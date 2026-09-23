@@ -109,6 +109,8 @@ def commande_recuperer(args, racine: Path) -> int:
           f"{bilan.elements_total} élément(s) lus, {len(bilan.nouveautes)} nouveauté(s), "
           f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else "")
           + (f", borne {bilan.borne}" if bilan.borne else ""))
+    for s in bilan.sources_amorcees:
+        print(f"  ~ amorçage   {s} : aucune trace dans l'état, fenêtre limitée (D30)")
     for e in bilan.nouveautes[:20]:
         print(f"  {'~' if e.revision else '+'} {e.date_publication or '????-??-??'}  {e.produit:<11} {e.titre[:80]}")
     if len(bilan.nouveautes) > 20:

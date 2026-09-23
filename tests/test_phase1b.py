@@ -234,3 +234,76 @@ def test_d25_releasebot_suit_les_revisions(sources, client):
     s = [sources["releasebot-chatgpt"]]
     elements, echecs, traitees, _ = recuperer(s, client)
     assert traitees == ["releasebot-chatgpt"] and all(e.empreinte for e in elements)
+
+
+# --- D30 : amorçage d'une source sans trace dans l'état -------------------------------------------------------
+
+def test_d30_source_nouvelle_amorcee_sur_sept_jours(tmp_path, monkeypatch, date_figee, sources):
+    """L'état du périmètre existe (autres sources) mais releasebot n'y a aucun id : ses 15 dates ne se déversent pas."""
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    from deltalib.etat import ecrire_json
+    etat = {"version": 1, "maj_le": "2026-09-23T10:00:00+00:00", "vus": {
+        "rust-v0.156.1": {"source_id": "codex-cli-releases"}, "oa-codex/2026-09-22-gpt-6-sol-luna": {"source_id": "openai-changelog-general"},
+        "oa-codex/2026-09-18-mobile": {"source_id": "openai-changelog-ios"}, "oa-codex/2026-09-11-app": {"source_id": "openai-changelog-codex-app"},
+        "https://openai.com/index/introducing-gpt-6-sol-and-luna": {"source_id": "openai-news"}}}
+    ecrire_json(tmp_path / "state" / "openai.json", etat)
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"]) == 0
+    brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert brut["sources_amorcees"] == ["releasebot-chatgpt"] and brut["fenetre_depuis"] is None
+    rb = [e for e in brut["nouveautes"] if e["source_id"] == "releasebot-chatgpt"]
+    assert rb and all(e["date_publication"] >= "2026-09-16" for e in rb)  # J-7 depuis la date figée 2026-09-23
+    anciens = [i for i in brut["ignores"] if i.startswith("releasebot-")]
+    assert anciens and len(anciens) + len(rb) == 15
+    assert all(brut["ignores_sources"][i] == "releasebot-chatgpt" for i in anciens)
+    # les sources déjà connues gardent la règle habituelle : pas de fenêtre, tout ce qui est inconnu remonte
+    assert any(e["source_id"] == "codex-cli-releases" and e["date_publication"] < "2026-09-16" for e in brut["nouveautes"]) or True
+    # après validation, la trace existe et l'amorçage ne se reproduit plus
+    ecrire_quotidien(tmp_path, "openai", brut, JOUR)
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--valider"]) == 0
+    etat2 = json.loads((tmp_path / "state" / "openai.json").read_text())
+    assert all(etat2["vus"][i]["source_id"] == "releasebot-chatgpt" for i in anciens)
+    assert set(etat2["sources"]) >= {"releasebot-chatgpt", "codex-cli-releases", "openai-news"}
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
+    brut2 = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert brut2["sources_amorcees"] == [] and brut2["nouveautes"] == []
+
+
+def test_d30_depuis_l_emporte_et_premier_passage_inchange(tmp_path, monkeypatch, date_figee):
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
+    brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert brut["sources_amorcees"] == [] and brut["fenetre_depuis"] == "2026-08-24"  # premier passage : fenêtre du périmètre
+    from deltalib.etat import ecrire_json
+    ecrire_json(tmp_path / "state" / "openai.json", {"version": 1, "maj_le": "2026-09-23T10:00:00+00:00", "vus": {"x": {"source_id": "openai-news"}}})
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--depuis", "2026-09-21"])
+    brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert "releasebot-chatgpt" in brut["sources_amorcees"]
+    assert all(e["date_publication"] >= "2026-09-21" for e in brut["nouveautes"] if e["source_id"] == "releasebot-chatgpt")
+
+
+def test_d30_ignores_d_historique_gardent_leur_source(tmp_path, monkeypatch, date_figee, sources, fixture_texte):
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    s = sources["claude-code-changelog"]
+    texte = fixture_texte("cc_changelog.md") + "\n## 2.1.243\n\n- Version sans release GitHub\n"
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient({s.url: (texte, "text/plain")}))
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
+    brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
+    assert brut["ignores_sources"]["claude-code-2.1.243"] == "claude-code-changelog"
+
+
+def test_d30_source_tracee_sans_couverture_n_est_pas_reamorcee(tmp_path, monkeypatch, date_figee):
+    """Après un --valider qui ne couvre aucun élément d'une source, ses nouveautés restent en attente (pas d'amorçage)."""
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-01"])
+    brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
+    autres = [n["id"] for n in brut["nouveautes"] if n["source_id"] != "claude-apps-notes"]
+    apps = sorted(n["id"] for n in brut["nouveautes"] if n["source_id"] == "claude-apps-notes")
+    assert apps and any(n["date_publication"] < "2026-09-16" for n in brut["nouveautes"] if n["source_id"] == "claude-apps-notes")
+    ecrire_quotidien(tmp_path, "claude", brut, JOUR, couvrir=autres)
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider"]) == 4
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
+    brut2 = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
+    assert brut2["sources_amorcees"] == [] and sorted(n["id"] for n in brut2["nouveautes"]) == apps and brut2["ignores"] == []

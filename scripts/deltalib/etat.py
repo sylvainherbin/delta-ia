@@ -35,16 +35,30 @@ def premier_passage(etat: dict) -> bool:
     return not etat.get("vus")
 
 
-def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None) -> tuple[list[Element], list[str]]:
+def sources_connues(etat: dict) -> set[str]:
+    """Sources déjà vues par un `--valider` (clé `sources` de l'état) ou dont un identifiant figure dans `vus`.
+
+    La clé `sources` est la trace fiable (D30) : une source dont aucun élément n'a encore été couvert par un
+    fichier quotidien y figure quand même, sinon ses nouveautés en attente glisseraient vers `ignores`.
+    """
+    connues = {s for s in (etat.get("sources") or {})}
+    connues |= {v.get("source_id") for v in etat.get("vus", {}).values() if v.get("source_id")}
+    return connues
+
+
+def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None,
+             fenetre_par_source: dict[str, date] | None = None) -> tuple[list[Element], list[str]]:
     """Sépare les nouveautés des éléments à ignorer.
 
     - identifiant connu : rien, sauf si la source suit les révisions et que l'empreinte a changé,
       auquel cas l'élément revient en nouveauté avec `revision: true` (D1) ;
-    - daté avant `fenetre_depuis` : ignoré, mais retenu pour que `--valider` l'inscrive dans l'état ;
+    - daté avant la fenêtre : ignoré, mais retenu pour que `--valider` l'inscrive dans l'état ; la fenêtre
+      est celle du périmètre, ou celle de la source si `fenetre_par_source` en donne une (amorçage, D30) ;
     - non daté : jamais ignoré à cause de la fenêtre, c'est une nouveauté (D3) ;
     - sinon : nouveauté.
     """
     vus = etat.get("vus", {})
+    fenetre_par_source = fenetre_par_source or {}
     nouveautes: list[Element] = []
     ignores: list[str] = []
     deja: set[str] = set()
@@ -58,8 +72,8 @@ def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None) -
                 e.revision = True
                 nouveautes.append(e)
             continue
-        if fenetre_depuis is not None and e.date_publication is not None \
-                and date.fromisoformat(e.date_publication) < fenetre_depuis:
+        fenetre = fenetre_par_source.get(e.source_id, fenetre_depuis)
+        if fenetre is not None and e.date_publication is not None and date.fromisoformat(e.date_publication) < fenetre:
             ignores.append(e.id)
             continue
         nouveautes.append(e)
@@ -121,12 +135,19 @@ def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
             bilan["inscrits"] += 1
         else:
             bilan["inconnus"].append(ident)  # ni dans le brut, ni dans l'état, ni issu du web : suspect
+    sources_ignores = brut.get("ignores_sources") or {}
     for ident in brut.get("ignores", []):
         if ident not in vus:
-            vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": None, "ignore": True}
+            # la source est conservée : c'est la trace qui évite de ré-amorcer la source au passage suivant (D30)
+            vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": sources_ignores.get(ident), "ignore": True}
             if ident in empreintes:
                 vus[ident]["empreinte"] = empreintes[ident]
             bilan["inscrits"] += 1
+    traces = etat.setdefault("sources", {})
+    for sid in brut.get("sources_traitees", []):  # D30 : trace de chaque source traitée, couverte ou non
+        traces.setdefault(sid, {"vue_le": horodatage})
+        traces[sid]["derniere_validation"] = horodatage
+    etat["sources"] = dict(sorted(traces.items()))
     bilan["en_attente"].sort()
     bilan["inconnus"].sort()
     etat["version"] = VERSION_ETAT
