@@ -165,8 +165,17 @@ def premier_code_en_ligne(lignes: list[str], debut: int, fin: int) -> str | None
     return None
 
 
+def usage_et_nature(lignes: list[str], debut: int, fin: int) -> tuple[str | None, str]:
+    """Usage recopié et sa nature (D49) : `syntaxe` (bloc de code, code en ligne) ou `etapes` (liste d'étapes,
+    paragraphe d'une page narrative). Ordre : bloc de code, liste d'étapes, code en ligne, paragraphe."""
+    for fonction, nature in ((premier_bloc_code, "syntaxe"), (lambda l, d, f: premiere_liste(l, d, f, True), "etapes"),
+                             (premier_code_en_ligne, "syntaxe"), (premier_paragraphe, "etapes")):
+        v = fonction(lignes, debut, fin)
+        if v:
+            return v, nature
+    return None, "syntaxe"
+
+
 def usage_de(lignes: list[str], debut: int, fin: int) -> str | None:
-    """Syntaxe recopiée : premier bloc de code, sinon première liste d'étapes, sinon premier code en ligne,
-    sinon premier paragraphe. Jamais reformulée."""
-    return (premier_bloc_code(lignes, debut, fin) or premiere_liste(lignes, debut, fin, True)
-            or premier_code_en_ligne(lignes, debut, fin) or premier_paragraphe(lignes, debut, fin))
+    """Syntaxe recopiée, jamais reformulée (voir `usage_et_nature`)."""
+    return usage_et_nature(lignes, debut, fin)[0]

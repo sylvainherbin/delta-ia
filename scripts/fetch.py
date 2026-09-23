@@ -142,7 +142,7 @@ def commande_kb(args, racine: Path) -> int:
         return 2
     bilan_pages = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": []}
     if not args.kb_sans_reseau:
-        bilan_pages = recuperer(racine, docs, Client)
+        bilan_pages = recuperer(racine, docs, Client, ecrire=not args.dry_run)  # D47 : dry-run n'écrit rien
     print(f"documentation {' '.join(args.kb)} : {bilan_pages['pages']} page(s) lue(s), "
           f"{len(bilan_pages['nouvelles'])} nouvelle(s), {len(bilan_pages['modifiees'])} modifiée(s), "
           f"{len(bilan_pages['echecs'])} en échec")
@@ -150,13 +150,15 @@ def commande_kb(args, racine: Path) -> int:
         print(f"  ! ÉCHEC   {e['doc']}/{e['fichier']} : {e['erreur']}")
     code = 0
     for perimetre in sorted({d.perimetre for d in docs}):
-        res = catalogue.mettre_a_jour(racine, perimetre, docs, ecrire_fichiers=not args.dry_run)
-        res["pages"] = {k: v for k, v in bilan_pages.items() if k != "pages"}
+        res = catalogue.mettre_a_jour(racine, perimetre, docs, ecrire_fichiers=not args.dry_run,
+                                      surcharge=bilan_pages.get("textes"))
+        res["pages"] = {k: v for k, v in bilan_pages.items() if k not in ("pages", "textes")}
         chemin = racine / "raw" / "kb" / f"{perimetre}-modifications.json"
         if not args.dry_run:
             ecrire_json(chemin, res)
         print(f"catalogue {perimetre} : {res['total']} entrée(s), {len(res['ajoutees'])} ajoutée(s), "
-              f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['retirees'])} retirée(s), "
+              f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['description_source_modifiee'])} description(s) "
+              f"d'origine modifiée(s), {len(res['retirees'])} retirée(s), "
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
         for e in res["echecs"]:
             print(f"  ! ÉCHEC   {e['doc']} : {e['erreur']}")

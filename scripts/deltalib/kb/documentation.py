@@ -94,17 +94,27 @@ def empreinte(texte: str) -> str:
     return hashlib.sha1(texte.encode("utf-8")).hexdigest()[:16]
 
 
-def lire_cache(racine: Path, doc: DocSource) -> dict[str, str]:
+def lire_cache(racine: Path, doc: DocSource, surcharge: dict | None = None) -> dict[str, str]:
+    """Fichiers d'une documentation : la version récupérée en mémoire (dry-run) prime sur la copie de raw/kb/."""
     res = {}
     for nom in doc.fichiers():
+        cle = f"{doc.id}/{nom}"
+        if surcharge and cle in surcharge:
+            res[nom] = surcharge[cle]
+            continue
         p = chemin_cache(racine, doc, nom)
         if p.exists():
             res[nom] = p.read_text(encoding="utf-8")
     return res
 
 
-def recuperer(racine: Path, docs: list[DocSource], fabrique_client=Client, paralleles: int = 4) -> dict:
-    """Télécharge chaque fichier ; en cas d'échec, l'ancienne copie reste en place. Rend un bilan par page."""
+def recuperer(racine: Path, docs: list[DocSource], fabrique_client=Client, paralleles: int = 4,
+              ecrire: bool = True) -> dict:
+    """Télécharge chaque fichier ; en cas d'échec, l'ancienne copie reste en place. Rend un bilan par page.
+
+    D47 : avec `ecrire=False` (dry-run), rien n'est écrit, ni copie ni empreinte ; les textes récupérés sont
+    rendus dans `bilan["textes"]` pour une extraction en mémoire.
+    """
     local = threading.local()
 
     def client():
@@ -124,7 +134,7 @@ def recuperer(racine: Path, docs: list[DocSource], fabrique_client=Client, paral
 
     with ThreadPoolExecutor(max_workers=paralleles) as ex:
         resultats = list(ex.map(une, taches))
-    bilan = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": []}
+    bilan = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": [], "textes": {}}
     par_produit: dict[str, dict] = {}
     for d, nom, url, texte, erreur in resultats:
         chemin = chemin_cache(racine, d, nom)
@@ -136,15 +146,18 @@ def recuperer(racine: Path, docs: list[DocSource], fabrique_client=Client, paral
             continue
         e = empreinte(texte)
         ancienne = (index.get(cle) or {}).get("empreinte")
-        chemin.parent.mkdir(parents=True, exist_ok=True)
-        chemin.write_text(texte, encoding="utf-8")
-        index[cle] = {"url": url, "empreinte": e, "recupere_le": maintenant_iso(), "octets": len(texte.encode("utf-8"))}
+        if ecrire:
+            chemin.parent.mkdir(parents=True, exist_ok=True)
+            chemin.write_text(texte, encoding="utf-8")
+            index[cle] = {"url": url, "empreinte": e, "recupere_le": maintenant_iso(), "octets": len(texte.encode("utf-8"))}
+        else:
+            bilan["textes"][cle] = texte
         bilan["pages"] += 1
         if ancienne is None:
             bilan["nouvelles"].append(cle)
         elif ancienne != e:
             bilan["modifiees"].append(cle)
-    for produit, index in par_produit.items():
+    for produit, index in (par_produit.items() if ecrire else ()):
         p = racine / "raw" / "kb" / produit / "empreintes.json"
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(dict(sorted(index.items())), ensure_ascii=False, indent=1), encoding="utf-8")

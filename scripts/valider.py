@@ -301,7 +301,7 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 
 # ----------------------------------------------------------------------------------------------- base de référence (D40, D41, SPEC §7.4)
 
-CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "exemple",
+CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
              "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "retiree", "origine", "groupe",
              "maj_le", "historique"}
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
@@ -368,6 +368,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                 r.erreur(o, "`nom` vide")
             if not isinstance(e["usage"], str) or not e["usage"].strip():
                 r.erreur(o, "`usage` vide")
+            if e["usage_nature"] not in ("syntaxe", "etapes"):
+                r.erreur(o, f"`usage_nature` doit valoir syntaxe ou etapes : {e['usage_nature']!r}")
             src = e["sources"]
             if not isinstance(src, list) or not src or not all(
                     isinstance(s, dict) and str(s.get("url", "")).startswith(("http://", "https://")) and s.get("libelle")

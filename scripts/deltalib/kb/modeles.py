@@ -12,6 +12,7 @@ PRODUITS_PAR_PERIMETRE = {"claude": ("claude", "claude-code"), "openai": ("chatg
 PERIMETRE_DU_PRODUIT = {p: per for per, ps in PRODUITS_PAR_PERIMETRE.items() for p in ps}
 STATUTS_USAGE = ("utilise", "non_utilise", "inconnu")
 VERDICTS = ("utiliser", "tester", "ignorer")
+NATURES_USAGE = ("syntaxe", "etapes")  # D49
 
 
 def gabarit_de(categorie: str) -> str:
@@ -39,11 +40,14 @@ class EntreeExtraite:
     origine: str  # identifiant de la documentation dans sources.yaml
     groupe: str | None = None  # section de la page, pour lire et découper
     cle: str | None = None  # base du slug si différente du nom
+    usage_nature: str = "syntaxe"  # D49 : `syntaxe` ou `etapes` (page narrative)
     id: str = field(default="")
 
     def __post_init__(self) -> None:
         if self.categorie not in CATEGORIES:
             raise ValueError(f"catégorie inconnue : {self.categorie!r}")
+        if self.usage_nature not in NATURES_USAGE:
+            raise ValueError(f"usage_nature inconnue : {self.usage_nature!r}")
         if self.produit not in PERIMETRE_DU_PRODUIT:
             raise ValueError(f"produit inconnu : {self.produit!r}")
         self.nom = (self.nom or "").strip()

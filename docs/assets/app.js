@@ -316,7 +316,8 @@
     if (e.groupe) c.append(el("div", { class: "meta", text: `${e.groupe} · mis à jour le ${dateFr(e.maj_le)}` }));
     if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));
     else if (texte(e.description_source)) c.append(el("p", { class: "resume source-en", lang: "en", text: e.description_source }));
-    c.append(el("pre", { class: "usage" }, el("code", { text: String(e.usage || "") })));
+    c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? "Accès" : "Syntaxe" }));  // D49
+    c.append(el("pre", { class: "usage" + (e.usage_nature === "etapes" ? " etapes" : "") }, el("code", { text: String(e.usage || "") })));
     if (e.commentee && texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
     if (verdict && texte(e.recommandation.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.recommandation.pourquoi })));
     if (texte(e.disponibilite)) c.append(el("p", { class: "projets", text: `Disponibilité : ${e.disponibilite}` }));

@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 
 from ..modeles import FormatInattendu
 from .markdown import (Section, cellules, nettoyer, premier_paragraphe, premiere_liste, sections, tableaux,
-                       usage_de)
+                       usage_de, usage_et_nature)
 from .modeles import EntreeExtraite
 
 _RE_PLATEFORME_EXCLUE = re.compile(r"macOS|\bmac\b|Windows|WSL|\bCmd\b|Cmd\+|Option\+|iTerm", re.I)
@@ -127,14 +127,16 @@ def sections_page(doc, fichiers: dict) -> list[EntreeExtraite]:
         if exclure and exclure.search(s.titre):
             continue
         prochain = next((t.debut for t in secs if t.debut > s.debut), len(lignes))
-        usage = usage_de(lignes, s.debut + 1, s.fin) or (s.titre if "`" in s.brut else None)
+        usage, nature = usage_et_nature(lignes, s.debut + 1, s.fin)
+        if not usage and "`" in s.brut:
+            usage, nature = s.titre, "syntaxe"
         if not usage:
             continue
         desc = premier_paragraphe(lignes, s.debut + 1, prochain) or ""
         res.append(EntreeExtraite(
             produit=doc.produit, categorie=o["categorie"], nom=(o.get("prefixe_nom") or "") + s.titre, usage=usage,
             description_source=nettoyer(desc), url=f"{doc.url_publique}#{_ancre(s.titre)}", libelle=doc.libelle,
-            origine=doc.id, groupe=ancetres[-1] if ancetres else None))
+            origine=doc.id, groupe=ancetres[-1] if ancetres else None, usage_nature=nature))
     if not res:
         raise FormatInattendu(f"aucune section de niveau {sorted(niveaux)} retenue : gabarit changé ?")
     return res
@@ -166,13 +168,13 @@ def pages(doc, fichiers: dict) -> list[EntreeExtraite]:
                 desc = lignes[i][2:]
                 break
         desc = desc or premier_paragraphe(lignes, debut, len(lignes)) or ""
-        usage = usage_de(lignes, debut, len(lignes))
+        usage, nature = usage_et_nature(lignes, debut, len(lignes))
         if not usage:
             raise FormatInattendu(f"page {chemin} : ni code, ni liste, ni paragraphe")
         res.append(EntreeExtraite(
             produit=conf.get("produit", doc.produit), categorie=conf["categorie"], nom=titre.titre, usage=usage,
             description_source=nettoyer(desc), url=doc.base + chemin, libelle=titre.titre, origine=doc.id,
-            groupe=None, cle=f"page-{chemin}"))
+            groupe=None, cle=f"page-{chemin}", usage_nature=nature))
     if not res:
         raise FormatInattendu("aucune page de fonctionnalité disponible")
     return res

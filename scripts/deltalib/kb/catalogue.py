@@ -2,8 +2,9 @@
 
 Fusion (D40, D44) :
 - entrée nouvelle : ajoutée avec `commentee: false` ;
-- `usage` changé : `usage` mis à jour, `commentee` repasse à false (le commentaire précédent reste lisible) ;
-- autre changement de la source (description d'origine, URL, groupe) : mis à jour sans toucher au commentaire ;
+- `usage` ou `description_source` changé (D48) : mis à jour, `commentee` repasse à false (le commentaire précédent
+  reste lisible) ;
+- autre changement de la source (URL, groupe, nature de l'usage) : mis à jour sans toucher au commentaire ;
 - entrée absente d'une page extraite avec succès : `retiree: true` (jamais supprimée) ; elle reparaît si la page
   la décrit de nouveau. Les pages non extraites (échec, pas de copie) ne retirent rien.
 """
@@ -50,13 +51,14 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
         tmp.replace(d / f"{cat}.json")
 
 
-def extraire(racine: Path, docs: list[DocSource]) -> tuple[list[EntreeExtraite], set[str], list[dict]]:
+def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None
+             ) -> tuple[list[EntreeExtraite], set[str], list[dict]]:
     """Rend (entrées, docs extraites avec succès, échecs). Une doc sans copie locale est ignorée."""
     entrees: list[EntreeExtraite] = []
     ok: set[str] = set()
     echecs: list[dict] = []
     for d in docs:
-        fichiers = lire_cache(racine, d)
+        fichiers = lire_cache(racine, d, surcharge)
         if not fichiers:
             echecs.append({"doc": d.id, "erreur": "aucune copie locale (lancer fetch.py --kb)"})
             continue
@@ -91,7 +93,8 @@ def _dedoublonner(entrees: list[EntreeExtraite]) -> list[EntreeExtraite]:
 def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:
     return {
         "id": x.id, "produit": x.produit, "categorie": x.categorie, "nom": x.nom, "gabarit": gabarit_de(x.categorie),
-        "description": None, "description_source": x.description_source, "usage": x.usage, "exemple": None,
+        "description": None, "description_source": x.description_source, "usage": x.usage,
+        "usage_nature": x.usage_nature, "exemple": None,
         "disponibilite": None, "statut_usage": "inconnu", "recommandation": None,
         "sources": [{"url": x.url, "libelle": x.libelle, "officielle": True}],
         "commentee": False, "retiree": False, "origine": x.origine, "groupe": x.groupe,
@@ -103,7 +106,7 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
               jour: str | None = None) -> tuple[dict[str, dict], dict]:
     jour = jour or date.today().isoformat()
     res = {k: dict(v) for k, v in existantes.items()}
-    modif = {"ajoutees": [], "usage_modifie": [], "retirees": [], "reapparues": []}
+    modif = {"ajoutees": [], "usage_modifie": [], "description_source_modifiee": [], "retirees": [], "reapparues": []}
     presentes = set()
     for x in extraites:
         presentes.add(x.id)
@@ -123,7 +126,13 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
             e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "usage modifié dans la documentation"}]
             e["maj_le"] = jour
             modif["usage_modifie"].append(x.id)
-        e["description_source"] = x.description_source
+        if e.get("description_source") != x.description_source:  # D48
+            e["description_source"] = x.description_source
+            e["commentee"] = False
+            e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "description d'origine modifiée dans la documentation"}]
+            e["maj_le"] = jour
+            modif["description_source_modifiee"].append(x.id)
+        e["usage_nature"] = x.usage_nature
         e["sources"] = [{"url": x.url, "libelle": x.libelle, "officielle": True}] + [
             s for s in e.get("sources", [])[1:] if s.get("url") != x.url]
         e["nom"], e["groupe"], e["origine"] = x.nom, x.groupe, x.origine
@@ -136,9 +145,10 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
     return res, modif
 
 
-def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True) -> dict:
+def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
+                  surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
-    extraites, ok, echecs = extraire(racine, docs)
+    extraites, ok, echecs = extraire(racine, docs, surcharge)
     entrees, modif = fusionner(charger(racine, perimetre), extraites, ok)
     if ecrire_fichiers:
         ecrire(racine, perimetre, entrees)
@@ -149,22 +159,40 @@ def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fi
 
 # ----------------------------------------------------------------------------------------------- lots et commentaires
 
+ORDRE_LOTS = ("commandes", "fonctionnalites", "skills", "plugins", "mcp", "raccourcis", "parametres")  # D51
+QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
+GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
+
+
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
-    """Lots D46 : une catégorie, ou une demi-catégorie au-delà du seuil de son gabarit."""
+    """Lots D46, D50, D51 : par valeur décroissante ; paramètres en quarts ; catégorie complète coupée en deux
+    au-delà du seuil de son gabarit ; skills, plugins et MCP regroupés pour openai."""
     res = []
-    for cat in CATEGORIES:
-        ids = sorted(k for k, e in entrees.items() if e["categorie"] == cat and not e.get("retiree"))
+    groupes = GROUPES.get(perimetre, {})
+    deja: set[str] = set()
+    for cat in ORDRE_LOTS:
+        if cat in deja:
+            continue
+        groupe = next((g for g in groupes if cat in g), None)
+        cats = groupe or (cat,)
+        deja.update(cats)
+        ids = sorted(k for k, e in entrees.items() if e["categorie"] in cats and not e.get("retiree"))
         if not ids:
             continue
         gab = gabarit_de(cat)
-        if len(ids) > SEUIL_DEMI[gab]:
-            m = (len(ids) + 1) // 2
-            parts = [(f"{cat}:1", ids[:m]), (f"{cat}:2", ids[m:])]
+        nom = groupes.get(groupe, cat) if groupe else cat
+        if cat in QUARTS:
+            n = 4
+        elif len(ids) > SEUIL_DEMI[gab]:
+            n = 2
         else:
-            parts = [(cat, ids)]
-        for nom, liste in parts:
-            res.append({"lot": nom, "perimetre": perimetre, "gabarit": gab, "entrees": len(liste),
-                        "a_commenter": sum(1 for k in liste if not entrees[k].get("commentee")), "ids": liste})
+            n = 1
+        taille = -(-len(ids) // n)
+        parts = [(f"{nom}:{k + 1}" if n > 1 else nom, ids[k * taille:(k + 1) * taille]) for k in range(n)]
+        for nom_lot, liste in parts:
+            if liste:
+                res.append({"lot": nom_lot, "perimetre": perimetre, "gabarit": gab, "entrees": len(liste),
+                            "a_commenter": sum(1 for k in liste if not entrees[k].get("commentee")), "ids": liste})
     return res
 
 

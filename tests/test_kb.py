@@ -224,11 +224,44 @@ def test_appliquer_commentaires_refuse_usage_et_champs_invalides():
     assert ent[k]["commentee"] is False
 
 
-def test_lots_categorie_et_demi_categorie():
-    ent, _ = cat.fusionner({}, [x(f"/c{i}", "u") for i in range(5)] + [x(f"P{i}", "p", categorie="parametres") for i in range(151)], {"doc-a"})
+def test_lots_ordre_quarts_et_moities_d50_d51():
+    ent, _ = cat.fusionner({}, [x(f"/c{i}", "u") for i in range(61)] + [x(f"P{i}", "p", categorie="parametres") for i in range(10)]
+                           + [x(f"R{i}", "r", categorie="raccourcis") for i in range(3)] + [x(f"F{i}", "f", categorie="fonctionnalites") for i in range(2)]
+                           + [x(f"M{i}", "m", categorie="mcp") for i in range(2)], {"doc-a"})
     lots = cat.lots(ent, "claude")
-    assert [(l["lot"], l["entrees"]) for l in lots] == [("commandes", 5), ("parametres:1", 76), ("parametres:2", 75)]
-    assert lots[1]["gabarit"] == "court" and lots[0]["gabarit"] == "complet"
+    assert [(l["lot"], l["entrees"]) for l in lots] == [
+        ("commandes:1", 31), ("commandes:2", 30), ("fonctionnalites", 2), ("mcp", 2), ("raccourcis", 3),
+        ("parametres:1", 3), ("parametres:2", 3), ("parametres:3", 3), ("parametres:4", 1)]
+    assert lots[-1]["gabarit"] == "court" and lots[0]["gabarit"] == "complet"
+
+
+def test_lots_openai_regroupe_skills_plugins_mcp():
+    def y(nom, categorie):
+        return EntreeExtraite(produit="codex", categorie=categorie, nom=nom, usage="u", description_source="s",
+                              url="https://learn.chatgpt.com/docs/x", libelle="x", origine="doc-b")
+    ent, _ = cat.fusionner({}, [y("s1", "skills"), y("p1", "plugins"), y("m1", "mcp"), y("m2", "mcp"), y("c1", "commandes")], {"doc-b"})
+    assert [(l["lot"], l["entrees"]) for l in cat.lots(ent, "openai")] == [("commandes", 1), ("skills+plugins+mcp", 4)]
+
+
+def test_d48_description_source_modifiee_repasse_en_attente():
+    ent, _ = cat.fusionner({}, [x("/a", "/a")], {"doc-a"})
+    k = "claude-code-commandes-a"
+    assert commenter(ent, k) == []
+    changee = x("/a", "/a"); changee.description_source = "New wording of the upstream description."
+    ent, m = cat.fusionner(ent, [changee], {"doc-a"}, jour="2026-09-30")
+    assert m["description_source_modifiee"] == [k] and m["usage_modifie"] == []
+    assert ent[k]["commentee"] is False and ent[k]["description_source"] == changee.description_source
+    assert ent[k]["historique"][-1]["changement"] == "description d'origine modifiée dans la documentation"
+
+
+def test_d49_nature_de_l_usage(docs):
+    e = extraire(docs["cc-fonctionnalites"], **{"page:remote-control": lire("page_remote-control.md")})[0]
+    assert e.usage_nature == "syntaxe"
+    e = extraire(docs["claude-apps"], **{"page:11101966-use-voice-mode": lire("page_support_voice.md")})[0]
+    assert e.usage_nature == "etapes", "page narrative : étapes ou accès recopiés"
+    assert all(x.usage_nature == "syntaxe" for x in extraire(docs["cc-commandes"], page=lire("cc_commands.md")))
+    nouvelle = cat.nouvelle_entree(e, "2026-09-23")
+    assert nouvelle["usage_nature"] == "etapes"
 
 
 # --- fetch.py --kb de bout en bout (D44) et valider.py --kb ------------------------------------------------
@@ -412,3 +445,22 @@ def test_skills_delta_kb():
     assert "allow_implicit_invocation: false" in (racine / ".agents" / "skills" / "delta-kb" / "agents" / "openai.yaml").read_text()
     for f in (racine / ".claude" / "skills" / "delta" / "SKILL.md", racine / "prompts" / "codex-delta.md"):
         assert "fetch.py --kb" in f.read_text(encoding="utf-8"), f"D44 absent de {f.name}"
+
+
+def test_d47_dry_run_n_ecrit_rien(racine_kb, monkeypatch):
+    monkeypatch.setattr(fetch, "Client", lambda: ClientDoc({}))
+    args = ["--racine", str(racine_kb), "--sources", str(racine_kb / "sources.yaml"), "--kb", "claude-code", "codex"]
+    assert fetch.main(args + ["--dry-run"]) == 0
+    assert not (racine_kb / "raw").exists() and not (racine_kb / "docs").exists(), "dry-run : ni cache, ni catalogue"
+    assert fetch.main(args) == 0
+    empreintes = (racine_kb / "raw" / "kb" / "claude-code" / "empreintes.json").read_text()
+    page = lire("cc_settings.md").replace('"advisorModel": "opus"', '"advisorModel": "sonnet"')
+    url = "https://code.claude.com/docs/en/settings-reference.md"
+    monkeypatch.setattr(fetch, "Client", lambda: ClientDoc({url: page}))
+    assert fetch.main(args + ["--dry-run"]) == 0
+    assert (racine_kb / "raw" / "kb" / "claude-code" / "empreintes.json").read_text() == empreintes, "empreinte intacte"
+    assert '"opus"' in (racine_kb / "raw" / "kb" / "claude-code" / "cc-reglages" / "page.md").read_text()
+    # le passage réel suivant voit donc bien le changement
+    assert fetch.main(args) == 0
+    modif = json.loads((racine_kb / "raw" / "kb" / "claude-modifications.json").read_text())
+    assert modif["pages"]["modifiees"] == ["cc-reglages/page"] and modif["usage_modifie"] == ["claude-code-parametres-advisormodel"]

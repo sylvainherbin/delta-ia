@@ -10,7 +10,7 @@ Tu commentes par lots la base de référence `docs/data/kb/openai/` (produits `c
 
 ## 1. Lots du jour : deux au plus (D46)
 
-1. `.venv/bin/python scripts/catalogue.py lots --perimetre openai` liste les lots dans l'ordre : une catégorie, ou une demi-catégorie (`parametres:1`, `parametres:2`…) quand elle est grande.
+1. `.venv/bin/python scripts/catalogue.py lots --perimetre openai` liste les lots par valeur décroissante (D51) : commandes, fonctionnalités, `skills+plugins+mcp` (regroupés), raccourcis, puis paramètres. Une grande catégorie est coupée en deux (`commandes:1`, `commandes:2`), les paramètres en quarts (`parametres:1` à `parametres:4`) (D50).
 2. Prends les **deux premiers lots** qui ont encore des entrées à commenter. Pas un de plus, même s'il reste du temps : la génération s'étale sur plusieurs jours.
 
 ## 2. Pour chaque lot
@@ -27,6 +27,7 @@ Tu commentes des entrées déjà extraites de la documentation officielle par `s
 
 - **Lis la source, sobrement.** `description_source` et `usage` d'abord ; pour une entrée du gabarit complet, lis aussi la page en cache dans `raw/kb/<produit>/<origine>/` (le nom du fichier suit l'URL de `sources[0]`), mais au plus ses 120 premières lignes, ou seulement la section de l'entrée (`groupe`, ancre de l'URL) avec `grep -n` puis `sed -n`. Ne lis jamais une page entière de plus de 120 lignes : c'est le poste de coût principal.
 - **Gabarit complet** (fonctionnalités, commandes, skills, plugins, MCP) : `description` en 2 ou 3 phrases, en français, précise et utilisable ; `exemple` recopié tel quel depuis la page de documentation (commande, bloc de configuration, étapes), jamais inventé, ou `null` si la page n'en donne pas d'autre que `usage` ; `recommandation.pourquoi` en 1 ou 2 phrases.
+- **Nature de l'usage** (D49) : `usage_nature` vaut `syntaxe` (commande, clé, bloc de code) ou `etapes` (chemin d'accès ou étapes d'une page narrative) ; elle est fixée par l'extraction, tu ne la changes pas.
 - **Gabarit court** (paramètres, variables d'environnement, options CLI, clés `config.toml`, raccourcis) : `description` en 1 phrase, `recommandation.pourquoi` en 1 phrase, `exemple: null`.
 - **`statut_usage`** d'après CONTEXTE.md : `utilise` si l'usage est observé ou déclaré (réglage présent, commande tapée, outil cité), `non_utilise` si CONTEXTE dit explicitement que Sylvain ne s'en sert pas, sinon `inconnu`. Ne déduis jamais un usage.
 - **`recommandation.verdict`** : `utiliser`, `tester` ou `ignorer`. `utiliser` et `tester` exigent un `pourquoi` qui nomme un projet (trading-sim d'abord, puis carnet, chatgpt-trading-sim, les sites), une session (herbin-mint, herbin-dev, herbin-trading, delta-ia…) ou une habitude de CONTEXTE.md (pilotage depuis l'iPhone, Remote Control, sessions tmux systemd, audits croisés Claude ↔ Codex, limites hebdomadaires, Wi-Fi fragile, machine lente) et ce que ça change concrètement (D26). Sans lien réel, le verdict est `ignorer` et le `pourquoi` le dit en une phrase ; ne fabrique jamais de pertinence.
