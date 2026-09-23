@@ -3,7 +3,7 @@
  "categorie": "commandes",
  "maj_le": "2026-09-23",
  "total": 127,
- "commentees": 64,
+ "commentees": 127,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -2575,14 +2575,17 @@
    "categorie": "commandes",
    "nom": "/heapdump",
    "gabarit": "complet",
-   "description": null,
+   "description": "Écrit un instantané du tas JavaScript et un bilan mémoire dans `~/Desktop`, ou dans le dossier personnel sous Linux sans dossier Desktop, pour diagnostiquer une forte consommation mémoire. Seul le fichier `-diagnostics.json` se joint à un signalement : le `.heapsnapshot` contient toute la conversation et les identifiants. Masquée du menu, elle se tape en entier.",
    "description_source": "Write a JavaScript heap snapshot and a memory breakdown to ~/Desktop, or your home directory on Linux without a Desktop folder, for diagnosing high memory usage. Attach only the -diagnostics.json file when reporting a memory issue; the .heapsnapshot contains your full conversation and credentials, so don't share it. Hidden from the command menu; type it in full. See what to do with the output",
    "usage": "/heapdump",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "À ressortir seulement si une session dépasse nettement les ~300 Mio notés dans CONTEXTE ; ne jamais partager le `.heapsnapshot`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2590,7 +2593,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2599,6 +2602,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2608,14 +2615,17 @@
    "categorie": "commandes",
    "nom": "/help",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche l'aide et la liste des commandes disponibles.",
    "description_source": "Show help and available commands",
    "usage": "/help",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Commande de base ; cette base de référence la remplace pour découvrir les commandes."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2623,7 +2633,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2632,6 +2642,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2641,14 +2655,17 @@
    "categorie": "commandes",
    "nom": "/hooks",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche la configuration des hooks par événement d'outil.",
    "description_source": "View hook configurations for tool events",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "non_utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE relève qu'aucun hook n'existe alors que des contrôles se répètent (SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f`) ; `/hooks` sert à vérifier les hooks une fois écrits dans les réglages."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2656,7 +2673,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2665,6 +2682,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2674,14 +2695,17 @@
    "categorie": "commandes",
    "nom": "/ide",
    "gabarit": "complet",
-   "description": null,
+   "description": "Gère les intégrations avec les IDE et affiche leur état.",
    "description_source": "Manage IDE integrations and show status",
    "usage": "/ide",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun IDE n'apparaît dans ta configuration ; tu travailles en terminal et depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2689,7 +2713,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2698,6 +2722,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2707,14 +2735,17 @@
    "categorie": "commandes",
    "nom": "/import",
    "gabarit": "complet",
-   "description": null,
+   "description": "Reprend dans Claude Code la configuration d'OpenAI Codex, de Gemini CLI ou de Cursor présente sur la machine : fichiers d'instructions, serveurs MCP, commandes, subagents et skills. `--dry-run` prévisualise sans rien écrire, `--yes` saute le sélecteur. En mode `-p`, elle liste ce qu'elle a trouvé et donne la commande de confirmation.",
    "description_source": "Bring configuration from OpenAI Codex, Google Gemini CLI, or Cursor on your machine into Claude Code, including instruction files, MCP servers, commands, subagents, and skills. In non-interactive mode with -p, /import lists what it found and gives you the command that confirms the import. Add --dry-run to preview without writing anything, or --yes to skip the interactive picker. Not available on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or Claude Platform on AWS, or through a Claude apps gateway. Also unavailable when you turn off feature-flag fetching. Requires Claude Code v2.1.213 or later. Importing from Cursor requires v2.1.265 or later",
    "usage": "/import [codex|gemini|cursor] [--dry-run] [--yes]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ta configuration Codex se limite à des profils, des règles et des skills système ; rien d'utile à reprendre côté Claude Code."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2722,7 +2753,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2731,6 +2762,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2740,14 +2775,17 @@
    "categorie": "commandes",
    "nom": "/init",
    "gabarit": "complet",
-   "description": null,
+   "description": "Initialise un projet avec un guide `CLAUDE.md`. Avec `CLAUDE_CODE_NEW_INIT=1`, un parcours interactif couvre aussi skills, hooks et fichiers de mémoire personnels. Si une configuration Codex ou Gemini CLI est trouvée, elle propose de la reprendre avec `/import`.",
    "description_source": "Initialize project with a CLAUDE.md guide. Set CLAUDE_CODE_NEW_INIT=1 for an interactive flow that also walks through skills, hooks, and personal memory files. If /init finds OpenAI Codex or Google Gemini CLI configuration, it offers to carry it over with /import",
    "usage": "/init",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "carnet et trading-sim ont déjà leur CLAUDE.md, gelé sur trading-sim ; les sites, sans CLAUDE.md, sont en maintenance."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2755,7 +2793,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2764,6 +2802,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2773,14 +2815,17 @@
    "categorie": "commandes",
    "nom": "/insights",
    "gabarit": "complet",
-   "description": null,
+   "description": "Génère un rapport HTML sur tes sessions récentes sur cette machine : projets, façon d'utiliser Claude Code, points de friction et fonctionnalités à essayer. Indisponible dans les sessions cloud ; la documentation précise l'emplacement, la conservation et le coût du rapport.",
    "description_source": "Generate an HTML report analyzing your recent sessions on this machine: which projects you work in, how you use Claude Code, where things go wrong, and features to try. Not available in cloud sessions. See Analyze your usage patterns for the report location, retention, and cost",
    "usage": "/insights",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Il répond directement à ton irritant principal (méconnaître les fonctionnalités) à partir de tes vraies sessions ; vérifier d'abord son coût, vu tes limites hebdomadaires."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2788,7 +2833,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2797,6 +2842,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2806,14 +2855,17 @@
    "categorie": "commandes",
    "nom": "/install-github-app",
    "gabarit": "complet",
-   "description": null,
+   "description": "Installe l'app GitHub Claude sur un dépôt, avec en option la mise en place de workflows GitHub Actions et de leurs secrets. Ne fonctionne qu'avec des dépôts github.com.",
    "description_source": "Install the Claude GitHub App for a repository, with an optional step to set up GitHub Actions workflows and secrets. Walks you through selecting a repo and configuring the integration. Works only with github.com repositories. When your repository's git remote is on gitlab.com or bitbucket.org, the command prints a notice and exits instead of starting setup. To run Claude Code from GitLab pipelines, see GitLab CI/CD",
    "usage": "/install-github-app",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun de tes projets n'a de CI, et les revues de trading-sim passent par Codex ; ouvrir Claude aux PR ajouterait un circuit parallèle."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2821,7 +2873,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2830,6 +2882,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2839,14 +2895,17 @@
    "categorie": "commandes",
    "nom": "/keybindings",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre dans l'éditeur le fichier où sont définis tes raccourcis clavier personnalisés.",
    "description_source": "Open your keyboard shortcuts file",
    "usage": "/keybindings",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu pilotes surtout depuis l'iPhone, où les raccourcis clavier du terminal ne servent pas."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2854,7 +2913,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2863,6 +2922,14 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -2872,14 +2939,17 @@
    "categorie": "commandes",
    "nom": "/list-agents",
    "gabarit": "complet",
-   "description": null,
+   "description": "Liste les subagents, coéquipiers d'une équipe d'agents et autres sessions Claude Code que Claude peut joindre, avec le nom à employer pour chacun. Alias : `/peers`. Uniquement dans les sessions où la messagerie entre sessions est activée.",
    "description_source": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Requires Claude Code v2.1.224 or later; earlier versions report Unknown command: /list-agents. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
    "usage": "/list-agents",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes six sessions se parlent par `SendMessage` ; vérifier les noms exacts avant un relais entre herbin-trading, herbin-mint et delta-ia évite un message perdu."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2887,7 +2957,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2896,6 +2966,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2905,14 +2979,17 @@
    "categorie": "commandes",
    "nom": "/login",
    "gabarit": "complet",
-   "description": null,
+   "description": "Connecte Claude Code à ton compte Anthropic.",
    "description_source": "Sign in to your Anthropic account",
    "usage": "/login",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Connexion déjà faite avec l'abonnement Max ; utile seulement après une déconnexion."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2920,7 +2997,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2929,6 +3006,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2938,14 +3019,17 @@
    "categorie": "commandes",
    "nom": "/logout",
    "gabarit": "complet",
-   "description": null,
+   "description": "Déconnecte Claude Code de ton compte Anthropic.",
    "description_source": "Sign out from your Anthropic account",
    "usage": "/logout",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin identifié : tes sessions restent connectées."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2953,7 +3037,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2962,6 +3046,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2971,14 +3059,17 @@
    "categorie": "commandes",
    "nom": "/mcp",
    "gabarit": "complet",
-   "description": null,
+   "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur, `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs.",
    "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, pass reconnect <server> to reconnect one disconnected server, or pass enable/disable with a server name or all to change connection state without opening the dialog. Also available in non-interactive mode (-p), where running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
    "usage": "/mcp [reconnect <server>|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) ; les désactiver dans les sessions qui n'en ont pas besoin allège le contexte chargé."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -2986,7 +3077,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2995,6 +3086,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3004,14 +3099,17 @@
    "categorie": "commandes",
    "nom": "/memory",
    "gabarit": "complet",
-   "description": null,
+   "description": "Édite les fichiers `CLAUDE.md`, active ou coupe la mémoire automatique et affiche ses entrées.",
    "description_source": "Edit CLAUDE.md files, enable or disable auto memory, and view auto memory entries",
    "usage": "/memory",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tes 23 mémoires répètent des règles transversales (français, tutoiement, validation pas à pas) ; les passer en revue ici prépare le `~/.claude/CLAUDE.md` global de la piste 1."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3019,7 +3117,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3028,6 +3126,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3037,14 +3139,17 @@
    "categorie": "commandes",
    "nom": "/mobile",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche un QR code pour télécharger l'app mobile Claude. Alias : `/ios`, `/android`.",
    "description_source": "Show QR code to download the Claude mobile app. Aliases: /ios, /android",
    "usage": "/mobile",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "L'app Claude est déjà installée sur ton iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3052,7 +3157,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3061,6 +3166,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3070,14 +3179,17 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": null,
+   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante. En mode `-p`, le modèle passé en argument ne vaut que pour la session.",
    "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when Claude Code asks you to confirm the switch. Once you confirm the switch, if Claude Code asks, Claude Code applies the change without waiting for the current response to finish. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Also available in non-interactive mode (-p) with a model argument instead of the picker, where it applies to the current session only and isn't saved as your default; requires Claude Code v2.1.205 or later",
    "usage": "/model [model]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Passer herbin-mint et herbin-carnet sur Sonnet et garder Fable ou Opus pour herbin-trading étale ta consommation, alors que la limite Fable atteint 75 % en milieu de semaine (piste 11)."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3085,7 +3197,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3094,6 +3206,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3103,14 +3219,17 @@
    "categorie": "commandes",
    "nom": "/output-style",
    "gabarit": "complet",
-   "description": null,
+   "description": "Liste les styles de sortie ou bascule sur l'un d'eux.",
    "description_source": "List output styles or switch to one, for example /output-style concise. See Change your output style. Requires Claude Code v2.1.269 or later",
    "usage": "/output-style [style]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/output-style concise",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton style de réponse est déjà fixé par les CLAUDE.md et la mémoire ; aucun besoin identifié."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3118,7 +3237,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3127,6 +3246,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3136,14 +3259,17 @@
    "categorie": "commandes",
    "nom": "/passes",
    "gabarit": "complet",
-   "description": null,
+   "description": "Partage une semaine gratuite de Claude Code avec des proches ; visible seulement si ton compte y a droit.",
    "description_source": "Share a free week of Claude Code with friends. Only visible if your account is eligible",
    "usage": "/passes",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sans lien avec tes projets."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3151,7 +3277,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3160,6 +3286,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3169,14 +3299,17 @@
    "categorie": "commandes",
    "nom": "/permissions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Gère les règles d'autorisation (allow, ask, deny) des outils : consultation par portée, ajout ou retrait de règles, répertoires de travail, refus récents du mode auto. L'onglet Auto mode permet de voir et modifier les règles du classificateur. Lancée pendant une réponse, les changements s'appliquent dès l'appel d'outil suivant. Alias : `/allowed-tools`.",
    "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. When you run it while Claude is responding, Claude Code opens the dialog immediately and applies your changes starting with Claude's next tool call in the same turn. Before v2.1.234, Claude Code queued the command until the turn finished. Alias: /allowed-tools",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur herbin-mint, l'onglet des refus récents du mode auto montre exactement quelles écritures système le classificateur bloque, au lieu de les découvrir en cours de tâche."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3184,7 +3317,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3193,6 +3326,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3202,14 +3339,17 @@
    "categorie": "commandes",
    "nom": "/plan",
    "gabarit": "complet",
-   "description": null,
+   "description": "Passe directement en mode plan depuis le prompt ; une description en argument lance aussitôt la tâche dans ce mode.",
    "description_source": "Enter plan mode directly from the prompt. Pass an optional description to enter plan mode and immediately start with that task, for example /plan fix the auth bug",
    "usage": "/plan [description]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plan fix the auth bug",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Le mode plan formalise ta méthode (diagnostic, proposition, accord explicite, puis exécution) ; sur trading-sim, il empêche toute modification avant ton accord."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3217,7 +3357,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3226,6 +3366,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3235,14 +3379,17 @@
    "categorie": "commandes",
    "nom": "/plugin",
    "gabarit": "complet",
-   "description": null,
+   "description": "Gère les plugins de Claude Code : sans argument, ouvre le menu ; avec une sous-commande (`list`, `install`, `enable`, `disable`), agit directement. Le résumé d'installation indique si le plugin est actif ou s'il faut lancer `/reload-plugins`.",
    "description_source": "Manage Claude Code plugins. Run with no argument to open the plugin menu, or pass a subcommand such as list, install, enable, or disable to act directly. Claude Code can activate a plugin during the install; the install summary tells you whether it did or whether to run /reload-plugins",
    "usage": "/plugin [subcommand]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun plugin installé ; la commande ne vaut que pour un plugin précis, à choisir au lot plugins."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3250,7 +3397,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3259,6 +3406,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3268,14 +3419,17 @@
    "categorie": "commandes",
    "nom": "/powerup",
    "gabarit": "complet",
-   "description": null,
+   "description": "Fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
    "description_source": "Discover Claude Code features through quick interactive lessons with animated demos",
    "usage": "/powerup",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Répond à ton irritant principal (méconnaître les fonctionnalités) ; à lancer dans une session locale plutôt que depuis l'iPhone, les démonstrations étant animées dans le terminal."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3283,7 +3437,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3292,6 +3446,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3301,14 +3459,17 @@
    "categorie": "commandes",
    "nom": "/pr-comments",
    "gabarit": "complet",
-   "description": null,
+   "description": "Supprimée en v2.1.91 : il faut demander directement à Claude d'afficher les commentaires de la PR. Avant, elle récupérait les commentaires d'une PR GitHub via `gh`.",
    "description_source": "Removed in v2.1.91. Ask Claude directly to view pull request comments instead. On earlier versions, fetches and displays comments from a GitHub pull request; automatically detects the PR for the current branch, or pass a PR URL or number. Requires the gh CLI",
    "usage": "/pr-comments [PR]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Retirée de Claude Code ; ta version 2.1.280 ne la connaît plus."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3316,7 +3477,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3325,6 +3486,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3334,14 +3499,17 @@
    "categorie": "commandes",
    "nom": "/privacy-settings",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche et modifie tes réglages de confidentialité.",
    "description_source": "View and update your privacy settings. Only available for Pro and Max plan subscribers",
    "usage": "/privacy-settings",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin identifié dans CONTEXTE ; à consulter une fois si la question de l'usage de tes données se pose."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3349,7 +3517,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3358,6 +3526,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3367,14 +3539,17 @@
    "categorie": "commandes",
    "nom": "/radio",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre la radio lo-fi Claude FM dans le navigateur, ou affiche l'URL du flux sans navigateur.",
    "description_source": "Open Claude FM lo-fi radio in your browser. Prints the stream URL when no browser is available",
    "usage": "/radio",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sans lien avec tes projets."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3382,7 +3557,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3391,6 +3566,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3400,14 +3579,17 @@
    "categorie": "commandes",
    "nom": "/rate-limit-options",
    "gabarit": "complet",
-   "description": null,
+   "description": "Montre les options quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des crédits ou changer de plan. Claude Code peut ouvrir ce menu de lui-même. Masquée du menu, elle se tape en entier.",
    "description_source": "Show ways to keep working when a claude.ai usage limit blocks a request: wait and continue automatically when the limit resets, add usage credits, or upgrade your plan. Claude Code can also open this menu on its own when you hit a limit at your own terminal. See Turn automatic continue off. Requires a claude.ai subscription. Doesn't appear in the command menu; type it in full. The wait-and-continue rows require Claude Code v2.1.234 or later",
    "usage": "/rate-limit-options",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Abonnement claude.ai",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu atteins les limites hebdomadaires ; l'option d'attente avec reprise automatique évite qu'une mission herbin-trading reste bloquée jusqu'à ton retour sur l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3415,7 +3597,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3424,6 +3606,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3433,14 +3619,17 @@
    "categorie": "commandes",
    "nom": "/recap",
    "gabarit": "complet",
-   "description": null,
+   "description": "Génère à la demande un résumé d'une ligne de la session courante ; un récapitulatif automatique existe aussi après une absence.",
    "description_source": "Generate a one-line summary of the current session on demand. See Session recap for the automatic recap that appears after you've been away",
    "usage": "/recap",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "En reprenant une session depuis l'iPhone après une coupure Wi-Fi ou une nuit, une ligne suffit pour savoir où en est herbin-trading."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3448,7 +3637,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3457,6 +3646,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3466,14 +3659,17 @@
    "categorie": "commandes",
    "nom": "/release-notes",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche le changelog dans un sélecteur de versions ; les notes s'affichent dans le transcript sans entrer dans la conversation vue par Claude.",
    "description_source": "View the changelog in an interactive version picker. Select a specific version to see its release notes, or choose to show all versions. The notes appear in your transcript without entering the conversation Claude sees",
    "usage": "/release-notes",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La veille delta-ia te livre déjà les nouveautés de Claude Code, rattachées à tes projets."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3481,7 +3677,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3490,6 +3686,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3499,14 +3699,17 @@
    "categorie": "commandes",
    "nom": "/reload-plugins",
    "gabarit": "complet",
-   "description": null,
+   "description": "Recharge tous les plugins actifs pour appliquer les changements sans redémarrer, et signale les erreurs de chargement. Si le rechargement invaliderait le cache de prompt en changeant les outils MCP chargés, elle avertit et s'abstient sauf avec `--force`.",
    "description_source": "Reload all active plugins to apply pending changes without restarting. Reports counts for each reloaded component and flags any load errors. When the reload would change which MCP tools are loaded and invalidate the prompt cache, the command warns and skips unless you pass --force. Also available in non-interactive mode (-p), the Agent SDK, and the desktop app, where it runs only on input typed directly into the session and doesn't apply plugin MCP server changes; requires Claude Code v2.1.260 or later. See Apply plugin changes without restarting",
    "usage": "/reload-plugins [--force]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun plugin installé."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3514,7 +3717,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3523,6 +3726,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3532,14 +3739,17 @@
    "categorie": "commandes",
    "nom": "/reload-skills",
    "gabarit": "complet",
-   "description": null,
+   "description": "Réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session, et indique combien ont été ajoutés ou retirés.",
    "description_source": "Re-scan skill and command directories so skills added or changed on disk during the session become available without restarting. Reports how many skills are available and how many were added or removed",
    "usage": "/reload-skills",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tes sessions systemd sont longues à relancer ; après avoir modifié un skill (`delta`, `delta-kb`, `maintenance-mint`), la recharge évite de redémarrer le service."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3547,7 +3757,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3556,6 +3766,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3565,14 +3779,17 @@
    "categorie": "commandes",
    "nom": "/remote-control",
    "gabarit": "complet",
-   "description": null,
+   "description": "Rend la session courante pilotable par Remote Control depuis claude.ai. Nécessite un abonnement claude.ai. Alias : `/rc`.",
    "description_source": "Make this session available for Remote Control from claude.ai. Running it while signed out prints that Remote Control requires a claude.ai subscription and tells you how to sign in; before v2.1.206 it reported Unknown command: /remote-control. Alias: /rc",
    "usage": "/remote-control",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Abonnement claude.ai",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tu la tapes déjà ; c'est le lien entre l'iPhone et une session lancée sans l'option `--remote-control`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3580,7 +3797,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3589,6 +3806,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3598,14 +3819,17 @@
    "categorie": "commandes",
    "nom": "/remote-env",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit l'environnement cloud par défaut des sessions cloud lancées depuis la CLI.",
    "description_source": "Choose the default cloud environment for cloud sessions you start from the CLI",
    "usage": "/remote-env",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu n'utilises pas de sessions cloud ; tout tourne sur ta machine."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3613,7 +3837,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3622,6 +3846,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3631,14 +3859,17 @@
    "categorie": "commandes",
    "nom": "/rename",
    "gabarit": "complet",
-   "description": null,
+   "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique. Les caractères de contrôle ou invisibles sont remplacés et le nom est limité à 200 caractères ; si une autre session active de la machine porte déjà ce nom, une variante est appliquée.",
    "description_source": "Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later. From every rename surface, including claude.ai and the desktop app, Claude Code replaces control and invisible characters in the new name with spaces and caps the name at 200 characters. If the name is empty once invisible characters are removed, Claude Code rejects it and shows That name is empty once invisible characters are removed. Usage: /rename <name>. The character replacement and length cap require Claude Code v2.1.221 or later. If another live session on this machine already uses a name you pass, Claude Code applies a variant of it instead",
    "usage": "/rename [name]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions sont déjà nommées `herbin-<nom>` par l'option `--remote-control` du service systemd."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3646,7 +3877,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3655,6 +3886,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3664,14 +3899,17 @@
    "categorie": "commandes",
    "nom": "/resume",
    "gabarit": "complet",
-   "description": null,
+   "description": "Reprend une conversation par son ID ou son nom, ou ouvre le sélecteur de sessions. Les sessions d'arrière-plan y sont marquées `bg` ; une session encore active ne peut pas être reprise ici. Alias : `/continue`.",
    "description_source": "Resume a conversation by ID or name, or open the session picker. Background sessions appear in the picker marked with bg; one that is still running can't be resumed here, so attach to it from claude agents or stop it there first. Alias: /continue",
    "usage": "/resume [session]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions reprennent déjà leur conversation par `claude --resume <id>` au démarrage du service ; utile seulement pour retrouver une conversation laissée par `/clear`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3679,7 +3917,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3688,6 +3926,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3697,14 +3939,17 @@
    "categorie": "commandes",
    "nom": "/review",
    "gabarit": "complet",
-   "description": null,
+   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument, avec les mêmes niveaux d'effort et options. Sans niveau, reprend le dernier niveau de `low` à `max` que tu as tapé ; `/code-review ultra` lance la revue approfondie dans le cloud.",
    "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review a diff locally for the exact rules. For a deep cloud review, use /code-review ultra. Before v2.1.223, /review was a separate command that ran a single-pass, read-only review of a GitHub pull request by number, listing open PRs to pick from when run with no argument; from v2.1.186 through v2.1.201, it ran the same multi-agent engine as /code-review medium",
    "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [pr#|branch|path]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/review 1234",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Alias ; la recommandation porte sur `/code-review`, traitée dans le lot skills."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3712,7 +3957,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3721,6 +3966,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3730,14 +3979,17 @@
    "categorie": "commandes",
    "nom": "/rewind",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ramène la conversation, le code ou les deux à un point antérieur, ou résume à partir d'un message choisi (checkpointing). Alias : `/checkpoint`, `/undo`.",
    "description_source": "Rewind the conversation and/or code to a previous point, or summarize from a selected message. See checkpointing. Aliases: /checkpoint, /undo",
    "usage": "/rewind",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur carnet, où les commits sont fréquents et petits, revenir sur une modification ratée de Claude sans passer par git ; sur trading-sim, vérifier que les fichiers gelés ne sont pas concernés."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3745,7 +3997,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3754,6 +4006,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3763,14 +4019,17 @@
    "categorie": "commandes",
    "nom": "/sandbox",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou coupe le mode sandbox, sur les plateformes prises en charge seulement.",
    "description_source": "Toggle sandbox mode. Available on supported platforms only",
    "usage": "/sandbox",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "trading-sim a déjà une politique de capacités stricte dans `.claude/settings.json` ; le sandbox pourrait la compléter en bornant les commandes Bash, si Linux Mint est pris en charge."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3778,7 +4037,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3787,6 +4046,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3796,14 +4059,17 @@
    "categorie": "commandes",
    "nom": "/schedule",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée, modifie, liste ou lance des routines, qui s'exécutent dans le cloud ; Claude guide la configuration par la conversation et peut rendre compte des exécutions récentes. Alias : `/routines`.",
    "description_source": "Create, update, list, or run routines, which execute in the cloud. Claude walks you through the setup conversationally. You can also ask about a routine's recent runs. Alias: /routines",
    "usage": "/schedule [description]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les routines planifiées sont sur ta liste à explorer ; le plan du jour de carnet, écrit par herbin-carnet dans un dépôt public, pourrait tourner en routine cloud sans occuper une session de la machine."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3811,7 +4077,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3820,6 +4086,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3829,14 +4099,17 @@
    "categorie": "commandes",
    "nom": "/scroll-speed",
    "gabarit": "complet",
-   "description": null,
+   "description": "Règle la vitesse de défilement de la molette, avec une règle pour prévisualiser le changement. Uniquement en rendu plein écran, pas dans le terminal des IDE JetBrains.",
    "description_source": "Adjust mouse wheel scroll speed interactively, with a ruler you can scroll while the dialog is open to preview the change. Available in fullscreen rendering only and not in the JetBrains IDE terminal",
    "usage": "/scroll-speed",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réglage d'affichage du terminal, sans effet sur le pilotage depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3844,7 +4117,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3853,6 +4126,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3862,14 +4139,17 @@
    "categorie": "commandes",
    "nom": "/security-review",
    "gabarit": "complet",
-   "description": null,
+   "description": "Analyse les changements de la branche courante à la recherche de vulnérabilités (injection, authentification, exposition de données), en comparant avec la branche par défaut d'`origin`. Nécessite un distant `origin`.",
    "description_source": "Analyze the changes on your current branch for security vulnerabilities. Reviews the diff between your branch and origin's default branch, identifying risks like injection, auth issues, and data exposure. Needs an origin remote; if the review fails with an ambiguous argument error, see the error reference",
    "usage": "/security-review",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "carnet est un dépôt public qui ne doit contenir aucun secret ; une revue avant de pousser une fonctionnalité touchant l'API GitHub Contents vérifie ce point."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3877,7 +4157,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3886,6 +4166,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3895,14 +4179,17 @@
    "categorie": "commandes",
    "nom": "/skill-doctor",
    "gabarit": "complet",
-   "description": null,
+   "description": "Montre ce que chaque skill coûte en contexte et à quelle fréquence il sert, pour repérer ceux à désactiver. Nécessite la récupération des feature flags.",
    "description_source": "Show what each of your skills costs in context and how often it gets used, so you can find skills to turn off. Requires Claude Code v2.1.252 or later and feature-flag fetching",
    "usage": "/skill-doctor",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "`latex-manuscrit` et `verif-numerique` ne sont jamais invoqués et de nombreux skills claude.ai sont synchronisés (piste 4) : le rapport chiffre ce qu'ils coûtent dans chaque session."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3910,7 +4197,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3919,6 +4206,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3928,14 +4219,17 @@
    "categorie": "commandes",
    "nom": "/skills",
    "gabarit": "complet",
-   "description": null,
+   "description": "Liste les skills disponibles, filtrables par nom, description ou source. `t` trie par nombre de jetons, Espace ou Entrée fait tourner la visibilité d'un skill pour Claude et le menu `/`, Échap enregistre. Les skills de plugin et ceux marqués `disable-model-invocation: true` ne se modifient pas ici.",
    "description_source": "List available skills. Type to filter the list by name, description, or source. Press t to sort by token count, Space or Enter to cycle a skill's visibility to Claude and the / menu, and Esc to save and close. You can't cycle plugin skills, skills whose frontmatter sets disable-model-invocation: true, or skills with a skillOverrides entry in managed settings or the --settings flag",
    "usage": "/skills",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Après `/skill-doctor`, masquer à Claude les skills dormants (`latex-manuscrit`, `verif-numerique`, skills claude.ai jamais invoqués) allège le contexte sans les supprimer."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3943,7 +4237,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3952,6 +4246,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3961,14 +4259,17 @@
    "categorie": "commandes",
    "nom": "/stats",
    "gabarit": "complet",
-   "description": null,
+   "description": "Alias de `/usage` qui ouvre directement l'onglet des statistiques d'activité.",
    "description_source": "Alias for /usage. Opens on the Stats tab",
    "usage": "/stats",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Simple alias ; voir l'entrée `/usage`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -3976,7 +4277,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3985,6 +4286,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3994,14 +4299,17 @@
    "categorie": "commandes",
    "nom": "/status",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre les réglages sur l'onglet Status : version, modèle, compte, connectivité, et type de session (interactive ou tâche d'arrière-plan). Fonctionne pendant une réponse.",
    "description_source": "Open the Settings interface on the Status tab, showing version, model, account, and connectivity. A Session kind row reads background job · attached or background job · unattended in a background session, depending on whether a terminal is attached, and interactive in any other session. Before v2.1.221, /status didn't show this row. Works while Claude is responding",
    "usage": "/status",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "`/usage` et `/model` couvrent ce qui compte pour toi ; la version est suivie par la veille."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4009,7 +4317,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4018,6 +4326,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4027,14 +4339,17 @@
    "categorie": "commandes",
    "nom": "/statusline",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configure la ligne d'état de Claude Code : décris ce que tu veux, ou lance sans argument pour la déduire de ton prompt shell.",
    "description_source": "Configure Claude Code's status line. Describe what you want, or run without arguments to auto-configure from your shell prompt",
    "usage": "/statusline",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La ligne d'état s'affiche dans le terminal ; tu suis surtout les sessions depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4042,7 +4357,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4051,6 +4366,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4060,14 +4379,17 @@
    "categorie": "commandes",
    "nom": "/stickers",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre la page de commande des autocollants Claude Code dans le navigateur.",
    "description_source": "Order Claude Code stickers",
    "usage": "/stickers",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sans lien avec tes projets."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4075,7 +4397,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4084,6 +4406,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4093,14 +4419,17 @@
    "categorie": "commandes",
    "nom": "/stop",
    "gabarit": "complet",
-   "description": null,
+   "description": "Arrête la session d'arrière-plan courante, en gardant le transcript et le worktree. Disponible seulement quand tu es attaché à une session d'arrière-plan.",
    "description_source": "Stop the current background session. Only available while attached to a background session; the transcript and any worktree are kept. To detach without stopping, use /exit or press ←",
    "usage": "/stop",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu n'utilises pas de sessions d'arrière-plan."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4108,7 +4437,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4117,6 +4446,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4126,14 +4459,17 @@
    "categorie": "commandes",
    "nom": "/subtask",
    "gabarit": "complet",
-   "description": null,
+   "description": "Lance un subagent forké : il hérite de toute la conversation, travaille en arrière-plan pendant que tu continues, et son résultat revient dans la conversation. `/fork` crée plutôt une session séparée.",
    "description_source": "Spawn a forked subagent: a background subagent that inherits the full conversation and works on the task while you keep working. Its result returns to this conversation when it finishes. To copy the conversation into a separate background session instead, use /fork. Requires Claude Code v2.1.212 or later; on v2.1.161 through v2.1.211 this command is /fork. When agent view is turned off, /subtask isn't available and /fork keeps the forked-subagent behavior",
    "usage": "/subtask <task>",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur herbin-trading, confier une vérification annexe (relire un rapport d'audit, contrôler une empreinte SHA-256) sans interrompre la mission ; le coût en jetons s'ajoute à ta limite hebdomadaire."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4141,7 +4477,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4150,6 +4486,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4159,14 +4499,17 @@
    "categorie": "commandes",
    "nom": "/tasks",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche et gère le travail d'arrière-plan de la session courante, y compris les subagents terminés. Alias : `/bashes`.",
    "description_source": "View and manage background work in the current session, including subagents that have finished. Also available as /bashes",
    "usage": "/tasks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu lances beaucoup de tâches suivies par Monitor (151 appels) ; la liste montre d'un coup ce qui tourne encore, par exemple une campagne dans `calculs.slice`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4174,7 +4517,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4183,6 +4526,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4192,14 +4539,17 @@
    "categorie": "commandes",
    "nom": "/team-onboarding",
    "gabarit": "complet",
-   "description": null,
+   "description": "Génère un guide d'accueil d'équipe à partir de ton usage de Claude Code sur les 30 derniers jours (sessions, commandes, MCP), à coller comme premier message par un coéquipier ; les abonnés claude.ai obtiennent aussi un lien de partage.",
    "description_source": "Generate a team onboarding guide from your Claude Code usage history. Claude analyzes your sessions, commands, and MCP server usage from the past 30 days and produces a markdown guide a teammate can paste as a first message to get set up quickly. For claude.ai subscribers on Pro, Max, Team, and Enterprise plans, also returns a share link teammates can open directly in Claude Code",
    "usage": "/team-onboarding",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise pour le lien de partage",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu travailles seul ; aucun coéquipier à accueillir."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4207,7 +4557,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4216,6 +4566,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4225,14 +4579,17 @@
    "categorie": "commandes",
    "nom": "/teleport",
    "gabarit": "complet",
-   "description": null,
+   "description": "Rapatrie une session cloud dans ce terminal : un sélecteur, puis récupération de la branche et de la conversation. Alias : `/tp`.",
    "description_source": "Pull a cloud session into this terminal. Opens a picker, then fetches the branch and conversation. Also available as /tp. Requires a claude.ai subscription",
    "usage": "/teleport",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Abonnement claude.ai",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu n'utilises pas de sessions cloud."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4240,7 +4597,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4249,6 +4606,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4258,14 +4619,17 @@
    "categorie": "commandes",
    "nom": "/terminal-setup",
    "gabarit": "complet",
-   "description": null,
+   "description": "Installe un raccourci Maj+Entrée pour les retours à la ligne dans VS Code, Cursor, Devin Desktop, Alacritty ou Zed ; règle aussi Apple Terminal et iTerm2.",
    "description_source": "Install a Shift+Enter keybinding for newlines in VS Code, Cursor, Devin Desktop, Alacritty, or Zed. In Apple Terminal, enable Option+Enter for newlines and turn off the audible bell instead. In iTerm2, turn on clipboard access so that /copy works",
    "usage": "/terminal-setup",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun des terminaux pris en charge n'apparaît dans ta configuration, et tu tapes surtout depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4273,7 +4637,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4282,6 +4646,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4291,14 +4659,17 @@
    "categorie": "commandes",
    "nom": "/theme",
    "gabarit": "complet",
-   "description": null,
+   "description": "Change le thème de couleurs : automatique selon le fond du terminal, clair, sombre, daltonien, ANSI, ou thème personnalisé de `~/.claude/themes/` ou d'un plugin.",
    "description_source": "Change the color theme. Includes an auto option that matches your terminal's light or dark background, light and dark variants, colorblind-accessible (daltonized) themes, ANSI themes that use your terminal's color palette, and any custom themes from ~/.claude/themes/ or plugins. Select New custom theme… to create one",
    "usage": "/theme",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le thème sombre est déjà fixé dans ton `settings.json`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4306,7 +4677,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4315,6 +4686,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4324,14 +4699,17 @@
    "categorie": "commandes",
    "nom": "/tui",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit le moteur d'affichage du terminal et relance dessus en gardant la conversation ; `fullscreen` active le rendu plein écran sans scintillement. Sans argument, affiche le moteur actif.",
    "description_source": "Set the terminal UI renderer and relaunch into it with your conversation intact. fullscreen enables the flicker-free alt-screen renderer. With no argument, prints the active renderer",
    "usage": "/tui [default|fullscreen]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Rendu du terminal local, sans effet sur le pilotage depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4339,7 +4717,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4348,6 +4726,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4357,14 +4739,17 @@
    "categorie": "commandes",
    "nom": "/ultraplan",
    "gabarit": "complet",
-   "description": null,
+   "description": "Commande supprimée : utiliser le mode plan à la place. Elle envoyait une tâche de planification à une session cloud, relue dans le navigateur.",
    "description_source": "Removed. Use plan mode instead. Previously sent a planning task to a cloud session for review in your browser",
    "usage": "/ultraplan <prompt>",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Retirée de Claude Code ; `/plan` la remplace."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4372,7 +4757,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4381,6 +4766,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4390,14 +4779,17 @@
    "categorie": "commandes",
    "nom": "/ultrareview",
    "gabarit": "complet",
-   "description": null,
+   "description": "Lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une PR en argument la cible, une branche ou un commit change la base de comparaison. La forme recommandée est `/code-review ultra`. Trois exécutions gratuites sur Pro et Max, puis crédits d'usage.",
    "description_source": "Run a deep, multi-agent code review in a cloud sandbox with ultrareview. Pass a PR reference to review that pull request, or a base branch or commit to change the comparison base. The preferred invocation is /code-review ultra, and /ultrareview is an alias. Includes 3 free runs on Pro and Max, then requires usage credits",
    "usage": "/ultrareview [PR or branch]",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max : 3 exécutions gratuites, puis crédits d'usage",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les trois exécutions gratuites permettent de comparer, sur une PR de trading-sim, ses résultats à ceux de l'audit Codex, dans l'esprit des audits croisés ; dépôt privé envoyé dans le cloud, à valider avec ChatGPT Work."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4405,7 +4797,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4414,6 +4806,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4423,14 +4819,17 @@
    "categorie": "commandes",
    "nom": "/upgrade",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre la page de changement de plan dans le navigateur.",
    "description_source": "Open the upgrade page in your browser to switch to a higher plan tier. When the browser fails to open, the command shows a sign-in prompt without printing the URL",
    "usage": "/upgrade",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun changement de plan envisagé dans CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4438,7 +4837,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4447,6 +4846,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4456,14 +4859,17 @@
    "categorie": "commandes",
    "nom": "/usage",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche le coût de la session, les limites du plan et les statistiques d'activité ; sur les plans Pro, Max, Team et Enterprise, détaille ce qui compte dans les limites. Alias : `/cost`, `/stats`.",
    "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. /cost and /stats are aliases",
    "usage": "/usage",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes limites hebdomadaires et Fable sont une friction récurrente ; consulter `/usage` avant de lancer une mission lourde sur herbin-trading évite de tomber à court en milieu de semaine."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4471,7 +4877,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4480,6 +4886,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4489,14 +4899,17 @@
    "categorie": "commandes",
    "nom": "/usage-credits",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configure des crédits d'usage quand une limite est atteinte, en ouvrant la page de facturation dans le navigateur ; sans navigateur (SSH), affiche l'URL. Ancien nom : `/extra-usage`.",
    "description_source": "Configure usage credits, or request them from your admin, when you hit a limit. Opens your usage-credits billing settings in the browser, except that Team and Enterprise members without billing access instead send a usage-credits request to their admin from the CLI, after confirming in a dialog that the request notifies their admins. When no browser can open the billing page, for example over SSH, the command prints the URL to visit instead; this requires Claude Code v2.1.205 or later, and earlier versions showed nothing in that case. Previously /extra-usage",
    "usage": "/usage-credits",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Payant en plus de l'abonnement Max ; mieux vaut d'abord ajuster `/model` et `/effort`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4504,7 +4917,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4513,6 +4926,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4522,14 +4939,17 @@
    "categorie": "commandes",
    "nom": "/vim",
    "gabarit": "complet",
-   "description": null,
+   "description": "Supprimée en v2.1.92 ; le mode d'édition Vim se règle dans `/config`, rubrique Editor mode.",
    "description_source": "Removed in v2.1.92. To toggle between Vim and Normal editing modes, use /config → Editor mode",
    "usage": "/vim",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Retirée de Claude Code, et le mode Vim n'apparaît pas dans ton usage."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4537,7 +4957,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4546,6 +4966,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4555,14 +4979,17 @@
    "categorie": "commandes",
    "nom": "/voice",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active la dictée vocale, éventuellement dans un mode précis (`hold`, `tap`) ou la coupe (`off`). Nécessite un compte Claude.ai.",
    "description_source": "Toggle voice dictation, or enable it in a specific mode. Requires a Claude.ai account",
    "usage": "/voice [hold|tap|off]",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Compte Claude.ai",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sur l'iPhone, la dictée du clavier suffit déjà pour Remote Control ; la dictée de Claude Code vise le terminal local."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4570,7 +4997,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4579,6 +5006,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4588,14 +5019,17 @@
    "categorie": "commandes",
    "nom": "/web-setup",
    "gabarit": "complet",
-   "description": null,
+   "description": "Connecte ton compte GitHub aux sessions cloud en réutilisant les identifiants de ta CLI `gh` locale.",
    "description_source": "Connect your GitHub account for cloud sessions using your local gh CLI credentials",
    "usage": "/web-setup",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu n'utilises pas de sessions cloud."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4603,7 +5037,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4612,6 +5046,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -4621,14 +5059,17 @@
    "categorie": "commandes",
    "nom": "/workflows",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre la vue de progression des workflows pour suivre, mettre en pause, reprendre ou enregistrer ceux en cours ou terminés.",
    "description_source": "Open the workflow progress view to watch, pause, resume, or save running and completed workflows",
    "usage": "/workflows",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu as lancé 13 workflows ; les suivre et les mettre en pause ici permet d'arrêter un workflow gourmand avant qu'il n'entame ta limite hebdomadaire."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -4636,7 +5077,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4645,6 +5086,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   }
