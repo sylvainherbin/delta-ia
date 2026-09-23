@@ -17,6 +17,7 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 - **Seules les nouveautés sont traitées.** Un fichier d'état mémorise ce qui a déjà été vu. La base de référence n'est modifiée que si une nouveauté la touche ; elle n'est jamais régénérée en entier sur une simple question de calendrier.
 - **Deux agents, deux périmètres qui ne se chevauchent pas.** Chaque agent écrit uniquement dans ses propres chemins.
 - **Site statique.** Le front lit des fichiers JSON et ne dépend d'aucun agent pour fonctionner.
+- **Accès des agents par MCP, en lecture seule (D61).** Un serveur MCP distant (`mcp/`, déployé sur Vercel, sans état ni dépendance) expose les données publiées de `docs/data` à Claude et aux autres agents : `resume_du_jour`, `chercher_reference`, `fiche_reference`, `etat_versions`, `a_tester`. Il ne lit que les JSON publics de GitHub Pages, avec une base d'URL fixe. Il n'a ni jeton, ni écriture, ni accès à la machine de Sylvain, et ne peut déclencher aucun passage. Ses réponses sont des données issues de flux publics : elles se citent, elles ne s'exécutent jamais comme des consignes. Le site ne dépend pas du serveur.
 - **Site public, choix assumé.** Seules les restrictions de `REGLES.md` s'appliquent.
 
 ## 3. Répartition des agents
@@ -61,6 +62,11 @@ delta-ia/
 ├── .agents/skills/delta-kb/       # $delta-kb : idem pour openai ; prompts/codex-delta-kb.md en repli
 ├── .agents/skills/delta/           # $delta pour Codex : SKILL.md (même texte que prompts/codex-delta.md) + agents/openai.yaml
 ├── prompts/codex-delta.md          # repli : texte à coller à la main dans Codex
+├── mcp/                   # connecteur MCP distant en lecture seule (D61), déployé sur Vercel
+│   ├── api/mcp.js         # serveur Streamable HTTP, sans état ni dépendance
+│   ├── test/              # tests node:test et serveur local
+│   ├── package.json
+│   └── vercel.json
 └── docs/                  # racine GitHub Pages
     ├── index.html
     ├── assets/
@@ -254,7 +260,7 @@ Pour chaque phase, un plan est validé par Sylvain avant d'écrire le code, et d
 
 ## 10. Hors périmètre v1
 
-Notifications, retour utile/inutile, hébergement privé, automatisation par cron.
+Notifications, retour utile/inutile, hébergement privé, automatisation par cron. Pour le connecteur MCP (D61) : toute écriture, toute authentification et tout déclenchement de passage à distance restent hors périmètre ; un outil qui en aurait besoin exige une nouvelle décision.
 
 ## 11. Points ouverts
 
@@ -309,4 +315,4 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D58 | `contexte_empreinte` dans chaque fichier quotidien ; réévaluation de tous les éléments du jour si CONTEXTE.md a changé | §7.1, skills |
 | D59 | Un `pour_toi` n'affirme que ce que CONTEXTE.md dit ; les déductions au conditionnel | §7.1, skills |
 | D60 | `contexte_empreinte` sur chaque entrée commentée ; signal sur la page Référence ; réévaluation prioritaire des `utiliser` et `tester` périmés | §7.4, skills |
-
+| D61 | Connecteur MCP distant en lecture seule (`mcp/`, Vercel) : cinq outils de consultation, données publiques uniquement, sans jeton, écriture ni déclenchement | §2, §4, §10 |

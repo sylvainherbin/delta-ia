@@ -35,3 +35,9 @@ Options de `fetch.py` : `--depuis AAAA-MM-JJ` (borne basse, sinon 30 jours au pr
 ```bash
 .venv/bin/pytest -q
 ```
+
+## Connecteur MCP
+
+- Serveur : `https://delta-mcp-ruddy.vercel.app/mcp` (Streamable HTTP, code dans `mcp/`, déployé sur Vercel à chaque push sur `main`).
+- Outils : `resume_du_jour`, `chercher_reference`, `fiche_reference`, `etat_versions`, `a_tester`.
+- Lecture seule sur les JSON publics de `docs/data` : ni jeton, ni écriture, ni déclenchement de passage (SPEC §2, D61).
