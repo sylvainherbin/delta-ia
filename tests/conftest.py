@@ -113,6 +113,7 @@ def ecrire_quotidien(racine: Path, perimetre: str, brut: dict, jour: str, couvri
         "date": jour, "perimetre": perimetre, "agent": AGENTS[perimetre], "genere_le": f"{jour}T12:00:00+00:00",
         "synthese": "Synthèse de test.", "sources_en_echec": brut.get("sources_en_echec", []), "elements": elements,
         "ecartes": [{"id": i, "raison": "hors sujet (test)"} for i in ecarter],
+        "contexte_empreinte": "0" * 40,
     }
     dossier = racine / "docs" / "data" / perimetre
     dossier.mkdir(parents=True, exist_ok=True)

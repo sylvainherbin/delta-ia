@@ -16,7 +16,7 @@ from datetime import date
 from pathlib import Path
 
 from ..dates import maintenant_iso
-from ..modeles import FormatInattendu
+from ..modeles import FormatInattendu, empreinte_contexte
 from .documentation import DocSource, lire_cache
 from .extracteurs import EXTRACTEURS
 from .modeles import (CATEGORIES, PRODUITS_PAR_PERIMETRE, STATUTS_USAGE, VERDICTS, EntreeExtraite, gabarit_de)
@@ -42,10 +42,14 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
     d = dossier(racine, perimetre)
     d.mkdir(parents=True, exist_ok=True)
     horodatage = maintenant_iso()
+    ctx = empreinte_contexte(racine)  # D60 : empreinte du CONTEXTE.md courant, comparée à celle de chaque commentaire
     for cat in CATEGORIES:
         liste = sorted((e for e in entrees.values() if e["categorie"] == cat), key=lambda e: e["id"])
+        for e in liste:
+            e.setdefault("contexte_empreinte", None)
         doc = {"perimetre": perimetre, "categorie": cat, "maj_le": max((e["maj_le"] for e in liste), default=horodatage[:10]),
-               "total": len(liste), "commentees": sum(1 for e in liste if e.get("commentee")), "entrees": liste}
+               "contexte_empreinte": ctx, "total": len(liste), "commentees": sum(1 for e in liste if e.get("commentee")),
+               "entrees": liste}
         tmp = d / f"{cat}.json.tmp"
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         tmp.replace(d / f"{cat}.json")
@@ -97,7 +101,7 @@ def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:
         "usage_nature": x.usage_nature, "exemple": None,
         "disponibilite": None, "statut_usage": "inconnu", "recommandation": None,
         "sources": [{"url": x.url, "libelle": x.libelle, "officielle": True}],
-        "commentee": False, "retiree": False, "origine": x.origine, "groupe": x.groupe,
+        "commentee": False, "contexte_empreinte": None, "retiree": False, "origine": x.origine, "groupe": x.groupe,
         "maj_le": jour, "historique": [{"date": jour, "changement": "ajoutée à l'inventaire"}],
     }
 
@@ -164,6 +168,20 @@ QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
 GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
 
 
+PERIMEES_MAX = 30  # D60 : réévaluations prioritaires par lancement, en plus des lots
+
+
+def perimees(entrees: dict[str, dict], contexte: str | None, maximum: int = PERIMEES_MAX) -> list[str]:
+    """Entrées `utiliser` puis `tester` commentées avec un autre CONTEXTE.md que l'actuel (D60)."""
+    if not contexte:
+        return []
+    rang = {"utiliser": 0, "tester": 1}
+    ids = [k for k, e in entrees.items() if e.get("commentee") and not e.get("retiree")
+           and (e.get("recommandation") or {}).get("verdict") in rang and e.get("contexte_empreinte") != contexte]
+    ids.sort(key=lambda k: (rang[entrees[k]["recommandation"]["verdict"]], k))
+    return ids[:maximum]
+
+
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
     """Lots D46, D50, D51 : par valeur décroissante ; paramètres en quarts ; catégorie complète coupée en deux
     au-delà du seuil de son gabarit ; skills, plugins et MCP regroupés pour openai."""
@@ -196,8 +214,10 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
     return res
 
 
-def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None) -> list[str]:
-    """Applique {id: {description, statut_usage, recommandation, exemple?, disponibilite?}} ; jamais `usage`."""
+def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
+                           contexte: str | None = None) -> list[str]:
+    """Applique {id: {description, statut_usage, recommandation, exemple?, disponibilite?}} ; jamais `usage`.
+    `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60)."""
     jour = jour or date.today().isoformat()
     erreurs = []
     for k, c in commentaires.items():
@@ -222,6 +242,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         deja = e.get("commentee")
         e.update({kk: c[kk] for kk in c})
         e["commentee"] = True
+        e["contexte_empreinte"] = contexte
         e["maj_le"] = jour
         e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "commentaire révisé" if deja else "commentée"}]
     return erreurs

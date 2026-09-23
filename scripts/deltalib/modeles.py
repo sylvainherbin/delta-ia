@@ -45,6 +45,16 @@ def id_web(url: str, date_publication: str | None, titre: str) -> str:
     return "web-" + hashlib.sha1(cle.encode("utf-8")).hexdigest()[:12]
 
 
+def empreinte_contexte(racine) -> str | None:
+    """D58, D60 : sha1 (40 hexadécimaux) de CONTEXTE.md, identique à `sha1sum CONTEXTE.md` ; None s'il est absent."""
+    from pathlib import Path
+    chemin = Path(racine) / "CONTEXTE.md"
+    try:
+        return hashlib.sha1(chemin.read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
 def empreinte_contenu(texte: str) -> str:
     """Empreinte du contenu, pour détecter une révision d'une entrée déjà vue (option `suivre_revisions`)."""
     return hashlib.sha1((texte or "").strip().encode("utf-8")).hexdigest()[:16]

@@ -63,6 +63,21 @@
     } catch (e) { /* stockage indisponible : la case reste cochée à l'écran seulement */ }
   }
 
+  /* ---------- éléments d'impact nul : masqués par défaut, bascule mémorisée (sous try/catch) ---------- */
+  const CLE_NUL = "delta.afficherNul";
+  function lireAfficherNul() { try { return localStorage.getItem(CLE_NUL) === "1"; } catch (e) { return false; } }
+  function ecrireAfficherNul(v) { try { localStorage.setItem(CLE_NUL, v ? "1" : "0"); } catch (e) { /* sans stockage : pour cette page seulement */ } }
+  etat.afficherNul = lireAfficherNul();
+  function sansNul(elements) { return etat.afficherNul ? elements : elements.filter((e) => e.impact !== "nul"); }
+  function basculeNul(elements) {
+    const n = elements.filter((e) => e.impact === "nul").length;
+    if (!n) return null;
+    const b = el("button", { type: "button", class: "bascule-nul", "aria-pressed": String(etat.afficherNul),
+      text: `${etat.afficherNul ? "Masquer" : "Afficher"} les éléments sans impact (${n})` });
+    b.addEventListener("click", () => { etat.afficherNul = !etat.afficherNul; ecrireAfficherNul(etat.afficherNul); rendre(); });
+    return el("div", { class: "filtres" }, b);
+  }
+
   /* ---------- chargement des données ---------- */
   async function lireJson(chemin) {
     const r = await fetch(chemin, { cache: "no-cache" });
@@ -280,10 +295,12 @@
       if (d) elements = elements.concat(elementsDe(p, [d]));
     }
     elements.sort(triImpact);
-    frag.append(el("h2", { text: `Éléments (${elements.length})` }));
+    frag.append(el("h2", { text: `Éléments (${sansNul(elements).length})` }));
     const f = filtresProduit(elements, rendre);
     if (f) frag.append(f);
-    frag.append(listeCartes(filtrer(elements), { vide: "Aucun élément pour ce filtre." }));
+    const bn = basculeNul(filtrer(elements));
+    if (bn) frag.append(bn);
+    frag.append(listeCartes(sansNul(filtrer(elements)), { vide: "Aucun élément pour ce filtre." }));
     const ec = blocEcartes(quotidiens);
     if (ec) frag.append(ec);
     return frag;
@@ -292,8 +309,10 @@
     const frag = document.createDocumentFragment();
     frag.append(el("h2", { text: "Changelogs" }), el("p", { class: "sous-titre", text: "Par produit, du plus récent au plus ancien." }), noteFenetre());
     const tous = elementsDe("claude", datesRecentes("claude")).concat(elementsDe("openai", datesRecentes("openai")));
+    const bn = basculeNul(tous);
+    if (bn) frag.append(bn);
     for (const produit of ["claude-code", "claude", "codex", "chatgpt"]) {
-      const liste = tous.filter((e) => e.produit === produit).sort(triChrono);
+      const liste = sansNul(tous.filter((e) => e.produit === produit)).sort(triChrono);
       frag.append(el("h3", { text: `${PRODUITS[produit]} (${liste.length})` }));
       frag.append(listeCartes(liste, { niveau: 4, vide: "Aucun élément." }));
     }
@@ -302,8 +321,10 @@
   function pageActu() {
     const frag = document.createDocumentFragment();
     frag.append(el("h2", { text: "Actu IA" }), noteFenetre());
-    const liste = elementsDe("actu", datesRecentes("actu")).sort(triChrono);
-    frag.append(listeCartes(liste, { vide: "Aucune actualité sur la période." }));
+    const tous = elementsDe("actu", datesRecentes("actu")).sort(triChrono);
+    const bn = basculeNul(tous);
+    if (bn) frag.append(bn);
+    frag.append(listeCartes(sansNul(tous), { vide: "Aucune actualité sur la période." }));
     const ec = blocEcartes(datesRecentes("actu").map((d) => etat.jours[`actu/${d}`]));
     if (ec) frag.append(ec);
     return frag;
@@ -325,6 +346,7 @@
         const d = await lireJson(`data/kb/${p}/${c}.json`);
         if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
         for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
+          e._ctx = typeof d.contexte_empreinte === "string" ? d.contexte_empreinte : null;
           e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
           entrees.push(e);
         }
@@ -351,7 +373,8 @@
       badge("type", KB_CATEGORIES[e.categorie] || String(e.categorie || "?")),
       verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"),
       e.commentee ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage || "")) : null,
-      e.retiree ? badge("revise", "retirée de la documentation") : null));
+      e.retiree ? badge("revise", "retirée de la documentation") : null,
+      e.commentee && e._ctx && e.contexte_empreinte !== e._ctx ? badge("perime", "commentaire antérieur au CONTEXTE actuel") : null));
     c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
     if (e.groupe) c.append(el("div", { class: "meta", text: `${e.groupe} · mis à jour le ${dateFr(e.maj_le)}` }));
     if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));

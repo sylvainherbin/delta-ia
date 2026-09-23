@@ -234,3 +234,24 @@ def test_id_web_d20():
     assert id_web(url, None, "x") == id_web(url, "", "x") != id_web(url, "2026-09-22", "x")
     assert normaliser_titre("Éléphant, GPT-6 !") == "elephant gpt 6"
     assert __import__("re").fullmatch(r"web-[0-9a-f]{12}", a)
+
+
+def test_d58_contexte_empreinte(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    assert validation(racine, "claude", brut=False) == 0
+    q["contexte_empreinte"] = "pas-un-sha1"; _reecrire(chemin, q)
+    assert validation(racine, "claude", brut=False) == 1
+    assert "`contexte_empreinte` doit être le sha1" in capsys.readouterr().err
+    # après le 23/09, l'absence est une erreur ; le 23/09, elle est tolérée
+    q.pop("contexte_empreinte")
+    ancien = racine / "docs" / "data" / "claude" / "2026-09-23.json"
+    recent = racine / "docs" / "data" / "claude" / "2026-09-24.json"
+    chemin.unlink()
+    for f, d in ((ancien, "2026-09-23"), (recent, "2026-09-24")):
+        f.write_text(json.dumps({**q, "date": d}, ensure_ascii=False))
+    import valider as v
+    r = v.Rapport()
+    v.verifier_quotidien(ancien, "claude", {"carnet", "trading-sim", "chatgpt-trading-sim"}, r)
+    assert r.ok, r.erreurs
+    v.verifier_quotidien(recent, "claude", {"carnet", "trading-sim", "chatgpt-trading-sim"}, r)
+    assert any("D58" in e for e in r.erreurs)

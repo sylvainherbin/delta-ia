@@ -143,9 +143,12 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
   "synthese": "2 à 4 phrases : ce qui compte aujourd'hui pour Sylvain.",
   "sources_en_echec": [],
   "elements": [],
-  "ecartes": []
+  "ecartes": [],
+  "contexte_empreinte": "sha1 de CONTEXTE.md au moment de la synthèse"
 }
 ```
+
+`contexte_empreinte` (D58) : sha1 de CONTEXTE.md (`sha1sum CONTEXTE.md`), obligatoire pour les fichiers datés après le 23/09/2026. À la fusion avec un fichier du jour existant, si l'empreinte a changé, l'agent réévalue les `pour_toi`, `impact` et `action` de tous les éléments du jour. Un `pour_toi` n'affirme sur la machine, les sessions ou les projets de Sylvain que ce que CONTEXTE.md dit explicitement ; une déduction se formule au conditionnel (D59).
 
 `sources_en_echec` reprend celles du fichier brut (`[{id, url, erreur, partiel}]`). `ecartes` (D13) liste, sous la forme `[{id, raison}]`, les nouveautés brutes sans aucun rapport avec l'usage des outils IA (marketing, offres sectorielles…). Chaque nouveauté brute du passage se retrouve soit dans les `ids_bruts` d'un élément, soit dans `ecartes`. `ecartes` et `impact: nul` sont distincts (D14) : un élément `nul` est pertinent pour le produit mais pas pour Sylvain, il est affiché.
 
@@ -208,9 +211,10 @@ Chaque entrée naît en deux étapes (D40) :
 | `exemple` | Gabarit complet : exemple recopié de la documentation, ou `null` |
 | `disponibilite` | Plan ou plateforme si la documentation le dit, sinon `null` |
 | `statut_usage` | `utilise` \| `non_utilise` \| `inconnu`, d'après CONTEXTE.md ; `inconnu` avant commentaire |
-| `recommandation` | `{verdict: "utiliser" \| "tester" \| "ignorer", pourquoi}` ; `pourquoi` en 1 ou 2 phrases (complet), 1 phrase (court), justifié par un projet ou une habitude de CONTEXTE.md (D26) ; `null` avant commentaire |
+| `recommandation` | `{verdict: "utiliser" \| "tester" \| "ignorer", pourquoi}` ; `pourquoi` en 1 ou 2 phrases (complet), 1 phrase (court), justifié par un projet ou une habitude de CONTEXTE.md (D26) ; `utiliser` exige un usage actuel d'après CONTEXTE ou un lien direct avec un objectif déclaré, un rattachement générique donne au plus `tester` (D57) ; `null` avant commentaire |
 | `sources` | `[{url, libelle, officielle}]`, au moins une ; la première est la page d'extraction |
 | `commentee` | `false` à l'extraction, et de nouveau `false` quand `usage` ou `description_source` change dans la documentation (D44, D48) |
+| `contexte_empreinte` | sha1 de CONTEXTE.md au moment du commentaire, inscrit par `catalogue.py appliquer` ; `null` avant commentaire. Chaque fichier porte aussi l'empreinte du CONTEXTE.md courant : quand elles diffèrent, la page Référence signale « commentaire antérieur au CONTEXTE actuel », et les entrées `utiliser` et `tester` périmées sont réévaluées en priorité au prochain `/delta-kb` ou `$delta-kb` (30 au plus par lancement, en plus des lots) (D60) |
 | `retiree` | `true` quand l'entrée a disparu d'une page extraite avec succès ; jamais supprimée |
 | `origine`, `groupe` | Documentation de `sources.yaml` et section de la page d'où vient l'entrée |
 | `maj_le` | AAAA-MM-JJ du dernier changement |
@@ -225,6 +229,7 @@ Génération initiale (D46, D50, D51) : par lots (`scripts/catalogue.py lots`), 
 Pages ou onglets :
 - **Aujourd'hui** : le bloc « Tes outils » (versions installées de Claude Code, Codex CLI, ChatGPT Desktop et Claude Desktop, dernière version publiée connue de Delta, à jour, en retard ou inconnu ; `docs/data/versions.json`, D54 à D56), les synthèses du jour par périmètre, puis les éléments triés par impact, avec un filtre par produit.
 - **Changelogs** : par produit, en ordre chronologique.
+- Sur Aujourd'hui, Changelogs et Actu, les éléments d'impact `nul` sont masqués par défaut, avec une bascule « afficher les éléments sans impact (n) » mémorisée dans le localStorage.
 - **Actu IA**.
 - **Référence** : la base de référence, avec une recherche plein texte et des filtres (produit, catégorie, verdict, statut d'usage).
 - **À tester** : toutes les actions ouvertes. Une case « fait » est stockée dans le localStorage, donc propre à chaque navigateur.
@@ -300,4 +305,8 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D54 | `scripts/versions.py` : versions installées (commande, paquet), dernière version publiée seulement si une source de Delta la fournit | §4, §8 |
 | D55 | `docs/data/versions.json` dans les chemins de Claude Code et contrôlé par `valider.py` | §3 |
 | D56 | `versions.py` à l'étape 0 de `/delta` ; bloc « Tes outils » sur la page Aujourd'hui | §8, skill |
+| D57 | Calibrage : `utiliser` exige un usage actuel ou un lien direct avec un objectif déclaré ; recalibrage ponctuel des 26 `utiliser` openai | §7.4, skills |
+| D58 | `contexte_empreinte` dans chaque fichier quotidien ; réévaluation de tous les éléments du jour si CONTEXTE.md a changé | §7.1, skills |
+| D59 | Un `pour_toi` n'affirme que ce que CONTEXTE.md dit ; les déductions au conditionnel | §7.1, skills |
+| D60 | `contexte_empreinte` sur chaque entrée commentée ; signal sur la page Référence ; réévaluation prioritaire des `utiliser` et `tester` périmés | §7.4, skills |
 

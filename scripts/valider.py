@@ -34,6 +34,7 @@ CERTITUDES = {"officiel", "rapporte", "non_confirme"}
 IMPACTS = {"fort", "moyen", "faible", "nul"}
 EFFORTS = {"5min", "30min", "plus"}
 RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+DATE_D58 = "2026-09-23"  # fichiers quotidiens datés après ce jour : `contexte_empreinte` obligatoire
 RE_SECRETS = [
     (re.compile(r"ghp_[A-Za-z0-9]{20,}"), "jeton GitHub (ghp_)"),
     (re.compile(r"github_pat_[A-Za-z0-9_]{20,}"), "jeton GitHub (github_pat_)"),
@@ -177,8 +178,14 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
         r.erreur(ou, "la racine doit être un objet")
         return None
     attendus = {"date", "perimetre", "agent", "genere_le", "synthese", "sources_en_echec", "elements", "ecartes"}
-    if set(q) != attendus:
-        r.erreur(ou, f"champs attendus {sorted(attendus)}, trouvés {sorted(q)}")
+    if not attendus <= set(q) or set(q) - attendus - {"contexte_empreinte"}:
+        r.erreur(ou, f"champs attendus {sorted(attendus)} (+ contexte_empreinte), trouvés {sorted(q)}")
+    # D58 : obligatoire pour les fichiers postérieurs à son introduction ; ceux du 23/09 sont laissés tels quels
+    ce = q.get("contexte_empreinte")
+    if ce is None and isinstance(q.get("date"), str) and q["date"] > DATE_D58:
+        r.erreur(ou, "`contexte_empreinte` absent : sha1 de CONTEXTE.md au moment de la synthèse (D58)")
+    elif ce is not None and not (isinstance(ce, str) and re.fullmatch(r"[0-9a-f]{40}", ce)):
+        r.erreur(ou, "`contexte_empreinte` doit être le sha1 de CONTEXTE.md (40 hexadécimaux)")
     if q.get("date") != chemin.stem or not _date_valide(q.get("date")):
         r.erreur(ou, f"`date` ({q.get('date')!r}) doit être AAAA-MM-JJ et égale au nom du fichier")
     if q.get("perimetre") != perimetre:
@@ -302,8 +309,8 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 # ----------------------------------------------------------------------------------------------- base de référence (D40, D41, SPEC §7.4)
 
 CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
-             "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "retiree", "origine", "groupe",
-             "maj_le", "historique"}
+             "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "retiree",
+             "origine", "groupe", "maj_le", "historique"}
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
 MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
 LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
@@ -385,6 +392,11 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
             for champ in ("commentee", "retiree"):
                 if not isinstance(e[champ], bool):
                     r.erreur(o, f"`{champ}` doit être un booléen")
+            ce = e["contexte_empreinte"]
+            if ce is not None and not (isinstance(ce, str) and re.fullmatch(r"[0-9a-f]{40}", ce)):
+                r.erreur(o, "`contexte_empreinte` : sha1 de CONTEXTE.md (40 hexadécimaux) ou null")
+            if e["commentee"] is True and ce is None:
+                r.erreur(o, "entrée commentée sans `contexte_empreinte` (D60)")
             if e["commentee"] is True:
                 lim = LONGUEURS[e["gabarit"]]
                 d = e["description"]

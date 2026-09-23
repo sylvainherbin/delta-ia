@@ -37,6 +37,8 @@ Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Les notes 
 - `date_publication`, `version` : reprises du brut, `null` si inconnues, jamais devinées. `revision: true` si le brut le dit.
 - `synthese` : 2 à 4 phrases sur ce qui compte aujourd'hui pour Sylvain ; s'il n'y a rien, une phrase le dit et `elements: []`.
 - `sources_en_echec` : recopiées du brut.
+- **Empreinte du contexte (D58)** : le fichier porte `contexte_empreinte`, le sha1 de CONTEXTE.md au moment de la synthèse (`sha1sum CONTEXTE.md | cut -c1-40`). À la fusion avec un fichier du jour existant, si son `contexte_empreinte` diffère de l'empreinte actuelle, réévalue les `pour_toi`, `impact` et `action` de **tous** les éléments du jour, pas seulement des nouveaux, puis mets l'empreinte à jour.
+- **Constats et déductions (D59)** : un `pour_toi` n'affirme sur la machine, les sessions ou les projets de Sylvain que ce que CONTEXTE.md dit explicitement ; une déduction se formule au conditionnel (« si tes campagnes saturent la mémoire… »), jamais comme un constat. Contre-exemple du 23/09 : « ta machine est souvent sous pression mémoire pendant les campagnes », alors que la campagne R4 a tourné sans swap ni protection mémoire. Relis dans CONTEXTE.md, au moment d'écrire, chaque nombre que tu en tires (sessions, versions, compteurs, pourcentages).
 - **Idempotence** : si `docs/data/openai/J.json` existe déjà, fusionne : conserve ses éléments, ajoute les nouveaux sans dupliquer un identifiant brut, mets à jour `synthese` et `genere_le`.
 
 ## 4. Index, base de référence, validation, état, commit

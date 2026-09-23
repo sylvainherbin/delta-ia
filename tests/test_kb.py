@@ -178,8 +178,11 @@ def x(nom, usage, origine="doc-a", categorie="commandes"):
                           url="https://code.claude.com/docs/en/commands", libelle="commands", origine=origine)
 
 
-def commenter(entrees, ident):
-    return cat.appliquer_commentaires(entrees, {ident: {
+CTX = "c" * 40
+
+
+def commenter(entrees, ident, contexte=CTX):
+    return cat.appliquer_commentaires(entrees, contexte=contexte, commentaires={ident: {
         "description": "Ajoute un répertoire de travail pour la session en cours.", "statut_usage": "inconnu",
         "recommandation": {"verdict": "tester", "pourquoi": "Utile sur trading-sim pour lire le dossier de missions."}}})
 
@@ -464,3 +467,71 @@ def test_d47_dry_run_n_ecrit_rien(racine_kb, monkeypatch):
     assert fetch.main(args) == 0
     modif = json.loads((racine_kb / "raw" / "kb" / "claude-modifications.json").read_text())
     assert modif["pages"]["modifiees"] == ["cc-reglages/page"] and modif["usage_modifie"] == ["claude-code-parametres-advisormodel"]
+
+
+# --- D60 : empreinte du CONTEXTE sur les commentaires ---------------------------------------------------------
+
+def test_d60_empreinte_et_perimees(tmp_path):
+    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("/c", "/c")], {"doc-a"})
+    assert all(e["contexte_empreinte"] is None for e in ent.values())
+    assert commenter(ent, "claude-code-commandes-a", contexte="a" * 40) == []
+    assert commenter(ent, "claude-code-commandes-b", contexte="b" * 40) == []
+    assert ent["claude-code-commandes-a"]["contexte_empreinte"] == "a" * 40
+    # le CONTEXTE courant est « b » : seule l'entrée commentée avec « a » est périmée
+    assert cat.perimees(ent, "b" * 40) == ["claude-code-commandes-a"]
+    ent["claude-code-commandes-a"]["recommandation"]["verdict"] = "ignorer"
+    assert cat.perimees(ent, "b" * 40) == [], "seuls utiliser et tester sont réévalués en priorité"
+    assert cat.perimees(ent, None) == []
+    beaucoup = {f"k{i}": {"commentee": True, "recommandation": {"verdict": "tester"}, "contexte_empreinte": "a" * 40} for i in range(40)}
+    assert len(cat.perimees(beaucoup, "b" * 40)) == 30
+    # le fichier écrit porte l'empreinte du CONTEXTE.md courant
+    (tmp_path / "CONTEXTE.md").write_text("contexte\n", encoding="utf-8")
+    cat.ecrire(tmp_path, "claude", ent)
+    import hashlib
+    d = json.loads((tmp_path / "docs" / "data" / "kb" / "claude" / "commandes.json").read_text())
+    assert d["contexte_empreinte"] == hashlib.sha1(b"contexte\n").hexdigest()
+
+
+def test_d60_catalogue_appliquer_inscrit_l_empreinte(racine_kb, monkeypatch, capsys):
+    import catalogue as cli
+    import hashlib
+    lancer_kb(racine_kb, monkeypatch)
+    (racine_kb / "CONTEXTE.md").write_text("### 2.1 trading-sim — x\n", encoding="utf-8")
+    k = "claude-code-parametres-advisormodel"
+    f = racine_kb / "c.json"
+    f.write_text(json.dumps({k: {"description": "Choisit le modèle qui conseille la session.", "statut_usage": "inconnu",
+                                 "recommandation": {"verdict": "tester", "pourquoi": "À tester sur trading-sim."}}}))
+    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 0
+    e = cat.charger(racine_kb, "claude")[k]
+    assert e["contexte_empreinte"] == hashlib.sha1((racine_kb / "CONTEXTE.md").read_bytes()).hexdigest()
+    import valider
+    assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0
+    # CONTEXTE.md change : l'entrée devient prioritaire
+    (racine_kb / "CONTEXTE.md").write_text("### 2.1 trading-sim — y\n", encoding="utf-8")
+    capsys.readouterr()
+    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(racine_kb)]) == 0
+    assert "perimees" in capsys.readouterr().out
+    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
+    assert [x["id"] for x in json.loads(capsys.readouterr().out)] == [k]
+
+
+def test_d60_commentee_sans_empreinte_invalide(racine_kb, monkeypatch, capsys):
+    ent = _base_valide(racine_kb, monkeypatch)
+    k = next(k for k, v in ent.items() if v["categorie"] == "commandes")
+    assert commenter(ent, k, contexte=None) == []
+    cat.ecrire(racine_kb, "claude", ent)
+    import valider
+    assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 1
+    assert "sans `contexte_empreinte`" in capsys.readouterr().err
+
+
+def test_skills_d57_d58_d59_d60():
+    racine = Path(fetch.RACINE)
+    kb_cx = (racine / "prompts" / "codex-delta-kb.md").read_text(encoding="utf-8")
+    kb_cc = (racine / ".claude" / "skills" / "delta-kb" / "SKILL.md").read_text(encoding="utf-8")
+    for t in (kb_cx, kb_cc):
+        assert "Calibrage du verdict (D57)" in t and "Constats et déductions (D59)" in t and "--lot perimees" in t
+    assert "recalibrage commandes" in kb_cx and "recalibrage commandes" not in kb_cc
+    for f in (racine / ".claude" / "skills" / "delta" / "SKILL.md", racine / "prompts" / "codex-delta.md"):
+        t = f.read_text(encoding="utf-8")
+        assert "contexte_empreinte" in t and "Constats et déductions (D59)" in t
