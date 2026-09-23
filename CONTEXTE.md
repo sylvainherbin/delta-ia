@@ -39,8 +39,10 @@ systemd dédiée `calculs.slice` (CPUWeight 20, MemoryMax 9G, pas de swap) **[ob
 ### Architecture multi-sessions Claude Code [observé]
 
 Six services systemd utilisateur `claude-session@{mint,dev,carnet,trading,delta,delta-ia}` lancent chacun une
-session tmux qui exécute `claude --resume <id> --remote-control herbin-<nom>`. Elles tournent en
-permanence et sont pilotées depuis l'iPhone.
+session tmux qui exécute `claude --resume <id> --remote-control herbin-<nom>`. Elles sont
+pilotées depuis l'iPhone. Depuis le 23/09, `dev` ne démarre plus automatiquement : elle s'allume
+et s'éteint au besoin depuis la console de pilotage (bouton réservé à `dev` et `delta`), pour
+économiser environ 300 Mio de RAM par session.
 
 | Session | Rôle |
 |---|---|
