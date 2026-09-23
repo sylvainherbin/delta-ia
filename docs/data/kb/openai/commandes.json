@@ -3,7 +3,7 @@
  "categorie": "commandes",
  "maj_le": "2026-09-23",
  "total": 108,
- "commentees": 54,
+ "commentees": 108,
  "entrees": [
   {
    "id": "chatgpt-commandes-codex-automations",
@@ -2171,14 +2171,17 @@
    "categorie": "commandes",
    "nom": "/copy",
    "gabarit": "complet",
-   "description": null,
+   "description": "Copie la dernière réponse ou le dernier plan terminé par Codex. Le raccourci `Ctrl+O` fournit la même action sans sélection manuelle dans le terminal.",
    "description_source": "Copy the latest completed Codex output. — Grab the latest finished response or plan text without manually selecting it. You can also press Ctrl+O .",
    "usage": "/copy",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour transférer un verdict d'audit vers chatgpt-trading-sim depuis une session tmux, la copie directe évite les sélections fragiles dans le terminal."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2186,7 +2189,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2195,6 +2198,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2204,14 +2211,17 @@
    "categorie": "commandes",
    "nom": "/debug-config",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche les couches de configuration actives, leur priorité et les contraintes de politique appliquées. Le diagnostic inclut les restrictions réseau expérimentales lorsqu'elles existent.",
    "description_source": "Print config layer and requirements diagnostics. — Debug precedence and policy requirements, including experimental network constraints.",
    "usage": "/debug-config",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Ton modèle par défaut a déjà été réécrit depuis l'app et `default.rules` est difficile à relire ; ce diagnostic aide à identifier la couche réellement gagnante."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2219,7 +2229,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2228,6 +2238,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2237,14 +2251,17 @@
    "categorie": "commandes",
    "nom": "/delete",
    "gabarit": "complet",
-   "description": null,
+   "description": "Supprime définitivement la session courante puis quitte Codex. La suppression inclut le transcript et les sessions descendantes, contrairement à l'archivage.",
    "description_source": "Permanently delete the current session and exit Codex. — Remove the transcript and descendant sessions when archiving isn’t enough.",
    "usage": "/delete",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les transcripts d'audit servent de trace pour trading-sim ; archive-les au lieu de les supprimer."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2252,7 +2269,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2261,6 +2278,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2270,14 +2291,17 @@
    "categorie": "commandes",
    "nom": "/diff",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche le diff Git du dépôt courant, y compris les fichiers non encore suivis. Elle permet de relire les modifications produites avant tests ou commit.",
    "description_source": "Show the Git diff, including files Git isn’t tracking yet. — Review Codex’s edits before you commit or run tests.",
    "usage": "/diff",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes audits doivent vérifier les changements de Claude avant PR sur trading-sim ; `/diff` donne la vue locale à contrôler sans quitter le TUI."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2285,7 +2309,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2294,6 +2318,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2303,14 +2331,17 @@
    "categorie": "commandes",
    "nom": "/exit",
    "gabarit": "complet",
-   "description": null,
+   "description": "Quitte immédiatement la CLI Codex. `/exit` est un synonyme de `/quit` et ne décrit pas d'opération supplémentaire sur la session.",
    "description_source": "Exit the CLI (same as /quit ). — Alternative spelling; both commands exit the session.",
    "usage": "/exit",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Commande utilitaire évidente, sans gain particulier pour tes projets ou habitudes."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2318,7 +2349,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2327,6 +2358,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2336,14 +2371,17 @@
    "categorie": "commandes",
    "nom": "/experimental",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre la gestion des fonctions expérimentales, par exemple le proxy réseau ou la prévention de veille pendant une exécution. Les options exposées dépendent du binaire installé.",
    "description_source": "Toggle experimental features. — Enable options such as Network proxy or Prevent sleep while running.",
    "usage": "/experimental",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Avant une longue tâche trading-sim, vérifier `Prevent sleep while running` peut éviter qu'une exécution locale soit interrompue sur le portable."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2351,7 +2389,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2360,6 +2398,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2369,14 +2411,17 @@
    "categorie": "commandes",
    "nom": "/fast",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou désactive le service tier Fast lorsque le catalogue du modèle courant le propose. Le choix est conservé pour les utilisations suivantes de ce modèle.",
    "description_source": "Toggle a Fast service tier when the model catalog exposes one. — Turn the current model’s Fast tier on or off and persist the selection.",
    "usage": "/fast",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes profils utilisent déjà le service tier `priority` et aucune disponibilité ni limite Fast n'est documentée dans CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2384,7 +2429,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2393,6 +2438,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2402,14 +2451,17 @@
    "categorie": "commandes",
    "nom": "/feedback",
    "gabarit": "complet",
-   "description": null,
+   "description": "Envoie aux mainteneurs Codex des journaux et informations de diagnostic pour signaler un problème. Le contenu transmis sert au support et ne corrige pas localement la session.",
    "description_source": "Send logs to the Codex maintainers. — Report issues or share diagnostics with support.",
    "usage": "/feedback",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "À réserver à un bug Codex reproductible ; aucun incident nécessitant un envoi de logs n'est identifié."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2417,7 +2469,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2426,6 +2478,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2435,14 +2491,17 @@
    "categorie": "commandes",
    "nom": "/fork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée une nouvelle conversation à partir du chat courant et conserve le transcript d'origine. La branche sert à explorer une autre approche sans perdre la première.",
    "description_source": "Fork the current chat into a new chat. — Branch the active session to explore a new approach without losing the current transcript.",
    "usage": "/fork",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur trading-sim, forker au point d'une hypothèse contestée permet un audit contradictoire avec exactement le même contexte initial."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2450,7 +2509,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2459,6 +2518,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2468,14 +2531,17 @@
    "categorie": "commandes",
    "nom": "/goal",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée, modifie, met en pause, reprend, affiche ou efface un objectif persistant pour la tâche. Codex peut suivre cet objectif pendant un travail plus long que le tour courant.",
    "description_source": "Set, edit, pause, resume, view, or clear a task goal. — Give Codex a persistent target to track while a larger task runs.",
    "usage": "/goal",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits trading-sim sont longs et formalisés ; un objectif explicite aide à conserver le verdict attendu et les critères de sortie pendant la session."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2483,7 +2549,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2492,6 +2558,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2501,14 +2571,17 @@
    "categorie": "commandes",
    "nom": "/hooks",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche et gère les hooks de cycle de vie configurés pour Codex. Elle permet notamment de faire confiance à un hook nouveau ou modifié, ou de désactiver les hooks non gérés avant leur exécution.",
    "description_source": "View and manage lifecycle hooks. — Inspect configured hooks, trust new or changed hooks, or disable non-managed hooks before they run.",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les contrôles répétés de trading-sim (SHA-256, absence de bytecode, interdiction de commandes dangereuses) sont des candidats à des hooks, piste déjà relevée dans CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2516,7 +2589,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2525,6 +2598,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2534,14 +2611,17 @@
    "categorie": "commandes",
    "nom": "/ide",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ajoute au prochain prompt les fichiers ouverts, la sélection courante et d'autres éléments du contexte IDE. Elle évite de décrire manuellement ce qui est affiché dans l'éditeur.",
    "description_source": "Include open files, current selection, and other IDE context. — Pull editor context into the next prompt without re-explaining what’s open in your IDE.",
    "usage": "/ide",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton interface Codex observée est l'app de bureau et aucun usage d'une extension IDE n'est déclaré."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2549,7 +2629,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2558,6 +2638,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2567,14 +2651,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.addFileToThread",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ajoute le fichier entier courant comme contexte de la conversation Codex depuis l'extension IDE. Le fichier devient disponible pour l'analyse du fil actif.",
    "description_source": "- — Add the entire file as context for the current chat",
    "usage": "chatgpt.addFileToThread",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune extension IDE Codex n'est observée dans ton environnement."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2582,7 +2669,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2591,6 +2678,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2600,14 +2691,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.addToThread",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ajoute la sélection de texte courante au contexte du fil Codex depuis l'IDE. Elle limite l'apport de contexte à la plage sélectionnée plutôt qu'au fichier complet.",
    "description_source": "- — Add selected text range as context for the current chat",
    "usage": "chatgpt.addToThread",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune extension IDE Codex n'est observée dans ton environnement."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2615,7 +2709,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2624,6 +2718,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2633,14 +2731,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.newChat",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée une nouvelle conversation Codex depuis l'extension IDE. Le raccourci documenté est `Ctrl+N` sous Windows et Linux, et `Cmd+N` sous macOS.",
    "description_source": "macOS: Cmd+N Windows/Linux: Ctrl+N — Create a new chat",
    "usage": "chatgpt.newChat",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS, Windows et Linux",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu travailles avec l'app de bureau et des sessions CLI, pas avec une extension IDE documentée dans CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2648,7 +2749,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2657,6 +2758,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2666,14 +2771,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.newCodexPanel",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée un nouveau panneau Codex dans l'IDE. Ce panneau sépare l'interface de conversation des panneaux Codex déjà ouverts.",
    "description_source": "- — Create a new Codex panel",
    "usage": "chatgpt.newCodexPanel",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun flux par extension IDE n'est identifié pour tes projets."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2681,7 +2789,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2690,6 +2798,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2699,14 +2811,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.openCommandMenu",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre le menu de commandes Codex dans l'extension IDE. Il donne accès aux actions de l'extension sans passer par la palette générale de l'éditeur.",
    "description_source": "- — Open the Codex command menu",
    "usage": "chatgpt.openCommandMenu",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune extension IDE Codex n'est utilisée selon CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2714,7 +2829,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2723,6 +2838,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2732,14 +2851,17 @@
    "categorie": "commandes",
    "nom": "IDE chatgpt.openSidebar",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre le panneau latéral Codex dans l'IDE. Cette action ne crée pas nécessairement une nouvelle conversation.",
    "description_source": "- — Open the Codex sidebar panel",
    "usage": "chatgpt.openSidebar",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune extension IDE Codex n'est utilisée selon CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#extension-commands",
@@ -2747,7 +2869,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Extension commands",
@@ -2756,6 +2878,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2765,14 +2891,17 @@
    "categorie": "commandes",
    "nom": "/ide-context",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou désactive l'ajout automatique du contexte IDE à la conversation. Le réglage agit sur les prompts suivants de la session.",
    "description_source": "Turn automatic IDE context on or off.",
    "usage": "/ide-context",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton flux actuel n'utilise pas d'IDE connecté à Codex."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
@@ -2780,7 +2909,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
@@ -2789,6 +2918,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2798,14 +2931,17 @@
    "categorie": "commandes",
    "nom": "/import",
    "gabarit": "complet",
-   "description": null,
+   "description": "Importe dans Codex des configurations, projets et conversations pris en charge depuis Claude Code ou Cursor. L'opération crée ou modifie des fichiers de configuration locaux.",
    "description_source": "Import Claude Code or Cursor setup, projects, and chats. — Migrate supported external-agent artifacts into Codex configuration and local files.",
    "usage": "/import",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes rôles Claude Code et Codex sont volontairement distincts ; importer les conversations brouillerait l'orchestration à trois IA."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2813,7 +2949,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2822,6 +2958,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2831,14 +2971,17 @@
    "categorie": "commandes",
    "nom": "/init",
    "gabarit": "complet",
-   "description": null,
+   "description": "Génère un squelette `AGENTS.md` dans le répertoire courant. Le fichier sert ensuite d'instructions persistantes pour le dépôt ou un sous-répertoire.",
    "description_source": "Generate an AGENTS.md scaffold in the current directory. — Capture persistent instructions for the repository or subdirectory you’re working in.",
    "usage": "/init",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "trading-sim n'a volontairement pas d'AGENTS.md et carnet en possède déjà un ; ne pas modifier cette décision par commodité."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2846,7 +2989,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2855,6 +2998,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2864,14 +3011,17 @@
    "categorie": "commandes",
    "nom": "/keymap",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche et remappe les raccourcis clavier du TUI, puis enregistre les liaisons personnalisées dans `config.toml`. Les changements s'appliquent à l'interface terminal.",
    "description_source": "Remap TUI keyboard shortcuts. — Inspect and persist custom shortcut bindings in config.toml .",
    "usage": "/keymap",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sous tmux, remapper une combinaison conflictuelle peut rendre la future session Codex plus fiable sans toucher aux raccourcis système."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2879,7 +3029,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2888,6 +3038,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2897,14 +3051,17 @@
    "categorie": "commandes",
    "nom": "/local",
    "gabarit": "complet",
-   "description": null,
+   "description": "Bascule l'exécution de la conversation sur l'espace de travail local. Elle s'oppose au mode cloud lorsque les deux environnements sont disponibles.",
    "description_source": "Run the chat in your local workspace.",
    "usage": "/local",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "trading-sim repose sur un dépôt privé local et des fichiers non publiés ; le mode local conserve ce périmètre d'exécution."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
@@ -2912,7 +3069,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
@@ -2921,6 +3078,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2930,14 +3091,17 @@
    "categorie": "commandes",
    "nom": "/logout",
    "gabarit": "complet",
-   "description": null,
+   "description": "Déconnecte le compte Codex courant et efface les identifiants locaux associés. Une nouvelle authentification est nécessaire avant de reprendre les fonctions en ligne.",
    "description_source": "Sign out of Codex. — Clear local credentials when using a shared machine.",
    "usage": "/logout",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La machine n'est pas partagée et tes sessions dépendent du compte ChatGPT Pro déjà connecté."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2945,7 +3109,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2954,6 +3118,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2963,14 +3131,17 @@
    "categorie": "commandes",
    "nom": "/mcp",
    "gabarit": "complet",
-   "description": null,
+   "description": "Liste les outils MCP configurés et peut afficher des détails supplémentaires sur leurs serveurs. Elle donne une vue de ce que Codex peut appeler pendant la session.",
    "description_source": "List configured Model Context Protocol (MCP) tools. — Check which external tools Codex can call during the session; add verbose for server details.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Avant un audit trading-sim, vérifier que seul le MCP attendu (`node_repl`) est présent réduit les capacités surprises dans la session."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -2978,7 +3149,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -2987,6 +3158,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -2996,14 +3171,17 @@
    "categorie": "commandes",
    "nom": "/memories",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou désactive l'injection et la génération de mémoires sans quitter le TUI. Les deux aspects peuvent être configurés séparément pour la session.",
    "description_source": "Configure memory use and generation. — Turn memory injection or memory generation on or off without leaving the TUI.",
    "usage": "/memories",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour les audits formels de trading-sim, comparer une session sans injection de mémoire permet de mesurer si un contexte implicite influence le verdict."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3011,7 +3189,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3020,6 +3198,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3029,14 +3211,17 @@
    "categorie": "commandes",
    "nom": "/mention",
    "gabarit": "complet",
-   "description": null,
+   "description": "Attache un fichier ou un dossier précis à la conversation courante. Elle dirige Codex vers le contexte à inspecter au prochain tour.",
    "description_source": "Attach a file to the chat. — Point Codex at specific files or folders you want it to inspect next.",
    "usage": "/mention",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes missions et rapports trading-sim sont des fichiers locaux nommés ; les joindre explicitement limite l'audit aux sources prévues."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3044,7 +3229,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3053,6 +3238,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3062,14 +3251,17 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit le modèle actif et, lorsqu'il est proposé, son niveau d'effort de raisonnement. Le sélecteur permet notamment de passer entre `gpt-6-sol` et `gpt-6-luna` avant une tâche.",
    "description_source": "Choose the active model (and reasoning effort, when available). — Switch between models such as gpt-6-luna and gpt-6-sol before running a task.",
    "usage": "/model",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes profils principaux sont sur Sol ; sélectionner Luna pour une vérification courte permet de comparer qualité et consommation sans modifier durablement `config.toml`."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3077,7 +3269,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3086,6 +3278,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3095,14 +3291,17 @@
    "categorie": "commandes",
    "nom": "/new",
    "gabarit": "complet",
-   "description": null,
+   "description": "Démarre une nouvelle conversation dans la même session CLI. Le contexte du chat est réinitialisé sans quitter le dépôt ni relancer le TUI.",
    "description_source": "Start a new chat inside the same CLI session. — Reset the chat context without leaving the CLI when you want a fresh prompt in the same repo.",
    "usage": "/new",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Dans une session tmux persistante, ouvre un audit trading-sim neuf sans transporter le contexte et les hypothèses du précédent."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3110,7 +3309,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3119,6 +3318,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3128,14 +3331,17 @@
    "categorie": "commandes",
    "nom": "/permissions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Modifie en cours de session ce que Codex peut faire sans demander confirmation. Elle permet de resserrer ou d'élargir la politique, par exemple entre Auto et Read Only.",
    "description_source": "Set what Codex can do without asking first. — Relax or tighten approval requirements mid-session, such as switching between Auto and Read Only.",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Commencer un audit trading-sim en Read Only puis n'élargir qu'au besoin respecte ta validation humaine pas à pas et la politique de capacités du projet."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3143,7 +3349,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3152,6 +3358,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3161,14 +3371,17 @@
    "categorie": "commandes",
    "nom": "/personality",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit le style de communication des réponses, par exemple plus concis, explicatif ou collaboratif. Le réglage n'ajoute pas de consigne métier ni de capacité à l'agent.",
    "description_source": "Choose a communication style for responses. — Make Codex more concise, more explanatory, or more collaborative without changing your instructions.",
    "usage": "/personality",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes exigences de français, densité et critique franche doivent rester dans les instructions, pas dépendre d'un style d'interface."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3176,7 +3389,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3185,6 +3398,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3194,14 +3411,17 @@
    "categorie": "commandes",
    "nom": "/pets",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche, choisit ou masque un pet d'ambiance dans le terminal. Les formes `/pets` et `/pet` ne changent que la personnalisation visuelle du TUI.",
    "description_source": "Choose or hide a terminal pet. — Personalize the TUI with a built-in or custom ambient pet.",
    "usage": "/pets , /pet",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun effet sur les audits, les limites d'usage ou le pilotage à distance."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3209,7 +3429,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3218,6 +3438,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3227,14 +3451,17 @@
    "categorie": "commandes",
    "nom": "/plan",
    "gabarit": "complet",
-   "description": null,
+   "description": "Passe en mode plan et peut envoyer immédiatement un prompt associé. Codex propose alors une démarche avant de commencer l'implémentation.",
    "description_source": "Switch to plan mode and optionally send a prompt. — Ask Codex to propose an execution plan before implementation work starts.",
    "usage": "/plan",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Ta méthode exige diagnostic, proposition puis accord explicite ; `/plan` formalise cette séparation avant toute modification de trading-sim."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3242,7 +3469,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3251,6 +3478,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3260,14 +3491,17 @@
    "categorie": "commandes",
    "nom": "/plugins",
    "gabarit": "complet",
-   "description": null,
+   "description": "Parcourt les plugins installés et ceux que Codex peut découvrir. La vue permet d'inspecter leurs outils, d'installer une suggestion ou de gérer leur disponibilité.",
    "description_source": "Browse installed and discoverable plugins. — Inspect plugin tools, install suggested plugins, or manage plugin availability.",
    "usage": "/plugins",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tu as plusieurs plugins actifs mais en connais mal la couverture ; vérifier la liste avant un audit évite de demander une capacité absente."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3275,7 +3509,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3284,6 +3518,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3293,14 +3531,17 @@
    "categorie": "commandes",
    "nom": "/project",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit le projet dans lequel les nouvelles conversations seront créées. La commande ne déplace pas nécessairement la conversation courante.",
    "description_source": "Choose a project for new chats.",
    "usage": "/project",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu as approuvé trading-sim et un dossier de travail Codex ; sélectionner explicitement le projet limite les erreurs de répertoire au démarrage d'un audit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
@@ -3308,7 +3549,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
@@ -3317,6 +3558,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3326,14 +3571,17 @@
    "categorie": "commandes",
    "nom": "/ps",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche les terminaux d'arrière-plan et leurs sorties récentes. Elle permet de surveiller une commande longue sans quitter le transcript principal.",
    "description_source": "Show background terminals and their recent output. — Check long-running commands without leaving the main transcript.",
    "usage": "/ps",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "La machine est lente pendant les campagnes trading-sim ; suivre leur sortie depuis le TUI évite de lancer un doublon ou d'interrompre l'audit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3341,7 +3589,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3350,6 +3598,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3359,14 +3611,17 @@
    "categorie": "commandes",
    "nom": "/quit",
    "gabarit": "complet",
-   "description": null,
+   "description": "Quitte immédiatement la CLI Codex. Cette commande est l'équivalent direct de `/exit`.",
    "description_source": "Exit the CLI. — Leave the session immediately.",
    "usage": "/quit",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Commande utilitaire sans incidence particulière sur tes flux de travail."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3374,7 +3629,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3383,6 +3638,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3392,14 +3651,17 @@
    "categorie": "commandes",
    "nom": "/raw",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou désactive un mode de scrollback brut dans le TUI. La sélection et la copie deviennent moins formatées lors de la lecture de longues sorties.",
    "description_source": "Toggle raw scrollback mode. — Make terminal selection and copying less formatted while reviewing long output.",
    "usage": "/raw",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sous tmux, ce mode peut faciliter la copie de longs verdicts d'audit vers les fichiers de chatgpt-trading-sim."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3407,7 +3669,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3416,6 +3678,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3425,14 +3691,17 @@
    "categorie": "commandes",
    "nom": "/reasoning",
    "gabarit": "complet",
-   "description": null,
+   "description": "Choisit le niveau d'effort de raisonnement pour la conversation courante. Le choix agit sur la profondeur et la consommation sans changer de modèle.",
    "description_source": "Choose the reasoning effort for the current chat.",
    "usage": "/reasoning",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes profils `audit` et `rapide` distinguent xhigh et low sur Sol ; cette commande permet d'ajuster ponctuellement l'effort sans réécrire les profils."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
@@ -3440,7 +3709,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
@@ -3449,6 +3718,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3458,14 +3731,17 @@
    "categorie": "commandes",
    "nom": "/rename",
    "gabarit": "complet",
-   "description": null,
+   "description": "Renomme la conversation courante sans quitter le TUI. Le nouveau nom facilite son identification dans la liste des sessions enregistrées.",
    "description_source": "Rename the current chat. — Give a saved session a recognizable name without leaving the TUI.",
    "usage": "/rename",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Nommer chaque audit par lot ou révision de trading-sim réduit les confusions entre les nombreux fils « Auditer » et « Arbitrage »."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3473,7 +3749,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3482,6 +3758,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3491,14 +3771,17 @@
    "categorie": "commandes",
    "nom": "/resume",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche la liste des conversations enregistrées et reprend celle qui est choisie. Elle continue le travail avec le transcript antérieur plutôt que de repartir sans contexte.",
    "description_source": "Resume a saved chat from your session list. — Continue work from a previous CLI session without starting over.",
    "usage": "/resume",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Pour des sessions tmux Codex persistantes, reprendre l'audit après un redémarrage ou une coupure Wi-Fi est indispensable."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3506,7 +3789,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3515,6 +3798,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3524,14 +3811,17 @@
    "categorie": "commandes",
    "nom": "/review",
    "gabarit": "complet",
-   "description": null,
+   "description": "Demande à Codex de relire l'arbre de travail courant. La revue vise les modifications locales après une implémentation ou avant leur validation.",
    "description_source": "Ask Codex to review your working tree. — Run after Codex completes work or when you want a second set of eyes on local changes.",
    "usage": "/review",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Codex sert principalement de relecteur du travail de Claude ; `/review` fournit le point d'entrée direct pour une revue locale avant PR trading-sim."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3539,7 +3829,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3548,6 +3838,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3557,14 +3851,17 @@
    "categorie": "commandes",
    "nom": "/sandbox-add-read-dir",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ajoute un répertoire absolu aux chemins lisibles par le sandbox sous Windows. Elle débloque une lecture hors des racines déjà autorisées pour la session.",
    "description_source": "Grant sandbox read access to an extra directory (Windows only). — Unblock commands that need to read an absolute directory path outside the current readable roots.",
    "usage": "/sandbox-add-read-dir",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Windows",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ta machine est sous Linux ; cette commande est réservée à Windows."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3572,7 +3869,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3581,6 +3878,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3590,14 +3891,17 @@
    "categorie": "commandes",
    "nom": "/setup-default-sandbox",
    "gabarit": "complet",
-   "description": null,
+   "description": "Installe le sandbox agent élevé sous Windows lorsqu'une configuration dégradée est détectée. L'opération remplace le mode Windows limité proposé par défaut.",
    "description_source": "Set up the elevated agent sandbox (Windows only). — Replace the degraded Windows sandbox after Codex offers the elevated setup.",
    "usage": "/setup-default-sandbox",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Windows",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ta machine est sous Linux ; cette commande est réservée à Windows."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3605,7 +3909,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3614,6 +3918,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3623,14 +3931,17 @@
    "categorie": "commandes",
    "nom": "/side",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ouvre une conversation annexe éphémère sans modifier le transcript principal. `/side` et `/btw` servent à poser une question ciblée puis revenir au fil de travail.",
    "description_source": "Start an ephemeral side chat. — Ask a focused follow-up without disrupting the main chat’s transcript.",
    "usage": "/side , /btw",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pendant un long audit trading-sim, une vérification courte peut rester hors du contexte principal et limiter sa croissance."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3638,7 +3949,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3647,6 +3958,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3656,14 +3971,17 @@
    "categorie": "commandes",
    "nom": "/skills",
    "gabarit": "complet",
-   "description": null,
+   "description": "Parcourt les skills disponibles et permet d'en sélectionner un pour la tâche. Le skill choisi apporte des instructions spécialisées à la conversation.",
    "description_source": "Browse and use skills. — Improve task-specific behavior by selecting a relevant local skill.",
    "usage": "/skills",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tu disposes de skills système mais les invoques peu ; consulter cette vue avant un document, PDF ou tableur évite de traiter la tâche sans le workflow prévu."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3671,7 +3989,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3680,6 +3998,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3689,14 +4011,17 @@
    "categorie": "commandes",
    "nom": "/status",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche la configuration effective de la session, l'usage des jetons, le modèle, la politique d'approbation, les racines inscriptibles et la capacité de contexte restante. La vue sert à vérifier l'environnement réel avant ou pendant une tâche.",
    "description_source": "Display session configuration and token usage. — Confirm the active model, approval policy, writable roots, and remaining context capacity.",
    "usage": "/status",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Avant chaque audit trading-sim, confirmer Sol, xhigh, les permissions et les racines évite qu'un profil ou l'app ait modifié la session à ton insu."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3704,7 +4029,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3713,6 +4038,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3722,14 +4051,17 @@
    "categorie": "commandes",
    "nom": "/statusline",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configure de façon interactive les champs affichés dans le pied du TUI et leur ordre. Les choix, tels que modèle, contexte, limites, Git ou jetons, sont enregistrés dans `config.toml`.",
    "description_source": "Configure TUI status-line fields interactively. — Pick and reorder footer items (model/context/limits/git/tokens/session) and persist in config.toml.",
    "usage": "/statusline",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Afficher modèle, limites et contexte dans les futures sessions tmux rend visibles les trois dérives qui coûtent le plus pendant tes audits."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3737,7 +4069,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3746,6 +4078,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3755,14 +4091,17 @@
    "categorie": "commandes",
    "nom": "/stop",
    "gabarit": "complet",
-   "description": null,
+   "description": "Arrête tous les terminaux d'arrière-plan lancés par la session courante. Elle annule globalement ces travaux sans viser un seul processus.",
    "description_source": "Stop all background terminals. — Cancel background terminal work started by the current session.",
    "usage": "/stop",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sur trading-sim, l'arrêt global pourrait couper une campagne utile ; surveille avec `/ps` et n'utilise `/stop` qu'en situation explicite."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3770,7 +4109,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3779,6 +4118,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3788,14 +4131,17 @@
    "categorie": "commandes",
    "nom": "/theme",
    "gabarit": "complet",
-   "description": null,
+   "description": "Prévisualise et enregistre un thème de coloration syntaxique pour le terminal. Le choix ne change ni les capacités ni les réponses de Codex.",
    "description_source": "Choose a syntax-highlighting theme. — Preview and persist a terminal syntax-highlighting theme.",
    "usage": "/theme",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Personnalisation visuelle sans effet sur les audits ou les contraintes de la machine."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3803,7 +4149,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3812,6 +4158,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3821,14 +4171,17 @@
    "categorie": "commandes",
    "nom": "/title",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configure les champs du titre de fenêtre ou d'onglet du terminal et leur ordre. Les éléments disponibles incluent projet, état, thread, branche, modèle et progression.",
    "description_source": "Configure terminal window or tab title fields interactively. — Pick and reorder title items such as project, status, thread, branch, model, and task progress.",
    "usage": "/title",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans plusieurs sessions tmux, afficher projet, modèle et tâche dans le titre réduit le risque d'envoyer un audit au mauvais fil."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3836,7 +4189,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3845,6 +4198,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3854,14 +4211,17 @@
    "categorie": "commandes",
    "nom": "/usage",
    "gabarit": "complet",
-   "description": null,
+   "description": "Affiche l'activité de jetons du compte sur des périodes quotidiennes, hebdomadaires ou cumulées et peut utiliser un crédit de réinitialisation de limite. La commande centralise ces informations dans le TUI.",
    "description_source": "View account token usage or use a rate-limit reset. — Inspect daily, weekly, or cumulative ChatGPT token activity from inside the TUI.",
    "usage": "/usage",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les limites hebdomadaires sont une friction récurrente ; vérifier `/usage` aide à réserver Sol xhigh aux audits et Luna ou low aux tâches courtes."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3869,7 +4229,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3878,6 +4238,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3887,14 +4251,17 @@
    "categorie": "commandes",
    "nom": "/vim",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active ou désactive le mode Vim dans l'éditeur de prompt du TUI. Le compositeur passe alors entre les comportements normal et insertion de Vim.",
    "description_source": "Toggle Vim mode for the composer. — Switch between Vim normal/insert behavior and the default composer editing mode.",
    "usage": "/vim",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun usage de Vim n'est déclaré dans CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
@@ -3902,7 +4269,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
@@ -3911,6 +4278,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   },
@@ -3920,14 +4291,17 @@
    "categorie": "commandes",
    "nom": "/worktree",
    "gabarit": "complet",
-   "description": null,
+   "description": "Crée un nouveau worktree Git et y exécute la conversation. La tâche obtient ainsi un checkout isolé du répertoire de travail principal.",
    "description_source": "Run the chat in a new Git worktree.",
    "usage": "/worktree",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les audits et correctifs trading-sim passent par PR et le dépôt contient parfois des changements non commités ; un worktree évite de les mélanger."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
@@ -3935,7 +4309,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
@@ -3944,6 +4318,10 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ]
   }
