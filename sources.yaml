@@ -274,3 +274,469 @@ sources:
     note: >-
       Testé le 2026-09-23 : 200, 10 items (flux court, haute fréquence). Média spécialisé IA. Écarté pour
       l'instant.
+
+# ============================================================================================================
+# Documentation de référence (phase 4, D40, D42, D44). Pages lues par `fetch.py --kb <produit>…` (copie et
+# empreinte dans raw/kb/), puis extraites sans modèle par `scripts/catalogue.py` vers docs/data/kb/<p>/.
+# Champs : id, perimetre, produit, extracteur, url (ou base + pages), statut, note, options.
+# Exclusions D42 : entreprise et administration, fournisseurs cloud (Bedrock, Vertex, Foundry), Windows et
+# macOS (Linux, iOS et le web sont gardés), API de la plateforme Claude.
+# ============================================================================================================
+
+documentation:
+
+  # ---------------------------------------------------------------- claude-code
+  - id: cc-commandes
+    perimetre: claude
+    produit: claude-code
+    extracteur: tableau
+    url: https://code.claude.com/docs/en/commands.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, text/markdown, 178 Ko, tableau « All commands » de 114 commandes `/`.
+      Les skills intégrées y sont marquées **Skill** (catégorie skills), les workflows **Workflow**.
+    options:
+      section: "All commands"
+      categorie: commandes
+      categorie_si_marque: {"Skill": skills}
+      exclure: "bedrock|vertex|foundry|install-slack-app|setup-"
+
+  - id: cc-cli
+    perimetre: claude
+    produit: claude-code
+    extracteur: tableau
+    url: https://code.claude.com/docs/en/cli-reference.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 126 Ko. Tableau « CLI commands » (commandes `claude …`) et tableau
+      « CLI flags » (79 options, catégorie parametres, gabarit court).
+    options:
+      section: "CLI commands|CLI flags"
+      categorie: commandes
+      categorie_par_section: {"CLI flags": parametres}
+      exclure: "bedrock|vertex|foundry|windows|macos|self-hosted|gateway"
+
+  - id: cc-reglages
+    perimetre: claude
+    produit: claude-code
+    extracteur: sections
+    url: https://code.claude.com/docs/en/settings-reference.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 434 Ko, 231 clés en titres `### \`cle\``, chacune suivie d'un bloc
+      `settings.json` d'exemple. Section « Enterprise and managed settings » exclue (D42).
+    options:
+      niveau: 3
+      categorie: parametres
+      exclure_sections: "Settings index|Enterprise and managed settings|See also"
+      exclure: "bedrock|vertex|foundry|aws|managed|windows"
+
+  - id: cc-variables
+    perimetre: claude
+    produit: claude-code
+    extracteur: tableau
+    url: https://code.claude.com/docs/en/env-vars.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 368 variables dans le tableau « Variables ». Variables des fournisseurs
+      cloud, de la télémétrie d'entreprise et des passerelles exclues (D42).
+    options:
+      section: "Variables"
+      categorie: parametres
+      nom_majuscule: true
+      exclure: "bedrock|vertex|foundry|aws_|_aws|google_|gcp|azure|cloud_ml|otel|managed|gateway|mtls|windows|macos|client_cert|proxy"
+
+  - id: cc-raccourcis
+    perimetre: claude
+    produit: claude-code
+    extracteur: tableau
+    url: https://code.claude.com/docs/en/interactive-mode.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 93 Ko, tableaux de « Keyboard shortcuts » et « Vim editor mode ». Les
+      variantes réservées à macOS ou Windows sont retirées ; une ligne sans variante Linux est exclue (D42).
+    options:
+      section: "Keyboard shortcuts|Vim editor mode"
+      categorie: raccourcis
+      filtre_plateforme: true
+
+  - id: cc-plugins
+    perimetre: claude
+    produit: claude-code
+    extracteur: plugins_cc
+    url: https://code.claude.com/docs/en/discover-plugins.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 38 Ko, section « Official Anthropic marketplace » : tableau des plugins
+      d'intelligence de code et listes à puces (intégrations, flux de travail, styles de sortie).
+    options:
+      section: "Official Anthropic marketplace"
+      fin_section: "Community marketplace"
+
+  - id: cc-mcp
+    perimetre: claude
+    produit: claude-code
+    extracteur: sections
+    url: https://code.claude.com/docs/en/mcp.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 115 Ko ; une entrée par sous-section (installation, portées,
+      authentification, import, Claude Code comme serveur MCP…).
+    options:
+      niveau: 3
+      categorie: mcp
+      exclure_sections: "Organization controls|Practical examples"
+      exclure: "organization|enterprise"
+
+  - id: cc-hooks
+    perimetre: claude
+    produit: claude-code
+    extracteur: sections
+    url: https://code.claude.com/docs/en/hooks.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 331 Ko ; événements de hooks en titres `###` sous « Hook events »
+      (catégorie parametres, gabarit court).
+    options:
+      niveau: 3
+      parent: "Hook events"
+      categorie: parametres
+      prefixe_nom: "Hook "
+
+  - id: cc-fonctionnalites
+    perimetre: claude
+    produit: claude-code
+    extracteur: pages
+    base: https://code.claude.com/docs/en/
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : index https://code.claude.com/docs/llms.txt (208 pages, 200). Retenues : les
+      pages de fonctionnalités de « Getting started », « Build with Claude Code », « Configuration » et
+      « Reference », hors pages de référence déjà extraites, dépannage, entreprise, fournisseurs cloud,
+      environnements auto-hébergés, WSL et simulateur iOS (macOS). Une page = une entrée.
+    options:
+      pages:
+        how-claude-code-works: fonctionnalites
+        features-overview: fonctionnalites
+        claude-directory: fonctionnalites
+        context-window: fonctionnalites
+        prompt-caching: fonctionnalites
+        memory: fonctionnalites
+        sessions: fonctionnalites
+        common-workflows: fonctionnalites
+        best-practices: fonctionnalites
+        remote-control: fonctionnalites
+        claude-projects: fonctionnalites
+        mobile: fonctionnalites
+        chrome: fonctionnalites
+        computer-use: fonctionnalites
+        vs-code: fonctionnalites
+        jetbrains: fonctionnalites
+        slack: fonctionnalites
+        claude-tag: fonctionnalites
+        claude-code-on-the-web: fonctionnalites
+        routines: fonctionnalites
+        ultrareview: fonctionnalites
+        desktop: fonctionnalites
+        desktop-linux: fonctionnalites
+        desktop-scheduled-tasks: fonctionnalites
+        security-guidance: fonctionnalites
+        claude-security: fonctionnalites
+        code-review: fonctionnalites
+        github-actions: fonctionnalites
+        gitlab-ci-cd: fonctionnalites
+        agents: fonctionnalites
+        sub-agents: fonctionnalites
+        agent-view: fonctionnalites
+        agent-teams: fonctionnalites
+        cross-session-messaging: fonctionnalites
+        workflows: fonctionnalites
+        worktrees: fonctionnalites
+        skills: skills
+        plugins: plugins
+        artifacts: fonctionnalites
+        hooks-guide: fonctionnalites
+        channels: fonctionnalites
+        scheduled-tasks: fonctionnalites
+        goal: fonctionnalites
+        headless: fonctionnalites
+        deep-links: fonctionnalites
+        large-codebases: fonctionnalites
+        permissions: fonctionnalites
+        permission-modes: fonctionnalites
+        auto-mode-config: fonctionnalites
+        sandboxing: fonctionnalites
+        cloud-environments: fonctionnalites
+        model-config: fonctionnalites
+        fast-mode: fonctionnalites
+        advisor: fonctionnalites
+        output-styles: fonctionnalites
+        terminal-config: fonctionnalites
+        fullscreen: fonctionnalites
+        voice-dictation: fonctionnalites
+        statusline: fonctionnalites
+        keybindings: fonctionnalites
+        checkpointing: fonctionnalites
+        tools-reference: fonctionnalites
+
+  # ---------------------------------------------------------------- claude (apps)
+  - id: claude-apps
+    perimetre: claude
+    produit: claude
+    extracteur: pages
+    base: https://support.claude.com/en/articles/
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : index https://support.claude.com/llms.txt (200, 695 Ko, 358 articles en
+      anglais), articles en Markdown (`<id>-<slug>.md`). Retenus : les articles de fonctionnalités des apps
+      web, bureau (Linux) et iOS ; exclus la facturation, l'entreprise et l'administration, la sécurité et
+      le juridique, Windows, macOS, Android, Microsoft et Google (D42). Articles narratifs : l'usage est la
+      première liste d'étapes ou le premier paragraphe, recopié.
+    options:
+      pages:
+        12260368-use-incognito-chats: fonctionnalites
+        11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context: fonctionnalites
+        12123587-import-and-export-your-memory-from-claude: fonctionnalites
+        16762496-share-a-chat-with-specific-people: fonctionnalites
+        9487310-what-are-artifacts-and-how-do-i-use-them: fonctionnalites
+        9547008-publish-and-share-artifacts: fonctionnalites
+        13641943-visual-and-interactive-content: fonctionnalites
+        13979539-custom-visuals-in-chat-and-cowork: fonctionnalites
+        10684626-enable-and-use-web-search: fonctionnalites
+        11088861-use-research-on-claude: fonctionnalites
+        11095361-when-should-i-use-web-search-extended-thinking-and-research: fonctionnalites
+        8241126-upload-files-to-claude: fonctionnalites
+        12111783-create-and-edit-files-with-claude: fonctionnalites
+        9517075-what-are-projects: fonctionnalites
+        11473015-retrieval-augmented-generation-rag-for-projects: fonctionnalites
+        10185728-understanding-claude-s-personalization-features: fonctionnalites
+        8887527-customizing-your-appearance-settings: parametres
+        8664678-change-the-model-effort-and-thinking-settings: parametres
+        15672868-set-break-reminders-and-quiet-hours: parametres
+        14503520-available-beta-and-research-preview-features: fonctionnalites
+        14604416-get-started-with-claude-design: fonctionnalites
+        16923645-get-started-with-claude-docs: fonctionnalites
+        14661296-use-claude-security: fonctionnalites
+        15594475-what-is-claude-tag: fonctionnalites
+        13345190-get-started-with-claude-cowork: fonctionnalites
+        13364135-use-claude-cowork-safely: fonctionnalites
+        15520349-use-claude-cowork-on-web-desktop-and-mobile: fonctionnalites
+        16607400-use-the-built-in-browser-in-claude-cowork: fonctionnalites
+        14729249-use-artifacts-in-claude-cowork: fonctionnalites
+        13854387-schedule-recurring-tasks-in-claude-cowork: fonctionnalites
+        13947068-assign-tasks-from-anywhere-in-claude-cowork: fonctionnalites
+        14116274-organize-your-tasks-with-projects-in-claude-cowork: fonctionnalites
+        14128542-let-claude-use-your-computer-in-cowork: fonctionnalites
+        16761823-claude-cowork-and-chat-are-one-claude: fonctionnalites
+        14553240-give-claude-context-claude-md-and-better-prompts: fonctionnalites
+        10065433-install-claude-desktop: fonctionnalites
+        14729294-open-claude-desktop-with-a-link: fonctionnalites
+        10065434-use-dictation-on-claude-mobile: fonctionnalites
+        11101966-use-voice-mode: fonctionnalites
+        14898120-open-the-claude-mobile-app-with-a-link: fonctionnalites
+        10263469-use-claude-app-intents-shortcuts-and-widgets-on-ios: fonctionnalites
+        10302511-access-claude-for-ios-on-your-lock-screen-control-center-and-action-button: fonctionnalites
+        11869619-use-claude-with-ios-apps: fonctionnalites
+        12012173-get-started-with-claude-in-chrome: fonctionnalites
+        12902446-claude-in-chrome-permissions-guide: fonctionnalites
+        17007452-what-is-a-limit-reset: fonctionnalites
+        15424964-claude-fable-models-on-your-plan: fonctionnalites
+        8606394-how-large-is-the-context-window-on-paid-claude-plans: fonctionnalites
+        12512176-what-are-skills: skills
+        12512180-use-skills-in-claude: skills
+        12512198-how-to-create-custom-skills: skills
+        13837440-use-plugins-in-claude: plugins
+        14328846-browse-skills-connectors-and-plugins-in-one-directory: plugins
+        11176164-use-connectors-to-extend-claude-s-capabilities: mcp
+        11725091-when-to-use-desktop-and-web-connectors: mcp
+        13454812-use-interactive-connectors-in-claude: mcp
+        11175166-get-started-with-custom-connectors-using-remote-mcp: mcp
+        10949351-getting-started-with-local-mcp-servers-on-claude-desktop: mcp
+        12592343-enabling-and-using-the-desktop-extension-allowlist: mcp
+        10167454-use-the-github-integration: mcp
+        14730684-how-claude-suggests-connected-apps: mcp
+
+  # ---------------------------------------------------------------- codex
+  - id: oa-cli
+    perimetre: openai
+    produit: codex
+    extracteur: codex_cli
+    url: https://learn.chatgpt.com/docs/developer-commands?surface=cli
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : la variante Markdown (`developer-commands.md?surface=cli`, 49 Ko) ne contient
+      que des références `<ConfigTable options={…}>` ; les tableaux ne sont rendus que dans la page HTML
+      (200, 1 Mo, 32 tableaux : options globales, vue d'ensemble des commandes, options par sous-commande,
+      commandes `codex mcp` et `codex plugin`, commandes `/`, commandes de l'extension IDE). Les deux sont lues :
+      l'ordre des `ConfigTable` du Markdown nomme les tableaux HTML (sandboxMacOptions, mcpCommands…), et
+      un écart de nombre lève FormatInattendu. Tableaux macOS et Windows exclus (D42).
+    options:
+      url_md: https://learn.chatgpt.com/docs/developer-commands.md?surface=cli
+
+  - id: oa-config
+    perimetre: openai
+    produit: codex
+    extracteur: configtable
+    url: https://learn.chatgpt.com/docs/config-file/config-reference.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 110 Ko ; la référence de `config.toml` est un composant
+      `<ConfigTable options={[{key, type, description}, …]}>` écrit en JavaScript dans le Markdown
+      (297 objets). Section `requirements.toml` (règles imposées par l'administrateur) exclue (D42).
+    options:
+      section: "config.toml"
+      fin_section: "requirements.toml"
+      exclure: "windows|macos|azure|bedrock|vertex|aws|otel|analytics"
+
+  - id: oa-variables
+    perimetre: openai
+    produit: codex
+    extracteur: tableau
+    url: https://learn.chatgpt.com/docs/config-file/environment-variables.md
+    statut: ok
+    note: "Testé le 2026-09-23 : 200, 7 Ko, tableau de 14 variables d'environnement Codex."
+    options:
+      categorie: parametres
+      exclure: "windows|macos"
+
+  - id: oa-ide-reglages
+    perimetre: openai
+    produit: codex
+    extracteur: tableau
+    url: https://learn.chatgpt.com/docs/developer-settings.md?surface=ide
+    statut: ok
+    note: "Testé le 2026-09-23 : 200, 6 Ko, tableau des réglages `chatgpt.*` de l'extension IDE."
+    options:
+      categorie: parametres
+      prefixe_nom: "IDE "
+      exclure: "windows|macos"
+
+  - id: oa-hooks
+    perimetre: openai
+    produit: codex
+    extracteur: sections
+    url: https://learn.chatgpt.com/docs/hooks.md
+    statut: ok
+    note: "Testé le 2026-09-23 : 200, 45 Ko ; événements de hooks en titres `###` sous « Hooks »."
+    options:
+      niveau: 3
+      parent: "^Hooks$"
+      categorie: parametres
+      prefixe_nom: "Hook "
+      exclure: "Plain-text aliases"
+
+  - id: oa-mcp
+    perimetre: openai
+    produit: codex
+    extracteur: sections
+    url: https://learn.chatgpt.com/docs/extend/mcp.md
+    statut: ok
+    note: "Testé le 2026-09-23 : 200, 20 Ko ; une entrée par sous-section (configuration CLI, IDE, config.toml, serveurs fournis par des plugins, exemples)."
+    options:
+      niveau: 2,3
+      categorie: mcp
+      exclure_sections: "^Connect Codex to an MCP server$"
+
+  - id: oa-fonctionnalites
+    perimetre: openai
+    produit: codex
+    extracteur: pages
+    base: https://learn.chatgpt.com/docs/
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : index https://learn.chatgpt.com/llms.txt (161 pages, 200). Retenues : pages de
+      fonctionnalités Codex (CLI, cloud, remote, sandbox, agents, environnements, skills, plugins…) et
+      ChatGPT (web, app Linux, voix, projets, mémoire, navigateur…), produit fixé par page. Exclues :
+      entreprise, administration, sécurité d'organisation, Windows, macOS, Bedrock (D42).
+    options:
+      pages:
+        codex/cli: {categorie: fonctionnalites, produit: codex}
+        cli-customization: {categorie: fonctionnalites, produit: codex}
+        cloud: {categorie: fonctionnalites, produit: codex}
+        cloud/internet-access: {categorie: fonctionnalites, produit: codex}
+        code-review: {categorie: fonctionnalites, produit: codex}
+        remote: {categorie: fonctionnalites, produit: codex}
+        remote-connections: {categorie: fonctionnalites, produit: codex}
+        non-interactive-mode: {categorie: fonctionnalites, produit: codex}
+        sandboxing: {categorie: fonctionnalites, produit: codex}
+        sandboxing/auto-review: {categorie: fonctionnalites, produit: codex}
+        permission-modes: {categorie: fonctionnalites, produit: codex}
+        agent-approvals-security: {categorie: fonctionnalites, produit: codex}
+        agent-configuration/agents-md: {categorie: fonctionnalites, produit: codex}
+        agent-configuration/rules: {categorie: fonctionnalites, produit: codex}
+        agent-configuration/speed: {categorie: fonctionnalites, produit: codex}
+        agent-configuration/subagents: {categorie: fonctionnalites, produit: codex}
+        model-selection: {categorie: fonctionnalites, produit: codex}
+        models: {categorie: fonctionnalites, produit: codex}
+        environments/local-environment: {categorie: fonctionnalites, produit: codex}
+        environments/cloud-environment: {categorie: fonctionnalites, produit: codex}
+        environments/git-worktrees: {categorie: fonctionnalites, produit: codex}
+        integrated-terminal: {categorie: fonctionnalites, produit: codex}
+        github-action: {categorie: fonctionnalites, produit: codex}
+        third-party/github: {categorie: fonctionnalites, produit: codex}
+        codex-sdk: {categorie: fonctionnalites, produit: codex}
+        import: {categorie: fonctionnalites, produit: codex}
+        long-running-work: {categorie: fonctionnalites, produit: codex}
+        security: {categorie: fonctionnalites, produit: codex}
+        config-file/config-basic: {categorie: fonctionnalites, produit: codex}
+        config-file/config-advanced: {categorie: fonctionnalites, produit: codex}
+        custom-prompts: {categorie: fonctionnalites, produit: codex}
+        mcp-server: {categorie: fonctionnalites, produit: codex}
+        features/codex-micro: {categorie: fonctionnalites, produit: codex}
+        pricing: {categorie: fonctionnalites, produit: codex}
+        build-skills: {categorie: skills, produit: codex}
+        skills-and-plugins: {categorie: skills, produit: codex}
+        extend/record-and-replay: {categorie: skills, produit: codex}
+        plugins: {categorie: plugins, produit: codex}
+        build-plugins: {categorie: plugins, produit: codex}
+        web: {categorie: fonctionnalites, produit: chatgpt}
+        app: {categorie: fonctionnalites, produit: chatgpt}
+        linux/linux-app: {categorie: fonctionnalites, produit: chatgpt}
+        use-chatgpt: {categorie: fonctionnalites, produit: chatgpt}
+        features: {categorie: fonctionnalites, produit: chatgpt}
+        features/voice: {categorie: fonctionnalites, produit: chatgpt}
+        personalize: {categorie: fonctionnalites, produit: chatgpt}
+        projects: {categorie: fonctionnalites, produit: chatgpt}
+        customization/memories: {categorie: fonctionnalites, produit: chatgpt}
+        automations: {categorie: fonctionnalites, produit: chatgpt}
+        browser: {categorie: fonctionnalites, produit: chatgpt}
+        chrome-extension: {categorie: fonctionnalites, produit: chatgpt}
+        computer-use: {categorie: fonctionnalites, produit: chatgpt}
+        image-generation: {categorie: fonctionnalites, produit: chatgpt}
+        image-inputs: {categorie: fonctionnalites, produit: chatgpt}
+        web-search: {categorie: fonctionnalites, produit: chatgpt}
+        visualizations: {categorie: fonctionnalites, produit: chatgpt}
+        sites: {categorie: fonctionnalites, produit: chatgpt}
+        artifacts-viewer: {categorie: fonctionnalites, produit: chatgpt}
+        appshots: {categorie: fonctionnalites, produit: chatgpt}
+        notifications: {categorie: fonctionnalites, produit: chatgpt}
+        webmcp: {categorie: fonctionnalites, produit: chatgpt}
+        get-started-with-work: {categorie: fonctionnalites, produit: chatgpt}
+
+  # ---------------------------------------------------------------- chatgpt
+  - id: chatgpt-app-commandes
+    perimetre: openai
+    produit: chatgpt
+    extracteur: tableau
+    url: https://learn.chatgpt.com/docs/reference/commands.md
+    statut: ok
+    note: >-
+      Testé le 2026-09-23 : 200, 27 Ko ; raccourcis clavier de l'app de bureau par système (seule la
+      section Linux est gardée, D42) et liens profonds `codex://` (catégorie commandes).
+    options:
+      section: "Linux|Supported links"
+      categorie: raccourcis
+      categorie_par_section: {"Supported links": commandes}
+      colonnes_par_section: {"Linux": {usage: 1, description: 0, nom: 0}}
+
+  - id: chatgpt-app-reglages
+    perimetre: openai
+    produit: chatgpt
+    extracteur: sections
+    url: https://learn.chatgpt.com/docs/reference/settings.md
+    statut: ok
+    note: "Testé le 2026-09-23 : 200, 5 Ko ; une entrée par section de réglages de l'app de bureau."
+    options:
+      niveau: 2
+      categorie: parametres
+      prefixe_nom: "Réglages : "

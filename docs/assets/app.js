@@ -268,9 +268,112 @@
     if (ec) frag.append(ec);
     return frag;
   }
+  /* ---------- Référence (phase 4) : base extraite de la documentation, commentée par les agents ---------- */
+  const KB_PERIMETRES = ["claude", "openai"];
+  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis" };
+  const VERDICTS = { utiliser: "à utiliser", tester: "à tester", ignorer: "à ignorer" };
+  const STATUTS = { utilise: "utilisé", non_utilise: "non utilisé", inconnu: "usage inconnu" };
+  const KB_PAGE = 50;
+  const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", limite: KB_PAGE };
+  function sansAccents(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+  async function chargerKb() {
+    if (etat.kb) return;
+    const t0 = performance.now();
+    const entrees = [], erreurs = [];
+    await Promise.all(KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).map(async (c) => {
+      try {
+        const d = await lireJson(`data/kb/${p}/${c}.json`);
+        if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
+        for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
+          e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
+          entrees.push(e);
+        }
+      } catch (err) { erreurs.push(`${p}/${c} : ${err.message || err}`); }
+    })));
+    entrees.sort((a, b) => String(a.nom).localeCompare(String(b.nom), "fr"));
+    etat.kb = { entrees, erreurs, ms: Math.round(performance.now() - t0) };
+    console.log(`delta:kb ${entrees.length} entrées en ${etat.kb.ms} ms`);
+  }
+  function filtrerKb() {
+    const mots = sansAccents(kbFiltre.q).split(/\s+/).filter(Boolean);
+    return etat.kb.entrees.filter((e) =>
+      (!kbFiltre.produit || e.produit === kbFiltre.produit) &&
+      (!kbFiltre.categorie || e.categorie === kbFiltre.categorie) &&
+      (!kbFiltre.statut || e.statut_usage === kbFiltre.statut) &&
+      (!kbFiltre.verdict || (kbFiltre.verdict === "attente" ? !e.commentee : e.commentee && e.recommandation && e.recommandation.verdict === kbFiltre.verdict)) &&
+      mots.every((m) => e._texte.includes(m)));
+  }
+  function carteKb(e) {
+    const c = el("li", { class: "carte kb" + (e.commentee ? "" : " attente") });
+    const verdict = e.commentee && e.recommandation ? e.recommandation.verdict : null;
+    c.append(el("div", { class: "badges" },
+      badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
+      badge("type", KB_CATEGORIES[e.categorie] || String(e.categorie || "?")),
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"),
+      e.commentee ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage || "")) : null,
+      e.retiree ? badge("revise", "retirée de la documentation") : null));
+    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
+    if (e.groupe) c.append(el("div", { class: "meta", text: `${e.groupe} · mis à jour le ${dateFr(e.maj_le)}` }));
+    if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));
+    else if (texte(e.description_source)) c.append(el("p", { class: "resume source-en", lang: "en", text: e.description_source }));
+    c.append(el("pre", { class: "usage" }, el("code", { text: String(e.usage || "") })));
+    if (e.commentee && texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
+    if (verdict && texte(e.recommandation.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.recommandation.pourquoi })));
+    if (texte(e.disponibilite)) c.append(el("p", { class: "projets", text: `Disponibilité : ${e.disponibilite}` }));
+    if (Array.isArray(e.sources) && e.sources.length) {
+      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
+        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
+    }
+    return c;
+  }
+  function choix(libelle, cle, options) {
+    const s = el("select", { "aria-label": libelle });
+    s.append(el("option", { value: "", text: libelle }));
+    for (const [v, t] of Object.entries(options)) {
+      const o = el("option", { value: v, text: t });
+      if (kbFiltre[cle] === v) o.selected = true;
+      s.append(o);
+    }
+    s.addEventListener("change", () => { kbFiltre[cle] = s.value; kbFiltre.limite = KB_PAGE; rendreResultatsKb(); });
+    return s;
+  }
+  function rendreResultatsKb() {
+    const zone = document.getElementById("kb-resultats");
+    if (!zone) return;
+    vider(zone);
+    const liste = filtrerKb();
+    const commentees = liste.filter((e) => e.commentee).length;
+    zone.append(el("p", { class: "sous-titre", role: "status", text: `${liste.length} entrée(s) affichable(s) · ${commentees}/${liste.length} commentée(s)` }));
+    zone.append(el("ul", { class: "liste" }, ...liste.slice(0, kbFiltre.limite).map(carteKb)));
+    if (liste.length > kbFiltre.limite) {
+      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(KB_PAGE, liste.length - kbFiltre.limite)} de plus` });
+      b.addEventListener("click", () => { kbFiltre.limite += KB_PAGE; rendreResultatsKb(); });
+      zone.append(b);
+    }
+  }
   function pageReference() {
-    return el("section", null, el("h2", { text: "Référence" }),
-      el("p", { class: "vide", text: "La base de référence (fonctionnalités, commandes, skills, plugins, MCP, paramètres, raccourcis, avec une recommandation pour chaque entrée) arrive en phase 4. Rien n'est encore publié ici." }));
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Référence" }));
+    const kb = etat.kb;
+    if (!kb || !kb.entrees.length) {
+      frag.append(el("p", { class: "vide", text: "La base de référence n'est pas encore publiée." }));
+      return frag;
+    }
+    const total = kb.entrees.length, faites = kb.entrees.filter((e) => e.commentee).length;
+    const barre = el("div", { class: "avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
+      el("progress", { max: String(total), value: String(faites), "aria-label": "Avancement des commentaires" }));
+    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
+    if (kb.erreurs.length) frag.append(el("p", { class: "erreur", text: `Fichiers illisibles : ${kb.erreurs.join(" ; ")}` }));
+    const recherche = el("input", { type: "search", placeholder: "Rechercher (nom, usage, description…)", "aria-label": "Recherche plein texte", value: kbFiltre.q });
+    let minuterie = null;
+    recherche.addEventListener("input", () => { clearTimeout(minuterie); minuterie = setTimeout(() => { kbFiltre.q = recherche.value; kbFiltre.limite = KB_PAGE; rendreResultatsKb(); }, 150); });
+    frag.append(el("div", { class: "filtres kb-filtres" }, recherche,
+      choix("Produit", "produit", Object.fromEntries(["claude-code", "claude", "codex", "chatgpt"].map((p) => [p, PRODUITS[p]]))),
+      choix("Catégorie", "categorie", KB_CATEGORIES),
+      choix("Verdict", "verdict", { ...VERDICTS, attente: "en attente de commentaire" }),
+      choix("Statut d'usage", "statut", STATUTS)));
+    frag.append(el("div", { id: "kb-resultats" }));
+    return frag;
   }
   function pageATester() {
     const frag = document.createDocumentFragment();
@@ -331,6 +434,7 @@
   async function rendre() {
     lireRoute();
     await chargerNecessaire();
+    if (etat.page === "reference") await chargerKb();
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
@@ -343,7 +447,7 @@
     switch (etat.page) {
       case "changelogs": main.append(pageChangelogs()); break;
       case "actu": main.append(pageActu()); break;
-      case "reference": main.append(pageReference()); break;
+      case "reference": main.append(pageReference()); rendreResultatsKb(); break;
       case "a-tester": main.append(pageATester()); break;
       case "archives": main.append(pageArchives()); break;
       default: main.append(pageAujourdhui(alertes));

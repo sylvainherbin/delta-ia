@@ -4,6 +4,7 @@
 Usage :
   valider.py --perimetre {claude,openai,actu} [--date AAAA-MM-JJ] [--brut raw/<p>-nouveautes.json]
              [--contexte CONTEXTE.md] [--racine <dossier>]
+  valider.py --perimetre {claude,openai} --kb         base de référence (SPEC §7.4)
 
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
@@ -298,6 +299,121 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
             r.erreur(ou, f"{j['date']}: `genere_le` différent du fichier quotidien")
 
 
+# ----------------------------------------------------------------------------------------------- base de référence (D40, D41, SPEC §7.4)
+
+CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "exemple",
+             "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "retiree", "origine", "groupe",
+             "maj_le", "historique"}
+MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
+MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
+LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
+
+
+def est_francais(texte: str) -> bool:
+    mots = re.findall(r"[a-zàâçéèêëîïôûùüÿœ]+", texte.lower())
+    fr = sum(1 for m in mots if m in MOTS_FR) + sum(1 for m in mots if re.search(r"[àâçéèêëîïôûùœ]", m))
+    en = sum(1 for m in mots if m in MOTS_EN)
+    return fr > en and fr >= 2
+
+
+def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
+    from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE, STATUTS_USAGE, VERDICTS, gabarit_de
+    if perimetre not in PRODUITS_PAR_PERIMETRE:
+        r.erreur("kb", f"pas de base de référence pour le périmètre {perimetre!r}")
+        return set()
+    dossier = racine / "docs" / "data" / "kb" / perimetre
+    ids: set[str] = set()
+    for cat in CATEGORIES:
+        chemin = dossier / f"{cat}.json"
+        ou = f"kb/{perimetre}/{cat}.json"
+        if not chemin.exists():
+            r.erreur(ou, "absent (les sept catégories sont toujours écrites, même vides)")
+            continue
+        texte = chemin.read_text(encoding="utf-8")
+        verifier_secrets(texte, ou, r)
+        try:
+            doc = json.loads(texte)
+        except ValueError as e:
+            r.erreur(ou, f"JSON invalide : {e}")
+            continue
+        if doc.get("perimetre") != perimetre or doc.get("categorie") != cat or not isinstance(doc.get("entrees"), list):
+            r.erreur(ou, "en-tête attendu : perimetre, categorie, maj_le, total, commentees, entrees")
+            continue
+        entrees = doc["entrees"]
+        if doc.get("total") != len(entrees) or doc.get("commentees") != sum(1 for e in entrees if isinstance(e, dict) and e.get("commentee")):
+            r.erreur(ou, "compteurs `total` ou `commentees` incohérents")
+        for i, e in enumerate(entrees):
+            o = f"{ou} [{i}] {e.get('id', '?') if isinstance(e, dict) else '?'}"
+            if not isinstance(e, dict):
+                r.erreur(o, "n'est pas un objet")
+                continue
+            manquants = CHAMPS_KB - set(e)
+            if manquants:
+                r.erreur(o, f"champs manquants : {sorted(manquants)}")
+                continue
+            if set(e) - CHAMPS_KB:
+                r.erreur(o, f"champs inconnus : {sorted(set(e) - CHAMPS_KB)}")
+            if e["id"] in ids:
+                r.erreur(o, "identifiant en double dans la base")
+            ids.add(e["id"])
+            if e["produit"] not in PRODUITS_PAR_PERIMETRE[perimetre]:
+                r.erreur(o, f"produit {e['produit']!r} hors du périmètre")
+            if e["categorie"] != cat:
+                r.erreur(o, f"catégorie {e['categorie']!r} dans le fichier {cat}")
+            if not re.fullmatch(rf"{re.escape(str(e['produit']))}-{cat}-[a-z0-9-]+", str(e["id"])):
+                r.erreur(o, "identifiant attendu : <produit>-<categorie>-<slug>")
+            if e["gabarit"] != gabarit_de(cat):
+                r.erreur(o, f"gabarit {e['gabarit']!r} au lieu de {gabarit_de(cat)!r}")
+            if not isinstance(e["nom"], str) or not e["nom"].strip():
+                r.erreur(o, "`nom` vide")
+            if not isinstance(e["usage"], str) or not e["usage"].strip():
+                r.erreur(o, "`usage` vide")
+            src = e["sources"]
+            if not isinstance(src, list) or not src or not all(
+                    isinstance(s, dict) and str(s.get("url", "")).startswith(("http://", "https://")) and s.get("libelle")
+                    and isinstance(s.get("officielle"), bool) for s in src):
+                r.erreur(o, "`sources` : au moins une source {url http(s), libelle, officielle}")
+            if e["statut_usage"] not in STATUTS_USAGE:
+                r.erreur(o, f"`statut_usage` inconnu : {e['statut_usage']!r}")
+            if not _date_valide(e["maj_le"]):
+                r.erreur(o, "`maj_le` doit être AAAA-MM-JJ")
+            if not isinstance(e["historique"], list) or not all(
+                    isinstance(h, dict) and _date_valide(h.get("date")) and str(h.get("changement", "")).strip() for h in e["historique"]):
+                r.erreur(o, "`historique` : liste de {date, changement}")
+            for champ in ("commentee", "retiree"):
+                if not isinstance(e[champ], bool):
+                    r.erreur(o, f"`{champ}` doit être un booléen")
+            if e["commentee"] is True:
+                lim = LONGUEURS[e["gabarit"]]
+                d = e["description"]
+                if not isinstance(d, str) or not d.strip():
+                    r.erreur(o, "entrée commentée sans `description`")
+                elif not est_francais(d):
+                    r.erreur(o, "`description` d'une entrée commentée doit être en français")
+                elif len(d) > lim["description"]:
+                    r.erreur(o, f"`description` trop longue pour le gabarit {e['gabarit']} ({len(d)} > {lim['description']})")
+                rec = e["recommandation"]
+                if not isinstance(rec, dict) or rec.get("verdict") not in VERDICTS or not str(rec.get("pourquoi", "")).strip():
+                    r.erreur(o, "entrée commentée sans `recommandation` {verdict, pourquoi}")
+                elif len(rec["pourquoi"]) > lim["pourquoi"]:
+                    r.erreur(o, f"`pourquoi` trop long pour le gabarit {e['gabarit']}")
+    return ids
+
+
+def ids_kb(racine: Path, perimetre: str) -> set[str] | None:
+    kb = "openai" if perimetre == "openai" else "claude"
+    dossier = racine / "docs" / "data" / "kb" / kb
+    if not dossier.exists() or not any(dossier.glob("*.json")):
+        return None
+    ids = set()
+    for f in dossier.glob("*.json"):
+        try:
+            ids |= {e["id"] for e in json.loads(f.read_text(encoding="utf-8")).get("entrees", [])}
+        except (ValueError, KeyError, AttributeError):
+            pass
+    return ids
+
+
 def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, contexte: Path) -> Rapport:
     r = Rapport()
     dossier = racine / "docs" / "data" / DOSSIERS[perimetre]
@@ -311,6 +427,13 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
             quotidiens[f.stem] = q
     if not quotidiens:
         r.erreur(dossier.name, "aucun fichier quotidien AAAA-MM-JJ.json")
+    connus = ids_kb(racine, perimetre)
+    if connus is not None:
+        for d, q in quotidiens.items():
+            for e in q.get("elements", []):
+                for ref in (e.get("kb_refs") or []) if isinstance(e, dict) else []:
+                    if ref not in connus:
+                        r.erreur(f"{d}.json", f"`kb_refs` inconnu dans la base de référence : {ref}")
     jour_iso = (jour or date.today()).isoformat()
     if brut is not None:
         q = quotidiens.get(jour_iso)
@@ -328,8 +451,19 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--date", type=date.fromisoformat, metavar="AAAA-MM-JJ", help="jour à couvrir avec --brut (défaut : aujourd'hui)")
     p.add_argument("--brut", type=Path, help="fichier raw/<p>-nouveautes.json dont chaque nouveauté doit être comptabilisée")
     p.add_argument("--contexte", type=Path, default=None, help="CONTEXTE.md (défaut : à la racine)")
+    p.add_argument("--kb", action="store_true", help="valider la base de référence docs/data/kb/<perimetre>/ (SPEC §7.4)")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     args = p.parse_args(argv)
+    if args.kb:
+        rapport = Rapport()
+        ids = verifier_kb(args.racine, args.perimetre, rapport)
+        if rapport.ok:
+            print(f"valider.py : base de référence {args.perimetre} valide ({len(ids)} entrées)")
+            return 0
+        print(f"valider.py : {len(rapport.erreurs)} erreur(s) dans la base {args.perimetre}", file=sys.stderr)
+        for e in rapport.erreurs[:200]:
+            print(f"  - {e}", file=sys.stderr)
+        return 1
     contexte = args.contexte or (args.racine / "CONTEXTE.md")
     rapport = valider(args.perimetre, args.racine, args.date, args.brut, contexte)
     if rapport.ok:

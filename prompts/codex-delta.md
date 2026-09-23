@@ -37,13 +37,13 @@ Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Les notes 
 ## 4. Index, base de référence, validation, état, commit
 
 1. Mets à jour `docs/data/openai/index.json` (SPEC §7.3) : une entrée par fichier quotidien, triées par date décroissante, compteurs exacts.
-2. Base de référence `docs/data/kb/openai/` : ne la modifie que si une nouveauté touche une entrée existante ; tant qu'elle n'existe pas (phase 4), ne crée rien.
+2. **Base de référence (D44).** `.venv/bin/python scripts/fetch.py --kb codex chatgpt` relit les pages de référence (empreinte par page), ré-extrait et met à jour `docs/data/kb/openai/` ; il écrit `raw/kb/openai-modifications.json` (`ajoutees`, `usage_modifie`, `retirees`, `echecs`). Commente les entrées de `ajoutees` et `usage_modifie` selon les règles de la skill `$delta-kb` (`.agents/skills/delta-kb/SKILL.md`, section « Règles de commentaire ») et applique-les avec `scripts/catalogue.py appliquer`. Les entrées `retirees` et un `usage` modifié défavorablement sont des éléments du jour (`type: depreciation` ou `changement_rupture`). Renseigne `kb_refs` des éléments du jour qui touchent une entrée de la base. Le stock d'entrées jamais commentées relève de `$delta-kb`, pas du passage quotidien. Puis `.venv/bin/python scripts/valider.py --perimetre openai --kb` doit rendre 0.
 3. `.venv/bin/python scripts/valider.py --perimetre openai --date $J --brut raw/openai-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
 4. `.venv/bin/python scripts/fetch.py --perimetre openai --valider --date $J`. Code 4 = des nouveautés brutes restent en attente : traite-les, revalide, relance. Code 0 attendu.
-5. `git add docs/data/openai state/openai.json` (jamais `git add -A`), message `delta(openai): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
+5. `git add docs/data/openai state/openai.json docs/data/kb/openai` (jamais `git add -A`), message `delta(openai): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
 
 ## 5. Fin de passage
 
 Relis les fichiers produits : aucun secret, aucune donnée de tiers identifiable (REGLES §5). Puis **confrontation à CONTEXTE.md (D29)** : pour chaque élément `fort` ou `moyen`, compare explicitement ce qu'il annonce (modèle, version, profil, outil, réglage) à ce que CONTEXTE.md décrit de l'usage de Sylvain, et note chaque écart : version installée dépassée, modèle par défaut remplacé, profil pointant sur un modèle retiré, outil abandonné. Contre-exemple du 23/09 : GPT-6 Sol remplaçait GPT-5.6 Sol, décrit dans CONTEXTE comme le modèle principal de Sylvain, et l'écart n'a pas été signalé. « Aucun point » n'est permis qu'après cette vérification, élément par élément.
 
-Enfin compte rendu REGLES §8, 10 lignes au plus : éléments par impact, les `fort` en une ligne chacun, sources en échec (dont les « trou possible »), entrées de la base de référence modifiées, points de CONTEXTE.md à mettre à jour (résultat de la confrontation ci-dessus).
+Enfin compte rendu REGLES §8, 10 lignes au plus : éléments par impact, les `fort` en une ligne chacun, sources en échec (dont les « trou possible »), entrées de la base de référence ajoutées, modifiées ou retirées (D44), points de CONTEXTE.md à mettre à jour (résultat de la confrontation ci-dessus).

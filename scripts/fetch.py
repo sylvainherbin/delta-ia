@@ -4,6 +4,7 @@
 Usage :
   fetch.py --perimetre {claude,openai,actu} [--depuis AAAA-MM-JJ] [--dry-run] [--sources sources.yaml]
   fetch.py --perimetre <p> --valider [--date AAAA-MM-JJ] [--dry-run]
+  fetch.py --kb PRODUIT [PRODUIT…] [--dry-run]   (documentation de référence, D44)
 
 Sans `--valider`, l'état `state/<p>.json` n'est jamais modifié : les nouveautés vont dans
 `raw/<p>-nouveautes.json`. `--valider` lit le fichier quotidien docs/data/<p>/<date>.json et n'inscrit
@@ -40,7 +41,10 @@ def _date(s: str) -> date:
 
 def construire_parseur() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fetch.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--perimetre", required=True, choices=PERIMETRES, help="périmètre à traiter")
+    p.add_argument("--perimetre", choices=PERIMETRES, help="périmètre à traiter (obligatoire sauf avec --kb)")
+    p.add_argument("--kb", nargs="+", metavar="PRODUIT", choices=["claude", "claude-code", "chatgpt", "codex"],
+                   help="récupère les pages de documentation de ces produits (raw/kb/) et met à jour le catalogue")
+    p.add_argument("--kb-sans-reseau", action="store_true", help=argparse.SUPPRESS)  # tests : extraction depuis raw/kb seul
     p.add_argument("--valider", action="store_true", help="faire avancer l'état à partir des nouveautés en attente")
     p.add_argument("--depuis", type=_date, metavar="AAAA-MM-JJ", help="ne retenir que les éléments datés à partir de ce jour")
     p.add_argument("--date", type=_date, metavar="AAAA-MM-JJ", help="avec --valider : date du fichier quotidien (défaut : aujourd'hui)")
@@ -124,10 +128,50 @@ def commande_recuperer(args, racine: Path) -> int:
     return 0
 
 
+def commande_kb(args, racine: Path) -> int:
+    """D44 : pages de référence -> raw/kb/ (empreintes) -> catalogue docs/data/kb/<p>/ -> raw/kb/<p>-modifications.json."""
+    from deltalib.kb import catalogue
+    from deltalib.kb.documentation import ErreurDocumentation, charger_documentation, recuperer
+    try:
+        docs = [d for d in charger_documentation(args.sources) if d.produit in args.kb and d.active]
+    except (ErreurDocumentation, OSError) as e:
+        print(f"sources.yaml (documentation) : {e}", file=sys.stderr)
+        return 2
+    if not docs:
+        print(f"aucune documentation active pour {args.kb}", file=sys.stderr)
+        return 2
+    bilan_pages = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": []}
+    if not args.kb_sans_reseau:
+        bilan_pages = recuperer(racine, docs, Client)
+    print(f"documentation {' '.join(args.kb)} : {bilan_pages['pages']} page(s) lue(s), "
+          f"{len(bilan_pages['nouvelles'])} nouvelle(s), {len(bilan_pages['modifiees'])} modifiée(s), "
+          f"{len(bilan_pages['echecs'])} en échec")
+    for e in bilan_pages["echecs"]:
+        print(f"  ! ÉCHEC   {e['doc']}/{e['fichier']} : {e['erreur']}")
+    code = 0
+    for perimetre in sorted({d.perimetre for d in docs}):
+        res = catalogue.mettre_a_jour(racine, perimetre, docs, ecrire_fichiers=not args.dry_run)
+        res["pages"] = {k: v for k, v in bilan_pages.items() if k != "pages"}
+        chemin = racine / "raw" / "kb" / f"{perimetre}-modifications.json"
+        if not args.dry_run:
+            ecrire_json(chemin, res)
+        print(f"catalogue {perimetre} : {res['total']} entrée(s), {len(res['ajoutees'])} ajoutée(s), "
+              f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['retirees'])} retirée(s), "
+              f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
+        for e in res["echecs"]:
+            print(f"  ! ÉCHEC   {e['doc']} : {e['erreur']}")
+            code = 3 if code == 0 else code
+    return code
+
+
 def main(argv: list[str] | None = None) -> int:
     args = construire_parseur().parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     racine = Path(args.racine)
+    if args.kb:
+        return commande_kb(args, racine)
+    if not args.perimetre:
+        construire_parseur().error("--perimetre est obligatoire (sauf avec --kb)")
     if args.valider:
         return commande_valider(args.perimetre, racine, args.dry_run, args.date)
     return commande_recuperer(args, racine)

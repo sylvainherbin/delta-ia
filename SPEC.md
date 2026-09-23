@@ -46,15 +46,18 @@ delta-ia/
 ├── sources.yaml           # sources et leur statut
 ├── scripts/
 │   ├── fetch.py           # récupération + détection des nouveautés ; --valider piloté par le fichier quotidien
-│   ├── valider.py         # validation des JSON produits avant commit (D15)
-│   └── deltalib/          # bibliothèque : analyseurs, état, passage
+│   ├── valider.py         # validation des JSON produits avant commit (D15) ; --kb pour la base (§7.4)
+│   ├── catalogue.py       # base de référence : extraction, inventaire, lots, application des commentaires
+│   └── deltalib/          # bibliothèque : analyseurs, état, passage, kb/ (documentation, extracteurs, catalogue)
 ├── tests/
 ├── state/
 │   ├── claude.json
 │   ├── openai.json
 │   └── actu.json
-├── raw/                   # cache de récupération, ignoré par git
+├── raw/                   # cache de récupération, ignoré par git ; raw/kb/ : pages de documentation et empreintes
 ├── .claude/skills/delta/SKILL.md   # /delta pour Claude Code (les commandes sont fusionnées dans les skills depuis 2.1.x)
+├── .claude/skills/delta-kb/       # /delta-kb : commentaire de la base de référence claude, par lots (D46)
+├── .agents/skills/delta-kb/       # $delta-kb : idem pour openai ; prompts/codex-delta-kb.md en repli
 ├── .agents/skills/delta/           # $delta pour Codex : SKILL.md (même texte que prompts/codex-delta.md) + agents/openai.yaml
 ├── prompts/codex-delta.md          # repli : texte à coller à la main dans Codex
 └── docs/                  # racine GitHub Pages
@@ -107,6 +110,8 @@ Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit
 5. `python scripts/valider.py --perimetre <p> --date J --brut raw/<p>-nouveautes.json` vérifie les JSON produits (schéma §7, cohérences, couverture des nouveautés brutes, secrets, `index.json`). Ne pas pousser s'il échoue.
 6. `python scripts/fetch.py --perimetre <p> --valider --date J`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5, D13) : `--valider` lit `docs/data/<dossier>/<date>.json` (option `--date`, défaut aujourd'hui) et inscrit dans l'état les `ids_bruts` de chaque élément, les `ecartes`, les `ignores` du fichier brut et les identifiants `web-*`. Les nouveautés brutes absentes du fichier quotidien restent en attente, sont listées, et la commande rend un code de sortie non nul.
 7. Commit sur les seuls chemins de l'agent, puis push selon les règles Git ci-dessous.
+
+Base de référence (D44) : dans chaque passage, l'agent lance `fetch.py --kb` sur les produits de son périmètre (`claude-code claude` pour Claude Code, `codex chatgpt` pour Codex). Le script relit uniquement les pages de référence de `sources.yaml` (copie et empreinte par page dans `raw/kb/`), ré-extrait les entrées et met à jour `docs/data/kb/<p>/` ; les entrées ajoutées ou dont `usage` a changé repassent en `commentee: false` et sont listées dans `raw/kb/<p>-modifications.json`. L'agent les commente pendant le passage, renseigne `kb_refs` et valide avec `valider.py --kb`.
 
 Comportement de `fetch.py` :
 - **Identifiants (D1)** : la clé native de la source, jamais le titre. Flux JSON OpenAI : `oa-<id>` (commun aux flux `general`, `codex-app` et `ios`, donc dédoublonnage) ; RSS : `guid`, sinon `link` ; Atom : `<id>` ; releases GitHub : le tag ; changelog Claude Code : `claude-code-<version>` ; newsroom : l'URL de l'article ; notes datées : `<source>-<date>`. Avec l'option `suivre_revisions: true`, une empreinte du contenu est stockée dans l'état ; si l'identifiant est connu mais l'empreinte a changé, l'élément revient en nouveauté avec `revision: true`.
@@ -162,7 +167,7 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
 | `pour_toi` | string \| null | Recommandation personnalisée ; `null` si l'impact est `nul` |
 | `projets_concernes` | array | Noms de projets tirés de CONTEXTE.md |
 | `action` | object \| null | `{description, etapes, effort: "5min" \| "30min" \| "plus"}` |
-| `kb_refs` | array | Identifiants des entrées de la base de référence touchées |
+| `kb_refs` | array | Identifiants des entrées de la base de référence touchées ; `valider.py` vérifie qu'ils existent |
 
 ### 7.3 Index — `docs/data/<dossier>/index.json`
 
@@ -184,9 +189,34 @@ La liste des dates disponibles, avec pour chacune le nombre d'éléments par niv
 
 ### 7.4 Base de référence — `docs/data/kb/<claude|openai>/<categorie>.json`
 
-Catégories : `fonctionnalites`, `commandes`, `skills`, `plugins`, `mcp`, `parametres`, `raccourcis`.
+Catégories : `fonctionnalites`, `commandes`, `skills`, `plugins`, `mcp`, `parametres`, `raccourcis`. Les sept fichiers sont toujours écrits, même vides : `{perimetre, categorie, maj_le, total, commentees, entrees}`.
 
-Champs d'une entrée : `id`, `produit`, `categorie`, `nom`, `description`, `usage` (syntaxe et exemple), `disponibilite` (plan ou plateforme, `null` si inconnue), `statut_usage` (`utilise` | `non_utilise` | `inconnu`, d'après CONTEXTE.md), `recommandation` (`{verdict: "utiliser" | "tester" | "ignorer", pourquoi}`), `sources`, `maj_le`, `historique` (`[{date, changement}]`).
+Chaque entrée naît en deux étapes (D40) :
+1. **Extraction** par `scripts/catalogue.py` (appelé par `fetch.py --kb`), sans aucun modèle, depuis les pages de référence déclarées dans `sources.yaml` (section `documentation`) : `id`, `nom`, `usage`, `description_source`, `sources`, `commentee: false`.
+2. **Commentaire** par l'agent du périmètre (skill `/delta-kb` ou `$delta-kb`, puis passages quotidiens) : `description` en français, `statut_usage`, `recommandation`, éventuellement `exemple` et `disponibilite`, puis `commentee: true`. L'agent ne modifie jamais `usage` ; `scripts/catalogue.py appliquer` le refuse.
+
+| Champ | Règle |
+|---|---|
+| `id` | `<produit>-<categorie>-<slug>`, stable ; pour une page de fonctionnalité, le slug suit le chemin de la page, pas son titre |
+| `produit`, `categorie`, `nom` | Extraits |
+| `gabarit` | `complet` (fonctionnalités, commandes, skills, plugins, MCP) ou `court` (paramètres, variables d'environnement, options CLI, clés `config.toml`, raccourcis) (D41) |
+| `usage` | Syntaxe exacte recopiée de la documentation (bloc de code, clé, commande, raccourci, liste d'étapes), jamais reformulée |
+| `description_source` | Description d'origine, en anglais, conservée |
+| `description` | `null` tant que l'entrée n'est pas commentée ; ensuite, en français : 2 ou 3 phrases (complet), 1 phrase (court) |
+| `exemple` | Gabarit complet : exemple recopié de la documentation, ou `null` |
+| `disponibilite` | Plan ou plateforme si la documentation le dit, sinon `null` |
+| `statut_usage` | `utilise` \| `non_utilise` \| `inconnu`, d'après CONTEXTE.md ; `inconnu` avant commentaire |
+| `recommandation` | `{verdict: "utiliser" \| "tester" \| "ignorer", pourquoi}` ; `pourquoi` en 1 ou 2 phrases (complet), 1 phrase (court), justifié par un projet ou une habitude de CONTEXTE.md (D26) ; `null` avant commentaire |
+| `sources` | `[{url, libelle, officielle}]`, au moins une ; la première est la page d'extraction |
+| `commentee` | `false` à l'extraction, et de nouveau `false` quand `usage` change dans la documentation (D44) |
+| `retiree` | `true` quand l'entrée a disparu d'une page extraite avec succès ; jamais supprimée |
+| `origine`, `groupe` | Documentation de `sources.yaml` et section de la page d'où vient l'entrée |
+| `maj_le` | AAAA-MM-JJ du dernier changement |
+| `historique` | `[{date, changement}]` : ajout, usage modifié, commentée, retirée, réapparue |
+
+Périmètre (D42) : sont exclus l'entreprise et l'administration, les fournisseurs cloud (Bedrock, Vertex, Foundry), Windows et macOS (Linux, iOS et le web sont gardés) et l'API de la plateforme Claude.
+
+Génération initiale (D46) : par lots d'une catégorie ou d'une demi-catégorie (`scripts/catalogue.py lots`), deux lots au plus par lancement de `/delta-kb` ou `$delta-kb`, avec validation (`valider.py --kb`) et commit après chaque lot, jamais en même temps qu'un passage quotidien (D21).
 
 ## 8. Site
 
@@ -253,4 +283,10 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D20 | Identifiant web : `web-<sha1(url + "\|" + date_publication + "\|" + titre normalisé)[:12]>`, l'URL seule fait entrer en collision les entrées d'une même page | §7.2, skills |
 | D21 | Étape 0 : si `.git/index.lock` existe, arrêt et signalement ; les passages Claude Code et Codex ne tournent jamais en même temps | §6, skills |
 | D27 | Changelog Claude Code : une version non datée inférieure à la plus haute version datée est de l'historique (cas de la 2.1.243) | §6 |
+| D40 | Base de référence en deux étapes : extraction par script sans modèle (`commentee: false`), puis commentaire de toutes les entrées par l'agent (`commentee: true`) ; `usage` jamais modifié par l'agent | §7.4 |
+| D41 | Gabarits complet et court | §7.4 |
+| D42 | Exclusions : entreprise et administration, fournisseurs cloud, Windows et macOS, API de la plateforme Claude | §7.4, `sources.yaml` |
+| D44 | `fetch.py --kb` dans chaque passage quotidien ; entrées ajoutées ou à `usage` modifié recommentées pendant le passage | §6, skills |
+| D45 | Arrêt avant toute génération, sur inventaire réel et estimation | phase 4 |
+| D46 | Deux lots au plus par lancement de `/delta-kb` ou `$delta-kb`, étalés sur plusieurs jours | §7.4, skills |
 
