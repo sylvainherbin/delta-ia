@@ -3,10 +3,12 @@
 
 Usage :
   fetch.py --perimetre {claude,openai,actu} [--depuis AAAA-MM-JJ] [--dry-run] [--sources sources.yaml]
-  fetch.py --perimetre <p> --valider [--dry-run]
+  fetch.py --perimetre <p> --valider [--date AAAA-MM-JJ] [--dry-run]
 
 Sans `--valider`, l'état `state/<p>.json` n'est jamais modifié : les nouveautés vont dans
-`raw/<p>-nouveautes.json`. `--valider` fait avancer l'état à partir de ce fichier.
+`raw/<p>-nouveautes.json`. `--valider` lit le fichier quotidien docs/data/<p>/<date>.json et n'inscrit
+dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*) plus les ignorés du brut ; les
+nouveautés absentes restent en attente (code de sortie 4).
 """
 
 from __future__ import annotations
@@ -20,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from deltalib.etat import charger_etat, ecrire_json, valider  # noqa: E402
+from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, valider  # noqa: E402
 from deltalib.http import Client  # noqa: E402
 from deltalib.modeles import PERIMETRES  # noqa: E402
 from deltalib.passage import executer  # noqa: E402
@@ -41,6 +43,7 @@ def construire_parseur() -> argparse.ArgumentParser:
     p.add_argument("--perimetre", required=True, choices=PERIMETRES, help="périmètre à traiter")
     p.add_argument("--valider", action="store_true", help="faire avancer l'état à partir des nouveautés en attente")
     p.add_argument("--depuis", type=_date, metavar="AAAA-MM-JJ", help="ne retenir que les éléments datés à partir de ce jour")
+    p.add_argument("--date", type=_date, metavar="AAAA-MM-JJ", help="avec --valider : date du fichier quotidien (défaut : aujourd'hui)")
     p.add_argument("--dry-run", action="store_true", help="n'écrire aucun fichier")
     p.add_argument("--sources", default=str(RACINE / "sources.yaml"), help="fichier des sources (défaut : sources.yaml)")
     p.add_argument("--racine", default=str(RACINE), help=argparse.SUPPRESS)  # pour les tests
@@ -48,25 +51,41 @@ def construire_parseur() -> argparse.ArgumentParser:
     return p
 
 
-def commande_valider(perimetre: str, racine: Path, dry_run: bool) -> int:
+def commande_valider(perimetre: str, racine: Path, dry_run: bool, jour: date | None) -> int:
+    """D5, D13 : l'état n'avance que pour ce que le fichier quotidien de l'agent comptabilise."""
     chemin_brut = racine / "raw" / f"{perimetre}-nouveautes.json"
     chemin_etat = racine / "state" / f"{perimetre}.json"
+    jour = jour or date.today()
+    chemin_quotidien = racine / "docs" / "data" / DOSSIERS[perimetre] / f"{jour.isoformat()}.json"
     if not chemin_brut.exists():
         print(f"aucun fichier de nouveautés en attente : {chemin_brut}", file=sys.stderr)
         return 2
+    if not chemin_quotidien.exists():
+        print(f"fichier quotidien absent : {chemin_quotidien} (écrire la synthèse avant --valider, ou passer --date)", file=sys.stderr)
+        return 2
     with open(chemin_brut, encoding="utf-8") as f:
         brut = json.load(f)
+    with open(chemin_quotidien, encoding="utf-8") as f:
+        quotidien = json.load(f)
     if brut.get("perimetre") != perimetre:
         print(f"le fichier {chemin_brut} concerne le périmètre {brut.get('perimetre')!r}, pas {perimetre!r}", file=sys.stderr)
         return 2
+    if quotidien.get("perimetre") != perimetre or quotidien.get("date") != jour.isoformat():
+        print(f"le fichier {chemin_quotidien} n'est pas celui du périmètre {perimetre!r} au {jour}", file=sys.stderr)
+        return 2
     etat = charger_etat(chemin_etat)
-    etat, ajoutes = valider(etat, brut)
-    if dry_run:
-        print(f"[dry-run] {ajoutes} identifiant(s) seraient ajoutés à {chemin_etat} ({len(etat['vus'])} au total)")
-        return 0
-    ecrire_json(chemin_etat, etat)
-    print(f"état {chemin_etat} : {ajoutes} identifiant(s) ajoutés, {len(etat['vus'])} au total")
-    return 0
+    etat, bilan = valider(etat, brut, quotidien)
+    prefixe = "[dry-run] " if dry_run else ""
+    print(f"{prefixe}état {chemin_etat} : {bilan['inscrits']} inscrit(s), {bilan['revises']} révisé(s), "
+          f"{len(etat['vus'])} au total ; {len(bilan['en_attente'])} nouveauté(s) en attente")
+    titres = {e["id"]: e.get("titre", "") for e in brut.get("nouveautes", [])}
+    for i in bilan["en_attente"]:
+        print(f"  ? en attente  {i}  {titres.get(i, '')[:70]}")
+    for i in bilan["inconnus"]:
+        print(f"  ! inconnu     {i}  (présent dans le fichier quotidien, absent du brut et de l'état)")
+    if not dry_run:
+        ecrire_json(chemin_etat, etat)
+    return 4 if bilan["en_attente"] or bilan["inconnus"] else 0
 
 
 def commande_recuperer(args, racine: Path) -> int:
@@ -108,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     racine = Path(args.racine)
     if args.valider:
-        return commande_valider(args.perimetre, racine, args.dry_run)
+        return commande_valider(args.perimetre, racine, args.dry_run, args.date)
     return commande_recuperer(args, racine)
 
 

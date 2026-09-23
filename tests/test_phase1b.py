@@ -5,7 +5,9 @@ import json
 import pytest
 
 import fetch
-from conftest import FIXTURES, FauxClient
+from conftest import FIXTURES, FauxClient, ecrire_quotidien
+
+JOUR = __import__("datetime").date.today().isoformat()
 from deltalib.analyseurs import github_changelog, github_releases, json_changelog, rss
 from deltalib.etat import detecter
 from deltalib.passage import detecter_trou, recuperer
@@ -41,12 +43,12 @@ def test_d1_entree_commune_general_et_codex_app_donne_un_seul_element(sources, c
 def test_d1_identifiants_rss_atom(sources, fixture_texte):
     s = sources["openai-news"]
     s.options = {}
-    e = rss.parser_flux(fixture_texte("openai_news.xml"), s)[0]
+    e = rss.parser_flux(fixture_texte("openai_news.xml"), s)[0][0]
     assert e.id == "https://openai.com/index/openai-extends-cyber-access-to-ukraine-for-civilian-defense"  # guid
-    e = rss.parser_flux(fixture_texte("simonw.atom"), sources["simon-willison"])[0]
+    e = rss.parser_flux(fixture_texte("simonw.atom"), sources["simon-willison"])[0][0]
     assert e.id == "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/"  # <id> Atom
     sans_guid = "<rss><channel><item><title>t</title><link>https://x.test/a</link></item></channel></rss>"
-    assert rss.parser_flux(sans_guid, sources["import-ai"])[0].id == "https://x.test/a"
+    assert rss.parser_flux(sans_guid, sources["import-ai"])[0][0].id == "https://x.test/a"
 
 
 def test_d1_identifiant_release_et_notes(sources, client):
@@ -62,10 +64,15 @@ def test_d1_identifiant_release_et_notes(sources, client):
 def test_d2_produit_par_entree(sources, client):
     r = json_changelog.analyser(sources["openai-changelog-general"], client)
     produits = {e.id: e.produit for e in r.elements}
-    assert produits["oa-codex/2026-09-22-gpt-6-sol-luna"] == "codex"          # « Codex » dans le titre
+    assert produits["oa-codex/2026-09-22-gpt-6-sol-luna"] == "codex"          # « Codex » et « ChatGPT » : codex l'emporte
     assert produits["oa-codex/2026-09-14-codex-spark-deprecation"] == "codex"
+    assert produits["oa-codex/2026-09-14-gpt-55-retirement"] == "codex"       # « ChatGPT » et « Codex » dans le titre
     assert produits["oa-codex/2026-08-20-app"] == "codex"                     # « codex-app » dans les sujets
-    assert produits["oa-codex/2026-07-29"] == "chatgpt"  # « Sign in with ChatGPT (beta) », sujets general
+    assert produits["oa-codex/2026-07-29"] == "chatgpt"  # « Sign in with ChatGPT (beta) », sans « codex »
+    # D2bis : sans « chatgpt » ni « codex », c'est le changelog Codex, donc codex
+    d = json.loads((FIXTURES / "oa_general.json").read_text())
+    d["items"][0]["title"] = "Best of N"; d["items"][0]["topics"] = ["general"]
+    assert json_changelog.parser_json(d, sources["openai-changelog-general"])[0].produit == "codex"
     # les autres flux gardent le produit de la source
     r = json_changelog.analyser(sources["openai-changelog-ios"], client)
     assert {e.produit for e in r.elements} == {"chatgpt"}
@@ -141,6 +148,7 @@ def test_d4_borne_vient_de_l_etat(tmp_path, monkeypatch, date_figee):
     fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
     brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
     assert brut["borne"] == "2026-08-24"
+    ecrire_quotidien(tmp_path, "openai", brut, JOUR)
     fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--valider"])
     fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
     brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
@@ -159,6 +167,7 @@ def test_suivre_revisions_de_bout_en_bout(tmp_path, monkeypatch, date_figee, sou
     suivis = [e for e in brut["nouveautes"] if e["source_id"] in ("claude-apps-notes", "claude-platform-notes")]
     assert suivis and all(e["empreinte"] for e in suivis)
     assert all(e["empreinte"] is None for e in brut["nouveautes"] if e["source_id"] == "claude-code-changelog")
+    ecrire_quotidien(tmp_path, "claude", brut, JOUR)
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider"])
     etat = json.loads((tmp_path / "state" / "claude.json").read_text())
     assert etat["vus"]["claude-apps-notes-2026-09-22"]["empreinte"]
@@ -171,6 +180,21 @@ def test_suivre_revisions_de_bout_en_bout(tmp_path, monkeypatch, date_figee, sou
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
     brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
     assert [(e["id"], e["revision"]) for e in brut["nouveautes"]] == [("claude-apps-notes-2026-09-22", True)]
+    ecrire_quotidien(tmp_path, "claude", brut, JOUR)
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider"])
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
     assert json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())["nouveautes"] == []
+
+
+# --- D12 : horizon d'un flux filtré -----------------------------------------------------------------------
+
+def test_d12_plus_ancienne_sur_le_flux_entier(sources, client, fixture_texte):
+    s = sources["openai-news"]
+    r = rss.analyser(s, client)
+    elements_filtres = r.elements
+    tous, ancienne_flux = rss.parser_flux(fixture_texte("openai_news.xml"), type(s)(**{**s.__dict__, "options": {}}))
+    assert len(elements_filtres) < len(tous)
+    assert r.plus_ancienne == ancienne_flux == min(e.date_publication for e in tous)
+    assert r.plus_ancienne < min(e.date_publication for e in elements_filtres)
+    # sans ce calcul, la borne comparée aux seuls éléments filtrés signalerait un faux trou
+    assert detecter_trou(r, ancienne_flux) is None

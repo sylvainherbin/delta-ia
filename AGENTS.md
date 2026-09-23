@@ -10,6 +10,8 @@ Avant toute tâche, lis intégralement `SPEC.md` (cahier des charges) et `REGLES
 
 ## Passage quotidien (SPEC.md §6)
 
+Lancement : `$delta` (skill du dépôt `.agents/skills/delta/SKILL.md`), ou le texte de `prompts/codex-delta.md` collé à la main. Résumé :
+
 1. `git pull --rebase` (seulement si un dépôt distant existe ; sans distant, ni pull ni push, commit local seulement).
 2. `.venv/bin/python scripts/fetch.py --perimetre openai` → `raw/openai-nouveautes.json` (l'état n'est pas modifié).
 3. Synthèse à partir de `raw/`, `CONTEXTE.md` et la base de référence existante, au format SPEC.md §7.

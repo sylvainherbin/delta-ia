@@ -192,7 +192,7 @@ def test_json_html_recu(sources):
 def test_rss_openai_news_filtre_par_categorie(sources, client, fixture_texte):
     s = sources["openai-news"]
     filtres = rss.analyser(s, client).elements
-    sans_filtre = rss.parser_flux(fixture_texte("openai_news.xml"), type(s)(**{**s.__dict__, "options": {}}))
+    sans_filtre = rss.parser_flux(fixture_texte("openai_news.xml"), type(s)(**{**s.__dict__, "options": {}}))[0]
     assert len(sans_filtre) == 8 and 0 < len(filtres) < 8
     assert all(e.produit == "chatgpt" and e.version is None for e in filtres)
     assert filtres[0].url.startswith("https://openai.com/") and filtres[0].date_publication is not None

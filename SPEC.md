@@ -28,9 +28,9 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 
 Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.
 
-Le lancement est manuel, une fois par jour :
-- côté Claude Code, par la commande `/delta` ;
-- côté Codex, par le prompt `prompts/codex-delta.md`.
+Le lancement est manuel, une fois par jour (D16, vérifié sur Claude Code 2.1.280 et codex-cli 0.155.0-alpha.16 le 23/09/2026) :
+- côté Claude Code, par `/delta`, skill du dépôt `.claude/skills/delta/SKILL.md` (`disable-model-invocation: true` : seul Sylvain la déclenche) ; elle enchaîne `claude` puis `actu` ;
+- côté Codex, par `$delta`, skill du dépôt `.agents/skills/delta/SKILL.md` (`allow_implicit_invocation: false`) ; à défaut, `prompts/codex-delta.md`, de contenu identique, est collé à la main. Les custom prompts de Codex sont dépréciés depuis le 22/01/2026.
 
 ## 4. Arborescence
 
@@ -45,16 +45,18 @@ delta-ia/
 ├── requirements.txt
 ├── sources.yaml           # sources et leur statut
 ├── scripts/
-│   ├── fetch.py           # récupération + détection des nouveautés
-│   └── valider.py         # validation du schéma des JSON avant commit (phase 2)
+│   ├── fetch.py           # récupération + détection des nouveautés ; --valider piloté par le fichier quotidien
+│   ├── valider.py         # validation des JSON produits avant commit (D15)
+│   └── deltalib/          # bibliothèque : analyseurs, état, passage
 ├── tests/
 ├── state/
 │   ├── claude.json
 │   ├── openai.json
 │   └── actu.json
 ├── raw/                   # cache de récupération, ignoré par git
-├── .claude/commands/delta.md
-├── prompts/codex-delta.md
+├── .claude/skills/delta/SKILL.md   # /delta pour Claude Code (les commandes sont fusionnées dans les skills depuis 2.1.x)
+├── .agents/skills/delta/           # $delta pour Codex : SKILL.md (même texte que prompts/codex-delta.md) + agents/openai.yaml
+├── prompts/codex-delta.md          # repli : texte à coller à la main dans Codex
 └── docs/                  # racine GitHub Pages
     ├── index.html
     ├── assets/
@@ -101,15 +103,15 @@ Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit
 2. `python scripts/fetch.py --perimetre <p>`. Le script écrit les nouveautés dans `raw/<p>-nouveautes.json` **sans toucher à l'état**.
 3. L'agent lit les nouveautés, `CONTEXTE.md` et la base de référence existante.
 4. L'agent écrit `docs/data/<dossier>/AAAA-MM-JJ.json`, met à jour son `index.json`, puis la base de référence si une nouveauté la touche.
-5. `python scripts/valider.py` vérifie les JSON produits.
-6. `python scripts/fetch.py --perimetre <p> --valider`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5) : `--valider` n'inscrit dans l'état que les identifiants présents dans `docs/data/<dossier>/<date>.json` ; les identifiants absents restent en attente et sont listés ; les éléments ignorés (`ignores`) sont inscrits directement. Mise en œuvre avec `valider.py` en phase 2.
+5. `python scripts/valider.py --perimetre <p> --brut raw/<p>-nouveautes.json` vérifie les JSON produits (schéma §7, cohérences, couverture des nouveautés brutes, secrets, `index.json`). Ne pas pousser s'il échoue.
+6. `python scripts/fetch.py --perimetre <p> --valider`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5, D13) : `--valider` lit `docs/data/<dossier>/<date>.json` (option `--date`, défaut aujourd'hui) et inscrit dans l'état les `ids_bruts` de chaque élément, les `ecartes`, les `ignores` du fichier brut et les identifiants `web-*`. Les nouveautés brutes absentes du fichier quotidien restent en attente, sont listées, et la commande rend un code de sortie non nul.
 7. Commit sur les seuls chemins de l'agent, puis push selon les règles Git ci-dessous.
 
 Comportement de `fetch.py` :
 - **Identifiants (D1)** : la clé native de la source, jamais le titre. Flux JSON OpenAI : `oa-<id>` (commun aux flux `general`, `codex-app` et `ios`, donc dédoublonnage) ; RSS : `guid`, sinon `link` ; Atom : `<id>` ; releases GitHub : le tag ; changelog Claude Code : `claude-code-<version>` ; newsroom : l'URL de l'article ; notes datées : `<source>-<date>`. Avec l'option `suivre_revisions: true`, une empreinte du contenu est stockée dans l'état ; si l'identifiant est connu mais l'empreinte a changé, l'élément revient en nouveauté avec `revision: true`.
-- **Produit par entrée (D2)** : pour `general.json`, « codex » dans le titre ou les sujets (insensible à la casse) donne `codex`, sinon `chatgpt`.
+- **Produit par entrée (D2bis)** : `general.json` est le changelog Codex, produit `codex` par défaut ; `chatgpt` seulement si « chatgpt » apparaît dans le titre ou les sujets (insensible à la casse) et que « codex » n'y apparaît pas.
 - **Non datés (D3)** : un élément sans date n'est jamais ignoré à cause d'une fenêtre, c'est une nouveauté. Seule exception, le changelog Claude Code : les versions strictement inférieures à la plus ancienne version datée par l'API sont de l'historique, donc ignorées.
-- **Détection de trou (D4)** : chaque analyseur reçoit une borne (date du dernier `--valider`, sinon le début de la fenêtre) et renvoie la date la plus ancienne qu'il a vue. Si elle est postérieure à la borne, la source passe en `partiel` avec le message « trou possible entre <borne> et <date> ». Pour les releases GitHub, pagination adaptative : page suivante tant que la plus ancienne release est postérieure à la borne, 4 pages au plus, puis `partiel` ; `releases/latest` garantit la dernière version stable.
+- **Détection de trou (D4)** : chaque analyseur reçoit une borne (date du dernier `--valider`, sinon le début de la fenêtre) et renvoie la date la plus ancienne qu'il a vue. Si elle est postérieure à la borne, la source passe en `partiel` avec le message « trou possible entre <borne> et <date> ». Pour les releases GitHub, pagination adaptative : page suivante tant que la plus ancienne release est postérieure à la borne, 4 pages au plus, puis `partiel` ; `releases/latest` garantit la dernière version stable. Pour un flux RSS filtré par catégorie, la date la plus ancienne est celle du flux entier, avant filtrage (D12).
 - **Premier passage sans état** : fenêtre de 30 jours, ou `--depuis`. Les éléments datés avant la fenêtre vont dans `ignores` et sont inscrits dans l'état par `--valider`. Le premier passage réel de la phase 2 se fait avec `--depuis` J-7 (D10).
 
 Git (D9) :
@@ -133,15 +135,20 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
   "genere_le": "ISO 8601",
   "synthese": "2 à 4 phrases : ce qui compte aujourd'hui pour Sylvain.",
   "sources_en_echec": [],
-  "elements": []
+  "elements": [],
+  "ecartes": []
 }
 ```
+
+`sources_en_echec` reprend celles du fichier brut (`[{id, url, erreur, partiel}]`). `ecartes` (D13) liste, sous la forme `[{id, raison}]`, les nouveautés brutes sans aucun rapport avec l'usage des outils IA (marketing, offres sectorielles…). Chaque nouveauté brute du passage se retrouve soit dans les `ids_bruts` d'un élément, soit dans `ecartes`. `ecartes` et `impact: nul` sont distincts (D14) : un élément `nul` est pertinent pour le produit mais pas pour Sylvain, il est affiché.
 
 ### 7.2 Élément
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | string | Clé native de la source (D1, voir §6) : tag, `oa-<id>`, guid, URL, `claude-code-<version>`, `<source>-<date>` |
+| `id` | string | Le premier de `ids_bruts`. Élément issu de la recherche web (repli, certitude `rapporte`) : `web-<sha1(url)[:12]>`, après vérification qu'il n'est ni dans l'état ni dans les fichiers quotidiens des 14 derniers jours |
+| `ids_bruts` | array | Au moins un identifiant brut (D1, D13). Plusieurs si un même événement vient de plusieurs sources : un seul élément, toutes les URL dans `sources` |
+| `revision` | bool | Facultatif ; `true` si l'élément reprend une entrée déjà vue dont le contenu a changé |
 | `produit` | enum | `claude` \| `claude-code` \| `chatgpt` \| `codex` \| `actu` |
 | `titre` | string | |
 | `version` | string \| null | |
@@ -158,7 +165,21 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
 
 ### 7.3 Index — `docs/data/<dossier>/index.json`
 
-La liste des dates disponibles, avec pour chacune le nombre d'éléments par niveau d'impact et l'horodatage du dernier passage.
+La liste des dates disponibles, avec pour chacune le nombre d'éléments par niveau d'impact et l'horodatage du dernier passage :
+
+```json
+{
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "maj_le": "ISO 8601",
+  "jours": [
+    {"date": "AAAA-MM-JJ", "genere_le": "ISO 8601", "elements": 0,
+     "impact": {"fort": 0, "moyen": 0, "faible": 0, "nul": 0}, "ecartes": 0}
+  ]
+}
+```
+
+`jours` est trié par date décroissante et correspond exactement aux fichiers `AAAA-MM-JJ.json` du dossier ; `valider.py` le vérifie.
 
 ### 7.4 Base de référence — `docs/data/kb/<claude|openai>/<categorie>.json`
 
@@ -210,7 +231,7 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | # | Décision | Reportée dans |
 |---|---|---|
 | D1 | Identifiants par clé native, sans le titre ; option `suivre_revisions` avec empreinte du contenu et `revision: true` | §6, §7.2 |
-| D2 | `general.json` : produit déterminé par entrée (« codex » dans le titre ou les sujets → `codex`, sinon `chatgpt`) | §6 |
+| D2 | `general.json` : produit déterminé par entrée. Remplacée par D2bis | §6 |
 | D3 | Un élément non daté est une nouveauté ; exception : historique du changelog Claude Code sous la plus ancienne version datée | §6 |
 | D4 | Détection de trou par borne et date la plus ancienne vue ; pagination adaptative des releases GitHub (4 pages max) ; Atom GitHub écarté | §6 |
 | D5 | `--valider` n'inscrit que les identifiants présents dans le fichier quotidien ; mise en œuvre en phase 2 avec `valider.py` | §6 |
@@ -220,4 +241,11 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D9 | Git : pas de pull ni push sans distant ; `/delta` ou le prompt Codex vaut accord de push sur les chemins de l'agent ; en développement, push sur accord de Sylvain | §6, `CLAUDE.md`, `AGENTS.md` |
 | D10 | Premier passage réel de la phase 2 avec `--depuis` J-7, jamais avant D3 | §6 |
 | D11 | Type `json`, statut `desactive`, champs `officielle` et `options` ajoutés à SPEC.md ; REGLES.md inchangé | §5 |
+| D2bis | `general.json` est le changelog Codex : `codex` par défaut, `chatgpt` seulement si « chatgpt » apparaît sans « codex » | §6 |
+| D12 | Flux RSS filtré : `plus_ancienne` calculée sur le flux entier, avant filtrage | §6 |
+| D13 | Chaque nouveauté brute est comptabilisée : `ids_bruts` sur l'élément, `ecartes` dans le fichier quotidien, id `web-*` pour la recherche web, `--valider` piloté par le fichier quotidien | §6, §7.1, §7.2 |
+| D14 | `ecartes` (hors sujet) distinct de `impact: nul` (pertinent pour le produit, affiché) | §7.1 |
+| D15 | `scripts/valider.py` : schéma §7, cohérences, projets de CONTEXTE.md §2, couverture du brut, secrets, `index.json` | §6 |
+| D16 | Lancement : `/delta` selon le mécanisme de la version installée de Claude Code ; Codex par skill de dépôt si la documentation le permet, sinon `prompts/codex-delta.md` collé à la main | §3, phase 2a |
+| D18 | `CONTEXTE.md` commité à part (`contexte: mise à jour herbin-mint du 23/09`) | — |
 

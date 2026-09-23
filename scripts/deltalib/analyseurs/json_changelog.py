@@ -2,7 +2,8 @@
 
 Endpoint non documenté : toute dérive de structure doit être une erreur explicite, jamais un résultat vide.
 Identifiant (D1) : `oa-<id natif>`, commun aux flux general, codex-app et ios, pour dédoublonner.
-Produit (D2, option `produit_par_entree`) : « codex » dans le titre ou les sujets -> codex, sinon chatgpt.
+Produit (D2bis, option `produit_par_entree`) : codex par défaut ; chatgpt si « chatgpt » apparaît dans le titre ou
+les sujets sans « codex ».
 """
 
 from __future__ import annotations
@@ -17,10 +18,14 @@ SCHEMA_ATTENDU = 1
 
 
 def produit_de(it: dict, source) -> str:
+    """D2bis : general.json est le changelog Codex. `chatgpt` seulement si « chatgpt » apparaît dans le titre
+    ou les sujets et que « codex » n'y apparaît pas ; sinon le produit de la source (`codex`)."""
     if not source.options.get("produit_par_entree"):
         return source.produit
     texte = " ".join([str(it.get("title") or "")] + [str(t) for t in (it.get("topics") or [])]).lower()
-    return "codex" if "codex" in texte else "chatgpt"
+    if "chatgpt" in texte and "codex" not in texte:
+        return "chatgpt"
+    return source.produit
 
 
 def parser_json(donnees, source) -> list[Element]:

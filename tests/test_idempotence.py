@@ -5,7 +5,9 @@ import json
 import pytest
 
 import fetch
-from conftest import FauxClient
+from conftest import FauxClient, ecrire_quotidien
+
+JOUR = __import__("datetime").date.today().isoformat()
 
 
 @pytest.fixture
@@ -43,6 +45,7 @@ def test_apres_valider_zero_nouveaute(racine):
     etat = racine / "state" / "claude.json"
     lancer(racine, "--perimetre", "claude")
     n = len(lire(brut)["nouveautes"]) + len(lire(brut)["ignores"])
+    ecrire_quotidien(racine, "claude", lire(brut), JOUR)
     assert lancer(racine, "--perimetre", "claude", "--valider") == 0
     assert etat.exists() and len(lire(etat)["vus"]) == n
     assert lancer(racine, "--perimetre", "claude") == 0
@@ -75,6 +78,7 @@ def test_dry_run_n_ecrit_rien(racine):
     assert lancer(racine, "--perimetre", "claude", "--dry-run") == 0
     assert not (racine / "raw" / "claude-nouveautes.json").exists()
     lancer(racine, "--perimetre", "claude")
+    ecrire_quotidien(racine, "claude", lire(racine / "raw" / "claude-nouveautes.json"), JOUR)
     assert lancer(racine, "--perimetre", "claude", "--valider", "--dry-run") == 0
     assert not (racine / "state" / "claude.json").exists()
 

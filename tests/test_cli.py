@@ -26,7 +26,17 @@ def test_valider_sans_fichier_en_attente(tmp_path, capsys):
 def test_valider_refuse_un_fichier_d_un_autre_perimetre(tmp_path, capsys):
     (tmp_path / "raw").mkdir()
     (tmp_path / "raw" / "claude-nouveautes.json").write_text('{"perimetre": "actu", "nouveautes": [], "ignores": []}')
+    from conftest import ecrire_quotidien
+    import datetime
+    ecrire_quotidien(tmp_path, "claude", {"nouveautes": []}, datetime.date.today().isoformat())
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider"]) == 2
+
+
+def test_valider_exige_le_fichier_quotidien(tmp_path, capsys):
+    (tmp_path / "raw").mkdir()
+    (tmp_path / "raw" / "claude-nouveautes.json").write_text('{"perimetre": "claude", "nouveautes": [], "ignores": []}')
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider"]) == 2
+    assert "fichier quotidien absent" in capsys.readouterr().err
 
 
 def test_sources_yaml_invalide(tmp_path, capsys):

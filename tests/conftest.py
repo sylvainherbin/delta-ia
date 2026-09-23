@@ -85,3 +85,43 @@ def date_figee(monkeypatch):
     import deltalib.passage as passage
     monkeypatch.setattr(passage, "aujourd_hui", lambda: AUJOURD_HUI)
     return AUJOURD_HUI
+
+
+AGENTS = {"claude": "claude-code", "actu": "claude-code", "openai": "codex"}
+
+
+def element_depuis_brut(n: dict, impact: str = "faible", ids_bruts=None) -> dict:
+    """Un élément SPEC §7.2 minimal et valide construit à partir d'une nouveauté brute."""
+    return {
+        "id": (ids_bruts or [n["id"]])[0], "ids_bruts": ids_bruts or [n["id"]], "produit": n["produit"], "titre": n["titre"],
+        "version": n.get("version"), "date_publication": n.get("date_publication"), "type": "nouveaute",
+        "resume": "Résumé de test.", "sources": [{"url": n["url"], "libelle": "source", "officielle": bool(n.get("officielle"))}],
+        "certitude": "officiel" if n.get("officielle") else "rapporte", "impact": impact,
+        "pour_toi": None if impact == "nul" else "Pertinent pour trading-sim.", "projets_concernes": [] if impact == "nul" else ["trading-sim"],
+        "action": None, "kb_refs": [],
+    }
+
+
+def ecrire_quotidien(racine: Path, perimetre: str, brut: dict, jour: str, couvrir=None, ecarter=(), extra_elements=()) -> Path:
+    """Écrit docs/data/<p>/<jour>.json et index.json couvrant les nouveautés du brut (toutes par défaut)."""
+    import json
+    nouveautes = brut.get("nouveautes", [])
+    couvrir = set(couvrir) if couvrir is not None else {n["id"] for n in nouveautes} - set(ecarter)
+    elements = [element_depuis_brut(n) for n in nouveautes if n["id"] in couvrir] + list(extra_elements)
+    q = {
+        "date": jour, "perimetre": perimetre, "agent": AGENTS[perimetre], "genere_le": f"{jour}T12:00:00+00:00",
+        "synthese": "Synthèse de test.", "sources_en_echec": brut.get("sources_en_echec", []), "elements": elements,
+        "ecartes": [{"id": i, "raison": "hors sujet (test)"} for i in ecarter],
+    }
+    dossier = racine / "docs" / "data" / perimetre
+    dossier.mkdir(parents=True, exist_ok=True)
+    (dossier / f"{jour}.json").write_text(json.dumps(q, ensure_ascii=False, indent=1), encoding="utf-8")
+    jours = []
+    for f in sorted(dossier.glob("????-??-??.json"), reverse=True):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        impacts = {k: 0 for k in ("fort", "moyen", "faible", "nul")}
+        for e in d["elements"]:
+            impacts[e["impact"]] += 1
+        jours.append({"date": d["date"], "genere_le": d["genere_le"], "elements": len(d["elements"]), "impact": impacts, "ecartes": len(d["ecartes"])})
+    (dossier / "index.json").write_text(json.dumps({"perimetre": perimetre, "agent": AGENTS[perimetre], "maj_le": f"{jour}T12:00:00+00:00", "jours": jours}, ensure_ascii=False, indent=1), encoding="utf-8")
+    return dossier / f"{jour}.json"

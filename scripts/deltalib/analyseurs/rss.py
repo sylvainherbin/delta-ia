@@ -78,9 +78,13 @@ def parser_flux(xml_texte: str, source) -> list[Element]:
     if not entrees:
         raise FormatInattendu("flux sans aucun <item> ni <entry>")
     elements: list[Element] = []
+    dates_flux: list[str] = []
     for ident, titre, lien, date_txt, corps, cats in entrees:
         if not titre or not lien:
             raise FormatInattendu(f"entrée sans titre ou sans lien (titre={titre!r})")
+        d = analyser_date(date_txt)
+        if d:
+            dates_flux.append(d)
         if categories and not ({c.lower() for c in cats} & categories):
             continue
         elements.append(Element(
@@ -95,11 +99,13 @@ def parser_flux(xml_texte: str, source) -> list[Element]:
             officielle=source.officielle,
         ))
     # Après filtrage par catégorie, une liste vide est légitime.
-    return elements
+    return elements, (min(dates_flux) if dates_flux else None)
 
 
 def analyser(source, client, borne: str | None = None) -> ResultatSource:
     reponse = client.get(source.url, accept="application/rss+xml, application/atom+xml, application/xml, text/xml")
     if "<html" in reponse.texte[:300].lower():
         raise FormatInattendu(f"page HTML reçue à la place d'un flux ({reponse.content_type or 'type inconnu'})")
-    return ResultatSource(parser_flux(reponse.texte, source))
+    elements, plus_ancienne = parser_flux(reponse.texte, source)
+    # D12 : l'horizon vu est celui du flux entier, avant filtrage par catégorie
+    return ResultatSource(elements, plus_ancienne=plus_ancienne)

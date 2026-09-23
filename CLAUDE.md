@@ -14,4 +14,4 @@
 - Aucune date, version ou fonctionnalité devinée : inconnu vaut `null`.
 - Git (SPEC §6, D9) : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Sans dépôt distant : ni pull ni push. Avec un distant : lancer `/delta` vaut accord de push sur les seuls chemins de l'agent ; en session de développement, push seulement sur accord de Sylvain.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
-- Plan validé par Sylvain avant tout code d'une nouvelle phase.
+- Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), jamais déclenché sans demande de Sylvain. Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable.

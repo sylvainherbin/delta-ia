@@ -67,35 +67,69 @@ def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None) -
     return nouveautes, sorted(ignores)
 
 
-def valider(etat: dict, brut: dict) -> tuple[dict, int]:
-    """Fait avancer l'état à partir du fichier des nouveautés en attente. Retourne (état, nb ajoutés ou révisés).
+DOSSIERS = {"claude": "claude", "openai": "openai", "actu": "actu"}  # périmètre -> docs/data/<dossier>
 
-    Phase 2 (D5) : seuls les identifiants présents dans le fichier quotidien de l'agent seront inscrits ;
-    en phase 1b, toutes les nouveautés du fichier brut le sont.
+
+def ids_couverts(quotidien: dict) -> tuple[set[str], set[str]]:
+    """Identifiants que le fichier quotidien comptabilise : (ids_bruts des éléments, ids écartés)."""
+    bruts: set[str] = set()
+    for e in quotidien.get("elements", []):
+        for i in e.get("ids_bruts") or []:
+            bruts.add(i)
+        if e.get("id"):
+            bruts.add(e["id"])
+    ecartes = {x["id"] for x in quotidien.get("ecartes", []) if isinstance(x, dict) and x.get("id")}
+    return bruts, ecartes
+
+
+def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
+    """Fait avancer l'état d'après le fichier quotidien de l'agent (D5, D13).
+
+    Inscrits : les nouveautés brutes reprises dans `ids_bruts` ou `ecartes`, les `ignores` du fichier brut,
+    les identifiants `web-*`. Les nouveautés brutes absentes restent en attente et sont listées.
+    Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids]}.
     """
     vus = etat.setdefault("vus", {})
     empreintes = brut.get("empreintes") or {}
     horodatage = maintenant_iso()
-    modifies = 0
-    for e in brut.get("nouveautes", []):
-        entree = vus.get(e["id"])
-        empreinte = e.get("empreinte") or empreintes.get(e["id"])
+    bruts, ecartes = ids_couverts(quotidien)
+    couverts = bruts | ecartes
+    bilan = {"inscrits": 0, "revises": 0, "en_attente": [], "inconnus": []}
+    par_id = {e["id"]: e for e in brut.get("nouveautes", [])}
+    for ident, e in par_id.items():
+        if ident not in couverts:
+            bilan["en_attente"].append(ident)
+            continue
+        empreinte = e.get("empreinte") or empreintes.get(ident)
+        entree = vus.get(ident)
         if entree is None:
-            vus[e["id"]] = {"date_publication": e.get("date_publication"), "vu_le": horodatage, "source_id": e.get("source_id")}
+            vus[ident] = {"date_publication": e.get("date_publication"), "vu_le": horodatage, "source_id": e.get("source_id")}
             if empreinte:
-                vus[e["id"]]["empreinte"] = empreinte
-            modifies += 1
+                vus[ident]["empreinte"] = empreinte
+            if ident in ecartes:
+                vus[ident]["ecarte"] = True
+            bilan["inscrits"] += 1
         elif empreinte and entree.get("empreinte") != empreinte:
             entree["empreinte"] = empreinte
             entree["revise_le"] = horodatage
-            modifies += 1
+            bilan["revises"] += 1
+    for ident in couverts - set(par_id):
+        if ident in vus:
+            continue  # déjà connu : reprise d'un élément existant (fusion, révision déjà inscrite)
+        if ident.startswith("web-"):
+            vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": "web"}
+            bilan["inscrits"] += 1
+        else:
+            bilan["inconnus"].append(ident)  # ni dans le brut, ni dans l'état, ni issu du web : suspect
     for ident in brut.get("ignores", []):
         if ident not in vus:
             vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": None, "ignore": True}
             if ident in empreintes:
                 vus[ident]["empreinte"] = empreintes[ident]
-            modifies += 1
+            bilan["inscrits"] += 1
+    bilan["en_attente"].sort()
+    bilan["inconnus"].sort()
     etat["version"] = VERSION_ETAT
     etat["maj_le"] = horodatage
     etat["vus"] = dict(sorted(vus.items()))
-    return etat, modifies
+    return etat, bilan

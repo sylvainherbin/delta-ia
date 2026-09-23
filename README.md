@@ -11,20 +11,24 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-## Lancer un passage (phase 1 : récupération seule)
+## Lancer un passage
+
+- Claude Code : `/delta` (skill `.claude/skills/delta/SKILL.md`), périmètres `claude` puis `actu`.
+- Codex : `$delta` (skill `.agents/skills/delta/SKILL.md`), périmètre `openai` ; à défaut, coller `prompts/codex-delta.md`.
+
+Ce que la skill enchaîne (SPEC.md §6) :
 
 ```bash
-# 1. Récupérer et détecter les nouveautés, sans toucher à l'état
-.venv/bin/python scripts/fetch.py --perimetre claude        # ou openai, actu
-# résultat : raw/claude-nouveautes.json
-
-# 2. (phases suivantes) l'agent synthétise à partir de raw/, puis :
-
-# 3. Faire avancer l'état, une fois la synthèse écrite et validée
-.venv/bin/python scripts/fetch.py --perimetre claude --valider
+# 1. Récupérer et détecter les nouveautés, sans toucher à l'état (premier passage réel : --depuis J-7)
+.venv/bin/python scripts/fetch.py --perimetre claude        # ou openai, actu -> raw/claude-nouveautes.json
+# 2. L'agent écrit docs/data/claude/AAAA-MM-JJ.json et index.json
+# 3. Valider les JSON produits et la couverture des nouveautés brutes
+.venv/bin/python scripts/valider.py --perimetre claude --brut raw/claude-nouveautes.json
+# 4. Faire avancer l'état pour ce que le fichier quotidien comptabilise (code 4 si des nouveautés restent en attente)
+.venv/bin/python scripts/fetch.py --perimetre claude --valider [--date AAAA-MM-JJ]
 ```
 
-Options : `--depuis AAAA-MM-JJ` (borne basse, sinon 30 jours au premier passage), `--dry-run` (n'écrit rien), `--sources chemin.yaml` (autre fichier de sources).
+Options de `fetch.py` : `--depuis AAAA-MM-JJ` (borne basse, sinon 30 jours au premier passage), `--dry-run` (n'écrit rien), `--sources chemin.yaml`.
 
 ## Tests
 

@@ -50,12 +50,14 @@ def test_detection_deduplique_les_identifiants():
 
 def test_valider_ajoute_nouveautes_et_ignores_puis_est_idempotent():
     etat = {"version": 1, "maj_le": None, "vus": {}}
-    brut = {"nouveautes": [el("a", "2026-09-02").en_dict()], "ignores": ["claude-nd-abc"]}
-    etat, ajoutes = valider(etat, brut)
-    assert ajoutes == 2 and len(etat["vus"]) == 2 and etat["maj_le"]
+    a = el("a", "2026-09-02")
+    brut = {"nouveautes": [a.en_dict()], "ignores": ["claude-nd-abc"]}
+    quotidien = {"elements": [{"id": a.id, "ids_bruts": [a.id]}], "ecartes": []}
+    etat, bilan = valider(etat, brut, quotidien)
+    assert bilan["inscrits"] == 2 and len(etat["vus"]) == 2 and etat["maj_le"]
     assert etat["vus"]["claude-nd-abc"]["ignore"] is True
-    etat, ajoutes = valider(etat, brut)
-    assert ajoutes == 0 and len(etat["vus"]) == 2
+    etat, bilan = valider(etat, brut, quotidien)
+    assert bilan["inscrits"] == 0 and len(etat["vus"]) == 2
     # tout ce qui est validé disparaît des nouveautés
     nouveautes, ignores = detecter([el("a", "2026-09-02")], etat, None)
     assert nouveautes == [] and ignores == []
@@ -78,9 +80,10 @@ def test_revision_detectee_seulement_si_l_empreinte_change():
 def test_valider_enregistre_et_met_a_jour_l_empreinte():
     etat = {"version": 1, "maj_le": None, "vus": {}}
     e = el("notes", "2026-09-22", ident="claude-apps-notes-2026-09-22", contenu="v1"); e.empreinte = "aaa"
-    etat, n = valider(etat, {"nouveautes": [e.en_dict()], "ignores": ["claude-apps-notes-2026-01-01"],
-                             "empreintes": {"claude-apps-notes-2026-01-01": "iii"}})
-    assert n == 2 and etat["vus"][e.id]["empreinte"] == "aaa" and etat["vus"]["claude-apps-notes-2026-01-01"]["empreinte"] == "iii"
+    quotidien = {"elements": [{"id": e.id, "ids_bruts": [e.id]}], "ecartes": []}
+    etat, bilan = valider(etat, {"nouveautes": [e.en_dict()], "ignores": ["claude-apps-notes-2026-01-01"],
+                                 "empreintes": {"claude-apps-notes-2026-01-01": "iii"}}, quotidien)
+    assert bilan["inscrits"] == 2 and etat["vus"][e.id]["empreinte"] == "aaa" and etat["vus"]["claude-apps-notes-2026-01-01"]["empreinte"] == "iii"
     e.empreinte = "bbb"; e.revision = True
-    etat, n = valider(etat, {"nouveautes": [e.en_dict()], "ignores": []})
-    assert n == 1 and etat["vus"][e.id]["empreinte"] == "bbb" and etat["vus"][e.id]["revise_le"]
+    etat, bilan = valider(etat, {"nouveautes": [e.en_dict()], "ignores": []}, quotidien)
+    assert bilan["revises"] == 1 and etat["vus"][e.id]["empreinte"] == "bbb" and etat["vus"][e.id]["revise_le"]
