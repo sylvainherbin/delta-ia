@@ -1,0 +1,276 @@
+{
+  "date": "2026-09-23",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-09-23T13:59:36+00:00",
+  "synthese": "Opus 5.5 est sorti le 22/09 et devient l'Opus par défaut de Claude Code 2.1.280, déjà installé : selon Anthropic, il vaut Fable 5.1 sur la plupart des tâches pour 40 % moins cher, ce qui en fait le premier levier pour épargner ta limite Fable sur trading-sim. Vérifie `/effort` sur chaque session, car l'ancien niveau enregistré ne s'applique plus à Opus 5.5. Côté stabilité, 2.1.274 et 2.1.280 corrigent l'arrêt des commandes d'arrière-plan sous pression mémoire et la reprise des sessions `--resume`, deux points qui touchent tes sessions systemd.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-apps-notes-2026-09-22",
+      "ids_bruts": [
+        "claude-apps-notes-2026-09-22",
+        "https://www.anthropic.com/claude-opus-5-5",
+        "claude-platform-notes-2026-09-22"
+      ],
+      "produit": "claude",
+      "titre": "Claude Opus 5.5",
+      "version": null,
+      "date_publication": "2026-09-22",
+      "type": "nouveaute",
+      "resume": "Anthropic lance Claude Opus 5.5 (`claude-opus-5-5`) : contexte de 1M jetons, 128k jetons de sortie max, raisonnement adaptatif toujours actif ; selon Anthropic, niveau de Fable 5.1 sur la plupart des tâches pour 40 % de coût en moins qu'Opus 5 (API : 4 $/20 $ par Mtok au lieu de 5 $/25 $). Côté API, le raisonnement ne peut plus être désactivé (`thinking` disabled/enabled → erreur 400), `tool_choice` `any`/`tool` est refusé, et l'outil computer use exige `computer_toolset_20260801`. Autres notes plateforme du 22/09 : mode rapide en préversion pour Opus 5.5, et outils définissables en cours de conversation (bêta `inline-tools-2026-09-15`).",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude",
+          "officielle": true
+        },
+        {
+          "url": "https://www.anthropic.com/claude-opus-5-5",
+          "libelle": "Introducing Claude Opus 5.5",
+          "officielle": true
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ta limite hebdomadaire Fable est séparée et atteinte à 75 % en milieu de semaine : si Opus 5.5 tient réellement le niveau de Fable 5.1 (affirmation d'Anthropic, à vérifier sur tes missions), basculer herbin-trading et herbin-dev de Fable vers Opus 5.5 épargne ce quota. L'effet sur la limite hebdomadaire Max n'est pas publié. Les changements d'API (thinking, tool_choice) ne te touchent pas : tu n'appelles pas l'API directement.",
+      "projets_concernes": [
+        "trading-sim",
+        "carnet"
+      ],
+      "action": {
+        "description": "Faire tourner les sessions d'exécution sur Opus 5.5 plutôt que sur Fable, et vérifier l'effort appliqué.",
+        "etapes": [
+          "Dans la session tmux herbin-trading (ou depuis l'iPhone) : `/model opus` (Opus 5.5 est l'Opus par défaut depuis 2.1.280)",
+          "Taper `/effort` pour voir le niveau appliqué : depuis 2.1.280, un niveau enregistré avant l'effort par modèle ne s'applique plus à Opus 5.5",
+          "Comparer sur une mission trading-sim la qualité et la consommation (`/usage`) avec Fable 5.1 avant de généraliser aux autres sessions"
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.280",
+      "ids_bruts": [
+        "claude-code-2.1.280"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.280",
+      "version": "2.1.280",
+      "date_publication": "2026-09-22",
+      "type": "amelioration",
+      "resume": "Opus 5.5 devient le modèle Opus par défaut ; Pro et Team Standard passent aussi à Opus par défaut. Un niveau d'effort enregistré avant `/effort` par modèle ne s'applique plus aux nouveaux modèles ; `y`/`n` isolés ne confirment ou ferment plus les dialogues (Entrée/Échap, réassignables dans `keybindings.json`). Corrections : reprise d'une session avec agents d'arrière-plan inachevés qui lançait un tour seul, vue diff et jauge de contexte des sessions Remote Control dans l'app Claude, écritures via lien symbolique approuvées hors de l'arborescence.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21280",
+          "libelle": "Changelog Claude Code 2.1.280",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée (mise à jour du 22/09). Tes cinq sessions `claude-session@*` repartent par `claude --resume` : la correction du tour lancé tout seul à la reprise avec des agents d'arrière-plan inachevés les concerne directement. Depuis l'iPhone, la vue diff et la jauge de contexte des sessions Remote Control sont corrigées. Si tu confirmais des dialogues avec `y`, c'est désormais Entrée.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.278",
+      "ids_bruts": [
+        "claude-code-2.1.278"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.278",
+      "version": "2.1.278",
+      "date_publication": "2026-09-19",
+      "type": "amelioration",
+      "resume": "Pour les utilisateurs de l'API Claude, d'Enterprise, de Bedrock, Vertex, Foundry et des passerelles, le classificateur du mode auto passe par défaut côté serveur, sans facturation du surcoût (`CLAUDE_CODE_AUTO_MODE_SERVER=0` pour s'en retirer hors API directe). `/status` affiche une ligne `Auto mode server`.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21278",
+          "libelle": "Changelog Claude Code 2.1.278",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.277",
+      "ids_bruts": [
+        "claude-code-2.1.277"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.277",
+      "version": "2.1.277",
+      "date_publication": "2026-09-18",
+      "type": "nouveaute",
+      "resume": "Prise en charge d'AGENTS.md : dans un projet sans CLAUDE.md, Claude Code lit AGENTS.md (réglable dans `/config`, « Project instructions »). L'outil TaskOutput est retiré (lecture du fichier de sortie avec Read) ; les skills de projet se chargent dans les sessions `--worktree` même si `.claude/skills` n'est pas suivi ; les messages tapés pendant un tour ne sont plus parfois ignorés ; les caractères Unicode invisibles sont retirés des prompts.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21277",
+          "libelle": "Changelog Claude Code 2.1.277",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Sur carnet, `CLAUDE.md` ne contient que `@AGENTS.md` : il devient facultatif, sans gain concret à le supprimer. trading-sim n'a volontairement ni AGENTS.md ni changement à faire. La correction des messages tapés pendant un tour sert quand tu relaies des consignes depuis l'iPhone.",
+      "projets_concernes": [
+        "carnet"
+      ],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.276",
+      "ids_bruts": [
+        "claude-code-2.1.276"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.276",
+      "version": "2.1.276",
+      "date_publication": "2026-09-18",
+      "type": "correction",
+      "resume": "Corrige la régression de 2.1.275 : toutes les requêtes échouaient en erreur 400 (`advisor_20260301`) quand `ANTHROPIC_BASE_URL` pointe vers un proxy ou une passerelle.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21276",
+          "libelle": "Changelog Claude Code 2.1.276",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.275",
+      "ids_bruts": [
+        "claude-code-2.1.275"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.275",
+      "version": "2.1.275",
+      "date_publication": "2026-09-17",
+      "type": "nouveaute",
+      "resume": "Touche d'envoi immédiat (ctrl+enter ou ctrl+x ctrl+s) qui interrompt le tour en cours et envoie tous les messages en attente. Les skills et plugins activés sur le compte claude.ai sont synchronisés dans le terminal (`syncClaudeAiSkills: false` / `syncClaudeAiPlugins: false` pour refuser) ; `/plugin install <plugin> --marketplace <source>` ajoute la marketplace au passage ; les routines planifiées republient sans demander un artefact modifiable.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21275",
+          "libelle": "Changelog Claude Code 2.1.275",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "La synchronisation explique les skills claude.ai (red-team, ask-the-council, orchestrator…) visibles dans tes sessions Claude Code ; le réglage `syncClaudeAiSkills: false` les retire si leur présence gêne sur trading-sim (le changelog ne précise pas dans quel fichier le poser). La touche ctrl+enter sert quand tu es au clavier dans tmux, pas depuis l'iPhone.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.274",
+      "ids_bruts": [
+        "claude-code-2.1.274"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.274",
+      "version": "2.1.274",
+      "date_publication": "2026-09-17",
+      "type": "correction",
+      "resume": "Les commandes d'arrière-plan ne sont plus arrêtées après 30 minutes d'inactivité sous une pression mémoire modérée, seulement quand la mémoire est critique (raison dans le journal de débogage) ; un avertissement visible signale une mémoire critique. Également : `/goal` conservé après reprise d'une session compactée, notifications de Monitor fusionnées (un tour de modèle économisé), `/code-review` avec des prompts plus légers, `CLAUDE_CODE_MCP_STARTUP_WAIT_MS`.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21274",
+          "libelle": "Changelog Claude Code 2.1.274",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Ta machine (14 Gio, zram, `calculs.slice` à 9G) est souvent sous pression mémoire pendant les campagnes : avant 2.1.274, une commande d'arrière-plan lancée par herbin-trading pouvait être tuée après 30 minutes sans sortie. Tu utilises beaucoup Monitor (151 appels) : chaque fin de script coûte désormais un tour de moins.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-code-2.1.243",
+      "ids_bruts": [
+        "claude-code-2.1.243"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.243",
+      "version": "2.1.243",
+      "date_publication": null,
+      "type": "amelioration",
+      "resume": "Version non datée dans le changelog. `/usage` détaille la consommation par tâche `/loop` ; réglage `modelPicker` ; `/resume` charge plus de 50 sessions ; `claude remote-control` récupère quand le serveur perd son environnement ; Claude in Chrome ne perd plus sa connexion après une mise à jour automatique (hôte natif lancé via le lanceur `claude` stable) ; une requête sans réponse de l'API expire après ~3 minutes au lieu de 10+.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21243",
+          "libelle": "Changelog Claude Code 2.1.243",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Déjà inclus dans ta 2.1.280. La correction Chrome vise l'une des causes de l'extension « souvent déconnectée » ; si la déconnexion persiste, la cause est ailleurs. Les correctifs Remote Control servent tes sessions pilotées depuis l'iPhone, et le délai de 3 minutes évite les sessions muettes quand le Wi-Fi flanche.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": []
+    },
+    {
+      "id": "claude-platform-notes-2026-09-18",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-18"
+      ],
+      "produit": "claude",
+      "titre": "Compliance API : sessions Claude in Chrome",
+      "version": null,
+      "date_publication": "2026-09-18",
+      "type": "nouveaute",
+      "resume": "Les points d'accès de sessions locales de la Compliance API renvoient aussi les transcriptions Claude in Chrome (`product_surface: claude_in_chrome`), en bêta pour les organisations Claude Enterprise.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": []
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+      "raison": "Partenariat commercial Anthropic–Accenture, sans effet sur l'usage des outils"
+    },
+    {
+      "id": "https://www.anthropic.com/news/life-sciences-verification-program",
+      "raison": "Programme sectoriel sciences de la vie"
+    }
+  ]
+}
