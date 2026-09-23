@@ -28,10 +28,11 @@ façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille ch
 | Disques | disque interne ~954 Go signalé non rotatif ; disque USB externe ~931 Go (sauvegardes Timeshift) | [observé] |
 | Réseau | Wi-Fi seul (clé USB TP-Link), débit plafonné vers 9 Mbit/s, pas de repli cellulaire | [observé] |
 | Outils CLI | git 2.43, gh 2.45, Python 3.12.3, tmux, nvm (Node 24.20 via le bundle Codex) , `python3.12-venv` (installé le 23/09) ; pas de `sqlite3` ; `pytest` absent du système, présent seulement dans `delta-ia/.venv` (9.1.1) | [observé] |
-| Claude Code | 2.1.280, installation native, mise à jour faite le 22/09 (2.1.278 → 2.1.280) | [observé] |
-| Codex | codex-cli 0.155.0-alpha.16, fourni par l'app de bureau ChatGPT/Codex (build 26.917) | [observé] |
-| Apps de bureau | Claude Desktop (Electron) et ChatGPT Desktop (avec Codex intégré) | [observé] |
+| Claude Code | installation native | [observé] |
+| Codex | codex-cli, livré avec l'app de bureau ChatGPT ; se met à jour avec elle, jamais séparément | [observé] |
+| Apps de bureau | Claude Desktop et ChatGPT Desktop (Electron), installées en paquets Debian | [observé] |
 | Mobile | iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS) | [observé] |
+| Versions installées | voir `docs/data/versions.json` du dépôt delta-ia (relevé automatique à chaque passage), seule source à jour | [observé] |
 
 La machine est modeste : les calculs lourds (campagnes de simulation) sont bridés dans une tranche
 systemd dédiée `calculs.slice` (CPUWeight 20, MemoryMax 9G, pas de swap) **[observé]**.
