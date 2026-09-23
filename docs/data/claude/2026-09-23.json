@@ -2,8 +2,8 @@
   "date": "2026-09-23",
   "perimetre": "claude",
   "agent": "claude-code",
-  "genere_le": "2026-09-23T13:59:36+00:00",
-  "synthese": "Opus 5.5 est sorti le 22/09 et devient l'Opus par défaut de Claude Code 2.1.280, déjà installé : selon Anthropic, il vaut Fable 5.1 sur la plupart des tâches pour 40 % moins cher, ce qui en fait le premier levier pour épargner ta limite Fable sur trading-sim. Vérifie `/effort` sur chaque session, car l'ancien niveau enregistré ne s'applique plus à Opus 5.5. Côté stabilité, 2.1.274 et 2.1.280 corrigent l'arrêt des commandes d'arrière-plan sous pression mémoire et la reprise des sessions `--resume`, deux points qui touchent tes sessions systemd.",
+  "genere_le": "2026-09-23T18:55:41+00:00",
+  "synthese": "Opus 5.5 est l'Opus par défaut de Claude Code 2.1.280, déjà installé : selon Anthropic, il vaut Fable 5.1 sur la plupart des tâches pour 40 % de moins qu'Opus 5, ce qui en fait le premier levier pour épargner ta limite Fable sur trading-sim. Vérifie `/effort` sur herbin-trading, car l'ancien niveau enregistré ne s'applique plus à Opus 5.5. Depuis le premier passage, rien de neuf pour toi : deux articles sectoriels écartés et deux notes de plateforme révisées sans changement de fond repéré.",
   "sources_en_echec": [],
   "elements": [
     {
@@ -38,21 +38,25 @@
       ],
       "certitude": "officiel",
       "impact": "fort",
-      "pour_toi": "Ta limite hebdomadaire Fable est séparée et atteinte à 75 % en milieu de semaine : si Opus 5.5 tient réellement le niveau de Fable 5.1 (affirmation d'Anthropic, à vérifier sur tes missions), basculer herbin-trading et herbin-dev de Fable vers Opus 5.5 épargne ce quota. L'effet sur la limite hebdomadaire Max n'est pas publié. Les changements d'API (thinking, tool_choice) ne te touchent pas : tu n'appelles pas l'API directement.",
+      "pour_toi": "Ta limite hebdomadaire Fable est séparée et a été atteinte à 75 % en milieu de semaine : si Opus 5.5 tient réellement le niveau de Fable 5.1 (affirmation d'Anthropic, à vérifier sur tes missions), faire tourner herbin-trading sur Opus 5.5 plutôt que sur Fable épargnerait ce quota. L'effet sur la limite hebdomadaire Max n'est pas publié. Les changements d'API (thinking, tool_choice) ne te touchent pas : CONTEXTE.md ne mentionne aucun appel direct à l'API. La note de plateforme du 22/09 a été révisée depuis le premier passage, sans changement de fond repéré.",
       "projets_concernes": [
-        "trading-sim",
-        "carnet"
+        "trading-sim"
       ],
       "action": {
         "description": "Faire tourner les sessions d'exécution sur Opus 5.5 plutôt que sur Fable, et vérifier l'effort appliqué.",
         "etapes": [
-          "Dans la session tmux herbin-trading (ou depuis l'iPhone) : `/model opus` (Opus 5.5 est l'Opus par défaut depuis 2.1.280)",
+          "Dans la session herbin-trading (tmux ou iPhone) : `/model opus` (Opus 5.5 est l'Opus par défaut depuis 2.1.280) ; `/model` enregistre aussi ce choix comme défaut des nouvelles sessions",
           "Taper `/effort` pour voir le niveau appliqué : depuis 2.1.280, un niveau enregistré avant l'effort par modèle ne s'applique plus à Opus 5.5",
-          "Comparer sur une mission trading-sim la qualité et la consommation (`/usage`) avec Fable 5.1 avant de généraliser aux autres sessions"
+          "Comparer sur une mission trading-sim la qualité et la consommation (`/usage`) avec Fable 5.1 avant de l'étendre aux autres sessions"
         ],
         "effort": "5min"
       },
-      "kb_refs": []
+      "kb_refs": [
+        "claude-code-commandes-model",
+        "claude-code-commandes-effort",
+        "claude-code-fonctionnalites-page-model-config"
+      ],
+      "revision": true
     },
     {
       "id": "claude-code-2.1.280",
@@ -74,12 +78,16 @@
       ],
       "certitude": "officiel",
       "impact": "moyen",
-      "pour_toi": "Déjà installée (mise à jour du 22/09). Tes cinq sessions `claude-session@*` repartent par `claude --resume` : la correction du tour lancé tout seul à la reprise avec des agents d'arrière-plan inachevés les concerne directement. Depuis l'iPhone, la vue diff et la jauge de contexte des sessions Remote Control sont corrigées. Si tu confirmais des dialogues avec `y`, c'est désormais Entrée.",
+      "pour_toi": "Déjà installée (mise à jour du 22/09). Tes six services `claude-session@*` lancent `claude --resume` : la correction du tour démarré seul à la reprise d'une session aux agents d'arrière-plan inachevés les concerne directement. Depuis l'iPhone, la vue diff et la jauge de contexte des sessions Remote Control sont corrigées. Si tu confirmais des dialogues avec `y`, c'est désormais Entrée.",
       "projets_concernes": [
         "trading-sim"
       ],
       "action": null,
-      "kb_refs": []
+      "kb_refs": [
+        "claude-code-commandes-effort",
+        "claude-code-fonctionnalites-page-keybindings",
+        "claude-code-fonctionnalites-page-remote-control"
+      ]
     },
     {
       "id": "claude-code-2.1.278",
@@ -126,10 +134,8 @@
       ],
       "certitude": "officiel",
       "impact": "faible",
-      "pour_toi": "Sur carnet, `CLAUDE.md` ne contient que `@AGENTS.md` : il devient facultatif, sans gain concret à le supprimer. trading-sim n'a volontairement ni AGENTS.md ni changement à faire. La correction des messages tapés pendant un tour sert quand tu relaies des consignes depuis l'iPhone.",
-      "projets_concernes": [
-        "carnet"
-      ],
+      "pour_toi": "Sur carnet, `CLAUDE.md` ne contient que `@AGENTS.md` : il devient facultatif, sans gain concret à le supprimer ; trading-sim n'a volontairement pas d'AGENTS.md. La correction des messages tapés pendant un tour servirait quand tu relaies des consignes depuis l'iPhone.",
+      "projets_concernes": [],
       "action": null,
       "kb_refs": []
     },
@@ -178,12 +184,12 @@
       ],
       "certitude": "officiel",
       "impact": "faible",
-      "pour_toi": "La synchronisation explique les skills claude.ai (red-team, ask-the-council, orchestrator…) visibles dans tes sessions Claude Code ; le réglage `syncClaudeAiSkills: false` les retire si leur présence gêne sur trading-sim (le changelog ne précise pas dans quel fichier le poser). La touche ctrl+enter sert quand tu es au clavier dans tmux, pas depuis l'iPhone.",
-      "projets_concernes": [
-        "trading-sim"
-      ],
+      "pour_toi": "La synchronisation explique les skills claude.ai (red-team, ask-the-council, orchestrator…) listés dans ta configuration Claude Code ; si leur présence gênait sur trading-sim, le réglage `syncClaudeAiSkills: false` les retirerait. La touche ctrl+enter sert au clavier dans tmux, pas depuis l'iPhone.",
+      "projets_concernes": [],
       "action": null,
-      "kb_refs": []
+      "kb_refs": [
+        "claude-code-parametres-syncclaudeaiskills"
+      ]
     },
     {
       "id": "claude-code-2.1.274",
@@ -204,13 +210,13 @@
         }
       ],
       "certitude": "officiel",
-      "impact": "moyen",
-      "pour_toi": "Ta machine (14 Gio, zram, `calculs.slice` à 9G) est souvent sous pression mémoire pendant les campagnes : avant 2.1.274, une commande d'arrière-plan lancée par herbin-trading pouvait être tuée après 30 minutes sans sortie. Tu utilises beaucoup Monitor (151 appels) : chaque fin de script coûte désormais un tour de moins.",
-      "projets_concernes": [
-        "trading-sim"
-      ],
+      "impact": "faible",
+      "pour_toi": "Si une campagne lancée en arrière-plan par herbin-trading mettait la machine (14 Gio, zram) sous pression mémoire, elle ne serait plus arrêtée après 30 minutes sans sortie, seulement en cas de mémoire critique. Tu utilises beaucoup Monitor (151 appels) : chaque fin de script coûte désormais un tour de modèle de moins.",
+      "projets_concernes": [],
       "action": null,
-      "kb_refs": []
+      "kb_refs": [
+        "claude-code-commandes-goal"
+      ]
     },
     {
       "id": "claude-code-2.1.243",
@@ -232,10 +238,13 @@
       ],
       "certitude": "officiel",
       "impact": "faible",
-      "pour_toi": "Déjà inclus dans ta 2.1.280. La correction Chrome vise l'une des causes de l'extension « souvent déconnectée » ; si la déconnexion persiste, la cause est ailleurs. Les correctifs Remote Control servent tes sessions pilotées depuis l'iPhone, et le délai de 3 minutes évite les sessions muettes quand le Wi-Fi flanche.",
+      "pour_toi": "Déjà inclus dans ta 2.1.280. La correction Chrome vise l'une des causes possibles de l'extension « souvent déconnectée » ; si la déconnexion persiste, la cause serait ailleurs. Les correctifs de `claude remote-control` et le délai de 3 minutes serviraient tes sessions pilotées depuis l'iPhone quand le Wi-Fi flanche.",
       "projets_concernes": [],
       "action": null,
-      "kb_refs": []
+      "kb_refs": [
+        "claude-code-commandes-usage",
+        "claude-code-fonctionnalites-page-remote-control"
+      ]
     },
     {
       "id": "claude-platform-notes-2026-09-18",
@@ -261,6 +270,32 @@
       "projets_concernes": [],
       "action": null,
       "kb_refs": []
+    },
+    {
+      "id": "claude-platform-notes-2026-07-24",
+      "ids_bruts": [
+        "claude-platform-notes-2026-07-24"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Claude Platform — 2026-07-24 (note révisée)",
+      "version": null,
+      "date_publication": "2026-07-24",
+      "type": "nouveaute",
+      "resume": "La note de plateforme du 24/07 (lancement de Claude Opus 5 à 5 $/25 $ par Mtok, raisonnement non désactivable en effort `xhigh`/`max`, changements d'outils en cours de conversation en bêta, retrait du mode rapide d'Opus 4.7 sur l'API) a été modifiée ; la nature de la modification n'est pas identifiable dans le brut.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": []
     }
   ],
   "ecartes": [
@@ -271,6 +306,15 @@
     {
       "id": "https://www.anthropic.com/news/life-sciences-verification-program",
       "raison": "Programme sectoriel sciences de la vie"
+    },
+    {
+      "id": "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system",
+      "raison": "Application sectorielle (recherche en biologie)"
+    },
+    {
+      "id": "https://www.anthropic.com/features/ebola-response",
+      "raison": "Application sectorielle (santé publique)"
     }
-  ]
+  ],
+  "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
 }
