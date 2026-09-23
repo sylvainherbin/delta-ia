@@ -1,4 +1,4 @@
-"""État `state/<perimetre>.json` : identifiants déjà vus. Détection des nouveautés et validation."""
+"""État `state/<perimetre>.json` : identifiants déjà vus, empreintes. Détection des nouveautés et validation."""
 
 from __future__ import annotations
 
@@ -38,9 +38,10 @@ def premier_passage(etat: dict) -> bool:
 def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None) -> tuple[list[Element], list[str]]:
     """Sépare les nouveautés des éléments à ignorer.
 
-    - déjà vu (id dans l'état) : ni l'un ni l'autre ;
-    - hors fenêtre (`fenetre_depuis` fourni et date absente ou antérieure) : ignoré, mais retenu pour que
-      `--valider` l'inscrive dans l'état ;
+    - identifiant connu : rien, sauf si la source suit les révisions et que l'empreinte a changé,
+      auquel cas l'élément revient en nouveauté avec `revision: true` (D1) ;
+    - daté avant `fenetre_depuis` : ignoré, mais retenu pour que `--valider` l'inscrive dans l'état ;
+    - non daté : jamais ignoré à cause de la fenêtre, c'est une nouveauté (D3) ;
     - sinon : nouveauté.
     """
     vus = etat.get("vus", {})
@@ -48,32 +49,53 @@ def detecter(elements: list[Element], etat: dict, fenetre_depuis: date | None) -
     ignores: list[str] = []
     deja: set[str] = set()
     for e in elements:
-        if e.id in vus or e.id in deja:
-            continue
+        if e.id in deja:
+            continue  # même identifiant natif rapporté par deux sources (ex. general et codex-app)
         deja.add(e.id)
-        if fenetre_depuis is not None:
-            if e.date_publication is None or date.fromisoformat(e.date_publication) < fenetre_depuis:
-                ignores.append(e.id)
-                continue
+        if e.id in vus:
+            connue = vus[e.id].get("empreinte")
+            if e.empreinte and connue and connue != e.empreinte:
+                e.revision = True
+                nouveautes.append(e)
+            continue
+        if fenetre_depuis is not None and e.date_publication is not None \
+                and date.fromisoformat(e.date_publication) < fenetre_depuis:
+            ignores.append(e.id)
+            continue
         nouveautes.append(e)
-    nouveautes.sort(key=lambda e: (e.date_publication or "", e.source_id, e.id), reverse=True)
+    nouveautes.sort(key=lambda e: (e.date_publication or "9999", e.source_id, e.id), reverse=True)
     return nouveautes, sorted(ignores)
 
 
 def valider(etat: dict, brut: dict) -> tuple[dict, int]:
-    """Fait avancer l'état à partir du fichier des nouveautés en attente. Retourne (état, nb ajoutés)."""
+    """Fait avancer l'état à partir du fichier des nouveautés en attente. Retourne (état, nb ajoutés ou révisés).
+
+    Phase 2 (D5) : seuls les identifiants présents dans le fichier quotidien de l'agent seront inscrits ;
+    en phase 1b, toutes les nouveautés du fichier brut le sont.
+    """
     vus = etat.setdefault("vus", {})
+    empreintes = brut.get("empreintes") or {}
     horodatage = maintenant_iso()
-    ajoutes = 0
+    modifies = 0
     for e in brut.get("nouveautes", []):
-        if e["id"] not in vus:
+        entree = vus.get(e["id"])
+        empreinte = e.get("empreinte") or empreintes.get(e["id"])
+        if entree is None:
             vus[e["id"]] = {"date_publication": e.get("date_publication"), "vu_le": horodatage, "source_id": e.get("source_id")}
-            ajoutes += 1
+            if empreinte:
+                vus[e["id"]]["empreinte"] = empreinte
+            modifies += 1
+        elif empreinte and entree.get("empreinte") != empreinte:
+            entree["empreinte"] = empreinte
+            entree["revise_le"] = horodatage
+            modifies += 1
     for ident in brut.get("ignores", []):
         if ident not in vus:
             vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": None, "ignore": True}
-            ajoutes += 1
+            if ident in empreintes:
+                vus[ident]["empreinte"] = empreintes[ident]
+            modifies += 1
     etat["version"] = VERSION_ETAT
     etat["maj_le"] = horodatage
     etat["vus"] = dict(sorted(vus.items()))
-    return etat, ajoutes
+    return etat, modifies

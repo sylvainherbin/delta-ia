@@ -88,9 +88,10 @@ def commande_recuperer(args, racine: Path) -> int:
         ecrire_json(chemin_brut, brut)
     print(f"périmètre {args.perimetre} : {len(bilan.sources_traitees)}/{len(sources)} source(s) traitée(s), "
           f"{bilan.elements_total} élément(s) lus, {len(bilan.nouveautes)} nouveauté(s), "
-          f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else ""))
+          f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else "")
+          + (f", borne {bilan.borne}" if bilan.borne else ""))
     for e in bilan.nouveautes[:20]:
-        print(f"  + {e.date_publication or '????-??-??'}  {e.produit:<11} {e.titre[:80]}")
+        print(f"  {'~' if e.revision else '+'} {e.date_publication or '????-??-??'}  {e.produit:<11} {e.titre[:80]}")
     if len(bilan.nouveautes) > 20:
         print(f"  … et {len(bilan.nouveautes) - 20} autre(s)")
     for ec in bilan.echecs:

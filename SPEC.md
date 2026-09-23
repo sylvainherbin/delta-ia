@@ -21,10 +21,12 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 
 ## 3. Répartition des agents
 
-| Agent | Périmètres | Écrit dans |
-|---|---|---|
-| Claude Code | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json` |
-| Codex | `chatgpt`, `codex` | `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json` |
+| Agent | Périmètres | Produits | Écrit dans |
+|---|---|---|---|
+| Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json` |
+| Codex | `openai` | `chatgpt`, `codex` | `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json` |
+
+Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.
 
 Le lancement est manuel, une fois par jour :
 - côté Claude Code, par la commande `/delta` ;
@@ -69,7 +71,15 @@ Chaque agent tient son propre `index.json` ; le front fusionne les index. Aucun 
 
 ## 5. Sources
 
-Les sources sont déclarées dans `sources.yaml`, avec les champs suivants : `id`, `perimetre`, `produit`, `type` (`github_changelog` | `github_releases` | `html` | `rss`), `url`, `statut` (`ok` | `bloque` | `a_valider`), `note`.
+Les sources sont déclarées dans `sources.yaml`, avec les champs suivants : `id`, `perimetre`, `produit`, `type` (`github_changelog` | `github_releases` | `html` | `rss` | `json`), `url`, `statut`, `officielle` (booléen : source de l'éditeur), `note`, et `options` (facultatif, propre au type : `inclure_prereleases`, `categories`, `format`, `suivre_revisions`, `produit_par_entree`, `releases_url`, `url_latest`…).
+
+Statuts (D7) :
+- `ok` : source fiable ;
+- `a_valider` : source active, en observation ; elle passe à `ok` après 7 passages réels sans échec ni bruit anormal, avec une mention dans `note` ;
+- `desactive` : conservée dans le fichier, non traitée ;
+- `bloque` : testée, en échec.
+
+`fetch.py` ne traite que `ok` et `a_valider`. Un endpoint non documenté publiquement n'est accepté que testé, et sa `note` indique qu'il peut changer sans préavis.
 
 Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit être inscrite sans avoir été testée**) :
 
@@ -87,13 +97,25 @@ Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit
 
 ## 6. Passage quotidien
 
-1. `git pull --rebase`
+1. `git pull --rebase` (seulement si un dépôt distant existe, voir Git ci-dessous).
 2. `python scripts/fetch.py --perimetre <p>`. Le script écrit les nouveautés dans `raw/<p>-nouveautes.json` **sans toucher à l'état**.
 3. L'agent lit les nouveautés, `CONTEXTE.md` et la base de référence existante.
 4. L'agent écrit `docs/data/<dossier>/AAAA-MM-JJ.json`, met à jour son `index.json`, puis la base de référence si une nouveauté la touche.
 5. `python scripts/valider.py` vérifie les JSON produits.
-6. `python scripts/fetch.py --perimetre <p> --valider`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue.
-7. Commit sur les seuls chemins de l'agent, puis push.
+6. `python scripts/fetch.py --perimetre <p> --valider`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5) : `--valider` n'inscrit dans l'état que les identifiants présents dans `docs/data/<dossier>/<date>.json` ; les identifiants absents restent en attente et sont listés ; les éléments ignorés (`ignores`) sont inscrits directement. Mise en œuvre avec `valider.py` en phase 2.
+7. Commit sur les seuls chemins de l'agent, puis push selon les règles Git ci-dessous.
+
+Comportement de `fetch.py` :
+- **Identifiants (D1)** : la clé native de la source, jamais le titre. Flux JSON OpenAI : `oa-<id>` (commun aux flux `general`, `codex-app` et `ios`, donc dédoublonnage) ; RSS : `guid`, sinon `link` ; Atom : `<id>` ; releases GitHub : le tag ; changelog Claude Code : `claude-code-<version>` ; newsroom : l'URL de l'article ; notes datées : `<source>-<date>`. Avec l'option `suivre_revisions: true`, une empreinte du contenu est stockée dans l'état ; si l'identifiant est connu mais l'empreinte a changé, l'élément revient en nouveauté avec `revision: true`.
+- **Produit par entrée (D2)** : pour `general.json`, « codex » dans le titre ou les sujets (insensible à la casse) donne `codex`, sinon `chatgpt`.
+- **Non datés (D3)** : un élément sans date n'est jamais ignoré à cause d'une fenêtre, c'est une nouveauté. Seule exception, le changelog Claude Code : les versions strictement inférieures à la plus ancienne version datée par l'API sont de l'historique, donc ignorées.
+- **Détection de trou (D4)** : chaque analyseur reçoit une borne (date du dernier `--valider`, sinon le début de la fenêtre) et renvoie la date la plus ancienne qu'il a vue. Si elle est postérieure à la borne, la source passe en `partiel` avec le message « trou possible entre <borne> et <date> ». Pour les releases GitHub, pagination adaptative : page suivante tant que la plus ancienne release est postérieure à la borne, 4 pages au plus, puis `partiel` ; `releases/latest` garantit la dernière version stable.
+- **Premier passage sans état** : fenêtre de 30 jours, ou `--depuis`. Les éléments datés avant la fenêtre vont dans `ignores` et sont inscrits dans l'état par `--valider`. Le premier passage réel de la phase 2 se fait avec `--depuis` J-7 (D10).
+
+Git (D9) :
+- Tant qu'il n'y a pas de dépôt distant (phase 2) : ni pull ni push, commit local seulement.
+- Une fois le distant créé : lancer `/delta` ou le prompt Codex vaut accord de push, sur les seuls chemins de l'agent.
+- En session de développement : push seulement sur accord explicite de Sylvain.
 
 Le passage est **idempotent** : relancer le même jour fusionne avec le fichier existant au lieu de créer un doublon.
 
@@ -119,7 +141,7 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | string | Stable : produit + version + hash du titre |
+| `id` | string | Clé native de la source (D1, voir §6) : tag, `oa-<id>`, guid, URL, `claude-code-<version>`, `<source>-<date>` |
 | `produit` | enum | `claude` \| `claude-code` \| `chatgpt` \| `codex` \| `actu` |
 | `titre` | string | |
 | `version` | string \| null | |
@@ -165,7 +187,7 @@ Contraintes :
 
 Pour chaque phase, un plan est validé par Sylvain avant d'écrire le code, et des critères d'acceptation sont fixés.
 
-1. **Fondations et récupération** : structure du dépôt, `sources.yaml` testé, `fetch.py`, fichiers d'état, tests.
+1. **Fondations et récupération** : structure du dépôt, `sources.yaml` testé, `fetch.py`, fichiers d'état, tests. Complétée par la phase 1b (identifiants natifs, non datés, détection de trou, révisions).
 2. **Synthèse** : `/delta`, prompt Codex, `valider.py`, premier passage réel pour chaque agent.
 3. **Site.**
 4. **Base de référence** : génération initiale complète, une seule fois, puis mise à jour pilotée par les nouveautés.
@@ -177,6 +199,25 @@ Notifications, retour utile/inutile, hébergement privé, automatisation par cro
 
 ## 11. Points ouverts
 
-- URL exactes des sources (phase 1).
+- URL exactes des sources : fixées en phase 1 (`sources.yaml`) ; le centre d'aide ChatGPT reste bloqué (403), repli par recherche web.
 - Accès réseau de Codex : son sandbox peut bloquer le réseau par défaut. Configuration à vérifier avant la phase 2.
 - Mécanisme de prompts personnalisés de Codex : à vérifier. À défaut, le contenu de `prompts/codex-delta.md` est collé à la main.
+
+## 12. Décisions (23/09/2026)
+
+Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après relecture du commit `781b418` (phase 1).
+
+| # | Décision | Reportée dans |
+|---|---|---|
+| D1 | Identifiants par clé native, sans le titre ; option `suivre_revisions` avec empreinte du contenu et `revision: true` | §6, §7.2 |
+| D2 | `general.json` : produit déterminé par entrée (« codex » dans le titre ou les sujets → `codex`, sinon `chatgpt`) | §6 |
+| D3 | Un élément non daté est une nouveauté ; exception : historique du changelog Claude Code sous la plus ancienne version datée | §6 |
+| D4 | Détection de trou par borne et date la plus ancienne vue ; pagination adaptative des releases GitHub (4 pages max) ; Atom GitHub écarté | §6 |
+| D5 | `--valider` n'inscrit que les identifiants présents dans le fichier quotidien ; mise en œuvre en phase 2 avec `valider.py` | §6 |
+| D6 | Vocabulaire : périmètre (`claude` \| `openai` \| `actu`) distinct de produit (`claude` \| `claude-code` \| `chatgpt` \| `codex` \| `actu`) | §3 |
+| D7 | Statuts `ok`, `a_valider` (observation, 7 passages), `desactive`, `bloque` | §5 |
+| D8 | OpenAI News : filtre `Product, Release, ChatGPT, API` inchangé, catégorie `API` en produit `chatgpt` ; chiffres recomptés dans `sources.yaml` | `sources.yaml` |
+| D9 | Git : pas de pull ni push sans distant ; `/delta` ou le prompt Codex vaut accord de push sur les chemins de l'agent ; en développement, push sur accord de Sylvain | §6, `CLAUDE.md`, `AGENTS.md` |
+| D10 | Premier passage réel de la phase 2 avec `--depuis` J-7, jamais avant D3 | §6 |
+| D11 | Type `json`, statut `desactive`, champs `officielle` et `options` ajoutés à SPEC.md ; REGLES.md inchangé | §5 |
+

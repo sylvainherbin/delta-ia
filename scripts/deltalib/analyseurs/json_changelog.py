@@ -1,6 +1,8 @@
 """Flux JSON du « ChatGPT & Codex changelog » (learn.chatgpt.com/docs/changelog/*.json).
 
 Endpoint non documenté : toute dérive de structure doit être une erreur explicite, jamais un résultat vide.
+Identifiant (D1) : `oa-<id natif>`, commun aux flux general, codex-app et ios, pour dédoublonner.
+Produit (D2, option `produit_par_entree`) : « codex » dans le titre ou les sujets -> codex, sinon chatgpt.
 """
 
 from __future__ import annotations
@@ -12,6 +14,13 @@ from ..modeles import Element, FormatInattendu, ResultatSource
 
 CHAMPS_OBLIGATOIRES = ("id", "title", "date")
 SCHEMA_ATTENDU = 1
+
+
+def produit_de(it: dict, source) -> str:
+    if not source.options.get("produit_par_entree"):
+        return source.produit
+    texte = " ".join([str(it.get("title") or "")] + [str(t) for t in (it.get("topics") or [])]).lower()
+    return "codex" if "codex" in texte else "chatgpt"
 
 
 def parser_json(donnees, source) -> list[Element]:
@@ -38,7 +47,8 @@ def parser_json(donnees, source) -> list[Element]:
             titre = f"{titre} {version}"
         corps = it.get("bodyMarkdown") or it.get("summary") or ""
         elements.append(Element(
-            produit=source.produit,
+            id=f"oa-{it['id']}",
+            produit=produit_de(it, source),
             titre=titre,
             version=version,
             date_publication=analyser_date(str(it["date"])),
@@ -50,7 +60,7 @@ def parser_json(donnees, source) -> list[Element]:
     return elements
 
 
-def analyser(source, client) -> ResultatSource:
+def analyser(source, client, borne: str | None = None) -> ResultatSource:
     reponse = client.get(source.url, accept="application/json")
     try:
         donnees = json.loads(reponse.texte)

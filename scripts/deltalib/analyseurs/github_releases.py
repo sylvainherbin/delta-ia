@@ -1,13 +1,19 @@
-"""Releases GitHub via l'API REST : une release stable = un élément. Pré-versions exclues par défaut."""
+"""Releases GitHub via l'API REST : une release stable = un élément, identifiée par son tag (D1).
+
+Pagination adaptative (D4) : page suivante tant que la plus ancienne release vue est postérieure à la borne,
+quatre pages au plus. `releases/latest` (option `url_latest`) garantit la dernière version stable.
+"""
 
 from __future__ import annotations
 
 import json
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 from ..dates import analyser_date
 from ..modeles import Element, ErreurSource, FormatInattendu, ResultatSource
 
 CHAMPS_OBLIGATOIRES = ("tag_name", "html_url", "published_at")
+PAGES_MAX = 4
 
 
 def _version(tag: str, prefixe: str) -> str:
@@ -51,6 +57,7 @@ def parser_releases(releases, source) -> list[Element]:
         if nom and nom != version and version not in nom:
             titre = f"{nom} ({version})"
         elements.append(Element(
+            id=r["tag_name"],
             produit=source.produit,
             titre=titre,
             version=version,
@@ -75,13 +82,38 @@ def _charger(client, url):
     return donnees
 
 
-def analyser(source, client) -> ResultatSource:
-    """Liste des dernières releases, complétée par `releases/latest` (option `url_latest`).
+def url_page(url: str, page: int) -> str:
+    parts = urlsplit(url)
+    q = {k: v[-1] for k, v in parse_qs(parts.query).items()}
+    q["page"] = str(page)
+    return urlunsplit(parts._replace(query=urlencode(q)))
 
-    La liste est volontairement courte (chaque release pèse ~300 Ko dans l'API) ; `latest` garantit que la
-    dernière version stable est vue même si les pré-versions ont rempli la liste.
-    """
-    donnees = _charger(client, source.url)
+
+def _plus_ancienne(releases) -> str | None:
+    dates = [analyser_date(r.get("published_at")) for r in releases if isinstance(r, dict)]
+    dates = [d for d in dates if d]
+    return min(dates) if dates else None
+
+
+def analyser(source, client, borne: str | None = None) -> ResultatSource:
+    releases = _charger(client, source.url)
+    if not isinstance(releases, list):
+        raise FormatInattendu("l'API releases n'a pas renvoyé une liste")
+    if not releases:
+        raise FormatInattendu("liste de releases vide")
+    page = 1
+    while borne and page < PAGES_MAX:
+        ancienne = _plus_ancienne(releases)
+        if ancienne is None or ancienne <= borne:
+            break
+        page += 1
+        suite = _charger(client, url_page(source.url, page))
+        if not isinstance(suite, list):
+            raise FormatInattendu(f"page {page} : l'API releases n'a pas renvoyé une liste")
+        if not suite:
+            break  # fin de l'historique
+        releases = releases + suite
+    plus_ancienne = _plus_ancienne(releases)  # pré-versions comprises : c'est l'horizon réellement vu
     partiel = None
     url_latest = source.options.get("url_latest")
     if url_latest:
@@ -92,6 +124,6 @@ def analyser(source, client) -> ResultatSource:
         else:
             if not isinstance(derniere, dict) or not derniere.get("tag_name"):
                 raise FormatInattendu("releases/latest n'a pas renvoyé une release")
-            if isinstance(donnees, list) and derniere["tag_name"] not in {r.get("tag_name") for r in donnees if isinstance(r, dict)}:
-                donnees = list(donnees) + [derniere]
-    return ResultatSource(parser_releases(donnees, source), partiel)
+            if derniere["tag_name"] not in {r.get("tag_name") for r in releases if isinstance(r, dict)}:
+                releases = releases + [derniere]
+    return ResultatSource(parser_releases(releases, source), partiel, plus_ancienne=plus_ancienne)

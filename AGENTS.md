@@ -4,18 +4,18 @@ Avant toute tâche, lis intégralement `SPEC.md` (cahier des charges) et `REGLES
 
 ## Ton périmètre (SPEC.md §3)
 
-- Périmètres : `chatgpt` et `codex` (périmètre de récupération `openai`).
+- Périmètre : `openai`. Produits : `chatgpt` et `codex` (SPEC.md §3, D6).
 - Tu écris **uniquement** dans : `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json`.
 - Tu ne touches ni aux chemins de Claude Code (`docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json`), ni au code (`scripts/`, `docs/*.html`, `docs/assets/`) pendant un passage quotidien.
 
 ## Passage quotidien (SPEC.md §6)
 
-1. `git pull --rebase`
+1. `git pull --rebase` (seulement si un dépôt distant existe ; sans distant, ni pull ni push, commit local seulement).
 2. `.venv/bin/python scripts/fetch.py --perimetre openai` → `raw/openai-nouveautes.json` (l'état n'est pas modifié).
 3. Synthèse à partir de `raw/`, `CONTEXTE.md` et la base de référence existante, au format SPEC.md §7.
 4. Validation des JSON (`scripts/valider.py`, phase 2).
 5. `.venv/bin/python scripts/fetch.py --perimetre openai --valider` : l'état n'avance qu'ici.
-6. Commit sur tes seuls chemins (`git add <chemins>`, jamais `git add -A`), message `delta(openai): AAAA-MM-JJ — <n> éléments (<n> fort)`.
+6. Commit sur tes seuls chemins (`git add <chemins>`, jamais `git add -A`), message `delta(openai): AAAA-MM-JJ — <n> éléments (<n> fort)`. Une fois le dépôt distant créé, le lancement du prompt Codex vaut accord de push, sur ces seuls chemins (SPEC.md §6, D9).
 
 ## Conventions
 

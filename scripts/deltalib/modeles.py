@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import re
-import unicodedata
 from dataclasses import asdict, dataclass, field
 
 PRODUITS = ("claude", "claude-code", "chatgpt", "codex", "actu")
@@ -29,26 +27,23 @@ class FormatInattendu(ErreurSource):
     """
 
 
-def normaliser_titre(titre: str) -> str:
-    """Minuscules, sans accents, sans ponctuation, espaces réduits : base stable pour le hachage."""
-    t = unicodedata.normalize("NFKD", titre or "")
-    t = "".join(c for c in t if not unicodedata.combining(c))
-    t = re.sub(r"[^a-z0-9]+", " ", t.lower())
-    return t.strip()
+def empreinte_contenu(texte: str) -> str:
+    """Empreinte du contenu, pour détecter une révision d'une entrée déjà vue (option `suivre_revisions`)."""
+    return hashlib.sha1((texte or "").strip().encode("utf-8")).hexdigest()[:16]
 
 
-def construire_id(produit: str, version: str | None, date_publication: str | None, titre: str) -> str:
-    """Identifiant stable : produit + version (ou date, ou `nd`) + hachage du titre (SPEC §7.2)."""
-    cle = version or date_publication or "nd"
-    cle = re.sub(r"[^A-Za-z0-9.\-]+", "-", cle).strip("-")
-    h = hashlib.sha1(normaliser_titre(titre).encode("utf-8")).hexdigest()[:10]
-    return f"{produit}-{cle}-{h}"
+def cle_version(version: str) -> tuple:
+    """Clé de tri d'une version `x.y.z[-suffixe]` : les nombres d'abord, le suffixe ensuite."""
+    base, _, suffixe = version.partition("-")
+    nombres = tuple(int(n) if n.isdigit() else 0 for n in base.split("."))
+    return (nombres, suffixe == "", suffixe)  # une pré-version passe avant la version finale
 
 
 @dataclass
 class Element:
-    """Format brut commun produit par tous les analyseurs."""
+    """Format brut commun produit par tous les analyseurs. `id` est la clé native de la source (D1)."""
 
+    id: str
     produit: str
     titre: str
     version: str | None
@@ -57,23 +52,25 @@ class Element:
     contenu: str
     source_id: str
     officielle: bool
-    id: str = field(default="")
+    empreinte: str | None = None  # renseignée si la source suit les révisions
+    revision: bool = False  # True si l'élément était connu mais son contenu a changé
 
     def __post_init__(self) -> None:
         if self.produit not in PRODUITS:
             raise ValueError(f"produit inconnu : {self.produit!r}")
+        if not self.id or not str(self.id).strip():
+            raise FormatInattendu(f"élément sans identifiant natif (source {self.source_id})")
         if not self.titre or not self.titre.strip():
-            raise FormatInattendu(f"élément sans titre (source {self.source_id})")
+            raise FormatInattendu(f"élément sans titre (source {self.source_id}, id {self.id!r})")
         if not self.url:
-            raise FormatInattendu(f"élément sans URL (source {self.source_id}, titre {self.titre[:60]!r})")
+            raise FormatInattendu(f"élément sans URL (source {self.source_id}, id {self.id!r})")
+        self.id = str(self.id).strip()
         self.titre = self.titre.strip()
-        if not self.id:
-            self.id = construire_id(self.produit, self.version, self.date_publication, self.titre)
 
     def en_dict(self) -> dict:
         d = asdict(self)
-        # ordre lisible dans le JSON
-        ordre = ["id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle"]
+        ordre = ["id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id",
+                 "officielle", "empreinte", "revision"]
         return {k: d[k] for k in ordre}
 
 
@@ -83,3 +80,5 @@ class ResultatSource:
 
     elements: list[Element]
     partiel: str | None = None  # message si une partie de la source a échoué (ex. dates indisponibles)
+    ignores: list[str] = field(default_factory=list)  # identifiants d'historique à inscrire sans les traiter (D3)
+    plus_ancienne: str | None = None  # date la plus ancienne vue par l'analyseur, pour la détection de trou (D4)

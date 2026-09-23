@@ -21,9 +21,10 @@ def actives(sources, perimetre):
 def test_source_en_panne_reseau_n_arrete_pas_les_autres(sources):
     s = actives(sources, "claude")
     url_apps = sources["claude-apps-notes"].url
-    elements, echecs, traitees = recuperer(s, FauxClient({url_apps: ErreurReseau("HTTP 403 pour " + url_apps)}))
-    assert [e.id for e in echecs] == ["claude-apps-notes"]
-    assert echecs[0].url == url_apps and "403" in echecs[0].erreur and echecs[0].partiel is False
+    elements, echecs, traitees, _ = recuperer(s, FauxClient({url_apps: ErreurReseau("HTTP 403 pour " + url_apps)}))
+    durs = [e for e in echecs if not e.partiel]
+    assert [e.id for e in durs] == ["claude-apps-notes"]
+    assert durs[0].url == url_apps and "403" in durs[0].erreur
     assert set(traitees) == {x.id for x in s} - {"claude-apps-notes"}
     assert any(e.source_id == "claude-code-changelog" for e in elements)
 
@@ -32,17 +33,18 @@ def test_format_inattendu_est_une_erreur_explicite_jamais_un_vide(sources):
     """Une réponse 200 au mauvais format doit être signalée, pas prise pour « rien de nouveau »."""
     s = actives(sources, "openai")
     url = sources["openai-changelog-general"].url
-    elements, echecs, traitees = recuperer(s, FauxClient({url: ('{"feeds": [{"id": "general"}]}', "application/json")}))
-    assert [e.id for e in echecs] == ["openai-changelog-general"]
-    assert echecs[0].erreur.startswith("FormatInattendu:")
+    elements, echecs, traitees, _ = recuperer(s, FauxClient({url: ('{"feeds": [{"id": "general"}]}', "application/json")}))
+    durs = [e for e in echecs if not e.partiel]
+    assert [e.id for e in durs] == ["openai-changelog-general"]
+    assert durs[0].erreur.startswith("FormatInattendu:")
     assert "openai-changelog-general" not in traitees and elements
 
 
 def test_echec_partiel_dates(sources):
     s = actives(sources, "claude")
     url_api = sources["claude-code-changelog"].options["releases_url"]
-    elements, echecs, traitees = recuperer(s, FauxClient({url_api: ErreurReseau("HTTP 500")}))
-    assert [(e.id, e.partiel) for e in echecs] == [("claude-code-changelog", True)]
+    elements, echecs, traitees, _ = recuperer(s, FauxClient({url_api: ErreurReseau("HTTP 500")}))
+    assert ("claude-code-changelog", "dates indisponibles, API releases en échec : HTTP 500") in [(e.id, e.erreur) for e in echecs]
     assert "claude-code-changelog" in traitees  # la source a livré ses éléments, sans dates
 
 
@@ -52,7 +54,7 @@ def test_erreur_interne_d_un_analyseur_est_capturee(sources, monkeypatch):
         raise KeyError("bogue")
     monkeypatch.setitem(passage.ANALYSEURS, "rss", casse)
     s = actives(sources, "actu")
-    elements, echecs, traitees = recuperer(s, FauxClient())
+    elements, echecs, traitees, _ = recuperer(s, FauxClient())
     assert len(echecs) == len(s) and all("erreur interne" in e.erreur for e in echecs) and elements == []
 
 
@@ -62,7 +64,8 @@ def test_cli_signale_les_echecs_et_continue(tmp_path, monkeypatch, date_figee, s
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient({url: ErreurReseau("délai dépassé")}))
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"]) == 0
     brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
-    assert brut["sources_en_echec"] == [{"id": "anthropic-newsroom", "url": url, "erreur": "ErreurReseau: délai dépassé", "partiel": False}]
+    durs = [e for e in brut["sources_en_echec"] if not e["partiel"]]
+    assert durs == [{"id": "anthropic-newsroom", "url": url, "erreur": "ErreurReseau: délai dépassé", "partiel": False}]
     assert brut["nouveautes"]
     assert "ÉCHEC" in capsys.readouterr().out
 

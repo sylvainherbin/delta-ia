@@ -8,10 +8,10 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from .analyseurs import ANALYSEURS
-from .dates import aujourd_hui, maintenant_iso
+from .dates import analyser_date, aujourd_hui, maintenant_iso
 from .etat import charger_etat, detecter, premier_passage
 from .http import Client
-from .modeles import Element, ErreurSource
+from .modeles import Element, ErreurSource, empreinte_contenu
 from .sources import Source
 
 FENETRE_PREMIER_PASSAGE_JOURS = 30
@@ -33,34 +33,40 @@ class Echec:
 class Bilan:
     perimetre: str
     fenetre_depuis: date | None
+    borne: str | None
     nouveautes: list[Element]
     ignores: list[str]
     echecs: list[Echec]
     sources_traitees: list[str] = field(default_factory=list)
     elements_total: int = 0
+    empreintes: dict = field(default_factory=dict)
 
     def en_dict(self) -> dict:
         return {
             "perimetre": self.perimetre,
             "genere_le": maintenant_iso(),
             "fenetre_depuis": self.fenetre_depuis.isoformat() if self.fenetre_depuis else None,
+            "borne": self.borne,
             "sources_traitees": self.sources_traitees,
             "elements_total": self.elements_total,
             "nouveautes": [e.en_dict() for e in self.nouveautes],
             "ignores": self.ignores,
+            "empreintes": self.empreintes,
             "sources_en_echec": [e.en_dict() for e in self.echecs],
         }
 
 
-def recuperer(sources: list[Source], client: Client) -> tuple[list[Element], list[Echec], list[str]]:
-    """Interroge chaque source ; un échec n'arrête pas les autres."""
+def recuperer(sources: list[Source], client: Client, borne: str | None = None
+              ) -> tuple[list[Element], list[Echec], list[str], list[str]]:
+    """Interroge chaque source ; un échec n'arrête pas les autres. Retourne (éléments, échecs, traitées, ignorés)."""
     elements: list[Element] = []
     echecs: list[Echec] = []
     traitees: list[str] = []
+    ignores: list[str] = []
     for s in sources:
         analyser = ANALYSEURS[s.type]
         try:
-            resultat = analyser(s, client)
+            resultat = analyser(s, client, borne)
         except ErreurSource as e:
             journal.warning("source %s en échec : %s", s.id, e)
             echecs.append(Echec(s.id, s.url, f"{type(e).__name__}: {e}"))
@@ -72,10 +78,31 @@ def recuperer(sources: list[Source], client: Client) -> tuple[list[Element], lis
         if resultat.partiel:
             journal.warning("source %s partielle : %s", s.id, resultat.partiel)
             echecs.append(Echec(s.id, s.url, resultat.partiel, partiel=True))
+        if s.options.get("suivre_revisions"):
+            for e in resultat.elements:
+                e.empreinte = empreinte_contenu(e.contenu)
+        trou = detecter_trou(resultat, borne)
+        if trou:
+            journal.warning("source %s : %s", s.id, trou)
+            echecs.append(Echec(s.id, s.url, trou, partiel=True))
         journal.info("source %s : %d éléments", s.id, len(resultat.elements))
         elements.extend(resultat.elements)
+        ignores.extend(resultat.ignores)
         traitees.append(s.id)
-    return elements, echecs, traitees
+    return elements, echecs, traitees, ignores
+
+
+def detecter_trou(resultat, borne: str | None) -> str | None:
+    """D4 : si la date la plus ancienne vue par la source est postérieure à la borne, il peut manquer des entrées."""
+    if not borne:
+        return None
+    plus_ancienne = resultat.plus_ancienne
+    if plus_ancienne is None:
+        dates = [e.date_publication for e in resultat.elements if e.date_publication]
+        plus_ancienne = min(dates) if dates else None
+    if plus_ancienne and plus_ancienne > borne:
+        return f"trou possible entre {borne} et {plus_ancienne}"
+    return None
 
 
 def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: Client,
@@ -86,6 +113,11 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     if fenetre is None and premier_passage(etat):
         fenetre = jour - timedelta(days=FENETRE_PREMIER_PASSAGE_JOURS)
         journal.info("premier passage sans état : fenêtre limitée à partir du %s", fenetre)
-    elements, echecs, traitees = recuperer(sources, client)
+    # D4 : la borne est la date du dernier `--valider`, sinon le début de la fenêtre
+    borne = analyser_date(etat.get("maj_le")) or (fenetre.isoformat() if fenetre else None)
+    elements, echecs, traitees, ignores_hist = recuperer(sources, client, borne)
     nouveautes, ignores = detecter(elements, etat, fenetre)
-    return Bilan(perimetre, fenetre, nouveautes, ignores, echecs, traitees, len(elements))
+    vus = etat.get("vus", {})
+    ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
+    empreintes = {e.id: e.empreinte for e in elements if e.empreinte and (e.id in ignores or e in nouveautes)}
+    return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes)

@@ -52,18 +52,23 @@ def parser_flux(xml_texte: str, source) -> list[Element]:
     entrees: list[tuple] = []
     if racine.tag == "rss" or racine.find("channel") is not None:
         for it in racine.iter("item"):
+            guid = _texte(it, "guid")
+            lien = _texte(it, "link") or (guid if guid and it.find("guid").get("isPermaLink") in (None, "true") else None)
             entrees.append((
+                guid or lien,  # D1 : guid, sinon lien
                 _texte(it, "title"),
-                _texte(it, "link") or (it.find("guid").text.strip() if it.find("guid") is not None and (it.find("guid").get("isPermaLink") in (None, "true")) and it.find("guid").text else None),
+                lien,
                 _texte(it, "pubDate", "dc:date", "atom:published", "atom:updated"),
                 _texte(it, "content:encoded", "description"),
                 [(c.text or "").strip() for c in it.findall("category")],
             ))
     elif racine.tag == f"{{{NS['atom']}}}feed":
         for en in racine.findall("atom:entry", NS):
+            lien = _lien_atom(en)
             entrees.append((
+                _texte(en, "atom:id") or lien,  # D1 : <id> Atom
                 _texte(en, "atom:title"),
-                _lien_atom(en),
+                lien,
                 _texte(en, "atom:published", "atom:updated"),
                 _texte(en, "atom:content", "atom:summary"),
                 [(c.get("term") or "").strip() for c in en.findall("atom:category", NS)],
@@ -73,12 +78,13 @@ def parser_flux(xml_texte: str, source) -> list[Element]:
     if not entrees:
         raise FormatInattendu("flux sans aucun <item> ni <entry>")
     elements: list[Element] = []
-    for titre, lien, date_txt, corps, cats in entrees:
+    for ident, titre, lien, date_txt, corps, cats in entrees:
         if not titre or not lien:
             raise FormatInattendu(f"entrée sans titre ou sans lien (titre={titre!r})")
         if categories and not ({c.lower() for c in cats} & categories):
             continue
         elements.append(Element(
+            id=ident,
             produit=source.produit,
             titre=titre,
             version=None,
@@ -92,7 +98,7 @@ def parser_flux(xml_texte: str, source) -> list[Element]:
     return elements
 
 
-def analyser(source, client) -> ResultatSource:
+def analyser(source, client, borne: str | None = None) -> ResultatSource:
     reponse = client.get(source.url, accept="application/rss+xml, application/atom+xml, application/xml, text/xml")
     if "<html" in reponse.texte[:300].lower():
         raise FormatInattendu(f"page HTML reçue à la place d'un flux ({reponse.content_type or 'type inconnu'})")

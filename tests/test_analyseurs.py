@@ -7,7 +7,8 @@ import pytest
 from deltalib.analyseurs import ANALYSEURS, github_changelog, github_releases, html_notes, json_changelog, rss
 from deltalib.modeles import ErreurReseau, FormatInattendu
 
-CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle"}
+CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle",
+          "empreinte", "revision"}
 
 
 def test_tous_les_types_ont_un_analyseur():
@@ -37,7 +38,7 @@ def test_changelog_claude_code_versions_et_dates(sources, client):
     assert e.titre == "Claude Code 2.1.280"
     assert e.url == "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21280"
     assert "claude-opus-5-5" in e.contenu and e.produit == "claude-code"
-    assert e.id.startswith("claude-code-2.1.280-")
+    assert e.id == "claude-code-2.1.280"  # D1 : clé native, sans le titre
 
 
 def test_changelog_api_releases_en_panne_est_un_echec_partiel(sources):
@@ -77,6 +78,7 @@ def test_releases_option_inclure_prereleases(sources, client):
     s.options = dict(s.options, inclure_prereleases=True)
     r = github_releases.analyser(s, client)
     assert len(r.elements) == 5 and "0.157.0-alpha.11" in [e.version for e in r.elements]
+    assert r.elements[1].id == "rust-v0.158.0-alpha.2"  # D1 : le tag
 
 
 def test_releases_reponse_inattendue(sources):
@@ -100,6 +102,7 @@ def test_notes_apps_markdown(sources, client):
     ]
     assert all(e.version is None and e.produit == "claude" for e in r.elements)
     assert "40% less" in r.elements[0].contenu
+    assert r.elements[0].id == "claude-apps-notes-2026-09-22"  # D1 : une entrée par date
 
 
 def test_notes_apps_html_de_repli_donne_les_memes_identifiants(sources, client, fixture_texte):
@@ -124,6 +127,7 @@ def test_newsroom_anthropic(sources, client):
     assert e.titre == "Introducing Claude Opus 5.5" and e.date_publication == "2026-09-22"
     assert e.url == "https://www.anthropic.com/claude-opus-5-5"  # lien relatif résolu
     assert len({e.url for e in r.elements}) == 6
+    assert e.id == e.url  # D1 : la newsroom est identifiée par l'URL de l'article
 
 
 @pytest.mark.parametrize("fmt, texte", [
@@ -149,10 +153,10 @@ def test_html_markdown_attendu_mais_html_recu(sources):
 
 def test_json_general(sources, client):
     r = json_changelog.analyser(sources["openai-changelog-general"], client)
-    assert len(r.elements) == 3
+    assert len(r.elements) == 5
     e = r.elements[0]
     assert e.titre == "GPT-6 Sol and Luna in Codex and ChatGPT Work" and e.date_publication == "2026-09-22"
-    assert e.version is None and e.produit == "codex"
+    assert e.version is None and e.produit == "codex" and e.id == "oa-codex/2026-09-22-gpt-6-sol-luna"
     assert e.url == "https://developers.openai.com/codex/changelog#codex-2026-09-22-gpt-6-sol-luna"
     assert "codex --model gpt-6-sol" in e.contenu
 

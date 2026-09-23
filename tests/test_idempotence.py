@@ -85,5 +85,5 @@ def test_nouveautes_triees_et_format(racine):
     dates = [e["date_publication"] for e in brut["nouveautes"]]
     assert dates == sorted(dates, reverse=True)
     assert {e["produit"] for e in brut["nouveautes"]} <= {"chatgpt", "codex"}
-    assert set(brut) == {"perimetre", "genere_le", "fenetre_depuis", "sources_traitees", "elements_total",
-                         "nouveautes", "ignores", "sources_en_echec"}
+    assert set(brut) == {"perimetre", "genere_le", "fenetre_depuis", "borne", "sources_traitees", "elements_total",
+                         "nouveautes", "ignores", "empreintes", "sources_en_echec"}

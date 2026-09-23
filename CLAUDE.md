@@ -12,6 +12,6 @@
 - Une source en échec ou au format inattendu va dans `sources_en_echec` ; jamais de résultat vide silencieux.
 - Sources déclarées dans `sources.yaml` uniquement, chaque URL testée avant inscription. Statuts : `ok`, `bloque`, `a_valider`, `desactive` (une source écartée est désactivée, pas supprimée).
 - Aucune date, version ou fonctionnalité devinée : inconnu vaut `null`.
-- Git : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Pas de push sans accord de Sylvain.
+- Git (SPEC §6, D9) : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Sans dépôt distant : ni pull ni push. Avec un distant : lancer `/delta` vaut accord de push sur les seuls chemins de l'agent ; en session de développement, push seulement sur accord de Sylvain.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
 - Plan validé par Sylvain avant tout code d'une nouvelle phase.
