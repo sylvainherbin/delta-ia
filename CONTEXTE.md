@@ -27,7 +27,7 @@ façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille ch
 | Machine | Portable HP, AMD A10-7300 (4 cœurs), 14 Gio de RAM, zram 7,3 Gio | [observé] |
 | Disques | disque interne ~954 Go signalé non rotatif ; disque USB externe ~931 Go (sauvegardes Timeshift) | [observé] |
 | Réseau | Wi-Fi seul (clé USB TP-Link), débit plafonné vers 9 Mbit/s, pas de repli cellulaire | [observé] |
-| Outils CLI | git 2.43, gh 2.45, Python 3.12.3, tmux, nvm (Node 24.20 via le bundle Codex) ; pas de `sqlite3`, pas de `pytest` | [observé] |
+| Outils CLI | git 2.43, gh 2.45, Python 3.12.3, tmux, nvm (Node 24.20 via le bundle Codex) , `python3.12-venv` (installé le 23/09) ; pas de `sqlite3` ; `pytest` absent du système, présent seulement dans `delta-ia/.venv` (9.1.1) | [observé] |
 | Claude Code | 2.1.280, installation native, mise à jour faite le 22/09 (2.1.278 → 2.1.280) | [observé] |
 | Codex | codex-cli 0.155.0-alpha.16, fourni par l'app de bureau ChatGPT/Codex (build 26.917) | [observé] |
 | Apps de bureau | Claude Desktop (Electron) et ChatGPT Desktop (avec Codex intégré) | [observé] |
@@ -88,8 +88,8 @@ Les sessions se parlent via `SendMessage` / `ListAgents` et Sylvain relaie des p
 - **Objectif** [observé] : tester **en simulation uniquement** si des règles adaptatives peuvent
   battre « acheter et garder » sur le CAC 40. Zéro argent réel, zéro ordre, zéro courtier.
 - **Stack** [observé] : Python 3.12, bibliothèque standard, tests `unittest` (16 fichiers de
-  test, 31 fichiers .py au total) ; pas de `pyproject`, pas de `.venv` (le paquet
-  `python3.12-venv` manque).
+  test, 31 fichiers .py au total) ; pas de `pyproject`, pas de `.venv` dans ce projet
+  (le paquet `python3.12-venv` est désormais disponible sur la machine).
 - **Méthode** [observé] : spécification d'architecture versionnée et gelée
   (`TRADING-SIM-ARCHITECTURE-V1.0`, révisions r3 → r3.4.1), registre de protocole scellé
   (`protocol/ledger.jsonl`), 17 rapports d'audit Codex dans `docs/audits/`, décisions de phase
@@ -215,7 +215,9 @@ et ailleurs (la console de pilotage, par exemple). Modèle le plus utilisé : **
    validation pas à pas, factuel/déduit) vivent dans les mémoires et sont répétées dans chaque
    projet. Un `~/.claude/CLAUDE.md` court les centraliserait.
 2. **trading-sim/CLAUDE.md périmé** [observé] : il annonce 6,7 Go de RAM et un `.venv` prévu,
-   alors que la machine a 14 Gio et qu'aucun `.venv` n'existe.
+   alors que la machine a 14 Gio et que trading-sim n'a pas de `.venv`. Le fichier est gelé
+   jusqu'au micro-lot « AGENT INSTRUCTIONS NORMALIZATION » ; le correctif recommandé (retirer
+   ces lignes, sans les remplacer) a été soumis à ChatGPT Work le 23/09.
 3. **Aucun hook** [observé] : les contrôles répétés à la main (vérification SHA-256 des missions,
    `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f`) pourraient devenir des hooks.
 4. **Skills dormants** [observé] : `latex-manuscrit` et `verif-numerique` ne sont jamais
