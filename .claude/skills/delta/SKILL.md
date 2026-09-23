@@ -12,6 +12,7 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 
 - Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
 - Si `.git/index.lock` existe, arrête-toi et signale-le : un autre passage (Codex) ou une autre session tient le dépôt ; les passages ne tournent jamais en même temps (D21).
+- Versions installées (D56) : `.venv/bin/python scripts/versions.py` écrit `docs/data/versions.json` (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop). Un outil `en_retard` qui touche CONTEXTE.md (version installée citée) est un point de fin de passage.
 - Calcule la date du passage **une seule fois** : `J=$(date +%F)`. Toutes les commandes et tous les fichiers du passage utilisent ce `J`, même si le passage franchit minuit (D19). Python : `.venv/bin/python`.
 
 ## 1. Pour chaque périmètre `p` dans `claude`, `actu`
@@ -38,7 +39,7 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 5. **Base de référence (D44), périmètre `claude` seulement.** `.venv/bin/python scripts/fetch.py --kb claude-code claude` relit les pages de référence (empreinte par page), ré-extrait et met à jour `docs/data/kb/claude/` ; il écrit `raw/kb/claude-modifications.json` (`ajoutees`, `usage_modifie`, `retirees`, `echecs`). Commente les entrées de `ajoutees` et `usage_modifie` selon les règles de la skill `/delta-kb` (`.claude/skills/delta-kb/SKILL.md`, section « Règles de commentaire ») et applique-les avec `scripts/catalogue.py appliquer`. Les entrées `retirees` et un `usage` modifié défavorablement sont des éléments du jour (`type: depreciation` ou `changement_rupture`). Renseigne `kb_refs` des éléments du jour qui touchent une entrée de la base. Le stock d'entrées jamais commentées relève de `/delta-kb`, pas du passage quotidien. Puis `.venv/bin/python scripts/valider.py --perimetre claude --kb` doit rendre 0.
 6. **Validation.** `.venv/bin/python scripts/valider.py --perimetre p --date $J --brut raw/p-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
 7. **Avancement de l'état.** `.venv/bin/python scripts/fetch.py --perimetre p --valider --date $J`. Code 4 = des nouveautés brutes restent en attente : traite-les (élément ou écarté), revalide, relance. Code 0 attendu.
-8. **Commit** sur les seuls chemins du périmètre : `git add docs/data/p state/p.json` (plus `docs/data/kb/claude` pour le périmètre `claude`), message `delta(p): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
+8. **Commit** sur les seuls chemins du périmètre : `git add docs/data/p state/p.json` (plus `docs/data/kb/claude` et `docs/data/versions.json` pour le périmètre `claude`), message `delta(p): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
 
 ## 2. Fin de passage
 

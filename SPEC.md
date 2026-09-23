@@ -23,7 +23,7 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 
 | Agent | Périmètres | Produits | Écrit dans |
 |---|---|---|---|
-| Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json` |
+| Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `state/claude.json`, `state/actu.json` |
 | Codex | `openai` | `chatgpt`, `codex` | `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json` |
 
 Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.
@@ -48,6 +48,7 @@ delta-ia/
 │   ├── fetch.py           # récupération + détection des nouveautés ; --valider piloté par le fichier quotidien
 │   ├── valider.py         # validation des JSON produits avant commit (D15) ; --kb pour la base (§7.4)
 │   ├── catalogue.py       # base de référence : extraction, inventaire, lots, application des commentaires
+│   ├── versions.py        # versions installées des outils -> docs/data/versions.json (D54)
 │   └── deltalib/          # bibliothèque : analyseurs, état, passage, kb/ (documentation, extracteurs, catalogue)
 ├── tests/
 ├── state/
@@ -222,7 +223,7 @@ Génération initiale (D46, D50, D51) : par lots (`scripts/catalogue.py lots`), 
 ## 8. Site
 
 Pages ou onglets :
-- **Aujourd'hui** : les synthèses du jour par périmètre, puis les éléments triés par impact, avec un filtre par produit.
+- **Aujourd'hui** : le bloc « Tes outils » (versions installées de Claude Code, Codex CLI, ChatGPT Desktop et Claude Desktop, dernière version publiée connue de Delta, à jour, en retard ou inconnu ; `docs/data/versions.json`, D54 à D56), les synthèses du jour par périmètre, puis les éléments triés par impact, avec un filtre par produit.
 - **Changelogs** : par produit, en ordre chronologique.
 - **Actu IA**.
 - **Référence** : la base de référence, avec une recherche plein texte et des filtres (produit, catégorie, verdict, statut d'usage).
@@ -295,4 +296,8 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D49 | Champ `usage_nature` (`syntaxe` ou `etapes`) ; « Syntaxe » ou « Accès » sur la page Référence | §7.4 |
 | D50 | Paramètres en quarts ; skills, plugins et MCP regroupés pour openai ; Android exclu | §7.4, `sources.yaml` |
 | D51 | Ordre des lots : commandes, fonctionnalités, skills/plugins/MCP, raccourcis, paramètres | §7.4, skills |
+| D53 | Nouveau design : thème selon le système, fond à halo et quadrillage, en-tête translucide avec logo « Prisme », pilules, cartes à liseré dégradé ; aucune dépendance externe ; contraste AA | §8 |
+| D54 | `scripts/versions.py` : versions installées (commande, paquet), dernière version publiée seulement si une source de Delta la fournit | §4, §8 |
+| D55 | `docs/data/versions.json` dans les chemins de Claude Code et contrôlé par `valider.py` | §3 |
+| D56 | `versions.py` à l'étape 0 de `/delta` ; bloc « Tes outils » sur la page Aujourd'hui | §8, skill |
 

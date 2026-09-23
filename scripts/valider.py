@@ -402,6 +402,40 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     return ids
 
 
+def verifier_versions(racine: Path, r: Rapport) -> None:
+    """D55 : docs/data/versions.json, écrit par scripts/versions.py."""
+    chemin = racine / "docs" / "data" / "versions.json"
+    ou = "versions.json"
+    if not chemin.exists():
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    try:
+        lignes = json.loads(texte)
+    except ValueError as e:
+        r.erreur(ou, f"JSON invalide : {e}")
+        return
+    if not isinstance(lignes, list) or not lignes:
+        r.erreur(ou, "tableau non vide attendu")
+        return
+    attendus = {"outil", "version", "detectee_le", "methode", "derniere_publiee", "source_derniere", "statut"}
+    for i, l in enumerate(lignes):
+        o = f"{ou}[{i}]"
+        if not isinstance(l, dict) or not attendus <= set(l) or set(l) - attendus - {"raison", "note"}:
+            r.erreur(o, f"champs attendus {sorted(attendus)} (+ raison, note)")
+            continue
+        if l["statut"] not in ("a_jour", "en_retard", "inconnu"):
+            r.erreur(o, f"statut inconnu : {l['statut']!r}")
+        if l["version"] is None and not l.get("raison"):
+            r.erreur(o, "version introuvable sans `raison`")
+        if (l["version"] is None or l["derniere_publiee"] is None) and l["statut"] != "inconnu":
+            r.erreur(o, "sans version installée ou publiée, le statut doit être `inconnu`")
+        if l["derniere_publiee"] is not None and not l["source_derniere"]:
+            r.erreur(o, "`derniere_publiee` sans `source_derniere`")
+        if not isinstance(l["detectee_le"], str) or "T" not in l["detectee_le"]:
+            r.erreur(o, "`detectee_le` doit être un horodatage ISO 8601")
+
+
 def ids_kb(racine: Path, perimetre: str) -> set[str] | None:
     kb = "openai" if perimetre == "openai" else "claude"
     dossier = racine / "docs" / "data" / "kb" / kb
@@ -429,6 +463,8 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
             quotidiens[f.stem] = q
     if not quotidiens:
         r.erreur(dossier.name, "aucun fichier quotidien AAAA-MM-JJ.json")
+    if perimetre == "claude":
+        verifier_versions(racine, r)  # D55 : chemin de Claude Code
     connus = ids_kb(racine, perimetre)
     if connus is not None:
         for d, q in quotidiens.items():

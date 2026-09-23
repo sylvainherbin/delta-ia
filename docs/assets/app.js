@@ -136,13 +136,47 @@
     for (const agent of Object.keys(AGENTS)) {
       const t = parAgent[agent];
       const heures = t ? (Date.now() - t.getTime()) / 36e5 : Infinity;
-      const enRetard = heures > ALERTE_HEURES;
-      const libelle = t ? `${AGENTS[agent]} : ${horodatageFr(t.toISOString())}` : `${AGENTS[agent]} : aucun passage`;
-      zone.append(el("span", { class: "agent" + (enRetard ? " alerte" : ""), text: enRetard ? `⚠ ${libelle}` : libelle,
-        title: enRetard ? `Dernier passage il y a plus de ${ALERTE_HEURES} h` : "Dernier passage" }));
-      if (enRetard) alertes.push(t ? `${AGENTS[agent]} n'a pas tourné depuis ${Math.floor(heures)} h` : `${AGENTS[agent]} n'a jamais tourné`);
+      // D36, D53 : vert jusqu'à 24 h, orange de 24 à 36 h, rouge au-delà de 36 h
+      const couleur = heures > ALERTE_HEURES ? "rouge" : heures > 24 ? "orange" : "vert";
+      const quand = t ? horodatageFr(t.toISOString()) : "aucun passage";
+      zone.append(el("span", { class: `agent ${couleur}`, title: t ? `Dernier passage il y a ${Math.floor(heures)} h` : "Aucun passage" },
+        el("span", { class: "point", "aria-hidden": "true" }), el("strong", { text: AGENTS[agent] }), ` ${quand}`,
+        couleur === "rouge" ? el("span", { class: "saut", text: " (en retard)" }) : null));
+      if (couleur === "rouge") alertes.push(t ? `${AGENTS[agent]} n'a pas tourné depuis ${Math.floor(heures)} h` : `${AGENTS[agent]} n'a jamais tourné`);
     }
     return alertes;
+  }
+
+  /* ---------- Tes outils : versions installées (D54 à D56) ---------- */
+  const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu" };
+  async function chargerVersions() {
+    if (etat.versions !== undefined) return;
+    try {
+      const v = await lireJson("data/versions.json");
+      etat.versions = Array.isArray(v) ? v : null;
+    } catch (e) { etat.versions = null; }
+  }
+  function blocOutils() {
+    const lignes = etat.versions;
+    if (!Array.isArray(lignes) || !lignes.length) return null;
+    const corps = el("tbody");
+    for (const l of lignes) {
+      if (!l || typeof l !== "object") continue;
+      const statut = STATUTS_VERSION[l.statut] ? l.statut : "inconnu";
+      corps.append(el("tr", { title: texte(l.note) || texte(l.raison) || null },
+        el("td", { text: texte(l.outil, "?") }),
+        el("td", { class: "v", text: l.version ? String(l.version) : "introuvable" }),
+        el("td", { class: "v col-derniere", text: l.derniere_publiee ? String(l.derniere_publiee) : "—" }),
+        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]))));
+    }
+    const date = lignes.map((l) => l && l.detectee_le).filter(Boolean).sort().pop();
+    return el("section", { class: "outils", "aria-label": "Tes outils" },
+      el("h3", { text: "TES OUTILS" }),
+      el("table", null,
+        el("thead", null, el("tr", null, el("th", { text: "Outil" }), el("th", { text: "Installée" }),
+          el("th", { class: "col-derniere", text: "Dernière publiée" }), el("th", { text: "Statut" }))),
+        corps),
+      el("p", { class: "pied-outils", text: `Relevé le ${date ? horodatageFr(date) : "?"} sur la machine de Sylvain. « Dernière publiée » vient des sources suivies par Delta ; sans source, le statut reste inconnu.` }));
   }
 
   /* ---------- rendu d'un élément ---------- */
@@ -230,6 +264,8 @@
     const frag = document.createDocumentFragment();
     if (alertes.length) frag.append(el("div", { class: "bandeau-alerte", role: "status", text: alertes.join(" · ") + "." }));
     frag.append(el("h2", { text: "Aujourd'hui" }));
+    const outils = blocOutils();
+    if (outils) frag.append(outils);
     const quotidiens = [];
     let elements = [];
     for (const p of PERIMETRES) {
@@ -436,6 +472,7 @@
     lireRoute();
     await chargerNecessaire();
     if (etat.page === "reference") await chargerKb();
+    if (etat.page === "aujourdhui") await chargerVersions();
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
@@ -466,7 +503,7 @@
       return;
     }
     window.addEventListener("hashchange", () => { rendre().catch((e) => console.error("delta:rendu", e)); });
-    console.log("delta:pret");
+    console.log("delta:pret", matchMedia("(prefers-color-scheme: dark)").matches ? "theme=sombre" : "theme=clair");
   }
   demarrer();
 })();

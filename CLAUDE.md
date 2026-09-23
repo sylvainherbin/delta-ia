@@ -4,7 +4,7 @@
 # Conventions du dépôt Delta
 
 - Français, tutoiement. Noms de commandes, d'options et de produits en version originale.
-- Périmètres de Claude Code : `claude`, `claude-code`, `actu`. Écriture uniquement dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json` (SPEC.md §3).
+- Périmètres de Claude Code : `claude`, `claude-code`, `actu`. Écriture uniquement dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `state/claude.json`, `state/actu.json` (SPEC.md §3).
 - `CONTEXTE.md`, `SPEC.md`, `REGLES.md` : lecture seule. Signaler, ne pas corriger.
 - Python 3.12, environnement `.venv` (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`). Pas de `pip` système.
 - Tests : `.venv/bin/pytest -q`. Analyseurs testés sur des échantillons réels dans `tests/fixtures/`.
