@@ -62,7 +62,8 @@ code { font-family: var(--mono); font-size: .9em; background: color-mix(in srgb,
 .saut:focus { left: 8px; top: 8px; background: var(--surface); padding: .5rem; z-index: 20; }
 
 /* ---------- en-tête ---------- */
-.entete { position: sticky; top: 0; z-index: 10; padding: .5rem .5rem 0; }
+/* mode standalone iOS (viewport-fit=cover, barre d'état translucide) : l'en-tête reste sous l'encoche */
+.entete { position: sticky; top: 0; z-index: 10; padding: calc(.5rem + env(safe-area-inset-top, 0px)) calc(.5rem + env(safe-area-inset-right, 0px)) 0 calc(.5rem + env(safe-area-inset-left, 0px)); }
 .entete-carte {
   max-width: 1000px; margin: 0 auto; background: var(--surface); border: 1px solid var(--bord); border-radius: var(--rayon);
   box-shadow: var(--lueur); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: .55rem .6rem .45rem;
@@ -192,11 +193,11 @@ pre.usage.etapes code { font-family: inherit; }
 .carte .source-en { color: var(--doux); font-style: italic; }
 button.plus { font: inherit; font-family: var(--mono); font-size: .78rem; margin: 1rem auto; display: block; padding: .45rem 1.1rem; border-radius: 999px; border: 1px solid var(--a1); background: var(--surface); color: var(--lien); cursor: pointer; }
 
-.pied { max-width: 1000px; margin: 2rem auto; padding: 0 1rem 2rem; font-size: .78rem; color: var(--doux); }
+.pied { max-width: 1000px; margin: 2rem auto; padding: 0 1rem calc(2rem + env(safe-area-inset-bottom, 0px)); font-size: .78rem; color: var(--doux); }
 
 @media (min-width: 720px) {
   body { font-size: 17px; }
-  .entete { padding: .75rem 1rem 0; }
+  .entete { padding: calc(.75rem + env(safe-area-inset-top, 0px)) calc(1rem + env(safe-area-inset-right, 0px)) 0 calc(1rem + env(safe-area-inset-left, 0px)); }
   .entete-carte { padding: .7rem 1rem .55rem; }
   .logo { width: 36px; height: 36px; }
   .marque-nom { font-size: 1.2rem; }
