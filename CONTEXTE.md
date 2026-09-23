@@ -38,7 +38,7 @@ systemd dédiée `calculs.slice` (CPUWeight 20, MemoryMax 9G, pas de swap) **[ob
 
 ### Architecture multi-sessions Claude Code [observé]
 
-Cinq services systemd utilisateur `claude-session@{mint,dev,carnet,trading,delta}` lancent chacun une
+Six services systemd utilisateur `claude-session@{mint,dev,carnet,trading,delta,delta-ia}` lancent chacun une
 session tmux qui exécute `claude --resume <id> --remote-control herbin-<nom>`. Elles tournent en
 permanence et sont pilotées depuis l'iPhone.
 
@@ -48,7 +48,8 @@ permanence et sont pilotées depuis l'iPhone.
 | herbin-dev | développement général (sites, console de pilotage) |
 | herbin-carnet | « coach » : écrit le plan d'entraînement du jour dans le dépôt carnet |
 | herbin-trading | exécution des missions trading-sim (noyaux, campagnes de calcul) |
-| herbin-delta | développement de la web app de veille `delta-ia` (créée le 23/09, dossier `~/projets/delta-ia`) |
+| herbin-delta (« Dev-delta ») | développement de la web app de veille `delta-ia` (créée le 23/09, dossier `~/projets/delta-ia`) |
+| delta-ia | exécution des passages quotidiens de la veille (`/delta`) |
 
 Les sessions se parlent via `SendMessage` / `ListAgents` et Sylvain relaie des prompts entre elles
 **[observé : transcripts]**.
@@ -167,8 +168,9 @@ atteinte à 75 % en milieu de semaine ; une réinitialisation promotionnelle a �
 
 | Élément | Contenu | Nature |
 |---|---|---|
-| Modèle par défaut | `gpt-6-astra`, raisonnement `medium`, `service_tier = "priority"` | [observé] |
-| Profils | `audit` (xhigh), `rapide` (low), `securite` (`gpt-daybreak-blue-latest`, high) ; les trois servent | [observé] ; usage [déclaré] |
+| Modèle par défaut | `gpt-6-sol` depuis le 23/09 (avant : `gpt-6-astra`, puis brièvement `gpt-5.6-sol`), raisonnement `medium`, `service_tier = "priority"` | [observé] |
+| Profils | `audit` (`gpt-6-sol`, xhigh), `rapide` (`gpt-6-sol`, low), `securite` (`gpt-daybreak-blue-latest`, high, conservé volontairement) ; les trois servent | [observé] ; usage et choix [déclaré] |
+| Modèles disponibles | `gpt-6-sol`, `gpt-6-astra`, `gpt-6-luna` présents dans le cache des modèles | [observé] |
 | Interface | app de bureau, parce que le trio CLI + tmux + remote control ne fonctionne pas encore pour Codex | [déclaré] |
 | AGENTS.md global / `prompts/` | absents | [observé] |
 | AGENTS.md projet | carnet seulement ; trading-sim n'en a volontairement pas (décision différée) | [observé] |
@@ -178,10 +180,10 @@ atteinte à 75 % en milieu de semaine ; une réinitialisation promotionnelle a �
 | Projets approuvés | trading-sim et un dossier de travail Codex daté | [observé] |
 | Règles | `rules/default.rules` : 32 Ko pour **une seule** `prefix_rule`, qui autorise un script d'audit entier collé tel quel | [observé] |
 | Activité | installé le 17/09 ; fils nommés « Auditer l'architecture », « Arbitrage », « Auditeur », « Console » ; 6 sessions CLI, l'essentiel se passe dans l'app de bureau | [observé] |
-| Modèle cité dans les audits | GPT-5.6 Sol, raisonnement high | [observé : rapport d'audit] |
+| Modèle cité dans les audits passés | GPT-5.6 Sol, raisonnement high | [observé : rapport d'audit] |
 
 **Rôle de Codex** [déclaré] : il sert surtout à **auditer ce que fait Claude**, sur trading-sim
-et ailleurs (la console de pilotage, par exemple). Modèle le plus utilisé : **GPT-5.6 Sol**.
+et ailleurs (la console de pilotage, par exemple). Modèle principal : **GPT-6 Sol**, qui remplace GPT-5.6 Sol [déclaré, 23/09].
 
 ---
 
@@ -227,9 +229,11 @@ et ailleurs (la console de pilotage, par exemple). Modèle le plus utilisé : **
    relais d'une mission vers herbin-trading, revue machine d'une campagne, synchronisation git.
 6. **Règles Codex** [observé] : `default.rules` contient un script complet autorisé tel quel,
    inutile et illisible ; mieux vaut des préfixes courts.
-7. **Profils Codex** : les trois servent [déclaré], mais ils pointent tous vers `gpt-6-astra`
-   (ou Daybreak), alors que le modèle le plus utilisé est Sol 5.6 [déclaré]. Un profil dédié à
-   Sol, ou un modèle par défaut réaligné, éviterait de le choisir à la main.
+7. **Profils Codex réalignés le 23/09** [observé] : le défaut, `audit` et `rapide` sont sur
+   `gpt-6-sol` ; `securite` reste sur Daybreak par choix [déclaré]. Point de vigilance :
+   le défaut de `config.toml` avait changé dans la journée, probablement depuis l'app de
+   bureau [déduit] ; si le sélecteur de modèle de l'app réécrit ce fichier, vérifier que le
+   réglage tient.
 12. **Codex en CLI + tmux + remote control** [déclaré] : c'est l'objectif, pas encore atteint.
     Une nouveauté Codex qui le permettrait serait une alerte prioritaire.
 8. **Pas d'AGENTS.md sur trading-sim** : c'est un choix délibéré, à ne pas « corriger »
@@ -253,7 +257,7 @@ et ailleurs (la console de pilotage, par exemple). Modèle le plus utilisé : **
 | Projets claude.ai | 3 : « Web app ia » (la veille elle-même, active le 23/09), « Application Identité Numérique Implant… » (privé, restoration-id), « Prothésiste Dentaire Indépendant » (lancement de son activité de sous-traitance) | [observé : capture] |
 | Mémoire claude.ai | activée et jugée utile | [déclaré] |
 | Skills claude.ai | surtout **red-team** ; les autres peu ou pas | [déclaré] |
-| ChatGPT | abonnement Pro ; surtout **GPT-5.6 Sol** ; utilisé aussi hors trading-sim (console de pilotage), principalement pour **auditer le travail de Claude** | [déclaré] |
+| ChatGPT | abonnement Pro ; modèle principal **GPT-6 Sol** (remplace GPT-5.6 Sol le 23/09) ; utilisé aussi hors trading-sim (console de pilotage), principalement pour **auditer le travail de Claude** | [déclaré] |
 | Codex | app de bureau ; profils audit / rapide / securite tous utilisés | [déclaré] |
 | Priorité | trading-sim | [déclaré] |
 | Irritant | méconnaissance des commandes et fonctionnalités, donc un usage sous-optimal | [déclaré] |
