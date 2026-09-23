@@ -4,7 +4,7 @@
  "maj_le": "2026-09-23",
  "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
  "total": 105,
- "commentees": 53,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -2185,14 +2185,17 @@
    "categorie": "fonctionnalites",
    "nom": "Configure your terminal for Claude Code",
    "gabarit": "complet",
-   "description": null,
+   "description": "Page de dépannage du terminal, classée par symptôme : Maj+Entrée qui envoie au lieu d'aller à la ligne (`Ctrl+J` ou `\\` puis Entrée marchent partout), signal sonore ou notification en fin de tâche (`preferredNotifChannel`), configuration de tmux, scintillement et touches Vim dans la saisie.",
    "description_source": "Fix Shift+Enter for newlines, get a terminal bell when Claude finishes, configure tmux, match the color theme, and enable Vim mode in the Claude Code CLI.",
    "usage": "{\n  \"preferredNotifChannel\": \"terminal_bell\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les six sessions tournent sous tmux ; la section tmux dit quoi régler si les touches ou les notifications n'y passent pas, en complément des notifications push déjà actives."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/terminal-config",
@@ -2200,7 +2203,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2209,9 +2212,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-tools-reference",
@@ -2219,14 +2226,17 @@
    "categorie": "fonctionnalites",
    "nom": "Tools reference",
    "gabarit": "complet",
-   "description": null,
+   "description": "Liste des outils intégrés (Agent, Artifact, Bash, CronCreate, Edit, Read, WebFetch…) avec leur description et le fait qu'ils demandent ou non une autorisation. Les noms sont les chaînes exactes à employer dans les règles de permission, les hooks et la configuration des sous-agents.",
    "description_source": "Complete reference for the tools Claude Code can use, including permission requirements and per-tool behavior.",
    "usage": "{\n  \"env\": {\n    \"CLAUDE_CODE_USE_POWERSHELL_TOOL\": \"1\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La politique de capacités de trading-sim refuse déjà WebFetch, WebSearch et le navigateur ; cette table donne les noms exacts à reprendre si la liste doit évoluer."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/tools-reference",
@@ -2234,7 +2244,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2243,9 +2253,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-ultrareview",
@@ -2253,14 +2267,17 @@
    "categorie": "fonctionnalites",
    "nom": "Find bugs with ultrareview",
    "gabarit": "complet",
-   "description": null,
+   "description": "`/code-review ultra` lance une revue de code approfondie dans une session cloud : une flotte d'agents examine la branche ou une PR et chaque bogue signalé est reproduit et vérifié indépendamment. Pour une branche, Claude Code empaquette l'état du dépôt et l'envoie dans un bac à sable cloud ; une boîte de dialogue affiche la portée, les essais gratuits restants et le coût estimé.",
    "description_source": "Run a deep, multi-agent code review in the cloud with /code-review ultra to find and verify bugs before you merge.",
    "usage": "/code-review ultra",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "/code-review ultra 1234",
+   "disponibilite": "Compte claude.ai (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Complément possible aux audits Codex de trading-sim, sur une PR avant fusion ; la revue d'une branche téléverse le dépôt privé, à confronter à la politique de capacités du projet."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/ultrareview",
@@ -2268,7 +2285,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2277,9 +2294,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-voice-dictation",
@@ -2287,14 +2308,17 @@
    "categorie": "fonctionnalites",
    "nom": "Voice dictation",
    "gabarit": "complet",
-   "description": null,
+   "description": "`/voice` active la dictée dans le CLI : la parole est transcrite en direct dans la saisie, en maintenant ou en touchant une touche. L'audio part vers les serveurs d'Anthropic, la transcription ne compte pas dans les limites, et il faut un micro local : pas de dictée en session cloud ni en SSH.",
    "description_source": "Speak your prompts in the Claude Code CLI with hold-to-record or tap-to-record voice dictation.",
    "usage": "/voice\nVoice mode enabled (hold). Hold space to record. Dictation language: en (/config to change).",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"voice\": {\n    \"enabled\": true,\n    \"mode\": \"tap\"\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les sessions sont pilotées depuis l'iPhone par Remote Control, pas devant le micro du PC."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/voice-dictation",
@@ -2302,7 +2326,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2311,9 +2335,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-vs-code",
@@ -2321,14 +2349,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Code in VS Code",
    "gabarit": "complet",
-   "description": null,
+   "description": "Extension VS Code (et Cursor) qui donne une interface graphique à Claude Code : relecture des plans, diffs en ligne, mentions `@fichier` avec plages de lignes, historique des conversations. Elle embarque sa propre copie du CLI.",
    "description_source": "Install and configure the Claude Code extension for VS Code. Get AI coding assistance with inline diffs, @-mentions, plan review, and keyboard shortcuts.",
    "usage": "Explain the logic in @auth (fuzzy matches auth.js, AuthService.ts, etc.)\nWhat's in @src/components/ (include a trailing slash for folders)",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun usage de VS Code dans CONTEXTE ; le travail passe par le terminal sous tmux et l'iPhone."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/vs-code",
@@ -2336,7 +2367,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2345,9 +2376,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-workflows",
@@ -2355,14 +2390,17 @@
    "categorie": "fonctionnalites",
    "nom": "Orchestrate subagents at scale with dynamic workflows",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un dynamic workflow est un script JavaScript, écrit par Claude pour la tâche décrite, qui orchestre en arrière-plan des dizaines à des centaines de sous-agents et recoupe leurs résultats. Il convient aux audits de code entiers, aux grosses migrations et aux recherches vérifiées ; `/workflows` suit les exécutions.",
    "description_source": "Dynamic workflows orchestrate many subagents from a script Claude writes and you can rerun. Use them for codebase audits, large migrations, and cross-checked research.",
    "usage": "    /deep-research What changed in the Node.js permission model between v20 and v22?",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "exemple": "/workflows",
+   "disponibilite": "Plans payants ; sur Pro, à activer dans `/config`",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Workflow compte 13 appels dans les transcripts et l'avertissement est désactivé dans les réglages ; à réserver aux tâches trop grosses pour une session, car chaque exécution multiplie la consommation des limites."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/workflows",
@@ -2370,7 +2408,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2379,9 +2417,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-worktrees",
@@ -2389,14 +2431,17 @@
    "categorie": "fonctionnalites",
    "nom": "Run parallel sessions with worktrees",
    "gabarit": "complet",
-   "description": null,
+   "description": "`claude --worktree <nom>` (ou `-w`) crée un worktree git isolé sous `.claude/worktrees/<nom>/`, sur une nouvelle branche, et y lance Claude, pour que des sessions parallèles sur le même dépôt ne se marchent pas dessus. Un sous-agent peut aussi travailler dans son propre worktree avec `isolation: worktree`.",
    "description_source": "Isolate parallel Claude Code sessions in separate git worktrees so changes don't collide. Covers the --worktree flag, subagent isolation, .worktreeinclude, cleanup, and non-git VCS hooks.",
    "usage": "claude --worktree feature-auth",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "---\nname: refactorer\ndescription: Applies mechanical refactors across many files\nisolation: worktree\n---\n\nApply the requested refactor across every affected file, then run the tests\nand report the results.",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "herbin-delta et delta-ia travaillent dans le même dossier `~/projets/delta-ia` ; un worktree pour la session de développement éviterait qu'un changement en cours croise un passage quotidien. Ajouter `.claude/worktrees/` au `.gitignore`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/worktrees",
@@ -2404,7 +2449,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -2413,9 +2458,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10065433-install-claude-desktop",
@@ -2423,14 +2472,17 @@
    "categorie": "fonctionnalites",
    "nom": "Install Claude Desktop",
    "gabarit": "complet",
-   "description": null,
+   "description": "Installation de Claude Desktop sur macOS, Windows et Linux (bêta), avec un tableau de ce que chaque plan ouvre : Chat pour tous, Claude Code et Cowork à partir de Pro. Sous Linux, Ubuntu 22.04+ ou Debian 12+, x64 ou arm64.",
    "description_source": "The Claude desktop apps bring Claude's capabilities directly to your computer, allowing for seamless integration with your workflow.",
    "usage": "sudo curl -fsSLo /usr/share/keyrings/claude-desktop-archive-keyring.asc https://downloads.claude.ai/claude-desktop/key.asc\necho \"deb [signed-by=/usr/share/keyrings/claude-desktop-archive-keyring.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main\" | sudo tee /etc/apt/sources.list.d/claude-desktop.list\nsudo apt update && sudo apt install claude-desktop",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "macOS, Windows, Linux (bêta)",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude Desktop est déjà installé ; la page Linux de la documentation Claude Code, commentée à part, couvre le dépôt apt et les mises à jour."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10065433-install-claude-desktop",
@@ -2438,7 +2490,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2447,9 +2499,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10065434-use-dictation-on-claude-mobile",
@@ -2457,14 +2513,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use dictation on Claude Mobile",
    "gabarit": "complet",
-   "description": null,
+   "description": "Dans l'app Claude pour iOS et Android, l'icône micro transforme la parole en prompt écrit, et Claude répond par écrit ; à distinguer du mode vocal, qui est une conversation parlée. Les langues autres que l'anglais sont en bêta.",
    "description_source": "Dictation is available to all Claude users (Free, Pro, Max, Team, and Enterprise plans). Support for languages other than English is in beta.",
    "usage": "1. Open Claude for iOS or Android.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans, iOS et Android",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Rien dans CONTEXTE ne signale une gêne à la saisie sur l'iPhone ; la page vise les conversations de l'app."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10065434-use-dictation-on-claude-mobile",
@@ -2472,7 +2531,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2481,9 +2540,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10185728-understanding-claude-s-personalization-features",
@@ -2491,14 +2554,17 @@
    "categorie": "fonctionnalites",
    "nom": "Understanding Claude's personalization features",
    "gabarit": "complet",
-   "description": null,
+   "description": "Présente les réglages de personnalisation de Claude : instructions valables pour tout le compte (Réglages, « Instructions for Claude »), instructions et connaissances propres à chaque Projet, styles de réponse et mémoire. Chacun agit à un niveau différent.",
    "description_source": "Claude offers several ways to personalize your experience. Each serves a different purpose in helping Claude better understand and meet your needs.",
    "usage": "1. Click your initials in the lower left corner.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les règles transversales de Sylvain (français, tutoiement, factuel séparé du déduit) sont répétées dans chaque projet ; côté app Claude, les instructions de compte les poseraient une fois pour toutes les conversations."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
@@ -2506,7 +2572,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2515,9 +2581,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10263469-use-claude-app-intents-shortcuts-and-widgets-on-ios",
@@ -2525,14 +2595,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude app intents, shortcuts, and widgets on iOS",
    "gabarit": "complet",
-   "description": null,
+   "description": "Sur iOS 18 et plus, l'intent « Ask Claude » s'utilise depuis Spotlight, Siri, le menu Partager et l'app Raccourcis, à côté d'un widget et d'une commande « Analyze Photo with Claude ».",
    "description_source": "The features described in this guide are available on iOS 18 and above.",
    "usage": "1. Open the Shortcuts app on your iOS device",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "iOS 18 et plus",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les raccourcis iOS de carnet sont volontairement de simples transports, toute la logique restant dans l'app ; y insérer Claude irait contre ce choix."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10263469-use-claude-app-intents-shortcuts-and-widgets-on-ios",
@@ -2540,7 +2613,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2549,9 +2622,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10302511-access-claude-for-ios-on-your-lock-screen-control-center-and-actio",
@@ -2559,14 +2636,17 @@
    "categorie": "fonctionnalites",
    "nom": "Access Claude for iOS on your Lock Screen, Control Center, and Action button",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ajoute l'ouverture de Claude pour iOS à l'écran verrouillé, au centre de contrôle ou au bouton Action, en quelques étapes de personnalisation d'iOS.",
    "description_source": "The features described in this guide are available on iOS 18 and above.",
    "usage": "1. Tap and hold your Lock Screen to open Customize Wallpaper",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "iOS 18 et plus",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "L'iPhone est l'interface principale de pilotage des sessions ; ouvrir l'app Claude depuis le bouton Action ou l'écran verrouillé raccourcit l'accès, en cinq minutes de réglage."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10302511-access-claude-for-ios-on-your-lock-screen-control-center-and-action-button",
@@ -2574,7 +2654,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2583,9 +2663,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-10684626-enable-and-use-web-search",
@@ -2593,14 +2677,17 @@
    "categorie": "fonctionnalites",
    "nom": "Enable and use web search",
    "gabarit": "complet",
-   "description": null,
+   "description": "Active la recherche web dans les conversations de Claude (bouton « + » en bas de la zone de saisie), pour des réponses appuyées sur des données récentes, avec les modèles listés (Opus 5.5, Fable 5.1, Sonnet 5…).",
    "description_source": "You can have Claude search the internet to provide you with up-to-date information and insights when using the following models:",
    "usage": "1. Click on the “+” button in the lower left corner of the chat window.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Fonction de base de l'app ; aucun besoin particulier dans CONTEXTE, et trading-sim refuse volontairement l'accès web côté Claude Code."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/10684626-enable-and-use-web-search",
@@ -2608,7 +2695,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2617,9 +2704,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11088861-use-research-on-claude",
@@ -2627,14 +2718,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use research on Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "Le mode Research enchaîne plusieurs recherches qui s'appuient les unes sur les autres, dans le web et les sources connectées, et rend en quelques minutes une réponse avec citations vérifiables. Il exige la recherche web activée et s'allume par « + » puis « Research ».",
    "description_source": "Research is available for users with paid Claude plans (Pro, Max, Team, or Enterprise) using Claude on the web, Claude Desktop, or Claude Mobile.",
    "usage": "Research is available for users with paid Claude plans (Pro, Max, Team, or Enterprise) using Claude on the web, Claude Desktop, or Claude Mobile.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise ; web, Desktop et mobile",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sur trading-sim, la recherche et l'arbitrage reviennent à ChatGPT « Work » ; CONTEXTE ne signale pas d'autre besoin de recherche documentaire."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11088861-use-research-on-claude",
@@ -2642,7 +2736,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2651,9 +2745,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11095361-when-should-i-use-web-search-extended-thinking-and-research",
@@ -2661,14 +2759,17 @@
    "categorie": "fonctionnalites",
    "nom": "When should I use web search, extended thinking, and research?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Guide de choix entre recherche web (questions factuelles simples), réflexion étendue (raisonnement complexe sans besoin du web) et Research (enquête approfondie sur plusieurs sources).",
    "description_source": "Claude offers several powerful capabilities to help you find information and solve problems. Understanding when to use each option—web search, extended thinking, and research—can help you get the best results for your specific needs. This guide explains the ideal use cases for each feature and how they can work together to enhance your experience.",
    "usage": "Claude offers several powerful capabilities to help you find information and solve problems. Understanding when to use each option—web search, extended thinking, and research—can help you get the best results for your specific needs. This guide explains the ideal use cases for each feature and how they can work together to enhance your experience.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Guide général sans lien avec un projet ou une habitude de CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research",
@@ -2676,7 +2777,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2685,9 +2786,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11101966-use-voice-mode",
@@ -2695,14 +2800,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use voice mode",
    "gabarit": "complet",
-   "description": null,
+   "description": "Le mode vocal est une conversation parlée avec Claude, qui répond à voix haute, avec recherche web et outils connectés ; bêta sur mobile, Desktop et web, conçu d'abord pour le téléphone.",
    "description_source": "Voice mode allows you to have complete spoken conversations with Claude. Instead of typing a prompt and reading a written response, you can speak to Claude and listen to its responses, making it easier to use when your hands are busy but your mind isn't.",
    "usage": "1. Log in to your Claude account and start a new chat.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans (bêta) ; mobile, Desktop et web",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "L'app iPhone sert surtout à piloter les sessions Claude Code, pas à converser ; aucun usage vocal dans CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11101966-use-voice-mode",
@@ -2710,7 +2818,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2719,9 +2827,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11473015-retrieval-augmented-generation-rag-for-projects",
@@ -2729,14 +2841,17 @@
    "categorie": "fonctionnalites",
    "nom": "Retrieval augmented generation \\(RAG\\) for projects",
    "gabarit": "complet",
-   "description": null,
+   "description": "Quand les connaissances d'un Projet approchent la limite de la fenêtre de contexte, Claude passe automatiquement en recherche documentaire (RAG) : un outil de recherche va chercher les passages utiles au lieu de tout charger, ce qui porte la capacité jusqu'à 10 fois plus de contenu.",
    "description_source": "RAG for projects is available on paid plans (Pro, Max, Team, and Enterprise).",
    "usage": "RAG for projects is available on paid plans (Pro, Max, Team, and Enterprise).",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Bascule automatique, sans réglage ; les trois Projets claude.ai de Sylvain en profiteront seuls s'ils grossissent."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects",
@@ -2744,7 +2859,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2753,9 +2868,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
@@ -2763,14 +2882,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude’s chat search and memory to build on previous context",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude peut chercher dans les conversations passées (hors Projets, ou à l'intérieur d'un Projet) et retenir le contexte des échanges pour les conversations et tâches Cowork suivantes. La mémoire se gère dans Réglages > Mémoire ; l'export de l'ancienne mémoire n'était proposé que jusqu'au 9 septembre 2026.",
    "description_source": "You can prompt Claude to search through your previous conversations to find and reference relevant information in new chats. Claude can also remember context from your chats and carry it into new conversations and Cowork tasks. This article explains how chat search and memory work, what Claude does and doesn't remember, how to review and edit what's saved, and how to turn these features on or off.",
    "usage": "You can prompt Claude to search through your previous conversations to find and reference relevant information in new chats. Claude can also remember context from your chats and carry it into new conversations and Cowork tasks. This article explains how chat search and memory work, what Claude does and doesn't remember, how to review and edit what's saved, and how to turn these features on or off.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Recherche dans les conversations : Pro, Max, Team et Enterprise",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "La mémoire claude.ai est activée et jugée utile par Sylvain ; chercher une ancienne conversation d'un Projet (par exemple « Web app ia ») évite de recopier un contexte déjà donné."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
@@ -2778,7 +2900,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2787,9 +2909,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-11869619-use-claude-with-ios-apps",
@@ -2797,14 +2923,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude with iOS apps",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude se connecte aux apps système d'iOS pour rédiger messages, courriels et événements, gérer les rappels, afficher des lieux, et lire et analyser les données Santé avec des graphiques natifs (Pro et Max).",
    "description_source": "Claude can now connect with your iOS device's system apps to help you take action directly from your conversations. When you chat with Claude, it can draft messages, emails, or calendar events, find locations, manage reminders, and analyze your health and fitness data — all seamlessly integrated with your mobile apps.",
    "usage": "1. Ask Claude to help draft a message or email (for example: \"Help me write a text to my team about tomorrow's meeting\").",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans ; données Santé en Pro et Max",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Carnet affiche les nuits de l'Apple Watch (durée de sommeil, SpO2) ; interroger Santé depuis l'app Claude permettrait de vérifier qu'un relevé affiché dans carnet correspond à la source."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11869619-use-claude-with-ios-apps",
@@ -2812,7 +2941,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2821,9 +2950,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-12012173-get-started-with-claude-in-chrome",
@@ -2831,14 +2964,17 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude in Chrome",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude in Chrome est une extension qui lit, clique et navigue sur les sites aux côtés de l'utilisateur, lancée depuis le panneau latéral de Chrome, Cowork ou Claude Code. Avec Claude Code, elle sert à tester et déboguer une app déployée (console, requêtes réseau, DOM).",
    "description_source": "Claude in Chrome is a browser extension that allows Claude to read, click, and navigate websites alongside you. You can launch Claude in Chrome tasks from the side panel in your Chrome browser, or through Claude Cowork or Claude Code.",
    "usage": "1. Click your initials in the lower left corner, then select “Settings.”",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Pro, Max, Team et Enterprise ; panneau latéral en bêta",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Déjà appelée 4 fois depuis Claude Code mais souvent déconnectée ; la section d'intégration à Claude Code s'applique à la vérification de carnet déployé sur GitHub Pages."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
@@ -2846,7 +2982,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2855,9 +2991,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-12111783-create-and-edit-files-with-claude",
@@ -2865,14 +3005,17 @@
    "categorie": "fonctionnalites",
    "nom": "Create and edit files with Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude exécute du code dans la conversation pour créer ou modifier des fichiers téléchargeables : tableurs Excel avec formules, présentations, documents Word et PDF. Activé par défaut sur Free, Pro et Max, avec accès réseau pour installer des paquets.",
    "description_source": "Claude can execute code to create and work with files directly in your conversations. Prompt Claude using natural language to generate Excel spreadsheets, PowerPoint presentations, Word documents, and PDF files that you can download and use immediately.",
    "usage": "Create a monthly budget tracker with income, expenses categories, and\nautomatic calculations for savings.",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "Create a monthly budget tracker with income, expenses categories, and\nautomatic calculations for savings.",
+   "disponibilite": "Tous les plans ; web, Desktop et mobile",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les skills docx, pdf, xlsx et pptx sont déjà synchronisés dans Claude Code, et aucun projet de CONTEXTE ne produit ce type de document."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude",
@@ -2880,7 +3023,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2889,9 +3032,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-12123587-import-and-export-your-memory-from-claude",
@@ -2899,14 +3046,17 @@
    "categorie": "fonctionnalites",
    "nom": "Import and export your memory from Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "Importe dans Claude la mémoire d'un autre assistant (en lui demandant d'abord la liste de ce qu'il sait de l'utilisateur) ou exporte la mémoire de Claude pour sauvegarde ou migration.",
    "description_source": "Memory imports are available for Free, Pro, Max, and Team plans on the web and Claude Desktop.",
    "usage": "Memory imports are available for Free, Pro, Max, and Team plans on the web and Claude Desktop.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Free, Pro, Max et Team ; web et Desktop",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La mémoire de ChatGPT n'a pas vocation à passer dans Claude : les deux jouent des rôles distincts dans l'orchestration à trois IA."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12123587-import-and-export-your-memory-from-claude",
@@ -2914,7 +3064,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2923,9 +3073,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-12260368-use-incognito-chats",
@@ -2933,14 +3087,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use incognito chats",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une conversation incognito n'est enregistrée ni dans l'historique ni dans la mémoire et ne sert pas à l'entraînement, mais elle est conservée 30 jours. Dans la nouvelle expérience Claude, elle s'ouvre dans l'ancienne interface, sans création de fichiers ni exécution de code.",
    "description_source": "Note: If you have the new Claude experience, incognito chats open in the previous chat experience, so Claude can't create files or run code in them.",
    "usage": "1. Click the ghost icon to enable incognito mode.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de conversation hors mémoire dans CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12260368-use-incognito-chats",
@@ -2948,7 +3105,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2957,9 +3114,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-12902446-claude-in-chrome-permissions-guide",
@@ -2967,14 +3128,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude in Chrome permissions guide",
    "gabarit": "complet",
-   "description": null,
+   "description": "Explique les modes de permission de Claude in Chrome : approbation manuelle de chaque action, approbation automatique avec contrôle de sécurité, ou aucune approbation, ainsi que les autorisations par site.",
    "description_source": "This guide explains how to control what Claude can access and do when using Claude in Chrome. Understanding permissions helps you balance productivity with security.",
    "usage": "This guide explains how to control what Claude can access and do when using Claude in Chrome. Understanding permissions helps you balance productivity with security.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les modes décrits se choisissent dans le panneau latéral et Claude Desktop ; l'usage observé de Chrome passe par Claude Code et reste marginal (4 appels)."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12902446-claude-in-chrome-permissions-guide",
@@ -2982,7 +3146,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -2991,9 +3155,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13345190-get-started-with-claude-cowork",
@@ -3001,14 +3169,17 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Cowork apporte les capacités agentiques de Claude Code au travail hors code : Claude planifie, exécute et livre une tâche avec les fichiers, le navigateur et les apps. Il fusionne progressivement avec le chat sur Pro et Max ; il est disponible sur Desktop, le web, le mobile et le panneau latéral de Chrome selon le plan.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Analyzes your request and creates a plan.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise ; web et mobile sur Pro, Max et Team",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE range Cowork parmi les fonctions à explorer, et Sylvain veut exploiter tout ce qui sert au développement ; sous Linux, Cowork dans Claude Desktop exige une VM KVM, lourde pour 14 Gio, alors que la version web ne la demande pas."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork",
@@ -3016,7 +3187,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3025,9 +3196,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13364135-use-claude-cowork-safely",
@@ -3035,14 +3210,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Cowork safely",
    "gabarit": "complet",
-   "description": null,
+   "description": "Présente les risques de Cowork, qui lit des fichiers, navigue, exécute du code et utilise des apps : les outils d'écriture (supprimer un fichier, créer un événement, cliquer) sont les plus risqués, et la page recommande de limiter ce que Claude peut atteindre et de garder une supervision humaine sur les tâches sensibles.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "**Note:** Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in **[Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823)**, or read …",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "À lire avant un premier essai de Cowork : Gmail, Drive et Calendar sont connectés sans être utilisés, et un courriel reçu de laboratoire ne doit jamais devenir une instruction."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
@@ -3050,7 +3228,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3059,9 +3237,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13641943-visual-and-interactive-content",
@@ -3069,14 +3251,17 @@
    "categorie": "fonctionnalites",
    "nom": "Visual and interactive content",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude répond par un contenu visuel quand il est plus clair que le texte : widgets de données réelles (météo, recettes, qui exigent la recherche web), visuels construits pour la question, et questions structurées par éléments interactifs.",
    "description_source": "Claude can respond with visual content when it’s clearer than plain text. Some visuals display real-world data—like weather and recipes. Others are custom-built by Claude for your specific question, like a diagram or an interactive chart. Claude can also ask you structured questions using interactive inputs instead of asking you to type.",
    "usage": "Claude can respond with visual content when it’s clearer than plain text. Some visuals display real-world data—like weather and recipes. Others are custom-built by Claude for your specific question, like a diagram or an interactive chart. Claude can also ask you structured questions using interactive inputs instead of asking you to type.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Comportement automatique de l'app, sans réglage ni lien avec un projet de CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13641943-visual-and-interactive-content",
@@ -3084,7 +3269,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3093,9 +3278,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13854387-schedule-recurring-tasks-in-claude-cowork",
@@ -3103,14 +3292,17 @@
    "categorie": "fonctionnalites",
    "nom": "Schedule recurring tasks in Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une tâche planifiée Cowork se décrit une fois puis s'exécute à intervalle régulier ou à la demande, avec les mêmes outils connectés, skills et plugins qu'une tâche Cowork ordinaire : synthèses quotidiennes, rapports hebdomadaires, veille, rangement de fichiers.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Describe the task and how often it should run, for example, \"Every Monday at 9 AM, summarize last week's messages in my team's Slack channels.\"",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les exemples (synthèses Slack, courriels, rapports Drive) ne correspondent à aucun usage de CONTEXTE ; côté code, les routines de Claude Code sont commentées à part."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork",
@@ -3118,7 +3310,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3127,9 +3319,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13947068-assign-tasks-from-anywhere-in-claude-cowork",
@@ -3137,14 +3333,17 @@
    "categorie": "fonctionnalites",
    "nom": "Assign tasks from anywhere in Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Dispatch permet d'envoyer une tâche depuis le téléphone pour qu'elle s'exécute sur l'ordinateur, qui doit rester allumé avec Claude Desktop ouvert. Bêta limitée sur Pro et Max, Dispatch n'est plus ouvert aux nouveaux utilisateurs.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Download or update Claude Desktop.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta limitée, utilisateurs existants)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Fermé aux nouveaux utilisateurs, et Remote Control couvre déjà le pilotage de la machine depuis l'iPhone."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13947068-assign-tasks-from-anywhere-in-claude-cowork",
@@ -3152,7 +3351,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3161,9 +3360,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-13979539-custom-visuals-in-chat-and-cowork",
@@ -3171,14 +3374,17 @@
    "categorie": "fonctionnalites",
    "nom": "Custom visuals in chat and Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude génère dans la conversation des diagrammes, graphiques et visuels interactifs (curseurs, boutons, plein écran), de lui-même ou sur demande, par exemple un graphique interactif à partir d'un CSV téléversé. Bêta sur le web et Desktop.",
    "description_source": "Claude can generate custom diagrams, charts, and interactive visuals directly in your conversation. When a visual would explain something better than text, Claude builds one from scratch—shaped to your specific question, rendered inline as part of the response.",
    "usage": "Claude can generate custom diagrams, charts, and interactive visuals directly in your conversation. When a visual would explain something better than text, Claude builds one from scratch—shaped to your specific question, rendered inline as part of the response.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans, web et Desktop (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Rien à activer, et les analyses de trading-sim passent par Claude Code et ChatGPT, pas par le chat de Claude."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/13979539-custom-visuals-in-chat-and-cowork",
@@ -3186,7 +3392,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3195,9 +3401,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14116274-organize-your-tasks-with-projects-in-claude-cowork",
@@ -3205,14 +3415,17 @@
    "categorie": "fonctionnalites",
    "nom": "Organize your tasks with projects in Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Les projets de Cowork regroupent des tâches liées dans un espace avec ses fichiers, son contexte, ses instructions et sa mémoire ; ils fonctionnent comme les Projets de Claude et exigent la dernière version de Claude Desktop.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "**Note:** Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in **[Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823)**, or read …",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Rien de plus que les Projets claude.ai déjà utilisés tant que Cowork n'est pas adopté."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14116274-organize-your-tasks-with-projects-in-claude-cowork",
@@ -3220,7 +3433,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3229,9 +3442,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14128542-let-claude-use-your-computer-in-cowork",
@@ -3239,14 +3456,17 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude use your computer in Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur, et en dernier recours par l'écran (clics, saisie). Bêta sur Pro et Max.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. **Connectors.** If a connector is available—like Gmail, Google Drive, Microsoft 365, or Slack—Claude uses it. This is the fastest and most reliable path.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max, macOS et Windows (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé à macOS et Windows alors que la machine est sous Linux Mint."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14128542-let-claude-use-your-computer-in-cowork",
@@ -3254,7 +3474,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3263,9 +3483,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14503520-available-beta-and-research-preview-features",
@@ -3273,14 +3497,17 @@
    "categorie": "fonctionnalites",
    "nom": "Available beta and research preview features",
    "gabarit": "complet",
-   "description": null,
+   "description": "Explique les étiquettes bêta (assez stable pour un usage régulier) et aperçu de recherche (plus précoce, susceptible de changer fortement), et ce qu'elles impliquent.",
    "description_source": "Claude offers some features in beta or research preview before they become generally available. This article explains what those labels mean, which features they apply to, and what to expect when you use them.",
    "usage": "Claude offers some features in beta or research preview before they become generally available. This article explains what those labels mean, which features they apply to, and what to expect when you use them.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Page d'information sans action ; la base signale déjà le statut de chaque fonction."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14503520-available-beta-and-research-preview-features",
@@ -3288,7 +3515,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3297,9 +3524,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14553240-give-claude-context-claude-md-and-better-prompts",
@@ -3307,14 +3538,17 @@
    "categorie": "fonctionnalites",
    "nom": "Give Claude context: CLAUDE.md and better prompts",
    "gabarit": "complet",
-   "description": null,
+   "description": "Guide en deux parties : CLAUDE.md, lu automatiquement au début de chaque session et fusionné du plus général au plus spécifique selon son emplacement, puis quelques habitudes de prompt qui rendent Claude Code plus efficace.",
    "description_source": "Claude Code works well out of the box, but it becomes noticeably more effective once it knows your project's conventions and once you adopt a few prompting habits. This guide covers both.",
    "usage": "CLAUDE.md",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE relève l'absence de `~/.claude/CLAUDE.md` global et un `trading-sim/CLAUDE.md` périmé (6,7 Go de RAM, `.venv` annoncé) ; le tableau des emplacements dit où poser chaque règle."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14553240-give-claude-context-claude-md-and-better-prompts",
@@ -3322,7 +3556,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3331,9 +3565,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14604416-get-started-with-claude-design",
@@ -3341,14 +3579,17 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude Design",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Design crée par conversation des maquettes, prototypes interactifs et pages visuelles, dans une conversation, l'onglet Artifacts, claude.ai/design ou Claude Code (`/design`). Bêta, activé par défaut sur Pro et Max.",
    "description_source": "Claude Design lets you create designs, interactive prototypes, one-pagers, and other visual work by having a conversation with Claude. You can use it in any conversation with Claude, including in Claude Code and the Artifacts tab, and all of its features come with it, including on-canvas editing and importing your design system. To make presentations, use Claude Slides. This guide walks you through creating your first design, iterating on it, and getting …",
    "usage": "1. Start a design from a conversation, the Artifacts tab, or claude.ai/design.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Carnet a un travail d'interface en cours (courbes de nuit dans Stats) ; une maquette `/design` avant d'écrire le composant React éviterait des allers-retours. Les deux sites sont en maintenance."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14604416-get-started-with-claude-design",
@@ -3356,7 +3597,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3365,9 +3606,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14661296-use-claude-security",
@@ -3375,14 +3620,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Security",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Security, intégré à Claude, analyse un code en parallèle, valide ses résultats en plusieurs étapes et renvoie vers une session Claude Code pour relire le correctif. En bêta publique pour les plans Enterprise.",
    "description_source": "Claude Security is a capability built into Claude that scans codebases for security vulnerabilities and suggests targeted patches for human review. It helps teams find and fix issues that traditional methods often miss. Learn more about Claude security.",
    "usage": "1. **Scan your code in parallel** — Claude Security understands context, traces data flows across files, and identifies complex, multi-component vulnerability patterns that traditional scanners might not detect.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Enterprise (bêta publique)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé aux plans Enterprise ; en Max, le plugin Claude Security de Claude Code, commenté à part, fait l'équivalent."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14661296-use-claude-security",
@@ -3390,7 +3638,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3399,9 +3647,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14729249-use-artifacts-in-claude-cowork",
@@ -3409,14 +3661,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use artifacts in Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Cowork construit des artefacts interactifs (tableaux de bord, suivis, pages de référence). Depuis le 19 août 2026, ils sont enregistrés dans le compte, partageables et ouverts aussi sur le web ; les artefacts vivants antérieurs gardent leurs propres règles.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Open Cowork and select \"Artifacts\" from the sidebar.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Lié à Cowork, pas encore adopté ; les artefacts de l'app et de Claude Code sont commentés à part."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14729249-use-artifacts-in-claude-cowork",
@@ -3424,7 +3679,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3433,9 +3688,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14729294-open-claude-desktop-with-a-link",
@@ -3443,14 +3702,17 @@
    "categorie": "fonctionnalites",
    "nom": "Open Claude Desktop with a link",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Desktop, y compris sous Linux, répond au schéma `claude://` : un lien ouvre une nouvelle conversation au prompt prérempli, une conversation ou un Projet existant, ou une session Code dans un dossier donné. Les paramètres doivent être encodés, et `q` est tronqué vers 14 000 caractères.",
    "description_source": "Claude for macOS, Windows, and Linux respond to the claude:// URL scheme, much like a browser responds to the https:// scheme. You can use these links from a website, a script, or another app to open Claude Desktop and jump straight to a chat, a Cowork session, or a Code session.",
    "usage": "claude://claude.ai/new\nclaude://claude.ai/new?q=Summarize%20this%20week%27s%20release%20notes",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "claude://code/new\nclaude://code/new?q=Fix%20the%20failing%20test&folder=%2FUsers%2Fme%2Frepo",
+   "disponibilite": "macOS, Windows et Linux",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude Desktop ne sert pas au pilotage quotidien, qui passe par l'iPhone et les sessions tmux."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14729294-open-claude-desktop-with-a-link",
@@ -3458,7 +3720,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3467,9 +3729,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-14898120-open-the-claude-mobile-app-with-a-link",
@@ -3477,14 +3743,17 @@
    "categorie": "fonctionnalites",
    "nom": "Open the Claude mobile app with a link",
    "gabarit": "complet",
-   "description": null,
+   "description": "L'app Claude pour iOS et Android répond au schéma `claude://` : un lien ouvre l'onglet Code, une session Code existante par son identifiant, ou une nouvelle session au prompt prérempli. Utilisable depuis un raccourci, une app tierce ou une page web.",
    "description_source": "The Claude mobile apps for iOS and Android respond to the claude:// URL scheme. Third-party apps, shortcuts, and web pages can use these links to open the Code tab, jump to an existing session, or prefill the new-session composer. All parameter values must be URL-encoded.",
    "usage": "claude://",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "claude://code/{session-id}",
+   "disponibilite": "iOS et Android, compte avec accès à Claude Code",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Un raccourci iOS ou un lien de la console de pilotage vers `claude://code/{session-id}` ouvrirait directement herbin-trading ou herbin-carnet, sans passer par la liste des sessions."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/14898120-open-the-claude-mobile-app-with-a-link",
@@ -3492,7 +3761,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3501,9 +3770,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-15424964-claude-fable-models-on-your-plan",
@@ -3511,14 +3784,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Fable models on your plan",
    "gabarit": "complet",
-   "description": null,
+   "description": "Sur Max, Fable 5 et Fable 5.1 sont inclus mais plafonnés à 50 % des limites hebdomadaires, qu'ils consomment plus vite que les autres modèles ; au-delà, on continue en crédits d'usage ou on change de modèle. La promotion Fable 5 s'est terminée le 19 juillet 2026.",
    "description_source": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Max : inclus jusqu'à 50 % de la limite hebdomadaire",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Fable 5.1 est le deuxième modèle le plus utilisé et sa limite a atteint 75 % en milieu de semaine ; atteindre le plafond fait basculer vers les crédits d'usage, payants, ou vers Opus."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
@@ -3526,7 +3802,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3535,9 +3811,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-15520349-use-claude-cowork-on-web-desktop-and-mobile",
@@ -3545,14 +3825,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Cowork on web, desktop, and mobile",
    "gabarit": "complet",
-   "description": null,
+   "description": "Cowork suit le compte sur Desktop, le web, le mobile et le panneau latéral de Chrome : sessions et fichiers se retrouvent sur tous les appareils, et une session se démarre depuis la zone de saisie commune au chat.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Start a task on any surface.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Team sur web et mobile (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Complément de la page de démarrage de Cowork, commentée à part ; rien de plus à faire avant un premier essai."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile",
@@ -3560,7 +3843,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3569,9 +3852,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-15594475-what-is-claude-tag",
@@ -3579,14 +3866,17 @@
    "categorie": "fonctionnalites",
    "nom": "What is Claude Tag?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Depuis le 3 août 2026, Claude in Slack est remplacé par Claude Tag : `@Claude` prend une tâche dans un canal, en message direct ou dans le panneau assistant de Slack, sous sa propre identité et avec les outils de l'organisation.",
    "description_source": "Claude in Slack switched over to the new Claude Tag experience on August 3, 2026. To integrate Claude and Slack, use Claude Tag instead. Learn how to set up Claude Tag or migrate from the earlier Claude in Slack.",
    "usage": "**[Claude in Slack](https://claude.com/product/tag)** switched over to the new Claude Tag experience on August 3, 2026. To integrate Claude and Slack, use Claude Tag instead. Learn how to **[set up Claude Tag](https://claude.com/docs/claude-tag/admins/setup-overview)** or **[migrate from the earlier Claude in Slack](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)**.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Team et Enterprise (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé aux plans Team et Enterprise, et Sylvain n'utilise pas Slack."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/15594475-what-is-claude-tag",
@@ -3594,7 +3884,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3603,9 +3893,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-16607400-use-the-built-in-browser-in-claude-cowork",
@@ -3613,14 +3907,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use the built-in browser in Claude Cowork",
    "gabarit": "complet",
-   "description": null,
+   "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; il peut importer les connexions depuis Firefox sous Linux. Claude Desktop doit rester ouvert et en ligne.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read …",
    "usage": "1. Open the Claude Desktop app and go to **Settings > Cowork**.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Team ; Claude Desktop macOS, Windows, Linux (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "L'extension Chrome est souvent déconnectée ; si Cowork est essayé, ce navigateur intégré à Claude Desktop n'en dépend pas."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork",
@@ -3628,7 +3925,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3637,9 +3934,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-16761823-claude-cowork-and-chat-are-one-claude",
@@ -3647,14 +3948,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Cowork and chat are one Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "La nouvelle expérience Claude fusionne chat et Cowork en une seule conversation : Claude juge seul s'il faut une réponse rapide ou une tâche, qui continue dans le cloud même l'ordinateur fermé. Déploiement progressif sur Pro et Max, sans rien à activer.",
    "description_source": "We’re introducing a new way to use both Claude Cowork and chat that removes the distinction between the two products: in the new experience, these are merged into a single conversation, so you don’t need to decide which option better suits your task before getting started. Ask Claude for what you need, and it can decide which tool to use. Claude can answer a quick question, and it can also take on more complex work, like research, reports, spreadsheets, and presentations, and hand it back as …",
    "usage": "We’re introducing a new way to use both Claude Cowork and chat that removes the distinction between the two products: in the new experience, these are merged into a single conversation, so you don’t need to decide which option better suits your task before getting started. Ask Claude for what you need, and it can decide which tool to use. Claude can answer a quick question, and it can also take on more complex work, like research, reports, spreadsheets, and presentations, and hand it back as …",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (déploiement progressif)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Changement d'interface déployé automatiquement, sans réglage à faire."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude",
@@ -3662,7 +3966,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3671,9 +3975,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-16762496-share-a-chat-with-specific-people",
@@ -3681,14 +3989,17 @@
    "categorie": "fonctionnalites",
    "nom": "Share a chat with specific people",
    "gabarit": "complet",
-   "description": null,
+   "description": "Partage une conversation avec des personnes invitées par courriel : elles voient un instantané, sans pouvoir répondre, copier ni continuer la conversation, et le lien ne fonctionne que pour l'adresse invitée.",
    "description_source": "You can share a chat with specific people by inviting them by email. This is the default way to share a chat and keeps it private to the people you choose. Invited people can view a snapshot of the chat but can't reply, copy it into their own account, or continue the conversation.",
    "usage": "1. Open the chat and click the \"Share\" button in the upper right corner.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Tous les plans",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sylvain travaille seul et relaie les missions par fichiers .md entre les IA, pas par conversations partagées."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/16762496-share-a-chat-with-specific-people",
@@ -3696,7 +4007,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3705,9 +4016,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-16923645-get-started-with-claude-docs",
@@ -3715,14 +4030,17 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude Docs",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Docs rédige des documents vivants enregistrés dans le compte (titres, tableaux, onglets), qu'on édite soi-même ou avec Claude, qu'on partage ou exporte ; Claude part des fichiers, de la mémoire, des Projets et des connecteurs. Bêta, activé par défaut sur Pro, Max et Team.",
    "description_source": "Claude Docs lets you write living documents with Claude and the people you work with. Ask for a doc in any conversation, and Claude drafts it in front of you, asks clarifying questions up front, and leaves comments explaining its choices. You can edit the doc yourself, ask Claude for the next pass, and share it by link, without moving your work into another tool.",
    "usage": "1. Go to the **[Artifacts](https://claude.ai/artifacts)** tab.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise (bêta)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les missions trading-sim sont des fichiers .md hachés en SHA-256 dans un dossier local ; un document vivant hors fichier sortirait de cette chaîne de vérification."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/16923645-get-started-with-claude-docs",
@@ -3730,7 +4048,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3739,9 +4057,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-17007452-what-is-a-limit-reset",
@@ -3749,14 +4071,17 @@
    "categorie": "fonctionnalites",
    "nom": "What is a limit reset?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une remise à zéro, accordée de temps en temps, remet à plein soit la limite de session de cinq heures, soit la limite hebdomadaire, au moment choisi, dans Réglages > Utilisation. Elle est irréversible, ne décale pas la réinitialisation hebdomadaire habituelle et peut avoir une date d'expiration.",
    "description_source": "Limit resets are given occasionally to eligible plans, and set your usage limits back to full when you choose to use one.",
    "usage": "1. Go to **[Settings > Usage](https://claude.ai/settings/usage)** on the web or in Claude Desktop.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Plans éligibles",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Une remise à zéro promotionnelle a servi le 23/09 ; comme elle est irréversible et que la date habituelle ne bouge pas, la garder pour une semaine où la limite bloque une campagne trading-sim, en surveillant son expiration."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/17007452-what-is-a-limit-reset",
@@ -3764,7 +4089,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3773,9 +4098,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-8241126-upload-files-to-claude",
@@ -3783,14 +4112,17 @@
    "categorie": "fonctionnalites",
    "nom": "Upload files to Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "Téléverser des documents (PDF, DOCX, CSV, TXT, HTML, ODT…) et des images dans une conversation, avec les types acceptés et les limites de taille.",
    "description_source": "This article explains how to upload documents and images to Claude, including supported file types, size limits, and how to get started.",
    "usage": "1. Click the \"+\" button in the lower left corner of the chat box",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Fonction de base ; le travail sur fichiers de Sylvain passe par Claude Code sur la machine."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/8241126-upload-files-to-claude",
@@ -3798,7 +4130,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3807,9 +4139,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-8606394-how-large-is-the-context-window-on-paid-claude-plans",
@@ -3817,14 +4153,17 @@
    "categorie": "fonctionnalites",
    "nom": "How large is the context window on paid Claude plans?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Donne la taille de la fenêtre de contexte par modèle sur les plans payants, pour le chat, Claude Code et Cowork : 1M de jetons pour Fable 5.1, Opus 5.5 et Opus 5, 500K pour Fable 5, Opus 4.8 et Opus 4.7.",
    "description_source": "This article explains how large the context window is on paid Claude plans (Pro, Max, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
    "usage": "claude-opus-4-6[1m]",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Opus 5, Fable 5.1 et Opus 5.5, les trois modèles les plus utilisés, ont tous 1M ; plus la fenêtre se remplit, plus chaque tour coûte, d'où l'intérêt du `/compact` déjà tapé par Sylvain avant qu'une session grossisse."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
@@ -3832,7 +4171,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3841,9 +4180,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-9487310-what-are-artifacts-and-how-do-i-use-them",
@@ -3851,14 +4194,17 @@
    "categorie": "fonctionnalites",
    "nom": "What are artifacts and how do I use them?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un artefact est ce que Claude produit pour être montré (design, présentation, document, tableau de bord, petit outil interactif) : il s'ouvre à côté de la conversation, se modifie, se reprend et se partage par lien. Il exige l'option « Code execution and file creation » dans Réglages > Capacités.",
    "description_source": "An artifact is anything Claude makes for you that you'd put in front of someone: a design, a deck, a document, a dashboard, or a small interactive tool. It opens beside your conversation, and you can edit it, come back to it, and share it with a link. Ask for one in any conversation with Claude, including in Claude Code, or pick a template in the Artifacts tab.",
    "usage": "1. Click your initials or name in the lower left corner.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Tous les plans ; Claude Code sur les plans qui l'incluent",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Sylvain utilise déjà les artefacts dans Claude ; ils s'ouvrent aussi depuis l'app iPhone, son interface principale."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them",
@@ -3866,7 +4212,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3875,9 +4221,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-9517075-what-are-projects",
@@ -3885,14 +4235,17 @@
    "categorie": "fonctionnalites",
    "nom": "What are projects?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un Projet est un espace avec son historique de conversations, ses documents et ses instructions. Une nouvelle version en bêta, d'abord dans Claude Code, fait du projet une seule conversation qui découpe le travail en tâches ; les Projets existants continuent de fonctionner et seront migrés plus tard sur Pro et Max.",
    "description_source": "Note: A new version of projects is now available in beta, rolling out in stages starting with Claude Code. Existing projects keep working as they do today. See The new version of projects (beta) below.",
    "usage": "**Note:** A new version of projects is now available in beta, rolling out in stages starting with Claude Code. Existing projects keep working as they do today. See **[The new version of projects (beta)](#h_e9fb2a161e)** below.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Tous les plans ; nouvelle version en bêta pour certains abonnés Pro et Max",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Sylvain a trois Projets claude.ai, dont « Web app ia » actif le 23/09 ; y garder instructions et documents de référence évite de les redonner à chaque conversation."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/9517075-what-are-projects",
@@ -3900,7 +4253,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3909,9 +4262,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-fonctionnalites-page-9547008-publish-and-share-artifacts",
@@ -3919,14 +4276,17 @@
    "categorie": "fonctionnalites",
    "nom": "Publish and share artifacts",
    "gabarit": "complet",
-   "description": null,
+   "description": "Explique comment partager un artefact selon l'endroit où il a été créé : boîte de dialogue « Share » pour la nouvelle expérience, Claude Design, Slides, Docs et Claude Code, « Publish » pour l'ancien chat. Un artefact est privé tant qu'on ne le partage pas.",
    "description_source": "Artifacts let you make things with Claude, like dashboards, apps, designs, decks, and docs, and share them with others. How you share an artifact depends on where you made it:",
    "usage": "1. Open the artifact.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sylvain travaille seul ; ses artefacts n'ont pas vocation à être partagés d'après CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/9547008-publish-and-share-artifacts",
@@ -3934,7 +4294,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -3943,9 +4303,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   }
  ]
 }
