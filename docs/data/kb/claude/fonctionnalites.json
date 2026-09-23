@@ -4,7 +4,7 @@
  "maj_le": "2026-09-23",
  "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
  "total": 105,
- "commentees": 0,
+ "commentees": 53,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -12,14 +12,17 @@
    "categorie": "fonctionnalites",
    "nom": "Escalate hard decisions with the advisor tool",
    "gabarit": "complet",
-   "description": null,
+   "description": "Adjoint au modèle principal un modèle conseiller plus puissant, que Claude consulte aux moments clés d'une tâche longue : avant de choisir une approche, sur une erreur qui revient, avant de déclarer la tâche finie. Expérimental, exécuté côté serveur, il consomme davantage de jetons ; il s'active par `/advisor`, par le réglage `advisorModel` ou par l'option `--advisor`.",
    "description_source": "Pair your main model with a stronger advisor model that Claude consults at key moments during a task.",
    "usage": "/advisor opus",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude --advisor opus",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur une mission longue de herbin-trading, un modèle principal moins coûteux conseillé par Opus pourrait ménager la limite Fable, au prix de jetons supplémentaires à mesurer. `/advisor` enregistre le conseiller dans `advisorModel` pour toutes les sessions ; `claude --advisor opus` ne vaut que pour la session lancée."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/advisor",
@@ -27,7 +30,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -36,9 +39,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-agent-teams",
@@ -46,14 +53,17 @@
    "categorie": "fonctionnalites",
    "nom": "Orchestrate teams of Claude Code sessions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Fait travailler plusieurs instances Claude Code en équipe : une session cheffe distribue les tâches d'une liste partagée, les coéquipiers travaillent chacun dans leur contexte et s'envoient des messages. Expérimental et désactivé par défaut, activé par la variable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` ; la documentation prévient que le coût en jetons est nettement supérieur à celui d'une session seule.",
    "description_source": "Coordinate multiple Claude Code instances working together as a team, with shared tasks, inter-agent messaging, and centralized management.",
    "usage": "{\n  \"env\": {\n    \"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS\": \"1\"\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "I'm designing a CLI tool that helps developers track TODO comments across\ntheir codebase. Spawn three teammates to explore this from different angles:\none on UX, one on technical architecture, one playing devil's advocate.",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les six sessions systemd échangent déjà par `SendMessage` et `ListAgents` ; une équipe multiplierait les jetons alors que les limites hebdomadaires sont la friction principale."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/agent-teams",
@@ -61,7 +71,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -70,9 +80,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-agent-view",
@@ -80,14 +94,17 @@
    "categorie": "fonctionnalites",
    "nom": "Manage multiple agents with agent view",
    "gabarit": "complet",
-   "description": null,
+   "description": "`claude agents` ouvre un écran unique qui liste les sessions en arrière-plan : en cours, en attente d'une réponse, terminées. On y lance une tâche par prompt (chacun démarre une nouvelle session), on jette un œil à une ligne avec `Espace` pour répondre, et on s'y attache pour la conversation complète. Aperçu de recherche ; chaque session consomme le quota séparément.",
    "description_source": "Dispatch and manage many Claude Code sessions from one screen. Agent view shows what every session is doing and which ones need your input.",
    "usage": "    claude agents",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude agents --cwd ~/projects/my-app",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Avec six sessions tmux pilotées depuis l'iPhone, une vue d'ensemble de ce qui attend une réponse aiderait sur la machine ; reste à vérifier si des sessions lancées par systemd hors d'agent view y apparaissent, ce que la page ne dit pas dans son introduction."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/agent-view",
@@ -95,7 +112,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -104,9 +121,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-agents",
@@ -114,14 +135,17 @@
    "categorie": "fonctionnalites",
    "nom": "Run agents in parallel",
    "gabarit": "complet",
-   "description": null,
+   "description": "Page de comparaison des cinq façons de mener plusieurs tâches à la fois : sous-agents, agent view, agent teams, dynamic workflows et projets, plus les outils d'appui (worktrees, messagerie entre sessions, `/batch`). Elle aide à choisir selon qui coordonne, si les agents doivent communiquer et s'ils modifient les mêmes fichiers ; chaque approche multiplie la consommation de jetons.",
    "description_source": "Compare the ways Claude Code can take on multiple tasks at once: subagents, agent view, agent teams, dynamic workflows, and projects.",
    "usage": "claude agents",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Workflow (13 appels) et Agent (2) figurent déjà dans l'usage observé, à côté de la messagerie entre sessions ; cette page sert à choisir le mécanisme le moins coûteux pour une campagne trading-sim."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/agents",
@@ -129,7 +153,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -138,9 +162,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-artifacts",
@@ -148,14 +176,17 @@
    "categorie": "fonctionnalites",
    "nom": "Share session output as artifacts",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Code publie un résultat de session sous forme de page web interactive sur claude.ai, privée par défaut, mise à jour sur place au fil de la session et partageable par lien. Utile pour une revue de diff annotée, un tableau de bord ou une chronologie d'enquête ; la publication passe par le mode de permission (en mode auto, le classificateur décide sans demander).",
    "description_source": "Artifacts turn Claude Code's work into live, interactive pages on claude.ai that you can keep private, share with your organization, or publish to a public link.",
    "usage": "Make an artifact that walks through this PR with the diff annotated inline.",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "Build a dashboard artifact of last week's deploy failures by service and keep it updated as you investigate.",
+   "disponibilite": "Pro, Max, Team et Enterprise, session connectée par `/login`",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sylvain utilise déjà les artefacts dans l'app Claude et pilote depuis l'iPhone ; un rapport de campagne trading-sim publié en artefact se lirait sur le téléphone au lieu du terminal. Sur trading-sim, vérifier d'abord que la politique de capacités du projet autorise la publication."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/artifacts",
@@ -163,7 +194,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -172,9 +203,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-auto-mode-config",
@@ -182,14 +217,17 @@
    "categorie": "fonctionnalites",
    "nom": "Configure auto mode",
    "gabarit": "complet",
-   "description": null,
+   "description": "Référence de configuration du mode auto : points de contrôle humain par `permissions.ask` (push, création de PR), infrastructure de confiance dans `autoMode.environment`, remplacement des règles de blocage et d'autorisation, et inspection de la configuration effective avec les sous-commandes `claude auto-mode`. Par défaut, le classificateur ne fait confiance qu'au répertoire de travail et aux dépôts distants configurés.",
    "description_source": "Tell the auto mode classifier which repos, buckets, and domains your organization trusts. Set environment context, override the default block and allow rules, and inspect your effective config with the auto-mode CLI subcommands.",
    "usage": "{\n  \"permissions\": {\n    \"ask\": [\n      \"Bash(git push *)\",\n      \"Bash(gh pr create *)\"\n    ]\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE relève que le classificateur du mode auto bloque certaines écritures système ; revoir les refus et la configuration effective avec `claude auto-mode` dirait si ces blocages se règlent par une règle ou relèvent du `sudo -A` déjà limité."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/auto-mode-config",
@@ -197,7 +235,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -206,9 +244,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-best-practices",
@@ -216,14 +258,17 @@
    "categorie": "fonctionnalites",
    "nom": "Best practices for Claude Code",
    "gabarit": "complet",
-   "description": null,
+   "description": "Guide de pratiques éprouvées : donner à Claude un moyen de vérifier son travail (tests, build, capture), explorer puis planifier avant de coder, gérer le contexte qui se remplit vite, et passer à l'échelle avec des sessions parallèles. Le fil conducteur est que la qualité baisse à mesure que la fenêtre de contexte se remplit.",
    "description_source": "Tips and patterns for getting the most out of Claude Code, from configuring your environment to scaling across parallel sessions.",
    "usage": "    read /src/auth and understand how we handle sessions and login.\n    also look at how we manage environment variables for secrets.",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "I want to add Google OAuth. What files need to change?\nWhat's the session flow? Create a plan.",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La section sur la vérification rejoint les tests `unittest` de trading-sim et `node --test` de carnet ; celle sur le contexte touche directement la consommation des limites hebdomadaires."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/best-practices",
@@ -231,7 +276,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -240,9 +285,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-channels",
@@ -250,14 +299,17 @@
    "categorie": "fonctionnalites",
    "nom": "Push events into a running session with channels",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un canal est un serveur MCP, installé comme plugin, qui pousse des événements (messages Telegram, Discord ou iMessage, alertes, webhooks) dans une session Claude Code déjà ouverte ; Claude peut répondre par le même canal. Aperçu de recherche, authentification claude.ai requise, et chaque plugin de canal exige Bun.",
    "description_source": "Use channels to push messages, alerts, and webhooks into your Claude Code session from an MCP server. Forward CI results, chat messages, and monitoring events so Claude can react while you're away.",
    "usage": "        /plugin install telegram@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude --channels plugin:telegram@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Remote Control couvre déjà le pilotage des sessions depuis l'iPhone, et aucune CI ne produit d'événements à pousser."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/channels",
@@ -265,7 +317,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -274,9 +326,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-checkpointing",
@@ -284,14 +340,17 @@
    "categorie": "fonctionnalites",
    "nom": "Checkpointing",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Code enregistre l'état des fichiers avant chaque prompt ; `/rewind` ou `Échap` deux fois (saisie vide) ouvre un menu pour restaurer le code, la conversation ou les deux, ou résumer la conversation avant ou après un point pour libérer du contexte. Les points de reprise survivent à `--resume`, mais seules les modifications faites par les outils d'édition sont suivies, pas celles des commandes shell.",
    "description_source": "Track, rewind, and summarize Claude's edits and conversation to manage session state.",
    "usage": "rm file.txt\nmv old.txt new.txt\ncp source.txt dest.txt",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Bash domine l'usage observé (≈2 900 appels contre 177 Edit) : les fichiers modifiés par `rm`, `mv` ou un script ne sont pas restaurables, git reste le filet sur trading-sim. « Summarize up to here » allège le contexte des sessions longues reprises par `--resume`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/checkpointing",
@@ -299,7 +358,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -308,9 +367,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-chrome",
@@ -318,14 +381,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Code with Chrome",
    "gabarit": "complet",
-   "description": null,
+   "description": "Relie Claude Code à l'extension Claude in Chrome pour piloter un navigateur visible depuis le CLI : lire la console et le DOM, tester des formulaires, vérifier un rendu, extraire des données, enregistrer un GIF. Claude partage l'état de connexion du navigateur et regroupe ses onglets dans un groupe lié à la session.",
    "description_source": "Connect Claude Code to your Chrome browser to test web apps, debug with console logs, automate form filling, and extract data from web pages.",
    "usage": "    claude --chrome",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "Go to code.claude.com/docs, click on the search box,\ntype \"hooks\", and tell me what results appear",
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Chrome est déjà appelé (4 fois) mais l'extension est souvent déconnectée ; sur carnet, vérifier un écran de la PWA dans le navigateur serait l'usage direct. trading-sim interdit le navigateur dans ses réglages."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/chrome",
@@ -333,7 +399,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -342,9 +408,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-code-on-the-web",
@@ -352,14 +422,17 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Code in the cloud",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une session cloud tourne sur l'infrastructure d'Anthropic au lieu de la machine locale, sur un clone du dépôt GitHub ; on la lance depuis claude.ai/code, l'onglet Code de l'app mobile, l'app de bureau ou `claude --cloud`, et `--teleport` la rapatrie dans le terminal. Elle peut aussi corriger automatiquement une PR sur échec de CI ou commentaire de revue.",
    "description_source": "Run Claude Code sessions in the cloud from your browser, phone, desktop app, or terminal, move them with --cloud and --teleport, and auto-fix pull requests.",
    "usage": "claude --cloud \"Fix the authentication bug in src/auth/login.ts\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "claude --cloud \"Execute the migration plan in docs/migration-plan.md\"",
+   "disponibilite": "Pro, Max et Team (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une tâche carnet lancée depuis l'iPhone en session cloud ne dépendrait ni du Wi-Fi fragile ni de la machine lente ; elle n'a pas accès aux fichiers locaux, et trading-sim est privé avec une politique de capacités à respecter."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/claude-code-on-the-web",
@@ -367,7 +440,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -376,9 +449,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-directory",
@@ -386,14 +463,17 @@
    "categorie": "fonctionnalites",
    "nom": "Explore the .claude directory",
    "gabarit": "complet",
-   "description": null,
+   "description": "Explorateur interactif de ce que Claude Code lit dans `.claude/` (projet) et `~/.claude/` (utilisateur) : CLAUDE.md, settings.json, hooks, skills, commandes, sous-agents, workflows, règles et mémoire automatique, avec ce qui est nettoyé automatiquement. La commande `claude project purge` supprime les données locales d'un projet.",
    "description_source": "Where Claude Code reads CLAUDE.md, settings.json, hooks, skills, commands, subagents, workflows, rules, and auto memory. Explore the .claude directory in your project and ~/.claude in your home directory.",
    "usage": "claude project purge ~/work/my-repo --dry-run",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Carte utile pour les pistes de CONTEXTE : `~/.claude/CLAUDE.md` global absent, aucun hook, aucune commande ni agent perso. `claude project purge` est irréversible : le lancer d'abord avec `--dry-run`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/claude-directory",
@@ -401,7 +481,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -410,9 +490,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-projects",
@@ -420,14 +504,17 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude coordinate ongoing work with Projects",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un projet est une conversation au long cours où Claude lance un fil (session cloud) par tâche, chacun avec les dépôts, les instructions et la mémoire du projet, et un volet Overview montre ce qui est fini ou attend une réponse. Il travaille sur des dépôts GitHub et des fichiers téléversés, pas sur la machine locale, et consomme les limites du plan plus vite qu'une session seule.",
    "description_source": "Give Claude a body of related work in one conversation and let it coordinate parallel cloud sessions that share repositories, instructions, and memory.",
    "usage": "This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.\n\n- Branch from main and open one draft pull request per thread.\n- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.\n- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.\n- Don't merge, force-push, or change CI configuration without asking me in the thread.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta publique, déploiement progressif)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE range les Projets parmi les fonctions à explorer ; le déploiement commence par les comptes sans projets claude.ai existants, or Sylvain en a trois, donc l'accès pourrait arriver plus tard. Carnet, public et sur GitHub, serait le candidat, pas trading-sim qui dépend de la machine."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/claude-projects",
@@ -435,7 +522,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -444,9 +531,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-security",
@@ -454,14 +545,17 @@
    "categorie": "fonctionnalites",
    "nom": "Scan your codebase for vulnerabilities",
    "gabarit": "complet",
-   "description": null,
+   "description": "Le plugin Claude Security lance dans la session une analyse de vulnérabilités à plusieurs agents : cartographie, modèle de menace, recherche puis vérification indépendante des failles, et propositions de correctifs sous forme de patchs à relire. Il repose sur les dynamic workflows, exige Python 3.9+ et git, et chaque analyse compte dans les limites du plan.",
    "description_source": "Install the Claude Security plugin to scan your codebase for vulnerabilities in a Claude Code session and turn findings into patches you review and apply.",
    "usage": "/plugin install claude-security@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "git apply CLAUDE-SECURITY-<timestamp>/patches/F1.patch",
+   "disponibilite": "Plan payant (dynamic workflows) ; Linux, macOS, Windows",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Carnet est public et synchronise par l'API GitHub Contents avec un jeton : une analyse ciblée sur cette chaîne aurait un sens, à lancer un jour où la limite hebdomadaire le permet."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/claude-security",
@@ -469,7 +563,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -478,9 +572,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-tag",
@@ -488,14 +586,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Tag",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Tag est l'intégration Slack où `@Claude` répond dans les canaux d'une équipe sous l'identité partagée de l'organisation, avec des accès configurés par un administrateur. Elle remplace Claude Code in Slack sur les plans Team et Enterprise.",
    "description_source": "Bring Claude into your team's Slack channels with Claude Tag and find its setup and usage documentation on claude.com.",
    "usage": "@Claude",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Team et Enterprise",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé aux plans Team et Enterprise ; Sylvain est en Max et travaille seul, sans Slack."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/claude-tag",
@@ -503,7 +604,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -512,9 +613,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-cloud-environments",
@@ -522,14 +627,17 @@
    "categorie": "fonctionnalites",
    "nom": "Configure cloud environments",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configure l'environnement des sessions cloud : niveau d'accès réseau (le Default n'autorise que les registres de paquets et une liste de domaines), variables d'environnement, script d'installation et cache de l'environnement. On le choisit dans le sélecteur de claude.ai/code ou de l'app, ou par `/remote-env` depuis le CLI.",
    "description_source": "Configure cloud environments for Claude Code cloud sessions: network access levels, environment variables, setup scripts, and environment caching.",
    "usage": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Team (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ne sert qu'une fois les sessions cloud adoptées, ce qui n'est pas le cas d'après CONTEXTE ; ne jamais y placer le jeton GitHub de carnet en clair."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/cloud-environments",
@@ -537,7 +645,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -546,9 +654,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-code-review",
@@ -556,14 +668,17 @@
    "categorie": "fonctionnalites",
    "nom": "Code Review",
    "gabarit": "complet",
-   "description": null,
+   "description": "Service géré qui relit les pull requests GitHub avec une flotte d'agents et publie des commentaires en ligne classés par gravité, sans approuver ni bloquer la PR ; `REVIEW.md` ou `CLAUDE.md` règlent ce qui est signalé. Une revue prend 20 minutes en moyenne et se facture selon la taille de la PR.",
    "description_source": "Set up automated PR reviews that catch logic errors, security vulnerabilities, and regressions using multi-agent analysis of your full codebase",
    "usage": "gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \\\n  --jq '.output.text | split(\"bughunter-severity: \")[1] | split(\" -->\")[0] | fromjson'",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Team et Enterprise (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé aux abonnements Team et Enterprise ; pour une revue locale, la commande `/code-review` reste disponible."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/code-review",
@@ -571,7 +686,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -580,9 +695,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-common-workflows",
@@ -590,14 +709,17 @@
    "categorie": "fonctionnalites",
    "nom": "Common workflows",
    "gabarit": "complet",
-   "description": null,
+   "description": "Recueil de recettes de prompts pour les tâches courantes : découvrir un code, corriger un bug, refactoriser, écrire des tests, créer une PR, reprendre une conversation, planifier avant d'éditer, déléguer à des sous-agents et appeler Claude depuis un script.",
    "description_source": "Step-by-step guides for exploring codebases, fixing bugs, refactoring, testing, and other everyday tasks with Claude Code.",
    "usage": "    cd /path/to/project ",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "give me an overview of this codebase",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Recettes générales ; les pages dédiées (worktrees, sous-agents, mode headless, sessions) sont commentées à part dans cette base."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/common-workflows",
@@ -605,7 +727,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -614,9 +736,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-computer-use",
@@ -624,14 +750,17 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude use your computer from the CLI",
    "gabarit": "complet",
-   "description": null,
+   "description": "Serveur MCP intégré `computer-use` qui laisse Claude ouvrir des applications, cliquer, taper et voir l'écran depuis le CLI, pour les outils sans API ni CLI. Désactivé par défaut, on l'active dans `/mcp` ; il exige une session interactive.",
    "description_source": "Enable computer use in the Claude Code CLI so Claude can open apps, click, type, and see your screen on macOS. Test native apps, debug visual issues, and automate GUI-only tools without leaving your terminal.",
    "usage": "    /mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "Build the app target, launch it, and click through each tab to make\nsure nothing crashes. Screenshot any error states you find.",
+   "disponibilite": "macOS, plans Pro et Max (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé à macOS alors que la machine est sous Linux Mint."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/computer-use",
@@ -639,7 +768,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -648,9 +777,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-context-window",
@@ -658,14 +791,17 @@
    "categorie": "fonctionnalites",
    "nom": "Explore the context window",
    "gabarit": "complet",
-   "description": null,
+   "description": "Simulation interactive du remplissage de la fenêtre de contexte au cours d'une session : invite système, mémoire automatique (`MEMORY.md`, 200 premières lignes ou 25 Ko), CLAUDE.md, lectures de fichiers, déclenchement des règles et des hooks. Elle montre ce que coûte chaque élément chargé automatiquement.",
    "description_source": "An interactive simulation of how Claude Code's context window fills during a session. See what loads automatically, what each file read costs, and when rules and hooks fire.",
    "usage": "ENABLE_TOOL_SEARCH=auto",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Avec 23 mémoires sur le projet racine et des sessions longues, voir ce qui se charge à chaque tour aiderait à alléger le contexte et donc la consommation des limites hebdomadaires."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/context-window",
@@ -673,7 +809,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -682,9 +818,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-cross-session-messaging",
@@ -692,14 +832,17 @@
    "categorie": "fonctionnalites",
    "nom": "Message your other Claude Code sessions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude liste les sessions Claude Code joignables avec `ListAgents` et leur envoie un message texte avec `SendMessage` : sur la même machine, sur une autre ou dans le cloud. Le message est rédigé par Claude, jamais l'historique ni les fichiers de l'expéditeur ; on nomme la cible par `@` suivi du nom de session.",
    "description_source": "Let Claude list and message your other Claude Code sessions on this machine, and reach your sessions on other machines or in the cloud.",
    "usage": "Ask the session running in my other terminal whether the migration finished",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "exemple": "Let @api-worker know the schema migration finished",
+   "disponibilite": "macOS et Linux à partir de Claude Code v2.1.224",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les sessions herbin-* se parlent déjà par `SendMessage` et `ListAgents` (23 appels observés) ; mentionner la cible avec `@herbin-trading` évite l'ambiguïté quand Sylvain relaie une mission."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/cross-session-messaging",
@@ -707,7 +850,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -716,9 +859,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-deep-links",
@@ -726,14 +873,17 @@
    "categorie": "fonctionnalites",
    "nom": "Launch sessions from links",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un lien `claude-cli://open`, avec un dossier et un prompt en paramètres, ouvre Claude Code dans une nouvelle fenêtre de terminal sur la machine où l'on clique, prompt prérempli mais non envoyé. Utile dans un runbook, une alerte ou un README.",
    "description_source": "Open a Claude Code terminal session from a URL. Embed claude-cli:// links in runbooks, alerts, and dashboards so a click opens Claude Code in the right repo with the right prompt.",
    "usage": "claude-cli://open",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude-cli://open?repo=acme/payments&q=Investigate%20the%20failed%20deploy%20of%20payments-api.%0ACheck%20recent%20commits%20to%20main%20and%20the%20last%20successful%20build.",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le lien ouvre une session locale sur l'ordinateur où l'on clique, pas sur le PC depuis l'iPhone ; les sessions de Sylvain tournent déjà sous tmux et systemd."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/deep-links",
@@ -741,7 +891,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -750,9 +900,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-desktop",
@@ -760,14 +914,17 @@
    "categorie": "fonctionnalites",
    "nom": "Desktop application",
    "gabarit": "complet",
-   "description": null,
+   "description": "Référence de l'onglet Code de Claude Desktop : sessions parallèles isolées par git, panneaux de diff, de terminal, d'éditeur et de navigateur pour prévisualiser l'app, questions annexes sans dérailler la session, suivi de PR, connecteurs et Dispatch depuis le téléphone. La prévisualisation se configure dans un fichier de lancement (`configurations`, commande, port).",
    "description_source": "Get more out of Claude Code Desktop: parallel sessions with Git isolation, drag-and-drop pane layout, integrated terminal and file editor, side chats, computer use, Dispatch sessions from your phone, visual diff review, app previews, PR monitoring, connectors, and enterprise configuration.",
    "usage": "{\n  \"version\": \"0.0.1\",\n  \"configurations\": [\n    {\n      \"name\": \"my-app\",\n      \"runtimeExecutable\": \"npm\",\n      \"runtimeArgs\": [\"run\", \"dev\"],\n      \"port\": 3000\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sylvain veut exploiter toutes les fonctions de Claude Desktop utiles au développement ; sur carnet (Vite), le panneau navigateur permettrait de voir la PWA pendant que Claude vérifie ses changements."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/desktop",
@@ -775,7 +932,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -784,9 +941,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-desktop-linux",
@@ -794,14 +955,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Desktop on Linux (beta)",
    "gabarit": "complet",
-   "description": null,
+   "description": "Installation de Claude Desktop sous Linux (bêta) depuis le dépôt apt d'Anthropic, pour recevoir les mises à jour avec celles du système ; Ubuntu 22.04+ ou Debian 12+. L'onglet Cowork y tourne dans une machine virtuelle QEMU/KVM, ce qui exige la virtualisation matérielle, des paquets QEMU et l'accès à `/dev/kvm`.",
    "description_source": "Install and update the Claude desktop app on Ubuntu and Debian",
    "usage": "    sudo apt install curl gnupg",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "exemple": "gpg --show-keys /usr/share/keyrings/claude-desktop-archive-keyring.asc",
+   "disponibilite": "Linux (bêta) : Ubuntu 22.04+ ou Debian 12+, x86_64 ou arm64",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Claude Desktop est installé sur Mint 22.1 (base Ubuntu 24.04) mais son mode d'installation n'est pas connu ; vérifier la clé et passer par le dépôt apt réglerait les mises à jour. Cowork en VM pèserait sur 14 Gio de RAM et un A10-7300."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/desktop-linux",
@@ -809,7 +973,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -818,9 +982,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-desktop-scheduled-tasks",
@@ -828,14 +996,17 @@
    "categorie": "fonctionnalites",
    "nom": "Schedule recurring tasks in Claude Code Desktop",
    "gabarit": "complet",
-   "description": null,
+   "description": "La page Routines de Claude Desktop crée des tâches planifiées locales, qui lancent une session à heure fixe sur la machine avec accès aux fichiers, à côté des routines cloud et de `/loop`. Une tâche locale ne se déclenche que si la machine est allumée ; une option lui donne un worktree git isolé à chaque exécution.",
    "description_source": "Set up scheduled tasks in Claude Code Desktop to run Claude automatically on a recurring basis for daily code reviews, dependency audits, or morning briefings.",
    "usage": "/loop",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Claude Desktop 1.1.5368 ou plus",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les passages Delta restent manuels par décision, et aucune tâche récurrente de CONTEXTE ne réclame un déclenchement automatique sur la machine."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/desktop-scheduled-tasks",
@@ -843,7 +1014,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -852,9 +1023,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-fast-mode",
@@ -862,14 +1037,17 @@
    "categorie": "fonctionnalites",
    "nom": "Speed up responses with fast mode",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configuration d'Opus jusqu'à 2,5 fois plus rapide, à qualité identique mais à un prix par jeton plus élevé, activée par `/fast`. Sur les abonnements, elle est payée en crédits d'usage et n'entre pas dans les limites du plan.",
    "description_source": "Get faster Opus responses in Claude Code by toggling fast mode.",
    "usage": "{\n  \"fastModePerSessionOptIn\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise, en crédits d'usage",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Facturé en crédits d'usage en plus de l'abonnement Max, sans gain sur les limites. Activé en session interactive, il persiste par défaut pour les sessions suivantes ; `fastModePerSessionOptIn: true` le remet à zéro à chaque session."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/fast-mode",
@@ -877,7 +1055,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -886,9 +1064,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-features-overview",
@@ -896,14 +1078,17 @@
    "categorie": "fonctionnalites",
    "nom": "Extend Claude Code",
    "gabarit": "complet",
-   "description": null,
+   "description": "Vue d'ensemble des extensions de Claude Code et de leur place dans la boucle agentique : CLAUDE.md, styles de sortie, skills, intelligence de code, MCP, sous-agents, dynamic workflows, messagerie entre sessions, hooks et plugins. Un tableau associe chaque extension au besoin qu'elle couvre.",
    "description_source": "Understand when to use CLAUDE.md, Skills, subagents, hooks, MCP, and plugins.",
    "usage": "/deploy",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE note aucun hook, aucune commande ni agent perso alors que des gestes reviennent (relais de mission, revue machine, contrôle SHA-256) ; ce tableau aide à choisir le bon mécanisme pour chacun."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/features-overview",
@@ -911,7 +1096,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -920,9 +1105,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-fullscreen",
@@ -930,14 +1119,17 @@
    "categorie": "fonctionnalites",
    "nom": "Fullscreen rendering",
    "gabarit": "complet",
-   "description": null,
+   "description": "Autre moteur de rendu du CLI qui dessine l'interface sur tout le terminal, comme `vim` : plus de scintillement, mémoire stable dans les longues conversations et prise en charge de la souris. Le gain est le plus net dans les terminaux lents à rafraîchir, dont tmux. Aperçu de recherche.",
    "description_source": "Enable a smoother, flicker-free rendering mode with mouse support and stable memory usage in long conversations.",
    "usage": "CLAUDE_CODE_NO_FLICKER=1 claude",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/tui fullscreen",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les six sessions tournent sous tmux et durent longtemps, deux cas cités par la page. `/tui fullscreen` enregistre le réglage `tui` pour les sessions suivantes ; `CLAUDE_CODE_NO_FLICKER=1 claude` l'essaie sur un seul lancement."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/fullscreen",
@@ -945,7 +1137,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -954,9 +1146,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-github-actions",
@@ -964,14 +1160,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Code GitHub Actions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Action GitHub `claude-code-action` qui exécute Claude Code dans les workflows d'un dépôt : une mention `@claude` dans une PR ou une issue déclenche l'analyse, la modification ou la création de PR. Installation rapide par `/install-github-app`, qui installe l'app GitHub, ajoute le secret et prépare la PR du workflow ; droits d'administration du dépôt requis.",
    "description_source": "Run Claude Code in GitHub Actions workflows to respond to @claude mentions, automate tasks, and turn issues into pull requests",
    "usage": "name: Claude Code\non:\n  issue_comment:\n    types: [created]\n  pull_request_review_comment:\n    types: [created]\njobs:\n  claude:\n    if: contains(github.event.comment.body, '@claude')\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sylvain travaille seul et pilote tout depuis ses sessions locales ; aucun dépôt n'a de CI d'après CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/github-actions",
@@ -979,7 +1178,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -988,9 +1187,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-gitlab-ci-cd",
@@ -998,14 +1201,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Code GitLab CI/CD",
    "gabarit": "complet",
-   "description": null,
+   "description": "Intégration bêta, maintenue par GitLab, qui lance Claude Code dans un job `.gitlab-ci.yml` pour transformer une issue ou une mention `@claude` en merge request.",
    "description_source": "Learn about integrating Claude Code into your development workflow with GitLab CI/CD",
    "usage": "stages:\n  - ai\n\nclaude:\n  stage: ai\n  image: node:24-alpine3.21\n  # Adjust rules to fit how you want to trigger the job:\n  # - manual runs\n  # - merge request events\n  # - web/API triggers when a comment contains '@claude'\n  rules:\n    - if: '$CI_PIPELINE_SOURCE == \"web\"'\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tous les dépôts de Sylvain sont sur GitHub."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/gitlab-ci-cd",
@@ -1013,7 +1219,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1022,9 +1228,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-goal",
@@ -1032,14 +1242,17 @@
    "categorie": "fonctionnalites",
    "nom": "Keep Claude working toward a goal",
    "gabarit": "complet",
-   "description": null,
+   "description": "`/goal <condition>` fixe une condition d'achèvement : après chaque tour, un petit modèle rapide vérifie si elle est remplie, et Claude continue sans nouveau prompt jusqu'à ce qu'elle le soit, qu'elle soit jugée impossible ou qu'une erreur l'annule. Convient au travail long à état final vérifiable, par exemple une suite de tests à faire passer.",
    "description_source": "Set a completion condition with /goal and Claude keeps working until it's met, a model judges it impossible, or an error you have to fix clears the goal.",
    "usage": "/goal all tests in test/auth pass and the lint step is clean",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/goal clear",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur herbin-trading, une mission dont la fin se vérifie par les tests `unittest` pourrait tourner sans relance depuis l'iPhone ; la validation pas à pas exigée par Sylvain limite l'usage aux étapes déjà approuvées."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/goal",
@@ -1047,7 +1260,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1056,9 +1269,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-headless",
@@ -1066,14 +1283,17 @@
    "categorie": "fonctionnalites",
    "nom": "Run Claude Code programmatically",
    "gabarit": "complet",
-   "description": null,
+   "description": "Mode non interactif : `claude -p \"<prompt>\"` exécute une tâche et rend un code de sortie, avec `--allowedTools` pour pré-approuver des outils, `--output-format` pour une sortie structurée et `--continue` pour enchaîner. `--bare` accélère le démarrage en sautant hooks, skills, plugins, MCP, mémoire automatique et CLAUDE.md.",
    "description_source": "Use the Agent SDK to run Claude Code programmatically from the CLI, Python, or TypeScript.",
    "usage": "claude -p \"Find and fix the bug in auth.py\" --allowedTools \"Read,Edit,Bash\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude --bare -p \"Summarize README.md\" --allowedTools \"Read\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE ne décrit aucun appel scripté de Claude : les sessions sont interactives sous tmux, pilotées par Remote Control."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/headless",
@@ -1081,7 +1301,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1090,9 +1310,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-hooks-guide",
@@ -1100,14 +1324,17 @@
    "categorie": "fonctionnalites",
    "nom": "Automate actions with hooks",
    "gabarit": "complet",
-   "description": null,
+   "description": "Les hooks sont des commandes shell (ou requêtes HTTP, prompts, sous-agents) que Claude Code exécute à des moments précis : avant ou après un outil, en attente d'une saisie, en fin de tour. Ils rendent un comportement déterministe au lieu de compter sur le modèle ; on les déclare dans un bloc `hooks` du fichier de réglages.",
    "description_source": "Run shell commands automatically when Claude Code edits files, finishes tasks, or needs input. Format code, send notifications, validate commands, and enforce project rules.",
    "usage": "    {\n      \"hooks\": {\n        \"Notification\": [\n          {\n            \"matcher\": \"\",\n            \"hooks\": [\n              {\n                \"type\": \"command\",\n                \"command\": \"osascript -e 'display notification \\\"Claude Code needs your attention\\\" with title \\\"Claude Code\\\"'\"\n              }\n            ]\n          }\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "non_utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE relève aucun hook alors que des contrôles se répètent à la main : vérification SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f` ; un hook `PreToolUse` sur Bash pourrait bloquer ce dernier sur herbin-trading."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/hooks-guide",
@@ -1115,7 +1342,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1124,9 +1351,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-how-claude-code-works",
@@ -1134,14 +1365,17 @@
    "categorie": "fonctionnalites",
    "nom": "How Claude Code works",
    "gabarit": "complet",
-   "description": null,
+   "description": "Explique la boucle agentique (recueillir le contexte, agir, vérifier), le rôle des modèles et des outils intégrés, et la façon dont Claude Code gère le contexte autour du modèle.",
    "description_source": "Understand the agentic loop, built-in tools, and how Claude Code interacts with your project.",
    "usage": "Fix the login bug",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Page conceptuelle, sans commande ni réglage à appliquer ; les pages pratiques de cette base couvrent les mêmes sujets."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/how-claude-code-works",
@@ -1149,7 +1383,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1158,9 +1392,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-jetbrains",
@@ -1168,14 +1406,17 @@
    "categorie": "fonctionnalites",
    "nom": "JetBrains IDEs",
    "gabarit": "complet",
-   "description": null,
+   "description": "Plugin pour les IDE JetBrains (IntelliJ, PyCharm, WebStorm…) : lancement par `Ctrl+Échap`, diffs dans la visionneuse de l'IDE, partage de la sélection, connexion depuis un terminal externe par `/ide`.",
    "description_source": "Use Claude Code with JetBrains IDEs including IntelliJ, PyCharm, WebStorm, and more",
    "usage": "claude",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/ide",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun IDE JetBrains dans l'environnement décrit par CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/jetbrains",
@@ -1183,7 +1424,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1192,9 +1433,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-keybindings",
@@ -1202,14 +1447,17 @@
    "categorie": "fonctionnalites",
    "nom": "Customize keyboard shortcuts",
    "gabarit": "complet",
-   "description": null,
+   "description": "`/keybindings` crée ou ouvre `~/.claude/keybindings.json`, où l'on associe des touches à des actions par contexte (Chat, etc.) ou en désactive, avec un schéma JSON pour l'autocomplétion.",
    "description_source": "Customize keyboard shortcuts in Claude Code with a keybindings configuration file.",
    "usage": "{\n  \"$schema\": \"https://www.schemastore.org/claude-code-keybindings.json\",\n  \"$docs\": \"https://code.claude.com/docs/en/keybindings\",\n  \"bindings\": [\n    {\n      \"context\": \"Chat\",\n      \"bindings\": {\n        \"ctrl+e\": \"chat:externalEditor\",\n        \"ctrl+u\": null\n      }\n    }\n  ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le pilotage passe surtout par l'iPhone, où les raccourcis clavier du terminal ne s'appliquent pas."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/keybindings",
@@ -1217,7 +1465,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1226,9 +1474,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-large-codebases",
@@ -1236,14 +1488,17 @@
    "categorie": "fonctionnalites",
    "nom": "Set up Claude Code in a monorepo or large codebase",
    "gabarit": "complet",
-   "description": null,
+   "description": "Guide pour les monodépôts et gros codes : CLAUDE.md par dossier, exclusion par `claudeMdExcludes`, règles `Read` refusées sur le code généré, plugin d'intelligence de code, worktrees clairsemés et skills par paquet.",
    "description_source": "Configure Claude Code for monorepos and large single-tree codebases with nested CLAUDE.md files, sparse worktrees, code intelligence, and per-package skills so Claude stays focused on the code you're working in.",
    "usage": "monorepo/\n  CLAUDE.md                     # root instructions\n  packages/\n    api/\n      CLAUDE.md                 # API-specific instructions\n      .claude/skills/\n      src/\n    web/\n      CLAUDE.md                 # frontend-specific instructions\n      .claude/skills/\n      src/\n    shared/\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les dépôts de Sylvain sont petits (31 fichiers .py pour trading-sim) et aucun n'est un monodépôt."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/large-codebases",
@@ -1251,7 +1506,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1260,9 +1515,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-memory",
@@ -1270,14 +1529,17 @@
    "categorie": "fonctionnalites",
    "nom": "How Claude remembers your project",
    "gabarit": "complet",
-   "description": null,
+   "description": "Deux mécanismes portent le savoir d'une session à l'autre : les fichiers CLAUDE.md (ou AGENTS.md) écrits par l'utilisateur, avec imports `@chemin` et règles `.claude/rules/` par type de fichier, et la mémoire automatique où Claude note corrections et préférences. Les deux sont chargés en début de conversation comme contexte, pas comme contrainte.",
    "description_source": "Give Claude persistent instructions with CLAUDE.md or AGENTS.md files, and let Claude accumulate learnings automatically with auto memory.",
    "usage": "See @README for project overview and @package.json for available npm commands for this project.\n\n# Additional Instructions\n- git workflow @docs/git-instructions.md",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "# Individual Preferences\n- @~/.claude/my-project-instructions.md",
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "La mémoire automatique est très utilisée (23 + 4 mémoires) et carnet importe `@AGENTS.md` ; il manque le `~/.claude/CLAUDE.md` global que CONTEXTE propose pour centraliser français, tutoiement et validation pas à pas."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/memory",
@@ -1285,7 +1547,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1294,9 +1556,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-mobile",
@@ -1304,14 +1570,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Code on mobile",
    "gabarit": "complet",
-   "description": null,
+   "description": "L'app Claude pour iOS et Android sert de client à Claude Code : sessions cloud et Remote Control dans l'onglet Code, Dispatch par message. `/mobile` (ou `/ios`, `/android`) affiche un QR code vers la boutique d'applications ; il faut le même compte claude.ai que dans Claude Code.",
    "description_source": "Start, monitor, and steer Claude Code tasks from your phone with the Claude app for iOS and Android.",
    "usage": "/mobile",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "iOS et Android, compte claude.ai",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "L'iPhone est l'interface principale de Sylvain pour piloter ses sessions ; la page recense ce que l'onglet Code permet au-delà de Remote Control."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/mobile",
@@ -1319,7 +1588,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1328,9 +1597,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-model-config",
@@ -1338,14 +1611,17 @@
    "categorie": "fonctionnalites",
    "nom": "Model configuration",
    "gabarit": "complet",
-   "description": null,
+   "description": "Configuration du modèle : alias (`opus`, `sonnet`…) ou nom complet, niveau d'effort, contexte étendu et fenêtre d'auto-compaction, réglables par `--model`, `/model`, le réglage `model` ou une variable d'environnement.",
    "description_source": "Configure which model Claude Code uses, effort levels, extended context, and the auto-compact window",
    "usage": "claude --model opus",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Opus 5, Fable 5.1 et Opus 5.5 se partagent l'usage et la limite Fable a atteint 75 % en milieu de semaine ; fixer par session modèle et effort (Sonnet pour les tâches machine simples de herbin-mint) étalerait la charge. `/model` enregistre le choix comme défaut des nouvelles sessions ; `--model` au lancement ne vaut que pour la session."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/model-config",
@@ -1353,7 +1629,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1362,9 +1638,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-output-styles",
@@ -1372,14 +1652,17 @@
    "categorie": "fonctionnalites",
    "nom": "Output styles",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un style de sortie fixe le rôle, le ton et le format des réponses pour toute une session : Default, quatre styles intégrés (Concise, Explanatory, Learning…) ou un style personnalisé. Il reste une consigne, pas une garantie ; pour une action systématique, la page renvoie aux hooks.",
    "description_source": "Change Claude Code's role, tone, and response format with a built-in output style such as Concise or Explanatory, or write a custom style.",
    "usage": "★ Insight ─────────────────────────────────────\n- Every route in this repo goes through the withAuth wrapper, so the new endpoint gets session checks without its own middleware.\n- Rate limits are set per route in limits.ts, which is why this change adds an entry there rather than a global default.\n─────────────────────────────────────────────────",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"outputStyle\": \"Explanatory\"\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les préférences de réponse de Sylvain (français, factuel, séparation du factuel et du déduit) vivent déjà dans les mémoires et les CLAUDE.md."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/output-styles",
@@ -1387,7 +1670,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1396,9 +1679,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-permission-modes",
@@ -1406,14 +1693,17 @@
    "categorie": "fonctionnalites",
    "nom": "Choose a permission mode",
    "gabarit": "complet",
-   "description": null,
+   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (lectures seules), `acceptEdits`, `plan`, `auto` (tout, avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`. On passe de l'un à l'autre par `Maj+Tab` ; sur Pro, Max et Team, le mode de départ intégré est `auto`.",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Le mode auto est en service, puisque CONTEXTE note son classificateur qui bloque des écritures système ; le mode `plan` convient aux étapes de diagnostic que Sylvain exige avant toute modification sur trading-sim."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/permission-modes",
@@ -1421,7 +1711,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1430,9 +1720,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-permissions",
@@ -1440,14 +1734,17 @@
    "categorie": "fonctionnalites",
    "nom": "Configure permissions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Règles fines `allow`, `ask` et `deny` par outil et par motif (`Bash(git push *)`, domaines WebFetch…), dans les réglages utilisateur, projet ou locaux. Répondre « Yes, and don't ask again » à une commande Bash ou à un domaine enregistre la règle de façon permanente dans `.claude/settings.local.json` du dépôt.",
    "description_source": "Control what Claude Code can access and do with fine-grained permission rules, modes, and managed policies.",
    "usage": "{\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(npm run *)\",\n      \"Bash(git commit *)\"\n    ],\n    \"deny\": [\n      \"Bash(git push *)\"\n    ]\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les réglages limitent déjà `sudo -A` à apt, timeshift et findmnt, et trading-sim refuse WebFetch, WebSearch et les connecteurs. « Don't ask again » laisse une règle permanente dans `.claude/settings.local.json` : à relire sur trading-sim, où les capacités sont volontairement restreintes."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/permissions",
@@ -1455,7 +1752,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1464,9 +1761,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-prompt-caching",
@@ -1474,14 +1775,17 @@
    "categorie": "fonctionnalites",
    "nom": "How Claude Code uses prompt caching",
    "gabarit": "complet",
-   "description": null,
+   "description": "Claude Code met en cache le préfixe de chaque requête (invite système, contexte du projet, conversation) pour ne pas retraiter tout l'historique à chaque tour. Changer de modèle, modifier les outils chargés ou lancer `/compact` invalide une partie du cache, et une modification de CLAUDE.md ne s'applique qu'à la session suivante ou après `/clear` ou `/compact`.",
    "description_source": "Claude Code manages prompt caching automatically. See why a model switch triggers a slow uncached turn, what /compact costs, why CLAUDE.md edits don't apply mid-session, and how to check your cache hit rate.",
    "usage": "1. `FORCE_PROMPT_CACHING_5M=1`, which forces five minutes for both buckets\n2. The bucket's environment variable\n3. The bucket's setting\n4. For a subagent's requests, the `cacheTtl` value in the subagent's [`experimental` frontmatter field](/docs/en/sub-agents#supported-frontmatter-fields), which requires Claude Code v2.1.248 or later. Claude Code ignores a `1h` there while your Claude subscription is using usage credits\n5. `ENABLE_PROMPT_CACHING_1H=1`, which requests one hour for both buckets\n6. The [default for the request's bucket](#which-ttl-each-request-gets)",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Lien direct avec l'économie des limites hebdomadaires : éviter d'alterner Opus et Fable au milieu d'une session longue évite un tour complet non mis en cache."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/prompt-caching",
@@ -1489,7 +1793,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1498,9 +1802,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-remote-control",
@@ -1508,14 +1816,17 @@
    "categorie": "fonctionnalites",
    "nom": "Continue local sessions from any device with Remote Control",
    "gabarit": "complet",
-   "description": null,
+   "description": "Remote Control relie claude.ai/code ou l'app Claude mobile à une session qui tourne sur la machine locale, avec ses fichiers, ses serveurs MCP et sa configuration. La conversation est synchronisée sur tous les appareils, on peut joindre photos et fichiers depuis le téléphone, et la session se reconnecte seule après une coupure réseau ou une mise en veille.",
    "description_source": "Continue a local Claude Code session from your phone, tablet, or any browser using Remote Control. Works with claude.ai/code and the Claude mobile app.",
    "usage": "    claude remote-control",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "exemple": "claude --remote-control \"My Project\"",
+   "disponibilite": "Pro, Max, Team et Enterprise ; pas avec une clé API",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les six sessions tmux sont lancées avec `--remote-control herbin-<nom>` et pilotées depuis l'iPhone ; la reconnexion automatique concerne directement les coupures du Wi-Fi fragile."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/remote-control",
@@ -1523,7 +1834,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1532,9 +1843,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-routines",
@@ -1542,14 +1857,17 @@
    "categorie": "fonctionnalites",
    "nom": "Automate work with routines",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une routine enregistre un prompt, des dépôts et des connecteurs, puis s'exécute sur l'infrastructure d'Anthropic selon un déclencheur : planning, appel HTTP avec jeton ou événement GitHub. Aperçu de recherche, gérée sur claude.ai/code/routines ou par `/schedule`, elle consomme les limites du plan.",
    "description_source": "Put Claude Code on autopilot. Define routines that run on a schedule, trigger on API calls, or react to GitHub events from cloud infrastructure.",
    "usage": "/schedule tomorrow at 9am, summarize yesterday's merged PRs",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise (aperçu de recherche)",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE range les routines planifiées parmi les fonctions à explorer ; tournant dans le cloud sur un clone GitHub, une routine ne dépend ni du Wi-Fi ni de la machine, mais elle n'a pas accès aux fichiers locaux."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/routines",
@@ -1557,7 +1875,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1566,9 +1884,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-sandboxing",
@@ -1576,14 +1898,17 @@
    "categorie": "fonctionnalites",
    "nom": "Configure the sandboxed Bash tool",
    "gabarit": "complet",
-   "description": null,
+   "description": "Le bac à sable Bash isole au niveau du système les fichiers et domaines que les commandes peuvent toucher, pour les exécuter sans demande d'autorisation. `/sandbox` ouvre le panneau de réglage ; sous Linux, il faut installer `bubblewrap` et `socat`.",
    "description_source": "Learn how Claude Code's sandboxed Bash tool provides filesystem and network isolation for safer, more autonomous agent execution.",
    "usage": "    /sandbox",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "sudo apt-get install bubblewrap socat",
+   "disponibilite": "macOS, Linux et WSL2",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le mode auto sert déjà à éviter les invites, et CONTEXTE ne décrit aucun besoin d'isolation supplémentaire des fichiers ou du réseau."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/sandboxing",
@@ -1591,7 +1916,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1600,9 +1925,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-scheduled-tasks",
@@ -1610,14 +1939,17 @@
    "categorie": "fonctionnalites",
    "nom": "Run prompts on a schedule",
    "gabarit": "complet",
-   "description": null,
+   "description": "`/loop` relance un prompt à intervalle fixe dans la session courante (surveiller un build, une PR, un déploiement) et les outils cron programment des rappels ponctuels. Les tâches appartiennent à la conversation : elles s'arrêtent avec elle et reviennent au `--resume` si elles n'ont pas expiré.",
    "description_source": "Use /loop and the cron scheduling tools to run prompts repeatedly, poll for status, or set one-time reminders within a Claude Code session.",
    "usage": "/loop 5m check if the deployment finished and tell me what happened",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/loop check whether CI passed and address any review comments",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur herbin-trading, un `/loop` pourrait surveiller une campagne longue et prévenir à la fin ; la session doit rester ouverte, ce que les services systemd assurent déjà."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/scheduled-tasks",
@@ -1625,7 +1957,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1634,9 +1966,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-security-guidance",
@@ -1644,14 +1980,17 @@
    "categorie": "fonctionnalites",
    "nom": "Catch security issues as Claude writes code",
    "gabarit": "complet",
-   "description": null,
+   "description": "Plugin qui fait relire à Claude ses propres modifications pour les vulnérabilités courantes (injection, etc.) et les corriger dans la même session, automatiquement, sans commande. Au premier lancement, il crée un environnement virtuel dans `~/.claude/security/` et y installe le Claude Agent SDK.",
    "description_source": "Install the security-guidance plugin to have Claude review its own code changes for vulnerabilities and fix them in the same session.",
    "usage": "/plugin install security-guidance@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"enabledPlugins\": {\n    \"security-guidance@claude-plugins-official\": true\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Actif à chaque modification dans toutes les sessions où il est activé, il pèserait probablement sur les limites ; l'analyse ponctuelle du plugin Claude Security sur carnet suffit."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/security-guidance",
@@ -1659,7 +1998,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1668,9 +2007,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-sessions",
@@ -1678,14 +2021,17 @@
    "categorie": "fonctionnalites",
    "nom": "Manage sessions",
    "gabarit": "complet",
-   "description": null,
+   "description": "Une session est une conversation enregistrée et liée à un dossier : `claude --continue` reprend la plus récente, `claude --resume` ouvre le sélecteur ou reprend une session nommée, `/branch` crée une variante pour essayer une autre approche, `--from-pr` filtre par pull request. La page couvre aussi le nommage, l'export et l'emplacement des transcripts.",
    "description_source": "Name, resume, branch, and switch between Claude Code conversations. Covers --continue, --resume, --from-pr, the /resume picker, session naming, exporting transcripts, and where transcripts are stored.",
    "usage": "/branch try-streaming-approach",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Les services systemd relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante d'une mission trading-sim sans polluer la session principale."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/sessions",
@@ -1693,7 +2039,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1702,9 +2048,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-slack",
@@ -1712,14 +2062,17 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Code in Slack",
    "gabarit": "complet",
-   "description": null,
+   "description": "Ancienne intégration Slack qui route une mention `@Claude` portant sur du code vers une session cloud sous le compte de l'utilisateur ; elle reste la voie d'installation sur Pro et Max, Claude Tag la remplaçant sur Team et Enterprise.",
    "description_source": "Delegate coding tasks directly from your Slack workspace. Anthropic is retiring this earlier version for Team and Enterprise workspaces in favor of Claude Tag; it remains the setup path on Pro and Max plans.",
    "usage": "1. Open the Claude app in Slack by clicking on \"Claude\" in your Apps section\n2. Open the App Home tab\n3. Click \"Connect\" to link your Slack account with your Claude account\n4. Complete the authentication flow in your browser",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sylvain n'utilise pas Slack d'après CONTEXTE."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/slack",
@@ -1727,7 +2080,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1736,9 +2089,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-statusline",
@@ -1746,14 +2103,17 @@
    "categorie": "fonctionnalites",
    "nom": "Customize your status line",
    "gabarit": "complet",
-   "description": null,
+   "description": "La ligne d'état est une barre en bas de Claude Code qui exécute un script : elle reçoit en JSON les données de la session (modèle, contexte utilisé, coût, dossier) et affiche ce que le script imprime. `/statusline <description>` fait générer le script par Claude.",
    "description_source": "Configure a custom status bar to monitor context window usage, costs, and git status in Claude Code",
    "usage": "/statusline show model name and context percentage with a progress bar",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"statusLine\": {\n    \"type\": \"command\",\n    \"command\": \"jq -r '\\\"[\\\\(.model.display_name)] \\\\(.context_window.used_percentage // 0)% context\\\"'\"\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Afficher modèle et pourcentage de contexte dans chacune des six sessions tmux aiderait à surveiller la consommation des limites et à distinguer les sessions."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/statusline",
@@ -1761,7 +2121,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1770,9 +2130,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-sub-agents",
@@ -1780,14 +2144,17 @@
    "categorie": "fonctionnalites",
    "nom": "Create custom subagents",
    "gabarit": "complet",
-   "description": null,
+   "description": "Un sous-agent est un assistant spécialisé qui travaille dans sa propre fenêtre de contexte, avec son invite système, ses outils et ses permissions, puis rend un résumé. On en crée au niveau utilisateur (`~/.claude/agents/`) ou projet ; ils préservent le contexte principal et peuvent tourner sur un modèle moins coûteux comme Haiku.",
    "description_source": "Create and use specialized AI subagents in Claude Code for task-specific workflows and improved context management.",
    "usage": "    Create a personal code-improver subagent in ~/.claude/agents/ that scans\n    files and suggests improvements for readability, performance, and best\n    practices. It should explain each issue, show the current code, and\n    provide an improved version. Make it read-only and have it use Sonnet.",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "non_utilise",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "CONTEXTE ne compte aucun agent perso alors que la revue machine d'une campagne revient souvent ; un sous-agent en lecture seule sur Sonnet ou Haiku ménagerait les limites."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/sub-agents",
@@ -1795,7 +2162,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
@@ -1804,9 +2171,13 @@
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec"
   },
   {
    "id": "claude-code-fonctionnalites-page-terminal-config",
