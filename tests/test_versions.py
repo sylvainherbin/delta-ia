@@ -31,6 +31,30 @@ def test_versions_publiees_depuis_etat_brut_et_quotidiens(tmp_path):
     assert v.versions_publiees(tmp_path, "openai-changelog-codex-app", r"oa-codex/.*-app", "openai") == ["26.908", "26.925"]
 
 
+def test_app_chatgpt_lue_dans_le_flux_codex_app(monkeypatch):
+    from conftest import FauxClient, RACINE
+    monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
+    monkeypatch.setattr(v, "codex_cli", lambda: ("0.155.0-alpha.16", "codex --version", None))
+    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.51856", f"dpkg-query -W {nom}", None))
+    lignes = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient())}
+    app = lignes["ChatGPT Desktop"]
+    assert app["derniere_publiee"] == "26.908" and app["statut"] == "a_jour" and app["source_derniere"] == "openai-changelog-codex-app"
+    assert "Correspondance déduite, non documentée par OpenAI" in app["note"]
+
+
+def test_app_chatgpt_flux_en_echec(monkeypatch):
+    from conftest import FauxClient, RACINE
+    from deltalib.modeles import ErreurReseau
+    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.51856", f"dpkg-query -W {nom}", None))
+    monkeypatch.setattr(v, "claude_code", lambda: (None, "x", "absent"))
+    monkeypatch.setattr(v, "codex_cli", lambda: (None, "x", "absent"))
+    url = "https://learn.chatgpt.com/docs/changelog/codex-app.json"
+    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient({url: ErreurReseau("HTTP 503")}))}["ChatGPT Desktop"]
+    assert app["statut"] == "inconnu" and app["derniere_publiee"] is None and "HTTP 503" in app["raison"]
+    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient({url: ('{"items": []}', "application/json")}))}["ChatGPT Desktop"]
+    assert app["statut"] == "inconnu" and "FormatInattendu" in app["raison"]
+
+
 def test_detecter_sans_outils_ni_source(tmp_path, monkeypatch):
     monkeypatch.setattr(v, "claude_code", lambda: (None, "claude --version", "exécutable `claude` introuvable"))
     monkeypatch.setattr(v, "codex_cli", lambda: ("0.155.0-alpha.16", "codex --version", None))
@@ -40,7 +64,7 @@ def test_detecter_sans_outils_ni_source(tmp_path, monkeypatch):
     assert set(lignes) == {"Claude Code", "Codex CLI", "ChatGPT Desktop", "Claude Desktop"}
     assert lignes["Claude Code"]["version"] is None and lignes["Claude Code"]["raison"] and lignes["Claude Code"]["statut"] == "inconnu"
     assert lignes["Codex CLI"]["derniere_publiee"] is None and lignes["Codex CLI"]["statut"] == "inconnu", "pas de source : pas de comparaison"
-    assert lignes["ChatGPT Desktop"]["statut"] == "inconnu" and "pas de comparaison" in lignes["ChatGPT Desktop"]["note"]
+    assert lignes["ChatGPT Desktop"]["statut"] == "inconnu" and "sources.yaml" in lignes["ChatGPT Desktop"]["raison"]
     assert lignes["Claude Desktop"]["source_derniere"] is None
 
 

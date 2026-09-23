@@ -9,9 +9,10 @@ Détection sur la machine, sans chemin supposé :
 Une version introuvable vaut null, avec la raison.
 
 Dernière version publiée : seulement si une source de Delta la fournit (état, fichiers quotidiens, fichier brut) :
-claude-code-changelog pour Claude Code, codex-cli-releases pour Codex CLI, openai-changelog-codex-app pour l'app de
-bureau ChatGPT (dont les versions « 26.908 » suivent la numérotation du paquet `chatgpt` 26.917.x). Aucune source de
-Delta ne publie les versions de Claude Desktop : statut `inconnu`.
+claude-code-changelog pour Claude Code, codex-cli-releases pour Codex CLI. Pour l'app de bureau ChatGPT, la version la
+plus haute est lue directement dans le flux de la source openai-changelog-codex-app (champ `version`, même analyseur
+que la source) ; ses versions « 26.908 » suivent la numérotation du paquet `chatgpt` 26.917.x (correspondance déduite).
+Aucune source de Delta ne publie les versions de Claude Desktop : statut `inconnu`.
 """
 
 from __future__ import annotations
@@ -110,6 +111,26 @@ def versions_publiees(racine: Path, source_id: str, motif: str, perimetre: str) 
     return sorted(res, key=cle_version)
 
 
+def versions_app_chatgpt(racine: Path, client=None) -> tuple[list[str], str | None]:
+    """Versions de l'app de bureau lues dans le flux de openai-changelog-codex-app, avec l'analyseur de la source."""
+    from deltalib.analyseurs import json_changelog
+    from deltalib.http import Client
+    from deltalib.modeles import ErreurSource
+    from deltalib.sources import ErreurConfiguration, charger_sources
+    try:
+        source = next(s for s in charger_sources(racine / "sources.yaml") if s.id == "openai-changelog-codex-app")
+    except (StopIteration, ErreurConfiguration, OSError) as e:
+        return [], f"source openai-changelog-codex-app introuvable dans sources.yaml : {e or 'absente'}"
+    try:
+        elements = json_changelog.analyser(source, client or Client()).elements
+    except ErreurSource as e:
+        return [], f"flux {source.url} en échec : {type(e).__name__}: {e}"
+    vs = sorted({e.version for e in elements if e.version and re.fullmatch(r"\d{2}\.\d{3}", e.version)}, key=cle_version)
+    if not vs:
+        return [], f"aucune version au format AA.MJJ dans {source.url}"
+    return vs, None
+
+
 def _stables(vs: list[str]) -> list[str]:
     return [v for v in vs if "-" not in v]
 
@@ -124,13 +145,14 @@ def comparer(installee: str | None, publiee: str | None, composantes: int | None
     return "a_jour" if cle_version(a if re.fullmatch(r"\d+(\.\d+)*(-.*)?", a) else "0") >= cle_version(b) else "en_retard"
 
 
-def detecter(racine: Path) -> list[dict]:
+def detecter(racine: Path, client=None) -> list[dict]:
     horodatage = maintenant_iso()
     res = []
 
-    def ligne(outil, trouve, publiees, source, composantes=None, note=None):
+    def ligne(outil, trouve, publiees, source, composantes=None, note=None, raison_source=None):
         version, methode, raison = trouve
         derniere = publiees[-1] if publiees else None
+        raison = "; ".join(x for x in (raison, None if derniere else raison_source) if x) or None
         d = {"outil": outil, "version": version, "detectee_le": horodatage, "methode": methode,
              "derniere_publiee": derniere, "source_derniere": source if derniere else None,
              "statut": comparer(version, derniere, composantes)}
@@ -147,13 +169,12 @@ def detecter(racine: Path) -> list[dict]:
           _stables(versions_publiees(racine, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai")),
           "codex-cli-releases",
           note="Livré avec l'app de bureau ChatGPT : il se met à jour avec elle, pas séparément.")
-    app = versions_publiees(racine, "openai-changelog-codex-app", r"oa-codex/.*-app", "openai")
-    app = [v for v in app if re.fullmatch(r"\d{2}\.\d{3}", v)]
+    app, raison_app = versions_app_chatgpt(racine, client)
     ligne("ChatGPT Desktop", paquet_dpkg("chatgpt"), app, "openai-changelog-codex-app", composantes=2,
           note="Correspondance déduite, non documentée par OpenAI : les versions de l'app Codex du changelog (ex. 26.908, "
-               "entrée décrivant « the ChatGPT desktop app ») suivent la numérotation du paquet chatgpt ; elles se comparent "
-               "aux deux premières composantes (26.917.51856 -> 26.917)."
-               + ("" if app else " Aucune version de l'app n'est encore dans l'état ni dans les fichiers de Delta : pas de comparaison."))
+               "entrée décrivant « the ChatGPT desktop app ») suivent la numérotation du paquet chatgpt ; la comparaison "
+               "porte sur les deux premières composantes (26.917.51856 -> 26.917).",
+          raison_source=raison_app)
     ligne("Claude Desktop", paquet_dpkg("claude-desktop"), [], None,
           note="Aucune source de Delta ne publie les versions de Claude Desktop.")
     return res

@@ -438,10 +438,10 @@ def test_skills_delta_kb():
     cc = (racine / ".claude" / "skills" / "delta-kb" / "SKILL.md").read_text(encoding="utf-8")
     tete = cc.split("---\n", 2)[1]
     assert "disable-model-invocation: true" in tete and "model: opus" in tete
-    assert "deux premiers lots" in cc and "index.lock" in cc and "jamais `usage`" in cc.replace("Tu ne touches jamais à `usage`", "jamais `usage`")
+    assert "deux premiers lots" in cc and "index.lock" in cc and "**Effets de bord**" in cc and "jamais `usage`" in cc.replace("Tu ne touches jamais à `usage`", "jamais `usage`")
     skill = (racine / ".agents" / "skills" / "delta-kb" / "SKILL.md").read_text(encoding="utf-8")
     prompt = (racine / "prompts" / "codex-delta-kb.md").read_text(encoding="utf-8")
-    assert skill.split("---\n", 2)[2].lstrip("\n") == prompt
+    assert skill.split("---\n", 2)[2].lstrip("\n") == prompt and "**Effets de bord**" in prompt
     assert "allow_implicit_invocation: false" in (racine / ".agents" / "skills" / "delta-kb" / "agents" / "openai.yaml").read_text()
     for f in (racine / ".claude" / "skills" / "delta" / "SKILL.md", racine / "prompts" / "codex-delta.md"):
         assert "fetch.py --kb" in f.read_text(encoding="utf-8"), f"D44 absent de {f.name}"

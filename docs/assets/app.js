@@ -163,11 +163,15 @@
     for (const l of lignes) {
       if (!l || typeof l !== "object") continue;
       const statut = STATUTS_VERSION[l.statut] ? l.statut : "inconnu";
-      corps.append(el("tr", { title: texte(l.note) || texte(l.raison) || null },
+      const note = [texte(l.raison), texte(l.note)].filter(Boolean).join(" ");
+      // Codex CLI est livré avec l'app de bureau : il se met à jour avec elle
+      const conseil = l.outil === "Codex CLI" && statut === "en_retard" ? el("span", { class: "conseil", text: "→ mettre à jour ChatGPT Desktop" }) : null;
+      corps.append(el("tr", { class: note ? "avec-note" : null },
         el("td", { text: texte(l.outil, "?") }),
         el("td", { class: "v", text: l.version ? String(l.version) : "introuvable" }),
         el("td", { class: "v col-derniere", text: l.derniere_publiee ? String(l.derniere_publiee) : "—" }),
-        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]))));
+        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]), conseil)));
+      if (note) corps.append(el("tr", { class: "ligne-note" }, el("td", { colspan: "4", text: note })));
     }
     const date = lignes.map((l) => l && l.detectee_le).filter(Boolean).sort().pop();
     return el("section", { class: "outils", "aria-label": "Tes outils" },
