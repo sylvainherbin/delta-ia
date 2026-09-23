@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import re
+import unicodedata
 from dataclasses import asdict, dataclass, field
 
 PRODUITS = ("claude", "claude-code", "chatgpt", "codex", "actu")
@@ -25,6 +27,22 @@ class FormatInattendu(ErreurSource):
 
     Un analyseur qui ne reconnaît aucune entrée doit lever cette erreur : jamais de liste vide silencieuse.
     """
+
+
+def normaliser_titre(titre: str) -> str:
+    """Minuscules, sans accents, sans ponctuation, espaces réduits."""
+    t = unicodedata.normalize("NFKD", titre or "")
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
+
+
+def id_web(url: str, date_publication: str | None, titre: str) -> str:
+    """D20 : identifiant d'un élément issu de la recherche web.
+
+    `web-<sha1(url + "|" + date_publication + "|" + titre normalisé)[:12]>` ; une date inconnue vaut la chaîne vide.
+    """
+    cle = f"{url.strip()}|{date_publication or ''}|{normaliser_titre(titre)}"
+    return "web-" + hashlib.sha1(cle.encode("utf-8")).hexdigest()[:12]
 
 
 def empreinte_contenu(texte: str) -> str:

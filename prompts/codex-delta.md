@@ -5,7 +5,8 @@ Tu exécutes le passage quotidien de Delta pour le périmètre `openai` (produit
 ## 0. Préparation
 
 - Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
-- Date du jour `J` = `date +%F`. Python : `.venv/bin/python`.
+- Si `.git/index.lock` existe, arrête-toi et signale-le : un autre passage (Claude Code) ou une autre session tient le dépôt ; les passages ne tournent jamais en même temps (D21).
+- Calcule la date du passage **une seule fois** : `J=$(date +%F)`. Toutes les commandes et tous les fichiers du passage utilisent ce `J`, même si le passage franchit minuit (D19). Python : `.venv/bin/python`.
 
 ## 1. Récupération
 
@@ -13,7 +14,7 @@ Si `state/openai.json` est absent ou si sa clé `vus` est vide, c'est le premier
 
 ## 2. Repli par recherche web pour ChatGPT
 
-Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Fais toi-même une recherche web sur les notes de version ChatGPT publiées depuis la `borne` du brut (sources OpenAI d'abord : openai.com, help.openai.com ; médias ensuite). Pour chaque nouveauté trouvée : `id: web-<sha1(url)[:12]>`, `certitude: rapporte`, URL obligatoire. Avant de créer un tel élément, vérifie que l'identifiant n'est ni dans `state/openai.json` ni dans les fichiers `docs/data/openai/*.json` des 14 derniers jours. Une rumeur n'est jamais présentée comme un fait (`non_confirme`).
+Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Fais toi-même une recherche web sur les notes de version ChatGPT publiées depuis la `borne` du brut (sources OpenAI d'abord : openai.com, help.openai.com ; médias ensuite). Pour chaque nouveauté trouvée : `certitude: rapporte`, URL obligatoire, et pour identifiant `web-<sha1(url + "|" + date_publication + "|" + titre normalisé)[:12]>` (D20 ; titre normalisé = minuscules, sans accents ni ponctuation ; date inconnue = chaîne vide), calculé par `.venv/bin/python -c "import sys; sys.path.insert(0, 'scripts'); from deltalib.modeles import id_web; print(id_web('<url>', '<date ou vide>', '<titre>'))"`. L'URL seule ne suffit pas : toutes les entrées d'une même page de notes de version auraient le même identifiant. Avant de créer un tel élément, vérifie que l'identifiant n'est ni dans `state/openai.json` ni dans les fichiers `docs/data/openai/*.json` des 14 derniers jours. Une rumeur n'est jamais présentée comme un fait (`non_confirme`).
 
 ## 3. Synthèse dans `docs/data/openai/J.json` (SPEC §7.1 et §7.2, `agent: "codex"`)
 
@@ -32,8 +33,8 @@ Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Fais toi-m
 
 1. Mets à jour `docs/data/openai/index.json` (SPEC §7.3) : une entrée par fichier quotidien, triées par date décroissante, compteurs exacts.
 2. Base de référence `docs/data/kb/openai/` : ne la modifie que si une nouveauté touche une entrée existante ; tant qu'elle n'existe pas (phase 4), ne crée rien.
-3. `.venv/bin/python scripts/valider.py --perimetre openai --brut raw/openai-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
-4. `.venv/bin/python scripts/fetch.py --perimetre openai --valider`. Code 4 = des nouveautés brutes restent en attente : traite-les, revalide, relance. Code 0 attendu.
+3. `.venv/bin/python scripts/valider.py --perimetre openai --date $J --brut raw/openai-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
+4. `.venv/bin/python scripts/fetch.py --perimetre openai --valider --date $J`. Code 4 = des nouveautés brutes restent en attente : traite-les, revalide, relance. Code 0 attendu.
 5. `git add docs/data/openai state/openai.json` (jamais `git add -A`), message `delta(openai): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
 
 ## 5. Fin de passage

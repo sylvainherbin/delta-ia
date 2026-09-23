@@ -11,7 +11,8 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 ## 0. Préparation
 
 - Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
-- Date du jour `J` = `date +%F`. Python : `.venv/bin/python`.
+- Si `.git/index.lock` existe, arrête-toi et signale-le : un autre passage (Codex) ou une autre session tient le dépôt ; les passages ne tournent jamais en même temps (D21).
+- Calcule la date du passage **une seule fois** : `J=$(date +%F)`. Toutes les commandes et tous les fichiers du passage utilisent ce `J`, même si le passage franchit minuit (D19). Python : `.venv/bin/python`.
 
 ## 1. Pour chaque périmètre `p` dans `claude`, `actu`
 
@@ -20,7 +21,7 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 3. **Synthèse** dans `docs/data/p/J.json`, au format SPEC §7.1 et §7.2 (`agent: "claude-code"`). Règles :
    - **Chaque nouveauté brute est comptabilisée** (D13) : soit dans les `ids_bruts` d'un élément, soit dans `ecartes: [{id, raison}]`. `ecartes` ne sert qu'à ce qui n'a aucun rapport avec l'usage des outils IA (marketing, offres sectorielles, événements). Ce qui concerne le produit mais pas Sylvain reste un élément avec `impact: nul` et `pour_toi: null` (D14).
    - **Fusion des doublons** : un même événement rapporté par plusieurs sources (changelog + newsroom + notes de la plateforme…) donne un seul élément, tous les identifiants bruts dans `ids_bruts`, toutes les URL dans `sources`. `id` = le premier de `ids_bruts`.
-   - `certitude: officiel` si au moins une source a `officielle: true` (le champ vient du brut). Un élément de recherche web a `id: web-<sha1(url)[:12]>`, `certitude: rapporte`, et n'est créé qu'après avoir vérifié que cet identifiant n'est ni dans `state/p.json` ni dans les fichiers `docs/data/p/*.json` des 14 derniers jours.
+   - `certitude: officiel` si au moins une source a `officielle: true` (le champ vient du brut). Un élément de recherche web a `certitude: rapporte` et pour identifiant `web-<sha1(url + "|" + date_publication + "|" + titre normalisé)[:12]>` (D20 ; titre normalisé = minuscules, sans accents ni ponctuation ; date inconnue = chaîne vide), calculé par `.venv/bin/python -c "import sys; sys.path.insert(0, 'scripts'); from deltalib.modeles import id_web; print(id_web('<url>', '<date ou vide>', '<titre>'))"`. Il n'est créé qu'après avoir vérifié que cet identifiant n'est ni dans `state/p.json` ni dans les fichiers `docs/data/p/*.json` des 14 derniers jours.
    - `resume` factuel, 1 à 3 phrases ; régressions, limites, hausses de prix et baisses de quota rapportées comme les nouveautés (REGLES §3) ; un changement défavorable vaut au moins `impact: moyen`.
    - `pour_toi` et `action` s'appuient sur CONTEXTE.md : projet, outil ou habitude nommés, commande ou réglage exact. Priorités : trading-sim d'abord ; ce qui débloque Codex en CLI + tmux + remote control ; ce qui allège les limites hebdomadaires ; ce qui renforce les audits croisés Claude ↔ Codex. Ne fabrique jamais de pertinence.
    - `projets_concernes` : uniquement des noms de CONTEXTE.md §2 (`carnet`, `trading-sim`, `chatgpt-trading-sim`, `ceramist`, `restoration-id`).
@@ -30,8 +31,8 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
    - **Idempotence** : si `docs/data/p/J.json` existe déjà, fusionne : conserve ses éléments, ajoute les nouveaux sans dupliquer un identifiant brut, mets à jour `synthese` et `genere_le`.
 4. **Index.** Mets à jour `docs/data/p/index.json` (SPEC §7.3) : une entrée par fichier quotidien, triées par date décroissante, compteurs exacts.
 5. **Base de référence** : ne la modifie que si une nouveauté touche une entrée existante de `docs/data/kb/claude/` ; renseigne alors `kb_refs` et `historique`. Tant qu'elle n'existe pas (phase 4), ne crée rien.
-6. **Validation.** `.venv/bin/python scripts/valider.py --perimetre p --brut raw/p-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
-7. **Avancement de l'état.** `.venv/bin/python scripts/fetch.py --perimetre p --valider`. Code 4 = des nouveautés brutes restent en attente : traite-les (élément ou écarté), revalide, relance. Code 0 attendu.
+6. **Validation.** `.venv/bin/python scripts/valider.py --perimetre p --date $J --brut raw/p-nouveautes.json`. Corrige jusqu'à ce qu'il rende 0. Ne commite pas s'il échoue.
+7. **Avancement de l'état.** `.venv/bin/python scripts/fetch.py --perimetre p --valider --date $J`. Code 4 = des nouveautés brutes restent en attente : traite-les (élément ou écarté), revalide, relance. Code 0 attendu.
 8. **Commit** sur les seuls chemins du périmètre : `git add docs/data/p state/p.json`, message `delta(p): J — <n> éléments (<n> fort)`. Push seulement si un dépôt distant existe (D9).
 
 ## 2. Fin de passage

@@ -99,12 +99,13 @@ Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit
 
 ## 6. Passage quotidien
 
+0. Si `.git/index.lock` existe, s'arrêter et le signaler : les passages Claude Code et Codex ne tournent jamais en même temps (D21). Calculer la date du passage `J` une seule fois et la passer explicitement à `valider.py` et à `fetch.py --valider` (D19), sinon un passage qui franchit minuit vise le mauvais fichier.
 1. `git pull --rebase` (seulement si un dépôt distant existe, voir Git ci-dessous).
 2. `python scripts/fetch.py --perimetre <p>`. Le script écrit les nouveautés dans `raw/<p>-nouveautes.json` **sans toucher à l'état**.
 3. L'agent lit les nouveautés, `CONTEXTE.md` et la base de référence existante.
 4. L'agent écrit `docs/data/<dossier>/AAAA-MM-JJ.json`, met à jour son `index.json`, puis la base de référence si une nouveauté la touche.
-5. `python scripts/valider.py --perimetre <p> --brut raw/<p>-nouveautes.json` vérifie les JSON produits (schéma §7, cohérences, couverture des nouveautés brutes, secrets, `index.json`). Ne pas pousser s'il échoue.
-6. `python scripts/fetch.py --perimetre <p> --valider`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5, D13) : `--valider` lit `docs/data/<dossier>/<date>.json` (option `--date`, défaut aujourd'hui) et inscrit dans l'état les `ids_bruts` de chaque élément, les `ecartes`, les `ignores` du fichier brut et les identifiants `web-*`. Les nouveautés brutes absentes du fichier quotidien restent en attente, sont listées, et la commande rend un code de sortie non nul.
+5. `python scripts/valider.py --perimetre <p> --date J --brut raw/<p>-nouveautes.json` vérifie les JSON produits (schéma §7, cohérences, couverture des nouveautés brutes, secrets, `index.json`). Ne pas pousser s'il échoue.
+6. `python scripts/fetch.py --perimetre <p> --valider --date J`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5, D13) : `--valider` lit `docs/data/<dossier>/<date>.json` (option `--date`, défaut aujourd'hui) et inscrit dans l'état les `ids_bruts` de chaque élément, les `ecartes`, les `ignores` du fichier brut et les identifiants `web-*`. Les nouveautés brutes absentes du fichier quotidien restent en attente, sont listées, et la commande rend un code de sortie non nul.
 7. Commit sur les seuls chemins de l'agent, puis push selon les règles Git ci-dessous.
 
 Comportement de `fetch.py` :
@@ -146,7 +147,7 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | string | Le premier de `ids_bruts`. Élément issu de la recherche web (repli, certitude `rapporte`) : `web-<sha1(url)[:12]>`, après vérification qu'il n'est ni dans l'état ni dans les fichiers quotidiens des 14 derniers jours |
+| `id` | string | Le premier de `ids_bruts`. Élément issu de la recherche web (repli, certitude `rapporte`) : `web-<sha1(url + "\|" + date_publication + "\|" + titre normalisé)[:12]>` (D20 ; titre normalisé = minuscules, sans accents ni ponctuation ; date inconnue = chaîne vide ; fonction `id_web` de `deltalib.modeles`), après vérification qu'il n'est ni dans l'état ni dans les fichiers quotidiens des 14 derniers jours |
 | `ids_bruts` | array | Au moins un identifiant brut (D1, D13). Plusieurs si un même événement vient de plusieurs sources : un seul élément, toutes les URL dans `sources` |
 | `revision` | bool | Facultatif ; `true` si l'élément reprend une entrée déjà vue dont le contenu a changé |
 | `produit` | enum | `claude` \| `claude-code` \| `chatgpt` \| `codex` \| `actu` |
@@ -248,4 +249,7 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D15 | `scripts/valider.py` : schéma §7, cohérences, projets de CONTEXTE.md §2, couverture du brut, secrets, `index.json` | §6 |
 | D16 | Lancement : `/delta` selon le mécanisme de la version installée de Claude Code ; Codex par skill de dépôt si la documentation le permet, sinon `prompts/codex-delta.md` collé à la main | §3, phase 2a |
 | D18 | `CONTEXTE.md` commité à part (`contexte: mise à jour herbin-mint du 23/09`) | — |
+| D19 | La date du passage `J` est calculée une fois à l'étape 0 et passée à `valider.py --date J` et `fetch.py --valider --date J` | §6, skills |
+| D20 | Identifiant web : `web-<sha1(url + "\|" + date_publication + "\|" + titre normalisé)[:12]>`, l'URL seule fait entrer en collision les entrées d'une même page | §7.2, skills |
+| D21 | Étape 0 : si `.git/index.lock` existe, arrêt et signalement ; les passages Claude Code et Codex ne tournent jamais en même temps | §6, skills |
 

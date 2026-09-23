@@ -63,7 +63,8 @@ def test_valider_partiel_laisse_les_autres_en_attente(racine, capsys):
 
 def test_valider_inscrit_les_ids_web_et_signale_les_inconnus(racine, capsys):
     brut = brut_de(racine, "openai")
-    web = {"id": "web-" + hashlib.sha1(b"https://help.openai.com/x").hexdigest()[:12], "produit": "chatgpt", "titre": "Note ChatGPT",
+    from deltalib.modeles import id_web
+    web = {"id": id_web("https://help.openai.com/x", None, "Note ChatGPT"), "produit": "chatgpt", "titre": "Note ChatGPT",
            "version": None, "date_publication": None, "url": "https://help.openai.com/x", "officielle": False}
     e_web = element_depuis_brut(web)
     e_inconnu = element_depuis_brut({**web, "id": "oa-codex/inexistant", "url": "https://x.test"})
@@ -221,3 +222,15 @@ def test_skill_codex_et_prompt_identiques():
     assert skill.startswith("---\nname: delta\n")
     cc = (racine / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
     assert "disable-model-invocation: true" in cc.split("---\n", 2)[1]
+
+
+def test_id_web_d20():
+    from deltalib.modeles import id_web, normaliser_titre
+    url = "https://help.openai.com/en/articles/6825453-chatgpt-release-notes"
+    a = id_web(url, "2026-09-22", "Mémoire améliorée !")
+    b = id_web(url, "2026-09-22", "memoire amelioree")
+    assert a == b and a == "web-" + hashlib.sha1(f"{url}|2026-09-22|memoire amelioree".encode()).hexdigest()[:12]
+    assert id_web(url, "2026-09-22", "Autre entrée") != a, "deux entrées d'une même page ne doivent pas entrer en collision"
+    assert id_web(url, None, "x") == id_web(url, "", "x") != id_web(url, "2026-09-22", "x")
+    assert normaliser_titre("Éléphant, GPT-6 !") == "elephant gpt 6"
+    assert __import__("re").fullmatch(r"web-[0-9a-f]{12}", a)
