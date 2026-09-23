@@ -162,7 +162,30 @@ sources:
     note: >-
       Testé le 2026-09-23 : 403, défi JavaScript Cloudflare, y compris avec un User-Agent de navigateur
       et sur la variante `.md`. Tout help.openai.com et openai.com/chatgpt/release-notes/ : 403. Aucune
-      piste de contournement retenue. Repli (SPEC §5) : recherche web de Codex, certitude `rapporte`.
+      piste de contournement retenue. Relais déterministe : `releasebot-chatgpt` ci-dessous (D25) ; la
+      recherche web de Codex ne sert plus qu'en repli si ce relais est en échec.
+
+  - id: releasebot-chatgpt
+    perimetre: openai
+    produit: chatgpt
+    type: json
+    url: https://releasebot.io/updates/openai/chatgpt/__data.json
+    statut: a_valider
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 (D25). La page https://releasebot.io/updates/openai/chatgpt (200, 164 Ko,
+      SvelteKit) recopie les notes de version ChatGPT du centre d'aide OpenAI (224 mises à jour, 15 par
+      page, dernière du 22/09). Aucun flux RSS ou JSON public : les boutons « RSS / API / MCP » sont des
+      boutons JavaScript liés à un compte, et /rss, /feed, .rss, .json, /rss.xml répondent 404. Le point
+      `__data.json` (27 Ko, sérialisation « devalue ») donne par date : id, release_date, résumé, contenu
+      Markdown (`### titre` par entrée), URL de la source officielle. NON DOCUMENTÉ : peut changer sans
+      préavis ; une dérive lève `FormatInattendu`. Pas de permalien par entrée (404) : l'URL de l'élément
+      est celle de la page, l'URL officielle est reportée en tête du contenu. Source tierce, donc
+      `officielle: false` et certitude `rapporte`. Repli : la page HTML (h2 = date, h3 = titre).
+    options:
+      format: releasebot
+      url_publique: https://releasebot.io/updates/openai/chatgpt
+      suivre_revisions: true
 
   # ---------------------------------------------------------------- actu
   - id: simon-willison

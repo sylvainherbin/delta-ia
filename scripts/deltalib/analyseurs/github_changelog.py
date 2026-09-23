@@ -1,7 +1,7 @@
 """CHANGELOG.md d'un dépôt GitHub : sections `## x.y.z`, datées par l'API releases du même dépôt.
 
-Identifiant (D1) : `<produit>-<version>`. Historique (D3) : les versions strictement inférieures à la plus
-ancienne version datée par l'API sont ignorées ; une version non datée plus récente est une nouveauté.
+Identifiant (D1) : `<produit>-<version>`. Historique (D3, D27) : une version non datée inférieure à la plus
+haute version datée par l'API est ignorée ; seule une version non datée plus récente est une nouveauté.
 """
 
 from __future__ import annotations
@@ -50,14 +50,18 @@ def parser_changelog(texte: str, source, dates: dict[str, str] | None = None) ->
 
 
 def separer_historique(elements: list[Element]) -> tuple[list[Element], list[str]]:
-    """D3 : versions non datées strictement inférieures à la plus ancienne version datée -> historique."""
+    """D3, D27 : une version non datée inférieure à la plus haute version datée est de l'historique.
+
+    Seule une version non datée plus récente que tout ce que l'API a daté (changelog publié avant la release)
+    reste une nouveauté. Cas du 23/09 : la 2.1.243, sans release GitHub, remontait à tort.
+    """
     datees = [e for e in elements if e.date_publication]
     if not datees:
         return elements, []
-    plancher = min(cle_version(e.version) for e in datees)
+    plafond = max(cle_version(e.version) for e in datees)
     courants, historique = [], []
     for e in elements:
-        if e.date_publication is None and cle_version(e.version) < plancher:
+        if e.date_publication is None and cle_version(e.version) < plafond:
             historique.append(e.id)
         else:
             courants.append(e)

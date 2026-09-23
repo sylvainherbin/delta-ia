@@ -10,6 +10,7 @@ from conftest import FIXTURES, FauxClient, ecrire_quotidien
 JOUR = __import__("datetime").date.today().isoformat()
 from deltalib.analyseurs import github_changelog, github_releases, json_changelog, rss
 from deltalib.etat import detecter
+from deltalib.modeles import FormatInattendu
 from deltalib.passage import detecter_trou, recuperer
 from deltalib.sources import sources_du_perimetre
 
@@ -80,16 +81,17 @@ def test_d2_produit_par_entree(sources, client):
 
 # --- D3 : non datés ---------------------------------------------------------------------------------------------
 
-def test_d3_changelog_versions_non_datees(sources, client, fixture_texte):
-    """Une version non datée plus récente que la plus ancienne datée est une nouveauté ; plus ancienne : historique."""
+def test_d3_d27_changelog_versions_non_datees(sources, client, fixture_texte):
+    """Non datée et plus haute que toute version datée : nouveauté. Non datée et plus basse : historique (D27, cas 2.1.243)."""
     s = sources["claude-code-changelog"]
-    texte = fixture_texte("cc_changelog.md")
+    texte = fixture_texte("cc_changelog.md")  # 2.1.280, 2.1.278, 2.1.277 datées par l'API
     texte = texte.replace("# Changelog\n", "# Changelog\n\n## 2.1.281\n\n- Version publiée dans le changelog avant la release GitHub\n", 1)
-    texte += "\n## 0.2.21\n\n- Ancienne version, sans release datée\n"
+    texte = texte.replace("## 2.1.278", "## 2.1.279\n\n- Version intermédiaire sans release GitHub\n\n## 2.1.278", 1)
+    texte += "\n## 2.1.243\n\n- Version sans release GitHub, entre deux versions datées\n\n## 0.2.21\n\n- Ancienne version, sans release datée\n"
     r = github_changelog.analyser(s, FauxClient({s.url: (texte, "text/plain")}))
     versions = {e.version: e.date_publication for e in r.elements}
-    assert versions["2.1.281"] is None and "0.2.21" not in versions
-    assert r.ignores == ["claude-code-0.2.21"]
+    assert versions["2.1.281"] is None and "2.1.279" not in versions and "2.1.243" not in versions and "0.2.21" not in versions
+    assert r.ignores == ["claude-code-2.1.279", "claude-code-2.1.243", "claude-code-0.2.21"]
     nouveautes, ignores = detecter(r.elements, {"vus": {}}, __import__("datetime").date(2026, 9, 20))
     assert "claude-code-2.1.281" in [e.id for e in nouveautes]
 
@@ -198,3 +200,37 @@ def test_d12_plus_ancienne_sur_le_flux_entier(sources, client, fixture_texte):
     assert r.plus_ancienne < min(e.date_publication for e in elements_filtres)
     # sans ce calcul, la borne comparée aux seuls éléments filtrés signalerait un faux trou
     assert detecter_trou(r, ancienne_flux) is None
+
+
+# --- D25 : releasebot, relais déterministe des notes de version ChatGPT --------------------------------------
+
+def test_d25_releasebot(sources, client):
+    s = sources["releasebot-chatgpt"]
+    assert s.statut == "a_valider" and s.officielle is False and s.produit == "chatgpt" and s.perimetre == "openai"
+    r = json_changelog.analyser(s, client)
+    assert len(r.elements) == 15 and r.plus_ancienne == "2026-08-25"
+    e = r.elements[0]
+    assert e.id == "releasebot-62193" and e.date_publication == "2026-09-22" and e.officielle is False
+    assert e.titre == "GPT-6 Sol and GPT-6 Luna in ChatGPT Work and Codex ; Create flashcards in ChatGPT"
+    assert e.url == "https://releasebot.io/updates/openai/chatgpt"  # page consultée, jamais reconstruite
+    assert e.contenu.startswith("Source officielle : https://help.openai.com/en/articles/6825453-chatgpt-release-notes")
+    assert "### Create flashcards in ChatGPT" in e.contenu
+    assert len({x.id for x in r.elements}) == 15 and all(x.date_publication for x in r.elements)
+
+
+@pytest.mark.parametrize("donnees", [
+    {"type": "data", "nodes": []},
+    {"type": "data", "nodes": [{"type": "data", "data": [{"product": 1}, "x"]}]},
+    {"type": "data", "nodes": [{"type": "data", "data": [{"releases": 1}, []]}]},
+    {"type": "data", "nodes": [{"type": "data", "data": [{"releases": 1}, [2], {"slug": 3}, "s"]}]},
+    [],
+])
+def test_d25_releasebot_derive_de_format(sources, donnees):
+    with pytest.raises(FormatInattendu):
+        json_changelog.parser_releasebot(donnees, sources["releasebot-chatgpt"])
+
+
+def test_d25_releasebot_suit_les_revisions(sources, client):
+    s = [sources["releasebot-chatgpt"]]
+    elements, echecs, traitees, _ = recuperer(s, client)
+    assert traitees == ["releasebot-chatgpt"] and all(e.empreinte for e in elements)

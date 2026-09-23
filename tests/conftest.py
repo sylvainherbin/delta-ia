@@ -35,6 +35,7 @@ CORRESPONDANCES = {
     "https://learn.chatgpt.com/docs/changelog/codex-app.json": ("oa_codex_app.json", "application/json; charset=utf-8"),
     "https://learn.chatgpt.com/docs/changelog/ios.json": ("oa_ios.json", "application/json; charset=utf-8"),
     "https://openai.com/news/rss.xml": ("openai_news.xml", "text/xml; charset=utf-8"),
+    "https://releasebot.io/updates/openai/chatgpt/__data.json": ("releasebot_data.json", "application/json"),
     "https://simonwillison.net/atom/everything/": ("simonw.atom", "application/xml; charset=utf-8"),
     "https://deepmind.google/blog/rss.xml": ("deepmind.xml", "text/xml"),
     "https://importai.substack.com/feed": ("deepmind.xml", "application/xml; charset=utf-8"),
