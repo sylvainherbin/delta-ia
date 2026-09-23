@@ -1,0 +1,353 @@
+/* Delta — application du site statique.
+ * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens ; aucune dépendance, aucun build.
+ * Sécurité : tout texte issu des données passe par textContent ; les liens sont limités à http(s). */
+(function () {
+  "use strict";
+
+  const PERIMETRES = ["claude", "openai", "actu"];
+  const AGENTS = { "claude-code": "Claude Code", codex: "Codex" };
+  const PRODUITS = { claude: "Claude", "claude-code": "Claude Code", chatgpt: "ChatGPT", codex: "Codex", actu: "Actu" };
+  const IMPACTS = ["fort", "moyen", "faible", "nul"];
+  const TYPES = { nouveaute: "nouveauté", amelioration: "amélioration", correction: "correction", changement_rupture: "rupture", depreciation: "dépréciation", actu: "actu" };
+  const CERTITUDES = { officiel: "officiel", rapporte: "rapporté", non_confirme: "non confirmé" };
+  const ALERTE_HEURES = 36;
+  const CLE_FAITS = "delta.faits";
+
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null };
+  const main = document.getElementById("contenu");
+
+  /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
+  function el(tag, attrs, ...enfants) {
+    const n = document.createElement(tag);
+    if (attrs) for (const [k, v] of Object.entries(attrs)) {
+      if (v === null || v === undefined || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = String(v);
+      else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : String(v));
+    }
+    for (const e of enfants) {
+      if (e === null || e === undefined || e === false) continue;
+      n.append(typeof e === "string" ? document.createTextNode(e) : e);
+    }
+    return n;
+  }
+  function lienSur(url, texte) {
+    if (typeof url !== "string" || !/^https?:\/\//i.test(url)) return el("span", { text: texte || String(url) });
+    return el("a", { href: url, rel: "noopener noreferrer", target: "_blank", text: texte || url });
+  }
+  function texte(v, defaut) { return typeof v === "string" && v.trim() ? v : (defaut || ""); }
+  function dateFr(iso) {
+    if (typeof iso !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return "date inconnue";
+    const [a, m, j] = iso.slice(0, 10).split("-");
+    return `${j}/${m}/${a}`;
+  }
+  function horodatageFr(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "inconnu";
+    return d.toLocaleString("fr-CA", { dateStyle: "short", timeStyle: "short" });
+  }
+  function vider(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+
+  /* ---------- localStorage sous try/catch : le site marche sans ---------- */
+  function lireFaits() {
+    try { const v = JSON.parse(localStorage.getItem(CLE_FAITS) || "{}"); return v && typeof v === "object" ? v : {}; }
+    catch (e) { return {}; }
+  }
+  function ecrireFait(id, fait) {
+    try {
+      const faits = lireFaits();
+      if (fait) faits[id] = new Date().toISOString(); else delete faits[id];
+      localStorage.setItem(CLE_FAITS, JSON.stringify(faits));
+    } catch (e) { /* stockage indisponible : la case reste cochée à l'écran seulement */ }
+  }
+
+  /* ---------- chargement des données ---------- */
+  async function lireJson(chemin) {
+    const r = await fetch(chemin, { cache: "no-cache" });
+    if (!r.ok) throw new Error(`${chemin} : HTTP ${r.status}`);
+    return r.json();
+  }
+  async function chargerIndex() {
+    await Promise.all(PERIMETRES.map(async (p) => {
+      try {
+        const idx = await lireJson(`data/${p}/index.json`);
+        if (!idx || !Array.isArray(idx.jours)) throw new Error("index sans `jours`");
+        etat.index[p] = idx;
+      } catch (e) { etat.index[p] = { erreur: String(e.message || e), jours: [] }; }
+    }));
+  }
+  async function chargerJour(p, date) {
+    const cle = `${p}/${date}`;
+    if (etat.jours[cle]) return etat.jours[cle];
+    try {
+      const q = await lireJson(`data/${p}/${date}.json`);
+      etat.jours[cle] = q && Array.isArray(q.elements) ? q : { erreur: "fichier quotidien illisible", elements: [], ecartes: [] };
+    } catch (e) { etat.jours[cle] = { erreur: String(e.message || e), elements: [], ecartes: [] }; }
+    return etat.jours[cle];
+  }
+  function datesDe(p) { return (etat.index[p]?.jours || []).map((j) => j.date).filter((d) => typeof d === "string").sort().reverse(); }
+  function derniereDate(p) { return datesDe(p)[0] || null; }
+  async function chargerTout() {
+    const taches = [];
+    for (const p of PERIMETRES) for (const d of datesDe(p)) taches.push(chargerJour(p, d));
+    await Promise.all(taches);
+  }
+  function elementsDe(p, dates) {
+    const out = [];
+    for (const d of dates) {
+      const q = etat.jours[`${p}/${d}`];
+      if (!q) continue;
+      for (const e of q.elements) if (e && typeof e === "object") out.push({ ...e, _perimetre: p, _jour: d });
+    }
+    return out;
+  }
+  const rangImpact = (e) => { const i = IMPACTS.indexOf(e.impact); return i < 0 ? IMPACTS.length : i; };
+  const triImpact = (a, b) => rangImpact(a) - rangImpact(b) || String(b.date_publication || "").localeCompare(String(a.date_publication || ""));
+  const triChrono = (a, b) => String(b.date_publication || b._jour || "").localeCompare(String(a.date_publication || a._jour || ""));
+
+  /* ---------- en-tête : dernier passage par agent, alerte au-delà de 36 h (D36) ---------- */
+  function rendreEtatAgents() {
+    const zone = document.getElementById("etat-agents");
+    vider(zone);
+    const parAgent = {};
+    for (const p of PERIMETRES) {
+      const idx = etat.index[p];
+      if (!idx || !idx.agent) continue;
+      const t = new Date(idx.maj_le || "");
+      if (Number.isNaN(t.getTime())) continue;
+      if (!parAgent[idx.agent] || t > parAgent[idx.agent]) parAgent[idx.agent] = t;
+    }
+    const alertes = [];
+    for (const agent of Object.keys(AGENTS)) {
+      const t = parAgent[agent];
+      const heures = t ? (Date.now() - t.getTime()) / 36e5 : Infinity;
+      const enRetard = heures > ALERTE_HEURES;
+      const libelle = t ? `${AGENTS[agent]} : ${horodatageFr(t.toISOString())}` : `${AGENTS[agent]} : aucun passage`;
+      zone.append(el("span", { class: "agent" + (enRetard ? " alerte" : ""), text: enRetard ? `⚠ ${libelle}` : libelle,
+        title: enRetard ? `Dernier passage il y a plus de ${ALERTE_HEURES} h` : "Dernier passage" }));
+      if (enRetard) alertes.push(t ? `${AGENTS[agent]} n'a pas tourné depuis ${Math.floor(heures)} h` : `${AGENTS[agent]} n'a jamais tourné`);
+    }
+    return alertes;
+  }
+
+  /* ---------- rendu d'un élément ---------- */
+  function badge(classe, libelle) { return el("span", { class: `badge ${classe}`, text: libelle }); }
+  function carte(e, options) {
+    options = options || {};
+    const faits = lireFaits();
+    const c = el("li", { class: `carte impact-${IMPACTS.includes(e.impact) ? e.impact : "nul"}` + (faits[e.id] ? " fait" : "") });
+    const badges = el("div", { class: "badges" },
+      badge(`impact ${IMPACTS.includes(e.impact) ? e.impact : "nul"}`, `impact ${e.impact || "?"}`),
+      badge(`certitude ${e.certitude || ""}`, CERTITUDES[e.certitude] || String(e.certitude || "?")),
+      badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
+      e.type ? badge("type", TYPES[e.type] || String(e.type)) : null,
+      e.revision === true ? badge("revise", "révisé") : null);
+    c.append(badges);
+    const titre = texte(e.titre, "(sans titre)") + (e.version ? ` ${e.version}` : "");
+    c.append(el(options.niveau === 4 ? "h4" : "h3", { text: titre }));
+    c.append(el("div", { class: "meta", text: `${dateFr(e.date_publication)} · passage du ${dateFr(e._jour)}` }));
+    if (texte(e.resume)) c.append(el("p", { class: "resume", text: e.resume }));
+    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", { text: e.pour_toi })));
+    if (e.action && typeof e.action === "object") {
+      const a = el("div", { class: "action" }, el("strong", { text: "Action" }),
+        e.action.effort ? el("span", { class: "effort", text: `effort : ${e.action.effort}` }) : null,
+        texte(e.action.description) ? el("p", { text: e.action.description }) : null);
+      if (Array.isArray(e.action.etapes) && e.action.etapes.length) {
+        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", { text: String(s) }))));
+      }
+      const id = String(e.id || "");
+      const caseFait = el("input", { type: "checkbox" });
+      caseFait.checked = Boolean(faits[id]);
+      caseFait.addEventListener("change", () => { ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked); });
+      a.append(el("label", null, caseFait, "Fait"));
+      c.append(a);
+    }
+    if (Array.isArray(e.projets_concernes) && e.projets_concernes.length) {
+      c.append(el("p", { class: "projets", text: `Projets : ${e.projets_concernes.map(String).join(", ")}` }));
+    }
+    if (Array.isArray(e.sources) && e.sources.length) {
+      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
+        el("li", { class: s && s.officielle === true ? "off" : null, title: s && s.officielle === true ? "source officielle" : "source tierce" },
+          lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
+    }
+    return c;
+  }
+  function listeCartes(elements, options) {
+    if (!elements.length) return el("p", { class: "vide", text: (options && options.vide) || "Rien à afficher." });
+    return el("ul", { class: "liste" + ((options && options.colonnes) ? " deux-colonnes" : "") }, ...elements.map((e) => carte(e, options)));
+  }
+  function blocSynthese(p, q, date) {
+    const idx = etat.index[p] || {};
+    const titre = { claude: "Claude et Claude Code", openai: "ChatGPT et Codex", actu: "Actu IA" }[p] || p;
+    const b = el("section", { class: "synthese" },
+      el("h3", null, titre, el("span", { class: "meta", text: `${AGENTS[idx.agent] || idx.agent || ""} · ${dateFr(date)}` })));
+    if (!q || q.erreur) b.append(el("p", { class: "erreur", text: q ? `Données indisponibles : ${q.erreur}` : "Aucun passage." }));
+    else {
+      b.append(el("p", { text: texte(q.synthese, "Synthèse absente.") }));
+      if (Array.isArray(q.sources_en_echec) && q.sources_en_echec.length) {
+        b.append(el("p", { class: "echecs", text: "Sources en échec : " + q.sources_en_echec.map((s) => `${s.id}${s.partiel ? " (partiel)" : ""}`).join(", ") }));
+      }
+    }
+    return b;
+  }
+  function blocEcartes(quotidiens) {
+    const tous = [];
+    for (const q of quotidiens) if (q && Array.isArray(q.ecartes)) tous.push(...q.ecartes);
+    if (!tous.length) return null;
+    return el("details", { class: "ecartes" }, el("summary", { text: `${tous.length} nouveauté(s) écartée(s) comme hors sujet` }),
+      el("ul", null, ...tous.map((x) => el("li", { text: `${texte(x && x.raison, "sans raison")} — ${texte(x && x.id, "?")}` }))));
+  }
+  function filtresProduit(elements, surChangement) {
+    const presents = [...new Set(elements.map((e) => e.produit).filter((p) => PRODUITS[p]))];
+    if (presents.length < 2) return null;
+    const f = el("div", { class: "filtres", role: "group", "aria-label": "Filtrer par produit" });
+    for (const p of ["tous", ...presents]) {
+      const b = el("button", { type: "button", "aria-pressed": String(etat.filtreProduit === p), text: p === "tous" ? "Tous" : PRODUITS[p] });
+      b.addEventListener("click", () => { etat.filtreProduit = p; surChangement(); });
+      f.append(b);
+    }
+    return f;
+  }
+  const filtrer = (elements) => etat.filtreProduit === "tous" ? elements : elements.filter((e) => e.produit === etat.filtreProduit);
+
+  /* ---------- pages ---------- */
+  function pageAujourdhui(alertes) {
+    const frag = document.createDocumentFragment();
+    if (alertes.length) frag.append(el("div", { class: "bandeau-alerte", role: "status", text: alertes.join(" · ") + "." }));
+    frag.append(el("h2", { text: "Aujourd'hui" }));
+    const quotidiens = [];
+    let elements = [];
+    for (const p of PERIMETRES) {
+      const d = derniereDate(p);
+      const q = d ? etat.jours[`${p}/${d}`] : null;
+      quotidiens.push(q);
+      frag.append(blocSynthese(p, q, d));
+      if (d) elements = elements.concat(elementsDe(p, [d]));
+    }
+    elements.sort(triImpact);
+    frag.append(el("h2", { text: `Éléments (${elements.length})` }));
+    const f = filtresProduit(elements, rendre);
+    if (f) frag.append(f);
+    frag.append(listeCartes(filtrer(elements), { vide: "Aucun élément pour ce filtre." }));
+    const ec = blocEcartes(quotidiens);
+    if (ec) frag.append(ec);
+    return frag;
+  }
+  function pageChangelogs() {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Changelogs" }), el("p", { class: "sous-titre", text: "Par produit, du plus récent au plus ancien, sur tous les passages archivés." }));
+    const tous = elementsDe("claude", datesDe("claude")).concat(elementsDe("openai", datesDe("openai")));
+    for (const produit of ["claude-code", "claude", "codex", "chatgpt"]) {
+      const liste = tous.filter((e) => e.produit === produit).sort(triChrono);
+      frag.append(el("h3", { text: `${PRODUITS[produit]} (${liste.length})` }));
+      frag.append(listeCartes(liste, { niveau: 4, vide: "Aucun élément." }));
+    }
+    return frag;
+  }
+  function pageActu() {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Actu IA" }));
+    const liste = elementsDe("actu", datesDe("actu")).sort(triChrono);
+    frag.append(listeCartes(liste, { vide: "Aucune actualité archivée." }));
+    const ec = blocEcartes(datesDe("actu").map((d) => etat.jours[`actu/${d}`]));
+    if (ec) frag.append(ec);
+    return frag;
+  }
+  function pageReference() {
+    return el("section", null, el("h2", { text: "Référence" }),
+      el("p", { class: "vide", text: "La base de référence (fonctionnalités, commandes, skills, plugins, MCP, paramètres, raccourcis, avec une recommandation pour chaque entrée) arrive en phase 4. Rien n'est encore publié ici." }));
+  }
+  function pageATester() {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Toutes les actions proposées, tous passages confondus. La case « fait » n'est enregistrée que dans ce navigateur." }));
+    let liste = [];
+    for (const p of PERIMETRES) liste = liste.concat(elementsDe(p, datesDe(p)).filter((e) => e.action && typeof e.action === "object"));
+    const faits = lireFaits();
+    liste.sort((a, b) => (Boolean(faits[a.id]) - Boolean(faits[b.id])) || triImpact(a, b));
+    frag.append(listeCartes(liste, { vide: "Aucune action ouverte." }));
+    return frag;
+  }
+  function pageArchives() {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Archives" }));
+    const toutesDates = [...new Set(PERIMETRES.flatMap(datesDe))].sort().reverse();
+    if (!toutesDates.length) { frag.append(el("p", { class: "vide", text: "Aucun passage archivé." })); return frag; }
+    if (etat.archiveDate && toutesDates.includes(etat.archiveDate)) {
+      const d = etat.archiveDate;
+      frag.append(el("p", { class: "sous-titre" }, el("a", { href: "#archives", text: "← Toutes les dates" }), ` · passage du ${dateFr(d)}`));
+      const quotidiens = [];
+      let elements = [];
+      for (const p of PERIMETRES) {
+        if (!datesDe(p).includes(d)) continue;
+        const q = etat.jours[`${p}/${d}`];
+        quotidiens.push(q);
+        frag.append(blocSynthese(p, q, d));
+        elements = elements.concat(elementsDe(p, [d]));
+      }
+      elements.sort(triImpact);
+      frag.append(el("h3", { text: `Éléments (${elements.length})` }));
+      frag.append(listeCartes(elements, { niveau: 4 }));
+      const ec = blocEcartes(quotidiens);
+      if (ec) frag.append(ec);
+      return frag;
+    }
+    const ul = el("ul", { class: "jours" });
+    for (const d of toutesDates) {
+      const compteurs = [];
+      for (const p of PERIMETRES) {
+        const j = (etat.index[p]?.jours || []).find((x) => x.date === d);
+        if (!j) continue;
+        const imp = j.impact || {};
+        compteurs.push(`${{ claude: "Claude", openai: "OpenAI", actu: "Actu" }[p]} ${j.elements ?? "?"} (${imp.fort ?? 0} fort, ${imp.moyen ?? 0} moyen)`);
+      }
+      ul.append(el("li", null, el("a", { href: `#archives/${d}` }, el("strong", { text: dateFr(d) }), el("span", { class: "compteurs", text: compteurs.join(" · ") }))));
+    }
+    frag.append(ul);
+    return frag;
+  }
+
+  /* ---------- routage par ancre ---------- */
+  function lireRoute() {
+    const h = (location.hash || "#aujourdhui").slice(1);
+    const [page, param] = h.split("/");
+    etat.page = ["aujourdhui", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
+    etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
+  }
+  function rendre() {
+    lireRoute();
+    document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
+    const alertes = rendreEtatAgents();
+    vider(main);
+    const erreursIndex = PERIMETRES.filter((p) => etat.index[p] && etat.index[p].erreur);
+    if (erreursIndex.length === PERIMETRES.length) {
+      main.append(el("p", { class: "erreur", text: "Aucune donnée lisible. Le site doit être servi par HTTP (GitHub Pages ou `python -m http.server` dans docs/)." }));
+      return;
+    }
+    for (const p of erreursIndex) main.append(el("p", { class: "erreur", text: `Index ${p} illisible : ${etat.index[p].erreur}` }));
+    switch (etat.page) {
+      case "changelogs": main.append(pageChangelogs()); break;
+      case "actu": main.append(pageActu()); break;
+      case "reference": main.append(pageReference()); break;
+      case "a-tester": main.append(pageATester()); break;
+      case "archives": main.append(pageArchives()); break;
+      default: main.append(pageAujourdhui(alertes));
+    }
+    document.title = `Delta — ${document.querySelector(".onglets a.actif")?.textContent || "veille IA"}`;
+  }
+
+  async function demarrer() {
+    try {
+      await chargerIndex();
+      await chargerTout();
+    } catch (e) {
+      vider(main);
+      main.append(el("p", { class: "erreur", text: `Erreur de chargement : ${e.message || e}` }));
+      return;
+    }
+    rendre();
+    window.addEventListener("hashchange", rendre);
+    console.log("delta:pret");
+  }
+  demarrer();
+})();
