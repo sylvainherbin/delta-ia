@@ -10,9 +10,9 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 
 ## 0. Préparation
 
-- Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
 - Si `.git/index.lock` existe, arrête-toi et signale-le : un autre passage (Codex) ou une autre session tient le dépôt ; les passages ne tournent jamais en même temps (D21).
-- Versions installées (D56) : `.venv/bin/python scripts/versions.py` écrit `docs/data/versions.json` (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop). Un outil `en_retard` qui touche CONTEXTE.md (version installée citée) est un point de fin de passage.
+- Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
+- Versions installées (D56), **après** le `git pull --rebase`, jamais avant (le 23/09, un `versions.json` modifié a bloqué le pull) : `.venv/bin/python scripts/versions.py` écrit `docs/data/versions.json` (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop). Un outil `en_retard` qui touche CONTEXTE.md (version installée citée) est un point de fin de passage.
 - Calcule la date du passage **une seule fois** : `J=$(date +%F)`. Toutes les commandes et tous les fichiers du passage utilisent ce `J`, même si le passage franchit minuit (D19). Python : `.venv/bin/python`.
 
 ## 1. Pour chaque périmètre `p` dans `claude`, `actu`
@@ -45,6 +45,6 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 
 ## 2. Fin de passage
 
-Relis les fichiers produits : aucun secret, aucune donnée de tiers identifiable (REGLES §5). Puis **confrontation à CONTEXTE.md (D29)** : pour chaque élément `fort` ou `moyen`, compare explicitement ce qu'il annonce (modèle, version, profil, outil, réglage) à ce que CONTEXTE.md décrit de l'usage de Sylvain, et note chaque écart : version installée dépassée, modèle par défaut remplacé, profil pointant sur un modèle retiré, outil abandonné. Contre-exemple du 23/09 : GPT-6 Sol remplaçait GPT-5.6 Sol, décrit dans CONTEXTE comme le modèle principal de Sylvain, et l'écart n'a pas été signalé. « Aucun point » n'est permis qu'après cette vérification, élément par élément.
+Relis les fichiers produits : aucun secret, aucune donnée de tiers identifiable (REGLES §5). Puis **confrontation à CONTEXTE.md (D29)** : pour chaque élément `fort` ou `moyen`, compare explicitement ce qu'il annonce (modèle, version, profil, outil, réglage) à ce que CONTEXTE.md décrit de l'usage de Sylvain, et note chaque écart : version installée dépassée, modèle par défaut remplacé, profil pointant sur un modèle retiré, outil abandonné. Contre-exemple du 23/09 : GPT-6 Sol remplaçait GPT-5.6 Sol, décrit dans CONTEXTE comme le modèle principal de Sylvain, et l'écart n'a pas été signalé. « Aucun point » n'est permis qu'après cette vérification, élément par élément. Une version **installée** ne se lit que dans `docs/data/versions.json`, jamais dans un changelog ni dans CONTEXTE.md. Contre-exemple du 23/09 : « version locale 0.155.1 » déclarée pour Codex, alors que 0.155.1 est une release publiée et que la version installée était 0.155.0-alpha.16.3.
 
 Enfin compte rendu REGLES §8, 10 lignes au plus : éléments par impact, les `fort` en une ligne chacun, sources en échec (dont les « trou possible »), entrées de la base de référence ajoutées, modifiées ou retirées (D44), points de CONTEXTE.md à mettre à jour (résultat de la confrontation ci-dessus).

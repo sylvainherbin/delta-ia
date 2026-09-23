@@ -1,6 +1,7 @@
 """D54 à D56 : versions installées, dernière version publiée connue de Delta, contrôle de versions.json."""
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -108,3 +109,14 @@ def test_versions_dans_la_skill_delta():
     skill = (racine / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
     assert "scripts/versions.py" in skill and "docs/data/versions.json" in skill
     assert "docs/data/versions.json" in (racine / "SPEC.md").read_text(encoding="utf-8")
+
+
+def test_note_app_construite_avec_les_valeurs_detectees(monkeypatch):
+    from conftest import FauxClient, RACINE
+    monkeypatch.setattr(v, "claude_code", lambda: (None, "x", "absent"))
+    monkeypatch.setattr(v, "codex_cli", lambda: (None, "x", "absent"))
+    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.62051", f"dpkg-query -W {nom}", None))
+    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient())}["ChatGPT Desktop"]
+    assert "26.917.62051 -> 26.917" in app["note"] and "(ex. 26.908)" in app["note"] and "51856" not in app["note"]
+    assert "51856" not in (Path(v.__file__)).read_text(encoding="utf-8")
+    assert "introuvable" in v.note_app((None, "x", "absent"), [])

@@ -131,6 +131,16 @@ def versions_app_chatgpt(racine: Path, client=None) -> tuple[list[str], str | No
     return vs, None
 
 
+def note_app(paquet: tuple, publiees: list[str]) -> str:
+    """Note de ChatGPT Desktop, construite avec les valeurs réellement détectées (jamais en dur)."""
+    installee = paquet[0]
+    exemple = publiees[-1] if publiees else None
+    comparaison = (f"la comparaison porte sur les deux premières composantes ({installee} -> "
+                   f"{'.'.join(installee.split('.')[:2])})" if installee else "version installée introuvable, pas de comparaison")
+    return ("Correspondance déduite, non documentée par OpenAI : les versions de l'app Codex du changelog"
+            + (f" (ex. {exemple})" if exemple else "") + " suivent la numérotation du paquet chatgpt ; " + comparaison + ".")
+
+
 def _stables(vs: list[str]) -> list[str]:
     return [v for v in vs if "-" not in v]
 
@@ -170,10 +180,9 @@ def detecter(racine: Path, client=None) -> list[dict]:
           "codex-cli-releases",
           note="Livré avec l'app de bureau ChatGPT : il se met à jour avec elle, pas séparément.")
     app, raison_app = versions_app_chatgpt(racine, client)
-    ligne("ChatGPT Desktop", paquet_dpkg("chatgpt"), app, "openai-changelog-codex-app", composantes=2,
-          note="Correspondance déduite, non documentée par OpenAI : les versions de l'app Codex du changelog (ex. 26.908, "
-               "entrée décrivant « the ChatGPT desktop app ») suivent la numérotation du paquet chatgpt ; la comparaison "
-               "porte sur les deux premières composantes (26.917.51856 -> 26.917).",
+    paquet_chatgpt = paquet_dpkg("chatgpt")
+    ligne("ChatGPT Desktop", paquet_chatgpt, app, "openai-changelog-codex-app", composantes=2,
+          note=note_app(paquet_chatgpt, app),
           raison_source=raison_app)
     ligne("Claude Desktop", paquet_dpkg("claude-desktop"), [], None,
           note="Aucune source de Delta ne publie les versions de Claude Desktop.")
