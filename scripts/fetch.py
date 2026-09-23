@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""Delta — récupération déterministe des sources et détection des nouveautés.
+
+Usage :
+  fetch.py --perimetre {claude,openai,actu} [--depuis AAAA-MM-JJ] [--dry-run] [--sources sources.yaml]
+  fetch.py --perimetre <p> --valider [--dry-run]
+
+Sans `--valider`, l'état `state/<p>.json` n'est jamais modifié : les nouveautés vont dans
+`raw/<p>-nouveautes.json`. `--valider` fait avancer l'état à partir de ce fichier.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+from datetime import date
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from deltalib.etat import charger_etat, ecrire_json, valider  # noqa: E402
+from deltalib.http import Client  # noqa: E402
+from deltalib.modeles import PERIMETRES  # noqa: E402
+from deltalib.passage import executer  # noqa: E402
+from deltalib.sources import ErreurConfiguration, charger_sources, sources_du_perimetre  # noqa: E402
+
+RACINE = Path(__file__).resolve().parent.parent
+
+
+def _date(s: str) -> date:
+    try:
+        return date.fromisoformat(s)
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(f"date attendue au format AAAA-MM-JJ : {s!r}") from e
+
+
+def construire_parseur() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="fetch.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--perimetre", required=True, choices=PERIMETRES, help="périmètre à traiter")
+    p.add_argument("--valider", action="store_true", help="faire avancer l'état à partir des nouveautés en attente")
+    p.add_argument("--depuis", type=_date, metavar="AAAA-MM-JJ", help="ne retenir que les éléments datés à partir de ce jour")
+    p.add_argument("--dry-run", action="store_true", help="n'écrire aucun fichier")
+    p.add_argument("--sources", default=str(RACINE / "sources.yaml"), help="fichier des sources (défaut : sources.yaml)")
+    p.add_argument("--racine", default=str(RACINE), help=argparse.SUPPRESS)  # pour les tests
+    p.add_argument("-v", "--verbose", action="store_true")
+    return p
+
+
+def commande_valider(perimetre: str, racine: Path, dry_run: bool) -> int:
+    chemin_brut = racine / "raw" / f"{perimetre}-nouveautes.json"
+    chemin_etat = racine / "state" / f"{perimetre}.json"
+    if not chemin_brut.exists():
+        print(f"aucun fichier de nouveautés en attente : {chemin_brut}", file=sys.stderr)
+        return 2
+    with open(chemin_brut, encoding="utf-8") as f:
+        brut = json.load(f)
+    if brut.get("perimetre") != perimetre:
+        print(f"le fichier {chemin_brut} concerne le périmètre {brut.get('perimetre')!r}, pas {perimetre!r}", file=sys.stderr)
+        return 2
+    etat = charger_etat(chemin_etat)
+    etat, ajoutes = valider(etat, brut)
+    if dry_run:
+        print(f"[dry-run] {ajoutes} identifiant(s) seraient ajoutés à {chemin_etat} ({len(etat['vus'])} au total)")
+        return 0
+    ecrire_json(chemin_etat, etat)
+    print(f"état {chemin_etat} : {ajoutes} identifiant(s) ajoutés, {len(etat['vus'])} au total")
+    return 0
+
+
+def commande_recuperer(args, racine: Path) -> int:
+    try:
+        sources = sources_du_perimetre(charger_sources(args.sources), args.perimetre)
+    except (ErreurConfiguration, OSError) as e:
+        print(f"sources.yaml : {e}", file=sys.stderr)
+        return 2
+    if not sources:
+        print(f"aucune source active pour le périmètre {args.perimetre!r}", file=sys.stderr)
+        return 2
+    chemin_etat = racine / "state" / f"{args.perimetre}.json"
+    bilan = executer(args.perimetre, sources, chemin_etat, Client(), depuis=args.depuis)
+    brut = bilan.en_dict()
+    chemin_brut = racine / "raw" / f"{args.perimetre}-nouveautes.json"
+    if args.dry_run:
+        print(f"[dry-run] rien n'est écrit ({chemin_brut})")
+    else:
+        ecrire_json(chemin_brut, brut)
+    print(f"périmètre {args.perimetre} : {len(bilan.sources_traitees)}/{len(sources)} source(s) traitée(s), "
+          f"{bilan.elements_total} élément(s) lus, {len(bilan.nouveautes)} nouveauté(s), "
+          f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else ""))
+    for e in bilan.nouveautes[:20]:
+        print(f"  + {e.date_publication or '????-??-??'}  {e.produit:<11} {e.titre[:80]}")
+    if len(bilan.nouveautes) > 20:
+        print(f"  … et {len(bilan.nouveautes) - 20} autre(s)")
+    for ec in bilan.echecs:
+        print(f"  ! {'partiel ' if ec.partiel else 'ÉCHEC   '}{ec.id} : {ec.erreur}")
+    if not args.dry_run:
+        print(f"nouveautés écrites dans {chemin_brut} ; l'état {chemin_etat} n'a pas été modifié")
+    if len(bilan.sources_traitees) == 0:
+        return 3
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = construire_parseur().parse_args(argv)
+    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
+    racine = Path(args.racine)
+    if args.valider:
+        return commande_valider(args.perimetre, racine, args.dry_run)
+    return commande_recuperer(args, racine)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

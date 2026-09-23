@@ -1,0 +1,243 @@
+# Sources de Delta. Aucune URL n'est inscrite sans avoir été testée (date du test dans `note`).
+# Champs : id, perimetre (claude | openai | actu), produit (claude | claude-code | chatgpt | codex | actu),
+# type (github_changelog | github_releases | html | rss | json), url, statut (ok | bloque | a_valider | desactive),
+# officielle (source de l'éditeur), note, options (propres au type).
+# fetch.py ne traite que les statuts `ok` et `a_valider`.
+
+sources:
+
+  # ---------------------------------------------------------------- claude
+  - id: claude-code-changelog
+    perimetre: claude
+    produit: claude-code
+    type: github_changelog
+    url: https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 402 sections `## x.y.z`, aucune date dans le fichier. Les dates viennent de
+      l'API releases (`options.releases_url`, tag `v<version>`). Si l'API échoue, les dates restent null et la
+      source est signalée en échec partiel. Repli daté : https://code.claude.com/docs/en/changelog.md
+      (blocs `<Update label="2.1.280" description="September 22, 2026">`).
+    options:
+      releases_url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=100
+      prefixe_tag: v
+      url_publique: https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
+      nom: Claude Code
+
+  - id: claude-apps-notes
+    perimetre: claude
+    produit: claude
+    type: html
+    url: https://support.claude.com/en/articles/12138966-release-notes.md
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, text/markdown, 37 Ko, 57 entrées `### September 22, 2026` suivies d'un
+      titre en gras et de paragraphes, depuis août 2025. Variante Markdown de la page du centre d'aide ;
+      repli HTML : https://support.claude.com/en/articles/12138966-release-notes (484 Ko, titres <h3> datés).
+    options:
+      format: markdown_date
+      nom: Claude (apps)
+
+  - id: claude-platform-notes
+    perimetre: claude
+    produit: claude
+    type: html
+    url: https://platform.claude.com/docs/en/release-notes/overview.md
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, text/markdown, 110 Ko, 141 entrées `### <date>` suivies de puces (API,
+      SDK, Console). `docs.claude.com/en/release-notes/*` redirige ici. Repli HTML : même URL sans `.md`
+      (907 Ko, Next.js, titres <h3> datés).
+    options:
+      format: markdown_date
+      nom: Claude Platform
+
+  - id: anthropic-newsroom
+    perimetre: claude
+    produit: claude
+    type: html
+    url: https://www.anthropic.com/news
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 463 Ko, chaque article est un lien contenant une balise <time>
+      (`Sep 22, 2026`). Anthropic ne publie aucun flux RSS (rss.xml, news/rss, feed.xml : 404). Page
+      Next.js : un changement de gabarit doit remonter en `sources_en_echec` (format inattendu).
+    options:
+      format: html_time_liens
+
+  # ---------------------------------------------------------------- openai
+  - id: codex-cli-releases
+    perimetre: openai
+    produit: codex
+    type: github_releases
+    url: https://api.github.com/repos/openai/codex/releases?per_page=10
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, tags `rust-v0.156.1`, champ `prerelease` fiable (alphas jusqu'à 3 par
+      jour), corps Markdown structuré. Les pré-versions sont exclues par défaut. Chaque release pèse
+      ~300 Ko dans l'API (liste des binaires) : mesuré le 2026-09-23, 20 releases = 6 Mo en 135 s, 10 = 3 Mo
+      en 17 s. `per_page=10` couvre 3 à 4 jours ; `options.url_latest` (releases/latest) garantit la dernière
+      version stable. Un premier passage ne voit donc pas 30 jours de releases Codex, et un passage sauté
+      de plus de 3 jours peut manquer une version stable intermédiaire.
+    options:
+      prefixe_tag: rust-v
+      inclure_prereleases: false
+      nom: Codex CLI
+      url_latest: https://api.github.com/repos/openai/codex/releases/latest
+
+  - id: openai-changelog-general
+    perimetre: openai
+    produit: codex
+    type: json
+    url: https://learn.chatgpt.com/docs/changelog/general.json
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 50 entrées {id, title, date, version, topics, bodyMarkdown, url}.
+      Flux JSON du « ChatGPT & Codex changelog » (developers.openai.com/codex/changelog →
+      learn.chatgpt.com/docs/changelog), découvert via https://learn.chatgpt.com/docs/changelog.json.
+      NON DOCUMENTÉ PUBLIQUEMENT : peut changer sans préavis. Repli : le flux RSS de la même page,
+      https://learn.chatgpt.com/docs/changelog/rss.xml (corps dans content:encoded).
+
+  - id: openai-changelog-codex-app
+    perimetre: openai
+    produit: codex
+    type: json
+    url: https://learn.chatgpt.com/docs/changelog/codex-app.json
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 53 entrées, versions de l'app de bureau (ex. 26.908). Même flux JSON
+      non documenté que `openai-changelog-general` : peut changer sans préavis.
+
+  - id: openai-changelog-ios
+    perimetre: openai
+    produit: chatgpt
+    type: json
+    url: https://learn.chatgpt.com/docs/changelog/ios.json
+    statut: ok
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 20 entrées « ChatGPT for iOS » avec version (ex. 1.2026.251). Même flux
+      JSON non documenté : peut changer sans préavis. `codex-cli.json` du même index n'est pas retenu
+      (redondant avec `codex-cli-releases`).
+
+  - id: openai-news
+    perimetre: openai
+    produit: chatgpt
+    type: rss
+    url: https://openai.com/news/rss.xml
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 200, 1 221 items depuis 2015, 68 sur 30 jours. Filtré par catégorie : les
+      annonces produit (GPT-6 Sol et Luna, Agents API, ChatGPT Images…) sont sous `Product` (14 sur 30
+      jours) ; `ChatGPT` (5) et `Release` (7) sont rares et `Codex` n'existe pas. Compense en partie le
+      blocage du centre d'aide ChatGPT ; reclassée hors de `actu` pour éviter les doublons.
+    options:
+      categories: [Product, Release, ChatGPT, API]
+
+  - id: chatgpt-release-notes
+    perimetre: openai
+    produit: chatgpt
+    type: html
+    url: https://help.openai.com/en/articles/6825453-chatgpt-release-notes
+    statut: bloque
+    officielle: true
+    note: >-
+      Testé le 2026-09-23 : 403, défi JavaScript Cloudflare, y compris avec un User-Agent de navigateur
+      et sur la variante `.md`. Tout help.openai.com et openai.com/chatgpt/release-notes/ : 403. Aucune
+      piste de contournement retenue. Repli (SPEC §5) : recherche web de Codex, certitude `rapporte`.
+
+  # ---------------------------------------------------------------- actu
+  - id: simon-willison
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://simonwillison.net/atom/everything/
+    statut: a_valider
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, Atom, 30 entrées sur 30 jours. Suivi le plus fin des outils de codage
+      agentique (Claude Code, Codex) et des sorties de modèles.
+
+  - id: google-deepmind
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://deepmind.google/blog/rss.xml
+    statut: a_valider
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, RSS, 100 items, 9 sur 30 jours. Blog officiel des modèles Gemini
+      (source officielle Google, mais hors périmètre éditeur de Delta, donc `officielle: false`).
+
+  - id: import-ai
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://importai.substack.com/feed
+    statut: a_valider
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, RSS, 20 items, 4 sur 30 jours. Lettre hebdomadaire recherche et
+      politique de l'IA, signal élevé.
+
+  - id: ars-technica-ia
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://arstechnica.com/ai/feed/
+    statut: a_valider
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, RSS, 20 items sur 30 jours. Journalisme technique factuel, couvre les
+      régressions et les polémiques autant que les sorties.
+
+  - id: google-ai
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://blog.google/technology/ai/rss/
+    statut: desactive
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, 20 items, 17 sur 30 jours. Annonces produit Google (Gemini app, outils
+      développeur). Écarté pour l'instant par Sylvain.
+
+  - id: hugging-face
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://huggingface.co/blog/feed.xml
+    statut: desactive
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, 866 items, 19 sur 30 jours. Écosystème ouvert. Écarté pour l'instant.
+
+  - id: latent-space
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://www.latent.space/feed
+    statut: desactive
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, 20 items sur 30 jours (dont le digest quotidien AINews). Écarté pour
+      l'instant.
+
+  - id: the-decoder
+    perimetre: actu
+    produit: actu
+    type: rss
+    url: https://the-decoder.com/feed/
+    statut: desactive
+    officielle: false
+    note: >-
+      Testé le 2026-09-23 : 200, 10 items (flux court, haute fréquence). Média spécialisé IA. Écarté pour
+      l'instant.
