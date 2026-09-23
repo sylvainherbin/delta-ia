@@ -11,6 +11,7 @@
   const TYPES = { nouveaute: "nouveauté", amelioration: "amélioration", correction: "correction", changement_rupture: "rupture", depreciation: "dépréciation", actu: "actu" };
   const CERTITUDES = { officiel: "officiel", rapporte: "rapporté", non_confirme: "non confirmé" };
   const ALERTE_HEURES = 36;
+  const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
   const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null };
@@ -88,9 +89,22 @@
   }
   function datesDe(p) { return (etat.index[p]?.jours || []).map((j) => j.date).filter((d) => typeof d === "string").sort().reverse(); }
   function derniereDate(p) { return datesDe(p)[0] || null; }
-  async function chargerTout() {
+  function datesRecentes(p) {
+    const limite = new Date(Date.now() - FENETRE_JOURS * 864e5).toISOString().slice(0, 10);
+    return datesDe(p).filter((d) => d >= limite);
+  }
+  function noteFenetre() {
+    return el("p", { class: "sous-titre" }, `Passages des ${FENETRE_JOURS} derniers jours. Au-delà, voir les `, el("a", { href: "#archives", text: "Archives" }), ".");
+  }
+  async function chargerNecessaire() {
     const taches = [];
-    for (const p of PERIMETRES) for (const d of datesDe(p)) taches.push(chargerJour(p, d));
+    for (const p of PERIMETRES) {
+      const dates = new Set(datesRecentes(p));
+      const derniere = derniereDate(p);
+      if (derniere) dates.add(derniere);
+      if (etat.archiveDate && datesDe(p).includes(etat.archiveDate)) dates.add(etat.archiveDate);
+      for (const d of dates) taches.push(chargerJour(p, d));
+    }
     await Promise.all(taches);
   }
   function elementsDe(p, dates) {
@@ -236,8 +250,8 @@
   }
   function pageChangelogs() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Changelogs" }), el("p", { class: "sous-titre", text: "Par produit, du plus récent au plus ancien, sur tous les passages archivés." }));
-    const tous = elementsDe("claude", datesDe("claude")).concat(elementsDe("openai", datesDe("openai")));
+    frag.append(el("h2", { text: "Changelogs" }), el("p", { class: "sous-titre", text: "Par produit, du plus récent au plus ancien." }), noteFenetre());
+    const tous = elementsDe("claude", datesRecentes("claude")).concat(elementsDe("openai", datesRecentes("openai")));
     for (const produit of ["claude-code", "claude", "codex", "chatgpt"]) {
       const liste = tous.filter((e) => e.produit === produit).sort(triChrono);
       frag.append(el("h3", { text: `${PRODUITS[produit]} (${liste.length})` }));
@@ -247,10 +261,10 @@
   }
   function pageActu() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Actu IA" }));
-    const liste = elementsDe("actu", datesDe("actu")).sort(triChrono);
-    frag.append(listeCartes(liste, { vide: "Aucune actualité archivée." }));
-    const ec = blocEcartes(datesDe("actu").map((d) => etat.jours[`actu/${d}`]));
+    frag.append(el("h2", { text: "Actu IA" }), noteFenetre());
+    const liste = elementsDe("actu", datesRecentes("actu")).sort(triChrono);
+    frag.append(listeCartes(liste, { vide: "Aucune actualité sur la période." }));
+    const ec = blocEcartes(datesRecentes("actu").map((d) => etat.jours[`actu/${d}`]));
     if (ec) frag.append(ec);
     return frag;
   }
@@ -260,9 +274,9 @@
   }
   function pageATester() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Toutes les actions proposées, tous passages confondus. La case « fait » n'est enregistrée que dans ce navigateur." }));
+    frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Les actions proposées. La case « fait » n'est enregistrée que dans ce navigateur." }), noteFenetre());
     let liste = [];
-    for (const p of PERIMETRES) liste = liste.concat(elementsDe(p, datesDe(p)).filter((e) => e.action && typeof e.action === "object"));
+    for (const p of PERIMETRES) liste = liste.concat(elementsDe(p, datesRecentes(p)).filter((e) => e.action && typeof e.action === "object"));
     const faits = lireFaits();
     liste.sort((a, b) => (Boolean(faits[a.id]) - Boolean(faits[b.id])) || triImpact(a, b));
     frag.append(listeCartes(liste, { vide: "Aucune action ouverte." }));
@@ -314,8 +328,9 @@
     etat.page = ["aujourdhui", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
   }
-  function rendre() {
+  async function rendre() {
     lireRoute();
+    await chargerNecessaire();
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
@@ -339,14 +354,13 @@
   async function demarrer() {
     try {
       await chargerIndex();
-      await chargerTout();
+      await rendre();
     } catch (e) {
       vider(main);
       main.append(el("p", { class: "erreur", text: `Erreur de chargement : ${e.message || e}` }));
       return;
     }
-    rendre();
-    window.addEventListener("hashchange", rendre);
+    window.addEventListener("hashchange", () => { rendre().catch((e) => console.error("delta:rendu", e)); });
     console.log("delta:pret");
   }
   demarrer();
