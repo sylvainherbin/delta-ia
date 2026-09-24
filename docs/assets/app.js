@@ -346,8 +346,8 @@
         const d = await lireJson(`data/kb/${p}/${c}.json`);
         if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
         for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
-          e._ctx = typeof d.contexte_empreinte === "string" ? d.contexte_empreinte : null;
           e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
+          e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
           e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
           entrees.push(e);
         }
@@ -391,13 +391,16 @@
     }
     return c;
   }
-  // D64 : péremption par section de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
+  // D64-bis : péremption par ctx-id de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
   function badgeContexte(e) {
     if (!e.commentee || !e._sections) return null;
     if (e.contexte_sections === null || e.contexte_sections === undefined) return badge("anterieur", "antérieur à D64");
     if (typeof e.contexte_sections !== "object") return null;
-    const changees = Object.keys(e.contexte_sections).filter((k) => e._sections[k] !== e.contexte_sections[k]);
-    return changees.length ? badge("perime", `commentaire à revoir : CONTEXTE ${changees.map((k) => "§" + k).join(", ")} modifié`) : null;
+    const changees = Object.keys(e.contexte_sections).filter((k) => {
+      const v = e.contexte_sections[k];
+      return e._deprecies.includes(k) || !v || typeof v !== "object" || e._sections[k] !== v.sha1;
+    });
+    return changees.length ? badge("perime", `commentaire à revoir : CONTEXTE ${changees.join(", ")} modifié`) : null;
   }
   function choix(libelle, cle, options) {
     const s = el("select", { "aria-label": libelle });

@@ -23,6 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.etat import DOSSIERS  # noqa: E402
+from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
 from deltalib.modeles import PERIMETRES, PRODUITS  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -35,7 +36,7 @@ IMPACTS = {"fort", "moyen", "faible", "nul"}
 EFFORTS = {"5min", "30min", "plus"}
 RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 DATE_D58 = "2026-09-23"
-DATE_D64 = "2026-09-24"  # éléments quotidiens datés après ce jour : `contexte_sections` obligatoire  # fichiers quotidiens datés après ce jour : `contexte_empreinte` obligatoire
+DATE_D64 = "2026-09-24"  # éléments quotidiens datés après ce jour : `contexte_sections` obligatoire, format D64-bis
 RE_SECRETS = [
     (re.compile(r"ghp_[A-Za-z0-9]{20,}"), "jeton GitHub (ghp_)"),
     (re.compile(r"github_pat_[A-Za-z0-9_]{20,}"), "jeton GitHub (github_pat_)"),
@@ -162,8 +163,11 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
                 r.erreur(ou, f"`action.effort` hors de {sorted(EFFORTS)} : {action['effort']!r}")
     if not isinstance(e.get("kb_refs"), list) or not all(isinstance(x, str) for x in e.get("kb_refs", [])):
         r.erreur(ou, "`kb_refs` doit être un tableau de chaînes")
-    if "contexte_sections" in e and (e["contexte_sections"] is None or not sections_valides(e["contexte_sections"])):
-        r.erreur(ou, "`contexte_sections` doit être {clé de section de CONTEXTE.md: sha1}, éventuellement vide (D64)")
+    if "contexte_sections" in e:
+        if e["contexte_sections"] is None:
+            r.erreur(ou, "`contexte_sections` doit être {ctx-id: {sha1, pourquoi}}, éventuellement vide (D64-bis)")
+        else:
+            verifier_sections(e["contexte_sections"], ou, r)
     if "revision" in e and not isinstance(e["revision"], bool):
         r.erreur(ou, "`revision` doit être un booléen")
 
@@ -400,8 +404,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
             ce = e["contexte_empreinte"]
             if ce is not None and not (isinstance(ce, str) and re.fullmatch(r"[0-9a-f]{40}", ce)):
                 r.erreur(o, "`contexte_empreinte` : sha1 de CONTEXTE.md (40 hexadécimaux) ou null")
-            if not sections_valides(e["contexte_sections"]):
-                r.erreur(o, "`contexte_sections` : null ou {clé de section: sha1} (D64)")
+            if e["contexte_sections"] is not None:
+                verifier_sections(e["contexte_sections"], o, r)
             if e["commentee"] is True and ce is None:
                 r.erreur(o, "entrée commentée sans `contexte_empreinte` (D60)")
             if e["commentee"] is True:
@@ -418,7 +422,32 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                     r.erreur(o, "entrée commentée sans `recommandation` {verdict, pourquoi}")
                 elif len(rec["pourquoi"]) > lim["pourquoi"]:
                     r.erreur(o, f"`pourquoi` trop long pour le gabarit {e['gabarit']}")
+    verifier_journal(dossier / "reevaluations.jsonl", f"kb/{perimetre}/reevaluations.jsonl", ids, r)
     return ids
+
+
+RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
+
+
+def verifier_journal(chemin: Path, ou: str, ids: set[str], r: Rapport) -> None:
+    """B3 : une ligne JSON {date, id, verdict_avant, verdict_apres, motif} par réévaluation."""
+    if not chemin.exists():
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    for n, ligne in enumerate(texte.splitlines(), 1):
+        if not ligne.strip():
+            continue
+        try:
+            l = json.loads(ligne)
+        except ValueError:
+            r.erreur(f"{ou}:{n}", "JSON invalide")
+            continue
+        if not isinstance(l, dict) or set(l) != {"date", "id", "verdict_avant", "verdict_apres", "motif"}:
+            r.erreur(f"{ou}:{n}", "{date, id, verdict_avant, verdict_apres, motif} attendu")
+            continue
+        if not _date_valide(l["date"]) or l["id"] not in ids or not RE_MOTIF.match(str(l["motif"])):
+            r.erreur(f"{ou}:{n}", f"date, id ou motif invalide : {l['date']!r}, {l['id']!r}, {l['motif']!r}")
 
 
 def verifier_versions(racine: Path, r: Rapport) -> None:
@@ -493,9 +522,40 @@ def verifier_etat(racine: Path, r: Rapport) -> None:
     parcourir(e, "etat")
 
 
-def sections_valides(cs) -> bool:
-    return cs is None or (isinstance(cs, dict) and all(isinstance(k, str) and k and isinstance(v, str)
-                                                         and re.fullmatch(r"[0-9a-f]{40}", v) for k, v in cs.items()))
+# D64-bis : ctx-id connus (actifs et dépréciés) du CONTEXTE.md de la racine ; None si absent ou illisible
+CTX_IDS: set[str] | None = None
+
+
+def charger_ctx_ids(racine: Path, r: Rapport) -> None:
+    global CTX_IDS
+    CTX_IDS = None
+    chemin = racine / "CONTEXTE.md"
+    if not chemin.exists():
+        return
+    try:
+        s, dep = analyser_contexte(chemin.read_text(encoding="utf-8"))
+    except ContexteInvalide as err:
+        r.erreur("CONTEXTE.md", f"structure ctx-id invalide : {err}")
+        return
+    CTX_IDS = set(s) | set(dep)
+
+
+def verifier_sections(cs, ou: str, r: Rapport) -> None:
+    """D64-bis : {ctx-id: {sha1, pourquoi}} ; ctx-id connu de CONTEXTE.md, pourquoi non vide, une ligne, 160 car. max."""
+    if not isinstance(cs, dict):
+        r.erreur(ou, "`contexte_sections` : {ctx-id: {sha1, pourquoi}} (D64-bis)")
+        return
+    for k, v in cs.items():
+        if not isinstance(v, dict) or set(v) != {"sha1", "pourquoi"} or not (
+                isinstance(v["sha1"], str) and re.fullmatch(r"[0-9a-f]{40}", v["sha1"])):
+            r.erreur(ou, f"`contexte_sections.{k}` : {{sha1, pourquoi}} attendu (D64-bis)")
+            continue
+        if v["sha1"] == SHA1_VIDE:
+            r.erreur(ou, f"`contexte_sections.{k}` : section au corps vide, cite une sous-section (D64-bis)")
+        for err in erreurs_pourquoi(v["pourquoi"]):
+            r.erreur(ou, f"`contexte_sections.{k}` : {err}")
+        if CTX_IDS is not None and k not in CTX_IDS:
+            r.erreur(ou, f"`contexte_sections` : ctx-id inconnu de CONTEXTE.md : {k}")
 
 
 def ids_kb(racine: Path, perimetre: str) -> set[str] | None:
@@ -514,6 +574,7 @@ def ids_kb(racine: Path, perimetre: str) -> set[str] | None:
 
 def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, contexte: Path) -> Rapport:
     r = Rapport()
+    charger_ctx_ids(racine, r)
     dossier = racine / "docs" / "data" / DOSSIERS[perimetre]
     projets = projets_du_contexte(contexte)
     if not projets:
@@ -557,6 +618,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     if args.kb:
         rapport = Rapport()
+        charger_ctx_ids(args.racine, rapport)
         ids = verifier_kb(args.racine, args.perimetre, rapport)
         if rapport.ok:
             print(f"valider.py : base de référence {args.perimetre} valide ({len(ids)} entrées)")

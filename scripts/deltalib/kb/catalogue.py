@@ -12,11 +12,16 @@ Fusion (D40, D44) :
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 from pathlib import Path
 
 from ..dates import maintenant_iso
-from ..contexte import empreintes as empreintes_sections, est_perime, projets as projets_contexte
+import hashlib
+from datetime import timedelta
+
+from ..contexte import (analyser as analyser_contexte, deprecies as deprecies_contexte, empreintes as empreintes_sections,
+                        format_valide, projets as projets_contexte, sections_perimees)
 from ..modeles import FormatInattendu, empreinte_contexte
 from .documentation import DocSource, lire_cache
 from .extracteurs import EXTRACTEURS
@@ -44,15 +49,19 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
     d.mkdir(parents=True, exist_ok=True)
     horodatage = maintenant_iso()
     ctx = empreinte_contexte(racine)  # D60 : empreinte du fichier entier (historique)
-    courantes = empreintes_sections(racine)  # D64 : empreintes par section, base de la péremption
+    courantes = empreintes_sections(racine)  # D64-bis : empreintes par ctx-id, base de la péremption
     connus = projets_connus(racine, perimetre, entrees)
     for cat in CATEGORIES:
         liste = sorted((e for e in entrees.values() if e["categorie"] == cat), key=lambda e: e["id"])
         for e in liste:
             e.setdefault("contexte_empreinte", None)
+            # D64-bis : un format antérieur (liste ou {clé: sha1} de ae895e6) n'a pas de correspondance : null
+            if e.get("contexte_sections") is not None and not format_valide(e["contexte_sections"]):
+                e["contexte_sections"] = None
             e.setdefault("contexte_sections", None)
         doc = {"perimetre": perimetre, "categorie": cat, "maj_le": max((e["maj_le"] for e in liste), default=horodatage[:10]),
-               "contexte_empreinte": ctx, "contexte_sections": courantes, "projets_connus": connus,
+               "contexte_empreinte": ctx, "contexte_sections": courantes, "contexte_deprecies": sorted(deprecies_contexte(racine)),
+               "projets_connus": connus,
                "total": len(liste), "commentees": sum(1 for e in liste if e.get("commentee")), "entrees": liste}
         tmp = d / f"{cat}.json.tmp"
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -71,11 +80,25 @@ def projets_connus(racine: Path, perimetre: str, entrees: dict[str, dict]) -> li
     actuels = projets_contexte(racine)
     if precedent is None:
         return sorted(actuels)
-    connus = set(precedent)
+    connus = set(migrer_projets(racine, precedent))
     for k in actuels:
         if k not in connus and not repasse_projet(entrees, k):
             connus.add(k)
     return sorted(connus)
+
+
+def migrer_projets(racine: Path, precedent: list[str]) -> list[str]:
+    """D64-bis : clés numérotées de D64 (`2.1`) -> ctx-id (`projet.carnet`), d'après le numéro du titre ; sans lot ouvert."""
+    try:
+        s = analyser_contexte((racine / "CONTEXTE.md").read_text(encoding="utf-8"))[0]
+    except OSError:
+        return precedent
+    par_numero = {}
+    for k, v in s.items():
+        m = re.match(r"^(\d+(?:\.\d+)*)\.?\s", v["titre"])
+        if m:
+            par_numero[m.group(1)] = k
+    return [k if k in s else par_numero.get(k, k) for k in precedent]
 
 
 def repasse_projet(entrees: dict[str, dict], projet: str) -> list[str]:
@@ -88,7 +111,7 @@ def repasse_projet(entrees: dict[str, dict], projet: str) -> list[str]:
 
 def nouveaux_projets(racine: Path, perimetre: str) -> list[str]:
     f = dossier(racine, perimetre) / "commandes.json"
-    connus = set(json.loads(f.read_text(encoding="utf-8")).get("projets_connus") or []) if f.exists() else set()
+    connus = set(migrer_projets(racine, json.loads(f.read_text(encoding="utf-8")).get("projets_connus") or [])) if f.exists() else set()
     return [k for k in projets_contexte(racine) if connus and k not in connus]
 
 
@@ -205,39 +228,73 @@ QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
 GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
 
 
-PERIMEES_MAX = 30  # D60, D64 : réévaluations prioritaires par lancement, en plus des lots
-# Lot `perimees` suspendu jusqu'à D64-bis (au plus tard le 01/10) : passer à False pour le réactiver.
-PERIMEES_SUSPENDU = True
+PERIMEES_MAX = 30  # D64-bis : réévaluations prioritaires par lancement, en plus des lots
+# Lot `perimees` : passer à True pour le suspendre (il l'a été du 24/09 jusqu'à la livraison de D64-bis).
+PERIMEES_SUSPENDU = False
+AGE_BASE_JOURS = 90  # D64-bis (B2) : filet par âge, 90 jours + (sha1(id) mod 90) jours
+AGE_ETALEMENT_JOURS = 90  # environ 8 entrées par jour et par base : un lancement quotidien suffit
 
 
-def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, maximum: int = PERIMEES_MAX) -> list[str]:
-    """D64 : entrées `utiliser` puis `tester` à revoir, 30 au plus.
+def date_dernier_commentaire(e: dict) -> date | None:
+    for h in reversed(e.get("historique") or []):
+        if h.get("changement") in ("commentée", "commentaire révisé", "réévaluée"):
+            try:
+                return date.fromisoformat(h["date"])
+            except (KeyError, ValueError):
+                break
+    try:
+        return date.fromisoformat(e.get("maj_le") or "")
+    except ValueError:
+        return None
 
-    D'abord celles dont une section citée a changé ou disparu, puis celles commentées avant D64
-    (`contexte_sections: null`), qui seront revues en citant leurs sections. Une entrée qui ne cite aucune
-    section (liste vide) n'est jamais périmée."""
+
+def echeance_age(e: dict) -> date | None:
+    """Date à laquelle le filet par âge reprend l'entrée ; le décalage sha1(id) mod 90 étale la vague initiale."""
+    d = date_dernier_commentaire(e)
+    if d is None:
+        return None
+    decalage = int(hashlib.sha1(e["id"].encode("utf-8")).hexdigest(), 16) % AGE_ETALEMENT_JOURS
+    return d + timedelta(days=AGE_BASE_JOURS + decalage)
+
+
+def classer(e: dict, courantes: dict[str, str], deprecies_: set[str], jour: date) -> tuple[str, str] | None:
+    """(catégorie a|b|c, motif du journal) si l'entrée est à réévaluer, sinon None.
+    a) section citée modifiée, disparue ou dépréciée ; b) antérieure à D64 (null) en utiliser/tester ; c) âge."""
+    if not e.get("commentee") or e.get("retiree"):
+        return None
+    cs = e.get("contexte_sections")
+    touchees = sections_perimees(cs, courantes, deprecies_) if cs else []
+    if touchees:
+        return "a", f"section:{touchees[0]}"
+    if cs is None and (e.get("recommandation") or {}).get("verdict") in ("utiliser", "tester"):
+        return "b", "legacy"
+    ech = echeance_age(e)
+    if ech is not None and ech <= jour:
+        return "c", "age"
+    return None
+
+
+def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], deprecies_: set[str] = frozenset(),
+                    jour: date | None = None, maximum: int | None = PERIMEES_MAX) -> list[dict]:
+    """D64-bis : lot `perimees`, dans l'ordre a, b, c ; dans a et b, `utiliser` avant `tester` avant `ignorer`."""
     if not courantes:
         return []
-    rang = {"utiliser": 0, "tester": 1}
-    perimees_, anterieures = [], []
+    jour = jour or date.today()
+    rang = {"utiliser": 0, "tester": 1, "ignorer": 2}
+    res = []
     for k, e in entrees.items():
-        verdict = (e.get("recommandation") or {}).get("verdict")
-        if not e.get("commentee") or e.get("retiree") or verdict not in rang:
-            continue
-        etat = est_perime(e.get("contexte_sections"), courantes)
-        if etat is True:
-            perimees_.append(k)
-        elif etat is None:
-            anterieures.append(k)
-    cle = lambda k: (rang[entrees[k]["recommandation"]["verdict"]], k)
-    return (sorted(perimees_, key=cle) + sorted(anterieures, key=cle))[:maximum]
+        c = classer(e, courantes, deprecies_, jour)
+        if c:
+            res.append({"id": k, "categorie": c[0], "motif": c[1]})
+    ordre = {"a": 0, "b": 1, "c": 2}
+    res.sort(key=lambda x: (ordre[x["categorie"]], rang.get((entrees[x["id"]].get("recommandation") or {}).get("verdict"), 3),
+                            echeance_age(entrees[x["id"]]) or date.min if x["categorie"] == "c" else date.min, x["id"]))
+    return res if maximum is None else res[:maximum]
 
 
-ORDRE_LOTS = ("commandes", "fonctionnalites", "skills", "plugins", "mcp", "raccourcis", "parametres")  # D51
-QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
-GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
-
-
+def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, deprecies_: set[str] = frozenset(),
+             jour: date | None = None, maximum: int = PERIMEES_MAX) -> list[str]:
+    return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, jour, maximum)]
 
 
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
@@ -273,11 +330,14 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
 
 
 def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
-                           contexte: str | None = None, resoudre=None) -> list[str]:
+                           contexte: str | None = None, resoudre=None, journal: list | None = None,
+                           motif_de=None) -> list[str]:
     """Applique {id: {description, statut_usage, recommandation, exemple?, disponibilite?}} ; jamais `usage`.
     `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
-    `resoudre` (D64) : fonction liste de clés -> {clé: sha1} ; quand elle est fournie, chaque commentaire doit citer
-    `contexte_sections` (liste, vide si le jugement ne dépend pas de CONTEXTE), stocké avec les empreintes."""
+    `resoudre` (D64-bis) : fonction {ctx-id: pourquoi} -> {ctx-id: {sha1, pourquoi}} ; quand elle est fournie, chaque
+    commentaire doit citer `contexte_sections` ({} si le jugement ne dépend d'aucune section).
+    `journal` (B3) : reçoit une ligne {date, id, verdict_avant, verdict_apres, motif} par réévaluation ; `motif_de(entrée)`
+    donne le motif (section:<ctx-id>, age, nouveau-projet:<ctx-id>, legacy)."""
     jour = jour or date.today().isoformat()
     erreurs = []
     for k, c in commentaires.items():
@@ -302,8 +362,8 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         sections_citees = None
         if resoudre is not None or "contexte_sections" in c:
             cs = c.get("contexte_sections")
-            if not isinstance(cs, list) or not all(isinstance(x, str) for x in cs):
-                erreurs.append(f"{k}: `contexte_sections` doit être une liste de clés de CONTEXTE.md (vide si sans lien) (D64)")
+            if not isinstance(cs, dict) or not all(isinstance(x, str) for x in cs):
+                erreurs.append(f"{k}: `contexte_sections` doit être {{ctx-id: pourquoi}} ({{}} si sans lien) (D64-bis)")
                 continue
             if resoudre is not None:
                 try:
@@ -312,7 +372,12 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
                     erreurs.append(f"{k}: {err}")
                     continue
         deja = e.get("commentee")
+        verdict_avant = (e.get("recommandation") or {}).get("verdict") if deja else None
+        motif = motif_de(e) if (deja and motif_de) else None
         e.update({kk: c[kk] for kk in c if kk != "contexte_sections"})
+        if motif and journal is not None:
+            journal.append({"date": jour, "id": k, "verdict_avant": verdict_avant, "verdict_apres": r["verdict"],
+                            "motif": motif})
         if sections_citees is not None:
             e["contexte_sections"] = sections_citees
         e["commentee"] = True

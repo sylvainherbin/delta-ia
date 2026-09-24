@@ -11,13 +11,16 @@ import valider as v
 from conftest import FauxClient, ecrire_quotidien, element_depuis_brut
 
 JOUR = __import__("datetime").date.today().isoformat()
+CONTEXTE = ("## 2. Projets\n<!-- ctx-id: projets -->\n\n### 2.1 carnet — PWA\n<!-- ctx-id: projet.carnet -->\n\n"
+            "### 2.2 trading-sim — robot\n<!-- ctx-id: projet.trading-sim -->\n\nrobot\n\n"
+            "### 2.3 chatgpt-trading-sim — espace\n<!-- ctx-id: projet.chatgpt-trading-sim -->\n<!-- ctx-id-deprecie: projet.ancien -->\n")
 
 
 @pytest.fixture
 def racine(tmp_path, monkeypatch, date_figee):
     (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
-    (tmp_path / "CONTEXTE.md").write_text("## 2. Projets\n\n### 2.1 carnet — PWA\n\n### 2.2 trading-sim — robot\n\n### 2.3 chatgpt-trading-sim — espace\n", encoding="utf-8")
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE, encoding="utf-8")
     return tmp_path
 
 
@@ -257,22 +260,33 @@ def test_d58_contexte_empreinte(racine, capsys):
     assert any("D58" in e for e in r.erreurs)
 
 
-def test_d64_contexte_sections_des_elements(racine, capsys):
+def test_d64bis_contexte_sections_des_elements(racine, capsys):
     import valider as v
     chemin, q = _quotidien_valide(racine)
-    q.pop("contexte_empreinte", None)
     q["contexte_empreinte"] = "0" * 40
     projets = {"carnet", "trading-sim", "chatgpt-trading-sim"}
     f24 = racine / "docs" / "data" / "claude" / "2026-09-24.json"
     f25 = racine / "docs" / "data" / "claude" / "2026-09-25.json"
-    f24.write_text(json.dumps({**q, "date": "2026-09-24"}, ensure_ascii=False))
-    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
-    r = v.Rapport(); v.verifier_quotidien(f24, "claude", projets, r); assert r.ok, r.erreurs
-    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert any("D64" in e for e in r.erreurs)
-    for e in q["elements"]:
-        e["contexte_sections"] = {"2.2": "a" * 40}
-    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
-    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert r.ok, r.erreurs
-    q["elements"][0]["contexte_sections"] = {"2.2": "court"}
-    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
-    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert any("contexte_sections" in e for e in r.erreurs)
+    v.charger_ctx_ids(racine, v.Rapport())
+
+    def verifier(f, elements_cs=None, date_="2026-09-25"):
+        d = copy.deepcopy(q)
+        if elements_cs is not None:
+            for e in d["elements"]:
+                e["contexte_sections"] = elements_cs
+        f.write_text(json.dumps({**d, "date": date_}, ensure_ascii=False))
+        r = v.Rapport(); v.verifier_quotidien(f, "claude", projets, r)
+        return r.erreurs
+
+    assert verifier(f24, date_="2026-09-24") == [], "jusqu'au 24/09, champ facultatif"
+    assert any("D64" in e for e in verifier(f25)), "après le 24/09, obligatoire"
+    ok = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "Le robot tourne sous tmux."}}
+    assert verifier(f25, ok) == [] and verifier(f25, {}) == []
+    assert any("ctx-id inconnu" in e for e in verifier(f25, {"2.2": {"sha1": "a" * 40, "pourquoi": "x"}}))
+    assert any("`pourquoi` vide" in e for e in verifier(f25, {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": " "}}))
+    assert any("160" in e for e in verifier(f25, {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "x" * 161}}))
+    assert any("{sha1, pourquoi}" in e for e in verifier(f25, {"projet.trading-sim": "a" * 40})), "format de ae895e6 refusé"
+    assert verifier(f25, {"projet.ancien": {"sha1": "a" * 40, "pourquoi": "x"}}) == [], "un ctx-id déprécié reste connu"
+    vide = hashlib.sha1(b"").hexdigest()
+    assert any("corps vide" in e for e in verifier(f25, {"projets": {"sha1": vide, "pourquoi": "Liste des projets."}}))
+    assert v.analyser_contexte(CONTEXTE)[0]["projets"]["sha1"] == vide

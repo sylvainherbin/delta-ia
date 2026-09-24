@@ -31,7 +31,7 @@ from deltalib.dates import maintenant_iso  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 MAISON = Path(os.path.expanduser("~"))
-DOSSIERS_MCP = ["~/projets", "~/projets/delta-ia"]
+DOSSIERS_MCP = ["~/projets", "~/projets/delta-ia", "~/projets/trading-sim"]
 _RE_LIGNE_MCP = re.compile(r"^(?P<nom>.+?): (?P<cible>\S+)(?: \((?P<transport>[A-Za-z]+)\))? - (?P<statut>.+)$")
 
 

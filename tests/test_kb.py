@@ -2,6 +2,7 @@
 
 import copy
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -425,7 +426,7 @@ def test_kb_refs_inconnus_signales(tmp_path, monkeypatch, date_figee):
     from conftest import ecrire_quotidien
     import valider
     (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
-    (tmp_path / "CONTEXTE.md").write_text("### 2.1 trading-sim — x\n", encoding="utf-8")
+    (tmp_path / "CONTEXTE.md").write_text("### 2.1 trading-sim — x\n<!-- ctx-id: projet.trading-sim -->\n", encoding="utf-8")
     ent, _ = cat.fusionner({}, [x("/a", "/a")], {"doc-a"})
     cat.ecrire(tmp_path, "claude", ent)
     brut = {"nouveautes": [{"id": "n1", "produit": "claude-code", "titre": "t", "url": "https://x.test", "officielle": True}]}
@@ -471,73 +472,88 @@ def test_d47_dry_run_n_ecrit_rien(racine_kb, monkeypatch):
 
 # --- D60 : empreinte du CONTEXTE sur les commentaires ---------------------------------------------------------
 
-def test_d60_empreinte_et_perimees(tmp_path):
-    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("/c", "/c")], {"doc-a"})
+def test_d60_empreinte_sur_les_commentaires(tmp_path):
+    ent, _ = cat.fusionner({}, [x("/a", "/a")], {"doc-a"})
     assert all(e["contexte_empreinte"] is None for e in ent.values())
     assert commenter(ent, "claude-code-commandes-a", contexte="a" * 40) == []
-    assert commenter(ent, "claude-code-commandes-b", contexte="b" * 40) == []
     assert ent["claude-code-commandes-a"]["contexte_empreinte"] == "a" * 40
-    # D64 : la péremption ne dépend plus de l'empreinte du fichier entier mais des sections citées
-    ent["claude-code-commandes-a"]["contexte_sections"] = {"2.2": "a" * 40}
-    ent["claude-code-commandes-b"]["contexte_sections"] = {"2.2": "a" * 40}
-    assert cat.perimees(ent, {"2.2": "a" * 40, "3": "c" * 40}) == []
-    assert cat.perimees(ent, {"2.2": "z" * 40}) == ["claude-code-commandes-a", "claude-code-commandes-b"]
-    assert cat.perimees(ent, {}) == []
-    beaucoup = {f"k{i}": {"commentee": True, "recommandation": {"verdict": "tester"}, "contexte_sections": {"4": "a" * 40}} for i in range(40)}
-    assert len(cat.perimees(beaucoup, {"4": "b" * 40})) == 30
-    # le fichier écrit porte l'empreinte du CONTEXTE.md courant
-    (tmp_path / "CONTEXTE.md").write_text("contexte\n", encoding="utf-8")
+    # le fichier écrit porte l'empreinte du CONTEXTE.md courant (historique de D60)
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE_MIN, encoding="utf-8")
     cat.ecrire(tmp_path, "claude", ent)
     import hashlib
     d = json.loads((tmp_path / "docs" / "data" / "kb" / "claude" / "commandes.json").read_text())
-    assert d["contexte_empreinte"] == hashlib.sha1(b"contexte\n").hexdigest()
+    assert d["contexte_empreinte"] == hashlib.sha1(CONTEXTE_MIN.encode()).hexdigest()
 
 
-def test_perimees_suspendu(racine_kb, monkeypatch, capsys):
-    import catalogue as cli
-    assert cat.PERIMEES_SUSPENDU is True
-    lancer_kb(racine_kb, monkeypatch)
-    capsys.readouterr()
-    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 3
-    assert "suspendu jusqu'à D64-bis" in capsys.readouterr().err
-    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(racine_kb)]) == 0
-    assert "suspendu" in capsys.readouterr().out
+CONTEXTE_MIN = "# C\n<!-- ctx-id: profil -->\n\nProfil.\n"
+CONTEXTE_KB = ("# C\n<!-- ctx-id: profil -->\n\nProfil.\n\n## 2. Projets\n<!-- ctx-id: projet.vue-ensemble -->\n\n"
+               "### 2.1 trading-sim — x\n<!-- ctx-id: projet.trading-sim -->\n\nA\n\n"
+               "### 2.2 carnet — y\n<!-- ctx-id: projet.carnet -->\n\nB\n")
+
+
+def test_perimees_reactive():
+    assert cat.PERIMEES_SUSPENDU is False
     for f in (".claude/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md", ".agents/skills/delta-kb/SKILL.md"):
         t = (RACINE / f).read_text(encoding="utf-8")
-        assert "Lot perimees suspendu jusqu'à D64-bis, au plus tard le 01/10." in t and "--lot perimees" not in t, f
+        assert "--lot perimees" in t and "suspendu" not in t and "reevaluations" in t and "le plus précis" in t, f
 
 
-def test_d64_catalogue_appliquer_sections_et_peremption(racine_kb, monkeypatch, capsys):
+def test_d64bis_appliquer_peremption_et_journal(racine_kb, monkeypatch, capsys):
     import catalogue as cli
-    monkeypatch.setattr(cat, "PERIMEES_SUSPENDU", False)  # la mécanique reste testée pendant la suspension
+    import valider
     lancer_kb(racine_kb, monkeypatch)
     ctx = racine_kb / "CONTEXTE.md"
-    ctx.write_text("# C\n\nProfil.\n\n## 2. Projets\n\n### 2.1 trading-sim — x\n\nA\n\n### 2.2 carnet — y\n\nB\n", encoding="utf-8")
+    ctx.write_text(CONTEXTE_KB, encoding="utf-8")
     k = "claude-code-parametres-advisormodel"
     f = racine_kb / "c.json"
     base = {"description": "Choisit le modèle qui conseille la session.", "statut_usage": "inconnu",
             "recommandation": {"verdict": "tester", "pourquoi": "Essai sur trading-sim : `/advisor opus` pendant un audit."}}
-    f.write_text(json.dumps({k: base}))
-    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 1, "sections obligatoires"
-    assert "contexte_sections" in capsys.readouterr().err
-    f.write_text(json.dumps({k: {**base, "contexte_sections": ["9.9"]}}))
-    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 1
-    assert "sections inconnues" in capsys.readouterr().err
-    f.write_text(json.dumps({k: {**base, "contexte_sections": ["2.1"]}}))
-    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 0
+
+    def appliquer(cs, attendu):
+        f.write_text(json.dumps({k: base if cs is None else {**base, "contexte_sections": cs}}))
+        assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == attendu
+        return capsys.readouterr()
+
+    assert "contexte_sections" in appliquer(None, 1).err, "sections obligatoires"
+    assert "{ctx-id: pourquoi}" in appliquer(["projet.trading-sim"], 1).err, "format liste de ae895e6 refusé"
+    assert "ctx-id inconnu : 2.1" in appliquer({"2.1": "x"}, 1).err, "plus de clé numérotée"
+    assert "`pourquoi` vide" in appliquer({"projet.trading-sim": ""}, 1).err
+    assert "corps vide : projet.vue-ensemble" in appliquer({"projet.vue-ensemble": "Liste des projets."}, 1).err
+    appliquer({"projet.trading-sim": "Les audits du robot passent par l'advisor."}, 0)
     e = cat.charger(racine_kb, "claude")[k]
-    assert list(e["contexte_sections"]) == ["2.1"] and len(e["contexte_sections"]["2.1"]) == 40
-    import valider
+    assert e["contexte_sections"]["projet.trading-sim"]["pourquoi"] == "Les audits du robot passent par l'advisor."
+    assert len(e["contexte_sections"]["projet.trading-sim"]["sha1"]) == 40
+    assert not (racine_kb / "docs" / "data" / "kb" / "claude" / "reevaluations.jsonl").exists(), "premier commentaire : pas de réévaluation"
     assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0
     capsys.readouterr()
-    # une autre section change : pas de péremption
-    ctx.write_text(ctx.read_text().replace("B\n", "B modifié\n"), encoding="utf-8")
-    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
-    assert json.loads(capsys.readouterr().out) == []
-    # la section citée change : périmée
-    ctx.write_text(ctx.read_text().replace("A\n", "A modifié\n"), encoding="utf-8")
-    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
-    assert [x["id"] for x in json.loads(capsys.readouterr().out)] == [k]
+
+    def lot():
+        assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
+        return [(x["id"], x["motif"]) for x in json.loads(capsys.readouterr().out) if x["id"] == k]
+
+    ctx.write_text(CONTEXTE_KB.replace("B\n", "B modifié\n"), encoding="utf-8")
+    assert lot() == [], "une autre section change : rien"
+    ctx.write_text(CONTEXTE_KB.replace("### 2.1 trading-sim — x", "### 2.1 trading-sim, robot — x"), encoding="utf-8")
+    assert lot() == [], "un changement de titre ne périme rien"
+    ctx.write_text(CONTEXTE_KB.replace("A\n", "A modifié\n"), encoding="utf-8")
+    assert lot() == [(k, "section:projet.trading-sim")]
+    # réévaluation : journal et taux
+    base["recommandation"] = {"verdict": "ignorer", "pourquoi": "Le robot n'a plus d'audit d'après CONTEXTE."}
+    assert "verdicts changés : 1 (100 %)" in appliquer({"projet.trading-sim": "Audits arrêtés."}, 0).out
+    j = [json.loads(l) for l in (racine_kb / "docs" / "data" / "kb" / "claude" / "reevaluations.jsonl").read_text().splitlines()]
+    assert j == [{"date": date.today().isoformat(), "id": k, "verdict_avant": "tester", "verdict_apres": "ignorer",
+                  "motif": "section:projet.trading-sim"}]
+    assert lot() == []
+    assert cli.main(["reevaluations", "--perimetre", "claude", "--racine", str(racine_kb)]) == 0
+    assert "verdicts changés : 1 (100 %)" in capsys.readouterr().out
+    assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0
+    capsys.readouterr()
+    # section dépréciée : périmée, et plus citable
+    ctx.write_text(CONTEXTE_KB.replace("<!-- ctx-id: projet.trading-sim -->", "<!-- ctx-id: projet.robot -->\n<!-- ctx-id-deprecie: projet.trading-sim -->"), encoding="utf-8")
+    assert lot() == [(k, "section:projet.trading-sim")]
+    assert "ctx-id déprécié" in appliquer({"projet.trading-sim": "x"}, 1).err
+    capsys.readouterr()
+    assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0, "déprécié : encore connu de valider"
 
 
 def test_d60_commentee_sans_empreinte_invalide(racine_kb, monkeypatch, capsys):
@@ -565,52 +581,114 @@ def test_skills_d57_d58_d59_d60():
         assert "contexte_empreinte" in t and "Constats et déductions (D59)" in t
 
 
-# --- D64 : sections de CONTEXTE ---------------------------------------------------------------------------------
+# --- D64-bis : sections de CONTEXTE par ctx-id ----------------------------------------------------------------
 
-def test_d64_sections_du_contexte_reel_et_cles():
-    from deltalib.contexte import sections
-    s = sections("Intro\n\n## 1. Env\n\na\n\n### Sessions [observé]\n\nb\n\n## 2. Projets\n\n### 2.2 trading-sim — x\n\nc\n")
-    assert list(s) == ["preambule", "1", "1/sessions", "2", "2.2"]
-    assert s["2.2"]["parent"] == "2" and s["1/sessions"]["parent"] == "1"
-    reel = sections((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"))
-    assert {"preambule", "2.2", "3", "4"} <= set(reel)
+def test_d64bis_analyse_et_erreurs():
+    from deltalib.contexte import ContexteInvalide, analyser
+    s, dep = analyser("# T\n<!-- ctx-id: a -->\n\ncorps a\n\n## U\n\n<!-- ctx-id: a.b -->\ncorps b\n### V\n<!-- ctx-id: a.b.c -->\n<!-- ctx-id-deprecie: vieux -->\nc\n")
+    assert list(s) == ["a", "a.b", "a.b.c"] and dep == {"vieux"}
+    assert s["a.b"]["parent"] == "a" and s["a.b.c"]["parent"] == "a.b"
+    # le corps d'une section s'arrête au titre suivant, quel que soit son niveau
+    s2, _ = analyser("# T\n<!-- ctx-id: a -->\n\ncorps a\n\n## U\n\n<!-- ctx-id: a.b -->\ncorps b modifié\n### V\n<!-- ctx-id: a.b.c -->\n<!-- ctx-id-deprecie: vieux -->\nc\n")
+    assert s2["a"]["sha1"] == s["a"]["sha1"] and s2["a.b"]["sha1"] != s["a.b"]["sha1"] and s2["a.b.c"]["sha1"] == s["a.b.c"]["sha1"]
+    # titre et ligne ctx-id exclus
+    s3, _ = analyser("# Autre titre\n<!-- ctx-id: a -->\n\ncorps a\n\n## U\n\n<!-- ctx-id: a.b -->\ncorps b\n### V\n<!-- ctx-id: a.b.c -->\n<!-- ctx-id-deprecie: vieux -->\nc\n")
+    assert s3["a"]["sha1"] == s["a"]["sha1"]
+    for mauvais, message in [("# T\n\nx\n", "sans ctx-id"), ("# T\n<!-- ctx-id: a -->\n## U\n<!-- ctx-id: a -->\n", "double"),
+                             ("x\n# T\n<!-- ctx-id: a -->\n", "avant"), ("### T\n<!-- ctx-id: a -->\n<!-- ctx-id-deprecie: a -->\n", "déprécié")]:
+        with pytest.raises(ContexteInvalide, match=message):
+            analyser(mauvais)
 
 
-def test_d64_est_perime_et_ordre_du_lot():
+def test_d64bis_contexte_reel():
+    from deltalib.contexte import analyser, projets
+    s, _ = analyser((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"))
+    assert {"profil", "projet.trading-sim", "projet.carnet", "config.codex.profils"} <= set(s)
+    assert "projet.trading-sim" in projets(RACINE) and "projet.vue-ensemble" not in projets(RACINE)
+
+
+def test_d64bis_classement_a_b_c_et_filet_par_age():
+    from datetime import timedelta
     from deltalib.contexte import est_perime
-    cour = {"2.2": "a" * 40, "3": "b" * 40}
-    assert est_perime({"2.2": "a" * 40}, cour) is False
-    assert est_perime({"2.2": "x" * 40}, cour) is True
-    assert est_perime({"9": "a" * 40}, cour) is True, "section disparue"
+    cour = {"projet.trading-sim": "a" * 40, "config.codex": "b" * 40}
+    assert est_perime({"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}, cour) is False
+    assert est_perime({"projet.trading-sim": {"sha1": "x" * 40, "pourquoi": "p"}}, cour) is True
+    assert est_perime({"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}, cour, {"projet.trading-sim"}) is True
+    assert est_perime({"disparu": {"sha1": "a" * 40, "pourquoi": "p"}}, cour) is True
     assert est_perime({}, cour) is False and est_perime(None, cour) is None
-    def e(v, cs):
-        return {"commentee": True, "recommandation": {"verdict": v}, "contexte_sections": cs}
-    ent = {"a-legacy": e("utiliser", None), "b-ok": e("utiliser", {"2.2": "a" * 40}), "c-perime": e("tester", {"3": "z" * 40}),
-           "d-ignorer": e("ignorer", None), "e-vide": e("tester", {})}
-    assert cat.perimees(ent, cour) == ["c-perime", "a-legacy"], "périmées d'abord, puis antérieures à D64 ; ni ignorer ni liste vide"
+    jour = date(2026, 9, 24)
+    recent = (jour - timedelta(days=10)).isoformat()
+
+    def e(k, v, cs, commente=recent):
+        return {"id": k, "commentee": True, "recommandation": {"verdict": v}, "contexte_sections": cs, "maj_le": commente,
+                "historique": [{"date": commente, "changement": "commentée"}]}
+    ok = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}
+    vieux = (jour - timedelta(days=200)).isoformat()
+    ent = {k: e(k, *a) for k, a in {
+        "b-legacy": ("tester", None), "a-ignorer": ("ignorer", {"config.codex": {"sha1": "z" * 40, "pourquoi": "p"}}),
+        "a-utiliser": ("utiliser", {"config.codex": {"sha1": "z" * 40, "pourquoi": "p"}}), "ok": ("utiliser", ok),
+        "legacy-ignorer": ("ignorer", None), "vide": ("tester", {}),
+        "c-vieux-ignorer": ("ignorer", None, vieux), "c-vieux-vide": ("tester", {}, vieux)}.items()}
+    det = cat.perimees_detail(ent, cour, set(), jour, maximum=None)
+    assert [(x["id"], x["categorie"], x["motif"]) for x in det] == [
+        ("a-utiliser", "a", "section:config.codex"), ("a-ignorer", "a", "section:config.codex"),
+        ("b-legacy", "b", "legacy"), ("c-vieux-vide", "c", "age"), ("c-vieux-ignorer", "c", "age")]
+    assert len(cat.perimees({f"k{i}": e(f"k{i}", "tester", None) for i in range(40)}, cour, set(), jour)) == 30
+    # échéance : 90 + sha1(id) mod 90 jours après le dernier commentaire, étalée sur 90 jours
+    assert cat.AGE_ETALEMENT_JOURS == 90
+    ech = {cat.echeance_age(e(f"k{i}", "ignorer", {}, "2026-01-01")) for i in range(2000)}
+    assert min(ech) >= date(2026, 4, 1) and max(ech) <= date(2026, 6, 29) and len(ech) == 90
+    # un commentaire révisé repousse l'échéance
+    x_ = e("c-vieux-vide", "tester", {}, vieux)
+    x_["historique"].append({"date": jour.isoformat(), "changement": "commentaire révisé"})
+    assert cat.classer(x_, cour, set(), jour) is None
 
 
-def test_d64_nouveau_projet_repasse_des_ignorer(tmp_path):
+def test_d64bis_migration_des_formats_et_projets(tmp_path):
     ctx = tmp_path / "CONTEXTE.md"
-    ctx.write_text("## 2. Projets\n\n### 2.1 carnet — a\n\nx\n", encoding="utf-8")
+    ctx.write_text(CONTEXTE_KB, encoding="utf-8")
+    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("/c", "/c")], {"doc-a"})
+    for kk in ent:
+        ent[kk].update(commentee=True, recommandation={"verdict": "ignorer", "pourquoi": "p"})
+    ent["claude-code-commandes-a"]["contexte_sections"] = {"2.1": "a" * 40}  # format de ae895e6
+    ent["claude-code-commandes-b"]["contexte_sections"] = ["2.1"]
+    ent["claude-code-commandes-c"]["contexte_sections"] = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}
+    cat.ecrire(tmp_path, "claude", ent)
+    lu = cat.charger(tmp_path, "claude")
+    assert lu["claude-code-commandes-a"]["contexte_sections"] is None and lu["claude-code-commandes-b"]["contexte_sections"] is None
+    assert lu["claude-code-commandes-c"]["contexte_sections"]["projet.trading-sim"]["pourquoi"] == "p"
+    # projets_connus au format D64 (clés numérotées) : migration vers les ctx-id, sans lot nouveau-projet
+    f = tmp_path / "docs" / "data" / "kb" / "claude" / "commandes.json"
+    d = json.loads(f.read_text()); d["projets_connus"] = ["2.1", "2.2"]; f.write_text(json.dumps(d))
+    assert cat.nouveaux_projets(tmp_path, "claude") == []
+    cat.ecrire(tmp_path, "claude", lu)
+    assert json.loads(f.read_text())["projets_connus"] == ["projet.carnet", "projet.trading-sim"]
+
+
+def test_d64bis_nouveau_projet_repasse_des_ignorer(tmp_path):
+    ctx = tmp_path / "CONTEXTE.md"
+    ctx.write_text(CONTEXTE_KB, encoding="utf-8")
     ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("P", "p", categorie="parametres")], {"doc-a"})
     for kk in ent:
         ent[kk].update(commentee=True, recommandation={"verdict": "ignorer", "pourquoi": "p"}, contexte_sections=None)
     cat.ecrire(tmp_path, "claude", ent)
     assert cat.nouveaux_projets(tmp_path, "claude") == [], "au premier passage, les projets présents sont connus"
-    ctx.write_text(ctx.read_text() + "\n### 2.2 trading-sim — b\n\ny\n", encoding="utf-8")
+    ctx.write_text(CONTEXTE_KB + "\n### 2.3 ceramist — z\n<!-- ctx-id: projet.ceramist -->\n\ny\n", encoding="utf-8")
     cat.ecrire(tmp_path, "claude", ent)
-    assert cat.nouveaux_projets(tmp_path, "claude") == ["2.2"]
-    assert cat.repasse_projet(ent, "2.2") == ["claude-code-commandes-a", "claude-code-commandes-b"], "paramètres exclus"
+    assert cat.nouveaux_projets(tmp_path, "claude") == ["projet.ceramist"]
+    assert cat.repasse_projet(ent, "projet.ceramist") == ["claude-code-commandes-a", "claude-code-commandes-b"], "paramètres exclus"
     for kk in ("claude-code-commandes-a", "claude-code-commandes-b"):
-        ent[kk]["contexte_sections"] = {"2.2": "c" * 40}
+        ent[kk]["contexte_sections"] = {"projet.ceramist": {"sha1": "c" * 40, "pourquoi": "p"}}
     cat.ecrire(tmp_path, "claude", ent)
     assert cat.nouveaux_projets(tmp_path, "claude") == [], "repasse terminée : le projet devient connu"
 
 
-def test_d64_page_et_skills():
+def test_d64bis_page_skills_et_etat():
     racine = Path(fetch.RACINE)
     app = (racine / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    assert "antérieur à D64" in app and "contexte_sections" in app
+    assert "antérieur à D64" in app and ".sha1" in app and "contexte_deprecies" in app
     for f in (".claude/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md", ".claude/skills/delta/SKILL.md", "prompts/codex-delta.md"):
-        assert "contexte_sections" in (racine / f).read_text(encoding="utf-8"), f
+        t = (racine / f).read_text(encoding="utf-8")
+        assert "D64-bis" in t and "ctx-id" in t and "(D64)" not in t, f
+    import etat
+    assert "~/projets/trading-sim" in etat.DOSSIERS_MCP
