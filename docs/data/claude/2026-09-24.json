@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-24",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-09-24T08:16:43+00:00",
+  "synthese": "Seule nouveauté : Claude Code 2.1.281, déjà installée, qui corrige surtout la reprise des sessions, ce qui touche tes six sessions relancées par `claude --resume`. Elle fiabilise aussi le pilotage de `/effort` et du modèle depuis l'iPhone, et évite une double connexion du serveur delta-ia si son URL diffère de celle du connecteur de compte.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.281",
+      "ids_bruts": [
+        "claude-code-2.1.281"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.281",
+      "version": "2.1.281",
+      "date_publication": "2026-09-23",
+      "type": "correction",
+      "resume": "Série de corrections de la reprise de session : une très grosse session ne restaure plus seulement ses derniers messages, une reprise après un redémarrage pendant une demande de permission ne casse plus le cache, et une session coupée pendant un appel d'outil reprend en signalant que son issue est inconnue. Un même serveur MCP n'est plus connecté deux fois quand un connecteur claude.ai et un serveur configuré écrivent son URL différemment ; via Remote Control, des touches arrivées d'un bloc n'agissent plus sur la sélection précédente de `/effort` ou du sélecteur de modèle, et l'outil Artifact ne manque plus aux sessions lancées par `claude remote-control`. Changements : l'envoi immédiat (ctrl+enter) passe les outils en cours en arrière-plan au lieu d'annuler le tour, `rm -rf \"$(pwd)\"` demande confirmation même en mode auto, et `/insights` estime combien de demandes de permission le mode auto aurait traitées.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21281",
+          "libelle": "Changelog Claude Code 2.1.281",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six services `claude-session@*` relancent `claude --resume` : les corrections de reprise (grosses sessions, cache après redémarrage, coupure pendant un appel d'outil) les touchent directement. Depuis l'iPhone, régler `/effort` ou le modèle ne devrait plus viser la mauvaise ligne. Si le connecteur de compte Delta-IA et le serveur local delta-ia pointent vers la même URL écrite autrement, ils ne seront plus connectés deux fois dans `~/projets`.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-fonctionnalites-page-sessions",
+        "claude-code-fonctionnalites-page-remote-control",
+        "claude-code-mcp-scope-hierarchy-and-precedence",
+        "claude-code-raccourcis-ctrl-enter",
+        "claude-code-commandes-insights"
+      ]
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
+}
