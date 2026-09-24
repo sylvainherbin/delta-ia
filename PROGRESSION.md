@@ -5,7 +5,7 @@ par une session Claude Code dans le rôle de professeur, à partir des données 
 par cette session et mis à jour après chaque séance. Les agents de Delta peuvent le lire pour
 doser la profondeur de `pour_toi` et de `action` (D67). Ce fichier est sans effet sur `impact` et
 sur le choix des éléments ; il n'a pas d'empreinte, et la base de référence ne le lit pas. Seule la
-session professeur y écrit ; Dev-delta le commite à part.
+session professeur y écrit et le commite, en fin de séance (D67 amendée).
 
 Légende (identique à `CONTEXTE.md`) : **[observé]** constaté sur un exercice ou une sortie ·
 **[déduit]** conclu à partir d'observations · **[déclaré]** dit par Sylvain · **[inconnu]** pas
