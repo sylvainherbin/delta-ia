@@ -4,7 +4,7 @@
  "maj_le": "2026-09-24",
  "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
  "total": 424,
- "commentees": 106,
+ "commentees": 212,
  "entrees": [
   {
    "id": "chatgpt-parametres-reglages-appearance",
@@ -4358,14 +4358,17 @@
    "categorie": "parametres",
    "nom": "codex exec --full-auto",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--full-auto` est une ancienne compatibilité pour l’exécution automatique, désormais déconseillée au profit du bac à sable `workspace-write`.",
    "description_source": "Deprecated compatibility flag. Prefer --sandbox workspace-write ; Codex prints a warning when this flag is used. (valeurs : boolean)",
    "usage": "codex exec --full-auto",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le mode est déprécié et la validation humaine de tes audits plaide pour des permissions explicites."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4373,18 +4376,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-ignore-rules",
@@ -4392,14 +4399,17 @@
    "categorie": "parametres",
    "nom": "codex exec --ignore-rules",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--ignore-rules` écarte les règles d’exécution de l’utilisateur et du projet pour cette tâche.",
    "description_source": "Do not load user or project execpolicy .rules files for this run. (valeurs : boolean)",
    "usage": "codex exec --ignore-rules",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La règle Codex actuelle est à simplifier, pas à contourner pendant les audits."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4407,18 +4417,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-ignore-user-config",
@@ -4426,14 +4440,17 @@
    "categorie": "parametres",
    "nom": "codex exec --ignore-user-config",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--ignore-user-config` lance la tâche sans le fichier de configuration utilisateur.",
    "description_source": "Do not load $CODEX_HOME/config.toml . Authentication still uses CODEX_HOME . (valeurs : boolean)",
    "usage": "codex exec --ignore-user-config",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Un audit comparatif pourrait isoler un effet de ta configuration Codex sans supprimer ses profils permanents."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4441,18 +4458,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-image-i",
@@ -4460,14 +4481,17 @@
    "categorie": "parametres",
    "nom": "codex exec --image, -i",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--image` joint une ou plusieurs images au premier message de l’exécution.",
    "description_source": "Attach images to the first message. Repeatable; supports comma-separated lists. (valeurs : path[,path...])",
    "usage": "codex exec --image, -i",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Des captures de résultats d’audit trading-sim pourraient fournir un contexte visuel lors d’une vérification ciblée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4475,18 +4499,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-json-experimental-json",
@@ -4494,14 +4522,17 @@
    "categorie": "parametres",
    "nom": "codex exec --json, --experimental-json",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--json` émet les événements de l’exécution en JSON ligne par ligne.",
    "description_source": "Print newline-delimited JSON events instead of formatted text. (valeurs : boolean)",
    "usage": "codex exec --json, --experimental-json",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits trading-sim produisent des rapports structurés et ce flux pourrait être exploitable par une revue automatisée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4509,18 +4540,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-last",
@@ -4528,14 +4563,17 @@
    "categorie": "parametres",
    "nom": "codex exec --last",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--last` reprend la dernière conversation du répertoire de travail courant.",
    "description_source": "Resume the most recent chat from the current working directory. (valeurs : boolean)",
    "usage": "codex exec --last",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La reprise des tâches Codex sous tmux doit rester liée au projet actif après une coupure Wi-Fi."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4543,18 +4581,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-local-provider",
@@ -4562,14 +4604,17 @@
    "categorie": "parametres",
    "nom": "codex exec --local-provider",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de fournisseur local choisit `lmstudio` ou `ollama` pour une exécution open source.",
    "description_source": "Choose the local provider used with --oss , overriding oss_provider for this run. (valeurs : lmstudio | ollama)",
    "usage": "codex exec --local-provider",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun fournisseur local de modèle n’est déclaré et la machine est limitée pour les calculs lourds."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4577,18 +4622,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-model-m",
@@ -4596,14 +4645,17 @@
    "categorie": "parametres",
    "nom": "codex exec --model, -m",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--model` remplace le modèle configuré pour cette seule exécution.",
    "description_source": "Override the configured model for this run. (valeurs : string)",
    "usage": "codex exec --model, -m",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu pourrais comparer Luna et Sol sur un audit court de trading-sim sans modifier les profils Codex."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4611,18 +4663,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-oss",
@@ -4630,14 +4686,17 @@
    "categorie": "parametres",
    "nom": "codex exec --oss",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--oss` utilise un fournisseur open source local déjà configuré.",
    "description_source": "Use a local open source provider. Codex uses --local-provider or your configured oss_provider , and exits with an error if neither is set. (valeurs : boolean)",
    "usage": "codex exec --oss",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun fournisseur local n’est déclaré dans CONTEXTE.md."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4645,18 +4704,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-output-last-message-o",
@@ -4664,14 +4727,17 @@
    "categorie": "parametres",
    "nom": "codex exec --output-last-message, -o",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de sortie écrit le dernier message de Codex dans un fichier.",
    "description_source": "Write the assistant’s final message to a file. Useful for downstream scripting. (valeurs : path)",
    "usage": "codex exec --output-last-message, -o",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Un verdict d’audit de trading-sim pourrait ainsi être conservé comme fichier de mission ou de retour."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4679,18 +4745,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-output-schema",
@@ -4698,14 +4768,17 @@
    "categorie": "parametres",
    "nom": "codex exec --output-schema",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de schéma impose un format JSON au résultat final de l’exécution.",
    "description_source": "JSON Schema file describing the expected final response shape. Codex validates tool output against it. (valeurs : path)",
    "usage": "codex exec --output-schema",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les verdicts d’audit trading-sim sont structurés et pourraient bénéficier d’une sortie validable."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4713,18 +4786,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-profile-p",
@@ -4732,14 +4809,17 @@
    "categorie": "parametres",
    "nom": "codex exec --profile, -p",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--profile` ajoute un profil de configuration à une exécution non interactive.",
    "description_source": "Layer $CODEX_HOME/profile-name.config.toml on top of the base user config. (valeurs : string)",
    "usage": "codex exec --profile, -p",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tes profils `audit`, `rapide` et `securite` pourraient être appliqués explicitement aux futurs audits CLI."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4747,18 +4827,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-prompt",
@@ -4766,14 +4850,17 @@
    "categorie": "parametres",
    "nom": "codex exec PROMPT",
    "gabarit": "court",
-   "description": null,
+   "description": "L’argument de prompt fournit la demande initiale, éventuellement depuis l’entrée standard.",
    "description_source": "Initial instruction for the task. Use - to pipe the prompt from stdin. (valeurs : string | - (read stdin))",
    "usage": "codex exec PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les missions trading-sim sont déjà rédigées dans des fichiers et pourraient alimenter une exécution contrôlée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4781,18 +4868,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-resume-subcommand",
@@ -4800,14 +4891,17 @@
    "categorie": "parametres",
    "nom": "codex exec Resume subcommand",
    "gabarit": "court",
-   "description": null,
+   "description": "La sous-commande de reprise continue une exécution Codex par identifiant ou reprend la plus récente.",
    "description_source": "Resume an exec session by ID or add --last to continue the most recent session from the current working directory. Add --all to consider sessions from any directory. Accepts an optional follow-up prompt. (valeurs : codex exec resume [SESSION_ID])",
    "usage": "codex exec Resume subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits répétés sous tmux pourraient reprendre après interruption sans reconstruire le contexte."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4815,18 +4909,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-sandbox-s",
@@ -4834,14 +4932,17 @@
    "categorie": "parametres",
    "nom": "codex exec --sandbox, -s",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de bac à sable fixe la politique d’isolation des commandes générées.",
    "description_source": "Sandbox policy for model-generated commands. Defaults to configuration. (valeurs : read-only | workspace-write | danger-full-access)",
    "usage": "codex exec --sandbox, -s",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits de trading-sim exigent un périmètre d’écriture limité et une validation humaine."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4849,18 +4950,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-session-id",
@@ -4868,14 +4973,17 @@
    "categorie": "parametres",
    "nom": "codex exec SESSION_ID",
    "gabarit": "court",
-   "description": null,
+   "description": "L’identifiant de session cible l’exécution précise à reprendre.",
    "description_source": "Resume the specified session. Omit and use --last to continue the most recent session. (valeurs : uuid | session name)",
    "usage": "codex exec SESSION_ID",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les missions trading-sim gagnent à reprendre le bon audit plutôt que la dernière session par défaut."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4883,18 +4991,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-exec-skip-git-repo-check",
@@ -4902,14 +5014,17 @@
    "categorie": "parametres",
    "nom": "codex exec --skip-git-repo-check",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de contrôle Git permet une exécution Codex hors d’un dépôt.",
    "description_source": "Allow running outside a Git repository (useful for one-off directories). (valeurs : boolean)",
    "usage": "codex exec --skip-git-repo-check",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits visés sont rattachés à des projets identifiés ; aucune exécution hors dépôt n’est demandée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
@@ -4917,18 +5032,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-execpolicy-command",
@@ -4936,14 +5055,17 @@
    "categorie": "parametres",
    "nom": "codex execpolicy COMMAND...",
    "gabarit": "court",
-   "description": null,
+   "description": "L’argument de commande désigne la commande à confronter aux règles d’exécution.",
    "description_source": "Command to be checked against the specified policies. (valeurs : var-args)",
    "usage": "codex execpolicy COMMAND...",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La règle Codex actuelle est trop large et peut être vérifiée sur des commandes représentatives."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
@@ -4951,18 +5073,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex execpolicy",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-execpolicy-pretty",
@@ -4970,14 +5096,17 @@
    "categorie": "parametres",
    "nom": "codex execpolicy --pretty",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--pretty` rend le résultat JSON des règles plus lisible.",
    "description_source": "Pretty-print the JSON result. (valeurs : boolean)",
    "usage": "codex execpolicy --pretty",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La revue de `default.rules` serait plus facile avec un résultat lisible avant tout changement."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
@@ -4985,18 +5114,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex execpolicy",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-execpolicy-rules-r",
@@ -5004,14 +5137,17 @@
    "categorie": "parametres",
    "nom": "codex execpolicy --rules, -r",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--rules` indique un ou plusieurs fichiers de règles à évaluer.",
    "description_source": "Path to an execpolicy rule file to evaluate. Provide multiple flags to combine rules across files. (valeurs : path (repeatable))",
    "usage": "codex execpolicy --rules, -r",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu pourrais tester de nouveaux préfixes courts sans remplacer directement ta règle Codex actuelle."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
@@ -5019,18 +5155,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex execpolicy",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-features-disable-subcommand",
@@ -5038,14 +5178,17 @@
    "categorie": "parametres",
    "nom": "codex features Disable subcommand",
    "gabarit": "court",
-   "description": null,
+   "description": "La sous-commande `disable` désactive durablement une fonctionnalité dans la configuration Codex.",
    "description_source": "Persistently disable a feature flag in $CODEX_HOME/config.toml . (valeurs : codex features disable <feature>)",
    "usage": "codex features Disable subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune fonctionnalité à désactiver n’est identifiée et le changement persiste dans `config.toml`."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-features",
@@ -5053,18 +5196,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex features",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-features-enable-subcommand",
@@ -5072,14 +5219,17 @@
    "categorie": "parametres",
    "nom": "codex features Enable subcommand",
    "gabarit": "court",
-   "description": null,
+   "description": "La sous-commande `enable` active durablement une fonctionnalité dans la configuration Codex.",
    "description_source": "Persistently enable a feature flag in $CODEX_HOME/config.toml . (valeurs : codex features enable <feature>)",
    "usage": "codex features Enable subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le pilotage distant visé doit d’abord être vérifié sans modifier durablement `config.toml`."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-features",
@@ -5087,18 +5237,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex features",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-features-list-subcommand",
@@ -5106,14 +5260,17 @@
    "categorie": "parametres",
    "nom": "codex features List subcommand",
    "gabarit": "court",
-   "description": null,
+   "description": "La sous-commande `list` affiche les fonctionnalités connues, leur maturité et leur état effectif.",
    "description_source": "Show known feature flags, their maturity stage, and their effective state. (valeurs : codex features list)",
    "usage": "codex features List subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour l’objectif Codex en CLI et tmux, cet inventaire peut révéler si une fonction utile est disponible."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-features",
@@ -5121,18 +5278,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex features",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-fork-all",
@@ -5140,14 +5301,17 @@
    "categorie": "parametres",
    "nom": "codex fork --all",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--all` élargit la liste des sessions à forker au-delà du répertoire courant.",
    "description_source": "Show sessions beyond the current working directory in the picker. (valeurs : boolean)",
    "usage": "codex fork --all",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits doivent rester rattachés à trading-sim et aucune bifurcation interprojets n’est prévue."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-fork",
@@ -5155,18 +5319,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex fork",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-fork-last",
@@ -5174,14 +5342,17 @@
    "categorie": "parametres",
    "nom": "codex fork --last",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--last` bifurque immédiatement la session Codex la plus récente.",
    "description_source": "Skip the picker and fork the most recent chat automatically. (valeurs : boolean)",
    "usage": "codex fork --last",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une hypothèse contradictoire d’audit trading-sim pourrait être explorée sans toucher au fil original."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-fork",
@@ -5189,18 +5360,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex fork",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-fork-session-id",
@@ -5208,14 +5383,17 @@
    "categorie": "parametres",
    "nom": "codex fork SESSION_ID",
    "gabarit": "court",
-   "description": null,
+   "description": "L’identifiant de session bifurque une conversation Codex précise.",
    "description_source": "Fork the specified session. Omit and use --last to fork the most recent session. (valeurs : uuid)",
    "usage": "codex fork SESSION_ID",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une branche d’audit trading-sim peut partir d’un contexte identifié sans modifier le verdict initial."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-fork",
@@ -5223,18 +5401,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex fork",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-home",
@@ -5242,14 +5424,17 @@
    "categorie": "parametres",
    "nom": "CODEX_HOME",
    "gabarit": "court",
-   "description": null,
+   "description": "La variable `CODEX_HOME` choisit le répertoire des réglages, identifiants et sessions Codex.",
    "description_source": "CLI, IDE extension, app-server, installers — ~/.codex — Sets the root for Codex state, including config, auth, logs, sessions, skills, and standalone package metadata. If you set it, the directory must already exist.",
    "usage": "CODEX_HOME",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton `AGENTS.md` global vient d’être créé dans l’emplacement par défaut ; le déplacer risquerait de séparer la configuration existante."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/environment-variables",
@@ -5257,18 +5442,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-variables",
    "groupe": "Core locations",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-image-i",
@@ -5276,14 +5465,17 @@
    "categorie": "parametres",
    "nom": "codex --image, -i",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--image` joint des fichiers visuels au prompt initial de Codex.",
    "description_source": "Attach one or more image files to the initial prompt. Separate multiple paths with commas or repeat the flag. (valeurs : path[,path...])",
    "usage": "codex --image, -i",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une capture d’erreur ou de diagramme pourrait étayer un audit de trading-sim."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5291,18 +5483,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-install-dir",
@@ -5310,14 +5506,17 @@
    "categorie": "parametres",
    "nom": "CODEX_INSTALL_DIR",
    "gabarit": "court",
-   "description": null,
+   "description": "La variable d’installation change le dossier où la commande Codex devient visible.",
    "description_source": "~/.local/bin on macOS/Linux; %LOCALAPPDATA%\\Programs\\OpenAI\\Codex\\bin on Windows — Changes where the visible codex command is installed. The standalone package cache still lives under CODEX_HOME/packages/standalone.",
    "usage": "CODEX_INSTALL_DIR",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La CLI est livrée avec l’application de bureau et aucun déplacement de son installation n’est souhaité."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/environment-variables",
@@ -5325,18 +5524,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-variables",
    "groupe": "Installer variables",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-local-provider",
@@ -5344,14 +5547,17 @@
    "categorie": "parametres",
    "nom": "codex --local-provider",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de fournisseur local choisit le moteur employé avec `--oss`.",
    "description_source": "Choose the local provider used with --oss , overriding oss_provider for this run. (valeurs : lmstudio | ollama)",
    "usage": "codex --local-provider",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun moteur de modèle local n’est déclaré."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5359,18 +5565,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-login-device-auth",
@@ -5378,14 +5588,17 @@
    "categorie": "parametres",
    "nom": "codex login --device-auth",
    "gabarit": "court",
-   "description": null,
+   "description": "L’authentification par appareil utilise un code OAuth au lieu d’ouvrir un navigateur.",
    "description_source": "Use OAuth device code flow instead of launching a browser window. (valeurs : boolean)",
    "usage": "codex login --device-auth",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "L’objectif de sessions Codex sous tmux pourrait nécessiter une connexion sans navigateur local."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-login",
@@ -5393,18 +5606,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-login-status-subcommand",
@@ -5412,14 +5629,17 @@
    "categorie": "parametres",
    "nom": "codex login status subcommand",
    "gabarit": "court",
-   "description": null,
+   "description": "La sous-commande de statut indique le mode d’authentification Codex actif.",
    "description_source": "Print the active authentication mode and exit with 0 when logged in. (valeurs : codex login status)",
    "usage": "codex login status subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Avant une future session CLI sous tmux, vérifier la connexion évite de confondre un échec d’accès avec un problème de pilotage distant."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-login",
@@ -5427,18 +5647,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-login-with-access-token",
@@ -5446,14 +5670,17 @@
    "categorie": "parametres",
    "nom": "codex login --with-access-token",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de jeton lit un jeton d’accès depuis l’entrée standard pour connecter Codex.",
    "description_source": "Read an access token from stdin (for example printenv CODEX_ACCESS_TOKEN | codex login --with-access-token ). (valeurs : boolean)",
    "usage": "codex login --with-access-token",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun jeton d’automatisation n’est déclaré et son stockage ajouterait un secret à protéger."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-login",
@@ -5461,18 +5688,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-login-with-api-key",
@@ -5480,14 +5711,17 @@
    "categorie": "parametres",
    "nom": "codex login --with-api-key",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de clé API lit une clé depuis l’entrée standard pour connecter Codex.",
    "description_source": "Read an API key from stdin (for example printenv OPENAI_API_KEY | codex login --with-api-key ). (valeurs : boolean)",
    "usage": "codex login --with-api-key",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu utilises ChatGPT Pro et aucun flux avec clé API n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-login",
@@ -5495,18 +5729,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-model-m",
@@ -5514,14 +5752,17 @@
    "categorie": "parametres",
    "nom": "codex --model, -m",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--model` remplace pour cette session le modèle défini en configuration.",
    "description_source": "Override the model set in configuration (for example gpt-6-sol ). (valeurs : string)",
    "usage": "codex --model, -m",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu pourrais essayer Luna dans la future CLI tmux sans changer les profils `audit` et `rapide` sur Sol."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5529,18 +5770,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-no-alt-screen",
@@ -5548,14 +5793,17 @@
    "categorie": "parametres",
    "nom": "codex --no-alt-screen",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--no-alt-screen` laisse le terminal principal visible au lieu d’utiliser l’écran alternatif.",
    "description_source": "Disable alternate screen mode for the TUI (overrides tui.alternate_screen for this run). (valeurs : boolean)",
    "usage": "codex --no-alt-screen",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour un usage futur dans tmux, ce réglage pourrait faciliter la lecture du défilement."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5563,18 +5811,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-non-interactive",
@@ -5582,14 +5834,17 @@
    "categorie": "parametres",
    "nom": "CODEX_NON_INTERACTIVE",
    "gabarit": "court",
-   "description": null,
+   "description": "La variable `CODEX_NON_INTERACTIVE` supprime les questions de l’installeur en prenant leurs réponses par défaut.",
    "description_source": "false — Set to 1, true, or yes to skip installer prompts. Prompts use their default response, so use this for scripted installs and updates, not first-run setup.",
    "usage": "CODEX_NON_INTERACTIVE",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La CLI vient de l’application de bureau et aucun déploiement automatisé d’installation n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/environment-variables",
@@ -5597,18 +5852,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-variables",
    "groupe": "Installer variables",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-oss",
@@ -5616,14 +5875,17 @@
    "categorie": "parametres",
    "nom": "codex --oss",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--oss` lance un fournisseur de modèle open source local.",
    "description_source": "Use a local open source model provider. Codex uses --local-provider , your configured oss_provider , or prompts you to choose between LM Studio and Ollama. (valeurs : boolean)",
    "usage": "codex --oss",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun fournisseur local n’est déclaré et la machine est réservée avec prudence aux calculs lourds."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5631,18 +5893,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-profile-p",
@@ -5650,14 +5916,17 @@
    "categorie": "parametres",
    "nom": "codex --profile, -p",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--profile` applique un profil Codex à la session CLI.",
    "description_source": "Layer $CODEX_HOME/profile-name.config.toml on top of the base user config. (valeurs : string)",
    "usage": "codex --profile, -p",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les profils `audit`, `rapide` et `securite` servent déjà ; les choisir explicitement serait utile au futur flux tmux."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5665,18 +5934,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-prompt",
@@ -5684,14 +5957,17 @@
    "categorie": "parametres",
    "nom": "codex PROMPT",
    "gabarit": "court",
-   "description": null,
+   "description": "L’argument de prompt donne une instruction initiale au lancement de la session.",
    "description_source": "Optional text instruction to start the session. Omit to launch the TUI without a pre-filled message. (valeurs : string)",
    "usage": "codex PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les missions trading-sim sont préparées à l’avance et pourraient ouvrir une session CLI ciblée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5699,18 +5975,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-remote",
@@ -5718,14 +5998,17 @@
    "categorie": "parametres",
    "nom": "codex --remote",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--remote` connecte certaines commandes CLI à un serveur d’application distant.",
    "description_source": "Connect to a remote app-server endpoint over WebSocket or a Unix socket. Supported for codex , codex resume , codex fork , codex archive , codex delete , and codex unarchive ; other subcommands reject remote mode. (valeurs : ws://host:port | wss://host:port | unix:// | unix://PATH)",
    "usage": "codex --remote",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "L’objectif Codex en CLI avec pilotage distant justifie un essai local sécurisé, sans confondre ce transport avec Remote Control sur iPhone."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5733,18 +6016,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-remote-auth-token-env",
@@ -5752,14 +6039,17 @@
    "categorie": "parametres",
    "nom": "codex --remote-auth-token-env",
    "gabarit": "court",
-   "description": null,
+   "description": "La variable de jeton fournit une authentification à une connexion Codex distante.",
    "description_source": "Read a bearer token from this environment variable and send it when connecting with --remote . Requires --remote ; tokens are only sent over wss:// URLs or local-only ws:// URLs. (valeurs : ENV_VAR)",
    "usage": "codex --remote-auth-token-env",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Si un serveur distant est essayé pour le pilotage CLI, un canal chiffré et une gestion sûre du jeton sont nécessaires."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -5767,18 +6057,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-resume-all",
@@ -5786,14 +6080,17 @@
    "categorie": "parametres",
    "nom": "codex resume --all",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--all` étend la reprise aux sessions hors du répertoire courant.",
    "description_source": "Include sessions outside the current working directory when selecting the most recent session. (valeurs : boolean)",
    "usage": "codex resume --all",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le choix du projet trading-sim doit rester explicite pour éviter de reprendre un audit d’un autre dossier."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
@@ -5801,18 +6098,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-resume-include-non-interactive",
@@ -5820,14 +6121,17 @@
    "categorie": "parametres",
    "nom": "codex resume --include-non-interactive",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de sessions non interactives inclut ces exécutions dans le sélecteur de reprise.",
    "description_source": "Include non-interactive sessions in the picker and --last selection. (valeurs : boolean)",
    "usage": "codex resume --include-non-interactive",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Si les audits trading-sim passent par `codex exec`, leur reprise interactive pourrait être utile après une coupure."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
@@ -5835,18 +6139,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-resume-last",
@@ -5854,14 +6162,17 @@
    "categorie": "parametres",
    "nom": "codex resume --last",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--last` reprend la dernière session du répertoire de travail courant.",
    "description_source": "Skip the picker and resume the most recent chat from the current working directory. (valeurs : boolean)",
    "usage": "codex resume --last",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Le projet de sessions Codex sous tmux suppose de pouvoir reprendre rapidement après redémarrage."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
@@ -5869,18 +6180,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-resume-session-id",
@@ -5888,14 +6203,17 @@
    "categorie": "parametres",
    "nom": "codex resume SESSION_ID",
    "gabarit": "court",
-   "description": null,
+   "description": "L’identifiant de session reprend une conversation Codex déterminée.",
    "description_source": "Resume the specified session. Omit and use --last to continue the most recent session. (valeurs : uuid | session name)",
    "usage": "codex resume SESSION_ID",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Un audit trading-sim peut être repris par identifiant sans risquer de choisir le mauvais fil."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
@@ -5903,18 +6221,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-base",
@@ -5922,14 +6244,17 @@
    "categorie": "parametres",
    "nom": "codex review --base",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de branche de base compare les changements à une branche Git donnée.",
    "description_source": "Review changes against the specified base branch. (valeurs : branch)",
    "usage": "codex review --base",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits croisés sur trading-sim pourraient contrôler les écarts face à une base explicite."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -5937,18 +6262,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-commit",
@@ -5956,14 +6285,17 @@
    "categorie": "parametres",
    "nom": "codex review --commit",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de commit examine les changements introduits par un commit précis.",
    "description_source": "Review the changes introduced by the specified commit. (valeurs : SHA)",
    "usage": "codex review --commit",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les modifications formelles de trading-sim sont regroupées en commits et peuvent être auditées isolément."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -5971,18 +6303,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-prompt",
@@ -5990,14 +6326,17 @@
    "categorie": "parametres",
    "nom": "codex review PROMPT",
    "gabarit": "court",
-   "description": null,
+   "description": "L’argument de prompt fournit des consignes propres à une revue Codex.",
    "description_source": "Custom review instructions. Use - to read the instructions from stdin. (valeurs : string | - (read stdin))",
    "usage": "codex review PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une mission d’audit trading-sim pourrait définir la portée de la revue sans modifier les règles permanentes."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -6005,18 +6344,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-strict-config",
@@ -6024,14 +6367,17 @@
    "categorie": "parametres",
    "nom": "codex review --strict-config",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option stricte refuse une revue si la configuration contient des champs inconnus.",
    "description_source": "Error when config.toml contains fields this Codex version does not recognize. (valeurs : boolean)",
    "usage": "codex review --strict-config",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Lors des audits croisés, ce contrôle pourrait révéler une configuration Codex ignorée par la version installée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -6039,18 +6385,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-title",
@@ -6058,14 +6408,17 @@
    "categorie": "parametres",
    "nom": "codex review --title",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de titre ajoute un intitulé au résumé d’une revue de commit.",
    "description_source": "Set the commit title shown in the review summary. Requires --commit . (valeurs : string)",
    "usage": "codex review --title",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le titre du rapport n’est pas un besoin identifié pour les audits actuels."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -6073,18 +6426,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-review-uncommitted",
@@ -6092,14 +6449,17 @@
    "categorie": "parametres",
    "nom": "codex review --uncommitted",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--uncommitted` examine les changements indexés, non indexés et non suivis.",
    "description_source": "Review staged, unstaged, and untracked changes. (valeurs : boolean)",
    "usage": "codex review --uncommitted",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Trading-sim comporte une révision locale non commitée ; une revue ciblée pourrait l’examiner sans la publier."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
@@ -6107,18 +6467,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-cd-c",
@@ -6126,14 +6490,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox --cd, -C",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de répertoire fixe le dossier d’exécution sous un profil de permissions.",
    "description_source": "Working directory used for profile resolution and command execution. Requires --permission-profile . (valeurs : DIR)",
    "usage": "codex sandbox --cd, -C",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour un test d’audit isolé, le répertoire trading-sim et le profil de permissions doivent être déterminés ensemble."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6141,18 +6508,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-command",
@@ -6160,14 +6531,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox COMMAND...",
    "gabarit": "court",
-   "description": null,
+   "description": "L’argument de commande lance un programme sous les protections Linux de Codex.",
    "description_source": "Command to execute under Landlock + seccomp. Provide the executable after -- . (valeurs : var-args)",
    "usage": "codex sandbox COMMAND...",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une commande de vérification de trading-sim pourrait être rejouée en isolation avant une mission plus large."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6175,18 +6549,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-config-c",
@@ -6194,14 +6572,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox --config, -c",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de configuration surcharge ponctuellement les paramètres du bac à sable.",
    "description_source": "Configuration overrides applied before launching the sandbox (repeatable). (valeurs : key=value)",
    "usage": "codex sandbox --config, -c",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun écart de configuration du bac à sable ne justifie une surcharge ad hoc."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6209,18 +6590,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-include-managed-config",
@@ -6228,14 +6613,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox --include-managed-config",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option des exigences gérées inclut ces contraintes dans un profil de permissions explicite.",
    "description_source": "Include managed requirements while resolving an explicit permissions profile. Requires --permission-profile . (valeurs : boolean)",
    "usage": "codex sandbox --include-managed-config",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Un test d’isolation pour trading-sim doit conserver les contraintes gérées plutôt que les écarter."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6243,18 +6631,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-permission-profile-p",
@@ -6262,14 +6654,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox --permission-profile, -P",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de profil de permissions applique un profil nommé au bac à sable.",
    "description_source": "Apply a named permissions profile from the active configuration stack. (valeurs : NAME)",
    "usage": "codex sandbox --permission-profile, -P",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "La validation humaine et le périmètre d’écriture des audits pourraient être vérifiés avec un profil explicite."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6277,18 +6672,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-profile-p",
@@ -6296,14 +6695,17 @@
    "categorie": "parametres",
    "nom": "codex sandbox --profile, -p",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option de profil ajoute la configuration Codex nommée à la base du bac à sable.",
    "description_source": "Layer $CODEX_HOME/NAME.config.toml on top of the base user config. (valeurs : NAME)",
    "usage": "codex sandbox --profile, -p",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les profils d’audit existants pourraient servir à reproduire un test isolé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-sandbox",
@@ -6311,18 +6713,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sandbox-s",
@@ -6330,14 +6736,17 @@
    "categorie": "parametres",
    "nom": "codex --sandbox, -s",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--sandbox` choisit l’isolation des commandes générées par Codex.",
    "description_source": "Select the sandbox policy for model-generated shell commands. (valeurs : read-only | workspace-write | danger-full-access)",
    "usage": "codex --sandbox, -s",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Le futur flux CLI pour trading-sim doit garder un bac à sable compatible avec les audits en lecture prudente."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -6345,18 +6754,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-search",
@@ -6364,14 +6777,17 @@
    "categorie": "parametres",
    "nom": "codex --search",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option `--search` active la recherche web en direct pour une session.",
    "description_source": "Enable live web search (sets web_search = \"live\" instead of the default \"cached\" ). (valeurs : boolean)",
    "usage": "codex --search",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Delta utilise des sources officielles ; une recherche en direct peut confirmer une nouveauté quand une source de veille échoue."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -6379,18 +6795,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-sqlite-home",
@@ -6398,14 +6818,17 @@
    "categorie": "parametres",
    "nom": "CODEX_SQLITE_HOME",
    "gabarit": "court",
-   "description": null,
+   "description": "La variable `CODEX_SQLITE_HOME` déplace le stockage des données Codex fondées sur SQLite.",
    "description_source": "CLI and app-server state — CODEX_HOME — Sets where SQLite-backed state is stored. The sqlite_home config option takes precedence. Relative paths resolve from the current working directory.",
    "usage": "CODEX_SQLITE_HOME",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de déplacer l’état local de Codex n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/environment-variables",
@@ -6413,18 +6836,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-variables",
    "groupe": "Core locations",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-codex-strict-config",
@@ -6432,14 +6859,17 @@
    "categorie": "parametres",
    "nom": "codex --strict-config",
    "gabarit": "court",
-   "description": null,
+   "description": "L’option stricte refuse de lancer Codex quand un champ de configuration est inconnu.",
    "description_source": "Error when config.toml contains fields this Codex version does not recognize. Supported by runtime commands such as codex , exec , review , resume , fork , app-server , and exec-server . (valeurs : boolean)",
    "usage": "codex --strict-config",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Après une mise à jour de l’application, ce contrôle pourrait repérer un profil d’audit partiellement ignoré."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
@@ -6447,18 +6877,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-compact-prompt",
@@ -6466,14 +6900,17 @@
    "categorie": "parametres",
    "nom": "compact_prompt",
    "gabarit": "court",
-   "description": null,
+   "description": "Le paramètre `compact_prompt` remplace le texte utilisé pour compacter l’historique.",
    "description_source": "Type : string. Inline override for the history compaction prompt.",
    "usage": "compact_prompt",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits sont longs, mais aucun défaut de compaction ne justifie une consigne personnalisée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6481,18 +6918,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-computer-use-default-app-access",
@@ -6500,14 +6941,17 @@
    "categorie": "parametres",
    "nom": "computer_use.default_app_access",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage d’accès aux applications natives définit la politique de repli pour Computer Use.",
    "description_source": "Type : allow | deny. Fallback native-app access policy for Computer Use. App-specific entries can supply a policy; local configuration cannot relax managed restrictions.",
    "usage": "computer_use.default_app_access",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "L’usage des connecteurs de l’application et la validation humaine justifient de vérifier l’accès natif autorisé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6515,18 +6959,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-config-toml-tui-keymap-context-action",
@@ -6534,14 +6982,17 @@
    "categorie": "parametres",
    "nom": "tui.keymap.<context>.<action> = []",
    "gabarit": "court",
-   "description": null,
+   "description": "Une liste vide dans la carte des touches retire une action de son raccourci TUI.",
    "description_source": "Type : empty array. Unbind the action in that keymap context. Key names use normalized strings such as ctrl-a, shift-enter, page-down, or minus.",
    "usage": "tui.keymap.<context>.<action> = []",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun conflit de raccourci du futur TUI sous tmux n’est signalé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6549,18 +7000,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-default-permissions",
@@ -6568,14 +7023,17 @@
    "categorie": "parametres",
    "nom": "default_permissions",
    "gabarit": "court",
-   "description": null,
+   "description": "Le paramètre de permissions choisit le profil de sécurité appliqué par défaut aux outils.",
    "description_source": "Type : string. Name of the default permissions profile to apply to sandboxed tool calls. Built-ins are :read-only, :workspace, and :danger-full-access; custom profile names require matching [permissions.<name>] tables. Don't combine with sandbox_mode or [sandbox_workspace_write].",
    "usage": "default_permissions",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits trading-sim exigent des limites d’écriture claires et un accord humain pour les élévations."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6583,18 +7041,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id",
@@ -6602,14 +7064,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>",
    "gabarit": "court",
-   "description": null,
+   "description": "La table des gestionnaires de fichiers ajoute une cible d’ouverture à l’application de bureau.",
    "description_source": "Type : table. User-level only. Defines an additional Open in target for the ChatGPT desktop app. See Add custom file handlers for examples and handler ID constraints.",
    "usage": "desktop.custom_file_handlers.<id>",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de cible d’ouverture personnalisée n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6617,18 +7082,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-args",
@@ -6636,14 +7105,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.args",
    "gabarit": "court",
-   "description": null,
+   "description": "La liste d’arguments complète la commande d’un gestionnaire de fichiers personnalisé.",
    "description_source": "Type : array<string>. Arguments inserted between the command and file input (default: []).",
    "usage": "desktop.custom_file_handlers.<id>.args",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun gestionnaire de fichiers personnalisé n’est demandé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6651,18 +7123,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-command",
@@ -6670,14 +7146,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.command",
    "gabarit": "court",
-   "description": null,
+   "description": "La commande du gestionnaire désigne le programme à lancer pour ouvrir un fichier.",
    "description_source": "Type : string. Executable path or command name to detect and launch. Required.",
    "usage": "desktop.custom_file_handlers.<id>.command",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun programme d’ouverture supplémentaire n’est demandé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6685,18 +7164,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-icon",
@@ -6704,14 +7187,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.icon",
    "gabarit": "court",
-   "description": null,
+   "description": "L’icône du gestionnaire donne un visuel à la cible d’ouverture personnalisée.",
    "description_source": "Type : string. Bundled asset path, Base64-encoded data:image/... URL, file URI, or absolute local path for the handler icon. Required; unsupported sources use the default VS Code icon.",
    "usage": "desktop.custom_file_handlers.<id>.icon",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun gestionnaire personnalisé ni besoin d’icône n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6719,18 +7205,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-input",
@@ -6738,14 +7228,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.input",
    "gabarit": "court",
-   "description": null,
+   "description": "Le mode d’entrée choisit comment un gestionnaire personnalisé reçoit le fichier.",
    "description_source": "Type : path | json_argument | json_stdin. How the app sends file input to the handler (default: path).",
    "usage": "desktop.custom_file_handlers.<id>.input",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun gestionnaire de fichiers personnalisé n’est prévu."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6753,18 +7246,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-label",
@@ -6772,14 +7269,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.label",
    "gabarit": "court",
-   "description": null,
+   "description": "Le libellé nomme la cible d’ouverture personnalisée dans les menus de l’application.",
    "description_source": "Type : string. Display name shown in Open in menus. Required.",
    "usage": "desktop.custom_file_handlers.<id>.label",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune cible d’ouverture personnalisée n’est demandée."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6787,18 +7287,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-desktop-custom-file-handlers-id-supports-ssh",
@@ -6806,14 +7310,17 @@
    "categorie": "parametres",
    "nom": "desktop.custom_file_handlers.<id>.supports_ssh",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage SSH affiche la cible personnalisée pour les fichiers de projets distants.",
    "description_source": "Type : boolean. Offer the handler for files in SSH workspaces (default: false).",
    "usage": "desktop.custom_file_handlers.<id>.supports_ssh",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun espace de travail SSH n’est décrit pour Codex."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6821,18 +7328,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-developer-instructions",
@@ -6840,14 +7351,17 @@
    "categorie": "parametres",
    "nom": "developer_instructions",
    "gabarit": "court",
-   "description": null,
+   "description": "Le champ d’instructions développeur ajoute des consignes à une session Codex.",
    "description_source": "Type : string. Additional developer instructions injected into the session (optional).",
    "usage": "developer_instructions",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les consignes durables sont déjà placées dans `AGENTS.md` et aucun besoin de couche supplémentaire n’est exprimé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6855,18 +7369,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-disable-paste-burst",
@@ -6874,14 +7392,17 @@
    "categorie": "parametres",
    "nom": "disable_paste_burst",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur désactive la détection des collages rapides dans le TUI.",
    "description_source": "Type : boolean. Disable burst-paste detection in the TUI.",
    "usage": "disable_paste_burst",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun problème de collage dans la future CLI tmux n’est signalé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6889,18 +7410,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-experimental-compact-prompt-file",
@@ -6908,14 +7433,17 @@
    "categorie": "parametres",
    "nom": "experimental_compact_prompt_file",
    "gabarit": "court",
-   "description": null,
+   "description": "Le fichier expérimental fournit une consigne de compaction personnalisée.",
    "description_source": "Type : string (path). Load the compaction prompt override from a file (experimental).",
    "usage": "experimental_compact_prompt_file",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun défaut précis de compaction ne justifie de maintenir ce fichier."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6923,18 +7451,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-experimental-use-unified-exec-tool",
@@ -6942,14 +7474,17 @@
    "categorie": "parametres",
    "nom": "experimental_use_unified_exec_tool",
    "gabarit": "court",
-   "description": null,
+   "description": "L’ancien paramètre active l’outil d’exécution unifié de Codex.",
    "description_source": "Type : boolean. Legacy name for enabling unified exec; prefer [features].unified_exec or codex --enable unified_exec.",
    "usage": "experimental_use_unified_exec_tool",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Cette clé historique est remplacée par une fonctionnalité dédiée et aucun besoin de l’activer n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6957,18 +7492,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-apps",
@@ -6976,14 +7515,17 @@
    "categorie": "parametres",
    "nom": "features.apps",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur des applications active les intégrations de connecteurs, déjà présentes par défaut.",
    "description_source": "Type : boolean. Enable app (connector) integrations (stable; on by default). App and connector traffic is not controlled by the sandboxed-command network proxy or its domain allowlist.",
    "usage": "features.apps",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les connecteurs de l’application sont utilisés ; vérifier leur état en CLI peut aider avant le passage sous tmux, sans changer le réglage par défaut."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -6991,18 +7533,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-code-mode-direct-only-tool-namespaces",
@@ -7010,14 +7556,17 @@
    "categorie": "parametres",
    "nom": "features.code_mode.direct_only_tool_namespaces",
    "gabarit": "court",
-   "description": null,
+   "description": "La liste des espaces directs limite les outils accessibles à code mode par appels directs.",
    "description_source": "Type : array<string>. Tool namespaces code mode can use only through direct tool calls.",
    "usage": "features.code_mode.direct_only_tool_namespaces",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Code mode est désactivé par défaut et aucun besoin de régler ses espaces d’outils n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7025,18 +7574,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-code-mode-enabled",
@@ -7044,14 +7597,17 @@
    "categorie": "parametres",
    "nom": "features.code_mode.enabled",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur active la configuration de code mode, encore en développement.",
    "description_source": "Type : boolean. Enable code mode feature configuration. This feature is under development and off by default.",
    "usage": "features.code_mode.enabled",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de cette fonction expérimentale n’est établi pour les audits."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7059,18 +7615,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-code-mode-excluded-tool-namespaces",
@@ -7078,14 +7638,17 @@
    "categorie": "parametres",
    "nom": "features.code_mode.excluded_tool_namespaces",
    "gabarit": "court",
-   "description": null,
+   "description": "La liste des espaces exclus retire des outils de code mode imbriqué.",
    "description_source": "Type : array<string>. Tool namespaces code mode excludes from nested code-mode tool guidance and executor exposure.",
    "usage": "features.code_mode.excluded_tool_namespaces",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Code mode n’est pas prévu dans le flux de travail décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7093,18 +7656,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-context-management-experimental-mode",
@@ -7112,14 +7679,17 @@
    "categorie": "parametres",
    "nom": "features.context_management.experimental_mode",
    "gabarit": "court",
-   "description": null,
+   "description": "Le mode expérimental de contexte conserve des notes et un historique interrogeable au lieu d’un résumé unique.",
    "description_source": "Type : boolean. Enable experimental context management (off by default). Rather than repeatedly compressing context into a single summary, it uses notes and searchable history to preserve accumulated details. Requires ChatGPT sign-in on Plus, Pro, or Pro Lite.",
    "usage": "features.context_management.experimental_mode",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits trading-sim longs peuvent perdre du contexte ; un essai isolé pourrait mesurer ce mode sans le rendre permanent."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7127,18 +7697,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-enable-request-compression",
@@ -7146,14 +7720,17 @@
    "categorie": "parametres",
    "nom": "features.enable_request_compression",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur comprime les requêtes transmises quand le service le prend en charge.",
    "description_source": "Type : boolean. Compress streaming request bodies with zstd when supported (stable; on by default).",
    "usage": "features.enable_request_compression",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La compression est déjà active par défaut et aucun défaut réseau lié à ce réglage n’est établi."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7161,18 +7738,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-fast-mode",
@@ -7180,14 +7761,17 @@
    "categorie": "parametres",
    "nom": "features.fast_mode",
    "gabarit": "court",
-   "description": null,
+   "description": "Le mode rapide rend sélectionnables les niveaux de service annoncés par le modèle actif.",
    "description_source": "Type : boolean. Enable model-catalog service tier selection in the TUI, including Fast-tier commands when the active model advertises them (stable; on by default).",
    "usage": "features.fast_mode",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les limites d’usage et les audits répétés motivent une vérification des niveaux disponibles, sans supposer un gain de quota."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7195,18 +7779,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-goals",
@@ -7214,14 +7802,17 @@
    "categorie": "parametres",
    "nom": "features.goals",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur des objectifs active leur suivi persistant et la continuation automatique.",
    "description_source": "Type : boolean. Enable persisted goals and automatic continuation (stable; on by default).",
    "usage": "features.goals",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les missions d’audit longues pourraient profiter d’un objectif explicite, mais une continuation automatique doit rester compatible avec la validation humaine."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7229,18 +7820,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-hooks",
@@ -7248,14 +7843,17 @@
    "categorie": "parametres",
    "nom": "features.hooks",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur active les hooks de cycle de vie définis dans la configuration Codex.",
    "description_source": "Type : boolean. Enable lifecycle hooks loaded from hooks.json or inline [hooks] config. features.codex_hooks is a deprecated alias.",
    "usage": "features.hooks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les contrôles d’intégrité répétés des audits trading-sim pourraient être candidats à un hook après accord explicite."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7263,18 +7861,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-memories",
@@ -7282,14 +7884,17 @@
    "categorie": "parametres",
    "nom": "features.memories",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur active la mémoire Codex, désactivée par défaut.",
    "description_source": "Type : boolean. Enable Memories (off by default).",
    "usage": "features.memories",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les consignes d’audit sont gouvernées par les fichiers de mission et aucun usage de mémoire Codex n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7297,18 +7902,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-multi-agent",
@@ -7316,14 +7925,17 @@
    "categorie": "parametres",
    "nom": "features.multi_agent",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur active les outils de collaboration multi-agents, présents par défaut.",
    "description_source": "Type : boolean. Enable multi-agent collaboration tools (spawn_agent, send_input, resume_agent, wait_agent, and close_agent) (stable; on by default).",
    "usage": "features.multi_agent",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits croisés Claude ↔ Codex pourraient évaluer des rôles séparés, mais aucun agent Codex personnel n’est déclaré."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7331,18 +7943,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy",
@@ -7350,14 +7966,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy",
    "gabarit": "court",
-   "description": null,
+   "description": "Le proxy expérimental filtre le réseau des commandes locales, sans couvrir la recherche web ni les connecteurs.",
    "description_source": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed experimental_network requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools.",
    "usage": "features.network_proxy",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les restrictions réseau de trading-sim exigent de distinguer ce proxy des autres accès avant tout essai."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7365,18 +7984,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-allow-local-binding",
@@ -7384,14 +8007,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.allow_local_binding",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage de liaison locale élargit l’accès aux adresses privées depuis le proxy.",
    "description_source": "Type : boolean. Allow broader local/private-network access. Defaults to false; exact local IP literal or localhost allow rules can still permit specific local targets.",
    "usage": "features.network_proxy.allow_local_binding",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun service local ne nécessite cet élargissement pour les audits et il augmenterait la surface d’accès."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7399,18 +8025,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-allow-upstream-proxy",
@@ -7418,14 +8048,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.allow_upstream_proxy",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage du proxy amont permet le chaînage vers un relais fourni par l’environnement.",
    "description_source": "Type : boolean. Allow chaining through an upstream proxy from the environment. Defaults to true.",
    "usage": "features.network_proxy.allow_upstream_proxy",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun proxy amont n’est décrit dans l’environnement."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7433,18 +8066,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-dangerously-allow-all-unix-sockets",
@@ -7452,14 +8089,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.dangerously_allow_all_unix_sockets",
    "gabarit": "court",
-   "description": null,
+   "description": "Le contournement des sockets Unix autorise toutes les destinations locales du proxy.",
    "description_source": "Type : boolean. Permit arbitrary Unix socket destinations instead of allowlist-only access. Defaults to false; use only in tightly controlled environments.",
    "usage": "features.network_proxy.dangerously_allow_all_unix_sockets",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Il élargirait dangereusement les accès sans besoin identifié."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7467,18 +8107,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-dangerously-allow-non-loopback-proxy",
@@ -7486,14 +8130,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.dangerously_allow_non_loopback_proxy",
    "gabarit": "court",
-   "description": null,
+   "description": "Le contournement d’écoute non locale expose potentiellement le proxy au-delà de la machine.",
    "description_source": "Type : boolean. Permit non-loopback listener addresses. Defaults to false; enabling it can expose proxy listeners beyond localhost.",
    "usage": "features.network_proxy.dangerously_allow_non_loopback_proxy",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune exposition de ce proxy n’est requise pour le pilotage distant de Codex."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7501,18 +8148,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-domains",
@@ -7520,14 +8171,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.domains",
    "gabarit": "court",
-   "description": null,
+   "description": "La carte des domaines autorise ou refuse les destinations des commandes placées derrière le proxy.",
    "description_source": "Type : map<string, allow | deny>. Domain policy for sandboxed networking. Unset by default, which means no external destinations are allowed until you add allow rules. Supports exact hosts, *.example.com for subdomains only, .example.com for apex plus subdomains, and global * allow rules; prefer scoped rules because * broadly opens public outbound access. Add deny rules for blocked destinations; deny wins on conflicts.",
    "usage": "features.network_proxy.domains",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La politique de trading-sim interdit les accès web et aucun domaine externe supplémentaire n’est demandé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7535,18 +8189,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-enable-socks5",
@@ -7554,14 +8212,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.enable_socks5",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur SOCKS5 expose ce protocole sur le proxy de commandes.",
    "description_source": "Type : boolean. Expose SOCKS5 support. Defaults to true.",
    "usage": "features.network_proxy.enable_socks5",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun client SOCKS5 n’est prévu dans le flux de travail décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7569,18 +8230,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-enable-socks5-udp",
@@ -7588,14 +8253,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.enable_socks5_udp",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage UDP autorise ce trafic via SOCKS5 quand le proxy fonctionne.",
    "description_source": "Type : boolean. Allow UDP over SOCKS5. Defaults to true.",
    "usage": "features.network_proxy.enable_socks5_udp",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de trafic UDP via SOCKS5 n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7603,18 +8271,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-enabled",
@@ -7622,14 +8294,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.enabled",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur démarre le proxy réseau quand les commandes disposent d’un accès réseau.",
    "description_source": "Type : boolean. Start the sandboxed-command network proxy when command network access is enabled. Defaults to false; permission-profile domain rules are not enforced while the proxy is off.",
    "usage": "features.network_proxy.enabled",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits trading-sim sont soumis à une politique sans accès web et aucun changement de réseau n’est autorisé."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7637,18 +8312,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-proxy-url",
@@ -7656,14 +8335,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.proxy_url",
    "gabarit": "court",
-   "description": null,
+   "description": "L’URL de proxy indique une adresse pour le relais réseau des commandes.",
    "description_source": "Type : string.",
    "usage": "features.network_proxy.proxy_url",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun relais réseau personnalisé n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7671,18 +8353,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-socks-url",
@@ -7690,14 +8376,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.socks_url",
    "gabarit": "court",
-   "description": null,
+   "description": "L’URL SOCKS indique une adresse SOCKS pour le relais des commandes.",
    "description_source": "Type : string.",
    "usage": "features.network_proxy.socks_url",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun relais SOCKS n’est décrit."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7705,18 +8394,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-network-proxy-unix-sockets",
@@ -7724,14 +8417,17 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.unix_sockets",
    "gabarit": "court",
-   "description": null,
+   "description": "La carte des sockets Unix précise quelles destinations locales le proxy autorise ou refuse.",
    "description_source": "Type : map<string, allow | deny>. Unix socket policy for sandboxed networking. Unset by default; add allow entries for permitted sockets.",
    "usage": "features.network_proxy.unix_sockets",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun socket local à ouvrir pour les audits n’est identifié."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7739,18 +8435,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-personality",
@@ -7758,14 +8458,17 @@
    "categorie": "parametres",
    "nom": "features.personality",
    "gabarit": "court",
-   "description": null,
+   "description": "Le commutateur de personnalité active le choix du style de réponse, déjà présent par défaut.",
    "description_source": "Type : boolean. Enable personality selection controls (stable; on by default).",
    "usage": "features.personality",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les consignes de français et de méthode sont définies dans les instructions existantes."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7773,18 +8476,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-prevent-idle-sleep",
@@ -7792,14 +8499,17 @@
    "categorie": "parametres",
    "nom": "features.prevent_idle_sleep",
    "gabarit": "court",
-   "description": null,
+   "description": "Le réglage expérimental empêche la veille de la machine pendant un tour actif.",
    "description_source": "Type : boolean. Prevent the machine from sleeping while a turn is actively running (experimental; off by default).",
    "usage": "features.prevent_idle_sleep",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les audits longs lancés à distance depuis l’iPhone pourraient bénéficier d’un essai si la mise en veille les interrompt."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7807,18 +8517,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-remote-plugin",
@@ -7826,14 +8540,17 @@
    "categorie": "parametres",
    "nom": "features.remote_plugin",
    "gabarit": "court",
-   "description": null,
+   "description": "Le catalogue de plugins distants active leur découverte, présente par défaut.",
    "description_source": "Type : boolean. Enable the remote plugin catalog (stable; on by default).",
    "usage": "features.remote_plugin",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les plugins actifs sont déjà connus et aucun besoin de changer ce catalogue n’est établi."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7841,18 +8558,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-rollout-budget-enabled",
@@ -7860,14 +8581,17 @@
    "categorie": "parametres",
    "nom": "features.rollout_budget.enabled",
    "gabarit": "court",
-   "description": null,
+   "description": "Le suivi expérimental active un budget de jetons pour une exécution.",
    "description_source": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, features.rollout_budget.limit_tokens is required.",
    "usage": "features.rollout_budget.enabled",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Le coût des audits trading-sim justifie un essai mesuré, sans supposer que ce budget modifie la facturation."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7875,18 +8599,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-rollout-budget-limit-tokens",
@@ -7894,14 +8622,17 @@
    "categorie": "parametres",
    "nom": "features.rollout_budget.limit_tokens",
    "gabarit": "court",
-   "description": null,
+   "description": "La limite fixe le nombre positif de jetons suivi par le budget expérimental.",
    "description_source": "Type : integer. Positive token limit for rollout budget tracking. Required when rollout budget is enabled.",
    "usage": "features.rollout_budget.limit_tokens",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune limite chiffrée fiable n’est définie pour les audits ; ce champ n’est utile qu’après un essai du suivi."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7909,18 +8640,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-rollout-budget-prefill-token-weight",
@@ -7928,14 +8663,17 @@
    "categorie": "parametres",
    "nom": "features.rollout_budget.prefill_token_weight",
    "gabarit": "court",
-   "description": null,
+   "description": "Le coefficient pondère les jetons de préremplissage dans le calcul du budget.",
    "description_source": "Type : number. Finite non-negative multiplier for prefill tokens in rollout budget accounting. Defaults to 1.0.",
    "usage": "features.rollout_budget.prefill_token_weight",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de modifier la pondération comptable par défaut n’est démontré."
+   },
    "sources": [
     {
      "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
@@ -7943,18 +8681,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "codex-parametres-features-rollout-budget-reminder-interval-tokens",
