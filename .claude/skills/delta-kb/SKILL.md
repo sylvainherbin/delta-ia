@@ -56,4 +56,4 @@ Réévaluations faites (recalibrage, entrées périmées) ; lots traités ; entr
 
 ## Rapport de fin de tâche (D63)
 
-En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).

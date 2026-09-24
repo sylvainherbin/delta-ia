@@ -12,12 +12,12 @@ Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `
 
 - Si `.git/index.lock` existe, arrête-toi et signale-le : un autre passage (Codex) ou une autre session tient le dépôt ; les passages ne tournent jamais en même temps (D21).
 - Si `git remote -v` est vide : ni pull ni push (SPEC §6, D9). Sinon `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
-- Versions installées (D56), **après** le `git pull --rebase`, jamais avant (le 23/09, un `versions.json` modifié a bloqué le pull) : `.venv/bin/python scripts/versions.py` écrit `docs/data/versions.json` (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop). Un outil `en_retard` qui touche CONTEXTE.md (version installée citée) est un point de fin de passage.
 - Calcule la date du passage **une seule fois** : `J=$(date +%F)`. Toutes les commandes et tous les fichiers du passage utilisent ce `J`, même si le passage franchit minuit (D19). Python : `.venv/bin/python`.
 
 ## 1. Pour chaque périmètre `p` dans `claude`, `actu`
 
 1. **Récupération.** Si `state/p.json` est absent ou si sa clé `vus` est vide, c'est le premier passage réel : `.venv/bin/python scripts/fetch.py --perimetre p --depuis $(date -d '-7 days' +%F)` (D10). Sinon : `.venv/bin/python scripts/fetch.py --perimetre p`. Le fichier `raw/p-nouveautes.json` contient `nouveautes`, `ignores`, `sources_en_echec`, `borne`. L'état n'est pas modifié.
+   - Pour `p = claude` seulement, **juste après** ce `fetch.py --perimetre claude` (donc toujours après le `git pull --rebase`) : versions installées (D56), `.venv/bin/python scripts/versions.py`, qui écrit `docs/data/versions.json` (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop). Lancé avant le fetch, il comparerait la version installée à la dernière publiée de la veille : le 24/09, 2.1.281 installée a été affichée « à jour » face à 2.1.280. Lancé avant le pull, un `versions.json` modifié bloque le pull (23/09). Un outil `en_retard` qui touche CONTEXTE.md est un point de fin de passage.
 2. **Lecture.** `raw/p-nouveautes.json`, CONTEXTE.md, et la base de référence `docs/data/kb/claude/*.json` si elle existe.
 3. **Synthèse** dans `docs/data/p/J.json`, au format SPEC §7.1 et §7.2 (`agent: "claude-code"`). Règles :
    - **Chaque nouveauté brute est comptabilisée** (D13) : soit dans les `ids_bruts` d'un élément, soit dans `ecartes: [{id, raison}]`. `ecartes` ne sert qu'à ce qui n'a aucun rapport avec l'usage des outils IA (marketing, offres sectorielles, événements). Ce qui concerne le produit mais pas Sylvain reste un élément avec `impact: nul` et `pour_toi: null` (D14).
@@ -51,4 +51,4 @@ Enfin compte rendu REGLES §8, 10 lignes au plus : éléments par impact, les `f
 
 ## Rapport de fin de tâche (D63)
 
-En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
