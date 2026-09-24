@@ -152,7 +152,7 @@ class ErreurParametre extends Error {}
 
 // ---------------------------------------------------------------------------------------------- JSON-RPC
 
-async function traiter(msg) {
+async function traiter(msg, mesure = {}) {
   if (!msg || msg.jsonrpc !== "2.0" || typeof msg.method !== "string") return erreur(msg?.id ?? null, -32600, "requête JSON-RPC invalide");
   const { id, method, params = {} } = msg;
   const notification = id === undefined || id === null;
@@ -172,6 +172,8 @@ async function traiter(msg) {
       if (!o) return erreur(id, -32602, `outil inconnu : ${params.name}`);
       try {
         const r = await o.f(params.arguments || {});
+        if (params.name === "chercher_reference") mesure.nb_resultats = typeof r.total === "number" ? r.total : null;
+        if (params.name === "a_tester") mesure.nb_resultats = Array.isArray(r.actions) ? r.actions.length : null;
         return ok(id, { content: [{ type: "text", text: JSON.stringify(r, null, 1) }], structuredContent: r, isError: false });
       } catch (e) {
         const texte = e instanceof ErreurParametre ? `Paramètre invalide : ${e.message}` : `Données Delta indisponibles : ${e.message}`;
@@ -183,6 +185,34 @@ async function traiter(msg) {
       return erreur(id, -32601, `méthode non prise en charge : ${method}`);
   }
 }
+// ---------------------------------------------------------------------------------------------- journal (D66)
+// Une ligne JSON par requête JSON-RPC, lue seulement dans les journaux Vercel : méthode, outil, client (clientInfo
+// d'initialize), durée, statut, démarrage à froid, nombre de résultats. Jamais d'argument, de requête de recherche,
+// de corps de réponse, d'en-tête, d'adresse IP, de User-Agent ni de session. Rien n'est écrit par le serveur.
+const METHODES = new Set(["initialize", "tools/list", "tools/call", "ping"]);
+let froid = true;  // première requête traitée par cette instance
+
+function ligneJournal(msg, reponse, mesure, duree) {
+  const methode = msg && typeof msg.method === "string" && METHODES.has(msg.method) ? msg.method : "autre";
+  const texte = (v) => (typeof v === "string" ? v.slice(0, 80) : null);
+  const info = methode === "initialize" && msg.params && typeof msg.params.clientInfo === "object" ? msg.params.clientInfo : null;
+  const outil = methode === "tools/call" && msg.params && typeof msg.params.name === "string" && OUTILS[msg.params.name] ? msg.params.name
+    : methode === "tools/call" ? "inconnu" : null;
+  const l = { methode, outil, client: info ? { name: texte(info.name), version: texte(info.version) } : null,
+    duree_ms: Math.round(duree), statut: reponse && reponse.error ? reponse.error.code : "ok",
+    demarrage_froid: froid, nb_resultats: mesure.nb_resultats ?? null };
+  froid = false;
+  return l;
+}
+
+async function traiterJournalise(msg) {
+  const debut = performance.now();
+  const mesure = {};
+  const reponse = await traiter(msg, mesure);
+  console.log(JSON.stringify(ligneJournal(msg, reponse, mesure, performance.now() - debut)));
+  return reponse;
+}
+
 const ok = (id, result) => (id === undefined || id === null ? null : { jsonrpc: "2.0", id, result });
 const erreur = (id, code, message) => ({ jsonrpc: "2.0", id, error: { code, message } });
 
@@ -206,14 +236,16 @@ export default async function handler(req, res) {
   let corps;
   try { corps = await lireCorps(req); } catch (e) {
     res.statusCode = 400; res.setHeader("Content-Type", "application/json");
-    return res.end(JSON.stringify(erreur(null, -32700, "JSON invalide")));
+    const r = erreur(null, -32700, "JSON invalide");
+    console.log(JSON.stringify(ligneJournal(null, r, {}, 0)));
+    return res.end(JSON.stringify(r));
   }
   const lot = Array.isArray(corps);
-  const reponses = (await Promise.all((lot ? corps : [corps]).map(traiter))).filter(Boolean);
+  const reponses = (await Promise.all((lot ? corps : [corps]).map(traiterJournalise))).filter(Boolean);
   if (!reponses.length) { res.statusCode = 202; return res.end(); }
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(lot ? reponses : reponses[0]));
 }
 
-export { traiter, OUTILS };
+export { traiter, traiterJournalise, OUTILS };

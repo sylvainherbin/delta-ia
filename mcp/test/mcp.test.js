@@ -90,3 +90,62 @@ test("erreurs JSON-RPC", async () => {
   const lot = await rpc([{ jsonrpc: "2.0", id: 4, method: "ping" }, { jsonrpc: "2.0", method: "notifications/initialized" }]);
   assert.deepEqual(lot.corps, [{ jsonrpc: "2.0", id: 4, result: {} }]);
 });
+
+// ---------------------------------------------------------------------------------------------- D66 : journal
+const CLES_JOURNAL = ["methode", "outil", "client", "duree_ms", "statut", "demarrage_froid", "nb_resultats"];
+
+async function journal(t, fn) {
+  const lignes = [];
+  const espion = t.mock.method(console, "log", (s) => lignes.push(s));
+  await fn();
+  espion.mock.restore();
+  return lignes.map((s) => { assert.equal(typeof s, "string"); assert.doesNotMatch(s, /\n/); return JSON.parse(s); });
+}
+
+test("journal D66 : une ligne par requête, clés exactes, aucun argument", async (t) => {
+  const SECRET = "requete-tres-particuliere-xyz42";
+  const lignes = await journal(t, async () => {
+    await rpc({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "claude-ai", version: "0.1.0" } } });
+    await rpc({ jsonrpc: "2.0", method: "notifications/initialized" });
+    await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
+    await appel("chercher_reference", { requete: SECRET, limite: 3 });
+    await appel("chercher_reference", { requete: "worktree" });
+    await appel("a_tester");
+    await appel("fiche_reference", { id: "claude-code-commandes-" + SECRET });
+    await appel(SECRET);
+    await rpc({ jsonrpc: "2.0", id: 5, method: "ping" });
+    await rpc({ jsonrpc: "2.0", id: 6, method: "resources/list" });
+  });
+  assert.equal(lignes.length, 10);
+  for (const l of lignes) assert.deepEqual(Object.keys(l), CLES_JOURNAL);
+  const brut = JSON.stringify(lignes);
+  assert.ok(!brut.includes(SECRET) && !brut.includes("worktree") && !brut.includes("claude-code-commandes"), "aucun argument dans le journal");
+  const [init, notif, liste, cherche0, cherche, aTester, fiche, inconnu, ping, autre] = lignes;
+  assert.deepEqual(init.client, { name: "claude-ai", version: "0.1.0" });
+  assert.equal(init.methode, "initialize"); assert.equal(init.outil, null);
+  assert.deepEqual([notif.methode, notif.statut, notif.client], ["autre", "ok", null]);
+  assert.deepEqual([liste.methode, liste.outil, liste.nb_resultats], ["tools/list", null, null]);
+  assert.deepEqual([cherche0.outil, cherche0.nb_resultats, cherche0.statut], ["chercher_reference", 0, "ok"]);
+  assert.ok(cherche.nb_resultats > 0 && cherche.client === null);
+  assert.equal(aTester.outil, "a_tester"); assert.equal(typeof aTester.nb_resultats, "number");
+  assert.deepEqual([fiche.outil, fiche.nb_resultats], ["fiche_reference", null]);
+  assert.deepEqual([inconnu.methode, inconnu.outil, inconnu.statut], ["tools/call", "inconnu", -32602]);
+  assert.deepEqual([ping.methode, autre.methode, autre.statut], ["ping", "autre", -32601]);
+  for (const l of lignes) { assert.equal(typeof l.duree_ms, "number"); assert.equal(l.demarrage_froid, false); }
+});
+
+test("journal D66 : démarrage à froid sur la première requête de l'instance seulement", async (t) => {
+  const { traiterJournalise } = await import("../api/mcp.js?instance-neuve");
+  const lignes = await journal(t, async () => {
+    await traiterJournalise({ jsonrpc: "2.0", id: 1, method: "ping" });
+    await traiterJournalise({ jsonrpc: "2.0", id: 2, method: "ping" });
+  });
+  assert.deepEqual(lignes.map((l) => l.demarrage_froid), [true, false]);
+});
+
+test("journal D66 : JSON invalide", async (t) => {
+  const lignes = await journal(t, async () => {
+    await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: "{pas du json" });
+  });
+  assert.deepEqual(lignes.map((l) => [l.methode, l.statut]), [["autre", -32700]]);
+});
