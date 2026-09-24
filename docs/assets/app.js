@@ -347,6 +347,7 @@
         if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
         for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
           e._ctx = typeof d.contexte_empreinte === "string" ? d.contexte_empreinte : null;
+          e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
           e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
           entrees.push(e);
         }
@@ -374,7 +375,7 @@
       verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"),
       e.commentee ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage || "")) : null,
       e.retiree ? badge("revise", "retirée de la documentation") : null,
-      e.commentee && e._ctx && e.contexte_empreinte !== e._ctx ? badge("perime", "commentaire antérieur au CONTEXTE actuel") : null));
+      badgeContexte(e)));
     c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
     if (e.groupe) c.append(el("div", { class: "meta", text: `${e.groupe} · mis à jour le ${dateFr(e.maj_le)}` }));
     if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));
@@ -389,6 +390,14 @@
         el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
     }
     return c;
+  }
+  // D64 : péremption par section de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
+  function badgeContexte(e) {
+    if (!e.commentee || !e._sections) return null;
+    if (e.contexte_sections === null || e.contexte_sections === undefined) return badge("anterieur", "antérieur à D64");
+    if (typeof e.contexte_sections !== "object") return null;
+    const changees = Object.keys(e.contexte_sections).filter((k) => e._sections[k] !== e.contexte_sections[k]);
+    return changees.length ? badge("perime", `commentaire à revoir : CONTEXTE ${changees.map((k) => "§" + k).join(", ")} modifié`) : null;
   }
   function choix(libelle, cle, options) {
     const s = el("select", { "aria-label": libelle });

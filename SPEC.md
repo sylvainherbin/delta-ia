@@ -179,6 +179,7 @@ S'il n'y a aucune nouveauté, le fichier du jour est quand même écrit, avec `e
 | `projets_concernes` | array | Noms de projets tirés de CONTEXTE.md |
 | `action` | object \| null | `{description, etapes, effort: "5min" \| "30min" \| "plus"}` |
 | `kb_refs` | array | Identifiants des entrées de la base de référence touchées ; `valider.py` vérifie qu'ils existent |
+| `contexte_sections` | object | D64 : `{clé de section de CONTEXTE.md: sha1}` des sections sur lesquelles reposent `pour_toi`, `impact` et `action` (`scripts/contexte.py --sections`), `{}` si aucune ; obligatoire pour les fichiers datés après le 24/09/2026 |
 
 ### 7.3 Index — `docs/data/<dossier>/index.json`
 
@@ -222,6 +223,7 @@ Chaque entrée naît en deux étapes (D40) :
 | `sources` | `[{url, libelle, officielle}]`, au moins une ; la première est la page d'extraction |
 | `commentee` | `false` à l'extraction, et de nouveau `false` quand `usage` ou `description_source` change dans la documentation (D44, D48) |
 | `contexte_empreinte` | sha1 de CONTEXTE.md au moment du commentaire, inscrit par `catalogue.py appliquer` ; `null` avant commentaire. Chaque fichier porte aussi l'empreinte du CONTEXTE.md courant : quand elles diffèrent, la page Référence signale « commentaire antérieur au CONTEXTE actuel », et les entrées `utiliser` et `tester` périmées sont réévaluées en priorité au prochain `/delta-kb` ou `$delta-kb` (30 au plus par lancement, en plus des lots) (D60) |
+| `contexte_sections` | D64 : `{clé de section de CONTEXTE.md: sha1}` des sections sur lesquelles s'appuie le commentaire, déclarées par l'agent (liste de clés, `scripts/contexte.py`) et résolues par `catalogue.py appliquer` ; `{}` si le jugement ne dépend pas de CONTEXTE. Une entrée n'est périmée que si le sha1 de l'une de ses sections a changé ou si la section a disparu : c'est cette règle, et non plus `contexte_empreinte`, qu'utilisent le lot `perimees` et la page Référence. `null` pour les commentaires antérieurs à D64 : affichés « antérieur à D64 », non réévalués en bloc ; seules les « utiliser » et « tester » sont revues, 30 par lancement, en citant leurs sections. Un nouveau projet (`###` sous CONTEXTE §2) fait relire une fois, en gabarit court, les « ignorer » des fonctionnalités et commandes (lot `nouveau-projet:<clé>`) |
 | `retiree` | `true` quand l'entrée a disparu d'une page extraite avec succès ; jamais supprimée |
 | `origine`, `groupe` | Documentation de `sources.yaml` et section de la page d'où vient l'entrée |
 | `maj_le` | AAAA-MM-JJ du dernier changement |
@@ -318,3 +320,4 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D60 | `contexte_empreinte` sur chaque entrée commentée ; signal sur la page Référence ; réévaluation prioritaire des `utiliser` et `tester` périmés | §7.4, skills |
 | D61 | Connecteur MCP distant en lecture seule (`mcp/`, Vercel) : cinq outils de consultation, données publiques uniquement, sans jeton, écriture ni déclenchement | §2, §4, §10 |
 | D63 | Comptes rendus de fin de tâche écrits par chaque agent dans `rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md` (en-tête : date et heure, agent, tâche, commits, contexte_empreinte), jamais commités | §4, skills, `CLAUDE.md`, `AGENTS.md` |
+| D64 | Péremption par section de CONTEXTE.md (`scripts/contexte.py`, `contexte_sections` sur les entrées commentées et les éléments quotidiens) ; migration sans invention (`null`, « antérieur à D64 ») ; repasse des « ignorer » pour un nouveau projet | §7.2, §7.4, skills |

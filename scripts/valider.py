@@ -34,7 +34,8 @@ CERTITUDES = {"officiel", "rapporte", "non_confirme"}
 IMPACTS = {"fort", "moyen", "faible", "nul"}
 EFFORTS = {"5min", "30min", "plus"}
 RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-DATE_D58 = "2026-09-23"  # fichiers quotidiens datés après ce jour : `contexte_empreinte` obligatoire
+DATE_D58 = "2026-09-23"
+DATE_D64 = "2026-09-24"  # éléments quotidiens datés après ce jour : `contexte_sections` obligatoire  # fichiers quotidiens datés après ce jour : `contexte_empreinte` obligatoire
 RE_SECRETS = [
     (re.compile(r"ghp_[A-Za-z0-9]{20,}"), "jeton GitHub (ghp_)"),
     (re.compile(r"github_pat_[A-Za-z0-9_]{20,}"), "jeton GitHub (github_pat_)"),
@@ -89,7 +90,7 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
     manquants = [c for c in obligatoires if c not in e]
     if manquants:
         r.erreur(ou, f"champs manquants : {manquants}")
-    inconnus = set(e) - set(obligatoires) - {"revision"}
+    inconnus = set(e) - set(obligatoires) - {"revision", "contexte_sections"}
     if inconnus:
         r.erreur(ou, f"champs inconnus : {sorted(inconnus)}")
     if not isinstance(e.get("id"), str) or not e.get("id"):
@@ -161,6 +162,8 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
                 r.erreur(ou, f"`action.effort` hors de {sorted(EFFORTS)} : {action['effort']!r}")
     if not isinstance(e.get("kb_refs"), list) or not all(isinstance(x, str) for x in e.get("kb_refs", [])):
         r.erreur(ou, "`kb_refs` doit être un tableau de chaînes")
+    if "contexte_sections" in e and (e["contexte_sections"] is None or not sections_valides(e["contexte_sections"])):
+        r.erreur(ou, "`contexte_sections` doit être {clé de section de CONTEXTE.md: sha1}, éventuellement vide (D64)")
     if "revision" in e and not isinstance(e["revision"], bool):
         r.erreur(ou, "`revision` doit être un booléen")
 
@@ -217,6 +220,8 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
     bruts: list[str] = []
     for i, e in enumerate(elements):
         verifier_element(e, i, perimetre, projets, r, ou)
+        if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
+            r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
         if isinstance(e, dict):
             if isinstance(e.get("id"), str):
                 ids.append(e["id"])
@@ -309,7 +314,7 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 # ----------------------------------------------------------------------------------------------- base de référence (D40, D41, SPEC §7.4)
 
 CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
-             "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "retiree",
+             "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "contexte_sections", "retiree",
              "origine", "groupe", "maj_le", "historique"}
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
 MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
@@ -395,6 +400,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
             ce = e["contexte_empreinte"]
             if ce is not None and not (isinstance(ce, str) and re.fullmatch(r"[0-9a-f]{40}", ce)):
                 r.erreur(o, "`contexte_empreinte` : sha1 de CONTEXTE.md (40 hexadécimaux) ou null")
+            if not sections_valides(e["contexte_sections"]):
+                r.erreur(o, "`contexte_sections` : null ou {clé de section: sha1} (D64)")
             if e["commentee"] is True and ce is None:
                 r.erreur(o, "entrée commentée sans `contexte_empreinte` (D60)")
             if e["commentee"] is True:
@@ -446,6 +453,11 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
             r.erreur(o, "`derniere_publiee` sans `source_derniere`")
         if not isinstance(l["detectee_le"], str) or "T" not in l["detectee_le"]:
             r.erreur(o, "`detectee_le` doit être un horodatage ISO 8601")
+
+
+def sections_valides(cs) -> bool:
+    return cs is None or (isinstance(cs, dict) and all(isinstance(k, str) and k and isinstance(v, str)
+                                                         and re.fullmatch(r"[0-9a-f]{40}", v) for k, v in cs.items()))
 
 
 def ids_kb(racine: Path, perimetre: str) -> set[str] | None:

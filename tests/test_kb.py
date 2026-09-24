@@ -477,13 +477,14 @@ def test_d60_empreinte_et_perimees(tmp_path):
     assert commenter(ent, "claude-code-commandes-a", contexte="a" * 40) == []
     assert commenter(ent, "claude-code-commandes-b", contexte="b" * 40) == []
     assert ent["claude-code-commandes-a"]["contexte_empreinte"] == "a" * 40
-    # le CONTEXTE courant est « b » : seule l'entrée commentée avec « a » est périmée
-    assert cat.perimees(ent, "b" * 40) == ["claude-code-commandes-a"]
-    ent["claude-code-commandes-a"]["recommandation"]["verdict"] = "ignorer"
-    assert cat.perimees(ent, "b" * 40) == [], "seuls utiliser et tester sont réévalués en priorité"
-    assert cat.perimees(ent, None) == []
-    beaucoup = {f"k{i}": {"commentee": True, "recommandation": {"verdict": "tester"}, "contexte_empreinte": "a" * 40} for i in range(40)}
-    assert len(cat.perimees(beaucoup, "b" * 40)) == 30
+    # D64 : la péremption ne dépend plus de l'empreinte du fichier entier mais des sections citées
+    ent["claude-code-commandes-a"]["contexte_sections"] = {"2.2": "a" * 40}
+    ent["claude-code-commandes-b"]["contexte_sections"] = {"2.2": "a" * 40}
+    assert cat.perimees(ent, {"2.2": "a" * 40, "3": "c" * 40}) == []
+    assert cat.perimees(ent, {"2.2": "z" * 40}) == ["claude-code-commandes-a", "claude-code-commandes-b"]
+    assert cat.perimees(ent, {}) == []
+    beaucoup = {f"k{i}": {"commentee": True, "recommandation": {"verdict": "tester"}, "contexte_sections": {"4": "a" * 40}} for i in range(40)}
+    assert len(cat.perimees(beaucoup, {"4": "b" * 40})) == 30
     # le fichier écrit porte l'empreinte du CONTEXTE.md courant
     (tmp_path / "CONTEXTE.md").write_text("contexte\n", encoding="utf-8")
     cat.ecrire(tmp_path, "claude", ent)
@@ -492,25 +493,34 @@ def test_d60_empreinte_et_perimees(tmp_path):
     assert d["contexte_empreinte"] == hashlib.sha1(b"contexte\n").hexdigest()
 
 
-def test_d60_catalogue_appliquer_inscrit_l_empreinte(racine_kb, monkeypatch, capsys):
+def test_d64_catalogue_appliquer_sections_et_peremption(racine_kb, monkeypatch, capsys):
     import catalogue as cli
-    import hashlib
     lancer_kb(racine_kb, monkeypatch)
-    (racine_kb / "CONTEXTE.md").write_text("### 2.1 trading-sim — x\n", encoding="utf-8")
+    ctx = racine_kb / "CONTEXTE.md"
+    ctx.write_text("# C\n\nProfil.\n\n## 2. Projets\n\n### 2.1 trading-sim — x\n\nA\n\n### 2.2 carnet — y\n\nB\n", encoding="utf-8")
     k = "claude-code-parametres-advisormodel"
     f = racine_kb / "c.json"
-    f.write_text(json.dumps({k: {"description": "Choisit le modèle qui conseille la session.", "statut_usage": "inconnu",
-                                 "recommandation": {"verdict": "tester", "pourquoi": "À tester sur trading-sim."}}}))
+    base = {"description": "Choisit le modèle qui conseille la session.", "statut_usage": "inconnu",
+            "recommandation": {"verdict": "tester", "pourquoi": "Essai sur trading-sim : `/advisor opus` pendant un audit."}}
+    f.write_text(json.dumps({k: base}))
+    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 1, "sections obligatoires"
+    assert "contexte_sections" in capsys.readouterr().err
+    f.write_text(json.dumps({k: {**base, "contexte_sections": ["9.9"]}}))
+    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 1
+    assert "sections inconnues" in capsys.readouterr().err
+    f.write_text(json.dumps({k: {**base, "contexte_sections": ["2.1"]}}))
     assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(racine_kb)]) == 0
     e = cat.charger(racine_kb, "claude")[k]
-    assert e["contexte_empreinte"] == hashlib.sha1((racine_kb / "CONTEXTE.md").read_bytes()).hexdigest()
+    assert list(e["contexte_sections"]) == ["2.1"] and len(e["contexte_sections"]["2.1"]) == 40
     import valider
     assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0
-    # CONTEXTE.md change : l'entrée devient prioritaire
-    (racine_kb / "CONTEXTE.md").write_text("### 2.1 trading-sim — y\n", encoding="utf-8")
     capsys.readouterr()
-    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(racine_kb)]) == 0
-    assert "perimees" in capsys.readouterr().out
+    # une autre section change : pas de péremption
+    ctx.write_text(ctx.read_text().replace("B\n", "B modifié\n"), encoding="utf-8")
+    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
+    assert json.loads(capsys.readouterr().out) == []
+    # la section citée change : périmée
+    ctx.write_text(ctx.read_text().replace("A\n", "A modifié\n"), encoding="utf-8")
     assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 0
     assert [x["id"] for x in json.loads(capsys.readouterr().out)] == [k]
 
@@ -538,3 +548,54 @@ def test_skills_d57_d58_d59_d60():
     for f in (racine / ".claude" / "skills" / "delta" / "SKILL.md", racine / "prompts" / "codex-delta.md"):
         t = f.read_text(encoding="utf-8")
         assert "contexte_empreinte" in t and "Constats et déductions (D59)" in t
+
+
+# --- D64 : sections de CONTEXTE ---------------------------------------------------------------------------------
+
+def test_d64_sections_du_contexte_reel_et_cles():
+    from deltalib.contexte import sections
+    s = sections("Intro\n\n## 1. Env\n\na\n\n### Sessions [observé]\n\nb\n\n## 2. Projets\n\n### 2.2 trading-sim — x\n\nc\n")
+    assert list(s) == ["preambule", "1", "1/sessions", "2", "2.2"]
+    assert s["2.2"]["parent"] == "2" and s["1/sessions"]["parent"] == "1"
+    reel = sections((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"))
+    assert {"preambule", "2.2", "3", "4"} <= set(reel)
+
+
+def test_d64_est_perime_et_ordre_du_lot():
+    from deltalib.contexte import est_perime
+    cour = {"2.2": "a" * 40, "3": "b" * 40}
+    assert est_perime({"2.2": "a" * 40}, cour) is False
+    assert est_perime({"2.2": "x" * 40}, cour) is True
+    assert est_perime({"9": "a" * 40}, cour) is True, "section disparue"
+    assert est_perime({}, cour) is False and est_perime(None, cour) is None
+    def e(v, cs):
+        return {"commentee": True, "recommandation": {"verdict": v}, "contexte_sections": cs}
+    ent = {"a-legacy": e("utiliser", None), "b-ok": e("utiliser", {"2.2": "a" * 40}), "c-perime": e("tester", {"3": "z" * 40}),
+           "d-ignorer": e("ignorer", None), "e-vide": e("tester", {})}
+    assert cat.perimees(ent, cour) == ["c-perime", "a-legacy"], "périmées d'abord, puis antérieures à D64 ; ni ignorer ni liste vide"
+
+
+def test_d64_nouveau_projet_repasse_des_ignorer(tmp_path):
+    ctx = tmp_path / "CONTEXTE.md"
+    ctx.write_text("## 2. Projets\n\n### 2.1 carnet — a\n\nx\n", encoding="utf-8")
+    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("P", "p", categorie="parametres")], {"doc-a"})
+    for kk in ent:
+        ent[kk].update(commentee=True, recommandation={"verdict": "ignorer", "pourquoi": "p"}, contexte_sections=None)
+    cat.ecrire(tmp_path, "claude", ent)
+    assert cat.nouveaux_projets(tmp_path, "claude") == [], "au premier passage, les projets présents sont connus"
+    ctx.write_text(ctx.read_text() + "\n### 2.2 trading-sim — b\n\ny\n", encoding="utf-8")
+    cat.ecrire(tmp_path, "claude", ent)
+    assert cat.nouveaux_projets(tmp_path, "claude") == ["2.2"]
+    assert cat.repasse_projet(ent, "2.2") == ["claude-code-commandes-a", "claude-code-commandes-b"], "paramètres exclus"
+    for kk in ("claude-code-commandes-a", "claude-code-commandes-b"):
+        ent[kk]["contexte_sections"] = {"2.2": "c" * 40}
+    cat.ecrire(tmp_path, "claude", ent)
+    assert cat.nouveaux_projets(tmp_path, "claude") == [], "repasse terminée : le projet devient connu"
+
+
+def test_d64_page_et_skills():
+    racine = Path(fetch.RACINE)
+    app = (racine / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
+    assert "antérieur à D64" in app and "contexte_sections" in app
+    for f in (".claude/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md", ".claude/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        assert "contexte_sections" in (racine / f).read_text(encoding="utf-8"), f

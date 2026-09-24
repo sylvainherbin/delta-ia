@@ -16,6 +16,7 @@ from datetime import date
 from pathlib import Path
 
 from ..dates import maintenant_iso
+from ..contexte import empreintes as empreintes_sections, est_perime, projets as projets_contexte
 from ..modeles import FormatInattendu, empreinte_contexte
 from .documentation import DocSource, lire_cache
 from .extracteurs import EXTRACTEURS
@@ -42,17 +43,53 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
     d = dossier(racine, perimetre)
     d.mkdir(parents=True, exist_ok=True)
     horodatage = maintenant_iso()
-    ctx = empreinte_contexte(racine)  # D60 : empreinte du CONTEXTE.md courant, comparée à celle de chaque commentaire
+    ctx = empreinte_contexte(racine)  # D60 : empreinte du fichier entier (historique)
+    courantes = empreintes_sections(racine)  # D64 : empreintes par section, base de la péremption
+    connus = projets_connus(racine, perimetre, entrees)
     for cat in CATEGORIES:
         liste = sorted((e for e in entrees.values() if e["categorie"] == cat), key=lambda e: e["id"])
         for e in liste:
             e.setdefault("contexte_empreinte", None)
+            e.setdefault("contexte_sections", None)
         doc = {"perimetre": perimetre, "categorie": cat, "maj_le": max((e["maj_le"] for e in liste), default=horodatage[:10]),
-               "contexte_empreinte": ctx, "total": len(liste), "commentees": sum(1 for e in liste if e.get("commentee")),
-               "entrees": liste}
+               "contexte_empreinte": ctx, "contexte_sections": courantes, "projets_connus": connus,
+               "total": len(liste), "commentees": sum(1 for e in liste if e.get("commentee")), "entrees": liste}
         tmp = d / f"{cat}.json.tmp"
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         tmp.replace(d / f"{cat}.json")
+
+
+def projets_connus(racine: Path, perimetre: str, entrees: dict[str, dict]) -> list[str]:
+    """D64 : sections de projet (`###` sous « ## 2. Projets ») déjà prises en compte par la base.
+
+    Au premier passage, ce sont les projets présents. Un nouveau projet y entre quand sa repasse des « ignorer »
+    (fonctionnalités et commandes) est terminée."""
+    precedent = None
+    f = dossier(racine, perimetre) / "commandes.json"
+    if f.exists():
+        precedent = json.loads(f.read_text(encoding="utf-8")).get("projets_connus")
+    actuels = projets_contexte(racine)
+    if precedent is None:
+        return sorted(actuels)
+    connus = set(precedent)
+    for k in actuels:
+        if k not in connus and not repasse_projet(entrees, k):
+            connus.add(k)
+    return sorted(connus)
+
+
+def repasse_projet(entrees: dict[str, dict], projet: str) -> list[str]:
+    """D64 : entrées « ignorer » des fonctionnalités et commandes pas encore relues à la lumière d'un nouveau projet."""
+    return sorted(k for k, e in entrees.items() if e.get("commentee") and not e.get("retiree")
+                  and e["categorie"] in ("fonctionnalites", "commandes")
+                  and (e.get("recommandation") or {}).get("verdict") == "ignorer"
+                  and projet not in (e.get("contexte_sections") or {}))
+
+
+def nouveaux_projets(racine: Path, perimetre: str) -> list[str]:
+    f = dossier(racine, perimetre) / "commandes.json"
+    connus = set(json.loads(f.read_text(encoding="utf-8")).get("projets_connus") or []) if f.exists() else set()
+    return [k for k in projets_contexte(racine) if connus and k not in connus]
 
 
 def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None
@@ -101,7 +138,7 @@ def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:
         "usage_nature": x.usage_nature, "exemple": None,
         "disponibilite": None, "statut_usage": "inconnu", "recommandation": None,
         "sources": [{"url": x.url, "libelle": x.libelle, "officielle": True}],
-        "commentee": False, "contexte_empreinte": None, "retiree": False, "origine": x.origine, "groupe": x.groupe,
+        "commentee": False, "contexte_empreinte": None, "contexte_sections": None, "retiree": False, "origine": x.origine, "groupe": x.groupe,
         "maj_le": jour, "historique": [{"date": jour, "changement": "ajoutée à l'inventaire"}],
     }
 
@@ -168,18 +205,37 @@ QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
 GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
 
 
-PERIMEES_MAX = 30  # D60 : réévaluations prioritaires par lancement, en plus des lots
+PERIMEES_MAX = 30  # D60, D64 : réévaluations prioritaires par lancement, en plus des lots
 
 
-def perimees(entrees: dict[str, dict], contexte: str | None, maximum: int = PERIMEES_MAX) -> list[str]:
-    """Entrées `utiliser` puis `tester` commentées avec un autre CONTEXTE.md que l'actuel (D60)."""
-    if not contexte:
+def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, maximum: int = PERIMEES_MAX) -> list[str]:
+    """D64 : entrées `utiliser` puis `tester` à revoir, 30 au plus.
+
+    D'abord celles dont une section citée a changé ou disparu, puis celles commentées avant D64
+    (`contexte_sections: null`), qui seront revues en citant leurs sections. Une entrée qui ne cite aucune
+    section (liste vide) n'est jamais périmée."""
+    if not courantes:
         return []
     rang = {"utiliser": 0, "tester": 1}
-    ids = [k for k, e in entrees.items() if e.get("commentee") and not e.get("retiree")
-           and (e.get("recommandation") or {}).get("verdict") in rang and e.get("contexte_empreinte") != contexte]
-    ids.sort(key=lambda k: (rang[entrees[k]["recommandation"]["verdict"]], k))
-    return ids[:maximum]
+    perimees_, anterieures = [], []
+    for k, e in entrees.items():
+        verdict = (e.get("recommandation") or {}).get("verdict")
+        if not e.get("commentee") or e.get("retiree") or verdict not in rang:
+            continue
+        etat = est_perime(e.get("contexte_sections"), courantes)
+        if etat is True:
+            perimees_.append(k)
+        elif etat is None:
+            anterieures.append(k)
+    cle = lambda k: (rang[entrees[k]["recommandation"]["verdict"]], k)
+    return (sorted(perimees_, key=cle) + sorted(anterieures, key=cle))[:maximum]
+
+
+ORDRE_LOTS = ("commandes", "fonctionnalites", "skills", "plugins", "mcp", "raccourcis", "parametres")  # D51
+QUARTS = ("parametres",)  # D50 : paramètres coupés en quarts
+GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D50 : lots regroupés
+
+
 
 
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
@@ -215,9 +271,11 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
 
 
 def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
-                           contexte: str | None = None) -> list[str]:
+                           contexte: str | None = None, resoudre=None) -> list[str]:
     """Applique {id: {description, statut_usage, recommandation, exemple?, disponibilite?}} ; jamais `usage`.
-    `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60)."""
+    `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
+    `resoudre` (D64) : fonction liste de clés -> {clé: sha1} ; quand elle est fournie, chaque commentaire doit citer
+    `contexte_sections` (liste, vide si le jugement ne dépend pas de CONTEXTE), stocké avec les empreintes."""
     jour = jour or date.today().isoformat()
     erreurs = []
     for k, c in commentaires.items():
@@ -225,7 +283,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         if e is None:
             erreurs.append(f"{k}: identifiant inconnu")
             continue
-        interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "disponibilite"}
+        interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "disponibilite", "contexte_sections"}
         if interdits:
             erreurs.append(f"{k}: champs non modifiables par le commentaire : {sorted(interdits)}")
             continue
@@ -239,8 +297,22 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         if not isinstance(r, dict) or r.get("verdict") not in VERDICTS or not str(r.get("pourquoi", "")).strip():
             erreurs.append(f"{k}: recommandation {{verdict, pourquoi}} invalide")
             continue
+        sections_citees = None
+        if resoudre is not None or "contexte_sections" in c:
+            cs = c.get("contexte_sections")
+            if not isinstance(cs, list) or not all(isinstance(x, str) for x in cs):
+                erreurs.append(f"{k}: `contexte_sections` doit être une liste de clés de CONTEXTE.md (vide si sans lien) (D64)")
+                continue
+            if resoudre is not None:
+                try:
+                    sections_citees = resoudre(cs)
+                except ValueError as err:
+                    erreurs.append(f"{k}: {err}")
+                    continue
         deja = e.get("commentee")
-        e.update({kk: c[kk] for kk in c})
+        e.update({kk: c[kk] for kk in c if kk != "contexte_sections"})
+        if sections_citees is not None:
+            e["contexte_sections"] = sections_citees
         e["commentee"] = True
         e["contexte_empreinte"] = contexte
         e["maj_le"] = jour

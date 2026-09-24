@@ -255,3 +255,24 @@ def test_d58_contexte_empreinte(racine, capsys):
     assert r.ok, r.erreurs
     v.verifier_quotidien(recent, "claude", {"carnet", "trading-sim", "chatgpt-trading-sim"}, r)
     assert any("D58" in e for e in r.erreurs)
+
+
+def test_d64_contexte_sections_des_elements(racine, capsys):
+    import valider as v
+    chemin, q = _quotidien_valide(racine)
+    q.pop("contexte_empreinte", None)
+    q["contexte_empreinte"] = "0" * 40
+    projets = {"carnet", "trading-sim", "chatgpt-trading-sim"}
+    f24 = racine / "docs" / "data" / "claude" / "2026-09-24.json"
+    f25 = racine / "docs" / "data" / "claude" / "2026-09-25.json"
+    f24.write_text(json.dumps({**q, "date": "2026-09-24"}, ensure_ascii=False))
+    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
+    r = v.Rapport(); v.verifier_quotidien(f24, "claude", projets, r); assert r.ok, r.erreurs
+    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert any("D64" in e for e in r.erreurs)
+    for e in q["elements"]:
+        e["contexte_sections"] = {"2.2": "a" * 40}
+    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
+    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert r.ok, r.erreurs
+    q["elements"][0]["contexte_sections"] = {"2.2": "court"}
+    f25.write_text(json.dumps({**q, "date": "2026-09-25"}, ensure_ascii=False))
+    r = v.Rapport(); v.verifier_quotidien(f25, "claude", projets, r); assert any("contexte_sections" in e for e in r.erreurs)

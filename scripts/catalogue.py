@@ -6,10 +6,13 @@ Usage :
   catalogue.py inventaire [--perimetre P]                      comptes par produit, catégorie et gabarit
   catalogue.py lots --perimetre P                              découpage en lots (catégorie ou demi-catégorie, D46)
   catalogue.py a-commenter --perimetre P --lot LOT [--tout]    entrées du lot à commenter (JSON sur la sortie)
-  catalogue.py a-commenter --perimetre P --lot perimees        30 entrées `utiliser` ou `tester` au plus, commentées avec
-                                                               un autre CONTEXTE.md (D60), à réévaluer en priorité
+  catalogue.py a-commenter --perimetre P --lot perimees        30 entrées `utiliser` ou `tester` au plus dont une section
+                                                               de CONTEXTE citée a changé, puis antérieures à D64 (D64)
+  catalogue.py a-commenter --perimetre P --lot nouveau-projet:2.6   « ignorer » des fonctionnalités et commandes à relire
+                                                               pour un nouveau projet de CONTEXTE §2 (D64)
   catalogue.py appliquer --perimetre P --fichier commentaires.json
-      commentaires = {id: {description, statut_usage, recommandation: {verdict, pourquoi}, exemple?, disponibilite?}}
+      commentaires = {id: {description, statut_usage, recommandation: {verdict, pourquoi}, contexte_sections: [clés],
+                           exemple?, disponibilite?}}   (clés : `scripts/contexte.py`, D64)
       `usage` n'est jamais modifiable par un commentaire.
 """
 
@@ -26,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deltalib.kb import catalogue as cat  # noqa: E402
 from deltalib.kb.documentation import charger_documentation  # noqa: E402
 from deltalib.kb.modeles import CATEGORIES, gabarit_de  # noqa: E402
+from deltalib.contexte import empreintes as empreintes_sections, resoudre as resoudre_sections  # noqa: E402
 from deltalib.modeles import empreinte_contexte  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -71,22 +75,28 @@ def main(argv=None) -> int:
     entrees = cat.charger(a.racine, a.perimetre)
     contexte = empreinte_contexte(a.racine)
     if a.commande == "lots":
-        per = cat.perimees(entrees, contexte)
+        per = cat.perimees(entrees, empreintes_sections(a.racine))
         if per:
-            print(f"{'perimees':<22} {'(D60)':<8} {len(per):>4} entrées, {len(per):>4} à réévaluer en priorité")
+            print(f"{'perimees':<22} {'(D64)':<8} {len(per):>4} entrées, {len(per):>4} à réévaluer en priorité")
+        for k in cat.nouveaux_projets(a.racine, a.perimetre):
+            n = len(cat.repasse_projet(entrees, k))
+            print(f"{'nouveau-projet:' + k:<22} {'court':<8} {n:>4} entrées « ignorer » à relire (D64)")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
     if a.commande == "a-commenter":
         if a.lot == "perimees":
-            lot = {"ids": cat.perimees(entrees, contexte)}
+            lot = {"ids": cat.perimees(entrees, empreintes_sections(a.racine))}
+            a.tout = True
+        elif a.lot and a.lot.startswith("nouveau-projet:"):
+            lot = {"ids": cat.repasse_projet(entrees, a.lot.split(":", 1)[1])}
             a.tout = True
         else:
             lot = next((l for l in cat.lots(entrees, a.perimetre) if l["lot"] == a.lot), None)
         if lot is None:
             p.error(f"lot inconnu : {a.lot!r} (voir `catalogue.py lots`)")
         champs = ["id", "produit", "categorie", "nom", "gabarit", "usage", "usage_nature", "description_source", "sources", "groupe",
-                  "description", "statut_usage", "recommandation", "exemple", "contexte_empreinte"]
+                  "description", "statut_usage", "recommandation", "exemple", "contexte_empreinte", "contexte_sections"]
         sortie = [{k: entrees[i].get(k) for k in champs} for i in lot["ids"] if a.tout or not entrees[i].get("commentee")]
         json.dump(sortie, sys.stdout, ensure_ascii=False, indent=1)
         print()
@@ -94,7 +104,8 @@ def main(argv=None) -> int:
     if a.commande == "appliquer":
         if not a.fichier:
             p.error("--fichier requis")
-        erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte)
+        erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,
+                                             resoudre=lambda cles: resoudre_sections(a.racine, cles))
         for e in erreurs:
             print(f"  ! {e}", file=sys.stderr)
         if erreurs:
