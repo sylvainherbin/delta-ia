@@ -532,6 +532,9 @@ def test_skills_d57_d58_d59_d60():
     for t in (kb_cx, kb_cc):
         assert "Calibrage du verdict (D57)" in t and "Constats et déductions (D59)" in t and "--lot perimees" in t
     assert "recalibrage commandes" in kb_cx and "recalibrage commandes" not in kb_cc
+    assert "recalibrage tester" in kb_cx and "recalibrage tester" not in kb_cc
+    for t in (kb_cx, kb_cc):
+        assert "Calibrage de `tester` (D57 étendu)" in t and "codex exec --output-schema" in t
     for f in (racine / ".claude" / "skills" / "delta" / "SKILL.md", racine / "prompts" / "codex-delta.md"):
         t = f.read_text(encoding="utf-8")
         assert "contexte_empreinte" in t and "Constats et déductions (D59)" in t
