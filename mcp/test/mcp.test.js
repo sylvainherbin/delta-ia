@@ -78,7 +78,7 @@ test("chercher_reference et fiche_reference", async () => {
 
 test("etat_versions et a_tester", async () => {
   const v = (await appel("etat_versions")).corps.result.structuredContent;
-  assert.deepEqual(v.outils.map((o) => o.outil), ["Claude Code", "Codex CLI", "ChatGPT Desktop", "Claude Desktop"]);
+  assert.deepEqual(v.outils.map((o) => o.outil), ["Claude Code", "Codex (app ChatGPT)", "Codex CLI (terminal, non utilisée)", "ChatGPT Desktop", "Claude Desktop"]);
   const a = (await appel("a_tester")).corps.result;
   assert.equal(a.isError, false);
 });

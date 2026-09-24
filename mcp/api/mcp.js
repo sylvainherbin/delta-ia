@@ -142,7 +142,7 @@ const OUTILS = {
       limite: { type: "integer", minimum: 1, maximum: 20 } }, additionalProperties: false } },
   fiche_reference: { f: ficheReference, description: "Fiche complète d'une entrée de la base de référence Delta, par identifiant (donné par chercher_reference).",
     inputSchema: { type: "object", required: ["id"], properties: { id: { type: "string" } }, additionalProperties: false } },
-  etat_versions: { f: etatVersions, description: "Versions installées sur la machine de Sylvain (Claude Code, Codex CLI, ChatGPT Desktop, Claude Desktop), dernière version publiée connue de Delta, à jour ou en retard.",
+  etat_versions: { f: etatVersions, description: "Versions installées sur la machine de Sylvain (Claude Code, Codex de l'app ChatGPT, Codex CLI autonome non utilisée, ChatGPT Desktop, Claude Desktop), dernière version publiée connue de Delta ; statut à jour, en retard, inconnu, embarqué (non comparé) ou non utilisée.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   a_tester: { f: aTester, description: "Actions proposées par Delta sur les 30 derniers jours (étapes et effort), les plus importantes d'abord.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },

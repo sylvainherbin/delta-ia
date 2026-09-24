@@ -472,12 +472,16 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
         if not isinstance(l, dict) or not attendus <= set(l) or set(l) - attendus - {"raison", "note"}:
             r.erreur(o, f"champs attendus {sorted(attendus)} (+ raison, note)")
             continue
-        if l["statut"] not in ("a_jour", "en_retard", "inconnu"):
+        if l["statut"] not in ("a_jour", "en_retard", "inconnu", "embarque", "non_utilise"):
             r.erreur(o, f"statut inconnu : {l['statut']!r}")
         if l["version"] is None and not l.get("raison"):
             r.erreur(o, "version introuvable sans `raison`")
-        if (l["version"] is None or l["derniere_publiee"] is None) and l["statut"] != "inconnu":
+        if l["statut"] in ("a_jour", "en_retard") and (l["version"] is None or l["derniere_publiee"] is None):
             r.erreur(o, "sans version installée ou publiée, le statut doit être `inconnu`")
+        if l["statut"] in ("embarque", "non_utilise") and (l["version"] is None or not l.get("note")):
+            r.erreur(o, f"statut `{l['statut']}` : version installée et `note` obligatoires")
+        if l["statut"] == "embarque" and l["derniere_publiee"] is not None:
+            r.erreur(o, "statut `embarque` : non comparé, `derniere_publiee` doit être null")
         if l["derniere_publiee"] is not None and not l["source_derniere"]:
             r.erreur(o, "`derniere_publiee` sans `source_derniere`")
         if not isinstance(l["detectee_le"], str) or "T" not in l["detectee_le"]:

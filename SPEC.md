@@ -239,7 +239,7 @@ Génération initiale (D46, D50, D51) : par lots (`scripts/catalogue.py lots`), 
 ## 8. Site
 
 Pages ou onglets :
-- **Aujourd'hui** : le bloc « Tes outils » (versions installées de Claude Code, Codex CLI, ChatGPT Desktop et Claude Desktop, dernière version publiée connue de Delta, à jour, en retard ou inconnu ; `docs/data/versions.json`, D54 à D56), les synthèses du jour par périmètre, puis les éléments triés par impact, avec un filtre par produit.
+- **Aujourd'hui** : le bloc « Tes outils » (versions installées de Claude Code, du Codex de l'app ChatGPT, de la Codex CLI autonome, de ChatGPT Desktop et de Claude Desktop, dernière version publiée connue de Delta, à jour, en retard ou inconnu ; le Codex de l'app suit le canal de l'app et vaut `embarque`, non comparé ; la CLI autonome, installée mais non utilisée, vaut `non_utilise`, sans alerte de retard ; `docs/data/versions.json`, D54 à D56), les synthèses du jour par périmètre, puis les éléments triés par impact, avec un filtre par produit.
 - **Changelogs** : par produit, en ordre chronologique.
 - Sur Aujourd'hui, Changelogs et Actu, les éléments d'impact `nul` sont masqués par défaut, avec une bascule « afficher les éléments sans impact (n) » mémorisée dans le localStorage.
 - **Actu IA**.

@@ -163,7 +163,7 @@
   }
 
   /* ---------- Tes outils : versions installées (D54 à D56) ---------- */
-  const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu" };
+  const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu", embarque: "embarqué", non_utilise: "non utilisée" };
   async function chargerVersions() {
     if (etat.versions !== undefined) return;
     try {
@@ -179,13 +179,11 @@
       if (!l || typeof l !== "object") continue;
       const statut = STATUTS_VERSION[l.statut] ? l.statut : "inconnu";
       const note = [texte(l.raison), texte(l.note)].filter(Boolean).join(" ");
-      // Codex CLI est livré avec l'app de bureau : il se met à jour avec elle
-      const conseil = l.outil === "Codex CLI" && statut === "en_retard" ? el("span", { class: "conseil", text: "→ mettre à jour ChatGPT Desktop" }) : null;
       corps.append(el("tr", { class: note ? "avec-note" : null },
         el("td", { text: texte(l.outil, "?") }),
         el("td", { class: "v", text: l.version ? String(l.version) : "introuvable" }),
         el("td", { class: "v col-derniere", text: l.derniere_publiee ? String(l.derniere_publiee) : "—" }),
-        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]), conseil)));
+        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]))));
       if (note) corps.append(el("tr", { class: "ligne-note" }, el("td", { colspan: "4", text: note })));
     }
     const date = lignes.map((l) => l && l.detectee_le).filter(Boolean).sort().pop();
@@ -195,7 +193,7 @@
         el("thead", null, el("tr", null, el("th", { text: "Outil" }), el("th", { text: "Installée" }),
           el("th", { class: "col-derniere", text: "Dernière publiée" }), el("th", { text: "Statut" }))),
         corps),
-      el("p", { class: "pied-outils", text: `Relevé le ${date ? horodatageFr(date) : "?"} sur la machine de Sylvain. « Dernière publiée » vient des sources suivies par Delta ; sans source, le statut reste inconnu.` }));
+      el("p", { class: "pied-outils", text: `Relevé le ${date ? horodatageFr(date) : "?"} sur la machine de Sylvain. « Dernière publiée » vient des sources suivies par Delta ; sans source, le statut reste inconnu. Le Codex de l'app ChatGPT suit le canal de l'app : il n'est pas comparé.` }));
   }
 
   /* ---------- rendu d'un élément ---------- */

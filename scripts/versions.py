@@ -3,8 +3,12 @@
 
 Détection sur la machine, sans chemin supposé :
 - Claude Code : `claude --version` (exécutable trouvé dans le PATH ou via ~/.local/bin, emplacement de l'installateur natif) ;
-- Codex CLI : `codex --version` si `codex` est dans le PATH, sinon l'exécutable `codex` livré par le paquet `chatgpt`
-  (liste des fichiers du paquet donnée par `dpkg -L`) ;
+- Codex de l'app ChatGPT (celui qu'utilise Sylvain) : l'exécutable `codex` livré par le paquet `chatgpt` (liste des
+  fichiers donnée par `dpkg -L`). Il suit le canal de l'app (pré-versions propres, ex. 0.155.0-alpha.16.4 avec l'app
+  26.917) : statut `embarque`, jamais comparé aux releases stables ;
+- Codex CLI autonome (terminal) : `codex` du PATH, sinon des installations globales npm de nvm
+  (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable de l'app. Installée
+  mais non utilisée [déclaré] : statut `non_utilise`, dernière stable donnée pour information, sans alerte de retard ;
 - ChatGPT Desktop, Claude Desktop : version du paquet Debian (`dpkg-query -W`).
 Une version introuvable vaut null, avec la raison.
 
@@ -66,20 +70,40 @@ def claude_code() -> tuple[str | None, str, str | None]:
     return m.group(0), f"`{exe} --version`", None
 
 
-def codex_cli() -> tuple[str | None, str, str | None]:
-    exe = shutil.which("codex")
-    origine = "PATH"
-    if not exe and shutil.which("dpkg"):
-        fichiers, _ = _executer(["dpkg", "-L", "chatgpt"])
-        exe = next((f for f in (fichiers or "").splitlines() if f.endswith("/codex") and os.access(f, os.X_OK)), None)
-        origine = "paquet chatgpt (dpkg -L)"
-    if not exe:
-        return None, "codex --version", "exécutable `codex` introuvable (PATH, paquet chatgpt)"
-    sortie, err = _executer([exe, "--version"])
+def _exe_codex_app() -> str | None:
+    if not shutil.which("dpkg"):
+        return None
+    fichiers, _ = _executer(["dpkg", "-L", "chatgpt"])
+    return next((f for f in (fichiers or "").splitlines() if f.endswith("/codex") and os.access(f, os.X_OK)), None)
+
+
+def _version_codex(exe: str, origine: str) -> tuple[str | None, str, str | None]:
+    cmd = [exe, "--version"]
+    voisin = os.path.join(os.path.dirname(exe), "node")  # script npm `#!/usr/bin/env node`, node de nvm hors du PATH
+    if not shutil.which("node") and os.access(voisin, os.X_OK):
+        cmd = [voisin, exe, "--version"]
+    sortie, err = _executer(cmd)
     m = _RE_SEMVER.search(sortie or "")
     if not m:
         return None, f"{exe} --version", err or f"sortie non reconnue : {sortie!r}"
     return m.group(0), f"`{exe} --version` ({origine})", None
+
+
+def codex_app() -> tuple[str | None, str, str | None]:
+    exe = _exe_codex_app()
+    if not exe:
+        return None, "dpkg -L chatgpt", "exécutable `codex` introuvable dans le paquet chatgpt"
+    return _version_codex(exe, "paquet chatgpt, dpkg -L")
+
+
+def codex_terminal() -> tuple[str | None, str, str | None]:
+    app = _exe_codex_app()
+    du_path = shutil.which("codex")
+    candidats = [du_path] + sorted(glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/codex")), reverse=True)
+    for exe in candidats:
+        if exe and os.access(exe, os.X_OK) and (not app or os.path.realpath(exe) != os.path.realpath(app)):
+            return _version_codex(exe, "PATH" if exe == du_path else "npm global, nvm")
+    return None, "codex --version", "CLI `codex` autonome introuvable (PATH, ~/.nvm/versions/node/*/bin)"
 
 
 # ----------------------------------------------------------------------------------------------- dernière version publiée
@@ -159,13 +183,14 @@ def detecter(racine: Path, client=None) -> list[dict]:
     horodatage = maintenant_iso()
     res = []
 
-    def ligne(outil, trouve, publiees, source, composantes=None, note=None, raison_source=None):
+    def ligne(outil, trouve, publiees, source, composantes=None, note=None, raison_source=None, statut=None):
         version, methode, raison = trouve
         derniere = publiees[-1] if publiees else None
         raison = "; ".join(x for x in (raison, None if derniere else raison_source) if x) or None
         d = {"outil": outil, "version": version, "detectee_le": horodatage, "methode": methode,
              "derniere_publiee": derniere, "source_derniere": source if derniere else None,
-             "statut": comparer(version, derniere, composantes)}
+             # `statut` imposé (embarque, non_utilise) : pas de comparaison ; sans version installée, inconnu
+             "statut": (statut if version else "inconnu") if statut else comparer(version, derniere, composantes)}
         if raison:
             d["raison"] = raison
         if note:
@@ -175,12 +200,18 @@ def detecter(racine: Path, client=None) -> list[dict]:
     ligne("Claude Code", claude_code(),
           _stables(versions_publiees(racine, "claude-code-changelog", r"claude-code-(\d+\.\d+\.\d+)", "claude")),
           "claude-code-changelog")
-    ligne("Codex CLI", codex_cli(),
-          _stables(versions_publiees(racine, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai")),
-          "codex-cli-releases",
-          note="Livré avec l'app de bureau ChatGPT : il se met à jour avec elle, pas séparément.")
-    app, raison_app = versions_app_chatgpt(racine, client)
     paquet_chatgpt = paquet_dpkg("chatgpt")
+    ligne("Codex (app ChatGPT)", codex_app(), [], None, statut="embarque",
+          note=("Codex utilisé par Sylvain [déclaré], livré avec l'app ChatGPT"
+                + (f" {paquet_chatgpt[0]}" if paquet_chatgpt[0] else "")
+                + " : il suit le canal de l'app, avec ses propres pré-versions, et se met à jour avec elle ;"
+                  " non comparé aux releases stables de codex-cli-releases."))
+    stables_cli = _stables(versions_publiees(racine, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai"))
+    ligne("Codex CLI (terminal, non utilisée)", codex_terminal(), stables_cli, "codex-cli-releases", statut="non_utilise",
+          note="CLI autonome installée mais non utilisée [déclaré] : "
+               + (f"dernière stable publiée {stables_cli[-1]}, pour information, " if stables_cli else "")
+               + "sans alerte de retard.")
+    app, raison_app = versions_app_chatgpt(racine, client)
     ligne("ChatGPT Desktop", paquet_chatgpt, app, "openai-changelog-codex-app", composantes=2,
           note=note_app(paquet_chatgpt, app),
           raison_source=raison_app)
