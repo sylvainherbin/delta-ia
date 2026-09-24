@@ -314,11 +314,14 @@ cette consultation en pratique.
    relais d'une mission vers herbin-trading, revue machine d'une campagne, synchronisation git.
 6. **Règles Codex** [observé] : `default.rules` contient un script complet autorisé tel quel,
    inutile et illisible ; mieux vaut des préfixes courts.
-7. **Profils Codex réalignés le 23/09** [observé] : le défaut, `audit` et `rapide` sont sur
-   `gpt-6-sol` ; `securite` reste sur Daybreak par choix [déclaré]. Point de vigilance :
-   le défaut de `config.toml` avait changé dans la journée, probablement depuis l'app de
-   bureau [déduit] ; si le sélecteur de modèle de l'app réécrit ce fichier, vérifier que le
-   réglage tient.
+7. **App Codex : le modèle choisi dans une conversation semble devenir le défaut global**
+   [déduit] : Sylvain a choisi `gpt-6-astra`, effort `high`, dans une conversation de l'app
+   Codex le 24/09 [déclaré], et ce choix est devenu la valeur de `modele_par_defaut` /
+   `effort_par_defaut` de `config.toml` [observé : `docs/data/etat.json`]. Le mécanisme
+   précis (portée du changement — juste la conversation ou tout `config.toml` — et
+   déclencheur) reste à confirmer au prochain changement de modèle dans l'app. État
+   courant des profils et défauts Codex : `docs/data/etat.json` (`outils.Codex`), jamais
+   de valeur en dur ici.
 8. **Pas d'AGENTS.md sur trading-sim** : c'est un choix délibéré, à ne pas « corriger »
    [observé : mémoire].
 9. **Connecteurs non utilisés** [observé] : Gmail, Drive, Calendar, Canva et GoDaddy sont
