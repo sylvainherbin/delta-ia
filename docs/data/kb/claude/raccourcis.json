@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "raccourcis",
- "maj_le": "2026-09-24",
- "contexte_empreinte": "9e4923a06a8fdb4186a0dec7b98dc6fb6b3e6967",
+ "maj_le": "2026-09-25",
+ "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+  "optimisation.pistes": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
   "usage.hors-machine": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8"
  },
  "contexte_deprecies": [],
@@ -721,8 +721,8 @@
    "categorie": "raccourcis",
    "nom": "Ctrl+Enter",
    "gabarit": "court",
-   "description": "Interrompt le tour en cours pour envoyer tout de suite les messages en attente et le brouillon.",
-   "description_source": "Send queued messages now — Interrupts the current turn so your queued messages, and your draft with them, go out right away instead of when the turn ends. In shell mode, the key queues your command without interrupting. In terminals that don't report extended keys, Ctrl+Enter arrives as plain Enter; Ctrl+X Ctrl+S works in any terminal. Requires Claude Code v2.1.275 or later",
+   "description": "Envoie tout de suite les messages en file et le brouillon ; dans un terminal qui ne transmet pas les touches étendues, Ctrl+Enter arrive comme Entrée et `Ctrl+X Ctrl+S` le remplace (2.1.275 et plus).",
+   "description_source": "Send queued messages now — Sends your queued messages, and your draft with them, right away. When Claude Code sends what you queued covers what happens to the turn Claude is working on. In shell mode, the key only queues your command. In terminals that don't report extended keys, Ctrl+Enter arrives as plain Enter; Ctrl+X Ctrl+S works in any terminal. Requires Claude Code v2.1.275 or later",
    "usage": "Ctrl+Enter or Ctrl+X Ctrl+S",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -730,7 +730,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Au clavier dans une session tmux, il enverrait tout de suite une consigne corrigée sans attendre la fin du tour ; sans objet depuis l'iPhone."
+    "pourquoi": "Tes sessions tournent sous tmux, qui pourrait ne pas transmettre Ctrl+Enter : dans herbin-dev, mettre un message en file pendant un tour puis taper `Ctrl+X Ctrl+S` doit l'envoyer sans attendre la fin."
    },
    "sources": [
     {
@@ -743,7 +743,7 @@
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -752,10 +752,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "Sessions Claude Code lancées dans tmux par des services systemd."
+    }
+   }
   },
   {
    "id": "claude-code-raccourcis-ctrl-g",
@@ -973,8 +986,8 @@
    "categorie": "raccourcis",
    "nom": "Ctrl+S",
    "gabarit": "court",
-   "description": "Met de côté le texte saisi et vide le prompt ; une nouvelle pression sur un prompt vide le restaure.",
-   "description_source": "Stash or restore prompt — With text in the input, stashes it and clears the prompt. Pressed again on an empty prompt, restores the stashed text, cursor position, and pasted content",
+   "description": "Met de côté le texte saisi et vide le prompt ; une nouvelle pression sur un prompt vide restaure le texte, le curseur, le contenu collé et le mode (une commande `!` revient en mode shell).",
+   "description_source": "Stash or restore prompt — With text in the input, stashes it and clears the prompt. Pressed again on an empty prompt, restores the stashed text, cursor position, pasted content, and input mode, so a stashed ! shell command comes back in shell mode",
    "usage": "Ctrl+S",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -982,7 +995,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Raccourci d'édition ou de navigation courant, sans lien avec un projet ou une habitude décrits dans CONTEXTE.md."
+    "pourquoi": "Raccourci d'édition au clavier, sans lien avec un projet ou une habitude décrits dans CONTEXTE.md, et sans objet depuis l'iPhone."
    },
    "sources": [
     {
@@ -995,7 +1008,7 @@
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1004,10 +1017,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Pilotage principal depuis l'iPhone, où ce raccourci clavier ne sert pas."
+    }
+   }
   },
   {
    "id": "claude-code-raccourcis-ctrl-t",

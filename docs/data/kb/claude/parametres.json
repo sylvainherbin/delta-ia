@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-09-24",
- "contexte_empreinte": "9e4923a06a8fdb4186a0dec7b98dc6fb6b3e6967",
+ "maj_le": "2026-09-25",
+ "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+  "optimisation.pistes": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
   "usage.hors-machine": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8"
  },
  "contexte_deprecies": [],
@@ -4897,16 +4897,16 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_AUTO_MODE_SERVER",
    "gabarit": "court",
-   "description": "Variable qui décide si le classificateur du mode auto tourne côté serveur ; depuis 2.1.281, elle s'applique aussi sur une connexion directe à l'API.",
-   "description_source": "Controls whether Claude Code asks the server to review auto mode actions. When unset, Claude Code asks the server on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS, and when you point ANTHROPIC_BASE_URL at an LLM gateway or proxy. Set to 0 to use Claude Code's own classifier requests instead. Not read on a direct connection to the Anthropic API. Requires Claude Code v2.1.271 or later; asking the server by default requires v2.1.278 or later",
+   "description": "Variable qui décide si Claude Code demande au serveur de juger les actions du mode auto ; `0` revient aux requêtes du classificateur propre à Claude Code (2.1.271 et plus, 2.1.281 et plus sur une connexion directe à l'API).",
+   "description_source": "Controls whether Claude Code asks the server to review auto mode actions. Set to 0 to use Claude Code's own classifier requests instead. On a direct connection to the Anthropic API, requires v2.1.281 or later. The linked section lists which sessions ask the server when the variable is unset, and from which version. Requires Claude Code v2.1.271 or later",
    "usage": "CLAUDE_CODE_AUTO_MODE_SERVER",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Sur un abonnement Max, le choix du classificateur n'est pas décrit ; rien à régler tant que le mode auto ne pose pas d'autre problème que les blocages connus."
+    "verdict": "tester",
+    "pourquoi": "Si le classificateur du mode auto bloque encore une écriture système sur herbin-mint, relancer la session avec `CLAUDE_CODE_AUTO_MODE_SERVER=0` permettrait de voir si l'autre classificateur tranche autrement."
    },
    "sources": [
     {
@@ -4919,7 +4919,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4928,10 +4928,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Friction récurrente : le classificateur du mode auto bloque certaines écritures système."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-bash-edit-diff",
