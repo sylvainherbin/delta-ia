@@ -1,6 +1,6 @@
 # Delta — passage quotidien (Codex, périmètre `openai`)
 
-Tu exécutes le passage quotidien de Delta pour le périmètre `openai` (produits `chatgpt` et `codex`). Lis d'abord intégralement `SPEC.md`, `REGLES.md` (qui prime sur tout le reste) et `CONTEXTE.md`. Tu n'écris que dans `docs/data/openai/`, `docs/data/kb/openai/` et `state/openai.json`. Aucun code n'est modifié pendant un passage.
+Tu exécutes le passage quotidien de Delta pour le périmètre `openai` (produits `chatgpt` et `codex`). Lis d'abord intégralement `SPEC.md`, `REGLES.md` (qui prime sur tout le reste), `CONTEXTE.md` et `PROGRESSION.md`. Tu n'écris que dans `docs/data/openai/`, `docs/data/kb/openai/` et `state/openai.json`. Aucun code n'est modifié pendant un passage.
 
 ## 0. Préparation
 
@@ -34,6 +34,7 @@ Le centre d'aide ChatGPT (`chatgpt-release-notes`) est bloqué (403). Les notes 
 - `sources_en_echec` : recopiées du brut.
 - **Empreinte du contexte (D58)** : le fichier porte `contexte_empreinte`, le sha1 de CONTEXTE.md au moment de la synthèse (`sha1sum CONTEXTE.md | cut -c1-40`). À la fusion avec un fichier du jour existant, si son `contexte_empreinte` diffère de l'empreinte actuelle, réévalue les `pour_toi`, `impact` et `action` de **tous** les éléments du jour, pas seulement des nouveaux, puis mets l'empreinte à jour.
 - **Sections citées (D64-bis)** : chaque élément porte `contexte_sections`, les sections de CONTEXTE.md sur lesquelles reposent `pour_toi`, `impact` et `action`, au format `{ctx-id: {sha1, pourquoi}}` : `.venv/bin/python scripts/contexte.py --sections projet.trading-sim,config.codex` donne le gabarit avec les sha1, tu remplis chaque `pourquoi` (une ligne, 160 caractères au plus). Cite le ctx-id le plus précis, jamais une section au corps vide (titre seul) : sa sous-section ; `{}` si l'élément ne dépend pas de CONTEXTE. `valider.py` refuse un ctx-id inconnu et un pourquoi vide.
+- **Profondeur selon PROGRESSION.md (D67)** : lis aussi `PROGRESSION.md` (lecture seule) pour doser la profondeur de `pour_toi` et de `action` : sur un point **acquis**, pas de réexplication, va droit à ce qui change ; sur un point **à travailler** ou **en cours**, sois plus détaillé (pourquoi, étape par étape, comment vérifier). Ce fichier n'agit ni sur `impact`, ni sur le choix, ni sur le tri des éléments, et il n'a pas d'empreinte : aucun champ ne le cite.
 - **Constats et déductions (D59)** : un `pour_toi` n'affirme sur la machine, les sessions ou les projets de Sylvain que ce que CONTEXTE.md dit explicitement ; une déduction se formule au conditionnel (« si tes campagnes saturent la mémoire… »), jamais comme un constat. Contre-exemple du 23/09 : « ta machine est souvent sous pression mémoire pendant les campagnes », alors que la campagne R4 a tourné sans swap ni protection mémoire. Relis dans CONTEXTE.md, au moment d'écrire, chaque nombre que tu en tires (sessions, versions, compteurs, pourcentages).
 - **Idempotence** : si `docs/data/openai/J.json` existe déjà, fusionne : conserve ses éléments, ajoute les nouveaux sans dupliquer un identifiant brut, mets à jour `synthese` et `genere_le`.
 

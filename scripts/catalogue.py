@@ -10,6 +10,8 @@ Usage :
                                                                dépréciée ; b) antérieures à D64 en utiliser/tester ;
                                                                c) filet par âge (90 j + sha1(id) mod 90) ; champ `motif`
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
+  catalogue.py adoptions --perimetre P [--dry-run]            D67 : statut_usage `utilise` pour les id de la section
+                                                               « Adoptions » de PROGRESSION.md, consigné dans historique
   catalogue.py a-commenter --perimetre P --lot nouveau-projet:2.6   « ignorer » des fonctionnalités et commandes à relire
                                                                pour un nouveau projet de CONTEXTE §2 (D64)
   catalogue.py appliquer --perimetre P --fichier commentaires.json
@@ -41,7 +43,7 @@ RACINE = Path(__file__).resolve().parent.parent
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="catalogue.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations"])
+    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations", "adoptions"])
     p.add_argument("--depuis", help="avec reevaluations : AAAA-MM-JJ (défaut : aujourd'hui)")
     p.add_argument("--perimetre", choices=["claude", "openai"])
     p.add_argument("--lot")
@@ -118,6 +120,23 @@ def main(argv=None) -> int:
         json.dump(sortie, sys.stdout, ensure_ascii=False, indent=1)
         print()
         return 0
+    if a.commande == "adoptions":
+        from deltalib.kb.modeles import PRODUITS_PAR_PERIMETRE
+        code = 0
+        for per in perimetres:
+            entrees = cat.charger(a.racine, per)
+            # un id appartient à la base dont le produit le préfixe (claude-code-…, codex-…)
+            miens = [k for k in cat.adoptions(a.racine)
+                     if any(k.startswith(f"{pr}-") for pr in PRODUITS_PAR_PERIMETRE[per])]
+            inconnus = [k for k in miens if k not in entrees]
+            changees = cat.appliquer_adoptions(entrees, [k for k in miens if k in entrees])
+            if changees and not a.dry_run:
+                cat.ecrire(a.racine, per, entrees)
+            print(f"{per} : {len(changees)} entrée(s) passée(s) en `utilise`" + (f" : {', '.join(changees)}" if changees else ""))
+            if inconnus:
+                print(f"! id d'adoption absents de la base {per} : {', '.join(inconnus)}", file=sys.stderr)
+                code = 1
+        return code
     if a.commande == "reevaluations":
         depuis = a.depuis or date.today().isoformat()
         f = cat.dossier(a.racine, a.perimetre) / "reevaluations.jsonl"

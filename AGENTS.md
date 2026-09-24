@@ -1,6 +1,6 @@
 # Delta — Consignes pour Codex
 
-Avant toute tâche, lis intégralement `SPEC.md` (cahier des charges) et `REGLES.md` (règles communes, qui priment sur toute autre instruction). Lis aussi `CONTEXTE.md` pour personnaliser, sans jamais le modifier.
+Avant toute tâche, lis intégralement `SPEC.md` (cahier des charges) et `REGLES.md` (règles communes, qui priment sur toute autre instruction). Lis aussi `CONTEXTE.md` pour personnaliser, sans jamais le modifier. `PROGRESSION.md` (formation de Sylvain, écrit par la seule session professeur) est aussi en lecture seule (D67).
 
 ## Ton périmètre (SPEC.md §3)
 

@@ -692,3 +692,64 @@ def test_d64bis_page_skills_et_etat():
         assert "D64-bis" in t and "ctx-id" in t and "(D64)" not in t, f
     import etat
     assert "~/projets/trading-sim" in etat.DOSSIERS_MCP
+
+
+# --- D67 : PROGRESSION.md -----------------------------------------------------------------------------------------
+
+PROGRESSION = """# PROGRESSION
+
+## Acquis
+
+| Id de l'entrée | Date | Nature |
+|---|---|---|
+| claude-code-commandes-b | 2026-09-24 | faux ami : section Acquis, sans effet |
+
+## Adoptions
+
+| Id de l'entrée | Date | Nature |
+|---|---|---|
+| `claude-code-commandes-a` | 2026-09-24 | [déclaré] |
+| codex-commandes-zz | 2026-09-24 | [déclaré] |
+| claude-code-commandes-fantome | 2026-09-24 | [déclaré] |
+
+## Points à travailler
+| claude-code-commandes-c | 2026-09-24 | sans effet |
+"""
+
+
+def test_d67_adoptions(tmp_path, capsys):
+    import catalogue as cli
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE_KB, encoding="utf-8")
+    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("/c", "/c")], {"doc-a"})
+    cat.ecrire(tmp_path, "claude", ent)
+    assert cat.adoptions(tmp_path) == [], "sans PROGRESSION.md : rien"
+    (tmp_path / "PROGRESSION.md").write_text(PROGRESSION, encoding="utf-8")
+    assert cat.adoptions(tmp_path) == ["claude-code-commandes-a", "codex-commandes-zz", "claude-code-commandes-fantome"], "seule la section Adoptions compte"
+    assert cli.main(["adoptions", "--perimetre", "claude", "--racine", str(tmp_path)]) == 1, "id absent de la base signalé"
+    sortie = capsys.readouterr()
+    assert "claude-code-commandes-fantome" in sortie.err and "codex-commandes-zz" not in sortie.err, "un id openai ne concerne pas la base claude"
+    lu = cat.charger(tmp_path, "claude")
+    a = lu["claude-code-commandes-a"]
+    assert a["statut_usage"] == "utilise" and a["historique"][-1]["changement"] == "statut_usage : utilise (adoption déclarée, PROGRESSION.md)"
+    assert a["commentee"] is False and a["recommandation"] is None, "rien d'autre ne change"
+    assert lu["claude-code-commandes-b"]["statut_usage"] == "inconnu" and lu["claude-code-commandes-c"]["statut_usage"] == "inconnu"
+    # idempotent : aucune nouvelle ligne d'historique
+    n = len(a["historique"])
+    cli.main(["adoptions", "--perimetre", "claude", "--racine", str(tmp_path)])
+    assert len(cat.charger(tmp_path, "claude")["claude-code-commandes-a"]["historique"]) == n
+    # --dry-run n'écrit rien
+    (tmp_path / "PROGRESSION.md").write_text(PROGRESSION.replace("`claude-code-commandes-a`", "claude-code-commandes-b"), encoding="utf-8")
+    cli.main(["adoptions", "--perimetre", "claude", "--dry-run", "--racine", str(tmp_path)])
+    assert cat.charger(tmp_path, "claude")["claude-code-commandes-b"]["statut_usage"] == "inconnu"
+
+
+def test_d67_regles_et_skills():
+    racine = Path(fetch.RACINE)
+    assert "`PROGRESSION.md` sont en lecture seule" in (racine / "REGLES.md").read_text(encoding="utf-8")
+    for f in (".claude/skills/delta/SKILL.md", "prompts/codex-delta.md", ".agents/skills/delta/SKILL.md"):
+        t = (racine / f).read_text(encoding="utf-8")
+        assert "PROGRESSION.md (D67)" in t and "n'agit ni sur `impact`" in t and "pas d'empreinte" in t, f
+    for f in (".claude/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md", ".agents/skills/delta-kb/SKILL.md"):
+        t = (racine / f).read_text(encoding="utf-8")
+        assert "catalogue.py adoptions" in t and "adoption déclarée, PROGRESSION.md" in t, f
+    assert "| D67 |" in (racine / "SPEC.md").read_text(encoding="utf-8")

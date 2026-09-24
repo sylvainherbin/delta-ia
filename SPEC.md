@@ -42,6 +42,7 @@ delta-ia/
 ├── SPEC.md
 ├── REGLES.md
 ├── CONTEXTE.md            # généré par la session herbin-mint — lecture seule pour les agents
+├── PROGRESSION.md         # formation de Sylvain, écrit par la seule session professeur — lecture seule pour les agents (D67)
 ├── README.md
 ├── requirements.txt
 ├── sources.yaml           # sources et leur statut
@@ -221,7 +222,7 @@ Chaque entrée naît en deux étapes (D40) :
 | `description` | `null` tant que l'entrée n'est pas commentée ; ensuite, en français : 2 ou 3 phrases (complet), 1 phrase (court) |
 | `exemple` | Gabarit complet : exemple recopié de la documentation, ou `null` |
 | `disponibilite` | Plan ou plateforme si la documentation le dit, sinon `null` |
-| `statut_usage` | `utilise` \| `non_utilise` \| `inconnu`, d'après CONTEXTE.md ; `inconnu` avant commentaire |
+| `statut_usage` | `utilise` \| `non_utilise` \| `inconnu`, d'après CONTEXTE.md ; `inconnu` avant commentaire ; `utilise` aussi pour un id cité dans la section « Adoptions » de PROGRESSION.md (`catalogue.py adoptions`, historique « adoption déclarée, PROGRESSION.md », D67) |
 | `recommandation` | `{verdict: "utiliser" \| "tester" \| "ignorer", pourquoi}` ; `pourquoi` en 1 ou 2 phrases (complet), 1 phrase (court), justifié par un projet ou une habitude de CONTEXTE.md (D26) ; `utiliser` exige un usage actuel d'après CONTEXTE ou un lien direct avec un objectif déclaré, un rattachement générique donne au plus `tester` (D57) ; `null` avant commentaire |
 | `sources` | `[{url, libelle, officielle}]`, au moins une ; la première est la page d'extraction |
 | `commentee` | `false` à l'extraction, et de nouveau `false` quand `usage` ou `description_source` change dans la documentation (D44, D48) |
@@ -327,3 +328,4 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D64-bis | Remplace D60 et D64 : péremption par ctx-id de CONTEXTE.md, `contexte_sections` `{ctx-id: {sha1, pourquoi}}`, sections dépréciées, lot `perimees` a/b/c avec filet par âge, journal `reevaluations.jsonl` et taux de verdicts changés ; échange assumé : une section omise ne périme rien | §7.2, §7.4, skills |
 | D65 | État volatil hors de CONTEXTE.md : `scripts/etat.py` -> `docs/data/etat.json` (modèles et profils, MCP et connecteurs, instructions globales), relevé à chaque `/delta`, contrôlé par `valider.py`, lisible par les passages pour `pour_toi` | §3, §4, §6 |
 | D66 | Journal minimal du serveur MCP pour mesurer l'usage (baseline d'une semaine avant la V1.1) : une ligne JSON par requête, sans contenu, lue seulement dans les journaux Vercel ; serveur toujours sans état. Conservation : plan Hobby maintenu (une heure de journaux ; Pro, drain et compteur côté serveur refusés), mesure par 5 ou 6 sondages ponctuels où Sylvain filtre `tools/call` dans Vercel → Logs dans l'heure suivant une séance réelle avec Work ou Codex et transmet les lignes à Delta-IA, qui les cumule, avant de concevoir la V1.1a ; signal prioritaire : `chercher_reference` avec `nb_resultats` = 0 | §2 |
+| D67 | Formation : `PROGRESSION.md`, tenu par la seule session professeur, en lecture seule pour les agents et commité à part (`formation: …`) ; `/delta` et `$delta` le lisent pour doser la profondeur de `pour_toi` et `action` (acquis : pas de réexplication ; à travailler : plus détaillé), sans effet sur l'impact, le choix ni le tri des éléments, et sans empreinte ; `/delta-kb` et `$delta-kb` passent en `utilise` les id de sa section « Adoptions » (`catalogue.py adoptions`), consignés dans `historique` ; rien d'autre dans ce fichier n'agit sur la base | §4, §7.4, REGLES §1, skills |

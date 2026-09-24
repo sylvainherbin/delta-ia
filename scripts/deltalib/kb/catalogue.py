@@ -101,6 +101,42 @@ def migrer_projets(racine: Path, precedent: list[str]) -> list[str]:
     return [k if k in s else par_numero.get(k, k) for k in precedent]
 
 
+MENTION_ADOPTION = "adoption déclarée, PROGRESSION.md"
+
+
+def adoptions(racine: Path) -> list[str]:
+    """D67 : identifiants de la section « Adoptions » de PROGRESSION.md (première colonne du tableau).
+    Rien d'autre dans ce fichier n'agit sur la base."""
+    f = racine / "PROGRESSION.md"
+    if not f.exists():
+        return []
+    ids, dedans = [], False
+    for ligne in f.read_text(encoding="utf-8").splitlines():
+        if ligne.startswith("## "):
+            dedans = ligne.strip() == "## Adoptions"
+            continue
+        if dedans and ligne.startswith("|"):
+            cellule = ligne.strip("|").split("|")[0].strip().strip("`").strip()
+            if cellule and not set(cellule) <= set("-: ") and cellule != "Id de l'entrée":
+                ids.append(cellule)
+    return ids
+
+
+def appliquer_adoptions(entrees: dict[str, dict], ids: list[str], jour: str | None = None) -> list[str]:
+    """Passe `statut_usage` à `utilise` pour les entrées adoptées (D67), avec une ligne d'historique ; idempotent."""
+    jour = jour or date.today().isoformat()
+    changees = []
+    for k in ids:
+        e = entrees.get(k)
+        if e is None or e.get("statut_usage") == "utilise":
+            continue
+        e["statut_usage"] = "utilise"
+        e["maj_le"] = jour
+        e["historique"] = e.get("historique", []) + [{"date": jour, "changement": f"statut_usage : utilise ({MENTION_ADOPTION})"}]
+        changees.append(k)
+    return changees
+
+
 def repasse_projet(entrees: dict[str, dict], projet: str) -> list[str]:
     """D64 : entrées « ignorer » des fonctionnalités et commandes pas encore relues à la lumière d'un nouveau projet."""
     return sorted(k for k, e in entrees.items() if e.get("commentee") and not e.get("retiree")
