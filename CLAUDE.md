@@ -15,4 +15,9 @@
 - Git (SPEC §6, D9) : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Sans dépôt distant : ni pull ni push. Avec un distant : lancer `/delta` vaut accord de push sur les seuls chemins de l'agent ; en session de développement, push seulement sur accord de Sylvain.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
 - Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), jamais déclenché sans demande de Sylvain. Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable.
-- Rapport (D63) : En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+
+## Rapports (D63)
+
+Toute session qui travaille sur delta-ia (développement, passage, formation, maintenance) termine chaque tâche par un rapport dans rapports/, nommé AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, avec l'heure lue par `date`, jamais estimée. Contenu minimal : date et heure, agent, tâche, commits produits (ou « aucun »), contexte_empreinte, ce qui a été fait, points fragiles ou à décider. Le rapport s'écrit aussi en cas d'arrêt, d'échec ou de STOP. Dev-delta : nom d'agent `dev-delta`.
+
+Heure : `date +%Y-%m-%d_%H%M` au moment de l'écriture. Ne commite jamais ce dossier. Aucun secret (REGLES §5).

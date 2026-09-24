@@ -26,6 +26,8 @@ Lancement : `$delta` (skill du dépôt `.agents/skills/delta/SKILL.md`), ou le t
 - Aucun secret, aucune donnée de tiers identifiable (REGLES.md §5).
 - Environnement Python : `.venv` (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`). Tests : `.venv/bin/pytest -q`.
 
-## Rapport de fin de tâche (D63)
+## Rapports (D63)
 
-En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+Toute session qui travaille sur delta-ia (développement, passage, formation, maintenance) termine chaque tâche par un rapport dans rapports/, nommé AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, avec l'heure lue par `date`, jamais estimée. Contenu minimal : date et heure, agent, tâche, commits produits (ou « aucun »), contexte_empreinte, ce qui a été fait, points fragiles ou à décider. Le rapport s'écrit aussi en cas d'arrêt, d'échec ou de STOP. Dev-delta : nom d'agent `dev-delta`.
+
+Heure : `date +%Y-%m-%d_%H%M` au moment de l'écriture. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
