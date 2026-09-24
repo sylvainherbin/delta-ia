@@ -57,6 +57,7 @@ delta-ia/
 │   ├── openai.json
 │   └── actu.json
 ├── raw/                   # cache de récupération, ignoré par git ; raw/kb/ : pages de documentation et empreintes
+├── rapports/              # comptes rendus de fin de tâche des agents, lus par Delta-IA ; ignoré par git sauf .gitkeep (D63)
 ├── .claude/skills/delta/SKILL.md   # /delta pour Claude Code (les commandes sont fusionnées dans les skills depuis 2.1.x)
 ├── .claude/skills/delta-kb/       # /delta-kb : commentaire de la base de référence claude, par lots (D46)
 ├── .agents/skills/delta-kb/       # $delta-kb : idem pour openai ; prompts/codex-delta-kb.md en repli
@@ -316,3 +317,4 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D59 | Un `pour_toi` n'affirme que ce que CONTEXTE.md dit ; les déductions au conditionnel | §7.1, skills |
 | D60 | `contexte_empreinte` sur chaque entrée commentée ; signal sur la page Référence ; réévaluation prioritaire des `utiliser` et `tester` périmés | §7.4, skills |
 | D61 | Connecteur MCP distant en lecture seule (`mcp/`, Vercel) : cinq outils de consultation, données publiques uniquement, sans jeton, écriture ni déclenchement | §2, §4, §10 |
+| D63 | Comptes rendus de fin de tâche écrits par chaque agent dans `rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md` (en-tête : date et heure, agent, tâche, commits, contexte_empreinte), jamais commités | §4, skills, `CLAUDE.md`, `AGENTS.md` |

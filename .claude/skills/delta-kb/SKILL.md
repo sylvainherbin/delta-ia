@@ -53,3 +53,7 @@ Tu commentes des entrées déjà extraites de la documentation officielle par `s
 ## 4. Compte rendu (10 lignes au plus)
 
 Réévaluations faites (recalibrage, entrées périmées) ; lots traités ; entrées commentées par verdict (`utiliser`, `tester`, `ignorer`) et par `statut_usage` ; les `utiliser` en une ligne chacun ; les entrées dont `usage` paraît faux ou incomplet ; les lots restants et l'avancement `n/N` (`catalogue.py inventaire --perimetre claude`).
+
+## Rapport de fin de tâche (D63)
+
+En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).

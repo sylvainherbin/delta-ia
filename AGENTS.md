@@ -25,3 +25,7 @@ Lancement : `$delta` (skill du dépôt `.agents/skills/delta/SKILL.md`), ou le t
 - Aucune affirmation sans URL. Inconnu vaut `null`. Certitude : `officiel` pour une source OpenAI (flux JSON, RSS, GitHub), `rapporte` pour une recherche web (repli si le centre d'aide ChatGPT reste bloqué).
 - Aucun secret, aucune donnée de tiers identifiable (REGLES.md §5).
 - Environnement Python : `.venv` (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`). Tests : `.venv/bin/pytest -q`.
+
+## Rapport de fin de tâche (D63)
+
+En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
