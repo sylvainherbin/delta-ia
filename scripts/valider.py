@@ -426,7 +426,7 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     return ids
 
 
-RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
+RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|adoption|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
 
 
 def verifier_journal(chemin: Path, ou: str, ids: set[str], r: Rapport) -> None:

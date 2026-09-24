@@ -87,9 +87,9 @@ def main(argv=None) -> int:
         else:
             tout = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine), maximum=None)
             if tout:
-                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in "abc"}
+                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption", "b", "c")}
                 print(f"{'perimees':<22} {'(D64bis)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
-                      f"(a section {n['a']}, b antérieures {n['b']}, c âge {n['c']})")
+                      f"(a section {n['a']}, adoption {n['adoption']}, b antérieures {n['b']}, c âge {n['c']})")
         for k in cat.nouveaux_projets(a.racine, a.perimetre):
             n = len(cat.repasse_projet(entrees, k))
             print(f"{'nouveau-projet:' + k:<22} {'court':<8} {n:>4} entrées « ignorer » à relire (D64)")

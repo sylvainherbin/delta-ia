@@ -293,15 +293,30 @@ def echeance_age(e: dict) -> date | None:
     return d + timedelta(days=AGE_BASE_JOURS + decalage)
 
 
+def adoptee_non_revue(e: dict) -> bool:
+    """D67 : adoption déclarée (statut_usage `utilise`) sur un verdict `ignorer`, sans commentaire postérieur."""
+    if e.get("statut_usage") != "utilise" or (e.get("recommandation") or {}).get("verdict") != "ignorer":
+        return False
+    for h in reversed(e.get("historique") or []):
+        if MENTION_ADOPTION in str(h.get("changement", "")):
+            return True
+        if h.get("changement") in ("commentée", "commentaire révisé", "réévaluée"):
+            return False
+    return False
+
+
 def classer(e: dict, courantes: dict[str, str], deprecies_: set[str], jour: date) -> tuple[str, str] | None:
-    """(catégorie a|b|c, motif du journal) si l'entrée est à réévaluer, sinon None.
-    a) section citée modifiée, disparue ou dépréciée ; b) antérieure à D64 (null) en utiliser/tester ; c) âge."""
+    """(catégorie a|adoption|b|c, motif du journal) si l'entrée est à réévaluer, sinon None.
+    a) section citée modifiée, disparue ou dépréciée ; adoption) `ignorer` adopté par Sylvain (D67) ;
+    b) antérieure à D64 (null) en utiliser/tester ; c) âge."""
     if not e.get("commentee") or e.get("retiree"):
         return None
     cs = e.get("contexte_sections")
     touchees = sections_perimees(cs, courantes, deprecies_) if cs else []
     if touchees:
         return "a", f"section:{touchees[0]}"
+    if adoptee_non_revue(e):
+        return "adoption", "adoption"
     if cs is None and (e.get("recommandation") or {}).get("verdict") in ("utiliser", "tester"):
         return "b", "legacy"
     ech = echeance_age(e)
@@ -322,7 +337,7 @@ def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], depreci
         c = classer(e, courantes, deprecies_, jour)
         if c:
             res.append({"id": k, "categorie": c[0], "motif": c[1]})
-    ordre = {"a": 0, "b": 1, "c": 2}
+    ordre = {"a": 0, "adoption": 1, "b": 2, "c": 3}
     res.sort(key=lambda x: (ordre[x["categorie"]], rang.get((entrees[x["id"]].get("recommandation") or {}).get("verdict"), 3),
                             echeance_age(entrees[x["id"]]) or date.min if x["categorie"] == "c" else date.min, x["id"]))
     return res if maximum is None else res[:maximum]

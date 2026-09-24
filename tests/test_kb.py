@@ -753,3 +753,28 @@ def test_d67_regles_et_skills():
         t = (racine / f).read_text(encoding="utf-8")
         assert "catalogue.py adoptions" in t and "adoption déclarée, PROGRESSION.md" in t, f
     assert "| D67 |" in (racine / "SPEC.md").read_text(encoding="utf-8")
+
+
+def test_d67_adoption_d_un_ignorer_entre_dans_perimees(tmp_path):
+    from datetime import timedelta
+    jour = date(2026, 9, 24)
+    recent = (jour - timedelta(days=5)).isoformat()
+    cour = {"projet.trading-sim": "a" * 40}
+
+    def e(k, verdict, cs=None):
+        return {"id": k, "commentee": True, "statut_usage": "inconnu", "recommandation": {"verdict": verdict, "pourquoi": "p"},
+                "contexte_sections": cs, "maj_le": recent, "historique": [{"date": recent, "changement": "commentée"}]}
+    ok = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}
+    ent = {"adopte-ignorer": e("adopte-ignorer", "ignorer", ok), "adopte-tester": e("adopte-tester", "tester", ok),
+           "a-section": e("a-section", "ignorer", {"projet.trading-sim": {"sha1": "z" * 40, "pourquoi": "p"}}),
+           "b-legacy": e("b-legacy", "utiliser")}
+    assert cat.appliquer_adoptions(ent, ["adopte-ignorer", "adopte-tester"], jour.isoformat()) == ["adopte-ignorer", "adopte-tester"]
+    det = cat.perimees_detail(ent, cour, set(), jour, maximum=None)
+    assert [(x["id"], x["motif"]) for x in det] == [("a-section", "section:projet.trading-sim"), ("adopte-ignorer", "adoption"),
+                                                   ("b-legacy", "legacy")], "adoption juste après a ; un `tester` adopté n'entre pas"
+    # une fois recommentée, l'entrée sort du lot, même si le verdict reste `ignorer`
+    x_ = ent["adopte-ignorer"]
+    x_["historique"].append({"date": jour.isoformat(), "changement": "commentaire révisé"})
+    assert cat.classer(x_, cour, set(), jour) is None
+    import valider
+    assert valider.RE_MOTIF.match("adoption")
