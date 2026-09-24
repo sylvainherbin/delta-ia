@@ -24,7 +24,7 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 
 | Agent | Périmètres | Produits | Écrit dans |
 |---|---|---|---|
-| Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `state/claude.json`, `state/actu.json` |
+| Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `docs/data/etat.json`, `state/claude.json`, `state/actu.json` |
 | Codex | `openai` | `chatgpt`, `codex` | `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json` |
 
 Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.
@@ -50,6 +50,7 @@ delta-ia/
 │   ├── valider.py         # validation des JSON produits avant commit (D15) ; --kb pour la base (§7.4)
 │   ├── catalogue.py       # base de référence : extraction, inventaire, lots, application des commentaires
 │   ├── versions.py        # versions installées des outils -> docs/data/versions.json (D54)
+│   ├── etat.py            # état volatil : modèles et profils, MCP et connecteurs, instructions globales -> docs/data/etat.json (D65)
 │   └── deltalib/          # bibliothèque : analyseurs, état, passage, kb/ (documentation, extracteurs, catalogue)
 ├── tests/
 ├── state/
@@ -118,6 +119,8 @@ Candidates (URL exactes à identifier et tester en phase 1, **aucune URL ne doit
 5. `python scripts/valider.py --perimetre <p> --date J --brut raw/<p>-nouveautes.json` vérifie les JSON produits (schéma §7, cohérences, couverture des nouveautés brutes, secrets, `index.json`). Ne pas pousser s'il échoue.
 6. `python scripts/fetch.py --perimetre <p> --valider --date J`. **L'état n'avance que maintenant**, une fois la synthèse écrite et validée. Si l'agent échoue en cours de route, aucune nouveauté n'est perdue. Règle (D5, D13) : `--valider` lit `docs/data/<dossier>/<date>.json` (option `--date`, défaut aujourd'hui) et inscrit dans l'état les `ids_bruts` de chaque élément, les `ecartes`, les `ignores` du fichier brut et les identifiants `web-*`. Les nouveautés brutes absentes du fichier quotidien restent en attente, sont listées, et la commande rend un code de sortie non nul.
 7. Commit sur les seuls chemins de l'agent, puis push selon les règles Git ci-dessous.
+
+État volatil (D65) : dans le passage de Claude Code, juste après `versions.py`, `scripts/etat.py` écrit `docs/data/etat.json` : modèle, effort et profils par défaut de Claude Code et de Codex (fichiers de configuration), serveurs MCP et connecteurs visibles (`claude mcp list` dans ~/projets et ~/projets/delta-ia, `mcp_servers` de `config.toml`), présence et date des `CLAUDE.md` et `AGENTS.md` globaux, `releve_le`. Chaque relevé porte `{valeur, source, raison}`, `raison` étant obligatoire quand la valeur est `null`. Aucun secret (ni `env`, ni arguments, ni paramètres d'URL) et aucun quota (`rapports/usage.json`, local). `valider.py` le contrôle ; pour ces valeurs, il prime sur CONTEXTE.md, dont herbin-mint retire les lignes devenues redondantes.
 
 Base de référence (D44) : dans chaque passage, l'agent lance `fetch.py --kb` (avec `--dry-run`, rien n'est écrit, ni catalogue ni cache `raw/kb/`, D47) sur les produits de son périmètre (`claude-code claude` pour Claude Code, `codex chatgpt` pour Codex). Le script relit uniquement les pages de référence de `sources.yaml` (copie et empreinte par page dans `raw/kb/`), ré-extrait les entrées et met à jour `docs/data/kb/<p>/` ; les entrées ajoutées ou dont `usage` a changé repassent en `commentee: false` et sont listées dans `raw/kb/<p>-modifications.json`. L'agent les commente pendant le passage, renseigne `kb_refs` et valide avec `valider.py --kb`.
 
@@ -321,3 +324,4 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D61 | Connecteur MCP distant en lecture seule (`mcp/`, Vercel) : cinq outils de consultation, données publiques uniquement, sans jeton, écriture ni déclenchement | §2, §4, §10 |
 | D63 | Comptes rendus de fin de tâche écrits par chaque agent dans `rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md` (en-tête : date et heure, agent, tâche, commits, contexte_empreinte), jamais commités | §4, skills, `CLAUDE.md`, `AGENTS.md` |
 | D64 | Péremption par section de CONTEXTE.md (`scripts/contexte.py`, `contexte_sections` sur les entrées commentées et les éléments quotidiens) ; migration sans invention (`null`, « antérieur à D64 ») ; repasse des « ignorer » pour un nouveau projet | §7.2, §7.4, skills |
+| D65 | État volatil hors de CONTEXTE.md : `scripts/etat.py` -> `docs/data/etat.json` (modèles et profils, MCP et connecteurs, instructions globales), relevé à chaque `/delta`, contrôlé par `valider.py`, lisible par les passages pour `pour_toi` | §3, §4, §6 |

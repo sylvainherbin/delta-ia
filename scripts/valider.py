@@ -455,6 +455,44 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
             r.erreur(o, "`detectee_le` doit être un horodatage ISO 8601")
 
 
+def verifier_etat(racine: Path, r: Rapport) -> None:
+    """D65 : docs/data/etat.json, écrit par scripts/etat.py. Chaque relevé {valeur, source, raison} ; raison si null."""
+    chemin = racine / "docs" / "data" / "etat.json"
+    ou = "etat.json"
+    if not chemin.exists():
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    if re.search(r'"(env|headers|args|token|api_key|bearer_token\w*)"\s*:', texte, re.I):
+        r.erreur(ou, "champ sensible publié (env, headers, args, jeton) : interdit (REGLES §5)")
+    if re.search(r"https?://[^\s\"]*\?", texte):
+        r.erreur(ou, "URL avec paramètres : seules les URL sans paramètres sont publiées")
+    try:
+        e = json.loads(texte)
+    except ValueError as err:
+        r.erreur(ou, f"JSON invalide : {err}")
+        return
+    if not isinstance(e, dict) or not {"releve_le", "outils", "mcp_claude_code", "instructions_globales"} <= set(e):
+        r.erreur(ou, "champs attendus : releve_le, outils, mcp_claude_code, instructions_globales")
+        return
+    if not isinstance(e["releve_le"], str) or "T" not in e["releve_le"]:
+        r.erreur(ou, "`releve_le` doit être un horodatage ISO 8601")
+
+    def parcourir(n, chemin_):
+        if isinstance(n, dict):
+            if "valeur" in n and "source" in n:
+                if n["valeur"] is None and not str(n.get("raison") or "").strip():
+                    r.erreur(ou, f"{chemin_} : valeur null sans `raison`")
+            if "elements" in n and "source" in n and not n["elements"] and not str(n.get("raison") or "").strip():
+                r.erreur(ou, f"{chemin_} : liste vide sans `raison`")
+            for k, v in n.items():
+                parcourir(v, f"{chemin_}.{k}")
+        elif isinstance(n, list):
+            for i, v in enumerate(n):
+                parcourir(v, f"{chemin_}[{i}]")
+    parcourir(e, "etat")
+
+
 def sections_valides(cs) -> bool:
     return cs is None or (isinstance(cs, dict) and all(isinstance(k, str) and k and isinstance(v, str)
                                                          and re.fullmatch(r"[0-9a-f]{40}", v) for k, v in cs.items()))
@@ -489,6 +527,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
         r.erreur(dossier.name, "aucun fichier quotidien AAAA-MM-JJ.json")
     if perimetre == "claude":
         verifier_versions(racine, r)  # D55 : chemin de Claude Code
+        verifier_etat(racine, r)  # D65
     connus = ids_kb(racine, perimetre)
     if connus is not None:
         for d, q in quotidiens.items():
