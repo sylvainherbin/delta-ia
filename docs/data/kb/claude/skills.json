@@ -1,10 +1,10 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-09-23",
+ "maj_le": "2026-09-24",
  "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
  "total": 20,
- "commentees": 0,
+ "commentees": 20,
  "entrees": [
   {
    "id": "claude-code-skills-batch",
@@ -12,14 +12,17 @@
    "categorie": "skills",
    "nom": "/batch",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill intégré qui orchestre un gros changement en parallèle : il étudie le code, découpe le travail en 5 à 30 unités indépendantes et présente un plan. Une fois le plan approuvé, il lance un sous-agent d'arrière-plan par unité, chacun dans un worktree git isolé, qui implémente, teste et ouvre une pull request. Exige un dépôt git.",
    "description_source": "Skill. Orchestrate large-scale changes across a codebase in parallel. Researches the codebase, decomposes the work into 5 to 30 independent units, and presents a plan. Once approved, spawns one background subagent per unit in an isolated git worktree. Each subagent implements its unit, runs tests, and opens a pull request. Requires a git repository. Example: /batch migrate src/ from JavaScript to TypeScript",
    "usage": "/batch <instruction>",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/batch migrate src/ from JavaScript to TypeScript",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Des dizaines de sous-agents et de PR en parallèle vont à l'encontre de ta validation pas à pas et consommeraient vite les limites hebdomadaires ; aucun de tes projets n'a de migration de cette taille."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -27,18 +30,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-claude-api",
@@ -46,14 +53,17 @@
    "categorie": "skills",
    "nom": "/claude-api",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de référence sur l'API Claude et les Managed Agents, chargé automatiquement quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`), changent de version majeure du SDK (`upgrade`), auditent les prompts (`prompt-audit`), analysent les coûts d'API (`cost-optimize`) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
    "description_source": "Skill. Load Claude API and Managed Agents reference material for your project's language. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. Run migrate to update existing Claude API code to a newer model. Run upgrade to move your project's Anthropic SDK dependency across a major version, currently the Python anthropic package from 0.x to 1.x. Run managed-agents-onboard for a walkthrough that creates a new Managed Agent. Run prompt-audit to flag instructions written for older models in your prompts, skills, and tool descriptions and propose fixes as a diff. Run cost-optimize to profile where your project's Claude API spend goes and propose savings from options such as prompt caching, trimming unneeded input and output tokens, batch processing, effort, and model choice, one change at a time. Run build-eval to build an eval set for your Claude-powered app, and hillclimb to iteratively improve the app against an existing eval. The prompt-audit subcommand requires Claude Code v2.1.221 or later, upgrade requires v2.1.236 or later, cost-optimize requires v2.1.247 or later, and build-eval and hillclimb require v2.1.259 or later",
    "usage": "/claude-api [migrate|upgrade|managed-agents-onboard|prompt-audit|cost-optimize|build-eval|hillclimb]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne mentionne aucun projet qui appelle l'API Claude."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -61,18 +71,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-code-review",
@@ -80,14 +94,17 @@
    "categorie": "skills",
    "nom": "/code-review",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de relecture du diff courant, ou d'une PR, d'une branche ou d'un chemin, à la recherche de bugs de correction ; selon le modèle et l'effort, il signale aussi des nettoyages. `--fix` applique les constats dans l'arbre de travail, `--comment` les publie sur la PR, `ultra` lance une relecture approfondie dans le cloud. Alias : `/review`.",
    "description_source": "Skill. Review the current diff, or a PR number, branch, or path you pass, for correctness bugs. Depending on your model and effort level, the review also covers cleanup opportunities. Pass --fix to apply findings, --comment to post them on the GitHub PR or GitLab merge request, or ultra to run a deep cloud review. Posting to a GitLab merge request requires Claude Code v2.1.257 or later. With ultra on a github.com PR target, pass --post to preselect posting the finished findings to the PR in the launch dialog; --post requires Claude Code v2.1.227 or later. See Review a diff locally for the effort levels, targeting, and how it relates to /simplify. Alias: /review",
    "usage": "/code-review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [pr#|branch|path]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Une relecture Claude d'une PR trading-sim avant l'audit Codex compléterait l'audit croisé sans le remplacer ; sans argument, le skill ne fait que signaler, alors que `--fix` modifie directement l'arbre de travail."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -95,18 +112,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-dataviz",
@@ -114,14 +135,17 @@
    "categorie": "skills",
    "nom": "/dataviz",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de conception de graphiques et tableaux de bord : Claude choisit la forme du graphique selon les données, attribue les couleurs par rôle et vérifie la palette (daltonisme, contraste) avec un script fourni. La palette neutre par défaut est à remplacer par la sienne.",
    "description_source": "Skill. Design guidance for charts, graphs, and dashboards. Claude picks the chart form for the data, assigns color by role, validates the palette for colorblind safety and contrast with a bundled script, and applies mark, interaction, and accessibility rules. Uses a brand-neutral placeholder palette that you replace with your own. Requires Claude Code v2.1.198 or later",
    "usage": "/dataviz [request]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Les courbes de nuit de l'onglet Stats de carnet (durée de sommeil avec seuil, SpO2, en Recharts) sont le travail en cours : le skill en vérifierait lisibilité et contraste en thème clair et sombre."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -129,18 +153,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-debug",
@@ -148,14 +176,17 @@
    "categorie": "skills",
    "nom": "/debug",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui active la journalisation de débogage de la session en cours et analyse ce journal pour diagnostiquer un problème. Sans `claude --debug` au lancement, la capture commence au moment où l'on tape `/debug` ; une description en argument oriente l'analyse.",
    "description_source": "Skill. Enable debug logging for the current session and troubleshoot issues by reading the session debug log. Debug logging is off by default unless you started with claude --debug, so running /debug mid-session starts capturing logs from that point forward. Optionally describe the issue to focus the analysis",
    "usage": "/debug [description]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun dysfonctionnement de Claude Code n'est décrit dans CONTEXTE.md qui justifierait un essai ; il sert au besoin, quand un problème se produit."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -163,18 +194,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-design",
@@ -182,14 +217,17 @@
    "categorie": "skills",
    "nom": "/design",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui dessine maquettes d'interface, enchaînements d'écrans, pages d'accueil ou affiches sur un canevas publié comme artefact Design, modifiable dans un navigateur de bureau et exportable en PNG ou PDF. Il exige une session où les artefacts sont disponibles.",
    "description_source": "Skill. Draft UI mockups, screen flows, landing pages, or posters as artboards on one canvas, published as a Design artifact, for example /design a settings screen for a mobile banking app. You edit the artboards in a desktop browser, and your edits save automatically. You can export each artboard as PNG or PDF. Requires a session where artifacts are available and Claude Code v2.1.265 or later. Available on the Anthropic API. On Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS, artifacts aren't available, so the command is unavailable there",
    "usage": "/design [brief]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/design a settings screen for a mobile banking app",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "ceramist est en maintenance et restoration-id sans évolution prévue ; carnet évolue par petites corrections de saisie et de graphiques, pas par maquettes."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -197,18 +235,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-design-sync",
@@ -216,14 +258,17 @@
    "categorie": "skills",
    "nom": "/design-sync",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui convertit le design system React d'un dépôt et l'envoie à Claude Design, pour que les maquettes produites utilisent les vrais composants. La première synchronisation vérifie chaque composant et peut durer plusieurs heures sur un gros dépôt.",
    "description_source": "Skill. Convert your repo's React design system and upload it to Claude Design, so designs it produces use your real components. Optionally name the design system, for example /design-sync Acme DS. A first-time sync verifies every component and can take a few hours on a large repo. Available on the Anthropic API. It needs claude.ai, which the CLI doesn't contact on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or Claude Platform on AWS, or through a Claude apps gateway, so the command is unavailable there",
    "usage": "/design-sync [hint]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/design-sync Acme DS",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "carnet est en React mais CONTEXTE.md ne décrit aucun design system, et `/design` n'est pas recommandé."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -231,18 +276,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-doctor",
@@ -250,14 +299,17 @@
    "categorie": "skills",
    "nom": "/doctor",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de bilan d'installation : doublons, PATH, fichiers de réglages illisibles, skills, serveurs MCP et plugins inutilisés rapportés à leur coût en contexte, hooks lents, nouvelle version disponible. Il peut aussi alléger les CLAUDE.md et proposer le mode auto par défaut ; il présente ses constats et demande confirmation avant tout changement. `claude doctor` dans le terminal donne un diagnostic en lecture seule, sans session. Alias : `/checkup`.",
    "description_source": "Skill. Run a setup checkup that diagnoses issues and can fix them. Checks installation health, including duplicate or leftover installs, PATH problems, and unparseable settings files. Finds unused skills, MCP servers, and plugins versus their context cost, flags slow hooks, and checks for a newer version on your release channel. Deduplicates local CLAUDE.md files against checked-in ones, trims checked-in CLAUDE.md files by cutting content Claude could derive from the codebase, and migrates the always-loaded guidance that remains into skills and nested CLAUDE.md files that load on demand. Also offers to make auto mode your default and to pre-approve frequently denied read-only commands. Reports findings first and asks for confirmation before changing anything. From the terminal, claude doctor prints read-only installation diagnostics without starting a session. Alias: /checkup. The CLAUDE.md trim check requires Claude Code v2.1.206 or later. Before v2.1.205, /doctor opened a read-only diagnostics screen and pressing f sent the report to Claude",
    "usage": "/doctor",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Il chiffrerait le coût des skills dormants `latex-manuscrit` et `verif-numerique` et des skills claude.ai synchronisés (piste 4). Commence par `claude doctor`, en lecture seule, puisque la version interactive propose aussi de modifier CLAUDE.md et le mode par défaut."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -265,18 +317,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-fewer-permission-prompts",
@@ -284,14 +340,17 @@
    "categorie": "skills",
    "nom": "/fewer-permission-prompts",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui parcourt les transcripts à la recherche des appels Bash et MCP en lecture seule les plus fréquents, puis ajoute une liste d'autorisations par priorité au `.claude/settings.json` du projet, pour réduire les demandes de permission.",
    "description_source": "Skill. Scan your transcripts for common read-only Bash and MCP tool calls, then add a prioritized allowlist to project .claude/settings.json to reduce permission prompts",
    "usage": "/fewer-permission-prompts",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Moins de demandes de permission allégeraient le pilotage depuis l'iPhone sur carnet ou delta-ia. Il écrit durablement dans `.claude/settings.json` : à éviter sur trading-sim, dont les capacités sont volontairement restreintes."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -299,18 +358,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-loop",
@@ -318,14 +381,17 @@
    "categorie": "skills",
    "nom": "/loop",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui relance un prompt à intervalle régulier tant que la session reste ouverte ; sans intervalle, Claude choisit lui-même le rythme, et sans prompt il lance la maintenance intégrée ou `loop.md`. Alias : `/proactive`.",
    "description_source": "Skill. Run a prompt repeatedly while the session stays open. Omit the interval and Claude self-paces between iterations. Omit the prompt and Claude runs the built-in maintenance prompt or your loop.md. Example: /loop 5m check if the deploy finished. See Run prompts on a schedule. Alias: /proactive",
    "usage": "/loop [interval] [prompt]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/loop 5m check if the deploy finished",
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur herbin-trading, il pourrait surveiller une campagne longue ; chaque itération consomme des jetons, alors que Monitor, déjà très utilisé, prévient seulement à la fin d'un script."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -333,18 +399,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-page-skills",
@@ -352,14 +422,17 @@
    "categorie": "skills",
    "nom": "Extend Claude with skills",
    "gabarit": "complet",
-   "description": null,
+   "description": "Page de référence des skills de Claude Code : un dossier avec un `SKILL.md` (en-tête YAML et instructions), rangé dans `~/.claude/skills/` pour tous les projets ou dans `.claude/skills/` pour un seul. Le nom du dossier devient la commande, et la `description` permet à Claude de le charger automatiquement ; la page couvre aussi les skills intégrés et l'injection de contexte dynamique.",
    "description_source": "Create, manage, and share skills to extend Claude's capabilities in Claude Code. Includes custom commands and bundled skills.",
    "usage": "    mkdir -p ~/.claude/skills/summarize-changes",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/summarize-changes",
    "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tu as déjà quatre skills perso (maintenance-mint, deploy-site…) et le skill `/delta` ; les gestes répétés de la piste 5 (relais d'une mission vers herbin-trading, revue machine d'une campagne) pourraient devenir des skills sur le même modèle."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/skills",
@@ -367,18 +440,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-run",
@@ -386,14 +463,17 @@
    "categorie": "skills",
    "nom": "/run",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui lance et pilote l'application du projet pour constater qu'un changement fonctionne vraiment, au-delà des tests qui passent.",
    "description_source": "Skill. Launch and drive your project's app to see a change working, not only passing tests. See Run and verify your app",
    "usage": "/run",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur carnet, il vérifierait dans l'app lancée une correction de saisie ou une nouvelle courbe, que les 13 fichiers de test `node --test` ne couvrent pas à l'écran."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -401,18 +481,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-run-skill-generator",
@@ -420,14 +504,17 @@
    "categorie": "skills",
    "nom": "/run-skill-generator",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui apprend à `/run` et `/verify` comment construire, lancer et piloter l'application du projet depuis un environnement propre, en écrivant un skill propre au projet.",
    "description_source": "Skill. Teach /run and /verify how to build, launch, and drive your project's app from a clean environment by writing a per-project skill",
    "usage": "/run-skill-generator",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "À essayer seulement si `/run` ne sait pas lancer carnet seul (Vite, service worker)."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -435,18 +522,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-simplify",
@@ -454,14 +545,17 @@
    "categorie": "skills",
    "nom": "/simplify",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de nettoyage du code modifié : quatre agents de relecture travaillent en parallèle (réutilisation de l'existant, simplification, efficacité, niveau d'abstraction) et appliquent directement les corrections. Il ne cherche pas les bugs, rôle de `/code-review` ; on peut lui passer un chemin ou une PR.",
    "description_source": "Skill. Review the changed code for cleanup opportunities and apply the fixes. Four review agents run in parallel, covering reuse of existing helpers, simplification, efficiency, and whether the change is at the right level of abstraction. The review doesn't look for correctness bugs. Use /code-review to find bugs. Pass a path or PR reference to review a specific target",
    "usage": "/simplify [target]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Utilisable sur les petits commits de carnet ; il applique ses corrections sans demander, donc à éviter sur trading-sim, où noyaux gelés et spécification passent par l'audit."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -469,18 +563,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-update-config",
@@ -488,14 +586,17 @@
    "categorie": "skills",
    "nom": "/update-config",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui modifie le bon `settings.json` à partir d'une demande en langage courant : autoriser une commande, définir une variable d'environnement, ajouter un hook. Pour le thème ou le modèle, `/config` est plus direct.",
    "description_source": "Skill. Describe a settings change, such as allowing a command, setting an environment variable, or adding a hook, and Claude edits the matching settings.json file. For options such as theme and model, use /config instead",
    "usage": "/update-config [request]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Il transformerait en hooks les contrôles répétés à la main de la piste 3 (vérification SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f`) ; le changement est écrit durablement dans le `settings.json` choisi."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -503,18 +604,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-verify",
@@ -522,14 +627,17 @@
    "categorie": "skills",
    "nom": "/verify",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill qui confirme qu'un changement fait ce qu'il doit en construisant, lançant et observant l'application, plutôt qu'en se fiant aux tests ou aux vérifications de types.",
    "description_source": "Skill. Confirm a code change does what it should by building your project's app, running it, and observing the result, rather than relying on tests or type checks. See Run and verify your app",
    "usage": "/verify",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Même usage que `/run` sur carnet : constater à l'écran une correction de la PWA avant de la déployer avec `scripts/deploy.sh`."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -537,18 +645,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-code-skills-workflow-authoring",
@@ -556,14 +668,17 @@
    "categorie": "skills",
    "nom": "/workflow-authoring",
    "gabarit": "complet",
-   "description": null,
+   "description": "Skill de référence pour écrire des scripts de workflow dynamique (API, reprise, bonnes pratiques, exemples). Claude le charge seul avant d'écrire un script ; on ne le lance soi-même qu'avant de retoucher à la main un script enregistré.",
    "description_source": "Skill. Load the reference for writing dynamic workflow scripts: the script API, resume behavior, quality patterns, and worked examples. Claude normally loads it on its own before writing a script; run it yourself before editing a saved script by hand. Available when dynamic workflows are enabled, and requires Claude Code v2.1.248 or later",
    "usage": "/workflow-authoring",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude le charge déjà seul quand il écrit un workflow, et CONTEXTE.md ne mentionne aucun script de workflow enregistré à retoucher."
+   },
    "sources": [
     {
      "url": "https://code.claude.com/docs/en/commands",
@@ -571,18 +686,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-skills-page-12512176-what-are-skills",
@@ -590,14 +709,17 @@
    "categorie": "skills",
    "nom": "What are skills?",
    "gabarit": "complet",
-   "description": null,
+   "description": "Présentation des skills dans l'app Claude : des dossiers d'instructions, de scripts et de ressources que Claude charge seulement quand la tâche le demande (divulgation progressive), pour ménager le contexte. Il existe des skills Anthropic (documents Excel, Word, PowerPoint, PDF), des skills perso et des skills de partenaires ; le format suit le standard ouvert Agent Skills.",
    "description_source": "Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.",
    "usage": "Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Free, Pro, Max, Team, Enterprise ; exécution de code activée",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tu utilises les skills dans Claude, surtout red-team ; la page explique la différence avec les Projets, que tu utilises aussi."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12512176-what-are-skills",
@@ -605,18 +727,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-skills-page-12512180-use-skills-in-claude",
@@ -624,14 +750,17 @@
    "categorie": "skills",
    "nom": "Use skills in Claude",
    "gabarit": "complet",
-   "description": null,
+   "description": "Mode d'emploi des skills dans l'app Claude : sur Max, activer « Code execution and file creation » dans Settings > Capabilities, puis activer ou désactiver chaque skill dans Customize > Skills. Un skill perso s'ajoute en téléversant un dossier zippé (« + », « Create skill », « Upload a skill ») ; les skills Anthropic se déclenchent seuls.",
    "description_source": "Skills extend Claude's capabilities by giving it access to specialized knowledge and workflows. This guide shows you how to enable, discover, and use skills in Claude.",
    "usage": "1. For Team / Enterprise plans: Navigate to **[Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills)**, click the “Policy” tab, and ensure that both **Cloud code execution and file creation** and **Skills** are enabled.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
-   "statut_usage": "inconnu",
-   "recommandation": null,
+   "disponibilite": "Free, Pro, Max, Team, Enterprise",
+   "statut_usage": "utilise",
+   "recommandation": {
+    "verdict": "utiliser",
+    "pourquoi": "Tes skills claude.ai (red-team, ask-the-council, orchestrator…) se gèrent ici ; en désactiver un dans Customize > Skills le retirerait aussi de la liste synchronisée dans Claude Code."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
@@ -639,18 +768,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   },
   {
    "id": "claude-skills-page-12512198-how-to-create-custom-skills",
@@ -658,14 +791,17 @@
    "categorie": "skills",
    "nom": "How to create custom skills",
    "gabarit": "complet",
-   "description": null,
+   "description": "Guide de création d'un skill perso pour l'app Claude : un dossier avec un fichier skill.md dont l'en-tête YAML porte `name` et `description`, suivi des instructions, éventuellement de ressources et de scripts. L'enregistrement d'un skill à partir d'une capture d'écran n'existe que dans Cowork sur Mac.",
    "description_source": "Skills are available for users on Free, Pro, Max, Team, and Enterprise plans. This feature requires code execution to be enabled. Skills are also available in beta for Claude Code users and for all API users using the code execution tool.",
    "usage": "## Metadata\nname: Brand Guidelines\ndescription: Apply Acme Corp brand guidelines to all presentations and documents\n\n## Overview\nThis skill provides Acme Corp's official brand guidelines for creating consistent, professional materials. When creating presentations, documents, or marketing materials, apply these standards to ensure all outputs match Acme's visual identity. Claude should reference these guidelines whenever creating external-facing materials or documents that represent Acme Corp.\n\n## Brand Colors\n\nOur official brand colors are:\n- Primary: #FF6B35 (Coral)\n- Secondary: #004E89 (Navy Blue)\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Free, Pro, Max, Team, Enterprise ; exécution de code activée",
    "statut_usage": "inconnu",
-   "recommandation": null,
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes skills perso servent dans Claude Code (maintenance-mint, deploy-site…) et CONTEXTE.md ne décrit aucun besoin de skill perso dans l'app Claude ; l'enregistrement par capture n'existe pas sous Linux."
+   },
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/12512198-how-to-create-custom-skills",
@@ -673,18 +809,26 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-24",
    "historique": [
     {
      "date": "2026-09-23",
      "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": null
+   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
   }
  ]
 }
