@@ -493,8 +493,23 @@ def test_d60_empreinte_et_perimees(tmp_path):
     assert d["contexte_empreinte"] == hashlib.sha1(b"contexte\n").hexdigest()
 
 
+def test_perimees_suspendu(racine_kb, monkeypatch, capsys):
+    import catalogue as cli
+    assert cat.PERIMEES_SUSPENDU is True
+    lancer_kb(racine_kb, monkeypatch)
+    capsys.readouterr()
+    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "perimees", "--racine", str(racine_kb)]) == 3
+    assert "suspendu jusqu'à D64-bis" in capsys.readouterr().err
+    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(racine_kb)]) == 0
+    assert "suspendu" in capsys.readouterr().out
+    for f in (".claude/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md", ".agents/skills/delta-kb/SKILL.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "Lot perimees suspendu jusqu'à D64-bis, au plus tard le 01/10." in t and "--lot perimees" not in t, f
+
+
 def test_d64_catalogue_appliquer_sections_et_peremption(racine_kb, monkeypatch, capsys):
     import catalogue as cli
+    monkeypatch.setattr(cat, "PERIMEES_SUSPENDU", False)  # la mécanique reste testée pendant la suspension
     lancer_kb(racine_kb, monkeypatch)
     ctx = racine_kb / "CONTEXTE.md"
     ctx.write_text("# C\n\nProfil.\n\n## 2. Projets\n\n### 2.1 trading-sim — x\n\nA\n\n### 2.2 carnet — y\n\nB\n", encoding="utf-8")
@@ -540,7 +555,7 @@ def test_skills_d57_d58_d59_d60():
     kb_cx = (racine / "prompts" / "codex-delta-kb.md").read_text(encoding="utf-8")
     kb_cc = (racine / ".claude" / "skills" / "delta-kb" / "SKILL.md").read_text(encoding="utf-8")
     for t in (kb_cx, kb_cc):
-        assert "Calibrage du verdict (D57)" in t and "Constats et déductions (D59)" in t and "--lot perimees" in t
+        assert "Calibrage du verdict (D57)" in t and "Constats et déductions (D59)" in t
     assert "recalibrage commandes" in kb_cx and "recalibrage commandes" not in kb_cc
     assert "recalibrage tester" in kb_cx and "recalibrage tester" not in kb_cc
     for t in (kb_cx, kb_cc):

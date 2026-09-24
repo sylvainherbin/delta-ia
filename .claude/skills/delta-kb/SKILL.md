@@ -17,7 +17,7 @@ Tu commentes par lots la base de référence `docs/data/kb/claude/` (produits `c
 
 ## 1. Réévaluations prioritaires, avant les lots
 
-1. **Commentaires à revoir (D64).** `.venv/bin/python scripts/catalogue.py a-commenter --perimetre claude --lot perimees` donne au plus 30 entrées `utiliser` ou `tester` : d'abord celles dont une section citée de CONTEXTE.md a changé ou disparu, puis celles commentées avant D64 (`contexte_sections: null`). Réévalue-les en citant leurs sections, applique, valide, puis commite à part : `delta-kb(claude): réévaluation contexte — <n> entrées`. Les autres entrées antérieures à D64 ne sont pas reprises en bloc. Ces réévaluations s'ajoutent aux deux lots.
+1. Lot perimees suspendu jusqu'à D64-bis, au plus tard le 01/10.
 2. **Nouveau projet dans CONTEXTE §2 (D64).** Si `catalogue.py lots --perimetre claude` affiche une ligne `nouveau-projet:<clé>`, relis une fois, en gabarit court, les entrées « ignorer » des fonctionnalités et commandes listées par `a-commenter --lot nouveau-projet:<clé>` : le verdict monte si le nouveau projet change quelque chose de concret, et `contexte_sections` cite la clé du projet dans tous les cas.
 
 ## 2. Lots du jour : deux au plus (D46)

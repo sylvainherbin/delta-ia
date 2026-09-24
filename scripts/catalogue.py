@@ -75,7 +75,9 @@ def main(argv=None) -> int:
     entrees = cat.charger(a.racine, a.perimetre)
     contexte = empreinte_contexte(a.racine)
     if a.commande == "lots":
-        per = cat.perimees(entrees, empreintes_sections(a.racine))
+        per = [] if cat.PERIMEES_SUSPENDU else cat.perimees(entrees, empreintes_sections(a.racine))
+        if cat.PERIMEES_SUSPENDU:
+            print(f"{'perimees':<22} suspendu jusqu'à D64-bis, au plus tard le 01/10")
         if per:
             print(f"{'perimees':<22} {'(D64)':<8} {len(per):>4} entrées, {len(per):>4} à réévaluer en priorité")
         for k in cat.nouveaux_projets(a.racine, a.perimetre):
@@ -85,6 +87,9 @@ def main(argv=None) -> int:
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
     if a.commande == "a-commenter":
+        if a.lot == "perimees" and cat.PERIMEES_SUSPENDU:
+            print("lot perimees suspendu jusqu'à D64-bis, au plus tard le 01/10 (catalogue.PERIMEES_SUSPENDU)", file=sys.stderr)
+            return 3
         if a.lot == "perimees":
             lot = {"ids": cat.perimees(entrees, empreintes_sections(a.racine))}
             a.tout = True

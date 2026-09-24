@@ -206,6 +206,8 @@ GROUPES = {"openai": {("skills", "plugins", "mcp"): "skills+plugins+mcp"}}  # D5
 
 
 PERIMEES_MAX = 30  # D60, D64 : réévaluations prioritaires par lancement, en plus des lots
+# Lot `perimees` suspendu jusqu'à D64-bis (au plus tard le 01/10) : passer à False pour le réactiver.
+PERIMEES_SUSPENDU = True
 
 
 def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, maximum: int = PERIMEES_MAX) -> list[str]:
