@@ -222,6 +222,7 @@ delta-ia.
 | Élément | Contenu | Nature |
 |---|---|---|
 | Interface | app de bureau, parce que le trio CLI + tmux + remote control ne fonctionne pas encore pour Codex | [déclaré] |
+| CLI autonome (`codex` du PATH) | installée (nvm) mais non utilisée par Sylvain ; version différente de celle livrée avec l'app de bureau (`/usr/lib/chatgpt/resources/codex`, `0.155.0-alpha.16.4` contre `0.155.1` sur le PATH, vérifié). Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire de l'app de bureau, jamais sur celui du PATH ; les deux partagent le même `$CODEX_HOME` (`~/.codex`), donc les données (sessions, `queue`) restent cohérentes entre les deux | [déclaré] pour l'usage ; [observé] pour les versions et le partage de `$CODEX_HOME` |
 | Projets approuvés | trading-sim et un dossier de travail Codex daté | [observé] |
 | Activité | installé le 17/09 ; fils nommés « Auditer l'architecture », « Arbitrage », « Auditeur », « Console » ; 6 sessions CLI, l'essentiel se passe dans l'app de bureau | [observé] |
 | Modèle cité dans les audits passés | GPT-5.6 Sol, raisonnement high | [observé : rapport d'audit] |
