@@ -8,6 +8,9 @@ Contrôles, dans l'ordre :
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
    code 12.
+4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
+   (`docs/data/claude/`, `docs/data/actu/`, `state/`) -> arrêt, code 13, avec la liste des fichiers. Un reste
+   d'arrêt (versions.json, etat.json, fichier du jour non commité) ou un CONTEXTE.md non commité bloquerait le pull.
 
 Code 0 : le passage peut tourner (éventuels avertissements affichés). Code 2 : argument invalide.
 Sortie : une ligne par contrôle, puis `GARDE: OK` ou `GARDE: ARRÊT (<motif>)` ; `--json` pour un bilan structuré.
@@ -17,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -25,7 +29,8 @@ RACINE = Path(__file__).resolve().parent.parent
 SEUIL_SESSION_5H = 80
 SEUIL_SEMAINE = 85
 FRAICHEUR_MAX_MIN = 15
-CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT = 10, 11, 12
+CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE = 10, 11, 12, 13
+CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "state/")
 
 
 def _pct(d: dict, *cles) -> float | None:
@@ -36,7 +41,7 @@ def _pct(d: dict, *cles) -> float | None:
 
 def controler(racine: Path, jour: date, maintenant: datetime | None = None) -> dict:
     maintenant = maintenant or datetime.now(timezone.utc)
-    res = {"jour": jour.isoformat(), "code": 0, "motif": None, "controles": [], "avertissements": []}
+    res = {"jour": jour.isoformat(), "code": 0, "motif": None, "controles": [], "avertissements": [], "fichiers_modifies": []}
 
     def arret(code, motif):
         if not res["code"]:
@@ -93,6 +98,29 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None) -> d
         arret(CODE_DEJA_FAIT, f"passage claude du {jour.isoformat()} déjà fait ({genere})")
     else:
         res["controles"].append("passage du jour : pas encore fait")
+
+    # 4. arbre de travail (git en lecture seule)
+    try:
+        sortie = subprocess.run(["git", "--no-optional-locks", "-C", str(racine), "status", "--porcelain=v1", "--untracked-files=all"],
+                                capture_output=True, text=True, timeout=30, check=True).stdout
+    except (OSError, subprocess.SubprocessError) as e:
+        res["controles"].append(f"arbre de travail : état git illisible ({type(e).__name__}) — arrêt")
+        arret(CODE_ARBRE, "état git illisible")
+        return res
+    sales = []
+    for ligne in sortie.splitlines():
+        etat, chemin = ligne[:2], ligne[3:].split(" -> ")[-1]
+        if etat == "??":
+            if chemin.startswith(CHEMINS_PASSAGE):
+                sales.append(f"{chemin} (non suivi)")
+        elif etat.strip():
+            sales.append(f"{chemin} ({etat.strip()})")
+    res["fichiers_modifies"] = sales
+    if sales:
+        res["controles"].append(f"arbre de travail : {len(sales)} fichier(s) modifié(s) — arrêt : " + ", ".join(sales))
+        arret(CODE_ARBRE, f"arbre de travail non propre ({len(sales)} fichier(s))")
+    else:
+        res["controles"].append("arbre de travail : propre")
     return res
 
 

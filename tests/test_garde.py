@@ -24,11 +24,25 @@ def quotidien(racine, genere_le):
     f = racine / "docs" / "data" / "claude" / f"{J.isoformat()}.json"
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps({"date": J.isoformat(), "genere_le": genere_le}), encoding="utf-8")
+    git(racine, "add", str(f.relative_to(racine)))
+    git(racine, "commit", "-qm", "jour")
+
+
+def git(racine, *args):
+    import subprocess
+    subprocess.run(["git", "-C", str(racine), *args], check=True, capture_output=True,
+                   env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"})
 
 
 @pytest.fixture
 def racine(tmp_path):
-    (tmp_path / ".git").mkdir()
+    git(tmp_path, "init", "-q")
+    (tmp_path / ".gitignore").write_text("rapports/\n")
+    for f in ("docs/data/versions.json", "docs/data/etat.json", "docs/data/claude/index.json", "CONTEXTE.md"):
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / f).write_text("{}\n")
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "commit", "-qm", "init")
     usage(tmp_path)
     return tmp_path
 
@@ -89,7 +103,7 @@ def test_premier_motif_prime_et_json(racine, capsys):
     usage(racine, 90, 90)
     code, out = lancer(racine, capsys, "--json")
     r = json.loads(out)
-    assert code == 10 and r["code"] == 10 and "verrou" in r["motif"] and len(r["controles"]) == 3
+    assert code == 10 and r["code"] == 10 and "verrou" in r["motif"] and len(r["controles"]) == 4
 
 
 def test_lecture_seule(racine, capsys):
@@ -126,3 +140,54 @@ def test_d68_skill_et_reglages():
         assert f"Bash({cmd})" in allow and f"`{cmd}`" in sec.replace("\n", " ") or f"Bash({cmd})" in allow, cmd
     assert {"Bash(git push --force *)", "Bash(git add -A *)"} <= set(s["permissions"]["deny"])
     assert "| D68 |" in (RACINE / "SPEC.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("fichier, attendu", [
+    ("docs/data/versions.json", "docs/data/versions.json (M)"),
+    ("docs/data/etat.json", "docs/data/etat.json (M)"),
+    ("CONTEXTE.md", "CONTEXTE.md (M)"),
+])
+def test_arbre_fichier_suivi_modifie(racine, capsys, fichier, attendu):
+    (racine / fichier).write_text('{"modifie": true}\n')
+    code, out = lancer(racine, capsys, "--json")
+    r = json.loads(out)
+    assert code == garde.CODE_ARBRE == 13 and r["fichiers_modifies"] == [attendu]
+
+
+def test_arbre_fichier_du_jour_non_suivi(racine, capsys):
+    f = racine / "docs" / "data" / "claude" / f"{J.isoformat()}.json"
+    f.write_text("{}")
+    code, out = lancer(racine, capsys)
+    assert code == 13 and f"docs/data/claude/{J.isoformat()}.json (non suivi)" in out
+
+
+def test_arbre_non_suivi_hors_chemins_et_ignores_toleres(racine, capsys):
+    (racine / "notes.txt").write_text("x")
+    (racine / "rapports").mkdir(exist_ok=True)
+    (racine / "rapports" / "r.md").write_text("x")
+    assert lancer(racine, capsys)[0] == 0
+
+
+def test_arbre_fichier_indexe(racine, capsys):
+    (racine / "docs" / "data" / "etat.json").write_text('{"x": 1}\n')
+    git(racine, "add", "docs/data/etat.json")
+    code, out = lancer(racine, capsys)
+    assert code == 13 and "docs/data/etat.json (M)" in out
+
+
+def test_d68_correctif_mcp_et_arret_propre():
+    from conftest import RACINE
+    skill = (RACINE / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
+    assert "Jamais d'outil MCP pendant un passage" in skill and "docs/data/kb/claude/*.json" in skill
+    assert "Grep et Glob n'existent pas dans les sessions Claude Desktop" in skill
+    sec = skill[skill.index("## Mode automatique (D68)"):skill.index("## 0. Préparation")]
+    arret_suivis = ("git checkout -- docs/data/versions.json docs/data/etat.json docs/data/claude docs/data/actu "
+                    "docs/data/kb/claude state/claude.json state/actu.json")
+    arret_nouveaux = "git clean -f -- docs/data/claude docs/data/actu"
+    assert f"`{arret_suivis}`" in sec and f"`{arret_nouveaux}`" in sec and "outil refusé" in sec and "13 arbre de travail" in sec
+    s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
+    assert f"Bash({arret_suivis})" in s["allow"] and f"Bash({arret_nouveaux})" in s["allow"]
+    assert not any(r.startswith(("Bash(git checkout *", "Bash(git clean *", "Bash(rm")) for r in s["allow"])
+    # serveur local delta-ia, connecteur de compte dans Claude Desktop (identifiant relevé le 25/09) et dans la CLI
+    assert {"mcp__delta-ia__*", "mcp__f15d4eb1-5763-45f3-b583-ed06d6d3532d__*", "mcp__claude_ai_Delta-IA__*"} <= set(s["deny"])
+    assert not any(r.startswith("mcp__") for r in s["allow"])
