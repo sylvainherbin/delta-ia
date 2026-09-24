@@ -946,7 +946,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les sessions herbin-* se parlent déjà par `SendMessage` et `ListAgents` (23 appels observés) ; mentionner la cible avec `@herbin-trading` évite l'ambiguïté quand Sylvain relaie une mission."
+    "pourquoi": "Tes sessions herbin-* se parlent déjà par `SendMessage` et `ListAgents` (23 appels `SendMessage` observés) ; nommer la cible avec `@herbin-trading` évite l'ambiguïté quand tu relaies une mission."
    },
    "sources": [
     {
@@ -972,10 +972,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "les sessions se parlent via SendMessage / ListAgents et Sylvain relaie des prompts"
+    },
+    "config.claude-code.skills": {
+     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "pourquoi": "SendMessage : 23 appels dans les transcripts"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-deep-links",
@@ -1688,7 +1701,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La mémoire automatique est très utilisée (23 + 4 mémoires) et carnet importe `@AGENTS.md`. Le `~/.claude/CLAUDE.md` global existe depuis le 24/09 mais ne contient que la consigne du connecteur delta-ia ; y centraliser français, tutoiement et validation pas à pas reste à proposer."
+    "pourquoi": "La mémoire automatique est très utilisée (23 + 4 mémoires) et le CLAUDE.md de carnet importe `@AGENTS.md`. Le `~/.claude/CLAUDE.md` global ne porte que la consigne delta-ia : y centraliser français, tutoiement et validation pas à pas reste à proposer (piste 1)."
    },
    "sources": [
     {
@@ -1714,10 +1727,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+     "pourquoi": "23 mémoires (racine) + 4 (trading-sim), très utilisées"
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "CLAUDE.md limité à `@AGENTS.md`"
+    },
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 1 : règles transversales à centraliser dans ~/.claude/CLAUDE.md"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-mobile",
@@ -1734,7 +1764,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'iPhone est l'interface principale de Sylvain pour piloter ses sessions ; la page recense ce que l'onglet Code permet au-delà de Remote Control."
+    "pourquoi": "L'iPhone est ton interface principale pour piloter les sessions ; la page recense ce que l'onglet Code permet au-delà de Remote Control."
    },
    "sources": [
     {
@@ -1760,10 +1790,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "iPhone : pilote le PC à distance (Remote Control, app Claude iOS)"
+    },
+    "usage.hors-machine": {
+     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "pourquoi": "l'app Claude iPhone sert surtout à piloter les sessions Claude Code"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-model-config",
@@ -1780,7 +1823,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Opus 5, Fable 5.1 et Opus 5.5 se partagent l'usage et la limite Fable a atteint 75 % en milieu de semaine ; fixer par session modèle et effort (Sonnet pour les tâches machine simples de herbin-mint) étalerait la charge. `/model` enregistre le choix comme défaut des nouvelles sessions ; `--model` au lancement ne vaut que pour la session."
+    "pourquoi": "Le défaut relevé dans `etat.json` est `opus`, sans effort fixé ; choisir modèle et effort par session (Sonnet pour herbin-mint) étalerait la consommation (piste 11). `/model` enregistre un défaut pour les nouvelles sessions, `--model` au lancement ne vaut que pour la session."
    },
    "sources": [
     {
@@ -1806,10 +1849,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code": {
+     "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
+     "pourquoi": "modèle et effort par défaut relevés dans docs/data/etat.json"
+    },
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, pour étaler la charge"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-output-styles",
@@ -1859,7 +1915,7 @@
    "categorie": "fonctionnalites",
    "nom": "Choose a permission mode",
    "gabarit": "complet",
-   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (lectures seules), `acceptEdits`, `plan`, `auto` (tout, avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`. On passe de l'un à l'autre par `Maj+Tab` ; sur Pro, Max et Team, le mode de départ intégré est `auto`.",
+   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (lectures seules), `acceptEdits`, `plan`, `auto` (tout, avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`. On passe de l'un à l'autre par `Maj+Tab`.",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
    "usage_nature": "syntaxe",
@@ -1868,7 +1924,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Le mode auto est en service, puisque CONTEXTE note son classificateur qui bloque des écritures système ; le mode `plan` convient aux étapes de diagnostic que Sylvain exige avant toute modification sur trading-sim."
+    "pourquoi": "Le mode auto est en service, puisque son classificateur bloque certaines écritures système ; le mode `plan` correspond au « diagnostic d'abord, accord explicite ensuite » que tu exiges avant toute modification."
    },
    "sources": [
     {
@@ -1894,10 +1950,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "classificateur du mode auto qui bloque des écritures système ; validation pas à pas"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-permissions",
@@ -1914,7 +1979,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les réglages limitent déjà `sudo -A` à apt, timeshift et findmnt, et trading-sim refuse WebFetch, WebSearch et les connecteurs, mais pas le connecteur de compte Delta-IA : ajouter ou non un `deny` est la question transmise à Work. « Don't ask again » laisse une règle permanente dans `.claude/settings.local.json`, à relire sur trading-sim."
+    "pourquoi": "Tes réglages limitent `sudo -A` à apt, timeshift et findmnt, et trading-sim refuse WebFetch, WebSearch et les connecteurs listés, mais pas les connecteurs de compte comme Delta-IA : la question du `deny` est chez Work. « Don't ask again » écrit une règle permanente dans `.claude/settings.local.json`."
    },
    "sources": [
     {
@@ -1940,10 +2005,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+     "pourquoi": "autorisations `sudo -A` limitées à apt / timeshift / findmnt"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur et connecteurs"
+    },
+    "config.claude-code.mcp": {
+     "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+     "pourquoi": "écart : les connecteurs de compte arrivent sur trading-sim faute de `deny`"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-prompt-caching",
@@ -1960,7 +2042,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Lien direct avec l'économie des limites hebdomadaires : éviter d'alterner Opus et Fable au milieu d'une session longue évite un tour complet non mis en cache."
+    "pourquoi": "Lien direct avec les limites hebdomadaires : ne pas changer de modèle au milieu d'une longue session herbin-trading évite un tour complet sans cache ; une mémoire ou un CLAUDE.md modifié ne s'applique qu'après `/clear` ou `/compact`."
    },
    "sources": [
     {
@@ -1986,10 +2068,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage et coût en jetons des prompts d'audit parmi les frictions"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "sessions longues relancées par `claude --resume`"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-remote-control",
@@ -2006,7 +2101,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les six sessions tmux sont lancées avec `--remote-control herbin-<nom>` et pilotées depuis l'iPhone ; la reconnexion automatique concerne directement les coupures du Wi-Fi fragile."
+    "pourquoi": "Tes six sessions tmux sont lancées avec `--remote-control herbin-<nom>` et pilotées depuis l'iPhone ; la reconnexion automatique concerne directement les coupures du Wi-Fi."
    },
    "sources": [
     {
@@ -2032,10 +2127,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "sessions lancées avec `--remote-control herbin-<nom>`, pilotées depuis l'iPhone"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Wi-Fi fragile : pannes qui coupent les sessions à distance"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-routines",
@@ -2228,7 +2336,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les services systemd relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante d'une mission trading-sim sans polluer la session principale."
+    "pourquoi": "Tes services systemd relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante d'une mission trading-sim sans polluer la session principale."
    },
    "sources": [
     {
@@ -2254,10 +2362,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "chaque service relance sa session par `claude --resume <id>`"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "missions à révisions successives, parfois rejetées"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-slack",
@@ -2630,7 +2751,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Workflow compte 13 appels dans les transcripts et l'avertissement est désactivé dans les réglages ; à réserver aux tâches trop grosses pour une session, car chaque exécution multiplie la consommation des limites."
+    "pourquoi": "Workflow compte 13 appels dans tes transcripts et son avertissement est désactivé ; à réserver aux tâches trop grosses pour une session, car chaque exécution multiplie la consommation des limites."
    },
    "sources": [
     {
@@ -2656,10 +2777,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "pourquoi": "Workflow : 13 appels observés"
+    },
+    "config.claude-code.interface": {
+     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+     "pourquoi": "avertissement Workflow désactivé dans settings.json"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-worktrees",
@@ -3141,7 +3279,7 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude’s chat search and memory to build on previous context",
    "gabarit": "complet",
-   "description": "Claude peut chercher dans les conversations passées (hors Projets, ou à l'intérieur d'un Projet) et retenir le contexte des échanges pour les conversations et tâches Cowork suivantes. La mémoire se gère dans Réglages > Mémoire ; l'export de l'ancienne mémoire n'était proposé que jusqu'au 9 septembre 2026.",
+   "description": "Claude peut chercher dans les conversations passées (hors Projets, ou à l'intérieur d'un Projet) et retenir le contexte des échanges pour les conversations et tâches Cowork suivantes. La mémoire se gère dans Réglages > Mémoire.",
    "description_source": "You can prompt Claude to search through your previous conversations to find and reference relevant information in new chats. Claude can also remember context from your chats and carry it into new conversations and Cowork tasks. This article explains how chat search and memory work, what Claude does and doesn't remember, how to review and edit what's saved, and how to turn these features on or off.",
    "usage": "You can prompt Claude to search through your previous conversations to find and reference relevant information in new chats. Claude can also remember context from your chats and carry it into new conversations and Cowork tasks. This article explains how chat search and memory work, what Claude does and doesn't remember, how to review and edit what's saved, and how to turn these features on or off.",
    "usage_nature": "etapes",
@@ -3150,7 +3288,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La mémoire claude.ai est activée et jugée utile par Sylvain ; chercher une ancienne conversation d'un Projet (par exemple « Web app ia ») évite de recopier un contexte déjà donné."
+    "pourquoi": "La mémoire claude.ai est activée et jugée utile ; chercher une ancienne conversation d'un Projet comme « Web app ia » évite de recopier un contexte déjà donné."
    },
    "sources": [
     {
@@ -3176,10 +3314,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "pourquoi": "mémoire claude.ai activée et jugée utile ; trois Projets claude.ai"
+    }
+   }
   },
   {
    "id": "claude-fonctionnalites-page-11869619-use-claude-with-ios-apps",
@@ -4094,7 +4241,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Fable 5.1 est le deuxième modèle le plus utilisé et sa limite a atteint 75 % en milieu de semaine ; atteindre le plafond fait basculer vers les crédits d'usage, payants, ou vers Opus."
+    "pourquoi": "La limite Fable figure parmi tes frictions récurrentes sur un plan Max (5x) ; atteindre le plafond fait basculer vers des crédits d'usage payants ou un autre modèle, d'où la piste 11 (Sonnet pour les tâches simples)."
    },
    "sources": [
     {
@@ -4120,10 +4267,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage hebdomadaire et Fable parmi les frictions récurrentes"
+    },
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "abonnement Claude Max (5x)"
+    },
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 11 : consommation Fable/Opus proche des plafonds (déduit)"
+    }
+   }
   },
   {
    "id": "claude-fonctionnalites-page-15520349-use-claude-cowork-on-web-desktop-and-mobile",
@@ -4389,10 +4553,10 @@
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Une remise à zéro promotionnelle a servi le 23/09 ; comme elle est irréversible et que la date habituelle ne bouge pas, la garder pour une semaine où la limite bloque une campagne trading-sim, en surveillant son expiration."
+    "pourquoi": "Les limites hebdomadaires sont une friction récurrente : si une remise à zéro t'est proposée, la garder pour une semaine où la limite bloquerait une campagne trading-sim, avant sa date d'expiration, car elle est irréversible."
    },
    "sources": [
     {
@@ -4418,10 +4582,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage hebdomadaires parmi les frictions récurrentes"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "campagnes de calcul coûteuses, projet prioritaire"
+    }
+   }
   },
   {
    "id": "claude-fonctionnalites-page-8241126-upload-files-to-claude",

@@ -456,7 +456,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; sur une longue session comme herbin-trading, une vérification ponctuelle posée en `/btw` ne gonflerait pas le contexte."
+    "pourquoi": "Tu la tapes déjà ; sur une longue session comme herbin-trading, une vérification ponctuelle posée en `/btw` ne gonfle pas le contexte de la mission."
    },
    "sources": [
     {
@@ -482,10 +482,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "pourquoi": "`/btw` figure parmi les commandes tapées observées"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "herbin-trading exécute les missions longues de trading-sim"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-bug",
@@ -674,7 +687,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est la base de tes six sessions tmux (`claude --resume … --remote-control`) ; rien à changer."
+    "pourquoi": "C'est la base de tes six services `claude-session@…`, qui lancent `claude --resume <id> --remote-control herbin-<nom>` sous tmux ; rien à changer."
    },
    "sources": [
     {
@@ -700,10 +713,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "six services systemd lancent `claude --resume <id> --remote-control herbin-<nom>` dans tmux"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-agents",
@@ -1678,10 +1700,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "chaque service relance sa session par `claude --resume <id>`"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-remote-control",
@@ -1996,7 +2027,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Entre deux missions sur herbin-trading, repartir d'un contexte vide coûte moins de jetons par tour que de traîner l'historique, et `/clear <nom>` garde la mission précédente retrouvable."
+    "pourquoi": "Entre deux missions sur herbin-trading, repartir d'un contexte vide coûte moins de jetons par tour que de traîner l'historique, et `/clear <nom>` garde la mission précédente retrouvable dans `/resume`."
    },
    "sources": [
     {
@@ -2022,10 +2053,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "herbin-trading enchaîne les missions trading-sim"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage hebdomadaires et coût en jetons listés parmi les frictions récurrentes"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-color",
@@ -2088,7 +2132,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; sur les longues sessions trading-sim, préciser en argument ce qu'il faut garder (mission en cours, verdicts d'audit) évite de les perdre au résumé."
+    "pourquoi": "Tu la tapes déjà ; sur les longues sessions trading-sim, préciser en argument ce qu'il faut garder (mission en cours, verdicts d'audit `CLÉ = VALEUR`) évite de les perdre au résumé."
    },
    "sources": [
     {
@@ -2114,10 +2158,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "pourquoi": "`/compact` figure parmi les commandes tapées observées"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "verdicts en blocs `CLÉ = VALEUR` à conserver d'une mission à l'autre"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-config",
@@ -2125,7 +2182,7 @@
    "categorie": "commandes",
    "nom": "/config",
    "gabarit": "complet",
-   "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles ne peuvent pas activer un réglage qui exige une confirmation. `/config --help` liste les clés. Alias : `/settings`.",
+   "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles ne peuvent pas activer un réglage qui exige une confirmation.",
    "description_source": "Open the Settings interface to adjust theme, model, output style, and other preferences. Pass one or more key=value pairs to set a setting directly without opening the interface, for example /config thinking=false, /config theme=dark, or /config model=sonnet. The key=value form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. The key=value form can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit, though it can turn one off. Run /config --help to list the keys it accepts. Alias: /settings",
    "usage": "/config [key=value ...]",
    "usage_nature": "syntaxe",
@@ -2133,8 +2190,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "Depuis l'iPhone, `/config model=sonnet` bascule une session sur un modèle moins coûteux sans panneau interactif, ce qui sert directement à ménager les limites hebdomadaires."
+    "verdict": "tester",
+    "pourquoi": "Depuis l'iPhone, taper `/config model=sonnet` dans herbin-mint via Remote Control et vérifier que la session bascule sans panneau interactif : c'est la piste 11 (Sonnet pour les tâches machine simples)."
    },
    "sources": [
     {
@@ -2160,10 +2217,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, pour étaler la charge"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "pilotage depuis l'iPhone par Remote Control"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-context",
@@ -2477,7 +2547,7 @@
    "categorie": "commandes",
    "nom": "/effort",
    "gabarit": "complet",
-   "description": "Règle le niveau d'effort : de `low` à `xhigh`, `max`, `ultracode` ou `auto` ; `status` l'affiche. `max` et `ultracode` ne valent que pour la session. Lancée pendant une réponse, elle s'applique à la requête suivante du même tour. Fonctionne en `-p`.",
+   "description": "Règle le niveau d'effort : de `low` à `xhigh`, `max`, `ultracode` ou `auto` ; `status` l'affiche. `max` et `ultracode` ne valent que pour la session. Lancée pendant une réponse, elle s'applique à la requête suivante du même tour.",
    "description_source": "Set the effort level: low to xhigh, max, ultracode, or auto; status prints it. max and ultracode are session-only; the ultracode key persists. Run it while Claude is responding and, once you confirm the cache warning, if Claude Code shows one, Claude Code applies the new level to the next request in that turn. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Works in -p",
    "usage": "/effort [level|auto|status]",
    "usage_nature": "syntaxe",
@@ -2486,7 +2556,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Baisser l'effort sur les sessions de tâches simples (herbin-mint, herbin-carnet) et le garder haut sur herbin-trading répartit mieux tes limites hebdomadaires (piste 11 de CONTEXTE)."
+    "pourquoi": "Baisser l'effort sur les sessions de tâches simples (herbin-mint, herbin-carnet) et le garder haut sur herbin-trading répartirait mieux tes limites hebdomadaires (piste 11). `max` et `ultracode` ne valent que pour la session courante."
    },
    "sources": [
     {
@@ -2512,10 +2582,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 11 : choisir modèle et effort par session pour étaler la charge"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "rôles des sessions : herbin-mint (système), herbin-carnet (coach), herbin-trading (calculs)"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-exit",
@@ -3479,7 +3562,7 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante. En mode `-p`, le modèle passé en argument ne vaut que pour la session.",
+   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante.",
    "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when Claude Code asks you to confirm the switch. Once you confirm the switch, if Claude Code asks, Claude Code applies the change without waiting for the current response to finish. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Also available in non-interactive mode (-p) with a model argument instead of the picker, where it applies to the current session only and isn't saved as your default; requires Claude Code v2.1.205 or later",
    "usage": "/model [model]",
    "usage_nature": "syntaxe",
@@ -3488,7 +3571,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Passer herbin-mint et herbin-carnet sur Sonnet et garder Fable ou Opus pour herbin-trading étale ta consommation, alors que la limite Fable atteint 75 % en milieu de semaine. Attention : `/model` enregistre ce choix comme défaut de toutes les nouvelles sessions ; pour ne changer que la session en cours, ouvre le sélecteur et appuie sur `s`."
+    "pourquoi": "Passer herbin-mint sur Sonnet et garder Opus ou Fable pour herbin-trading étalerait la consommation (piste 11). Attention : `/model` enregistre le choix comme défaut de toutes les nouvelles sessions ; pour la seule session en cours, ouvre le sélecteur et appuie sur `s`."
    },
    "sources": [
     {
@@ -3518,10 +3601,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, la consommation Fable/Opus approchant les plafonds"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "six sessions aux rôles distincts, chacune avec son propre modèle possible"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-output-style",
@@ -4176,10 +4272,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "pourquoi": "`/remote-control` figure parmi les commandes tapées observées"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "l'iPhone est l'interface principale de pilotage"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-remote-env",
@@ -5324,7 +5433,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes limites hebdomadaires et Fable sont une friction récurrente ; consulter `/usage` avant de lancer une mission lourde sur herbin-trading évite de tomber à court en milieu de semaine."
+    "pourquoi": "Les limites hebdomadaires et Fable sont une friction récurrente ; `/usage` avant une mission lourde sur herbin-trading montre ce qui reste et ce qui compte dans ton plan Max (5x)."
    },
    "sources": [
     {
@@ -5350,10 +5459,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage hebdomadaire et Fable parmi les frictions récurrentes"
+    },
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "abonnement Claude Max (5x)"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-usage-credits",
