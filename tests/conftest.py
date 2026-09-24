@@ -99,7 +99,7 @@ def element_depuis_brut(n: dict, impact: str = "faible", ids_bruts=None) -> dict
         "resume": "Résumé de test.", "sources": [{"url": n["url"], "libelle": "source", "officielle": bool(n.get("officielle"))}],
         "certitude": "officiel" if n.get("officielle") else "rapporte", "impact": impact,
         "pour_toi": None if impact == "nul" else "Pertinent pour trading-sim.", "projets_concernes": [] if impact == "nul" else ["trading-sim"],
-        "action": None, "kb_refs": [],
+        "action": None, "kb_refs": [], "contexte_sections": {},  # D64-bis : obligatoire après le 24/09/2026
     }
 
 

@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(date +%F)",
+      "Bash(date +%Y-%m-%d_%H%M)",
+      "Bash(date -d '-7 days' +%F)",
+      "Bash(sha1sum CONTEXTE.md)",
+      "Bash(.venv/bin/python scripts/garde.py *)",
+      "Bash(.venv/bin/python scripts/fetch.py *)",
+      "Bash(.venv/bin/python scripts/versions.py)",
+      "Bash(.venv/bin/python scripts/etat.py)",
+      "Bash(.venv/bin/python scripts/contexte.py *)",
+      "Bash(.venv/bin/python scripts/valider.py *)",
+      "Bash(.venv/bin/python scripts/catalogue.py appliquer *)",
+      "Bash(git pull --rebase)",
+      "Bash(git add docs/data/claude state/claude.json docs/data/kb/claude docs/data/versions.json docs/data/etat.json)",
+      "Bash(git add docs/data/actu state/actu.json)",
+      "Bash(git commit -m \"delta(claude): *\")",
+      "Bash(git commit -m \"delta(actu): *\")",
+      "Bash(git push)",
+      "Edit(docs/data/claude/**)",
+      "Edit(docs/data/actu/**)",
+      "Edit(raw/kb/commentaires-auto-*.json)",
+      "Edit(rapports/*-delta-ia-delta-auto.md)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git add -A *)",
+      "Bash(git add --all *)"
+    ]
+  }
+}

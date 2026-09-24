@@ -271,8 +271,10 @@ def test_d64bis_contexte_sections_des_elements(racine, capsys):
 
     def verifier(f, elements_cs=None, date_="2026-09-25"):
         d = copy.deepcopy(q)
-        if elements_cs is not None:
-            for e in d["elements"]:
+        for e in d["elements"]:
+            if elements_cs is None:
+                e.pop("contexte_sections", None)
+            else:
                 e["contexte_sections"] = elements_cs
         f.write_text(json.dumps({**d, "date": date_}, ensure_ascii=False))
         r = v.Rapport(); v.verifier_quotidien(f, "claude", projets, r)

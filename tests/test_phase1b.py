@@ -154,7 +154,9 @@ def test_d4_borne_vient_de_l_etat(tmp_path, monkeypatch, date_figee):
     fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--valider"])
     fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
     brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
-    assert brut["borne"] == __import__("datetime").date.today().isoformat()  # date du dernier --valider
+    from datetime import date, datetime, timezone
+    # date du dernier --valider : inscrite en UTC, qui peut différer de la date locale autour de minuit
+    assert brut["borne"] in {date.today().isoformat(), datetime.now(timezone.utc).date().isoformat()}
 
 
 # --- suivre_revisions -----------------------------------------------------------------------------------------
