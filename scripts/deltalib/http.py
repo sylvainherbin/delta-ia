@@ -24,6 +24,7 @@ class Reponse:
     statut: int
     content_type: str
     texte: str
+    redirections: tuple = ()  # ((statut, url), …) des sauts suivis, dans l'ordre ; vide sans redirection
 
     @property
     def est_markdown(self) -> bool:
@@ -80,7 +81,8 @@ class Client:
                     r._content = contenu  # décodage par requests (charset de l'en-tête, sinon détection)
                     if not r.encoding or r.encoding.lower() == "iso-8859-1":
                         r.encoding = r.apparent_encoding or "utf-8"
-                    return Reponse(r.url, r.status_code, r.headers.get("Content-Type", ""), r.text)
+                    return Reponse(r.url, r.status_code, r.headers.get("Content-Type", ""), r.text,
+                                   tuple((h.status_code, h.url) for h in r.history))
                 r.close()
                 derniere = f"HTTP {r.status_code}"
                 if 400 <= r.status_code < 500 and r.status_code not in (408, 429):

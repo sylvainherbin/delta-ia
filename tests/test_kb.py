@@ -821,3 +821,64 @@ def test_page_en_echec_isolee(docs, tmp_path):
 def test_toutes_les_pages_en_echec(docs):
     with pytest.raises(FormatInattendu, match="1 en échec"):
         extraire(docs["claude-apps"], **{"page:12260368-use-incognito-chats": "sans titre\n"})
+
+
+# --- Redirections : jamais suivies en silence (24/09) ---------------------------------------------------------------
+
+@pytest.mark.parametrize("statut", [301, 302, 307, 308])
+def test_client_note_les_redirections(statut):
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    from deltalib.http import Client
+
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == "/ancien.md":
+                self.send_response(statut); self.send_header("Location", "/nouveau.md"); self.end_headers()
+            else:
+                corps = b"# Titre\n\nTexte.\n"
+                self.send_response(200); self.send_header("Content-Type", "text/markdown"); self.send_header("Content-Length", str(len(corps)))
+                self.end_headers(); self.wfile.write(corps)
+
+        def log_message(self, *a):
+            pass
+    srv = HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        base = f"http://127.0.0.1:{srv.server_address[1]}"
+        rep = Client(dormir=lambda s: None).get(base + "/ancien.md")
+        assert rep.url == base + "/nouveau.md" and rep.texte.startswith("# Titre")
+        assert rep.redirections == ((statut, base + "/ancien.md"),)
+        assert Client(dormir=lambda s: None).get(base + "/nouveau.md").redirections == ()
+    finally:
+        srv.shutdown()
+
+
+class ClientRedirige(ClientDoc):
+    """Première page de la liste : servie après une redirection 301, contenu inchangé."""
+    def get(self, url, accept=None):
+        rep = super().get(url, accept)
+        if url == sorted(PAGES)[0]:
+            return Reponse(url.replace(".md", "-deplace.md"), 200, rep.content_type, rep.texte, ((301, url),))
+        return rep
+
+
+def test_fetch_kb_signale_les_redirections(racine_kb, monkeypatch, capsys):
+    monkeypatch.setattr(fetch, "Client", lambda: ClientRedirige({}))
+    args = ["--racine", str(racine_kb), "--sources", str(racine_kb / "sources.yaml"), "--kb", "claude-code", "codex"]
+    assert fetch.main(args) == 0, "la page reste lisible : pas d'échec"
+    sortie = capsys.readouterr().out
+    ancienne = sorted(PAGES)[0]
+    lignes = [l for l in sortie.splitlines() if "→ REDIRECTION" in l]
+    assert len(lignes) == 1 and f"{ancienne} → {ancienne.replace('.md', '-deplace.md')}" in lignes[0] and "(301)" in lignes[0]
+    assert "1 redirection(s)" in sortie
+    modif = json.loads((racine_kb / "raw" / "kb" / "claude-modifications.json").read_text())
+    tout = modif["pages"]["redirections"] + json.loads((racine_kb / "raw" / "kb" / "openai-modifications.json").read_text())["pages"]["redirections"]
+    assert [r["ancienne"] for r in tout if r["ancienne"] == ancienne], "la redirection figure dans le rapport du passage"
+    assert fetch.main(args + ["--dry-run"]) == 0 and "→ REDIRECTION" in capsys.readouterr().out, "signalée aussi en dry-run"
+
+
+def test_skills_redirections_et_consolidation():
+    for f in (".claude/skills/delta/SKILL.md", "prompts/codex-delta.md", ".agents/skills/delta/SKILL.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "→ REDIRECTION" in t and "**en consolidation**" in t and "ni allégée comme un acquis" in t, f

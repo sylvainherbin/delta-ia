@@ -140,14 +140,18 @@ def commande_kb(args, racine: Path) -> int:
     if not docs:
         print(f"aucune documentation active pour {args.kb}", file=sys.stderr)
         return 2
-    bilan_pages = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": []}
+    bilan_pages = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": [], "redirections": []}
     if not args.kb_sans_reseau:
         bilan_pages = recuperer(racine, docs, Client, ecrire=not args.dry_run)  # D47 : dry-run n'écrit rien
     print(f"documentation {' '.join(args.kb)} : {bilan_pages['pages']} page(s) lue(s), "
           f"{len(bilan_pages['nouvelles'])} nouvelle(s), {len(bilan_pages['modifiees'])} modifiée(s), "
-          f"{len(bilan_pages['echecs'])} en échec")
+          f"{len(bilan_pages['echecs'])} en échec, {len(bilan_pages.get('redirections', []))} redirection(s)")
     for e in bilan_pages["echecs"]:
         print(f"  ! ÉCHEC   {e['doc']}/{e['fichier']} : {e['erreur']}")
+    for r in bilan_pages.get("redirections", []):  # jamais suivie en silence, même si la page reste lisible
+        page = r["fichier"].removeprefix("page:")
+        print(f"  → REDIRECTION {r['doc']}/{page} : {r['ancienne']} → {r['nouvelle']} "
+              f"({', '.join(map(str, r['statuts']))})")
     code = 0
     for perimetre in sorted({d.perimetre for d in docs}):
         res = catalogue.mettre_a_jour(racine, perimetre, docs, ecrire_fichiers=not args.dry_run,

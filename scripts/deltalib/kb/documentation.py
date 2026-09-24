@@ -135,14 +135,24 @@ def recuperer(racine: Path, docs: list[DocSource], fabrique_client=Client, paral
         try:
             rep = client().get(url, accept="text/markdown, text/html")
         except ErreurSource as e:
-            return d, nom, url, None, str(e)
-        return d, nom, url, rep.texte, None
+            return d, nom, url, None, str(e), None
+        return d, nom, url, rep.texte, None, rep
+
+    def redirection(d, nom, url, rep):
+        """Une redirection n'est jamais suivie en silence : page déplacée, à reporter dans sources.yaml."""
+        if rep is None or not rep.redirections:
+            return None
+        return {"doc": d.id, "fichier": nom, "ancienne": url, "nouvelle": rep.url,
+                "statuts": [s for s, _ in rep.redirections]}
 
     with ThreadPoolExecutor(max_workers=paralleles) as ex:
         resultats = list(ex.map(une, taches))
-    bilan = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": [], "textes": {}}
+    bilan = {"pages": 0, "modifiees": [], "nouvelles": [], "echecs": [], "redirections": [], "textes": {}}
     par_produit: dict[str, dict] = {}
-    for d, nom, url, texte, erreur in resultats:
+    for d, nom, url, texte, erreur, rep in resultats:
+        r = redirection(d, nom, url, rep)
+        if r:
+            bilan["redirections"].append(r)
         chemin = chemin_cache(racine, d, nom)
         index_path = racine / "raw" / "kb" / d.produit / "empreintes.json"
         index = par_produit.setdefault(d.produit, _lire_json(index_path))
