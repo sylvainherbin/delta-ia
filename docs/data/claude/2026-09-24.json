@@ -2,10 +2,56 @@
   "date": "2026-09-24",
   "perimetre": "claude",
   "agent": "claude-code",
-  "genere_le": "2026-09-24T12:38:36+00:00",
-  "synthese": "Seule nouveauté du jour : Claude Code 2.1.281, déjà installée, qui corrige surtout la reprise des sessions, ce qui touche tes six sessions relancées par `claude --resume`. Elle fiabilise aussi le réglage de `/effort` et du modèle depuis l'iPhone. Rien de nouveau depuis le passage du matin.",
+  "genere_le": "2026-09-24T21:03:48+00:00",
+  "synthese": "Claude Code 2.1.282, déjà installée, poursuit les corrections de reprise de la 2.1.281 : tes six sessions relancées par `claude --resume` gardent mieux leur raisonnement, et un `/compact` refusé réessaie seul. Seul changement à surveiller : si ta télémétrie est coupée, le mode auto passe au classificateur côté serveur. Les notes de la plateforme (refus facturés, cache diagnostics) ne touchent que l'API, dont CONTEXTE.md ne décrit aucun usage direct chez toi.",
   "sources_en_echec": [],
   "elements": [
+    {
+      "id": "claude-code-2.1.282",
+      "ids_bruts": [
+        "claude-code-2.1.282"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.282",
+      "version": "2.1.282",
+      "date_publication": "2026-09-24",
+      "type": "correction",
+      "resume": "Nouvelle série de corrections de la reprise : `--continue` et `--resume` ne renvoient plus d'anciens messages sous une forme modifiée qui faisait perdre le raisonnement antérieur, le thinking n'est plus perdu quand `/model`, `/rename` ou `/artifacts` sont lancés pendant un tour, la reprise des très grosses sessions est plus rapide, et un compactage refusé réessaie sur un modèle de repli. `claude remote-control --debug` fonctionne de nouveau, les clients Remote Control voient le changement de modèle, et les règles Bash avec `:*` au milieu du motif s'appliquent depuis les fichiers de réglages. Changements : le mode auto utilise par défaut le classificateur côté serveur quand la télémétrie est coupée (`CLAUDE_CODE_AUTO_MODE_SERVER=0` pour revenir), les dossiers de skills locaux nommés `anthropic-skills` ou `claude-ai` ne se chargent plus, et le réglage `maxProseWidth` borne la largeur du texte.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21282",
+          "libelle": "Changelog Claude Code 2.1.282",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six sessions tournent en `claude --resume … --remote-control` : elles profitent directement des corrections de reprise et du thinking conservé ; un `/compact` qui échouait sur un refus réessaie désormais seul. Depuis l'iPhone, un changement de modèle forcé (crédits Fable) s'affiche maintenant dans Remote Control au lieu de passer inaperçu. Tes skills claude.ai synchronisés (`anthropic-skills:*`) ne sont pas touchés ; seul un dossier local portant ce nom cesserait de se charger. Si ta télémétrie est coupée, le mode auto dont le classificateur bloque certaines écritures système passerait au classificateur serveur : son comportement pourrait changer.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-resume",
+        "claude-code-commandes-compact",
+        "claude-code-commandes-claude-remote-control",
+        "claude-code-commandes-artifacts",
+        "claude-code-parametres-claude-code-auto-mode-server",
+        "claude-code-fonctionnalites-page-sessions"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+          "pourquoi": "Six sessions en claude --resume --remote-control : touchées par les corrections de reprise et de thinking."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Pilotage iPhone par Remote Control et friction du classificateur du mode auto."
+        },
+        "config.claude-code.skills": {
+          "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+          "pourquoi": "Skills claude.ai synchronisés sous anthropic-skills:*, visés par le changement d'espace de noms."
+        }
+      }
+    },
     {
       "id": "claude-code-2.1.281",
       "ids_bruts": [
@@ -26,7 +72,7 @@
       ],
       "certitude": "officiel",
       "impact": "moyen",
-      "pour_toi": "Déjà installée d'après `versions.json`. Tes six services `claude-session@*` relancent `claude --resume` : les corrections de reprise (grosses sessions, cache après redémarrage, coupure pendant un appel d'outil) les touchent directement. Depuis l'iPhone, régler `/effort` ou le modèle ne devrait plus viser la mauvaise ligne. La correction de double connexion MCP ne te concerne pas : d'après `etat.json`, le serveur local delta-ia et le connecteur de compte Delta-IA ont exactement la même URL.",
+      "pour_toi": "Incluse dans la 2.1.282 installée d'après `versions.json`. Tes six services `claude-session@*` relancent `claude --resume` : les corrections de reprise (grosses sessions, cache après redémarrage, coupure pendant un appel d'outil) les touchent directement. Depuis l'iPhone, régler `/effort` ou le modèle ne devrait plus viser la mauvaise ligne. La correction de double connexion MCP ne devrait rien changer pour toi : d'après `etat.json`, `~/projets` et `~/projets/delta-ia` ne listent qu'une seule entrée delta-ia.",
       "projets_concernes": [],
       "action": null,
       "kb_refs": [
@@ -45,8 +91,63 @@
           "pourquoi": "Pilotage depuis l'iPhone par Remote Control : touches groupées sur /effort et le sélecteur de modèle corrigées."
         }
       }
+    },
+    {
+      "id": "claude-platform-notes-2026-09-24",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-24"
+      ],
+      "produit": "claude",
+      "titre": "API Claude : facturation des refus reprise pour trois catégories",
+      "version": null,
+      "date_publication": "2026-09-24",
+      "type": "changement_rupture",
+      "resume": "Les refus survenant avant toute sortie sont de nouveau facturés, au tarif du modèle, quand `stop_details.category` vaut `bio`, `frontier_llm` ou `reasoning_extraction` ; les autres catégories restent gratuites. Côté Compliance API, les sessions locales de Claude pour Microsoft 365 sortent de bêta et le flux d'activité ne renvoie plus les noms de fichiers ni les titres d'artefacts.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-09-23",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-23",
+        "claude-platform-notes-2026-09-18",
+        "claude-platform-notes-2026-09-09"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "API Claude : cache diagnostics sort de bêta",
+      "version": null,
+      "date_publication": "2026-09-23",
+      "type": "nouveaute",
+      "resume": "Cache diagnostics n'exige plus l'en-tête bêta `cache-diagnosis-2026-04-07` : il suffit d'ajouter l'objet `diagnostics` à la requête, et `POST /v1/messages` renvoie toujours un champ `diagnostics` (`null` sans l'objet). La note du 18/09 a été révisée dans le même sens, et une note du 09/09 précise que l'empreinte d'une requête n'est stockée que si elle porte `diagnostics`.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
     }
   ],
   "ecartes": [],
-  "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926"
+  "contexte_empreinte": "9e4923a06a8fdb4186a0dec7b98dc6fb6b3e6967"
 }
