@@ -145,13 +145,15 @@ Hors périmètre, pour mémoire [observé : GitHub] : `console-mur` (dépôt pri
 
 | Élément | Contenu | Usage | Nature |
 |---|---|---|---|
-| `~/.claude/CLAUDE.md` global | absent | — | [observé] |
+| `~/.claude/CLAUDE.md` global | créé le 24/09 : consulter le connecteur delta-ia (s'il est disponible) avant de choisir une commande/un réglage, vérifier ensuite sur `--help` | — | [observé] |
 | Skills perso | `maintenance-mint`, `deploy-site`, `latex-manuscrit`, `verif-numerique` | maintenance-mint ×2, deploy-site ×1 ; **latex-manuscrit et verif-numerique jamais invoqués** dans les transcripts présents | [observé] |
 | Skills claude.ai synchronisés | ask-the-council, orchestrator, red-team, scientific-adversary, context-engine, courriel-labo, docs/pdf/xlsx/pptx… | ask-the-council ×1 ; les autres non invoqués dans Claude Code | [observé] |
 | Commandes, agents, hooks | aucun (`commands/`, `agents/`, `hooks` absents) | — | [observé] |
 | Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé | — | [observé] |
 | MCP locaux | aucun (`mcpServers` vide) | — | [observé] |
-| Connecteurs claude.ai | Gmail, Google Drive, Google Calendar, Notion, Canva, GoDaddy, Claude Docs, Claude in Chrome | Notion ≈30 appels ; Chrome 4 (extension souvent déconnectée) ; Gmail/Drive/Calendar non observés | [observé] |
+| Connecteurs claude.ai (compte, globaux) | Gmail, Google Drive, Google Calendar, Notion, Canva, GoDaddy, Claude Docs, Claude in Chrome, Delta-IA (ajouté le 23/09) ; **Vercel déconnecté le 24/09** (apparaît « Needs authentication » partout) | Notion ≈30 appels ; Chrome 4 (extension souvent déconnectée) ; Gmail/Drive/Calendar non observés | [observé] |
+| Connecteur MCP delta-ia (projet, local) | ajouté le 24/09 en portée locale (`claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp`) dans `~/projets` (mint, dev, carnet, tous trois lancés depuis ce dossier) et `~/projets/delta-ia` (delta, delta-ia). **Pas dans trading-sim** : `herbin-trading` a un dossier de travail dédié (`DIR=/home/herbin/projets/trading-sim` dans `claude-session.sh`), vérifié avant l'ajout ; `claude mcp list` confirme le serveur local absent de ce dossier | — | [observé] |
+| **En attente** : trading-sim voit quand même Delta-IA via le connecteur de compte | les connecteurs claude.ai de compte s'appliquent à tous les projets sauf deny explicite dans le `.claude/settings.json` du projet ; celui de trading-sim ne le liste pas | contraire à sa règle « aucun accès web en Lot 001 » ; herbin-mint n'y touche pas (dépôt gouverné par Work) ; Sylvain transmet la question du deny à Work | [observé] |
 | settings.json | thème sombre, notifications push des agents, avertissement Workflow désactivé, autorisations `sudo -A` limitées à apt / timeshift / findmnt | actif | [observé] |
 | Mémoire automatique | 23 mémoires (projet racine) + 4 (trading-sim) : préférences de méthode, rôles des sessions, règles machine | très utilisée | [observé] |
 | Mises à jour auto | `autoUpdates: false` dans `~/.claude.json`, mais mise à jour native réussie le 22/09 | [observé] ; mécanisme exact [inconnu] |
@@ -175,7 +177,8 @@ atteinte à 75 % en milieu de semaine ; une réinitialisation promotionnelle a �
 | Profils | `audit` (`gpt-6-sol`, xhigh), `rapide` (`gpt-6-sol`, low), `securite` (`gpt-daybreak-blue-latest`, high, conservé volontairement) ; les trois servent | [observé] ; usage et choix [déclaré] |
 | Modèles disponibles | `gpt-6-sol`, `gpt-6-astra`, `gpt-6-luna` présents dans le cache des modèles | [observé] |
 | Interface | app de bureau, parce que le trio CLI + tmux + remote control ne fonctionne pas encore pour Codex | [déclaré] |
-| AGENTS.md global / `prompts/` | absents | [observé] |
+| AGENTS.md global | créé le 24/09 (`~/.codex/AGENTS.md`) : consulter Delta-IA avant de vérifier une affirmation sur Claude/Codex/ChatGPT, sauf pendant un passage `$delta`/`$delta-kb`. Emplacement confirmé par la documentation officielle Codex (`CODEX_HOME` par défaut) | [observé] |
+| `prompts/` global | absent | [observé] |
 | AGENTS.md projet | carnet seulement ; trading-sim n'en a volontairement pas (décision différée) | [observé] |
 | Plugins actifs | codex-app-tools, visualize, documents, pdf, spreadsheets, presentations, template-creator, browser, unified-computer-use | [observé] |
 | Skills | uniquement les skills système (imagegen, openai-docs, review-agent, skill-creator, plugin-creator, skill-installer) | [observé] |
@@ -216,9 +219,10 @@ et ailleurs (la console de pilotage, par exemple). Modèle principal : **GPT-6 S
 
 ## 6. Pistes d'optimisation déjà visibles
 
-1. **Pas de CLAUDE.md global** [observé] : les règles transversales (français, tutoiement,
-   validation pas à pas, factuel/déduit) vivent dans les mémoires et sont répétées dans chaque
-   projet. Un `~/.claude/CLAUDE.md` court les centraliserait.
+1. **`~/.claude/CLAUDE.md` créé le 24/09** [observé], limité pour l'instant à la consigne
+   connecteur delta-ia. Les règles transversales (français, tutoiement, validation pas à pas,
+   factuel/déduit) restent dans les mémoires, dispersées entre projets : à centraliser ici sur
+   proposition et accord explicite de Sylvain (non fait, hors mandat du 24/09).
 2. **trading-sim/CLAUDE.md périmé** [observé] : il annonce 6,7 Go de RAM et un `.venv` prévu,
    alors que la machine a 14 Gio et que trading-sim n'a pas de `.venv`. Le fichier est gelé
    jusqu'au micro-lot « AGENT INSTRUCTIONS NORMALIZATION » ; le correctif recommandé (retirer
