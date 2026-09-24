@@ -5,7 +5,7 @@
 
 - Français, tutoiement. Noms de commandes, d'options et de produits en version originale.
 - Périmètres de Claude Code : `claude`, `claude-code`, `actu`. Écriture uniquement dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `docs/data/etat.json`, `state/claude.json`, `state/actu.json` (SPEC.md §3).
-- `CONTEXTE.md`, `SPEC.md`, `REGLES.md`, `PROGRESSION.md` : lecture seule. Signaler, ne pas corriger. `PROGRESSION.md` est écrit par la seule session professeur et commité à part (`formation: …`) (D67).
+- `CONTEXTE.md`, `SPEC.md`, `REGLES.md`, `PROGRESSION.md` : lecture seule. Signaler, ne pas corriger. `PROGRESSION.md` est écrit et commité par la seule session professeur, ce fichier seul (D67) ; `CONTEXTE.md` reste sous D32.
 - Python 3.12, environnement `.venv` (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`). Pas de `pip` système.
 - Tests : `.venv/bin/pytest -q`. Analyseurs testés sur des échantillons réels dans `tests/fixtures/`.
 - `scripts/fetch.py` n'écrit jamais dans `state/` sans `--valider`. `raw/` est ignoré par git.

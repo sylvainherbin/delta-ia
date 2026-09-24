@@ -151,9 +151,11 @@ def nouveaux_projets(racine: Path, perimetre: str) -> list[str]:
     return [k for k in projets_contexte(racine) if connus and k not in connus]
 
 
-def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None
+def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None, avertissements: list | None = None
              ) -> tuple[list[EntreeExtraite], set[str], list[dict]]:
-    """Rend (entrées, docs extraites avec succès, échecs). Une doc sans copie locale est ignorée."""
+    """Rend (entrées, docs extraites avec succès, échecs). Une doc sans copie locale est ignorée.
+    Doc à pages : une page en échec est signalée à part et ne bloque pas les autres ; la doc n'est alors pas
+    « extraite avec succès », donc rien n'est retiré. Les replis HTML vont dans `avertissements`."""
     entrees: list[EntreeExtraite] = []
     ok: set[str] = set()
     echecs: list[dict] = []
@@ -168,6 +170,13 @@ def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None
             echecs.append({"doc": d.id, "erreur": f"FormatInattendu: {e}"})
             continue
         entrees.extend(extraites)
+        for chemin, err in getattr(extraites, "echecs_pages", []):
+            echecs.append({"doc": d.id, "page": chemin, "erreur": f"FormatInattendu: {err}"})
+        if avertissements is not None:
+            avertissements.extend({"doc": d.id, "page": c, "avertissement": "page servie en HTML, lue en repli"}
+                                  for c in getattr(extraites, "replis_html", []))
+        if getattr(extraites, "echecs_pages", None):
+            continue  # une page en échec : ses entrées restent inchangées, aucune entrée n'est retirée
         if d.extracteur != "pages" or len(fichiers) == len(d.fichiers()):
             ok.add(d.id)  # une doc à pages partiellement récupérée ne retire rien
     return _dedoublonner(entrees), ok, echecs
@@ -248,11 +257,13 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
 def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
                   surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
-    extraites, ok, echecs = extraire(racine, docs, surcharge)
+    avertissements: list[dict] = []
+    extraites, ok, echecs = extraire(racine, docs, surcharge, avertissements)
     entrees, modif = fusionner(charger(racine, perimetre), extraites, ok)
     if ecrire_fichiers:
         ecrire(racine, perimetre, entrees)
     return {"perimetre": perimetre, "genere_le": maintenant_iso(), "docs_extraites": sorted(ok), "echecs": echecs,
+            "avertissements": avertissements,
             "total": len(entrees), "a_commenter": sorted(k for k, e in entrees.items() if not e.get("commentee") and not e.get("retiree")),
             **modif}
 

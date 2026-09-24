@@ -5,7 +5,7 @@ Ces règles s'appliquent à chaque passage, sans exception. En cas de conflit av
 ## 1. Périmètre d'écriture
 
 - Chaque agent écrit **uniquement** dans les chemins que lui attribue SPEC.md §3.
-- `CONTEXTE.md`, `SPEC.md`, `REGLES.md` et `PROGRESSION.md` sont en lecture seule. `PROGRESSION.md` (suivi de la formation de Sylvain) n'a qu'un rédacteur, la session professeur (D67). Si un agent constate que CONTEXTE.md est périmé (projet terminé, outil abandonné, nouvelle configuration), il le signale dans son compte rendu de fin de passage, sans modifier le fichier.
+- `CONTEXTE.md`, `SPEC.md`, `REGLES.md` et `PROGRESSION.md` sont en lecture seule. `PROGRESSION.md` (suivi de la formation de Sylvain) n'a qu'un rédacteur, la session professeur, qui le commite elle-même, ce fichier seul, avec un `git add` explicite (D67). `CONTEXTE.md` reste sous D32. Si un agent constate que CONTEXTE.md est périmé (projet terminé, outil abandonné, nouvelle configuration), il le signale dans son compte rendu de fin de passage, sans modifier le fichier.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) n'est modifié que dans une session de développement, jamais pendant un passage quotidien.
 
 ## 2. Sources et vérité

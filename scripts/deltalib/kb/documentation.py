@@ -50,11 +50,17 @@ class DocSource:
     def fichiers(self) -> dict[str, str]:
         """Nom logique -> URL à récupérer."""
         if self.extracteur == "pages":
-            return {f"page:{c}": f"{self.base}{c}.md" for c in self.options["pages"]}
+            # option `chemin` : l'article a changé d'adresse ; la clé (donc l'id de l'entrée et le cache) reste
+            return {f"page:{c}": f"{self.base}{chemin_page(c, v)}.md" for c, v in self.options["pages"].items()}
         res = {"page": self.url}
         if self.options.get("url_md"):
             res["md"] = self.options["url_md"]
         return res
+
+
+def chemin_page(cle: str, conf) -> str:
+    """Chemin réel d'une page : `chemin` de sa configuration s'il est donné, sinon sa clé."""
+    return conf.get("chemin", cle) if isinstance(conf, dict) else cle
 
 
 class ErreurDocumentation(Exception):

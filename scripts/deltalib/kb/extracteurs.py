@@ -148,36 +148,94 @@ def _ancre(titre: str) -> str:
 
 # ----------------------------------------------------------------------------------------------- pages
 
+class ExtractionPages(list):
+    """Entrées d'une documentation à pages, avec les pages en échec (isolées) et les pages lues en repli HTML."""
+
+    def __init__(self):
+        super().__init__()
+        self.echecs_pages: list[tuple[str, str]] = []
+        self.replis_html: list[str] = []
+
+
+def est_html(texte: str) -> bool:
+    debut = texte.lstrip()[:200].lower()
+    return debut.startswith("<!doctype html") or debut.startswith("<html")
+
+
+def html_vers_markdown(texte: str) -> str:
+    """Repli : article du centre d'aide servi en HTML au lieu du Markdown demandé. Titre `<h1>`, corps
+    `.article_body` (sinon `<article>`), converti en Markdown minimal : titres, paragraphes, listes, code."""
+    s = BeautifulSoup(texte, "html.parser")
+    h1 = s.find("h1")
+    corps = s.select_one(".article_body") or s.find("article")
+    if h1 is None or corps is None:
+        raise FormatInattendu("HTML sans <h1> ni corps d'article")
+    lignes = [f"# {h1.get_text(' ', strip=True)}", ""]
+    for n in corps.find_all(["h2", "h3", "h4", "p", "li", "pre"]):
+        if n.find_parent(["pre", "table"]) or (n.name == "p" and n.find_parent("li")) or n.find_parent("h1"):
+            continue
+        txt = n.get_text(" ", strip=True)
+        if not txt:
+            continue
+        if n.name in ("h2", "h3", "h4"):
+            lignes += ["#" * int(n.name[1]) + " " + txt, ""]
+        elif n.name == "pre":
+            lignes += ["```", n.get_text().rstrip("\n"), "```", ""]
+        elif n.name == "li":
+            puce = "1." if n.find_parent("ol") else "-"
+            lignes.append(f"{puce} {txt}")
+            if not n.find_next_sibling("li"):
+                lignes.append("")
+        else:
+            lignes += [txt, ""]
+    return "\n".join(lignes)
+
+
 def pages(doc, fichiers: dict) -> list[EntreeExtraite]:
-    """Une page de fonctionnalité = une entrée ; l'identifiant suit le chemin de la page, pas son titre."""
-    res: list[EntreeExtraite] = []
+    """Une page de fonctionnalité = une entrée ; l'identifiant suit le chemin de la page, pas son titre.
+    Une page en échec est isolée (ses entrées restent inchangées) et signalée ; les autres sont extraites.
+    Une page servie en HTML au lieu du Markdown est lue en repli (`html_vers_markdown`)."""
+    res = ExtractionPages()
     for chemin, conf in doc.options["pages"].items():
         cle = f"page:{chemin}"
         if cle not in fichiers:
             continue  # page non récupérée : signalée par fetch, ses entrées restent inchangées
         conf = conf if isinstance(conf, dict) else {"categorie": conf}
-        texte = fichiers[cle]
-        lignes, secs = sections(texte)
-        titre = next((s for s in secs if s.niveau == 1), None)
-        if titre is None:
-            raise FormatInattendu(f"page {chemin} : aucun titre `# …`")
-        debut = titre.debut + 1
-        desc = None
-        for i in range(debut, min(len(lignes), debut + 6)):
-            if lignes[i].startswith("> ") and "Documentation Index" not in lignes[i] and "llms.txt" not in lignes[i]:
-                desc = lignes[i][2:]
-                break
-        desc = desc or premier_paragraphe(lignes, debut, len(lignes)) or ""
-        usage, nature = usage_et_nature(lignes, debut, len(lignes))
-        if not usage:
-            raise FormatInattendu(f"page {chemin} : ni code, ni liste, ni paragraphe")
-        res.append(EntreeExtraite(
-            produit=conf.get("produit", doc.produit), categorie=conf["categorie"], nom=titre.titre, usage=usage,
-            description_source=nettoyer(desc), url=doc.base + chemin, libelle=titre.titre, origine=doc.id,
-            groupe=None, cle=f"page-{chemin}", usage_nature=nature))
+        try:
+            res.extend(_page(doc, chemin, conf, fichiers[cle], res))
+        except FormatInattendu as e:
+            res.echecs_pages.append((chemin, str(e)))
     if not res:
-        raise FormatInattendu("aucune page de fonctionnalité disponible")
+        raise FormatInattendu("aucune page de fonctionnalité disponible"
+                              + (f" ({len(res.echecs_pages)} en échec : {res.echecs_pages[0][1]})" if res.echecs_pages else ""))
     return res
+
+
+def _page(doc, chemin: str, conf: dict, texte: str, res: ExtractionPages) -> list[EntreeExtraite]:
+    if est_html(texte):
+        try:
+            texte = html_vers_markdown(texte)
+        except FormatInattendu as e:
+            raise FormatInattendu(f"page {chemin} : servie en HTML, repli impossible ({e})") from None
+        res.replis_html.append(chemin)
+    lignes, secs = sections(texte)
+    titre = next((s for s in secs if s.niveau == 1), None)
+    if titre is None:
+        raise FormatInattendu(f"page {chemin} : aucun titre `# …`")
+    debut = titre.debut + 1
+    desc = None
+    for i in range(debut, min(len(lignes), debut + 6)):
+        if lignes[i].startswith("> ") and "Documentation Index" not in lignes[i] and "llms.txt" not in lignes[i]:
+            desc = lignes[i][2:]
+            break
+    desc = desc or premier_paragraphe(lignes, debut, len(lignes)) or ""
+    usage, nature = usage_et_nature(lignes, debut, len(lignes))
+    if not usage:
+        raise FormatInattendu(f"page {chemin} : ni code, ni liste, ni paragraphe")
+    return [EntreeExtraite(
+        produit=conf.get("produit", doc.produit), categorie=conf["categorie"], nom=titre.titre, usage=usage,
+        description_source=nettoyer(desc), url=doc.base + conf.get("chemin", chemin), libelle=titre.titre, origine=doc.id,
+        groupe=None, cle=f"page-{chemin}", usage_nature=nature)]
 
 
 # ----------------------------------------------------------------------------------------------- plugins Claude Code

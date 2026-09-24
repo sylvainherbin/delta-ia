@@ -161,8 +161,10 @@ def commande_kb(args, racine: Path) -> int:
               f"d'origine modifiée(s), {len(res['retirees'])} retirée(s), "
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
         for e in res["echecs"]:
-            print(f"  ! ÉCHEC   {e['doc']} : {e['erreur']}")
+            print(f"  ! ÉCHEC   {e['doc']}" + (f" / {e['page']}" if e.get("page") else "") + f" : {e['erreur']}")
             code = 3 if code == 0 else code
+        for e in res.get("avertissements", []):
+            print(f"  ~ REPLI   {e['doc']} / {e['page']} : {e['avertissement']}")
     return code
 
 

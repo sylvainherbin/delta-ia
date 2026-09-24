@@ -778,3 +778,46 @@ def test_d67_adoption_d_un_ignorer_entre_dans_perimees(tmp_path):
     assert cat.classer(x_, cour, set(), jour) is None
     import valider
     assert valider.RE_MOTIF.match("adoption")
+
+
+# --- Pages : échec isolé, repli HTML, article déplacé (24/09) -------------------------------------------------------
+
+ARTICLES = "9487310-what-are-artifacts-and-how-do-i-use-them"
+
+
+def test_page_html_lue_en_repli(docs):
+    d = docs["claude-apps"]
+    es = extraire(d, **{f"page:{ARTICLES}": lire("page_support_html.html")})
+    assert len(es) == 1 and es.replis_html == [ARTICLES] and not es.echecs_pages
+    e = es[0]
+    assert e.id == f"claude-fonctionnalites-page-{ARTICLES}", "l'id suit la clé de la page, pas son adresse"
+    assert e.nom == "What are artifacts and how do I use them?" and e.usage and e.description_source.startswith("An artifact")
+    assert "Free" not in e.description_source, "les cellules de tableau ne sont pas prises pour des paragraphes"
+
+
+def test_article_deplace_option_chemin(docs):
+    d = docs["claude-apps"]
+    assert d.fichiers()[f"page:{ARTICLES}"] == "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them.md"
+    es = extraire(d, **{f"page:{ARTICLES}": "# What are artifacts?\n\nUn paragraphe.\n\n1. Étape.\n"})
+    assert es[0].url == "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them"
+
+
+def test_page_en_echec_isolee(docs, tmp_path):
+    d = docs["claude-apps"]
+    pages = {f"page:11101966-use-voice-mode": lire("page_support_voice.md"),
+             f"page:{ARTICLES}": "<!DOCTYPE html><html><body><p>sans titre</p></body></html>",
+             "page:12260368-use-incognito-chats": "texte sans titre\n"}
+    es = extraire(d, **pages)
+    assert [e.nom for e in es] == ["Use voice mode"], "les pages valides sont extraites malgré les autres"
+    assert sorted(c for c, _ in es.echecs_pages) == sorted([ARTICLES, "12260368-use-incognito-chats"])
+    assert any("repli impossible" in m for _, m in es.echecs_pages)
+    # au niveau du catalogue : échec signalé par page, doc non « extraite avec succès » (rien n'est retiré)
+    avert = []
+    entrees, ok, echecs = cat.extraire(tmp_path, [d], surcharge={f"claude-apps/{k}": v for k, v in pages.items()}, avertissements=avert)
+    assert [e.nom for e in entrees] == ["Use voice mode"] and "claude-apps" not in ok
+    assert {e["page"] for e in echecs} == {ARTICLES, "12260368-use-incognito-chats"} and all(e["doc"] == "claude-apps" for e in echecs)
+
+
+def test_toutes_les_pages_en_echec(docs):
+    with pytest.raises(FormatInattendu, match="1 en échec"):
+        extraire(docs["claude-apps"], **{"page:12260368-use-incognito-chats": "sans titre\n"})
