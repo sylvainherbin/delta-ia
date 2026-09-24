@@ -178,6 +178,7 @@ atteinte à 75 % en milieu de semaine ; une réinitialisation promotionnelle a �
 | Modèles disponibles | `gpt-6-sol`, `gpt-6-astra`, `gpt-6-luna` présents dans le cache des modèles | [observé] |
 | Interface | app de bureau, parce que le trio CLI + tmux + remote control ne fonctionne pas encore pour Codex | [déclaré] |
 | AGENTS.md global | créé le 24/09 (`~/.codex/AGENTS.md`) : consulter Delta-IA avant de vérifier une affirmation sur Claude/Codex/ChatGPT, sauf pendant un passage `$delta`/`$delta-kb`. Emplacement confirmé par la documentation officielle Codex (`CODEX_HOME` par défaut) | [observé] |
+| Connecteur Delta-IA (compte OpenAI) | disponible pour Codex et pour ChatGPT Work depuis le 23/09 ; son usage par Codex est réglé par `~/.codex/AGENTS.md` (vérifier ensuite via `--help`/source primaire, ne jamais l'utiliser pendant un passage `$delta`/`$delta-kb`) | [déclaré] |
 | `prompts/` global | absent | [observé] |
 | AGENTS.md projet | carnet seulement ; trading-sim n'en a volontairement pas (décision différée) | [observé] |
 | Plugins actifs | codex-app-tools, visualize, documents, pdf, spreadsheets, presentations, template-creator, browser, unified-computer-use | [observé] |
@@ -190,6 +191,11 @@ atteinte à 75 % en milieu de semaine ; une réinitialisation promotionnelle a �
 
 **Rôle de Codex** [déclaré] : il sert surtout à **auditer ce que fait Claude**, sur trading-sim
 et ailleurs (la console de pilotage, par exemple). Modèle principal : **GPT-6 Sol**, qui remplace GPT-5.6 Sol [déclaré, 23/09].
+
+**Point à recouper** [observé, 24/09] : malgré le connecteur déclaré disponible depuis le 23/09,
+Codex a écrit dans une réponse « si Delta-IA devient accessible à Codex », formulation qui suggère
+qu'il ne perçoit pas encore cet accès. Écart entre disponibilité déclarée et perception de Codex,
+à vérifier avant de compter sur cette consultation en pratique.
 
 ---
 
@@ -275,6 +281,8 @@ Compléments [déclaré] :
 - « Work » est l'usage de ChatGPT réservé à trading-sim ; ailleurs (la console, par exemple),
   ChatGPT/Codex sert aux audits du travail de Claude.
 - Codex n'est pas utilisé sur carnet.
+- ChatGPT Work dispose du connecteur Delta-IA (compte OpenAI) depuis le 23/09, comme Codex ; voir
+  §4 pour le réglage d'usage côté Codex (`~/.codex/AGENTS.md`) et l'écart constaté le 24/09.
 - ChatGPT Desktop : il n'en utilise que les connecteurs.
 - Claude : il utilise les **artefacts**, les **connecteurs** et les **skills**. Les autres
   fonctions (Cowork, Projets en profondeur, routines planifiées…) sont à explorer ; il veut
