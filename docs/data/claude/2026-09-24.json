@@ -2,8 +2,8 @@
   "date": "2026-09-24",
   "perimetre": "claude",
   "agent": "claude-code",
-  "genere_le": "2026-09-24T08:16:43+00:00",
-  "synthese": "Seule nouveauté : Claude Code 2.1.281, déjà installée, qui corrige surtout la reprise des sessions, ce qui touche tes six sessions relancées par `claude --resume`. Elle fiabilise aussi le pilotage de `/effort` et du modèle depuis l'iPhone, et évite une double connexion du serveur delta-ia si son URL diffère de celle du connecteur de compte.",
+  "genere_le": "2026-09-24T12:38:36+00:00",
+  "synthese": "Seule nouveauté du jour : Claude Code 2.1.281, déjà installée, qui corrige surtout la reprise des sessions, ce qui touche tes six sessions relancées par `claude --resume`. Elle fiabilise aussi le réglage de `/effort` et du modèle depuis l'iPhone. Rien de nouveau depuis le passage du matin.",
   "sources_en_echec": [],
   "elements": [
     {
@@ -26,18 +26,27 @@
       ],
       "certitude": "officiel",
       "impact": "moyen",
-      "pour_toi": "Déjà installée d'après `versions.json`. Tes six services `claude-session@*` relancent `claude --resume` : les corrections de reprise (grosses sessions, cache après redémarrage, coupure pendant un appel d'outil) les touchent directement. Depuis l'iPhone, régler `/effort` ou le modèle ne devrait plus viser la mauvaise ligne. Si le connecteur de compte Delta-IA et le serveur local delta-ia pointent vers la même URL écrite autrement, ils ne seront plus connectés deux fois dans `~/projets`.",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six services `claude-session@*` relancent `claude --resume` : les corrections de reprise (grosses sessions, cache après redémarrage, coupure pendant un appel d'outil) les touchent directement. Depuis l'iPhone, régler `/effort` ou le modèle ne devrait plus viser la mauvaise ligne. La correction de double connexion MCP ne te concerne pas : d'après `etat.json`, le serveur local delta-ia et le connecteur de compte Delta-IA ont exactement la même URL.",
       "projets_concernes": [],
       "action": null,
       "kb_refs": [
         "claude-code-fonctionnalites-page-sessions",
         "claude-code-fonctionnalites-page-remote-control",
-        "claude-code-mcp-scope-hierarchy-and-precedence",
         "claude-code-raccourcis-ctrl-enter",
         "claude-code-commandes-insights"
-      ]
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+          "pourquoi": "Six services systemd relancent chaque session par claude --resume : directement touchés par les corrections de reprise."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Pilotage depuis l'iPhone par Remote Control : touches groupées sur /effort et le sélecteur de modèle corrigées."
+        }
+      }
     }
   ],
   "ecartes": [],
-  "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64"
+  "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926"
 }
