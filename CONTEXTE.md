@@ -186,7 +186,8 @@ pilotage, pas ici.
 |---|---|---|
 | Skills perso | `maintenance-mint`, `deploy-site`, `latex-manuscrit`, `verif-numerique` ; usage observé : maintenance-mint ×2, deploy-site ×1, **latex-manuscrit et verif-numerique jamais invoqués** | [observé] |
 | Skills claude.ai synchronisés | ask-the-council, orchestrator, red-team, scientific-adversary, context-engine, courriel-labo, docs/pdf/xlsx/pptx… ; ask-the-council ×1, les autres non invoqués dans Claude Code | [observé] |
-| Commandes, agents, hooks perso | aucun (`commands/`, `agents/`, `hooks` absents) | [observé] |
+| Commandes, agents, hooks perso | un agent perso `executant` (`~/projets/.claude/agents/`, niveau projet ; modèle indiqué dans sa définition), créé et testé une fois le 25/09/2026, verdict du pilote neutre, non adopté dans le workflow ; commandes et hooks : aucun | [observé] |
+| Modèle des sous-agents | politique actuelle du pilote Routage (25/09) : modèle choisi explicitement dans la définition de chaque sous-agent plutôt qu'un défaut global `CLAUDE_CODE_SUBAGENT_MODEL` ; réévaluable si des essais montrent l'intérêt d'un défaut global | [déclaré] |
 | Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé | [observé] |
 | Usage réel des outils | Bash ≈2 900 appels (très dominant), Write 219, Edit 177, Monitor 151, ReadNotifications 146, Read 133, WebFetch 31, SendMessage 23, WebSearch 19, Workflow 13, Skill 7, Agent 2 ; commandes tapées : `/btw`, `/remote-control`, `/compact` | [observé, 14 transcripts] |
 
@@ -310,7 +311,8 @@ cette consultation en pratique.
 4. **Skills dormants** [observé] : `latex-manuscrit` et `verif-numerique` ne sont jamais
    déclenchés ; à revoir, à supprimer, ou à rendre déclenchables sur trading-sim (où les
    vérifications numériques abondent).
-5. **Aucune commande ni aucun agent perso** [observé] alors que des gestes reviennent souvent :
+5. **Aucune commande perso, un seul agent perso testé une fois (`executant`, 25/09/2026, non
+   adopté)** [observé] alors que des gestes reviennent souvent :
    relais d'une mission vers herbin-trading, revue machine d'une campagne, synchronisation git.
 6. **Règles Codex** [observé] : `default.rules` contient un script complet autorisé tel quel,
    inutile et illisible ; mieux vaut des préfixes courts.
