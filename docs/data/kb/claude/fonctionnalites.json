@@ -2,11 +2,11 @@
  "perimetre": "claude",
  "categorie": "fonctionnalites",
  "maj_le": "2026-09-25",
- "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+ "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
-  "env.multi-sessions": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+  "env.multi-sessions": "ed09aece97334b3647314b21c924226298790c41",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -26,7 +26,7 @@
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
   "optimisation.pistes": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
-  "usage.hors-machine": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8"
+  "usage.hors-machine": "09cc74e6ff37e230dd36b637c1e0939776a25543"
  },
  "contexte_deprecies": [],
  "projets_connus": [
@@ -946,7 +946,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes sessions herbin-* se parlent déjà par `SendMessage` et `ListAgents` (23 appels `SendMessage` observés) ; nommer la cible avec `@herbin-trading` évite l'ambiguïté quand tu relaies une mission."
+    "pourquoi": "Tes sessions herbin-* se parlent déjà par `SendMessage` et `ListAgents` (23 appels `SendMessage` observés) ; nommer la cible avec `@herbin-trading` évite l'ambiguïté quand tu relaies une mission. Depuis une session connectée à Remote Control, la liste inclut aussi sessions cloud et Remote Control : tu y as vu la conversation Dispatch, pas les sessions Cowork cloud."
    },
    "sources": [
     {
@@ -980,17 +980,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
-     "pourquoi": "les sessions se parlent via SendMessage / ListAgents et Sylvain relaie des prompts"
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "SendMessage / ListAgents entre sessions ; /list-agents montre Dispatch comme Remote Control, pas les sessions Cowork cloud (25/09)"
     },
     "config.claude-code.skills": {
      "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "SendMessage : 23 appels dans les transcripts"
+    },
+    "usage.hors-machine": {
+     "sha1": "09cc74e6ff37e230dd36b637c1e0939776a25543",
+     "pourquoi": "priorité déclarée : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code"
     }
    }
   },
@@ -1776,7 +1784,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'iPhone est ton interface principale pour piloter les sessions ; la page recense ce que l'onglet Code permet au-delà de Remote Control."
+    "pourquoi": "L'iPhone est ton interface principale pour piloter les sessions ; la page situe Dispatch (tâche envoyée par message, exécutée par l'app de bureau, qui doit rester allumée) à côté de Remote Control et des sessions cloud, utile pour ta priorité d'échanges Cowork ↔ Claude Code."
    },
    "sources": [
     {
@@ -1789,7 +1797,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1806,17 +1814,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "env.machine": {
      "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
      "pourquoi": "iPhone : pilote le PC à distance (Remote Control, app Claude iOS)"
     },
     "usage.hors-machine": {
-     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
-     "pourquoi": "l'app Claude iPhone sert surtout à piloter les sessions Claude Code"
+     "sha1": "09cc74e6ff37e230dd36b637c1e0939776a25543",
+     "pourquoi": "app iPhone surtout pour piloter les sessions ; priorité : échanges Cowork (Dispatch compris) ↔ Claude Code"
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Dispatch visible comme session Remote Control ; sessions Code ou Cowork créées par Dispatch (rapporté, non vérifié)"
     }
    }
   },
@@ -2079,7 +2095,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2096,16 +2112,20 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
      "pourquoi": "limites d'usage et coût en jetons des prompts d'audit parmi les frictions"
     },
     "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
      "pourquoi": "sessions longues relancées par `claude --resume`"
     }
    }
@@ -2138,7 +2158,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2155,12 +2175,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
      "pourquoi": "sessions lancées avec `--remote-control herbin-<nom>`, pilotées depuis l'iPhone"
     },
     "methode.travail": {
@@ -2373,7 +2397,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2390,12 +2414,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
      "pourquoi": "chaque service relance sa session par `claude --resume <id>`"
     },
     "projet.trading-sim": {
@@ -2537,9 +2565,13 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
@@ -2550,7 +2582,7 @@
      "pourquoi": "piste 5 : revue machine d'une campagne, geste répété sans commande perso"
     },
     "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
      "pourquoi": "herbin-mint fait la revue machine des calculs lourds avant lancement"
     }
    }
@@ -3346,7 +3378,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3363,12 +3395,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "sha1": "09cc74e6ff37e230dd36b637c1e0939776a25543",
      "pourquoi": "mémoire claude.ai activée et jugée utile ; trois Projets claude.ai"
     }
    }
@@ -4794,12 +4830,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "sha1": "09cc74e6ff37e230dd36b637c1e0939776a25543",
      "pourquoi": "Claude : artefacts utilisés ; app iPhone surtout pour piloter les sessions"
     }
    }
@@ -4849,12 +4889,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "sha1": "09cc74e6ff37e230dd36b637c1e0939776a25543",
      "pourquoi": "3 Projets claude.ai, dont « Web app ia » actif le 23/09"
     }
    }
