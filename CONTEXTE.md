@@ -66,7 +66,9 @@ et s'éteint au besoin depuis la console de pilotage (bouton réservé à `dev` 
 | delta-ia | exécution des passages quotidiens de la veille (`/delta`) |
 
 Les sessions se parlent via `SendMessage` / `ListAgents` et Sylvain relaie des prompts entre elles
-**[observé : transcripts]**.
+**[observé : transcripts]**. Depuis une session Claude Code, `/list-agents` montre la conversation
+Dispatch de Cowork comme session Remote Control ; les sessions Cowork cloud n'y apparaissent pas
+**[observé 25/09]**.
 
 ---
 
@@ -375,7 +377,9 @@ et de Codex, annonces Claude et ChatGPT), les rattacher à un usage concret sur 
 d'abord, puis sur carnet et les sessions à distance, et expliquer la commande ou le réglage exact
 à employer. Signaler en priorité ce qui débloque Codex en CLI + tmux + remote control, ce qui
 allège la consommation des limites hebdomadaires, et ce qui renforce les audits croisés
-Claude ↔ Codex.
+Claude ↔ Codex. Signaler aussi en priorité ce qui permet aux sessions Cowork (y compris Dispatch) d'échanger directement
+avec les sessions Claude Code (ListAgents / SendMessage entre Cowork et Claude Code, connexion
+Remote Control d'une session Cowork, réponse d'une session cloud) [déclaré].
 
 ---
 
