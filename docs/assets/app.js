@@ -226,7 +226,10 @@
       const id = String(e.id || "");
       const caseFait = el("input", { type: "checkbox" });
       caseFait.checked = Boolean(faits[id]);
-      caseFait.addEventListener("change", () => { ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked); });
+      caseFait.addEventListener("change", () => {
+        ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked);
+        if (options.surFait) options.surFait();
+      });
       a.append(el("label", null, caseFait, "Fait"));
       c.append(a);
     }
@@ -456,9 +459,20 @@
     frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Les actions proposées. La case « fait » n'est enregistrée que dans ce navigateur." }), noteFenetre());
     let liste = [];
     for (const p of PERIMETRES) liste = liste.concat(elementsDe(p, datesRecentes(p)).filter((e) => e.action && typeof e.action === "object"));
+    // audit du 25/09 : les actions ouvertes d'abord, avec leur nombre ; les faites à part, dans une section repliée
     const faits = lireFaits();
-    liste.sort((a, b) => (Boolean(faits[a.id]) - Boolean(faits[b.id])) || triImpact(a, b));
-    frag.append(listeCartes(liste, { vide: "Aucune action ouverte." }));
+    const ouvertes = liste.filter((e) => !faits[String(e.id || "")]).sort(triImpact);
+    const faites = liste.filter((e) => faits[String(e.id || "")]).sort(triImpact);
+    const surFait = () => rendre();  // une case cochée ou décochée fait passer l'action dans l'autre section
+    frag.append(el("h3", { class: "compte-actions", text: `Actions ouvertes (${ouvertes.length})` }),
+      listeCartes(ouvertes, { vide: "Aucune action ouverte.", surFait }));
+    if (faites.length) {
+      const d = el("details", { class: "actions-faites" }, el("summary", { text: `Actions faites (${faites.length})` }),
+        listeCartes(faites, { surFait }));
+      d.open = etat.faitesOuvertes === true;
+      d.addEventListener("toggle", () => { etat.faitesOuvertes = d.open; });
+      frag.append(d);
+    }
     return frag;
   }
   function pageArchives() {

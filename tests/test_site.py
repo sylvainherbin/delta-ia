@@ -48,3 +48,13 @@ def test_voyant_agent_prend_le_passage_le_plus_ancien():
     debut = app.index("function rendreEtatAgents")
     corps = app[debut:app.index("return alertes", debut)]
     assert "t < parAgent[idx.agent]" in corps and "t > parAgent[idx.agent]" not in corps
+
+
+def test_a_tester_ouvertes_puis_faites_repliees():
+    """Audit du 25/09, point 5 : actions ouvertes d'abord avec leur nombre, faites dans une section repliée."""
+    from pathlib import Path
+    app = (Path(__file__).resolve().parent.parent / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
+    corps = app[app.index("function pageATester"):app.index("function pageArchives")]
+    assert "Actions ouvertes (${ouvertes.length})" in corps and "Actions faites (${faites.length})" in corps
+    assert 'el("details", { class: "actions-faites" }' in corps and corps.index("ouvertes.length") < corps.index("faites.length")
+    assert "surFait" in app[app.index("function carte"):app.index("function listeCartes")]
