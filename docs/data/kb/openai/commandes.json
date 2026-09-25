@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-09-24",
+ "maj_le": "2026-09-25",
  "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -356,7 +356,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-mint, ouvrir le réglage de connexion SSH et vérifier qu'il expose le type de connexion nécessaire au pilotage depuis l'iPhone ; ne pas assimiler ce lien à Remote Control."
+    "pourquoi": "Dans l'app Codex sur Linux, ouvrir `codex://settings/connections/computer` et vérifier si le PC peut être déclaré pour l'accès depuis l'iPhone ; aucune connexion distante n'est attestée."
    },
    "sources": [
     {
@@ -369,7 +369,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -386,13 +386,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'app Codex est utilisée sur Linux ; le pilotage distant n'est pas encore opérationnel."
+    },
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "L'objectif de pilotage distant justifie un essai ciblé des réglages de connexion."
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "L'accès Codex depuis l'iPhone est un objectif déclaré."
     }
    }
   },
@@ -410,8 +418,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur herbin-mint, avec un alias déjà défini dans `~/.ssh/config`, ouvrir le lien d'ajout et vérifier que cet hôte apparaît dans les connexions Codex ; ne rien créer sans besoin."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun alias SSH destiné à Codex n'est décrit ; l'objectif d'accès depuis l'iPhone ne justifie pas l'ajout d'un hôte supposé."
    },
    "sources": [
     {
@@ -424,7 +432,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -441,13 +449,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Aucun usage d'une connexion SSH Codex n'est attesté."
+    },
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "Le pilotage distant des sessions Codex peut requérir un hôte SSH déclaré."
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "L'objectif de pilotage distant ne précise aucun hôte SSH."
     }
    }
   },
@@ -962,10 +978,10 @@
    "usage_nature": "syntaxe",
    "exemple": "codex --sandbox workspace-write --ask-for-approval on-request",
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est la commande de base pour ton objectif de sessions Codex sous tmux et six sessions CLI ont déjà été observées."
+    "pourquoi": "La CLI autonome n'est pas utilisée aujourd'hui, mais `codex` est le point d'entrée direct pour l'objectif déclaré de sessions sous tmux. Vérifier la version du binaire de l'app avant tout essai."
    },
    "sources": [
     {
@@ -978,7 +994,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -995,13 +1011,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée ; les vérifications visent le binaire de l'app."
+    },
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "L'objectif de sessions CLI persistantes sous tmux repose sur la commande interactive."
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "L'objectif Codex CLI sous tmux est déclaré et non atteint."
     }
    }
   },
@@ -2175,8 +2199,8 @@
    "disponibilite": null,
    "statut_usage": "non_utilise",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "C'est la commande directement alignée sur ton objectif de piloter une session Codex CLI sous tmux depuis l'iPhone, objectif explicitement non atteint dans CONTEXTE.md."
+    "verdict": "tester",
+    "pourquoi": "Tester `codex remote-control start` puis `pair` avec la version de l'app, et vérifier si l'iPhone peut accéder à la session ; cet accès n'est pas encore établi."
    },
    "sources": [
     {
@@ -2189,7 +2213,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2206,13 +2230,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'app de bureau est utilisée et l'objectif de pilotage CLI distant n'est pas atteint."
+    },
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "Le pilotage des sessions CLI depuis l'iPhone est un objectif déclaré, non encore atteint."
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "Le pilotage Codex depuis l'iPhone est un objectif déclaré."
     }
    }
   },
@@ -4256,8 +4288,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "Pour des sessions tmux Codex persistantes, reprendre l'audit après un redémarrage ou une coupure Wi-Fi est indispensable."
+    "verdict": "tester",
+    "pourquoi": "Après une session d'audit Codex CLI sous tmux, saisir `/resume` et vérifier que le fil et son transcript réapparaissent après fermeture ; aucun usage actuel n'est établi."
    },
    "sources": [
     {
@@ -4270,7 +4302,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4287,13 +4319,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome n'est pas actuellement utilisée."
+    },
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "Les sessions Codex persistantes sous tmux doivent pouvoir être reprises."
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "L'objectif de reprise d'une session Codex sous tmux motive l'essai."
     }
    }
   },
