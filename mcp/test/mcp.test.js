@@ -161,3 +161,13 @@ test("journal D66 : un outil en erreur (isError) donne statut erreur_outil", asy
     [["chercher_reference", "erreur_outil"], ["fiche_reference", "erreur_outil"], ["chercher_reference", "ok"]]);
   assert.equal(lignes[0].nb_resultats, null);
 });
+
+test("a_tester : id, produit, date de publication et première source par action", async () => {
+  const r = (await appel("a_tester")).corps.result;
+  assert.equal(r.isError, false);
+  for (const a of r.structuredContent.actions) {
+    assert.deepEqual(Object.keys(a), ["id", "date", "produit", "date_publication", "titre", "impact", "action", "source"]);
+    assert.equal(typeof a.id, "string");
+    assert.ok(a.source === null || (typeof a.source.url === "string" && typeof a.source.officielle === "boolean"));
+  }
+});

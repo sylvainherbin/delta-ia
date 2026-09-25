@@ -124,7 +124,13 @@ async function aTester() {
     const jours = (index[p]?.jours || []).map((j) => j.date).filter((d) => d >= limite);
     for (const d of jours) {
       const q = await lire(`${p}/${d}.json`);
-      for (const e of q.elements || []) if (e.action) actions.push({ date: d, titre: e.titre, impact: e.impact, action: e.action });
+      for (const e of q.elements || []) {
+        if (!e.action) continue;
+        const s = (e.sources || [])[0];
+        actions.push({ id: e.id ?? null, date: d, produit: e.produit ?? null, date_publication: e.date_publication ?? null,
+          titre: e.titre, impact: e.impact, action: e.action,
+          source: s ? { url: s.url ?? null, libelle: s.libelle ?? null, officielle: s.officielle === true } : null });
+      }
     }
   }
   actions.sort((a, b) => ["fort", "moyen", "faible", "nul"].indexOf(a.impact) - ["fort", "moyen", "faible", "nul"].indexOf(b.impact) || b.date.localeCompare(a.date));
