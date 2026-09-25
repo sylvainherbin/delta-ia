@@ -101,7 +101,7 @@ def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
 
     Inscrits : les nouveautés brutes reprises dans `ids_bruts` ou `ecartes`, les `ignores` du fichier brut,
     les identifiants `web-*`. Les nouveautés brutes absentes restent en attente et sont listées.
-    Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids]}.
+    Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids], borne_avancee}.
     """
     vus = etat.setdefault("vus", {})
     empreintes = brut.get("empreintes") or {}
@@ -151,6 +151,13 @@ def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
     bilan["en_attente"].sort()
     bilan["inconnus"].sort()
     etat["version"] = VERSION_ETAT
-    etat["maj_le"] = horodatage
+    # D4 : `maj_le` est la borne du passage suivant. Elle n'avance que si la couverture est complète : avec des
+    # nouveautés en attente ou des identifiants inconnus, elle reste celle du dernier passage entièrement couvert
+    # (audit du 25/09) ; le reste de la validation s'applique normalement.
+    bilan["borne_avancee"] = not (bilan["en_attente"] or bilan["inconnus"])
+    if bilan["borne_avancee"]:
+        etat["maj_le"] = horodatage
+    else:
+        etat.setdefault("maj_le", None)
     etat["vus"] = dict(sorted(vus.items()))
     return etat, bilan

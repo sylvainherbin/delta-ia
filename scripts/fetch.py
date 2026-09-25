@@ -87,6 +87,8 @@ def commande_valider(perimetre: str, racine: Path, dry_run: bool, jour: date | N
         print(f"  ? en attente  {i}  {titres.get(i, '')[:70]}")
     for i in bilan["inconnus"]:
         print(f"  ! inconnu     {i}  (présent dans le fichier quotidien, absent du brut et de l'état)")
+    if not bilan["borne_avancee"]:
+        print(f"  borne (maj_le) inchangée : {etat.get('maj_le')} — couverture incomplète")
     if not dry_run:
         ecrire_json(chemin_etat, etat)
     return 4 if bilan["en_attente"] or bilan["inconnus"] else 0

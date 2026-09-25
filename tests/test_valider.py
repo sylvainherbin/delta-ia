@@ -292,3 +292,40 @@ def test_d64bis_contexte_sections_des_elements(racine, capsys):
     vide = hashlib.sha1(b"").hexdigest()
     assert any("corps vide" in e for e in verifier(f25, {"projets": {"sha1": vide, "pourquoi": "Liste des projets."}}))
     assert v.analyser_contexte(CONTEXTE)[0]["projets"]["sha1"] == vide
+
+
+# --- Audit du 25/09, point 2 : la borne D4 n'avance qu'avec une couverture complète -----------------------------
+
+def test_borne_n_avance_pas_si_couverture_incomplete(racine, capsys):
+    from deltalib import etat as mod_etat
+    brut = brut_de(racine, "claude")
+    ids = [n["id"] for n in brut["nouveautes"]]
+    # premier passage complet : la borne est posée
+    ecrire_quotidien(racine, "claude", brut, JOUR)
+    assert fetch.main(["--racine", str(racine), "--perimetre", "claude", "--valider"]) == 0
+    borne = lire_etat(racine, "claude")["maj_le"]
+    assert borne
+    # validation partielle (nouveautés en attente) : inscriptions faites, borne inchangée
+    brut2 = {**brut, "nouveautes": [{**n, "id": n["id"] + "-bis"} for n in brut["nouveautes"]], "ignores": []}
+    e, bilan = mod_etat.valider(lire_etat(racine, "claude"),
+                                brut2, {"elements": [element_depuis_brut(brut2["nouveautes"][0])], "ecartes": []})
+    assert bilan["en_attente"] and not bilan["borne_avancee"] and e["maj_le"] == borne
+    assert brut2["nouveautes"][0]["id"] in e["vus"], "le reste de la validation s'applique"
+    # identifiant inconnu : borne inchangée aussi
+    e, bilan = mod_etat.valider(lire_etat(racine, "claude"), {"nouveautes": []},
+                                {"elements": [element_depuis_brut({**brut["nouveautes"][0], "id": "inconnu-x"})], "ecartes": []})
+    assert bilan["inconnus"] == ["inconnu-x"] and e["maj_le"] == borne
+    # état neuf et couverture incomplète : pas de borne inventée
+    e, bilan = mod_etat.valider({"vus": {}}, brut, {"elements": [], "ecartes": []})
+    assert e["maj_le"] is None and bilan["en_attente"] == sorted(ids)
+
+
+def test_borne_inchangee_de_bout_en_bout(racine, capsys):
+    brut = brut_de(racine, "claude")
+    ids = [n["id"] for n in brut["nouveautes"]]
+    ecrire_quotidien(racine, "claude", brut, JOUR, couvrir=ids[:1])
+    assert fetch.main(["--racine", str(racine), "--perimetre", "claude", "--valider"]) == 4
+    assert lire_etat(racine, "claude")["maj_le"] is None and "borne (maj_le) inchangée" in capsys.readouterr().out
+    ecrire_quotidien(racine, "claude", brut, JOUR)
+    assert fetch.main(["--racine", str(racine), "--perimetre", "claude", "--valider"]) == 0
+    assert lire_etat(racine, "claude")["maj_le"]
