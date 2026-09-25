@@ -199,7 +199,8 @@ function ligneJournal(msg, reponse, mesure, duree) {
   const outil = methode === "tools/call" && msg.params && typeof msg.params.name === "string" && OUTILS[msg.params.name] ? msg.params.name
     : methode === "tools/call" ? "inconnu" : null;
   const l = { methode, outil, client: info ? { name: texte(info.name), version: texte(info.version) } : null,
-    duree_ms: Math.round(duree), statut: reponse && reponse.error ? reponse.error.code : "ok",
+    // erreur JSON-RPC : son code ; outil qui répond isError (paramètre invalide, données indisponibles) : "erreur_outil"
+    duree_ms: Math.round(duree), statut: reponse && reponse.error ? reponse.error.code : reponse && reponse.result && reponse.result.isError ? "erreur_outil" : "ok",
     demarrage_froid: froid, nb_resultats: mesure.nb_resultats ?? null };
   froid = false;
   return l;

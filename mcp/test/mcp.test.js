@@ -149,3 +149,15 @@ test("journal D66 : JSON invalide", async (t) => {
   });
   assert.deepEqual(lignes.map((l) => [l.methode, l.statut]), [["autre", -32700]]);
 });
+
+test("journal D66 : un outil en erreur (isError) donne statut erreur_outil", async (t) => {
+  const lignes = await journal(t, async () => {
+    const r = await appel("chercher_reference", { requete: "" });
+    assert.equal(r.corps.result.isError, true);
+    await appel("fiche_reference", { id: "claude-code-commandes-inexistante" });
+    await appel("chercher_reference", { requete: "worktree" });
+  });
+  assert.deepEqual(lignes.map((l) => [l.outil, l.statut]),
+    [["chercher_reference", "erreur_outil"], ["fiche_reference", "erreur_outil"], ["chercher_reference", "ok"]]);
+  assert.equal(lignes[0].nb_resultats, null);
+});
