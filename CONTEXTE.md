@@ -68,7 +68,10 @@ et s'éteint au besoin depuis la console de pilotage (bouton réservé à `dev` 
 Les sessions se parlent via `SendMessage` / `ListAgents` et Sylvain relaie des prompts entre elles
 **[observé : transcripts]**. Depuis une session Claude Code, `/list-agents` montre la conversation
 Dispatch de Cowork comme session Remote Control ; les sessions Cowork cloud n'y apparaissent pas
-**[observé 25/09]**.
+**[observé 25/09]**. Dispatch dit pouvoir créer une session Code (`start_code_task`) ou Cowork
+(`start_task`) et leur parler (`send_message`) tant qu'elles sont ses enfants ; aucun canal retour
+vers lui, il lit leur transcript (`read_transcript`) **[rapporté par Dispatch le 25/09, non
+vérifié]**.
 
 ---
 
@@ -379,7 +382,8 @@ d'abord, puis sur carnet et les sessions à distance, et expliquer la commande o
 allège la consommation des limites hebdomadaires, et ce qui renforce les audits croisés
 Claude ↔ Codex. Signaler aussi en priorité ce qui permet aux sessions Cowork (y compris Dispatch) d'échanger directement
 avec les sessions Claude Code (ListAgents / SendMessage entre Cowork et Claude Code, connexion
-Remote Control d'une session Cowork, réponse d'une session cloud) [déclaré].
+Remote Control d'une session Cowork, réponse d'une session cloud, un canal retour vers Dispatch, ou
+son accès à des sessions Claude Code existantes) [déclaré].
 
 ---
 
