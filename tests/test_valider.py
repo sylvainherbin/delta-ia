@@ -329,3 +329,35 @@ def test_borne_inchangee_de_bout_en_bout(racine, capsys):
     ecrire_quotidien(racine, "claude", brut, JOUR)
     assert fetch.main(["--racine", str(racine), "--perimetre", "claude", "--valider"]) == 0
     assert lire_etat(racine, "claude")["maj_le"]
+
+
+# --- Audit du 25/09, point 6 : identifiants web- recalculés (D20) ------------------------------------------------
+
+def test_id_web_recalcule_dans_les_nouveaux_fichiers(racine):
+    import valider as v
+    from deltalib.modeles import id_web
+    url, titre, date_pub = "https://help.openai.com/x", "Note ChatGPT", "2026-09-24"
+    bon = id_web(url, date_pub, titre)
+    base = {"id": bon, "ids_bruts": [bon], "titre": titre, "date_publication": date_pub,
+            "sources": [{"url": "https://autre.test/y", "libelle": "l", "officielle": False}, {"url": url, "libelle": "l", "officielle": False}]}
+
+    def erreurs(e):
+        r = v.Rapport(); v.verifier_ids_web(e, "x", r); return r.erreurs
+    assert erreurs(base) == [], "l'URL de n'importe quelle source convient"
+    assert any("id_web" in m for m in erreurs({**base, "titre": "Titre changé"})), "titre modifié après calcul"
+    assert any("id_web" in m for m in erreurs({**base, "date_publication": None}))
+    faux = "web-" + "0" * 12
+    assert any(faux in m for m in erreurs({**base, "id": faux, "ids_bruts": [faux, bon]}))
+    assert erreurs({**base, "sources": []}) == [], "sans URL, rien n'est vérifié"
+    assert erreurs({**base, "ids_bruts": ["oa-1"], "id": "oa-1"}) == []
+
+
+def test_id_web_historique_non_verifie():
+    """Les 6 identifiants web- du 23/09 ne se recalculent pas (titre de calcul absent de l'élément) : non vérifiés."""
+    import valider as v
+    assert v.DATE_ID_WEB == "2026-09-25"
+    from conftest import RACINE
+    r = v.Rapport()
+    v.verifier_quotidien(RACINE / "docs" / "data" / "openai" / "2026-09-23.json", "openai",
+                         {"carnet", "trading-sim", "chatgpt-trading-sim", "ceramist", "restoration-id"}, r)
+    assert not any("id_web" in m for m in r.erreurs)

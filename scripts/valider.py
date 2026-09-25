@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.etat import DOSSIERS  # noqa: E402
 from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
-from deltalib.modeles import PERIMETRES, PRODUITS  # noqa: E402
+from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -36,6 +36,7 @@ IMPACTS = {"fort", "moyen", "faible", "nul"}
 EFFORTS = {"5min", "30min", "plus"}
 RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 DATE_D58 = "2026-09-23"
+DATE_ID_WEB = "2026-09-25"  # fichiers datés après ce jour : identifiant `web-` recalculé (D20, audit du 25/09)
 DATE_D64 = "2026-09-24"  # éléments quotidiens datés après ce jour : `contexte_sections` obligatoire, format D64-bis
 RE_SECRETS = [
     (re.compile(r"ghp_[A-Za-z0-9]{20,}"), "jeton GitHub (ghp_)"),
@@ -172,6 +173,19 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
         r.erreur(ou, "`revision` doit être un booléen")
 
 
+def verifier_ids_web(e: dict, ou: str, r: Rapport) -> None:
+    """D20 : chaque identifiant `web-` de `ids_bruts` doit valoir id_web(url, date_publication, titre) pour l'URL de
+    l'une des sources de l'élément, avec sa `date_publication` et son `titre` publiés. Sans URL, rien n'est vérifié."""
+    urls = [s.get("url") for s in e.get("sources") or [] if isinstance(s, dict) and isinstance(s.get("url"), str) and s["url"]]
+    if not urls or not isinstance(e.get("titre"), str):
+        return
+    attendus = {id_web(u, e.get("date_publication"), e["titre"]) for u in urls}
+    for ident in e.get("ids_bruts") or []:
+        if isinstance(ident, str) and ident.startswith("web-") and ident not in attendus:
+            r.erreur(ou, f"identifiant `{ident}` ≠ id_web(url, date_publication, titre) de l'élément "
+                         f"(attendu : {', '.join(sorted(attendus))}) ; calcule-le avec le titre publié (D20)")
+
+
 def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rapport) -> dict | None:
     ou = chemin.name
     texte = chemin.read_text(encoding="utf-8")
@@ -226,6 +240,8 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
         verifier_element(e, i, perimetre, projets, r, ou)
         if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
             r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
+        if isinstance(e, dict) and isinstance(q.get("date"), str) and q["date"] > DATE_ID_WEB:
+            verifier_ids_web(e, f"{ou} elements[{i}]", r)
         if isinstance(e, dict):
             if isinstance(e.get("id"), str):
                 ids.append(e["id"])
