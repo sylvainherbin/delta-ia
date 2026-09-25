@@ -145,7 +145,9 @@
       if (!idx || !idx.agent) continue;
       const t = new Date(idx.maj_le || "");
       if (Number.isNaN(t.getTime())) continue;
-      if (!parAgent[idx.agent] || t > parAgent[idx.agent]) parAgent[idx.agent] = t;
+      // un agent à plusieurs périmètres (Claude Code : claude et actu) prend le passage le plus ANCIEN,
+      // pour qu'un périmètre qui n'a pas tourné ne soit pas masqué par l'autre (audit du 25/09)
+      if (!parAgent[idx.agent] || t < parAgent[idx.agent]) parAgent[idx.agent] = t;
     }
     const alertes = [];
     for (const agent of Object.keys(AGENTS)) {

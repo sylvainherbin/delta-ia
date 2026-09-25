@@ -39,3 +39,12 @@ def test_manifeste_relatif():
     assert {i["sizes"] for i in m["icons"]} == {"180x180", "512x512"}
     for i in m["icons"]:
         assert not i["src"].startswith("/") and (DOCS / i["src"]).exists()
+
+
+def test_voyant_agent_prend_le_passage_le_plus_ancien():
+    """Audit du 25/09, point 4 : Claude Code (claude + actu) prend le maj_le le plus ancien de ses périmètres."""
+    from pathlib import Path
+    app = (Path(__file__).resolve().parent.parent / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
+    debut = app.index("function rendreEtatAgents")
+    corps = app[debut:app.index("return alertes", debut)]
+    assert "t < parAgent[idx.agent]" in corps and "t > parAgent[idx.agent]" not in corps
