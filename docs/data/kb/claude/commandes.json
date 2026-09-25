@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-09-24",
+ "maj_le": "2026-09-25",
  "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -54,7 +54,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, ajouter le dossier chatgpt-trading-sim donne accès aux missions `NEXT-CLAUDE-MISSION-*` sans relancer la session dans un autre dossier."
+    "pourquoi": "Sur herbin-trading, `/add-dir` vers le dossier chatgpt-trading-sim donnerait accès aux missions `NEXT-CLAUDE-MISSION-*` sans relancer la session ailleurs ; vérifier ensuite que la lecture d'une mission marche dans le même tour."
    },
    "sources": [
     {
@@ -67,7 +67,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -80,10 +80,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "missions `NEXT-CLAUDE-MISSION-*` dans un dossier local hors git"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "herbin-trading exécute les missions trading-sim"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-advisor",
@@ -113,7 +126,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -126,10 +139,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "piste 11 : consommation Fable/Opus proche des plafonds"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limite Fable parmi les frictions ; pilotage depuis l'iPhone"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-agents",
@@ -188,7 +214,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu utilises les artefacts dans l'app Claude : les attacher à une session Claude Code (herbin-dev pour la console, delta-ia) évite de recopier leur contenu à la main."
+    "pourquoi": "Tu utilises les artefacts dans l'app Claude : `/artifacts` puis Entrée dans la session delta-ia attacherait un artefact de la veille sans recopier son contenu à la main."
    },
    "sources": [
     {
@@ -201,7 +227,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -214,10 +240,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8",
+     "pourquoi": "Claude : artefacts utilisés"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "session delta-ia pour les passages de la veille"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-auto-mode-setup",
@@ -234,7 +273,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le classificateur du mode auto bloque certaines écritures système (friction relevée dans CONTEXTE.md) ; décrire l'environnement réel de la machine pourrait réduire ces blocages. Le brouillon relu est enregistré dans les réglages utilisateur, donc pour toutes les sessions."
+    "pourquoi": "Lancer `/auto-mode-setup` dans herbin-mint et relire le brouillon : décrire l'environnement réel de la machine pourrait réduire les blocages d'écritures système du mode auto. Le brouillon validé va dans les réglages utilisateur, donc pour toutes les sessions."
    },
    "sources": [
     {
@@ -247,7 +286,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -260,10 +299,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "classificateur du mode auto qui bloque certaines écritures système"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "herbin-mint gère système et réseau"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-autocompact",
@@ -280,7 +332,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions tmux reprises par `claude --resume` peuvent durer longtemps ; une fenêtre plus basse limiterait le coût en jetons de chaque tour, au prix de compactions plus fréquentes. La valeur est enregistrée dans les réglages utilisateur, donc pour toutes les sessions ; `auto` revient au réglage du modèle."
+    "pourquoi": "Sur herbin-trading, `/autocompact 300k` puis comparer `/usage` sur une semaine : une fenêtre plus basse réduirait le contexte envoyé à chaque tour, au prix de compactions plus fréquentes. La valeur est enregistrée dans les réglages utilisateur, donc pour toutes les sessions ; `auto` revient au réglage du modèle."
    },
    "sources": [
     {
@@ -293,7 +345,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -306,10 +358,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "sessions longues reprises par `claude --resume`"
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "limites d'usage hebdomadaire parmi les frictions"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-autofix-pr",
@@ -423,7 +488,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -436,10 +501,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "révisions de spécification gelées puis rejetées par l'audit"
+    },
+    "env.multi-sessions": {
+     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
+     "pourquoi": "herbin-trading exécute les missions"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-btw",
@@ -641,7 +719,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "L'extension Chrome est souvent déconnectée (CONTEXTE) : c'est le premier endroit où vérifier son état avant de relancer."
+    "pourquoi": "L'extension Chrome est souvent déconnectée : `/chrome` est le premier endroit où vérifier son état avant de relancer une tâche navigateur."
    },
    "sources": [
     {
@@ -654,7 +732,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -667,10 +745,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "extension Chrome souvent déconnectée"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude",
@@ -2204,7 +2291,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2221,12 +2308,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
      "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, pour étaler la charge"
     },
     "methode.travail": {
@@ -2569,7 +2660,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2586,12 +2677,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
      "pourquoi": "piste 11 : choisir modèle et effort par session pour étaler la charge"
     },
     "env.multi-sessions": {
@@ -3584,7 +3679,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3605,17 +3700,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d8ad28e743c04c426e678e4ae4b00337daaf3231",
-     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, la consommation Fable/Opus approchant les plafonds"
+     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples, consommation Fable/Opus proche des plafonds"
     },
     "env.multi-sessions": {
      "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
-     "pourquoi": "six sessions aux rôles distincts, chacune avec son propre modèle possible"
+     "pourquoi": "six sessions aux rôles distincts"
     }
    }
   },
