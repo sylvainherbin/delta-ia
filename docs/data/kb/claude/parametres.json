@@ -2,7 +2,7 @@
  "perimetre": "claude",
  "categorie": "parametres",
  "maj_le": "2026-09-25",
- "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+ "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -15,7 +15,7 @@
   "projet.restoration-id": "fa8476b43814e6dd02af96a248e178016f655ad4",
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-  "config.claude-code.skills": "28438a8972f63751408a02e7577ff36c74ee835c",
+  "config.claude-code.skills": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
   "config.claude-code.mcp": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+  "optimisation.pistes": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
   "usage.hors-machine": "c4f6debd41dd45c3f51010a003a1599cf7ec47a8"
  },
  "contexte_deprecies": [],
@@ -10664,16 +10664,16 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_SUBAGENT_MODEL",
    "gabarit": "court",
-   "description": "Variable qui fixe le modèle par défaut des sous-agents, coéquipiers et agents de workflow sans modèle attribué autrement.",
+   "description": "Variable qui fixe le modèle par défaut des sous-agents, coéquipiers et agents de workflow, appliqué seulement après le paramètre d'appel et le champ `model` de la définition, avant le modèle de la session.",
    "description_source": "The default model for subagents, agent team teammates, and workflow agents that aren't assigned a model another way. Accepts an alias such as haiku or a full model name. Two sources take precedence over it: a model Claude passes when it spawns the agent, and a model field in the agent's definition, including inherit. To change that, set CLAUDE_CODE_SUBAGENT_MODEL_FORCE. See Choose a model for the full order. Setting it to inherit is the same as leaving it unset. Before v2.1.251, this variable overrode both the per-invocation model and the definition's model field",
    "usage": "CLAUDE_CODE_SUBAGENT_MODEL",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Faire tourner sous-agents et agents de workflow sur Sonnet ou Haiku ménagerait tes limites hebdomadaires, surtout lors de tes workflows ; à poser dans l'environnement d'une session pour mesurer l'effet sur la qualité."
+    "verdict": "ignorer",
+    "pourquoi": "Ta politique déclarée fixe un modèle dans la définition de chaque agent, qui prime déjà sur cette variable ; un défaut global n'est à réévaluer que si des essais en montrent l'intérêt."
    },
    "sources": [
     {
@@ -10686,7 +10686,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10695,10 +10695,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "politique déclarée : modèle choisi dans chaque définition de sous-agent plutôt qu'un défaut global CLAUDE_CODE_SUBAGENT_MODEL"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-subagent-model-force",
@@ -10706,7 +10715,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_SUBAGENT_MODEL_FORCE",
    "gabarit": "court",
-   "description": "Variable qui impose un seul modèle à tous les sous-agents, coéquipiers et agents de workflow.",
+   "description": "Variable qui, à `1`, impose à tous les sous-agents, coéquipiers et agents de workflow le modèle de `CLAUDE_CODE_SUBAGENT_MODEL` (ou celui de la session si elle est seule), en écrasant paramètre d'appel et champ `model` des définitions.",
    "description_source": "Set to 1 to force one model onto subagents, teammates, and workflow agents. Run every subagent on one model says which model that is. Requires Claude Code v2.1.257 or later",
    "usage": "CLAUDE_CODE_SUBAGENT_MODEL_FORCE",
    "usage_nature": "syntaxe",
@@ -10715,7 +10724,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Imposer un modèle écraserait les choix faits agent par agent ; `CLAUDE_CODE_SUBAGENT_MODEL` suffit pour un défaut."
+    "pourquoi": "Elle écraserait le modèle choisi dans chaque définition d'agent, à l'inverse de ta politique déclarée d'un modèle par agent."
    },
    "sources": [
     {
@@ -10728,7 +10737,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10737,10 +10746,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "politique déclarée : un modèle choisi explicitement dans la définition de chaque sous-agent"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-subagent-prompt-cache-ttl",
@@ -13789,7 +13807,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13798,12 +13816,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "commandes tapées `/btw`, `/remote-control`, `/compact` et skills perso"
     }
    }
@@ -14014,7 +14036,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14023,13 +14045,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
-     "pourquoi": "aucun hook perso"
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "commandes et hooks perso : aucun"
     }
    }
   },
@@ -14192,7 +14218,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14201,12 +14227,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "Workflow : 13 appels observés"
     }
    }
@@ -14290,7 +14320,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14299,12 +14329,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "aucun plugin propre observé"
     }
    }
@@ -14800,12 +14834,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 11 : modèle et effort choisis par session pour étaler la charge"
     },
     "env.multi-sessions": {
@@ -14855,16 +14893,20 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code": {
      "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
      "pourquoi": "effort par défaut relevé dans etat.json (clé absente)"
     },
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 11 : régler l'effort par session pour étaler la charge"
     }
    }
@@ -15449,12 +15491,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 3 : `PYTHONDONTWRITEBYTECODE=1` contrôlé à la main"
     },
     "projet.trading-sim": {
@@ -17480,12 +17526,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 3 : contrôles répétés à la main (SHA-256, `PYTHONDONTWRITEBYTECODE`, `pkill -f`) à changer en hooks"
     }
    }
@@ -18189,16 +18239,20 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 3 : aucun hook, contrôles répétés à la main à changer en hooks"
     },
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "hooks perso absents"
     }
    }
@@ -18903,12 +18957,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 1 : règles transversales (français…) dispersées dans les mémoires"
     },
     "profil": {
@@ -19961,12 +20019,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 11 : Sonnet pour les tâches machine simples"
     },
     "env.multi-sessions": {
@@ -24246,16 +24308,20 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 4 : `latex-manuscrit` et `verif-numerique` jamais déclenchés"
     },
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "usage observé des skills perso"
     }
    }
@@ -26609,7 +26675,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26618,12 +26684,16 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "28438a8972f63751408a02e7577ff36c74ee835c",
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
      "pourquoi": "Workflow : 13 appels observés"
     },
     "methode.travail": {
@@ -26925,12 +26995,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "d2cb51484391a1fb19bc42823ae031ab6e9818ec",
+     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
      "pourquoi": "piste 11 : modèle et effort adaptés à la tâche pour étaler la charge"
     },
     "usage.hors-machine": {
