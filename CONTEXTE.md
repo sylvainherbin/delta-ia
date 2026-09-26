@@ -383,7 +383,9 @@ allège la consommation des limites hebdomadaires, et ce qui renforce les audits
 Claude ↔ Codex. Signaler aussi en priorité ce qui permet aux sessions Cowork (y compris Dispatch) d'échanger directement
 avec les sessions Claude Code (ListAgents / SendMessage entre Cowork et Claude Code, connexion
 Remote Control d'une session Cowork, réponse d'une session cloud, un canal retour vers Dispatch, ou
-son accès à des sessions Claude Code existantes) [déclaré].
+son accès à des sessions Claude Code existantes) [déclaré]. Signaler aussi en priorité les offres,
+crédits, promotions et remises à zéro des limites d'usage (Claude, Claude Code, ChatGPT, Codex),
+avec leurs conditions et dates limites [déclaré].
 
 ---
 
