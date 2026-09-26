@@ -191,3 +191,11 @@ def test_d68_correctif_mcp_et_arret_propre():
     # serveur local delta-ia, connecteur de compte dans Claude Desktop (identifiant relevé le 25/09) et dans la CLI
     assert {"mcp__delta-ia__*", "mcp__f15d4eb1-5763-45f3-b583-ed06d6d3532d__*", "mcp__claude_ai_Delta-IA__*"} <= set(s["deny"])
     assert not any(r.startswith("mcp__") for r in s["allow"])
+
+
+def test_d68_grep_lecture_seule_et_settings_local_ignore():
+    from conftest import RACINE
+    s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
+    greps = sorted(r for r in s["allow"] if r.startswith("Bash(grep"))
+    assert greps == ["Bash(grep -n *)", "Bash(grep -o *)", "Bash(grep -rn *)"], "grep en lecture seule, formes -n, -rn, -o seulement"
+    assert ".claude/settings.local.json" in (RACINE / ".gitignore").read_text(encoding="utf-8").splitlines()
