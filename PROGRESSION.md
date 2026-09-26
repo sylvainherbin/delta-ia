@@ -23,7 +23,7 @@ Ce dépôt est public : on n'inscrit ici que du technique, rien de personnel ni 
 | 2 | Le contexte | Savoir ce que le modèle voit (CLAUDE.md, mémoires, fichiers, compactage) | terminé le 24/09 |
 | 3 | Écrire une consigne | Rédiger une mission sans place pour l'interprétation | terminé le 24/09 |
 | 4 | Outils et MCP | Comprendre le choix d'un outil par un agent ; brancher un MCP | terminé le 24/09 |
-| 5 | Skills et hooks | Automatiser un comportement : skill ou hook | prochain |
+| 5 | Skills et hooks | Automatiser un comportement : skill ou hook | en cours, débuté le 26/09 |
 | 6 | Vérifier l'IA | Repérer une hallucination, faire recouper, audit croisé Claude ↔ Codex | à venir |
 
 ## Acquis
@@ -55,10 +55,18 @@ consolidation (D67 amendée).
 ## En cours
 
 - Modules 1, 2, 3 et 4 terminés le 24/09, en une seule séance, avec deux missions réelles
-  (pratique /compact sur herbin-mint, relecture d'un prompt d'automatisation avant envoi). Séance du
-  26/09 : rappel des 5 points en consolidation, un point confirmé (passé en Acquis), les 4 autres
-  restent en consolidation (pas retestés individuellement, seulement jugés clairs par Sylvain).
-  Module 5 (skills et hooks) en cours d'ouverture.
+  (pratique /compact sur herbin-mint, relecture d'un prompt d'automatisation avant envoi).
+- Séance du 26/09 : rappel des 5 points en consolidation, un point confirmé (passé en Acquis), les
+  4 autres restent en consolidation (pas retestés individuellement, seulement jugés clairs par
+  Sylvain). Module 5 ouvert : distinction skill/hook réussie sur deux exemples, puis exercice
+  pratique de construction d'un hook réel — abandonné en cours de route, encore un exercice trop
+  technique (comme 1.2), voir Points à travailler. Le hook construit reste actif (voir note
+  ci-dessous) ; le module n'est pas terminé, à reprendre avec un exemple plus accessible.
+- **Changement réel hors dépôt** : un hook `PreToolUse` sur `Bash` a été installé dans
+  `~/.claude/settings.json` (global, toutes sessions Claude Code) le 26/09, avec le script
+  `~/.claude/hooks/check-bash.sh` : il bloque toute commande contenant le texte `pkill -f`. Testé et
+  actif. Limite connue : il bloque sur le texte, pas sur un vrai appel à `pkill` (faux positif
+  possible, sans conséquence pratique pour Sylvain qui n'utilise pas cette commande).
 
 ## Adoptions
 
@@ -88,6 +96,11 @@ donne `fiche_reference`.
   de mission, l'ancienne conversation restant accessible par `/resume`).
 - **Justifications absentes** [observé : 1.1] : les choix ont été donnés sans la phrase de
   justification demandée.
+- **Récidive du même défaut de conception (module 5)** [observé : 26/09] : après l'exercice 1.2
+  (piège bash), un deuxième exercice trop technique a été proposé (limite d'un hook bloquant
+  `pkill -f`, une commande que Sylvain ne connaît pas). Il l'a signalé lui-même, sans détour. Leçon
+  répétée : vérifier, avant de proposer un exercice pratique, que le domaine est déjà familier à
+  Sylvain ou que je peux l'expliquer en une phrase sans qu'il ait besoin de connaître l'outil visé.
 
 ## Journal des séances
 
@@ -107,3 +120,6 @@ donne `fiche_reference`.
 | 2026-09-24 | 3 | Application réelle : relecture d'un prompt d'automatisation (cron /delta + $delta) avant envoi à herbin-mint | Sylvain avait bien repris la contrainte D21 (ordre strict) depuis SPEC.md ; grille des 4 questions appliquée par le professeur : fini quand et format absents, méthode (IDs de session figés) prescrite au lieu du but. Blocage trouvé en croisant SPEC.md §10 (cron hors périmètre v1) et §3 (`disable-model-invocation: true`) : proposition reformulée et envoyée directement à la session delta-ia pour décision, plutôt qu'exécutée sur herbin-mint | [observé] |
 | 2026-09-24 | 4 | 4.1 lire `/mcp` et dire ce qui sert vraiment dans la session | réussi : 7 connectés, 1 seul utilisé (delta-ia) ; confirme la piste 9 de Delta (Gmail/Drive/Calendar/Canva/GoDaddy connectés sans servir dans Claude Code) | [observé] |
 | 2026-09-26 | 1 | Rappel des 5 points en consolidation avant le module 5 ; Sylvain désigne lui-même le point 1.4 comme le moins clair | retravaillé puis réussi : `/effort status` tapé directement, résultat lu correctement (« auto (currently high) ») ; deuxième réussite à un jour différent → passage en Acquis | [observé] |
+| 2026-09-26 | 5 | 5.1 skill ou hook : le passage `/delta` | réussi : skill, correctement justifié (déclenché par Sylvain, disable-model-invocation) | [observé] |
+| 2026-09-26 | 5 | 5.2 skill ou hook : lancer les tests automatiquement après modification d'un `.py` | réussi : hook, bonne justification (« commande automatique lancée par le programme à un moment précis ») | [observé] |
+| 2026-09-26 | 5 | 5.3 construction réelle d'un hook `PreToolUse` bloquant `pkill -f` (recommandation Delta, piste 3) | hook écrit et testé avec succès (commande bloquée, commande normale non affectée) ; en creusant une limite (faux positif sur simple texte), exercice devenu trop technique — Sylvain ne connaît pas `pkill -f`, ne peut pas juger lui-même l'importance du défaut ; interrompu, conclusion donnée par le professeur plutôt que demandée à Sylvain | [observé] |
