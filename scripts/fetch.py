@@ -10,6 +10,8 @@ Sans `--valider`, l'état `state/<p>.json` n'est jamais modifié : les nouveaut�
 `raw/<p>-nouveautes.json`. `--valider` lit le fichier quotidien docs/data/<p>/<date>.json et n'inscrit
 dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*) plus les ignorés du brut ; les
 nouveautés absentes restent en attente (code de sortie 4).
+`--kb` : code 3 = échec partiel (des pages ou des documentations en échec, les autres traitées normalement) ;
+code 5 = échec total (aucune page lue, ou toutes les documentations d'un périmètre en échec) ; D68.
 """
 
 from __future__ import annotations
@@ -150,11 +152,14 @@ def commande_kb(args, racine: Path) -> int:
           f"{len(bilan_pages['echecs'])} en échec, {len(bilan_pages.get('redirections', []))} redirection(s)")
     for e in bilan_pages["echecs"]:
         print(f"  ! ÉCHEC   {e['doc']}/{e['fichier']} : {e['erreur']}")
+    code = 3 if bilan_pages["echecs"] else 0  # page illisible : sa copie précédente reste en place, les autres avancent
+    if not args.kb_sans_reseau and bilan_pages["pages"] == 0:
+        print("  ! ÉCHEC TOTAL : aucune page de documentation lue")
+        code = 5
     for r in bilan_pages.get("redirections", []):  # jamais suivie en silence, même si la page reste lisible
         page = r["fichier"].removeprefix("page:")
         print(f"  → REDIRECTION {r['doc']}/{page} : {r['ancienne']} → {r['nouvelle']} "
               f"({', '.join(map(str, r['statuts']))})")
-    code = 0
     for perimetre in sorted({d.perimetre for d in docs}):
         res = catalogue.mettre_a_jour(racine, perimetre, docs, ecrire_fichiers=not args.dry_run,
                                       surcharge=bilan_pages.get("textes"))
@@ -168,7 +173,13 @@ def commande_kb(args, racine: Path) -> int:
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
         for e in res["echecs"]:
             print(f"  ! ÉCHEC   {e['doc']}" + (f" / {e['page']}" if e.get("page") else "") + f" : {e['erreur']}")
-            code = 3 if code == 0 else code
+            code = max(code, 3)
+        docs_per = {d.id for d in docs if d.perimetre == perimetre}
+        # une documentation est en échec total quand elle ne produit rien (échec sans « page ») ; si toutes le sont : code 5
+        totales = {e["doc"] for e in res["echecs"] if not e.get("page")}
+        if docs_per and docs_per <= totales:
+            print(f"  ! ÉCHEC TOTAL : toutes les documentations du périmètre {perimetre} sont en échec")
+            code = 5
         for e in res.get("avertissements", []):
             print(f"  ~ REPLI   {e['doc']} / {e['page']} : {e['avertissement']}")
     return code

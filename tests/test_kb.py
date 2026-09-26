@@ -362,9 +362,9 @@ def test_fetch_kb_page_modifiee_repasse_en_attente(racine_kb, monkeypatch):
 def test_fetch_kb_echec_ou_format_change(racine_kb, monkeypatch, capsys):
     lancer_kb(racine_kb, monkeypatch)
     avant = cat.charger(racine_kb, "claude")
-    # panne réseau : l'ancienne copie sert, rien n'est retiré
-    code = lancer_kb(racine_kb, monkeypatch, {"https://code.claude.com/docs/en/commands.md": ErreurReseau("HTTP 503")})
-    assert code == 0 and "ÉCHEC   cc-commandes/page" in capsys.readouterr().out
+    # panne réseau : l'ancienne copie sert, rien n'est retiré ; échec partiel signalé (code 3, D68 : avertissement)
+    code = lancer_kb(racine_kb, monkeypatch, {"https://code.claude.com/docs/en/commands.md": ErreurReseau("HTTP 403")})
+    assert code == 3 and "ÉCHEC   cc-commandes/page" in capsys.readouterr().out
     assert cat.charger(racine_kb, "claude") == avant
     # format changé : erreur explicite, code 3, aucune entrée retirée
     code = lancer_kb(racine_kb, monkeypatch, {"https://code.claude.com/docs/en/commands.md": "# Commands\n\nRefonte.\n"})
@@ -882,3 +882,16 @@ def test_skills_redirections_et_consolidation():
     for f in (".claude/skills/delta/SKILL.md", "prompts/codex-delta.md", ".agents/skills/delta/SKILL.md"):
         t = (RACINE / f).read_text(encoding="utf-8")
         assert "→ REDIRECTION" in t and "**en consolidation**" in t and "ni allégée comme un acquis" in t, f
+
+
+def test_fetch_kb_echec_total_code_5(racine_kb, monkeypatch, capsys):
+    """D68 : code 5 si aucune page n'est lue ; le code 3 (partiel) n'arrête pas le mode automatique, le 5 si."""
+    lancer_kb(racine_kb, monkeypatch)
+    capsys.readouterr()
+    toutes = {u: ErreurReseau("HTTP 403") for u in PAGES}
+    assert lancer_kb(racine_kb, monkeypatch, toutes) == 5 and "ÉCHEC TOTAL" in capsys.readouterr().out
+    # toutes les documentations d'un périmètre en format inattendu : code 5 aussi
+    casse = {u: "# Refonte\n\nRien.\n" for u in PAGES}
+    assert lancer_kb(racine_kb, monkeypatch, casse) == 5
+    # une seule page cassée, le reste traité : code 3
+    assert lancer_kb(racine_kb, monkeypatch, {"https://code.claude.com/docs/en/commands.md": "# Commands\n\nRefonte.\n"}) == 3
