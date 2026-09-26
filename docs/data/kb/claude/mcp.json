@@ -37,7 +37,7 @@
   "projet.trading-sim"
  ],
  "total": 41,
- "commentees": 40,
+ "commentees": 41,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -87,7 +87,7 @@
    "categorie": "mcp",
    "nom": "Authenticate from the command line",
    "gabarit": "complet",
-   "description": "Depuis la v2.1.186, `claude mcp login <nom>` lance l'authentification OAuth d'un serveur configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session.",
+   "description": "`claude mcp login <nom>` lance le flux OAuth d'un serveur MCP configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session. Il fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai.",
    "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session.",
    "usage": "claude mcp login sentry",
    "usage_nature": "syntaxe",
@@ -96,7 +96,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui exige ce type d'authentification ; delta-ia n'en a aucune."
+    "pourquoi": "Le seul connecteur en attente d'authentification, Vercel, est refermé volontairement ; delta-ia n'a aucune authentification."
    },
    "sources": [
     {
@@ -105,7 +105,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
@@ -122,10 +122,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur Vercel refermé volontairement, à ne pas réautoriser ; delta-ia sans authentification."
+    }
+   }
   },
   {
    "id": "claude-code-mcp-automatic-backgrounding-of-long-tool-calls",
