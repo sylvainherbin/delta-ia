@@ -87,7 +87,8 @@ def test_nouveautes_triees_et_format(racine):
     lancer(racine, "--perimetre", "openai")
     brut = lire(racine / "raw" / "openai-nouveautes.json")
     dates = [e["date_publication"] for e in brut["nouveautes"]]
-    assert dates == sorted(dates, reverse=True)
+    cle = [d or "9999" for d in dates]  # non datés en tête, comme etat.detecter (D3, O2)
+    assert cle == sorted(cle, reverse=True)
     assert {e["produit"] for e in brut["nouveautes"]} <= {"chatgpt", "codex"}
     assert set(brut) == {"perimetre", "genere_le", "fenetre_depuis", "borne", "sources_traitees", "elements_total",
                          "nouveautes", "ignores", "ignores_sources", "sources_amorcees", "empreintes", "sources_en_echec"}

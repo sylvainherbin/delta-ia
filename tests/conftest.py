@@ -32,6 +32,7 @@ CORRESPONDANCES = {
     "https://api.github.com/repos/openai/codex/releases?per_page=10&page=4": ("page_vide.json", "application/json; charset=utf-8"),
     "https://api.github.com/repos/openai/codex/releases/latest": ("codex_latest.json", "application/json; charset=utf-8"),
     "https://learn.chatgpt.com/docs/changelog/general.json": ("oa_general.json", "application/json; charset=utf-8"),
+    "https://learn.chatgpt.com/docs/pricing.md": ("oa_pricing.md", "text/markdown; charset=utf-8"),
     "https://learn.chatgpt.com/docs/changelog/codex-app.json": ("oa_codex_app.json", "application/json; charset=utf-8"),
     "https://learn.chatgpt.com/docs/changelog/ios.json": ("oa_ios.json", "application/json; charset=utf-8"),
     "https://openai.com/news/rss.xml": ("openai_news.xml", "text/xml; charset=utf-8"),

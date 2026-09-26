@@ -159,10 +159,41 @@ def texte_article(html: str) -> str:
     return texte
 
 
+def parser_sections_suivies(texte: str, source) -> list[Element]:
+    """O2 (26/09) : page Markdown suivie par empreinte de section (option `suivre_revisions`). Chaque section de
+    `options.sections` ({id, titre: regex, portee: complete|chapeau}) donne un élément non daté `<source>-<id>` :
+    une modification de la section le fait revenir en révision. `chapeau` = texte avant le premier sous-titre.
+    Section introuvable ou vide : FormatInattendu."""
+    from ..kb.markdown import sections as decouper
+    lignes, secs = decouper(texte)
+    base = source.url[:-3] if source.url.endswith(".md") else source.url
+    res: list[Element] = []
+    for conf in source.options.get("sections") or []:
+        rx = re.compile(conf["titre"], re.I)
+        sec = next((s for s in secs if rx.search(s.titre)), None)
+        if sec is None:
+            raise FormatInattendu(f"section « {conf['titre']} » introuvable : gabarit changé ?")
+        fin = sec.fin
+        if conf.get("portee") == "chapeau":
+            fin = next((s.debut for s in secs if s.debut > sec.debut and s.niveau > sec.niveau), sec.fin)
+        corps = "\n".join(lignes[sec.debut + 1:fin]).strip()
+        if not corps:
+            raise FormatInattendu(f"section « {sec.titre} » vide")
+        ancre = re.sub(r"[^a-z0-9-]", "", re.sub(r"\s+", "-", sec.titre.lower()))
+        res.append(Element(id=f"{source.id}-{conf['id']}", produit=source.produit,
+                           titre=f"{_nom(source)} — {sec.titre}", version=None, date_publication=None,
+                           url=f"{base}#{ancre}" if conf.get("portee") != "chapeau" else base, contenu=corps,
+                           source_id=source.id, officielle=source.officielle))
+    if not res:
+        raise FormatInattendu("aucune section suivie déclarée (options.sections)")
+    return res
+
+
 PARSEURS = {
     "markdown_date": parser_markdown_date,
     "html_date": parser_html_date,
     "html_time_liens": parser_html_time_liens,
+    "sections_suivies": parser_sections_suivies,
 }
 
 
