@@ -37,7 +37,7 @@
   "projet.trading-sim"
  ],
  "total": 20,
- "commentees": 19,
+ "commentees": 20,
  "entrees": [
   {
    "id": "claude-code-skills-batch",
@@ -45,7 +45,7 @@
    "categorie": "skills",
    "nom": "/batch",
    "gabarit": "complet",
-   "description": "Skill intégré qui orchestre un gros changement en parallèle : il étudie le code, découpe le travail en 5 à 30 unités indépendantes et présente un plan. Une fois le plan approuvé, il lance un sous-agent d'arrière-plan par unité, chacun dans un worktree git isolé, qui implémente, teste et ouvre une pull request. Exige un dépôt git.",
+   "description": "Skill intégré qui orchestre un gros changement en parallèle : il étudie le code, découpe le travail en 5 à 30 unités indépendantes et présente un plan. Une fois le plan approuvé, il lance un sous-agent d'arrière-plan par unité, chacun dans un worktree isolé, qui implémente, teste et publie son changement. Il exige un dépôt git ou un hook WorktreeCreate (hors dépôt git : v2.1.281 ou plus).",
    "description_source": "Skill. Orchestrate large-scale changes across a codebase in parallel. Researches the codebase, decomposes the work into 5 to 30 independent units, and presents a plan. Once approved, spawns one background subagent per unit in an isolated worktree. Each subagent implements its unit, runs tests, and publishes its change. Requires a git repository or a WorktreeCreate hook that creates the worktrees. Outside a git repository, /batch requires Claude Code v2.1.281 or later. Example: /batch migrate src/ from JavaScript to TypeScript",
    "usage": "/batch <instruction>",
    "usage_nature": "syntaxe",
@@ -54,7 +54,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Des dizaines de sous-agents et de PR en parallèle vont à l'encontre de ta validation pas à pas et consommeraient vite les limites hebdomadaires ; aucun de tes projets n'a de migration de cette taille."
+    "pourquoi": "Des dizaines de sous-agents en parallèle vont à l'encontre de ta validation pas à pas et consommeraient vite les limites hebdomadaires ; aucun de tes projets n'a de migration de cette taille."
    },
    "sources": [
     {
@@ -63,7 +63,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -80,10 +80,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Validation humaine pas à pas ; limites d'usage hebdomadaires."
+    }
+   }
   },
   {
    "id": "claude-code-skills-claude-api",

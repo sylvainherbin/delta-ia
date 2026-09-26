@@ -37,7 +37,7 @@
   "projet.trading-sim"
  ],
  "total": 127,
- "commentees": 124,
+ "commentees": 127,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1540,7 +1540,7 @@
    "categorie": "commandes",
    "nom": "claude mcp login <name>",
    "gabarit": "complet",
-   "description": "Lance le flux OAuth d'un serveur MCP configuré sans ouvrir le panneau `/mcp` ; fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai. `--no-browser` affiche l'URL d'autorisation, utile en SSH.",
+   "description": "Lance depuis le shell le flux OAuth d'un serveur MCP configuré, sans ouvrir le panneau `/mcp` ; fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai. En SSH, `--no-browser` affiche l'URL d'autorisation au lieu d'ouvrir un navigateur, puis on recolle l'URL de retour.",
    "description_source": "Run a configured MCP server's OAuth flow without opening the interactive /mcp panel. Works for HTTP, SSE, and claude.ai connector servers. Add --no-browser over SSH to print the authorization URL instead of opening a browser, then paste the redirect URL back at the prompt. See Authenticate from the command line — claude mcp login sentry",
    "usage": "claude mcp login <name>",
    "usage_nature": "syntaxe",
@@ -1548,8 +1548,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Tes connecteurs claude.ai sont déjà autorisés ; à ressortir seulement si l'un d'eux perd son authentification."
+    "verdict": "tester",
+    "pourquoi": "Le connecteur claude.ai Vercel, qui sert au déploiement de delta-ia, demande une nouvelle authentification : `claude mcp login` le réautoriserait depuis le shell de la session herbin-delta ; résultat attendu, le connecteur repasse en « Connected » dans `claude mcp list`."
    },
    "sources": [
     {
@@ -1558,7 +1558,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1575,10 +1575,23 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+     "pourquoi": "Serveur delta-ia servi depuis vercel.app ; connecteurs de compte claude.ai actifs dans tous les dossiers."
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "herbin-delta développe et déploie la web app delta-ia."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-mcp-logout-name",
@@ -1595,7 +1608,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun MCP local ; tes connecteurs claude.ai n'ont pas de problème d'authentification signalé."
+    "pourquoi": "Aucun serveur MCP local à authentification OAuth dans ta configuration ; delta-ia n'en a pas."
    },
    "sources": [
     {
@@ -1604,7 +1617,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1621,10 +1634,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+     "pourquoi": "Seul MCP local : delta-ia, public et sans authentification."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-p-query",
@@ -2157,7 +2179,7 @@
    "categorie": "commandes",
    "nom": "/clear",
    "gabarit": "complet",
-   "description": "Démarre une nouvelle conversation avec un contexte vide ; un nom en argument étiquette la précédente dans le sélecteur `/resume`. `/compact` libère du contexte en gardant la même conversation. Alias : `/reset`, `/new`.",
+   "description": "Démarre une nouvelle conversation au contexte vide ; un nom en argument étiquette la précédente dans le sélecteur `/resume`, qui permet de la rouvrir, comme l'entrée « session précédente » du menu de retour en arrière. Pour libérer du contexte sans changer de conversation, c'est `/compact`. Alias : `/reset`, `/new`.",
    "description_source": "Start a new conversation with empty context. Pass a name to label the previous conversation in the /resume picker. To free up context while continuing the same conversation, use /compact instead. Resume the previous conversation with /resume, or, in the same Claude Code process, restore it from the rewind menu's previous-session entry. Aliases: /reset, /new",
    "usage": "/clear [name]",
    "usage_nature": "syntaxe",
@@ -2166,7 +2188,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Entre deux missions sur herbin-trading, repartir d'un contexte vide coûte moins de jetons par tour que de traîner l'historique, et `/clear <nom>` garde la mission précédente retrouvable dans `/resume`."
+    "pourquoi": "En fin de mission sur herbin-trading, un rapport daté puis `/clear <nom>` repart d'un contexte vide, moins coûteux à chaque tour, et la mission reste retrouvable par `/resume` ; `/compact` sert seulement quand la même mission continue."
    },
    "sources": [
     {
@@ -2175,7 +2197,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -2204,17 +2226,21 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
    "contexte_sections": {
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading enchaîne les missions trading-sim"
-    },
     "methode.travail": {
      "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage hebdomadaires et coût en jetons listés parmi les frictions récurrentes"
+     "pourquoi": "Limites d'usage hebdomadaires ; rapports datés qui gardent l'essentiel d'une mission."
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "herbin-trading exécute des missions successives dans une session de longue durée."
     }
    }
   },
