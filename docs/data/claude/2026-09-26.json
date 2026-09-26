@@ -1,0 +1,137 @@
+{
+  "date": "2026-09-26",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-09-26T08:38:16+00:00",
+  "synthese": "Claude Code 2.1.283, déjà installée, corrige un défaut qui pouvait rendre ton serveur delta-ia inutilisable après un redéploiement Vercel, et des touches en rafale mal traitées dans tmux. Elle apporte `/doctor prompt-audit`, à essayer sur herbin-mint pour repérer ce qui vieillit dans tes CLAUDE.md, skills et agents avant le module 5 de ta formation. Le reste est sans effet pour toi : un portail de publication de plugins et une révision en bloc d'anciennes notes de la plateforme.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.283",
+      "ids_bruts": [
+        "claude-code-2.1.283"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.283",
+      "version": "2.1.283",
+      "date_publication": "2026-09-25",
+      "type": "amelioration",
+      "resume": "Nouvelle commande `/doctor prompt-audit` (ou `/checkup prompt-audit`), qui repère dans les CLAUDE.md, skills, agents et commandes les consignes écrites pour d'anciens modèles, les chemins et commandes périmés et les fichiers d'instructions contradictoires. Corrections : un serveur MCP distant sans état qui renvoyait brièvement un 404 (proxy en cours de redéploiement) restait inutilisable toute la session tout en s'affichant connecté ; des touches tapées vite (répétition, rafales via ssh ou tmux) pouvaient agir sur un état périmé ; `/context` compte désormais les instructions des serveurs MCP ; Remote Control était indisponible sur les plans payants quand la télémétrie était coupée. La réservation du nom `claude-ai` introduite en 2.1.282 est annulée.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21283",
+          "libelle": "Changelog Claude Code 2.1.283",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Ton serveur delta-ia tourne sur Vercel et n'a pas d'état : si un redéploiement le faisait répondre 404 un instant, tes sessions ne le perdraient plus jusqu'à leur redémarrage. Tes sessions tournent dans tmux : si des touches y arrivaient en rafale, par exemple via Remote Control depuis l'iPhone, elles ne seraient plus traitées sur un état périmé. `/doctor prompt-audit` lit tes CLAUDE.md, tes quatre skills perso et l'agent `executant` : c'est un bon point de départ pour le module 5 (skills et hooks) de ta formation, puisqu'il te montre ce qui vieillit dans ta propre configuration avant d'en écrire de nouvelles.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Auditer tes fichiers d'instructions, skills et agents avec `/doctor prompt-audit`, sans rien appliquer à l'aveugle.",
+        "etapes": [
+          "Dans la session herbin-mint (dossier `~/projets`, où vivent l'agent `executant` et tes réglages), tape `/doctor prompt-audit`.",
+          "Lis le rapport : il liste d'abord les chemins et commandes périmés et les fichiers d'instructions qui se contredisent, puis les consignes écrites pour d'anciens modèles.",
+          "`/doctor` présente ses constats et demande confirmation avant de modifier quoi que ce soit : refuse toute modification de `trading-sim/CLAUDE.md`, gelé jusqu'au micro-lot de normalisation (piste 2).",
+          "Recopie les constats utiles dans un rapport daté plutôt que de les appliquer tout de suite, puis décide avec ton professeur ce qu'il faut corriger."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-skills-doctor",
+        "claude-code-mcp-automatic-reconnection",
+        "claude-code-commandes-context"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+          "pourquoi": "delta-ia est un serveur MCP distant servi depuis vercel.app : concerné par la correction du 404 passager."
+        },
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Sessions dans tmux pilotées depuis l'iPhone : concernées par la correction des touches en rafale."
+        },
+        "config.claude-code.skills": {
+          "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+          "pourquoi": "Quatre skills perso et un agent executant : ce que /doctor prompt-audit analyse."
+        },
+        "optimisation.pistes": {
+          "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
+          "pourquoi": "Piste 2 : trading-sim/CLAUDE.md gelé, à ne pas modifier par l'audit."
+        }
+      }
+    },
+    {
+      "id": "claude-apps-notes-2026-09-25",
+      "ids_bruts": [
+        "claude-apps-notes-2026-09-25"
+      ],
+      "produit": "claude",
+      "titre": "Portail développeur pour publier des plugins Claude",
+      "version": null,
+      "date_publication": "2026-09-25",
+      "type": "nouveaute",
+      "resume": "Un portail développeur permet de soumettre des plugins au répertoire Claude, de suivre leur examen et de consulter leurs statistiques d'usage une fois publiés.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-plugins-page-13837440-use-plugins-in-claude"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-09-01",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-01",
+        "claude-platform-notes-2026-08-19",
+        "claude-platform-notes-2026-07-14",
+        "claude-platform-notes-2026-07-08",
+        "claude-platform-notes-2026-06-09",
+        "claude-platform-notes-2026-05-28",
+        "claude-platform-notes-2026-04-16",
+        "claude-platform-notes-2026-02-17",
+        "claude-platform-notes-2025-11-24",
+        "claude-platform-notes-2025-10-15",
+        "claude-platform-notes-2025-08-18",
+        "claude-platform-notes-2025-08-05",
+        "claude-platform-notes-2025-05-22",
+        "claude-platform-notes-2025-02-24",
+        "claude-platform-notes-2024-12-19"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Révision de 15 anciennes notes de Claude Platform",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "15 notes de version de la plateforme Claude, datées du 19/12/2024 au 01/09/2026, ont changé d'empreinte le même jour ; la nature des modifications n'est pas identifiable dans le brut, ce qui évoque une reprise de forme de la page plutôt que de nouvelles annonces.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064"
+}

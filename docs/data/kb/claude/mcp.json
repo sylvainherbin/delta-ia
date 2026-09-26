@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-09-25",
- "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+ "maj_le": "2026-09-26",
+ "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -26,7 +26,7 @@
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
   "optimisation.pistes": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
-  "usage.hors-machine": "09cc74e6ff37e230dd36b637c1e0939776a25543"
+  "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
  "projets_connus": [
@@ -36,7 +36,7 @@
   "projet.restoration-id",
   "projet.trading-sim"
  ],
- "total": 40,
+ "total": 41,
  "commentees": 40,
  "entrees": [
   {
@@ -88,7 +88,7 @@
    "nom": "Authenticate from the command line",
    "gabarit": "complet",
    "description": "Depuis la v2.1.186, `claude mcp login <nom>` lance l'authentification OAuth d'un serveur configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session.",
-   "description_source": "From v2.1.186, claude mcp login <name> runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session.",
+   "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session.",
    "usage": "claude mcp login sentry",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -105,11 +105,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -118,6 +118,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -584,6 +588,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-mcp-images-in-tool-results",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Images in tool results",
+   "gabarit": "complet",
+   "description": "Quand un outil MCP renvoie une image (PNG, JPEG, GIF, WebP), Claude la voit dans la conversation, parfois réduite, et Claude Code enregistre aussi l'original dans le dossier `tool-results` de la session. Claude peut ensuite recadrer ou convertir le fichier en pleine résolution avec Bash.",
+   "description_source": "When an MCP tool returns a PNG, JPEG, GIF, or WebP image, Claude sees the image inline in the conversation. The inline copy may be scaled down or compressed to fit the model's image size limits. Claude Code also saves the original bytes to a file in the session's tool-results directory under ~/.claude/projects/ and gives Claude the path. Claude can then crop, convert, or reuse the full-resolution file with tools such as Bash.",
+   "usage": "tool-results",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton serveur delta-ia renvoie du texte, pas d'images ; comportement automatique, rien à régler."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#images-in-tool-results",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+     "pourquoi": "Seul MCP maison : delta-ia, qui renvoie des données texte."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "MCP output limits and warnings",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-local-scope",
@@ -1206,16 +1257,16 @@
    "categorie": "mcp",
    "nom": "Scope hierarchy and precedence",
    "gabarit": "complet",
-   "description": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une fois, avec la définition la plus prioritaire : local, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai. Les trois portées se comparent par nom ; plugins et connecteurs, par URL ou commande.",
+   "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une fois, avec la définition la plus prioritaire : local, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Plugins et connecteurs se comparent par URL ou commande.",
    "description_source": "When the same server is defined in more than one place, Claude Code connects to it once, using the definition from the highest-precedence source. The entire server entry from that source is used; fields are not merged across scopes.",
-   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Si le connecteur de compte Delta-IA pointe vers la même URL que le serveur local delta-ia, seule la définition locale servirait dans `~/projets` et `~/projets/delta-ia` ; dans trading-sim, seul le connecteur de compte resterait."
+    "pourquoi": "Le serveur local delta-ia et le connecteur de compte Delta-IA ont la même URL : dans `~/projets` et `~/projets/delta-ia`, seule la définition locale sert ; dans trading-sim, seul le connecteur de compte reste."
    },
    "sources": [
     {
@@ -1228,7 +1279,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1237,10 +1288,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+     "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteur de compte partout."
+    }
+   }
   },
   {
    "id": "claude-code-mcp-use-a-fixed-oauth-callback-port",

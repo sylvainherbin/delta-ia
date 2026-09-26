@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-09-25",
- "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+ "maj_le": "2026-09-26",
+ "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -26,7 +26,7 @@
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
   "optimisation.pistes": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
-  "usage.hors-machine": "09cc74e6ff37e230dd36b637c1e0939776a25543"
+  "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
  "projets_connus": [
@@ -36,8 +36,8 @@
   "projet.restoration-id",
   "projet.trading-sim"
  ],
- "total": 619,
- "commentees": 619,
+ "total": 625,
+ "commentees": 600,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -269,7 +269,7 @@
    "nom": "--agents",
    "gabarit": "court",
    "description": "Option de lancement qui définit des sous-agents à la volée en JSON ; une valeur invalide fait quitter Claude Code au démarrage.",
-   "description_source": "Define custom subagents dynamically via JSON. Accepts the fields listed for CLI-defined subagents. Claude Code validates the JSON at startup and exits on an invalid value; see Invalid --agents configuration for the message and for the flags and environment variable that skip the validation. Validation requires Claude Code v2.1.242 or later — claude --agents '{\"reviewer\":{\"description\":\"Reviews code\",\"prompt\":\"You are a code reviewer\"}}'",
+   "description_source": "Define custom subagents dynamically via JSON. Accepts the fields listed for CLI-defined subagents. With --print, the value can instead be the path to a JSON file holding the object; the file form requires Claude Code v2.1.281 or later. Claude Code validates the value at startup and exits on an invalid one; see Invalid --agents configuration for the message and for the flags and environment variable that skip the validation. Validation requires Claude Code v2.1.242 or later — claude --agents '{\"reviewer\":{\"description\":\"Reviews code\",\"prompt\":\"You are a code reviewer\"}}'",
    "usage": "--agents",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -286,11 +286,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -299,6 +299,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -3050,7 +3054,7 @@
    "nom": "availableModels",
    "gabarit": "court",
    "description": "Réglage géré qui limite les modèles sélectionnables pour la session, les sous-agents, les skills et l'advisor.",
-   "description_source": "Restrict which models people can select for the main session, subagents, skills, and the advisor. A managed list constrains /model, --model, and the model key in a developer's own files; a model outside it can't be selected. On its own this doesn't touch the Default option; pair it with enforceAvailableModels for that.",
+   "description_source": "Restrict which models people can select for the main session, subagents, skills, and the advisor. A managed list constrains /model, --model, and the model key in a developer's own files; a model outside it can't be selected. With the default prefix matching, this doesn't touch the Default option on its own; pair it with enforceAvailableModels for that.",
    "usage": "{\n  \"availableModels\": [\"sonnet\", \"haiku\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3067,11 +3071,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3080,10 +3084,61 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-availablemodelsmatch",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "availableModelsMatch",
+   "gabarit": "court",
+   "description": "Réglage géré qui décide si une entrée de `availableModels` autorise aussi les versions plus récentes du modèle, ou, avec `exact`, seulement la version nommée.",
+   "description_source": "Choose how availableModels entries match model IDs. By default a model ID entry also permits later versions that extend it, so \"claude-opus-5\" permits Opus 5.5. With \"exact\", each model ID entry permits only the version it names, so a newer version of that model stays blocked until you list it. Requires Claude Code v2.1.283 or later.",
+   "usage": "{\n  \"availableModels\": [\"claude-opus-5\", \"claude-sonnet-5\"],\n  \"availableModelsMatch\": \"exact\"\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réglage d'administration d'organisation ; tu es seul sur un abonnement Max."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#availablemodelsmatch",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Model and responses",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-awaysummaryenabled",
@@ -3218,7 +3273,7 @@
    "nom": "--bare",
    "gabarit": "court",
    "description": "Option de lancement en mode minimal : ni hooks, ni skills, ni plugins, ni MCP, ni mémoire, ni CLAUDE.md, pour des appels scriptés plus rapides.",
-   "description_source": "Minimal mode: skip auto-discovery of hooks, skills, custom commands, subagents, plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\"",
+   "description_source": "Minimal mode: skip auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\"",
    "usage": "--bare",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3235,11 +3290,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3248,6 +3303,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -3554,7 +3613,7 @@
    "nom": "--bg",
    "gabarit": "court",
    "description": "Option de lancement qui démarre la session comme agent d'arrière-plan et rend la main aussitôt, en affichant son identifiant.",
-   "description_source": "Start the session as a background agent and return immediately. Prints the session ID and management commands. Combine with --exec to run a shell command as a background job instead of a Claude session, or with --agent to run a specific subagent. Can't be combined with -p/--print; see the error reference — claude --bg \"investigate the flaky test\"",
+   "description_source": "Start the session as a background agent and return immediately. Prints the session ID and management commands. Combine with --exec to run a shell command as a background job instead of a Claude session, or with --agent to run a specific subagent. Checks workspace trust for the directory before it starts. Can't be combined with -p/--print; see the error reference — claude --bg \"investigate the flaky test\"",
    "usage": "--bg, --background",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3571,11 +3630,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3584,6 +3643,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -6081,6 +6144,53 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-disable-dangerous-rm-timeout",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
+   "gabarit": "court",
+   "description": "Variable qui supprime le délai de 2 minutes des demandes de suppression sur un chemin critique : en mode auto, la suppression passe alors au classificateur.",
+   "description_source": "Set to 1 to turn off the time limit on critical-path removal prompts. In auto mode Claude Code then sends these removals to the classifier instead, and in bypassPermissions mode the prompt waits for your answer. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later",
+   "usage": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le délai qui refuse la suppression après 2 minutes protège les sessions laissées seules ; le supprimer n'a pas de motif décrit."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sessions pilotées à distance, souvent sans réponse immédiate de ta part."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-disable-experimental-betas",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -6711,6 +6821,100 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-disable-powershell-cmd-rm-deny",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_POWERSHELL_CMD_RM_DENY",
+   "gabarit": "court",
+   "description": "Variable qui coupe le refus des commandes `rd`, `rmdir`, `del` et `erase` sur un chemin système dans l'outil PowerShell.",
+   "description_source": "Set to 1 to turn off the PowerShell tool check that denies the cmd built-ins rd, rmdir, del, and erase on a system path, such as a drive root or your home directory. Claude Code ignores this variable in a settings file's env block. Requires Claude Code v2.1.283 or later",
+   "usage": "CLAUDE_CODE_DISABLE_POWERSHELL_CMD_RM_DENY",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Propre à Windows ; ta machine est sous Linux Mint."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "Linux Mint 22.1, sans PowerShell."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-substitution-rm-prompt",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT",
+   "gabarit": "court",
+   "description": "Variable qui coupe la demande de confirmation d'un `rm` récursif dont la cible vient entièrement d'une substitution, comme `rm -rf \"$(pwd)\"`.",
+   "description_source": "Set to 1 to turn off the critical-path check for a recursive rm whose target is entirely the output of a command substitution, such as rm -rf \"$(pwd)\". The other critical-path checks keep running. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later",
+   "usage": "CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Cette confirmation est une protection sans coût pour tes sessions ; aucune raison décrite de la couper."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Validation pas à pas : une suppression risquée doit rester soumise à accord."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-disable-terminal-title",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -7263,7 +7467,7 @@
    "nom": "CLAUDE_CODE_ENABLE_TELEMETRY",
    "gabarit": "court",
    "description": "Variable qui active la collecte OpenTelemetry de métriques et de journaux, préalable à tout exportateur.",
-   "description_source": "Set to 1 to enable OpenTelemetry data collection for metrics and logging. Required before configuring OTel exporters. See Monitoring",
+   "description_source": "Set to 1 to enable OpenTelemetry data collection for metrics and logging. Required before configuring OTel exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings. See Monitoring",
    "usage": "CLAUDE_CODE_ENABLE_TELEMETRY",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7280,11 +7484,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7293,6 +7497,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9237,7 +9445,7 @@
    "nom": "CLAUDE_CODE_PLUGIN_DIRS",
    "gabarit": "court",
    "description": "Variable qui liste des dossiers de plugins à charger pour la session, comme `--plugin-dir`.",
-   "description_source": "Plugin directories to load for the session, each loaded the way a --plugin-dir flag loads it. Separate multiple paths with : on Unix or ; on Windows. Give each path as an absolute path or start it with ~, because Claude Code skips relative paths. Requires Claude Code v2.1.280 or later",
+   "description_source": "Plugin directories to load for the session, each loaded the way a --plugin-dir flag loads it. Separate multiple paths with : on Unix or ; on Windows. Give each path as an absolute path or start it with ~, because Claude Code skips relative paths. Requires Claude Code v2.1.280 or later. See Load a plugin for one session",
    "usage": "CLAUDE_CODE_PLUGIN_DIRS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9254,11 +9462,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9267,6 +9475,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9279,7 +9491,7 @@
    "nom": "CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai des opérations git lors de l'installation ou de la mise à jour d'un plugin, 2 minutes par défaut.",
-   "description_source": "Timeout in milliseconds for git operations when installing or updating plugins (default: 120000). Increase this value for large repositories or slow network connections. See Git operations time out",
+   "description_source": "Timeout in milliseconds for cloning or refreshing a plugin marketplace (default: 120000). Increase this value for large repositories or slow network connections. See Git clone timed out",
    "usage": "CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9296,11 +9508,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9309,6 +9521,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9867,7 +10083,7 @@
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "gabarit": "court",
    "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul.",
-   "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips both the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and the injected CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 means no bound, except that a turn whose last request failed with an API error resumes only while that error is less than six hours old. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
+   "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 means no bound, except that a turn whose last request failed with an API error resumes only while that error is less than six hours old. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9884,11 +10100,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9897,6 +10113,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9909,7 +10129,7 @@
    "nom": "CLAUDE_CODE_RESUME_PROMPT",
    "gabarit": "court",
    "description": "Variable qui remplace le message de reprise injecté quand une session s'est arrêtée en plein tour.",
-   "description_source": "Override the continuation message injected when resuming a session that ended mid-turn. Defaults to Continue from where you left off.. Spawn scripts for long-running agents can set this to a more directive boot message. An empty string uses the default",
+   "description_source": "Override the continuation message Claude Code sends to Claude when CLAUDE_CODE_RESUME_INTERRUPTED_TURN continues an interrupted turn instead of resending its prompt, or when you resume a deferred tool call with -p. Defaults to Continue from where you left off.. An empty string uses the default",
    "usage": "CLAUDE_CODE_RESUME_PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9926,11 +10146,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9939,6 +10159,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -10329,7 +10553,7 @@
    "nom": "CLAUDE_CODE_SIMPLE",
    "gabarit": "court",
    "description": "Variable qui lance Claude Code avec un prompt système minimal et seulement les outils Bash, lecture et édition, sans skills ni hooks.",
-   "description_source": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
+   "description_source": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
    "usage": "CLAUDE_CODE_SIMPLE",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10346,11 +10570,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10359,6 +10583,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -12827,6 +13055,53 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-deniedmodels",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "deniedModels",
+   "gabarit": "court",
+   "description": "Réglage qui bloque des modèles précis, même quand `availableModels` les autorise : ils disparaissent du sélecteur `/model`.",
+   "description_source": "Block specific models, with or without an availableModels allowlist and even when that list permits them. Claude Code hides a blocked model from the /model picker, and the model can't be selected anywhere availableModels is enforced. A session on the Default option doesn't run a blocked model either, as Block specific models or versions describes. Requires Claude Code v2.1.283 or later.",
+   "usage": "{\n  \"availableModels\": [\"opus\", \"sonnet\"],\n  \"deniedModels\": [\"claude-opus-5-5\"]\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Pensé pour une organisation ; bloquer un modèle chez toi n'a pas de motif décrit dans CONTEXTE.md."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#deniedmodels",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Model and responses",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-desktopsessioncleanupperioddays",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -13655,7 +13930,7 @@
    "nom": "DISABLE_PROMPT_CACHING_HAIKU",
    "gabarit": "court",
    "description": "Variable qui désactive le cache de prompt pour les modèles Haiku.",
-   "description_source": "Set to 1 to disable prompt caching for Haiku models",
+   "description_source": "Set to 1 to disable prompt caching for the default Haiku model, wherever it runs",
    "usage": "DISABLE_PROMPT_CACHING_HAIKU",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -13672,11 +13947,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13685,6 +13960,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -13837,7 +14116,7 @@
    "nom": "DISABLE_TELEMETRY",
    "gabarit": "court",
    "description": "Variable qui désactive la télémétrie (toute valeur non vide, même `0`) et coupe aussi les feature flags, donc Remote Control.",
-   "description_source": "Set to any non-empty value, such as 1, to opt out of telemetry. Setting it to 0 or false still opts out, unlike most on/off variables; unset the variable to turn telemetry back on. Telemetry events don't include user data like code, file paths, or bash commands. Also disables feature-flag fetching with the same effect as DISABLE_GROWTHBOOK, which makes Remote Control and the other features that need feature-flag fetching unavailable. See Turn telemetry off for your organization",
+   "description_source": "Set to any non-empty value, such as 1, to opt out of telemetry. Setting it to 0 or false still opts out, unlike most on/off variables; unset the variable to turn telemetry back on. Telemetry events don't include user data like code, file paths, or Bash commands. Also disables feature-flag fetching. See Turn telemetry off for your organization",
    "usage": "DISABLE_TELEMETRY",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -13854,11 +14133,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13867,6 +14146,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -14706,7 +14989,7 @@
    "nom": "DO_NOT_TRACK",
    "gabarit": "court",
    "description": "Variable standard qui désactive la télémétrie comme `DISABLE_TELEMETRY`, y compris les fonctions qui dépendent des feature flags comme Remote Control.",
-   "description_source": "Set to 1 to opt out of telemetry, with the same effect as DISABLE_TELEMETRY, including making Remote Control and the other features that need feature-flag fetching unavailable. Claude Code reads this variable as a standard boolean, so 0 leaves telemetry on, and honors it as the cross-tool convention recognized by many developer CLIs",
+   "description_source": "Set to 1 to opt out of telemetry, with the same effect as DISABLE_TELEMETRY, including on feature-flag fetching. Claude Code reads this variable as a standard boolean, so 0 leaves telemetry on, and honors it as the cross-tool convention recognized by many developer CLIs",
    "usage": "DO_NOT_TRACK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14723,11 +15006,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14736,6 +15019,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -15419,7 +15706,7 @@
    "nom": "enforceAvailableModels",
    "gabarit": "court",
    "description": "Réglage qui force l'option Default du sélecteur `/model` à rester dans la liste `availableModels`.",
-   "description_source": "The /model picker has a Default option that resolves to your organization default model when one applies, and otherwise to your account type's default. An availableModels allowlist limits the models you can name, but on its own it leaves Default alone, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code v2.1.175 or later.",
+   "description_source": "The /model picker has a Default option that resolves to your organization default model when one applies, and otherwise to your account type's default. An availableModels allowlist limits the models you can name, but with the default prefix matching it leaves Default alone, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code …",
    "usage": "{\n  \"availableModels\": [\"sonnet\", \"haiku\"],\n  \"enforceAvailableModels\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15436,11 +15723,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15449,6 +15736,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -15461,7 +15752,7 @@
    "nom": "env",
    "gabarit": "court",
    "description": "Réglage qui définit des variables d'environnement pour chaque session et les sous-processus qu'elle lance.",
-   "description_source": "Set environment variables for every session and for the subprocesses Claude Code starts from it. Any variable in the environment variables reference can go here, which is how you apply one to every session or roll it out to your team.",
+   "description_source": "Set environment variables for every session and for the subprocesses Claude Code starts from it. Most variables in the environment variables reference can go here, which is how you apply one to every session or roll it out to your team. Project and local settings can't set some of them.",
    "usage": "{\n  \"env\": {\n    \"DISABLE_AUTO_COMPACT\": \"1\",\n    \"ANTHROPIC_BASE_URL\": \"https://proxy.example.com\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15478,11 +15769,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15499,6 +15790,10 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
@@ -19291,6 +19586,53 @@
    "contexte_sections": {}
   },
   {
+   "id": "claude-code-parametres-maxprosewidth",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "maxProseWidth",
+   "gabarit": "court",
+   "description": "Réglage qui limite la largeur du texte des réponses dans un terminal large, sans toucher aux tableaux ni aux blocs de code (v2.1.282 ou plus).",
+   "description_source": "Cap the width of the prose in Claude's responses so lines stay readable in a wide terminal. Paragraphs, headings, lists, and blockquotes wrap within this many columns, while tables and code blocks keep the full terminal width. Requires Claude Code v2.1.282 or later.",
+   "usage": "{\n  \"maxProseWidth\": 80\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Confort d'affichage au terminal, sans effet sur tes sessions pilotées surtout depuis l'iPhone."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#maxprosewidth",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "L'iPhone est l'interface principale ; le rendu du terminal compte peu."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Interface and terminal",
+   "maj_le": "2026-09-26",
+   "historique": [
+    {
+     "date": "2026-09-26",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-mcp-client-secret",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -20979,7 +21321,7 @@
    "nom": "permissions.defaultMode",
    "gabarit": "court",
    "description": "Réglage du mode de permission des nouvelles sessions ; non défini, c'est le défaut du plan et de la surface.",
-   "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your plan and surface.",
+   "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"acceptEdits\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20996,11 +21338,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21009,6 +21351,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22178,7 +22524,7 @@
    "nom": "respondToBashCommands",
    "gabarit": "court",
    "description": "Réglage qui fait répondre ou non Claude après une commande shell lancée avec le préfixe `!`.",
-   "description_source": "Choose whether Claude responds after you run a shell command with the ! prefix in the input box. By default, Claude Code adds the command's output to the conversation and Claude replies to it. Set this key to false to add the output to context without a reply, so you can run several commands and ask about them together. Requires Claude Code v2.1.186 or later.",
+   "description_source": "Choose whether Claude responds after you run a shell command with the ! prefix in the input box. By default, Claude Code adds the command's output to the conversation and Claude replies to it. Set this key to false to add the output to context without a reply, so you can run several commands and ask about them together.",
    "usage": "{\n  \"respondToBashCommands\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22195,11 +22541,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22212,6 +22558,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22687,7 +23037,7 @@
    "nom": "sandbox.credentials.envVars",
    "gabarit": "court",
    "description": "Réglage qui protège des variables d'environnement des commandes isolées, retirées (`deny`) ou masquées (`mask`).",
-   "description_source": "Protect environment variables from sandboxed commands. With \"mode\": \"deny\", Claude Code removes the variable from the environment of sandboxed commands. With \"mode\": \"mask\", sandboxed commands see a per-session sentinel value, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts, so tools such as gh and npm keep authenticating without ever holding the real credential. Requires Claude Code v2.1.187 or later, and \"mode\": \"mask\" requires …",
+   "description_source": "Protect environment variables from sandboxed commands. With \"mode\": \"deny\", Claude Code removes the variable from the environment of sandboxed commands. With \"mode\": \"mask\", sandboxed commands see a per-session sentinel value, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts, so tools such as gh and npm keep authenticating without ever holding the real credential. \"mode\": \"mask\" requires Claude Code v2.1.199 or later.",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"envVars\": [\n        { \"name\": \"NPM_TOKEN\", \"mode\": \"deny\" },\n        { \"name\": \"GITHUB_TOKEN\", \"mode\": \"mask\", \"injectHosts\": [\"api.github.com\"] }\n      ]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22704,11 +23054,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22721,6 +23071,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22733,7 +23087,7 @@
    "nom": "sandbox.credentials.files",
    "gabarit": "court",
    "description": "Réglage qui protège des fichiers ou dossiers d'identifiants des commandes isolées.",
-   "description_source": "Protect credential files or directories from sandboxed commands. With \"mode\": \"deny\", Claude Code blocks reads of the path inside the sandbox, the same read block as sandbox.filesystem.denyRead. With \"mode\": \"mask\", sandboxed commands on Linux and WSL2 read a sentinel copy of the file, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts; on macOS the file is unreadable inside the sandbox instead. Requires …",
+   "description_source": "Protect credential files or directories from sandboxed commands. With \"mode\": \"deny\", Claude Code blocks reads of the path inside the sandbox, the same read block as sandbox.filesystem.denyRead. With \"mode\": \"mask\", sandboxed commands on Linux and WSL2 read a sentinel copy of the file, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts; on macOS the file is unreadable inside the sandbox instead. \"mode\": …",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"files\": [\n        { \"path\": \"~/.aws/credentials\", \"mode\": \"deny\" },\n        { \"path\": \"~/.config/gh/hosts.yml\", \"mode\": \"mask\", \"injectHosts\": [\"api.github.com\"] }\n      ]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22750,11 +23104,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22767,6 +23121,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -23053,7 +23411,7 @@
    "nom": "sandbox.filesystem",
    "gabarit": "court",
    "description": "Réglage des chemins que les commandes isolées peuvent lire et écrire.",
-   "description_source": "Control which paths sandboxed commands can read and write. By default they can write to the working directory, the session temp directory, and directories you add with --add-dir, /add-dir, or permissions.additionalDirectories, and can read the rest of the filesystem, including credential files. Widen or narrow that with the four path lists, or switch the filesystem layer off with disabled. See Filesystem isolation for the default boundaries.",
+   "description_source": "Control which paths sandboxed commands can read and write. By default they can write to the working directory, the per-user temp directory, and directories you add with --add-dir, /add-dir, or permissions.additionalDirectories, and can read the rest of the filesystem, including credential files. Widen or narrow that with the four path lists, or switch the filesystem layer off with disabled. See Filesystem isolation for the default boundaries.",
    "usage": "{\n  \"sandbox\": {\n    \"filesystem\": {\n      \"allowWrite\": [\"/tmp/build\", \"~/.kube\"],\n      \"denyRead\": [\"~/.aws/credentials\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23070,11 +23428,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23087,6 +23445,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -23145,7 +23507,7 @@
    "nom": "sandbox.filesystem.allowWrite",
    "gabarit": "court",
    "description": "Réglage de chemins supplémentaires où les commandes isolées peuvent écrire.",
-   "description_source": "Add paths where sandboxed commands can write, beyond the working directory, the session temp directory, and the directories you've added with --add-dir, /add-dir, or permissions.additionalDirectories. Use it when a subprocess such as kubectl or a build tool needs to write outside the project.",
+   "description_source": "Add paths where sandboxed commands can write, beyond the working directory, the per-user temp directory, and the directories you've added with --add-dir, /add-dir, or permissions.additionalDirectories. Use it when a subprocess such as kubectl or a build tool needs to write outside the project.",
    "usage": "{\n  \"sandbox\": {\n    \"filesystem\": {\n      \"allowWrite\": [\"/tmp/build\", \"~/.kube\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23162,11 +23524,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23179,6 +23541,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -24003,7 +24369,7 @@
    "nom": "--setting-sources",
    "gabarit": "court",
    "description": "Option CLI qui choisit les sources de réglages chargées (`user`, `project`, `local`).",
-   "description_source": "Comma-separated list of setting sources to load (user, project, local) — claude --setting-sources user,project",
+   "description_source": "Comma-separated list of setting sources to load (user, project, local). See agent view and agent teams for the sessions you start from this one that inherit the list — claude --setting-sources user,project",
    "usage": "--setting-sources",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24020,11 +24386,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24033,6 +24399,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25283,7 +25653,7 @@
    "nom": "syncClaudeAiPlugins",
    "gabarit": "court",
    "description": "Réglage qui, à `false`, coupe le téléchargement des plugins activés sur ton compte claude.ai.",
-   "description_source": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account, and in Cowork and cloud sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing …",
+   "description_source": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where …",
    "usage": "{\n  \"syncClaudeAiPlugins\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25300,11 +25670,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25313,6 +25683,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25624,7 +25998,7 @@
    "nom": "--teammate-mode",
    "gabarit": "court",
    "description": "Option CLI de l'affichage des coéquipiers d'une équipe d'agents : `in-process`, `auto`, `tmux` ou `iterm2`.",
-   "description_source": "Set how agent team teammates display: in-process (default), auto, tmux, or iterm2 (added in v2.1.186). Overrides the teammateMode setting for this session. See Choose a display mode — claude --teammate-mode auto",
+   "description_source": "Set how agent team teammates display: in-process (default), auto, tmux, or iterm2. Overrides the teammateMode setting for this session. See Choose a display mode — claude --teammate-mode auto",
    "usage": "--teammate-mode",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25641,11 +26015,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25654,6 +26028,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26242,7 +26620,7 @@
    "nom": "useAutoModeDuringPlan",
    "gabarit": "court",
    "description": "Réglage qui fait examiner ou non par le classificateur du mode auto les commandes shell en mode plan ; à `false`, une demande de permission apparaît.",
-   "description_source": "Choose whether Claude Code uses the auto mode classifier to review shell commands in plan mode. With the default true, the classifier reviews each command during planning when auto mode is available and you see no prompt. Set false to get a permission prompt for every command outside the built-in read-only set. Appears in /config as Use auto mode during plan.",
+   "description_source": "Choose whether Claude Code uses the auto mode classifier to review shell commands in plan mode. With the default true, the classifier reviews each command during planning when auto mode is available and you see no prompt, except for critical-path removals. Set false to get a permission prompt for every command outside the built-in read-only set. Appears in /config as Use auto mode during plan.",
    "usage": "{\n  \"useAutoModeDuringPlan\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26259,11 +26637,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26272,6 +26650,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
