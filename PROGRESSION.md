@@ -31,15 +31,17 @@ Ce dépôt est public : on n'inscrit ici que du technique, rien de personnel ni 
 Un point passe ici après deux réussites à des jours différents. Avant ça, il reste en
 consolidation (D67 amendée).
 
-Aucun pour l'instant : tous les points ci-dessous n'ont été vus qu'une fois, le 24/09.
+- **Lire l'effort réel d'une session** [observé : exercice 1.4 le 24/09, confirmé le 26/09] :
+  `/effort status` (et non `/effort` seul, qui n'affiche que la syntaxe) ; deuxième réussite, jour
+  différent — Sylvain l'a lui-même identifié comme le point le moins clair des cinq en
+  consolidation, l'a retravaillé, puis a tapé la commande et lu correctement le résultat
+  (« auto (currently high) »).
 
 ## En consolidation
 
 - **Quand monter l'effort** [observé : exercice 1.3, 24/09] : l'effort haut sert quand le modèle
   doit découvrir quelque chose qu'il ne sait pas (bug intermittent) ; une consigne claire, sans rien
   à découvrir, n'en a pas besoin. Formulé par Sylvain lui-même, avec une justification correcte.
-- **Lire l'effort réel d'une session** [observé : exercice 1.4, 24/09] : `/effort status` (et non
-  `/effort` seul, qui n'affiche que la syntaxe).
 - **Les quatre questions d'une consigne** [observé : module 3, 24/09] : but (l'état voulu, pas
   l'action ni la méthode), contraintes (vérifiables après coup), fini quand, format de réponse.
   Exercice réussi en fill-in-the-blank après une première tentative trop abstraite.
@@ -53,9 +55,10 @@ Aucun pour l'instant : tous les points ci-dessous n'ont été vus qu'une fois, l
 ## En cours
 
 - Modules 1, 2, 3 et 4 terminés le 24/09, en une seule séance, avec deux missions réelles
-  (pratique /compact sur herbin-mint, relecture d'un prompt d'automatisation avant envoi). Module 5
-  (skills et hooks) à ouvrir à la prochaine séance, après un rappel rapide des points en
-  consolidation ci-dessus.
+  (pratique /compact sur herbin-mint, relecture d'un prompt d'automatisation avant envoi). Séance du
+  26/09 : rappel des 5 points en consolidation, un point confirmé (passé en Acquis), les 4 autres
+  restent en consolidation (pas retestés individuellement, seulement jugés clairs par Sylvain).
+  Module 5 (skills et hooks) en cours d'ouverture.
 
 ## Adoptions
 
@@ -103,3 +106,4 @@ donne `fiche_reference`.
 | 2026-09-24 | 2 | Mise en pratique réelle sur herbin-mint : `/context` (36 %) puis `/compact` x2 | 362,6k → 63,9k jetons (356k économisés, 36 % → 6 %) ; question posée sur `CLAUDE.md` comme mémoire avant `/clear`, corrigée vers le réflexe rapport daté (pattern D63 delta-ia) | [observé] |
 | 2026-09-24 | 3 | Application réelle : relecture d'un prompt d'automatisation (cron /delta + $delta) avant envoi à herbin-mint | Sylvain avait bien repris la contrainte D21 (ordre strict) depuis SPEC.md ; grille des 4 questions appliquée par le professeur : fini quand et format absents, méthode (IDs de session figés) prescrite au lieu du but. Blocage trouvé en croisant SPEC.md §10 (cron hors périmètre v1) et §3 (`disable-model-invocation: true`) : proposition reformulée et envoyée directement à la session delta-ia pour décision, plutôt qu'exécutée sur herbin-mint | [observé] |
 | 2026-09-24 | 4 | 4.1 lire `/mcp` et dire ce qui sert vraiment dans la session | réussi : 7 connectés, 1 seul utilisé (delta-ia) ; confirme la piste 9 de Delta (Gmail/Drive/Calendar/Canva/GoDaddy connectés sans servir dans Claude Code) | [observé] |
+| 2026-09-26 | 1 | Rappel des 5 points en consolidation avant le module 5 ; Sylvain désigne lui-même le point 1.4 comme le moins clair | retravaillé puis réussi : `/effort status` tapé directement, résultat lu correctement (« auto (currently high) ») ; deuxième réussite à un jour différent → passage en Acquis | [observé] |
