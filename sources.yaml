@@ -363,15 +363,21 @@ documentation:
   - id: cc-plugins
     perimetre: claude
     produit: claude-code
-    extracteur: plugins_cc
-    url: https://code.claude.com/docs/en/discover-plugins.md
+    extracteur: marketplace_json
+    url: https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json
     statut: ok
     note: >-
-      Testé le 2026-09-23 : 200, 38 Ko, section « Official Anthropic marketplace » : tableau des plugins
-      d'intelligence de code et listes à puces (intégrations, flux de travail, styles de sortie).
+      Testé le 2026-09-23 : discover-plugins.md, 200, 38 Ko, section « Official Anthropic marketplace ».
+      Testé le 2026-09-26 : marketplace.json, 200, JSON, 189 Ko, 314 plugins. Changement de source : la page
+      discover-plugins, devenue plugins/install, ne liste plus le catalogue
+      (« The catalog changes often, so this page doesn't list it » ; plugins/anthropic-marketplaces.md) ;
+      l'extracteur plugins_cc échouait (« section de la marketplace officielle introuvable »). Source :
+      marketplace.json du dépôt anthropics/claude-plugins-official. Retenus : auteur Anthropic (38) et les 12 intégrations déjà suivies ; les
+      30 entrées existantes gardent leur identifiant. Ancienne URL : https://code.claude.com/docs/en/discover-plugins.md
     options:
-      section: "Official Anthropic marketplace"
-      fin_section: "Community marketplace"
+      auteurs: [Anthropic]
+      suivis: [asana, atlassian, figma, firebase, github, gitlab, linear, notion, sentry, slack, supabase, vercel]
+      depot: https://github.com/anthropics/claude-plugins-official
 
   - id: cc-mcp
     perimetre: claude
@@ -433,7 +439,9 @@ documentation:
         vs-code: fonctionnalites
         jetbrains: fonctionnalites
         slack: fonctionnalites
-        claude-tag: fonctionnalites
+        # claude-tag retirée le 2026-09-26 : claude-tag.md répond 403 (défi Cloudflare « Just a moment… », cf-mitigated:
+        # challenge, avec ou sans User-Agent, .md ou HTML) ; la documentation a migré vers claude.com/docs/claude-tag/overview
+        # et la fonctionnalité (Team et Enterprise, D42) est déjà couverte par l'article 15594475-what-is-claude-tag (claude-apps).
         claude-code-on-the-web: fonctionnalites
         routines: fonctionnalites
         ultrareview: fonctionnalites

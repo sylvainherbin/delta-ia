@@ -425,11 +425,54 @@ def codex_cli(doc, fichiers: dict) -> list[EntreeExtraite]:
     return res
 
 
+# ----------------------------------------------------------------------------------------------- marketplace JSON
+
+def marketplace_json(doc, fichiers: dict) -> list[EntreeExtraite]:
+    """Catalogue de la marketplace officielle (`.claude-plugin/marketplace.json`, 26/09) : la documentation ne liste
+    plus les plugins. Retenus : ceux dont l'auteur est dans `options.auteurs` (Anthropic), plus les noms de
+    `options.suivis` (intégrations déjà suivies), après les renommages déclarés par le fichier. L'`usage` est la
+    commande d'installation documentée ; ni version ni adresse de l'auteur ne sont reprises."""
+    import json
+    o = doc.options
+    try:
+        d = json.loads(_texte(fichiers))
+    except ValueError as e:
+        raise FormatInattendu(f"marketplace.json illisible : {e}") from None
+    plugins = d.get("plugins") if isinstance(d, dict) else None
+    if not isinstance(plugins, list) or not plugins:
+        raise FormatInattendu("marketplace.json sans liste `plugins`")
+    marche = d.get("name") or "claude-plugins-official"
+    renommes = d.get("renames") if isinstance(d.get("renames"), dict) else {}
+    auteurs = set(o.get("auteurs") or [])
+    suivis = {renommes.get(n, n) for n in (o.get("suivis") or [])}
+    depot = o.get("depot", "https://github.com/anthropics/claude-plugins-official").rstrip("/")
+    res: list[EntreeExtraite] = []
+    for pl in plugins:
+        if not isinstance(pl, dict) or not isinstance(pl.get("name"), str):
+            continue
+        nom, auteur = pl["name"], (pl.get("author") or {}).get("name") if isinstance(pl.get("author"), dict) else None
+        if auteur not in auteurs and nom not in suivis:
+            continue
+        src = pl.get("source")
+        url = f"{depot}/tree/main/{src[2:] if src.startswith('./') else src}" if isinstance(src, str) else pl.get("homepage") or depot
+        res.append(EntreeExtraite(
+            produit=doc.produit, categorie="plugins", nom=nom, usage=f"/plugin install {nom}@{marche}",
+            description_source=nettoyer(str(pl.get("description") or "")), url=url, libelle=nom, origine=doc.id,
+            groupe=pl.get("category") if isinstance(pl.get("category"), str) else None))
+    if not res:
+        raise FormatInattendu("aucun plugin retenu dans marketplace.json : auteurs ou noms suivis introuvables")
+    manquants = sorted(suivis - {e.nom for e in res})
+    if manquants:
+        raise FormatInattendu(f"plugins suivis absents de marketplace.json : {', '.join(manquants)}")
+    return res
+
+
 EXTRACTEURS = {
     "tableau": tableau,
     "sections": sections_page,
     "pages": pages,
     "plugins_cc": plugins_cc,
+    "marketplace_json": marketplace_json,
     "configtable": configtable,
     "codex_cli": codex_cli,
 }

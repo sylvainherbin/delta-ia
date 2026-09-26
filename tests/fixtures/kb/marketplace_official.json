@@ -1,0 +1,83 @@
+{
+ "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+ "name": "claude-plugins-official",
+ "renames": {
+  "azure-skills": "azure"
+ },
+ "plugins": [
+  {
+   "name": "42crunch-api-security-testing",
+   "description": "Automate API security directly in Claude Code with 42Crunch - automatically audit OpenAPI specs, detect vulnerabilities aligned with OWASP API Security risks (including BOLA/BFLA), and apply AI-powered fixes. Designed for AI-assisted development workflows, it provides continuous guardrails through an audit->scan->remediate->validate loop, ensuring APIs meet enterprise security standards before deployment.",
+   "category": "security",
+   "source": {
+    "source": "git-subdir",
+    "url": "https://github.com/42Crunch-AI/claude-plugins.git",
+    "path": "plugins/api-security-testing",
+    "ref": "v1.5.5",
+    "sha": "faf5305385de8afed9468904e8639be737aff39e"
+   },
+   "homepage": "https://42crunch.com",
+   "author": {
+    "name": "42Crunch"
+   }
+  },
+  {
+   "name": "azure",
+   "description": "Transform Claude into an Azure expert. This plugin integrates the Azure MCP server and specialized Azure skills to move beyond generic advice. It enables Claude to perform real-world tasks: listing resources, validating deployments, diagnosing infrastructure issues, and optimizing costs across 50+ Azure services.",
+   "category": "deployment",
+   "source": {
+    "source": "url",
+    "url": "https://github.com/microsoft/azure-skills.git",
+    "sha": "5b4f0c0778079a2f568581107f23349ce9a0a9b2"
+   },
+   "homepage": "https://github.com/microsoft/azure-skills"
+  },
+  {
+   "name": "clangd-lsp",
+   "description": "C/C++ language server (clangd) for code intelligence",
+   "version": "1.0.0",
+   "source": "./plugins/clangd-lsp",
+   "category": "development",
+   "strict": false,
+   "lspServers": {
+    "clangd": {
+     "command": "clangd",
+     "args": [
+      "--background-index"
+     ],
+     "extensionToLanguage": {
+      ".c": "c",
+      ".h": "c",
+      ".cpp": "cpp",
+      ".cc": "cpp",
+      ".cxx": "cpp",
+      ".hpp": "cpp",
+      ".hxx": "cpp",
+      ".C": "cpp",
+      ".H": "cpp"
+     }
+    }
+   },
+   "author": {
+    "name": "Anthropic"
+   }
+  },
+  {
+   "name": "commit-commands",
+   "description": "Commands for git commit workflows including commit, push, and PR creation",
+   "source": "./plugins/commit-commands",
+   "category": "productivity",
+   "homepage": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/commit-commands",
+   "author": {
+    "name": "Anthropic"
+   }
+  },
+  {
+   "name": "github",
+   "description": "Official GitHub MCP server for repository management. Create issues, manage pull requests, review code, search repositories, and interact with GitHub's full API directly from Claude Code.",
+   "category": "productivity",
+   "source": "./external_plugins/github",
+   "homepage": "https://github.com/anthropics/claude-plugins-public/tree/main/external_plugins/github"
+  }
+ ]
+}

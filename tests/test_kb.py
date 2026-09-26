@@ -102,7 +102,11 @@ def test_raccourcis_claude_code(docs):
 
 
 def test_plugins_claude_code(docs):
-    es = extraire(docs["cc-plugins"], page=lire("cc_plugins.md"))
+    """Ancien extracteur (page discover-plugins jusqu'au 25/09), gardé et testé sur son échantillon réel."""
+    d0 = docs["cc-plugins"]
+    d = type(d0)(**{**d0.__dict__, "extracteur": "plugins_cc", "url": "https://code.claude.com/docs/en/discover-plugins.md",
+                    "options": {"section": "Official Anthropic marketplace", "fin_section": "Community marketplace"}})
+    es = extraire(d, page=lire("cc_plugins.md"))
     noms = {e.nom for e in es}
     assert {"clangd-lsp", "github", "commit-commands", "security-guidance"} <= noms
     assert all(e.categorie == "plugins" for e in es)
@@ -895,3 +899,34 @@ def test_fetch_kb_echec_total_code_5(racine_kb, monkeypatch, capsys):
     assert lancer_kb(racine_kb, monkeypatch, casse) == 5
     # une seule page cassée, le reste traité : code 3
     assert lancer_kb(racine_kb, monkeypatch, {"https://code.claude.com/docs/en/commands.md": "# Commands\n\nRefonte.\n"}) == 3
+
+
+# --- cc-plugins : catalogue de la marketplace officielle (26/09) ---------------------------------------------------
+
+def test_marketplace_json(docs):
+    d0 = docs["cc-plugins"]
+    assert d0.extracteur == "marketplace_json" and len(d0.options["suivis"]) == 12
+    d = type(d0)(**{**d0.__dict__, "options": {**d0.options, "suivis": ["github"]}})  # extrait réel : 5 plugins
+    texte = lire("marketplace_official.json")
+    es = EXTRACTEURS["marketplace_json"](d, {"page": texte})
+    noms = {e.nom for e in es}
+    assert {"commit-commands", "clangd-lsp", "github"} <= noms, "auteur Anthropic ou intégration suivie"
+    assert "42crunch-api-security-testing" not in noms, "un plugin tiers non suivi n'entre pas"
+    gh = next(e for e in es if e.nom == "github")
+    assert gh.id == "claude-code-plugins-github" and gh.usage == "/plugin install github@claude-plugins-official"
+    assert gh.url.startswith("https://github.com/anthropics/claude-plugins-official/tree/main/")
+    assert "support@" not in json.dumps([e.__dict__ for e in es]), "aucune adresse d'auteur reprise"
+    # un plugin suivi absent : erreur explicite ; renommage déclaré suivi
+    d2 = type(d)(**{**d.__dict__, "options": {**d.options, "suivis": ["github", "azure-skills"]}})
+    assert "azure" in {e.nom for e in EXTRACTEURS["marketplace_json"](d2, {"page": texte})}
+    d3 = type(d)(**{**d.__dict__, "options": {**d.options, "suivis": ["github", "inexistant"]}})
+    with pytest.raises(FormatInattendu, match="inexistant"):
+        EXTRACTEURS["marketplace_json"](d3, {"page": texte})
+    with pytest.raises(FormatInattendu):
+        EXTRACTEURS["marketplace_json"](d, {"page": "{}"})
+
+
+def test_claude_tag_retiree_de_la_configuration(docs):
+    d = docs["cc-fonctionnalites"]
+    assert "claude-tag" not in d.options["pages"]
+    assert "15594475-what-is-claude-tag" in docs["claude-apps"].options["pages"], "fonctionnalité couverte par le centre d'aide"
