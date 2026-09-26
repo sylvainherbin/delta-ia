@@ -58,6 +58,10 @@ class FauxClient:
                 raise p
             texte, content_type = p
             return Reponse(url, 200, content_type, texte)
+        if url not in CORRESPONDANCES and url.startswith("https://www.anthropic.com/") and url != "https://www.anthropic.com/news":
+            # A1 : les articles de la newsroom sont lus ; tous servis par l'extrait réel de l'article Opus 5.5
+            return Reponse(url, 200, "text/html; charset=utf-8",
+                           (FIXTURES / "anthropic_article_opus55.html").read_text(encoding="utf-8"))
         if url not in CORRESPONDANCES:
             raise ErreurReseau(f"HTTP 404 pour {url} (aucun échantillon)")
         fichier, content_type = CORRESPONDANCES[url]

@@ -70,8 +70,13 @@ sources:
       Testé le 2026-09-23 : 200, 463 Ko, chaque article est un lien contenant une balise <time>
       (`Sep 22, 2026`). Anthropic ne publie aucun flux RSS (rss.xml, news/rss, feed.xml : 404). Page
       Next.js : un changement de gabarit doit remonter en `sources_en_echec` (format inattendu).
+      A1 (26/09) : chaque nouvel article est lu (un GET, environ 600 Ko de HTML) et son texte principal
+      (plus long <article>, 20 000 caractères au plus) remplace le résumé dans `contenu` ; testé le
+      2026-09-26 sur https://www.anthropic.com/claude-opus-5-5 (200, 620 Ko, 33 906 caractères de texte).
+      Sans cette lecture, la remise à zéro des limites d'Opus 5.5 avait échappé au passage du 23/09.
     options:
       format: html_time_liens
+      lire_articles: true
 
   # ---------------------------------------------------------------- openai
   - id: codex-cli-releases

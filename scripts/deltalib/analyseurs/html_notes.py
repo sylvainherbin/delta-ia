@@ -128,6 +128,37 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
     return elements
 
 
+TAILLE_MAX_ARTICLE = 20000  # caractères gardés du texte principal d'un article (le début porte l'essentiel)
+TAILLE_MIN_ARTICLE = 200
+
+
+def texte_article(html: str) -> str:
+    """A1 (26/09) : texte principal d'un article de la newsroom, pour `contenu`. Le plus long <article> de la page,
+    sinon <main> ; titres, paragraphes et puces, un bloc par ligne. Gabarit changé ou texte trop court :
+    FormatInattendu, jamais un contenu vide."""
+    soup = BeautifulSoup(html, "html.parser")
+    candidats = soup.find_all("article") or soup.find_all("main")
+    if not candidats:
+        raise FormatInattendu("article sans <article> ni <main> : gabarit changé ?")
+    zone = max(candidats, key=lambda e: len(e.get_text(" ", strip=True)))
+    for bruit in zone.find_all(["script", "style", "nav", "aside", "noscript", "svg", "button", "form"]):
+        bruit.decompose()
+    blocs, vus = [], set()
+    for b in zone.find_all(["h1", "h2", "h3", "h4", "p", "li"]):
+        if b.find_parent(["li", "p"]) and b.name in ("p", "li"):
+            continue  # paragraphe dans une puce : le texte est déjà pris avec la puce
+        t = re.sub(r"\s+", " ", b.get_text(" ", strip=True)).replace(" .", ".").replace(" ,", ",")
+        if t and t not in vus:
+            vus.add(t)
+            blocs.append(t)
+    texte = "\n".join(blocs)
+    if len(texte) < TAILLE_MIN_ARTICLE:
+        raise FormatInattendu(f"texte de l'article trop court ({len(texte)} caractères) : gabarit changé ?")
+    if len(texte) > TAILLE_MAX_ARTICLE:
+        texte = texte[:TAILLE_MAX_ARTICLE].rsplit("\n", 1)[0] + "\n[… texte tronqué]"
+    return texte
+
+
 PARSEURS = {
     "markdown_date": parser_markdown_date,
     "html_date": parser_html_date,

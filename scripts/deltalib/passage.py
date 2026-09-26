@@ -133,6 +133,7 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
                 fenetre_par_source[s.id] = depuis or (jour - timedelta(days=FENETRE_AMORCAGE_SOURCE_JOURS))
                 journal.info("source %s sans trace dans l'état : amorçage à partir du %s", s.id, fenetre_par_source[s.id])
     nouveautes, ignores = detecter(elements, etat, fenetre, fenetre_par_source)
+    lire_articles(nouveautes, sources, client, echecs)
     vus = etat.get("vus", {})
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
     par_id = {e.id: e for e in elements}
@@ -140,6 +141,22 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     empreintes = {e.id: e.empreinte for e in elements if e.empreinte and (e.id in ignores or e in nouveautes)}
     return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes,
                  ignores_sources, amorcees)
+
+
+def lire_articles(nouveautes: list[Element], sources: list[Source], client: Client, echecs: list[Echec]) -> None:
+    """A1 (26/09) : pour une source à option `lire_articles`, chaque nouvel article est lu (un GET) et son texte
+    principal remplace le résumé de la liste dans `contenu`. Un article illisible garde le résumé et remonte en
+    `sources_en_echec` (partiel), jamais en contenu vide."""
+    from .analyseurs.html_notes import texte_article
+    lues = {s.id for s in sources if s.options.get("lire_articles")}
+    for e in nouveautes:
+        if e.source_id not in lues or not e.url:
+            continue
+        try:
+            e.contenu = texte_article(client.get(e.url, accept="text/html").texte)
+        except ErreurSource as err:
+            echecs.append(Echec(e.source_id, e.url, f"article illisible : {type(err).__name__}: {err}", partiel=True))
+            journal.warning("source %s : article %s illisible : %s", e.source_id, e.url, err)
 
 
 def _source_de_l_historique(ident: str, sources: list[Source]) -> str | None:
