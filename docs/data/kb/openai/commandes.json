@@ -1,8 +1,8 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-09-25",
- "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+ "maj_le": "2026-09-26",
+ "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -16,7 +16,7 @@
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
   "config.claude-code.skills": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
-  "config.claude-code.mcp": "6fa42356864fa5c6c74a5e28ef891eed2a569139",
+  "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
   "config.codex.interface": "df56f075d6430903783090d81fe79cdaa5706cef",
@@ -628,12 +628,12 @@
    "description_source": "Switch the active agent thread. — Inspect or continue work in a spawned subagent thread.",
    "usage": "/agent , /subagents",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "1. Type `/agent` or `/subagents` and press Enter.\n2. Select the thread you want from the picker.",
+   "disponibilite": "Codex CLI",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur trading-sim, séparer une vérification adversariale en subagent permet de comparer son résultat à l'audit principal sans mélanger les fils."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI autonome n'est pas utilisée ; aucun fil de sous-agent Codex à inspecter dans son interface n'est déclaré pour les audits."
    },
    "sources": [
     {
@@ -646,7 +646,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -659,10 +659,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+    }
+   }
   },
   {
    "id": "codex-commandes-app",
@@ -716,12 +725,12 @@
    "description_source": "Approve one retry of a recent auto review denial. — Retry a command or action that the auto reviewer denied.",
    "usage": "/approve",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "1. Type `/approve`.\n2. Confirm the retry when Codex shows the relevant denied action.",
+   "disponibilite": "Codex CLI",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tes audits rencontrent parfois des blocages d'autorisation ; cette reprise ponctuelle évite d'élargir durablement les permissions de trading-sim."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI autonome n'est pas utilisée ; un refus de revue automatique ne justifie pas de recommander cette commande CLI sans action précise à retenter."
    },
    "sources": [
     {
@@ -734,7 +743,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -747,10 +756,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+    }
+   }
   },
   {
    "id": "codex-commandes-apps",
@@ -762,12 +780,12 @@
    "description_source": "Browse apps (connectors) and insert them into your prompt. — Attach an app as $app-slug before asking Codex to use it.",
    "usage": "/apps",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "1. Type `/apps`.\n2. Pick an app from the list.",
+   "disponibilite": "Codex CLI",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tu utilises ChatGPT Desktop surtout pour les connecteurs ; `/apps` permet de voir lesquels sont réellement accessibles depuis une session Codex."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI autonome n'est pas utilisée ; les connecteurs de ChatGPT Desktop ne prouvent pas un besoin de les insérer par `/apps` dans une session CLI."
    },
    "sources": [
     {
@@ -780,7 +798,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -793,10 +811,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+    },
+    "usage.hors-machine": {
+     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "pourquoi": "ChatGPT Desktop est utilisé pour ses connecteurs."
+    }
+   }
   },
   {
    "id": "codex-commandes-archive",
@@ -808,12 +839,12 @@
    "description_source": "Archive the current session and exit Codex. — Remove the current session from active session lists without deleting its transcript.",
    "usage": "/archive",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "1. Type `/archive` and press Enter.\n2. Confirm that you want to archive the current session and exit Codex.",
+   "disponibilite": "Codex CLI",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tes tâches d'audit s'accumulent dans l'app ; archiver les audits clos rend les fils actifs plus lisibles sans supprimer les preuves."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI autonome n'est pas utilisée ; les audits clos dans l'app ne créent pas de besoin d'archiver une session CLI avec `/archive`."
    },
    "sources": [
     {
@@ -826,7 +857,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -839,10 +870,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-26",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+    }
+   }
   },
   {
    "id": "codex-commandes-clear",
