@@ -191,7 +191,7 @@ pilotage, pas ici.
 |---|---|---|
 | Skills perso | `maintenance-mint`, `deploy-site`, `latex-manuscrit`, `verif-numerique` ; usage observé : maintenance-mint ×2, deploy-site ×1, **latex-manuscrit et verif-numerique jamais invoqués** | [observé] |
 | Skills claude.ai synchronisés | ask-the-council, orchestrator, red-team, scientific-adversary, context-engine, courriel-labo, docs/pdf/xlsx/pptx… ; ask-the-council ×1, les autres non invoqués dans Claude Code | [observé] |
-| Commandes, agents, hooks perso | un agent perso `executant` (`~/projets/.claude/agents/`, niveau projet ; modèle indiqué dans sa définition), créé et testé une fois le 25/09/2026, verdict du pilote neutre, non adopté dans le workflow ; commandes : aucune ; hooks : un hook PreToolUse perso depuis le 26/09 (`~/.claude/hooks/check-bash.sh`, bloque `pkill -f`) | [observé] |
+| Commandes, agents, hooks perso | un agent perso `executant` (`~/projets/.claude/agents/`, niveau projet ; modèle indiqué dans sa définition), créé et testé une fois le 25/09/2026, verdict du pilote neutre, non adopté dans le workflow ; commandes : aucune ; hooks : aucun (hook de test `check-bash.sh` installé le 26/09 par prof, retiré le 27/09) | [observé] |
 | Modèle des sous-agents | politique actuelle du pilote Routage (25/09) : modèle choisi explicitement dans la définition de chaque sous-agent plutôt qu'un défaut global `CLAUDE_CODE_SUBAGENT_MODEL` ; réévaluable si des essais montrent l'intérêt d'un défaut global | [déclaré] |
 | Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé | [observé] |
 | Usage réel des outils | Bash ≈2 900 appels (très dominant), Write 219, Edit 177, Monitor 151, ReadNotifications 146, Read 133, WebFetch 31, SendMessage 23, WebSearch 19, Workflow 13, Skill 7, Agent 2 ; commandes tapées : `/btw`, `/remote-control`, `/compact` | [observé, 14 transcripts] |
@@ -312,9 +312,8 @@ cette consultation en pratique.
    alors que la machine a 14 Gio et que trading-sim n'a pas de `.venv`. Le fichier est gelé
    jusqu'au micro-lot « AGENT INSTRUCTIONS NORMALIZATION » ; le correctif recommandé (retirer
    ces lignes, sans les remplacer) a été soumis à ChatGPT Work le 23/09.
-3. **Un seul hook** [observé] : un hook PreToolUse perso existe depuis le 26/09
-   (`~/.claude/hooks/check-bash.sh`, bloque `pkill -f`). Les autres contrôles répétés à la main
-   (vérification SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`) pourraient devenir des hooks.
+3. **Aucun hook** [observé] : les contrôles répétés à la main (vérification SHA-256 des missions,
+   `PYTHONDONTWRITEBYTECODE=1`) pourraient devenir des hooks.
 4. **Skills dormants** [observé] : `latex-manuscrit` et `verif-numerique` ne sont jamais
    déclenchés ; à revoir, à supprimer, ou à rendre déclenchables sur trading-sim (où les
    vérifications numériques abondent).
