@@ -37,7 +37,7 @@
   "projet.trading-sim"
  ],
  "total": 625,
- "commentees": 600,
+ "commentees": 610,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -268,7 +268,7 @@
    "categorie": "parametres",
    "nom": "--agents",
    "gabarit": "court",
-   "description": "Option de lancement qui définit des sous-agents à la volée en JSON ; une valeur invalide fait quitter Claude Code au démarrage.",
+   "description": "Option de lancement qui définit des sous-agents à la volée en JSON, ou, avec `--print`, dans un fichier JSON (v2.1.281 ou plus) ; une valeur invalide fait quitter Claude Code au démarrage.",
    "description_source": "Define custom subagents dynamically via JSON. Accepts the fields listed for CLI-defined subagents. With --print, the value can instead be the path to a JSON file holding the object; the file form requires Claude Code v2.1.281 or later. Claude Code validates the value at startup and exits on an invalid one; see Invalid --agents configuration for the message and for the flags and environment variable that skip the validation. Validation requires Claude Code v2.1.242 or later — claude --agents '{\"reviewer\":{\"description\":\"Reviews code\",\"prompt\":\"You are a code reviewer\"}}'",
    "usage": "--agents",
    "usage_nature": "syntaxe",
@@ -277,7 +277,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'as aucun agent perso ; un sous-agent se définirait plutôt dans un fichier, réutilisable."
+    "pourquoi": "Ton agent perso `executant` est défini dans un fichier, réutilisable ; `--agents` ne sert qu'à des définitions jetables."
    },
    "sources": [
     {
@@ -286,11 +286,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -303,10 +303,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "Un agent perso executant, défini dans ~/projets/.claude/agents/."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-agents-sessions-and-worktrees-agent",
@@ -3053,7 +3062,7 @@
    "categorie": "parametres",
    "nom": "availableModels",
    "gabarit": "court",
-   "description": "Réglage géré qui limite les modèles sélectionnables pour la session, les sous-agents, les skills et l'advisor.",
+   "description": "Réglage géré qui limite les modèles sélectionnables pour la session, les sous-agents, les skills et l'advisor ; il ne touche l'option Default qu'avec `enforceAvailableModels`.",
    "description_source": "Restrict which models people can select for the main session, subagents, skills, and the advisor. A managed list constrains /model, --model, and the model key in a developer's own files; a model outside it can't be selected. With the default prefix matching, this doesn't touch the Default option on its own; pair it with enforceAvailableModels for that.",
    "usage": "{\n  \"availableModels\": [\"sonnet\", \"haiku\"]\n}",
    "usage_nature": "syntaxe",
@@ -3071,11 +3080,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3088,10 +3097,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-availablemodelsmatch",
@@ -3272,7 +3290,7 @@
    "categorie": "parametres",
    "nom": "--bare",
    "gabarit": "court",
-   "description": "Option de lancement en mode minimal : ni hooks, ni skills, ni plugins, ni MCP, ni mémoire, ni CLAUDE.md, pour des appels scriptés plus rapides.",
+   "description": "Option de lancement en mode minimal : ni hooks, ni skills, ni plugins, ni MCP, ni mémoire automatique, ni CLAUDE.md, pour des appels scriptés plus rapides ; elle pose `CLAUDE_CODE_SIMPLE`.",
    "description_source": "Minimal mode: skip auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\"",
    "usage": "--bare",
    "usage_nature": "syntaxe",
@@ -3290,11 +3308,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3307,10 +3325,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+     "pourquoi": "Mémoire automatique très utilisée, que ce mode ne charge pas."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-bash-default-timeout-ms",
@@ -3612,7 +3639,7 @@
    "categorie": "parametres",
    "nom": "--bg",
    "gabarit": "court",
-   "description": "Option de lancement qui démarre la session comme agent d'arrière-plan et rend la main aussitôt, en affichant son identifiant.",
+   "description": "Option de lancement qui démarre la session comme agent d'arrière-plan et rend la main aussitôt, en affichant son identifiant et les commandes de gestion ; elle vérifie d'abord la confiance du dossier.",
    "description_source": "Start the session as a background agent and return immediately. Prints the session ID and management commands. Combine with --exec to run a shell command as a background job instead of a Claude session, or with --agent to run a specific subagent. Checks workspace trust for the directory before it starts. Can't be combined with -p/--print; see the error reference — claude --bg \"investigate the flaky test\"",
    "usage": "--bg, --background",
    "usage_nature": "syntaxe",
@@ -3630,11 +3657,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3647,10 +3674,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Services systemd qui lancent chaque session dans tmux."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-blockedmarketplaces",
@@ -7466,7 +7502,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_ENABLE_TELEMETRY",
    "gabarit": "court",
-   "description": "Variable qui active la collecte OpenTelemetry de métriques et de journaux, préalable à tout exportateur.",
+   "description": "Variable qui active la collecte OpenTelemetry de métriques et de journaux, préalable à tout exportateur ; ignorée dans les réglages de projet et locaux.",
    "description_source": "Set to 1 to enable OpenTelemetry data collection for metrics and logging. Required before configuring OTel exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings. See Monitoring",
    "usage": "CLAUDE_CODE_ENABLE_TELEMETRY",
    "usage_nature": "syntaxe",
@@ -7484,11 +7520,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7501,10 +7537,14 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-enable-todo-tools",
@@ -9444,7 +9484,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_PLUGIN_DIRS",
    "gabarit": "court",
-   "description": "Variable qui liste des dossiers de plugins à charger pour la session, comme `--plugin-dir`.",
+   "description": "Variable qui liste des dossiers de plugins à charger pour la session, comme `--plugin-dir`, en chemins absolus ou commençant par `~` (v2.1.280 ou plus).",
    "description_source": "Plugin directories to load for the session, each loaded the way a --plugin-dir flag loads it. Separate multiple paths with : on Unix or ; on Windows. Give each path as an absolute path or start it with ~, because Claude Code skips relative paths. Requires Claude Code v2.1.280 or later. See Load a plugin for one session",
    "usage": "CLAUDE_CODE_PLUGIN_DIRS",
    "usage_nature": "syntaxe",
@@ -9462,11 +9502,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9479,10 +9519,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "Aucun plugin propre observé ; seule la marketplace officielle est déclarée."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-plugin-git-timeout-ms",
@@ -9490,7 +9539,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe le délai des opérations git lors de l'installation ou de la mise à jour d'un plugin, 2 minutes par défaut.",
+   "description": "Variable qui fixe le délai de clonage ou de rafraîchissement d'une marketplace de plugins, 2 minutes par défaut.",
    "description_source": "Timeout in milliseconds for cloning or refreshing a plugin marketplace (default: 120000). Increase this value for large repositories or slow network connections. See Git clone timed out",
    "usage": "CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
@@ -9508,11 +9557,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9525,10 +9574,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "pourquoi": "Aucun plugin propre observé ; seule la marketplace officielle est déclarée."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-plugin-keep-marketplace-on-failure",
@@ -10082,7 +10140,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul.",
+   "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul avec `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` ; au-delà, la session démarre à l'arrêt.",
    "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 means no bound, except that a turn whose last request failed with an API error resumes only while that error is less than six hours old. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "usage_nature": "syntaxe",
@@ -10091,7 +10149,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé à l'Agent SDK, au mode non interactif ou à l'automatisation, que CONTEXTE.md ne mentionne pas."
+    "pourquoi": "Réservé à la reprise automatique en mode SDK, que CONTEXTE.md ne mentionne pas."
    },
    "sources": [
     {
@@ -10100,11 +10158,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10117,10 +10175,14 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-resume-prompt",
@@ -10128,7 +10190,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_RESUME_PROMPT",
    "gabarit": "court",
-   "description": "Variable qui remplace le message de reprise injecté quand une session s'est arrêtée en plein tour.",
+   "description": "Variable qui remplace le message de reprise envoyé quand un tour interrompu reprend seul, ou quand un appel d'outil différé reprend avec `-p`.",
    "description_source": "Override the continuation message Claude Code sends to Claude when CLAUDE_CODE_RESUME_INTERRUPTED_TURN continues an interrupted turn instead of resending its prompt, or when you resume a deferred tool call with -p. Defaults to Continue from where you left off.. An empty string uses the default",
    "usage": "CLAUDE_CODE_RESUME_PROMPT",
    "usage_nature": "syntaxe",
@@ -10137,7 +10199,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé à l'Agent SDK, au mode non interactif ou à l'automatisation, que CONTEXTE.md ne mentionne pas."
+    "pourquoi": "Réservé à la reprise automatique en mode SDK, que CONTEXTE.md ne mentionne pas."
    },
    "sources": [
     {
@@ -10146,11 +10208,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10163,10 +10225,14 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-retry-watchdog",
@@ -10552,7 +10618,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_SIMPLE",
    "gabarit": "court",
-   "description": "Variable qui lance Claude Code avec un prompt système minimal et seulement les outils Bash, lecture et édition, sans skills ni hooks.",
+   "description": "Variable qui lance Claude Code avec un prompt système minimal et seulement Bash, la lecture et l'édition de fichiers, sans skills, hooks, mémoire ni CLAUDE.md ; l'authentification doit alors venir d'une clé d'API.",
    "description_source": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
    "usage": "CLAUDE_CODE_SIMPLE",
    "usage_nature": "syntaxe",
@@ -10561,7 +10627,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions ont besoin de leurs skills, mémoires et messagerie."
+    "pourquoi": "Tes sessions ont besoin de leurs skills, mémoires et messagerie, et utilisent ton abonnement plutôt qu'une clé d'API."
    },
    "sources": [
     {
@@ -10570,11 +10636,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10587,10 +10653,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+     "pourquoi": "Mémoire automatique très utilisée, que ce mode ne charge pas."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-simple-system-prompt",
