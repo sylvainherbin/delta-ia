@@ -327,7 +327,10 @@ cette consultation en pratique.
    Codex le 24/09 [déclaré], et ce choix est devenu la valeur de `modele_par_defaut` /
    `effort_par_defaut` de `config.toml` [observé : `docs/data/etat.json`]. Le mécanisme
    précis (portée du changement — juste la conversation ou tout `config.toml` — et
-   déclencheur) reste à confirmer au prochain changement de modèle dans l'app. État
+   déclencheur) reste à confirmer au prochain changement de modèle dans l'app. Le 27/09,
+   Sylvain est passé au modèle `gpt-6-sol` à la place de `gpt-6-astra` high (relevé par
+   etat.py le 27/09 [observé], choix confirmé par Sylvain [déclaré]), effort `high`
+   [observé : `config.toml`]. État
    courant des profils et défauts Codex : `docs/data/etat.json` (`outils.Codex`), jamais
    de valeur en dur ici.
 8. **Pas d'AGENTS.md sur trading-sim** : c'est un choix délibéré, à ne pas « corriger »
