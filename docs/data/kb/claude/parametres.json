@@ -37,7 +37,7 @@
   "projet.trading-sim"
  ],
  "total": 625,
- "commentees": 610,
+ "commentees": 625,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -14008,7 +14008,7 @@
    "categorie": "parametres",
    "nom": "DISABLE_PROMPT_CACHING_HAIKU",
    "gabarit": "court",
-   "description": "Variable qui désactive le cache de prompt pour les modèles Haiku.",
+   "description": "Variable qui désactive le cache de prompt pour le modèle Haiku par défaut, où qu'il tourne.",
    "description_source": "Set to 1 to disable prompt caching for the default Haiku model, wherever it runs",
    "usage": "DISABLE_PROMPT_CACHING_HAIKU",
    "usage_nature": "syntaxe",
@@ -14017,7 +14017,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun intérêt : couper le cache ne fait qu'augmenter la consommation."
+    "pourquoi": "Couper le cache ne ferait qu'augmenter la consommation, alors que tes limites d'usage sont déjà une friction."
    },
    "sources": [
     {
@@ -14026,11 +14026,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14043,10 +14043,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-disable-prompt-caching-opus",
@@ -14194,7 +14203,7 @@
    "categorie": "parametres",
    "nom": "DISABLE_TELEMETRY",
    "gabarit": "court",
-   "description": "Variable qui désactive la télémétrie (toute valeur non vide, même `0`) et coupe aussi les feature flags, donc Remote Control.",
+   "description": "Variable qui désactive la télémétrie (toute valeur non vide, même `0`) et coupe aussi la récupération des feature flags ; les événements de télémétrie ne contiennent ni code, ni chemins, ni commandes.",
    "description_source": "Set to any non-empty value, such as 1, to opt out of telemetry. Setting it to 0 or false still opts out, unlike most on/off variables; unset the variable to turn telemetry back on. Telemetry events don't include user data like code, file paths, or Bash commands. Also disables feature-flag fetching. See Turn telemetry off for your organization",
    "usage": "DISABLE_TELEMETRY",
    "usage_nature": "syntaxe",
@@ -14203,7 +14212,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À ne pas poser : elle rendrait Remote Control indisponible, alors que tu pilotes tes sessions depuis l'iPhone."
+    "pourquoi": "Elle couperait aussi les feature flags dont dépendent certaines fonctions, sans motif décrit dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -14212,11 +14221,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14229,15 +14238,14 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {
-    "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
-     "pourquoi": "les six sessions sont lancées avec `--remote-control` et pilotées depuis l'iPhone"
-    }
-   }
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-disable-updates",
@@ -15083,7 +15091,7 @@
    "categorie": "parametres",
    "nom": "DO_NOT_TRACK",
    "gabarit": "court",
-   "description": "Variable standard qui désactive la télémétrie comme `DISABLE_TELEMETRY`, y compris les fonctions qui dépendent des feature flags comme Remote Control.",
+   "description": "Variable standard qui désactive la télémétrie comme `DISABLE_TELEMETRY`, feature flags compris ; `0` la laisse active.",
    "description_source": "Set to 1 to opt out of telemetry, with the same effect as DISABLE_TELEMETRY, including on feature-flag fetching. Claude Code reads this variable as a standard boolean, so 0 leaves telemetry on, and honors it as the cross-tool convention recognized by many developer CLIs",
    "usage": "DO_NOT_TRACK",
    "usage_nature": "syntaxe",
@@ -15092,7 +15100,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À ne pas poser : elle rendrait Remote Control indisponible pour tes sessions pilotées depuis l'iPhone."
+    "pourquoi": "Même effet que `DISABLE_TELEMETRY`, sans motif décrit dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -15101,11 +15109,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15118,15 +15126,14 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {
-    "env.multi-sessions": {
-     "sha1": "f7db231deb31c668e9169d46c4e36db3fbae4efe",
-     "pourquoi": "les six sessions sont lancées avec `--remote-control` et pilotées depuis l'iPhone"
-    }
-   }
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-editormode",
@@ -15845,7 +15852,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations qui restreignent les modèles."
+    "pourquoi": "Réglage d'administration d'organisation ; tu es seul sur un abonnement Max."
    },
    "sources": [
     {
@@ -15854,11 +15861,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15871,10 +15878,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-env",
@@ -15882,7 +15898,7 @@
    "categorie": "parametres",
    "nom": "env",
    "gabarit": "court",
-   "description": "Réglage qui définit des variables d'environnement pour chaque session et les sous-processus qu'elle lance.",
+   "description": "Réglage `env` qui définit des variables d'environnement pour chaque session et pour les sous-processus qu'elle lance, sauf quelques-unes que les réglages de projet et locaux ne peuvent pas poser.",
    "description_source": "Set environment variables for every session and for the subprocesses Claude Code starts from it. Most variables in the environment variables reference can go here, which is how you apply one to every session or roll it out to your team. Project and local settings can't set some of them.",
    "usage": "{\n  \"env\": {\n    \"DISABLE_AUTO_COMPACT\": \"1\",\n    \"ANTHROPIC_BASE_URL\": \"https://proxy.example.com\"\n  }\n}",
    "usage_nature": "syntaxe",
@@ -15900,11 +15916,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15925,17 +15941,21 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "4cf8299b1de0440d24595547ae1bae939f1ef1f1",
-     "pourquoi": "piste 3 : `PYTHONDONTWRITEBYTECODE=1` contrôlé à la main"
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
+     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 encore contrôlé à la main."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Python 3.12, tests `unittest`"
+     "pourquoi": "Python 3.12, tests unittest."
     }
    }
   },
@@ -21627,7 +21647,7 @@
    "categorie": "parametres",
    "nom": "permissions.defaultMode",
    "gabarit": "court",
-   "description": "Réglage du mode de permission des nouvelles sessions ; non défini, c'est le défaut du plan et de la surface.",
+   "description": "Réglage du mode de permission de départ des nouvelles sessions ; non défini, c'est le défaut intégré de la surface utilisée.",
    "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"acceptEdits\"\n  }\n}",
    "usage_nature": "syntaxe",
@@ -21636,7 +21656,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le mode de départ actuel te convient, rien n'indique qu'il faille le fixer."
+    "pourquoi": "CONTEXTE.md ne décrit aucun besoin de fixer le mode de départ ; le mode auto est déjà en service."
    },
    "sources": [
     {
@@ -21645,11 +21665,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21662,10 +21682,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Le classificateur du mode auto, en service, bloque certaines écritures système : c'est lui qui contrôle les commandes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-permissions-deny",
@@ -22834,7 +22863,7 @@
    "categorie": "parametres",
    "nom": "respondToBashCommands",
    "gabarit": "court",
-   "description": "Réglage qui fait répondre ou non Claude après une commande shell lancée avec le préfixe `!`.",
+   "description": "Réglage qui fait répondre ou non Claude après une commande shell lancée avec le préfixe `!` ; à `false`, la sortie entre dans le contexte sans réponse, pour enchaîner plusieurs commandes.",
    "description_source": "Choose whether Claude responds after you run a shell command with the ! prefix in the input box. By default, Claude Code adds the command's output to the conversation and Claude replies to it. Set this key to false to add the output to context without a reply, so you can run several commands and ask about them together.",
    "usage": "{\n  \"respondToBashCommands\": false\n}",
    "usage_nature": "syntaxe",
@@ -22843,7 +22872,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale pas d'usage du préfixe `!`."
+    "pourquoi": "CONTEXTE.md ne signale pas d'usage du préfixe `!`."
    },
    "sources": [
     {
@@ -22852,11 +22881,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22873,10 +22902,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+     "pourquoi": "Commandes tapées observées : /btw, /remote-control, /compact, pas de préfixe !."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-restricted",
@@ -23347,7 +23385,7 @@
    "categorie": "parametres",
    "nom": "sandbox.credentials.envVars",
    "gabarit": "court",
-   "description": "Réglage qui protège des variables d'environnement des commandes isolées, retirées (`deny`) ou masquées (`mask`).",
+   "description": "Réglage qui protège des variables d'environnement des commandes isolées dans le bac à sable : retirées (`deny`) ou remplacées par une valeur témoin que le proxy substitue (`mask`).",
    "description_source": "Protect environment variables from sandboxed commands. With \"mode\": \"deny\", Claude Code removes the variable from the environment of sandboxed commands. With \"mode\": \"mask\", sandboxed commands see a per-session sentinel value, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts, so tools such as gh and npm keep authenticating without ever holding the real credential. \"mode\": \"mask\" requires Claude Code v2.1.199 or later.",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"envVars\": [\n        { \"name\": \"NPM_TOKEN\", \"mode\": \"deny\" },\n        { \"name\": \"GITHUB_TOKEN\", \"mode\": \"mask\", \"injectHosts\": [\"api.github.com\"] }\n      ]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -23356,7 +23394,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale aucun bac à sable, et le mode auto contrôle déjà tes commandes."
+    "pourquoi": "CONTEXTE.md ne signale aucun bac à sable ; le mode auto contrôle déjà tes commandes."
    },
    "sources": [
     {
@@ -23365,11 +23403,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23386,10 +23424,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Le classificateur du mode auto, en service, bloque certaines écritures système : c'est lui qui contrôle les commandes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-sandbox-credentials-files",
@@ -23397,7 +23444,7 @@
    "categorie": "parametres",
    "nom": "sandbox.credentials.files",
    "gabarit": "court",
-   "description": "Réglage qui protège des fichiers ou dossiers d'identifiants des commandes isolées.",
+   "description": "Réglage qui protège des fichiers ou dossiers d'identifiants des commandes isolées : lecture bloquée (`deny`) ou copie témoin sous Linux (`mask`).",
    "description_source": "Protect credential files or directories from sandboxed commands. With \"mode\": \"deny\", Claude Code blocks reads of the path inside the sandbox, the same read block as sandbox.filesystem.denyRead. With \"mode\": \"mask\", sandboxed commands on Linux and WSL2 read a sentinel copy of the file, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts; on macOS the file is unreadable inside the sandbox instead. \"mode\": …",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"files\": [\n        { \"path\": \"~/.aws/credentials\", \"mode\": \"deny\" },\n        { \"path\": \"~/.config/gh/hosts.yml\", \"mode\": \"mask\", \"injectHosts\": [\"api.github.com\"] }\n      ]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -23406,7 +23453,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale aucun bac à sable, et le mode auto contrôle déjà tes commandes."
+    "pourquoi": "CONTEXTE.md ne signale aucun bac à sable ; le mode auto contrôle déjà tes commandes."
    },
    "sources": [
     {
@@ -23415,11 +23462,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23436,10 +23483,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Le classificateur du mode auto, en service, bloque certaines écritures système : c'est lui qui contrôle les commandes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-sandbox-credentials-sigv4",
@@ -23721,7 +23777,7 @@
    "categorie": "parametres",
    "nom": "sandbox.filesystem",
    "gabarit": "court",
-   "description": "Réglage des chemins que les commandes isolées peuvent lire et écrire.",
+   "description": "Réglage des chemins que les commandes isolées peuvent lire et écrire, au-delà du dossier de travail et du dossier temporaire, ou qui coupe la couche de fichiers du bac à sable.",
    "description_source": "Control which paths sandboxed commands can read and write. By default they can write to the working directory, the per-user temp directory, and directories you add with --add-dir, /add-dir, or permissions.additionalDirectories, and can read the rest of the filesystem, including credential files. Widen or narrow that with the four path lists, or switch the filesystem layer off with disabled. See Filesystem isolation for the default boundaries.",
    "usage": "{\n  \"sandbox\": {\n    \"filesystem\": {\n      \"allowWrite\": [\"/tmp/build\", \"~/.kube\"],\n      \"denyRead\": [\"~/.aws/credentials\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -23730,7 +23786,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale aucun bac à sable, et le mode auto contrôle déjà tes commandes."
+    "pourquoi": "CONTEXTE.md ne signale aucun bac à sable ; le mode auto contrôle déjà tes commandes."
    },
    "sources": [
     {
@@ -23739,11 +23795,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23760,10 +23816,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Le classificateur du mode auto, en service, bloque certaines écritures système : c'est lui qui contrôle les commandes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-sandbox-filesystem-allowread",
@@ -23817,7 +23882,7 @@
    "categorie": "parametres",
    "nom": "sandbox.filesystem.allowWrite",
    "gabarit": "court",
-   "description": "Réglage de chemins supplémentaires où les commandes isolées peuvent écrire.",
+   "description": "Réglage qui ajoute des chemins où les commandes isolées peuvent écrire, hors du projet.",
    "description_source": "Add paths where sandboxed commands can write, beyond the working directory, the per-user temp directory, and the directories you've added with --add-dir, /add-dir, or permissions.additionalDirectories. Use it when a subprocess such as kubectl or a build tool needs to write outside the project.",
    "usage": "{\n  \"sandbox\": {\n    \"filesystem\": {\n      \"allowWrite\": [\"/tmp/build\", \"~/.kube\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -23826,7 +23891,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale aucun bac à sable, et le mode auto contrôle déjà tes commandes."
+    "pourquoi": "CONTEXTE.md ne signale aucun bac à sable ; le mode auto contrôle déjà tes commandes."
    },
    "sources": [
     {
@@ -23835,11 +23900,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23856,10 +23921,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Le classificateur du mode auto, en service, bloque certaines écritures système : c'est lui qui contrôle les commandes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-sandbox-filesystem-denyread",
@@ -24679,7 +24753,7 @@
    "categorie": "parametres",
    "nom": "--setting-sources",
    "gabarit": "court",
-   "description": "Option CLI qui choisit les sources de réglages chargées (`user`, `project`, `local`).",
+   "description": "Option de lancement qui choisit les sources de réglages chargées (`user`, `project`, `local`), héritée par les sessions lancées depuis celle-ci.",
    "description_source": "Comma-separated list of setting sources to load (user, project, local). See agent view and agent teams for the sessions you start from this one that inherit the list — claude --setting-sources user,project",
    "usage": "--setting-sources",
    "usage_nature": "syntaxe",
@@ -24688,7 +24762,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin d'écarter une source de réglages."
+    "pourquoi": "CONTEXTE.md ne décrit aucun besoin d'écarter une source de réglages."
    },
    "sources": [
     {
@@ -24697,11 +24771,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24714,9 +24788,13 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {}
   },
   {
@@ -25971,7 +26049,7 @@
    "categorie": "parametres",
    "nom": "syncClaudeAiPlugins",
    "gabarit": "court",
-   "description": "Réglage qui, à `false`, coupe le téléchargement des plugins activés sur ton compte claude.ai.",
+   "description": "Réglage qui, à `false`, arrête le téléchargement des plugins activés sur le compte claude.ai dans `~/.claude/plugins/synced/` et leur chargement ; seul `false` a un effet.",
    "description_source": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where …",
    "usage": "{\n  \"syncClaudeAiPlugins\": false\n}",
    "usage_nature": "syntaxe",
@@ -25980,7 +26058,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun plugin claude.ai signalé."
+    "pourquoi": "Aucun plugin claude.ai n'est signalé dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -25989,11 +26067,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26006,10 +26084,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+     "pourquoi": "Aucun plugin propre observé ; seuls des skills claude.ai sont synchronisés."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-syncclaudeaiskills",
@@ -26316,7 +26403,7 @@
    "categorie": "parametres",
    "nom": "--teammate-mode",
    "gabarit": "court",
-   "description": "Option CLI de l'affichage des coéquipiers d'une équipe d'agents : `in-process`, `auto`, `tmux` ou `iterm2`.",
+   "description": "Option de lancement qui règle l'affichage des coéquipiers d'une équipe d'agents : `in-process`, `auto`, `tmux` ou `iterm2`.",
    "description_source": "Set how agent team teammates display: in-process (default), auto, tmux, or iterm2. Overrides the teammateMode setting for this session. See Choose a display mode — claude --teammate-mode auto",
    "usage": "--teammate-mode",
    "usage_nature": "syntaxe",
@@ -26325,7 +26412,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'utilises pas d'équipes d'agents."
+    "pourquoi": "CONTEXTE.md ne décrit aucune équipe d'agents."
    },
    "sources": [
     {
@@ -26334,11 +26421,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26351,10 +26438,19 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+     "pourquoi": "Un seul agent perso, testé une fois, sans équipe d'agents."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-teammatedefaultmodel",
@@ -26938,7 +27034,7 @@
    "categorie": "parametres",
    "nom": "useAutoModeDuringPlan",
    "gabarit": "court",
-   "description": "Réglage qui fait examiner ou non par le classificateur du mode auto les commandes shell en mode plan ; à `false`, une demande de permission apparaît.",
+   "description": "Réglage qui fait examiner ou non par le classificateur du mode auto les commandes shell en mode plan ; à `false`, chaque commande hors lecture seule demande une permission.",
    "description_source": "Choose whether Claude Code uses the auto mode classifier to review shell commands in plan mode. With the default true, the classifier reviews each command during planning when auto mode is available and you see no prompt, except for critical-path removals. Set false to get a permission prompt for every command outside the built-in read-only set. Appears in /config as Use auto mode during plan.",
    "usage": "{\n  \"useAutoModeDuringPlan\": false\n}",
    "usage_nature": "syntaxe",
@@ -26947,7 +27043,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale pas d'usage du mode plan."
+    "pourquoi": "CONTEXTE.md ne signale pas d'usage du mode plan."
    },
    "sources": [
     {
@@ -26956,11 +27052,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26973,9 +27069,13 @@
     {
      "date": "2026-09-26",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {}
   },
   {
