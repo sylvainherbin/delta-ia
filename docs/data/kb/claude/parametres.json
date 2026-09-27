@@ -2,7 +2,7 @@
  "perimetre": "claude",
  "categorie": "parametres",
  "maj_le": "2026-09-27",
- "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+ "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -15,7 +15,7 @@
   "projet.restoration-id": "fa8476b43814e6dd02af96a248e178016f655ad4",
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-  "config.claude-code.skills": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+  "config.claude-code.skills": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
   "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "b584903a158d3fbe514e125508ace9b0d535c357",
+  "optimisation.pistes": "f484c410fc32696eda481aae96dbee09d5c1f453",
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
@@ -15228,12 +15228,16 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
      "pourquoi": "piste 11 : modèle et effort choisis par session pour étaler la charge"
     },
     "env.multi-sessions": {
@@ -15291,16 +15295,20 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "config.claude-code": {
      "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
      "pourquoi": "effort par défaut relevé dans etat.json (clé absente)"
     },
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
      "pourquoi": "piste 11 : régler l'effort par session pour étaler la charge"
     }
    }
@@ -17995,10 +18003,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Un hook `PreToolUse` sur `Bash` qui refuse (code 2) toute commande contenant `pkill -f` remplacerait l'interdiction tenue à la main (piste 3) ; à essayer d'abord dans herbin-mint."
+    "verdict": "utiliser",
+    "pourquoi": "Ton hook `check-bash.sh` sur `Bash` utilise cet événement ; le même mécanisme servirait aux contrôles restants de la piste 3, en vérifiant qu'une commande qui ne fait que citer le motif bloqué n'est pas refusée à tort."
    },
    "sources": [
     {
@@ -18032,13 +18040,21 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+     "pourquoi": "hook PreToolUse perso check-bash.sh depuis le 26/09, qui bloque la commande pkill -f"
+    },
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
-     "pourquoi": "piste 3 : contrôles répétés à la main (SHA-256, `PYTHONDONTWRITEBYTECODE`, `pkill -f`) à changer en hooks"
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
+     "pourquoi": "piste 3 : un seul hook ; SHA-256 et PYTHONDONTWRITEBYTECODE encore contrôlés à la main"
     }
    }
   },
@@ -18760,10 +18776,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Déclarer dans `~/.claude/settings.json` un premier hook `PreToolUse` sur `Bash` qui refuse `pkill -f`, puis vérifier dans herbin-mint qu'une telle commande est bloquée : premier pas de la piste 3."
+    "verdict": "utiliser",
+    "pourquoi": "Tu as déjà un hook `PreToolUse` perso (`~/.claude/hooks/check-bash.sh`) ; le prochain candidat de la piste 3 serait la vérification SHA-256 des missions avant lancement sur herbin-trading."
    },
    "sources": [
     {
@@ -18797,17 +18813,21 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
-     "pourquoi": "piste 3 : aucun hook, contrôles répétés à la main à changer en hooks"
-    },
     "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
-     "pourquoi": "hooks perso absents"
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+     "pourquoi": "hook PreToolUse perso check-bash.sh depuis le 26/09, qui bloque la commande pkill -f"
+    },
+    "optimisation.pistes": {
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
+     "pourquoi": "piste 3 : un seul hook ; SHA-256 et PYTHONDONTWRITEBYTECODE encore contrôlés à la main"
     }
    }
   },
@@ -19531,12 +19551,16 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
      "pourquoi": "piste 1 : règles transversales (français…) dispersées dans les mémoires"
     },
     "profil": {
@@ -20660,12 +20684,16 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
      "pourquoi": "piste 11 : Sonnet pour les tâches machine simples"
     },
     "env.multi-sessions": {
@@ -24997,16 +25025,20 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "b584903a158d3fbe514e125508ace9b0d535c357",
+     "sha1": "f484c410fc32696eda481aae96dbee09d5c1f453",
      "pourquoi": "piste 4 : `latex-manuscrit` et `verif-numerique` jamais déclenchés"
     },
     "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
      "pourquoi": "usage observé des skills perso"
     }
    }
@@ -27372,7 +27404,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-09-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27385,12 +27417,16 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "021d91624a7d1d6a0cbf057cbac3b5111d743d19",
+   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
+     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
      "pourquoi": "Workflow : 13 appels observés"
     },
     "methode.travail": {
