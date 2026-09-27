@@ -23,7 +23,7 @@ Ce dépôt est public : on n'inscrit ici que du technique, rien de personnel ni 
 | 2 | Le contexte | Savoir ce que le modèle voit (CLAUDE.md, mémoires, fichiers, compactage) | terminé le 24/09 |
 | 3 | Écrire une consigne | Rédiger une mission sans place pour l'interprétation | terminé le 24/09 |
 | 4 | Outils et MCP | Comprendre le choix d'un outil par un agent ; brancher un MCP | terminé le 24/09 |
-| 5 | Skills et hooks | Automatiser un comportement : skill ou hook | en cours, débuté le 26/09 |
+| 5 | Skills et hooks | Automatiser un comportement : skill ou hook | en cours, débuté le 26/09, exercice pratique clos le 27/09 |
 | 6 | Vérifier l'IA | Repérer une hallucination, faire recouper, audit croisé Claude ↔ Codex | à venir |
 
 ## Acquis
@@ -62,11 +62,12 @@ consolidation (D67 amendée).
   pratique de construction d'un hook réel — abandonné en cours de route, encore un exercice trop
   technique (comme 1.2), voir Points à travailler. Le hook construit reste actif (voir note
   ci-dessous) ; le module n'est pas terminé, à reprendre avec un exemple plus accessible.
-- **Changement réel hors dépôt** : un hook `PreToolUse` sur `Bash` a été installé dans
+- **Changement réel hors dépôt, retiré** : un hook `PreToolUse` sur `Bash` avait été installé dans
   `~/.claude/settings.json` (global, toutes sessions Claude Code) le 26/09, avec le script
-  `~/.claude/hooks/check-bash.sh` : il bloque toute commande contenant le texte `pkill -f`. Testé et
-  actif. Limite connue : il bloque sur le texte, pas sur un vrai appel à `pkill` (faux positif
-  possible, sans conséquence pratique pour Sylvain qui n'utilise pas cette commande).
+  `~/.claude/hooks/check-bash.sh`, pour bloquer les appels à `pkill -f`. Le faux positif identifié
+  le 26/09 (texte contenant « pkill -f » sans appel réel) a bloqué une vraie séance delta-ia le
+  27/09, malgré une réécriture du script entre-temps pour l'affiner. Exercice terminé : le hook et
+  son script sont retirés le 27/09, aucune autre entrée de `settings.json` touchée (diff vérifié).
 
 ## Adoptions
 
@@ -123,3 +124,4 @@ donne `fiche_reference`.
 | 2026-09-26 | 5 | 5.1 skill ou hook : le passage `/delta` | réussi : skill, correctement justifié (déclenché par Sylvain, disable-model-invocation) | [observé] |
 | 2026-09-26 | 5 | 5.2 skill ou hook : lancer les tests automatiquement après modification d'un `.py` | réussi : hook, bonne justification (« commande automatique lancée par le programme à un moment précis ») | [observé] |
 | 2026-09-26 | 5 | 5.3 construction réelle d'un hook `PreToolUse` bloquant `pkill -f` (recommandation Delta, piste 3) | hook écrit et testé avec succès (commande bloquée, commande normale non affectée) ; en creusant une limite (faux positif sur simple texte), exercice devenu trop technique — Sylvain ne connaît pas `pkill -f`, ne peut pas juger lui-même l'importance du défaut ; interrompu, conclusion donnée par le professeur plutôt que demandée à Sylvain | [observé] |
+| 2026-09-27 | 5 | Suite de 5.3 : le faux positif a bloqué une vraie séance delta-ia | hook et script retirés proprement (fichier supprimé, entrée `hooks` ôtée de `settings.json`, diff vérifié, aucune autre entrée touchée) ; exercice clos | [observé] |
