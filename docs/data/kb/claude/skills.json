@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-09-27",
- "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+ "maj_le": "2026-09-28",
+ "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -15,7 +15,7 @@
   "projet.restoration-id": "fa8476b43814e6dd02af96a248e178016f655ad4",
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-  "config.claude-code.skills": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
+  "config.claude-code.skills": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
   "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "f484c410fc32696eda481aae96dbee09d5c1f453",
+  "optimisation.pistes": "bb99e14936e00ce198428393b81ca83709ce8ccb",
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
@@ -352,16 +352,16 @@
    "categorie": "skills",
    "nom": "/doctor",
    "gabarit": "complet",
-   "description": "Skill de bilan d'installation : doublons, PATH, fichiers de réglages illisibles, skills, serveurs MCP et plugins inutilisés rapportés à leur coût en contexte, hooks lents, nouvelle version disponible. Il peut aussi alléger les CLAUDE.md et proposer le mode auto par défaut ; il présente ses constats et demande confirmation avant tout changement. `claude doctor` dans le terminal donne un diagnostic en lecture seule, sans session. Alias : `/checkup`.",
-   "description_source": "Skill. Run a setup checkup that diagnoses issues and can fix them. Checks installation health, including duplicate or leftover installs, PATH problems, and unparseable settings files. Finds unused skills, MCP servers, and plugins versus their context cost, flags slow hooks, and checks for a newer version on your release channel. Deduplicates local CLAUDE.md files against checked-in ones, trims checked-in CLAUDE.md files by cutting content Claude could derive from the codebase, and migrates the always-loaded guidance that remains into skills and nested CLAUDE.md files that load on demand. Also offers to make auto mode your default and to pre-approve frequently denied read-only commands. Reports findings first and asks for confirmation before changing anything. From the terminal, claude doctor prints read-only installation diagnostics without starting a session. Alias: /checkup. The CLAUDE.md trim check requires Claude Code v2.1.206 or later. Before v2.1.205, /doctor opened a read-only diagnostics screen and pressing f sent the report to Claude",
-   "usage": "/doctor",
+   "description": "Skill de bilan d'installation : doublons, PATH, fichiers de réglages illisibles, skills, serveurs MCP et plugins inutilisés rapportés à leur coût en contexte, hooks lents, nouvelle version disponible ; il peut aussi alléger les CLAUDE.md et proposer le mode auto par défaut, après confirmation. Nouveau : `/doctor prompt-audit [path]` fait auditer par Claude les CLAUDE.md, skills et autres réglages à la recherche de consignes périmées ou contradictoires, au lieu du bilan (Claude Code 2.1.283 ou plus). `claude doctor` dans le terminal donne un diagnostic en lecture seule, sans session ; alias `/checkup`.",
+   "description_source": "Skill. Run a setup checkup that diagnoses issues and can fix them. Checks installation health, including duplicate or leftover installs, PATH problems, and unparseable settings files. Finds unused skills, MCP servers, and plugins versus their context cost, flags slow hooks, and checks for a newer version on your release channel. Deduplicates local CLAUDE.md files against checked-in ones, trims checked-in CLAUDE.md files by cutting content Claude could derive from the codebase, and migrates the always-loaded guidance that remains into skills and nested CLAUDE.md files that load on demand. Also offers to make auto mode your default and to pre-approve frequently denied read-only commands. Reports findings first and asks for confirmation before changing anything. From the terminal, claude doctor prints read-only installation diagnostics without starting a session. Alias: /checkup. Run /doctor prompt-audit to have Claude audit your CLAUDE.md files, skills, and other configuration for outdated or conflicting instructions instead of running the checkup. The prompt-audit subcommand requires Claude Code v2.1.283 or later. The CLAUDE.md trim check requires Claude Code v2.1.206 or later. Before v2.1.205, /doctor opened a read-only diagnostics screen and pressing f sent the report to Claude",
+   "usage": "/doctor [prompt-audit [path]]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Il chiffrerait le coût des skills dormants `latex-manuscrit` et `verif-numerique` et des skills claude.ai synchronisés (piste 4). Commence par `claude doctor`, en lecture seule, puisque la version interactive propose aussi de modifier CLAUDE.md et le mode par défaut."
+    "pourquoi": "Dans herbin-mint (`~/projets`, 2.1.283 installée), `/doctor prompt-audit` signalerait les consignes dispersées entre mémoires et CLAUDE.md (piste 1) et les skills dormants `latex-manuscrit` et `verif-numerique` (piste 4). Le bilan interactif `/doctor` propose de modifier CLAUDE.md et le mode par défaut : commence par `claude doctor`, en lecture seule, et n'accepte aucun changement sur trading-sim, gouverné par Work."
    },
    "sources": [
     {
@@ -374,7 +374,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-28",
    "historique": [
     {
      "date": "2026-09-23",
@@ -383,10 +383,35 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-28",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-28",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-28",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Pistes 1 (règles dispersées, CLAUDE.md global minimal) et 4 (skills dormants) : cibles directes de prompt-audit et du bilan."
+    },
+    "config.claude-code.skills": {
+     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "pourquoi": "Skills perso dont latex-manuscrit et verif-numerique jamais invoqués, skills claude.ai synchronisés peu utilisés."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Dépôt gouverné par Work, CLAUDE.md gelé : aucun changement proposé par /doctor à y accepter."
+    }
+   }
   },
   {
    "id": "claude-code-skills-fewer-permission-prompts",
