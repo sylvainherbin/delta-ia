@@ -1,6 +1,6 @@
 ---
 name: delta
-description: Passage quotidien de la veille Delta pour Claude Code — périmètres claude puis actu, selon SPEC.md §6. À lancer à la main, une fois par jour.
+description: Passage quotidien de la veille Delta pour Claude Code — périmètres claude puis actu, selon SPEC.md §6. Une fois par jour, à la main ou par la tâche planifiée (mode automatique D68).
 disable-model-invocation: true
 ---
 

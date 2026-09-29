@@ -29,7 +29,7 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 
 Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.
 
-Le lancement est manuel, une fois par jour (D16, vérifié sur Claude Code 2.1.280 et codex-cli 0.155.0-alpha.16 le 23/09/2026) :
+Le lancement se fait une fois par jour, à la demande de Sylvain (D16, vérifié sur Claude Code 2.1.280 et codex-cli 0.155.0-alpha.16 le 23/09/2026) ou, pour `/delta` seulement, automatiquement par la tâche planifiée de Claude Desktop (D68, §10) :
 - côté Claude Code, par `/delta`, skill du dépôt `.claude/skills/delta/SKILL.md` (`disable-model-invocation: true` : seul Sylvain la déclenche) ; elle enchaîne `claude` puis `actu` ;
 - côté Codex, par `$delta`, skill du dépôt `.agents/skills/delta/SKILL.md` (`allow_implicit_invocation: false`) ; à défaut, `prompts/codex-delta.md`, de contenu identique, est collé à la main. Les custom prompts de Codex sont dépréciés depuis le 22/01/2026.
 

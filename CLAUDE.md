@@ -15,7 +15,7 @@ SPEC.md (cahier des charges) se consulte quand une tâche en dépend ; il n'est 
 - Aucune date, version ou fonctionnalité devinée : inconnu vaut `null`.
 - Git (SPEC §6, D9) : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Sans dépôt distant : ni pull ni push. Avec un distant : lancer `/delta` vaut accord de push sur les seuls chemins de l'agent ; en session de développement, push seulement sur accord de Sylvain.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
-- Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), jamais déclenché sans demande de Sylvain. Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable.
+- Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), lancé à la demande de Sylvain ou automatiquement par la tâche planifiée de Claude Desktop selon D68 (section « Mode automatique (D68) » de la skill). Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable.
 
 ## Rapports (D63)
 
