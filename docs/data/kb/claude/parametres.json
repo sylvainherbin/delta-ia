@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-09-28",
+ "maj_le": "2026-09-29",
  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -36,8 +36,8 @@
   "projet.restoration-id",
   "projet.trading-sim"
  ],
- "total": 625,
- "commentees": 625,
+ "total": 630,
+ "commentees": 630,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -5517,8 +5517,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "gabarit": "court",
-   "description": "Variable qui désactive la fenêtre de contexte de 1M et ramène les sessions à 200K.",
-   "description_source": "Set to 1 to disable 1M context window support. When set, 1M model variants are unavailable in the model picker, and Claude Code holds sessions on models with a native 1M window, such as Sonnet 5 and the Fable models, to a 200K window; see Extended context for how the hold is enforced. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID",
+   "description": "Variable qui désactive la fenêtre de contexte de 1M et limite à 200K les sessions sur les modèles à fenêtre native de 1M, comme Sonnet 5.5 et les modèles Fable.",
+   "description_source": "Set to 1 to disable 1M context window support. When set, 1M model variants are unavailable in the model picker, and Claude Code holds sessions on models with a native 1M window, such as Sonnet 5.5 and the Fable models, to a 200K window; see Extended context for how the hold is enforced. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID",
    "usage": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5526,7 +5526,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Opus 5.5 et tes sessions longues profitent de la fenêtre de 1M ; la couper forcerait des compactions plus fréquentes."
+    "pourquoi": "Tes sessions longues profitent de la fenêtre de 1M ; la couper forcerait des compactions plus fréquentes."
    },
    "sources": [
     {
@@ -5539,7 +5539,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5548,10 +5548,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Sessions reprises en continu par --resume, donc longues."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-adaptive-thinking",
@@ -5559,8 +5572,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
    "gabarit": "court",
-   "description": "Variable qui désactive le raisonnement adaptatif d'Opus 4.6 et Sonnet 4.6 ; sans effet sur les modèles plus récents.",
-   "description_source": "Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5, or Opus 4.7 and later, which always use adaptive reasoning",
+   "description": "Variable qui désactive le raisonnement adaptatif d'Opus 4.6 et Sonnet 4.6 ; sans effet sur Fable, Sonnet 5 et suivants, Opus 4.7 et suivants.",
+   "description_source": "Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5 and later, or Opus 4.7 and later, which always use adaptive reasoning",
    "usage": "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5568,7 +5581,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sans effet sur tes modèles (Opus 5 et 5.5, Fable)."
+    "pourquoi": "Sans effet sur les modèles récents que tes sessions utilisent (défaut `opus` dans etat.json)."
    },
    "sources": [
     {
@@ -5581,7 +5594,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5590,10 +5603,18 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-disable-admin-env-union",
@@ -7002,8 +7023,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_THINKING",
    "gabarit": "court",
-   "description": "Variable qui retire complètement le paramètre de raisonnement des requêtes, pour les passerelles qui le refusent.",
-   "description_source": "Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5 or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there",
+   "description": "Variable qui retire le paramètre de raisonnement des requêtes, pour les passerelles qui le refusent ; elle ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5 ni des modèles Fable.",
+   "description_source": "Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5, Sonnet 5.5, or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there",
    "usage": "CLAUDE_CODE_DISABLE_THINKING",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7011,7 +7032,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'API, de passerelle ou de fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
+    "pourquoi": "Option de compatibilité pour passerelle ou fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
    },
    "sources": [
     {
@@ -7024,7 +7045,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7033,10 +7054,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Claude Max (5x), pas de passerelle ni de fournisseur tiers."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-unknown-model-window-enforcement",
@@ -12105,8 +12139,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_EFFORT",
    "gabarit": "court",
-   "description": "Variable posée automatiquement dans les sous-processus avec le niveau d'effort en vigueur.",
-   "description_source": "Set automatically in Bash tool subprocesses and hook commands to the effort level in effect when the subprocess starts: low, medium, high, xhigh, or max. Ultracode is not a distinct level and reports as xhigh. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter",
+   "description": "Variable posée automatiquement dans les sous-processus Bash et les hooks avec le niveau d'effort en vigueur (low à max), seulement si le modèle accepte le paramètre d'effort.",
+   "description_source": "Set automatically in Bash tool subprocesses and hook commands to the effort level in effect when the subprocess starts: low, medium, high, xhigh, or max. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter",
    "usage": "CLAUDE_EFFORT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12114,7 +12148,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Posée automatiquement par Claude Code ; rien à régler."
+    "pourquoi": "Posée automatiquement par Claude Code ; utile seulement à un hook qui dépendrait de l'effort, et tu n'en as aucun."
    },
    "sources": [
     {
@@ -12127,7 +12161,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12136,10 +12170,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "pourquoi": "Aucun hook installé depuis le retrait du hook de test le 27/09."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-enable-byte-watchdog",
@@ -12566,6 +12613,57 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claudeinchromedefaultenabled",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "claudeInChromeDefaultEnabled",
+   "gabarit": "court",
+   "description": "Réglage qui démarre chaque session interactive avec l'intégration Chrome active, sans passer `--chrome` ; `/chrome` puis « Enabled by default » le pose pour toi.",
+   "description_source": "Start every interactive CLI session with Chrome integration on, without passing --chrome each time. If you run claude remote-control, a session it starts for one of your project threads follows this key too, except in bypassPermissions mode. Running /chrome and selecting Enabled by default sets this key for you, as described in Enable Chrome by default. Appears in …",
+   "usage": "{\n  \"claudeInChromeDefaultEnabled\": true\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "L'extension Chrome est souvent déconnectée et trading-sim interdit le navigateur : l'activer partout ajouterait des erreurs sans usage identifié."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#claudeinchromedefaultenabled",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Friction récurrente : extension Chrome souvent déconnectée."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "settings.json de trading-sim interdit le navigateur."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Global config settings",
+   "maj_le": "2026-09-29",
+   "historique": [
+    {
+     "date": "2026-09-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claudemd",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -12655,8 +12753,8 @@
    "categorie": "parametres",
    "nom": "cleanupPeriodDays",
    "gabarit": "court",
-   "description": "Réglage qui fixe combien de jours Claude Code garde les transcripts de session et autres données avant de les supprimer.",
-   "description_source": "Set how many days Claude Code keeps session transcripts and other application data before deleting them. Claude Code runs the deletion as a background sweep after a session starts, as long as it can safely determine the retention period.",
+   "description": "Réglage qui fixe combien de jours Claude Code garde les transcripts et autres données avant de les supprimer sans message ; une session inutilisée plus longtemps disparaît du sélecteur `/resume`.",
+   "description_source": "Set how many days Claude Code keeps session transcripts and other application data before deleting them. Claude Code runs the deletion as a background sweep after a session starts, as long as it can safely determine the retention period. The sweep deletes transcripts without showing a message, so a session you haven't used for longer than the retention period no longer appears in the /resume picker.",
    "usage": "{\n  \"cleanupPeriodDays\": 20\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12664,7 +12762,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Si une session peu utilisée, comme herbin-dev désormais allumée à la demande, restait inactive plus longtemps que cette période, son transcript pourrait être supprimé et `claude --resume <id>` échouer ; à vérifier."
+    "pourquoi": "Si herbin-dev, désormais allumée à la demande, restait inactive plus longtemps que cette période, son transcript pourrait être supprimé et `claude --resume <id>` échouer ; vérifie la valeur en vigueur dans `/config`."
    },
    "sources": [
     {
@@ -12677,7 +12775,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12686,10 +12784,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Sessions lancées par claude --resume <id> ; herbin-dev ne démarre plus automatiquement depuis le 23/09."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-cloud",
@@ -12816,6 +12927,57 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-copyfullresponse",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "copyFullResponse",
+   "gabarit": "court",
+   "description": "Réglage qui fait copier à `/copy` la réponse entière à chaque fois, sans le sélecteur de blocs de code ; il apparaît dans `/config` comme « Skip the /copy picker ».",
+   "description_source": "Make /copy copy the full response every time, without the picker it otherwise shows when the response contains code blocks. Selecting Always copy full response in that picker sets this key to true. Appears in /config as Skip the /copy picker.",
+   "usage": "{\n  \"copyFullResponse\": true\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "`/copy` ne figure pas parmi tes commandes tapées, et tu pilotes surtout depuis l'iPhone, où le presse-papiers du PC ne te sert pas."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#copyfullresponse",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "pourquoi": "Commandes tapées observées : /btw, /remote-control, /compact."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "L'iPhone est l'interface principale de pilotage."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Global config settings",
+   "maj_le": "2026-09-29",
+   "historique": [
+    {
+     "date": "2026-09-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-copyonselect",
@@ -13110,6 +13272,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-defaulttoagentsview",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "defaultToAgentsView",
+   "gabarit": "court",
+   "description": "Réglage qui ouvre la vue des agents au lieu d'une nouvelle conversation quand tu lances `claude` sans argument.",
+   "description_source": "Open agent view instead of a new conversation when you run claude with no arguments. Appears in /config as Open agents view by default unless agent view is turned off.",
+   "usage": "{\n  \"defaultToAgentsView\": true\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions démarrent toutes par `claude --resume <id>` via systemd, jamais par `claude` sans argument."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#defaulttoagentsview",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Services systemd qui lancent claude --resume <id> --remote-control."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Global config settings",
+   "maj_le": "2026-09-29",
+   "historique": [
+    {
+     "date": "2026-09-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-deniedmcpservers",
@@ -15903,8 +16112,8 @@
    "categorie": "parametres",
    "nom": "enforceAvailableModels",
    "gabarit": "court",
-   "description": "Réglage qui force l'option Default du sélecteur `/model` à rester dans la liste `availableModels`.",
-   "description_source": "The /model picker has a Default option that resolves to your organization default model when one applies, and otherwise to your account type's default. An availableModels allowlist limits the models you can name, but with the default prefix matching it leaves Default alone, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code …",
+   "description": "Réglage qui oblige l'option Default du sélecteur `/model` à rester dans la liste `availableModels`.",
+   "description_source": "The /model picker has a Default option, and default model setting describes the model it resolves to. An availableModels allowlist limits the models you can name, but with the default prefix matching it doesn't remap your account type's default, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code v2.1.175 or later.",
    "usage": "{\n  \"availableModels\": [\"sonnet\", \"haiku\"],\n  \"enforceAvailableModels\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15925,7 +16134,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15942,13 +16151,21 @@
     {
      "date": "2026-09-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
    "contexte_sections": {
     "profil": {
      "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+     "pourquoi": "Utilisateur seul, abonnement Claude Max (5x)."
     }
    }
   },
@@ -16071,8 +16288,8 @@
    "categorie": "parametres",
    "nom": "--exclude-dynamic-system-prompt-sections",
    "gabarit": "court",
-   "description": "Option CLI qui déplace les sections propres à la machine du prompt système vers le premier message, pour mieux réutiliser le cache entre utilisateurs et machines.",
-   "description_source": "Move per-machine sections from the system prompt (working directory, environment info, memory paths, git-repo flag) into the first user message. Improves prompt-cache reuse across different users and machines running the same task. Only applies with the default system prompt; ignored when --system-prompt or --system-prompt-file is set. Use with -p for scripted, multi-user workloads — claude -p --exclude-dynamic-system-prompt-sections \"query\"",
+   "description": "Option CLI qui déplace le contexte propre à l'utilisateur (emplacement de la mémoire automatique…) du prompt système vers le premier message, pour mieux réutiliser le cache entre utilisateurs et machines, avec `-p`.",
+   "description_source": "Move per-user context, such as the auto memory location, out of the system prompt and into the first user message. Improves prompt-cache reuse across different users and machines running the same task. Only applies with the default system prompt; ignored when --system-prompt or --system-prompt-file is set. Use with -p for scripted, multi-user workloads — claude -p --exclude-dynamic-system-prompt-sections \"query\"",
    "usage": "--exclude-dynamic-system-prompt-sections",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -16080,7 +16297,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Gain pour des tâches identiques sur plusieurs machines ; tu travailles sur une seule."
+    "pourquoi": "Gain pour une même tâche lancée par plusieurs utilisateurs ou machines ; tu travailles seul sur une seule machine."
    },
    "sources": [
     {
@@ -16093,7 +16310,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16102,10 +16319,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "Une seule machine, un portable HP."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-exec",
@@ -17862,16 +18092,16 @@
    "categorie": "parametres",
    "nom": "Hook PostToolBatch",
    "gabarit": "court",
-   "description": "Événement de hook déclenché une fois après un lot d'appels d'outils résolus, avant la requête suivante.",
+   "description": "Événement de hook déclenché une seule fois après un lot d'appels d'outils résolus, avant la requête suivante, avec la liste complète des appels ; il n'a pas de matcher.",
    "description_source": "Runs once after every tool call in a batch has resolved, before Claude Code sends the next request to the model. PostToolUse fires once per tool, which means it fires concurrently when Claude makes parallel tool calls. PostToolBatch fires exactly once with the full batch, so it is the right place to inject context that depends on the set of tools that ran rather than on any single tool. There is no matcher for this event.",
-   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"PostToolBatch\",\n  \"tool_calls\": [\n    {\n      \"tool_name\": \"Read\",\n      \"tool_input\": {\"file_path\": \"/.../ledger/accounts.py\"},\n      \"tool_use_id\": \"toolu_01...\",\n      \"tool_response\": \"     1\\tfrom __future__ import annotations\\n     2\\t...\"\n…",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"PostToolBatch\",\n  \"tool_calls\": [\n    {\n      \"tool_name\": \"Read\",\n      \"tool_input\": {\"file_path\": \"/.../ledger/accounts.py\"},\n      \"tool_use_id\": \"toolu_01...\",\n      \"tool_response\": \"1\\tfrom __future__ import annotations\\n2\\t...\"\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun contrôle par lot d'outils n'est identifié ; ton seul hook agit avant l'outil."
+    "pourquoi": "Tu n'as aucun hook actif et aucun contrôle par lot d'outils n'est identifié ; les candidats de la piste 3 (SHA-256 des missions) relèvent d'un hook par outil."
    },
    "sources": [
     {
@@ -17884,7 +18114,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17901,13 +18131,25 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
-     "pourquoi": "Un seul hook perso : PreToolUse check-bash.sh."
+     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "pourquoi": "Hooks : aucun, le hook de test a été retiré le 27/09."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Piste 3 : contrôles répétés qui pourraient devenir des hooks."
     }
    }
   },
@@ -19738,6 +19980,48 @@
    }
   },
   {
+   "id": "claude-code-parametres-leftarrowopensagents",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "leftArrowOpensAgents",
+   "gabarit": "court",
+   "description": "Réglage qui désactive (`false`) le raccourci ← sur une invite vide, qui met la session en arrière-plan et ouvre la vue des agents.",
+   "description_source": "Press ← on an empty prompt to background the session and open agent view. Set this key to false to turn the shortcut off. Appears in /config as ← opens agents when agent view is available.",
+   "usage": "{\n  \"leftArrowOpensAgents\": false\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune gêne liée à ce raccourci n'est signalée dans tes sessions tmux ; le défaut convient."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#leftarrowopensagents",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Global config settings",
+   "maj_le": "2026-09-29",
+   "historique": [
+    {
+     "date": "2026-09-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-maintenance",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -19916,8 +20200,8 @@
    "categorie": "parametres",
    "nom": "MAX_THINKING_TOKENS",
    "gabarit": "court",
-   "description": "Variable d'un budget fixe de jetons de réflexion ; sans elle, les modèles à raisonnement adaptatif choisissent leur profondeur.",
-   "description_source": "Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024. See CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Opus 5.5 and the Fable models, which can't have thinking turned off. On third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. Claude Code ignores nonzero values on adaptive reasoning models, except on the models where CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING turns adaptive reasoning off",
+   "description": "Variable qui fixe un budget de jetons de réflexion ; ignorée par les modèles à raisonnement adaptatif, et `0` ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5 ni des modèles Fable.",
+   "description_source": "Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024. See CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Opus 5.5, Sonnet 5.5, and the Fable models, which can't have thinking turned off. On third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. Claude Code ignores nonzero values on adaptive reasoning models, except on the models where CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING turns adaptive reasoning off",
    "usage": "MAX_THINKING_TOKENS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -19925,7 +20209,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "`/effort` règle la même chose plus simplement."
+    "pourquoi": "Sans effet sur tes modèles récents ; `/effort` règle la profondeur plus simplement."
    },
    "sources": [
     {
@@ -19938,7 +20222,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19947,9 +20231,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
    "contexte_sections": {}
   },
   {
@@ -22519,6 +22811,53 @@
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
    "contexte_sections": {}
+  },
+  {
+   "id": "claude-code-parametres-prstatusfooterenabled",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "prStatusFooterEnabled",
+   "gabarit": "court",
+   "description": "Réglage qui affiche (ou masque avec `false`) dans le pied de l'invite un badge de la pull request ouverte de la branche courante, souligné selon son statut.",
+   "description_source": "Show a badge in the prompt footer for the current branch's open pull request or merge request, with a colored underline that shows its status. Appears in /config as Show PR status footer.",
+   "usage": "{\n  \"prStatusFooterEnabled\": false\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les PR ne concernent que trading-sim, dont les commits sont rares ; le défaut suffit."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#prstatusfooterenabled",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "trading-sim : commits rares et formels, passés par une PR."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Global config settings",
+   "maj_le": "2026-09-29",
+   "historique": [
+    {
+     "date": "2026-09-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-prurltemplate",
@@ -27101,8 +27440,8 @@
    "categorie": "parametres",
    "nom": "ultracode",
    "gabarit": "court",
-   "description": "Réglage qui démarre les sessions avec ultracode : Claude planifie un workflow pour chaque tâche substantielle.",
-   "description_source": "Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you, your model supports xhigh effort, and no effort cap below xhigh applies. Either way, ultracode: true runs the session at xhigh effort, or at the cap when an …",
+   "description": "Réglage qui démarre les sessions avec ultracode actif : Claude planifie un workflow pour chaque tâche substantielle, au niveau d'effort de la session, sans le changer.",
+   "description_source": "Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you and your model supports xhigh effort. The key doesn't change the session's effort level: ultracode runs at whichever level the session uses. Claude Code reads this key but never writes it: /effort ultracode turns …",
    "usage": "{\n  \"ultracode\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27123,7 +27462,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27132,13 +27471,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+     "pourquoi": "Friction récurrente : limites d'usage hebdomadaires et Fable."
     }
    }
   },

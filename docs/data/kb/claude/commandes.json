@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-09-28",
+ "maj_le": "2026-09-29",
  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -1048,8 +1048,8 @@
    "categorie": "commandes",
    "nom": "claude auth status",
    "gabarit": "complet",
-   "description": "Affiche l'état d'authentification en JSON (`--text` pour du texte lisible) ; code de sortie 0 si connecté, 1 sinon.",
-   "description_source": "Show authentication status as JSON. Use --text for human-readable output. Exits with code 0 if logged in, 1 if not — claude auth status",
+   "description": "Affiche l'état d'authentification du CLI en JSON (`--text` pour un texte lisible), avec le champ `configDirectory` qui nomme le dossier de configuration utilisé (2.1.268 ou plus). Le code de sortie vaut 0 si la session est connectée, 1 sinon.",
+   "description_source": "Show authentication status as JSON. Use --text for human-readable output. Exits with code 0 if logged in, 1 if not. The JSON includes a configDirectory field naming the configuration directory the CLI uses. The field requires Claude Code v2.1.268 or later — claude auth status",
    "usage": "claude auth status",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1070,7 +1070,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1079,10 +1079,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.restoration-id": {
+     "sha1": "fa8476b43814e6dd02af96a248e178016f655ad4",
+     "pourquoi": "console-mur est cité hors périmètre à la fin de cette section."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-auto-mode-defaults",
@@ -2776,16 +2789,16 @@
    "categorie": "commandes",
    "nom": "/effort",
    "gabarit": "complet",
-   "description": "Règle le niveau d'effort : de `low` à `xhigh`, `max`, `ultracode` ou `auto` ; `status` l'affiche. `max` et `ultracode` ne valent que pour la session. Lancée pendant une réponse, elle s'applique à la requête suivante du même tour.",
-   "description_source": "Set the effort level: low to xhigh, max, ultracode, or auto; status prints it. max and ultracode are session-only; the ultracode key persists. Run it while Claude is responding and, once you confirm the cache warning, if Claude Code shows one, Claude Code applies the new level to the next request in that turn. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Works in -p",
-   "usage": "/effort [level|auto|status]",
+   "description": "Règle le niveau d'effort de la session (`low` à `xhigh`, `max` ou `auto`) ; `/effort status` affiche le niveau en vigueur. Depuis la 2.1.284, `ultracode` devient une bascule indépendante (`/effort ultracode on|off`) qui garde le niveau courant au lieu de forcer `xhigh`. `max` ne vaut que pour la session ; lancée pendant une réponse, la commande s'applique à la requête suivante du même tour.",
+   "description_source": "Set the effort level: low to xhigh, max, or auto; status prints it. ultracode or ultracode on turns ultracode on for the session at the current level, and ultracode off turns it off; the ultracode key persists. max is session-only. The on and off arguments and keeping the current level require Claude Code v2.1.284 or later. Before v2.1.284, /effort ultracode set the session to xhigh, and /effort ultracode off failed with Invalid argument. Run it while Claude is responding and, once you confirm the cache warning, if Claude Code shows one, Claude Code applies the new level to the next request in that turn. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Works in -p",
+   "usage": "/effort [level|auto|status|ultracode [on|off]]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Baisser l'effort sur les sessions de tâches simples (herbin-mint, herbin-carnet) et le garder haut sur herbin-trading répartirait mieux tes limites hebdomadaires (piste 11). `max` et `ultracode` ne valent que pour la session courante."
+    "pourquoi": "Baisser l'effort sur les sessions de tâches simples (herbin-mint, herbin-carnet) et le garder haut sur herbin-trading répartirait mieux tes limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
    },
    "sources": [
     {
@@ -2798,7 +2811,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2839,17 +2852,29 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 11 : choisir modèle et effort par session pour étaler la charge"
+     "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la consommation hebdomadaire."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "rôles des sessions : herbin-mint (système), herbin-carnet (coach), herbin-trading (calculs)"
+     "pourquoi": "Sessions herbin-mint, herbin-carnet et herbin-trading aux besoins d'effort différents."
     }
    }
   },

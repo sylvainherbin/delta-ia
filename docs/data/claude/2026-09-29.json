@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-29",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-09-29T05:05:00+00:00",
+  "synthese": "Claude Sonnet 5.5 sort : même prix que Sonnet 5, sortie plus de 30 % plus rapide que Sonnet 5 d'après Anthropic, et c'est le modèle à essayer pour la piste 11 (herbin-mint sur Sonnet pour épargner tes limites hebdomadaires). Claude Code 2.1.284, déjà installée, fait démarrer en mode auto les sessions de terminal sans mode de permission configuré : vérifie `permissions.defaultMode` avant que tes sessions tmux ne changent de comportement au prochain redémarrage. Elle corrige aussi les appels MCP qui échouaient juste après un `--resume`.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-apps-notes-2026-09-28",
+      "ids_bruts": [
+        "claude-apps-notes-2026-09-28",
+        "https://www.anthropic.com/claude-sonnet-5-5",
+        "claude-platform-notes-2026-09-28"
+      ],
+      "produit": "claude",
+      "titre": "Claude Sonnet 5.5",
+      "version": null,
+      "date_publication": "2026-09-28",
+      "type": "nouveaute",
+      "resume": "Anthropic lance Claude Sonnet 5.5 (`claude-sonnet-5-5`), au même prix que Sonnet 5 (2 $ / 10 $ par million de jetons, 0,20 $ en lecture de cache) ; Anthropic annonce une sortie plus de 30 % plus rapide et un coût par tâche jusqu'à 30 % inférieur à Sonnet 5, Opus 5.5 restant plus fort sur le travail complexe. Limites : les tâches de cybersécurité à risque retombent visiblement sur Sonnet 5, les blocs de raisonnement sont liés au compte qui les a produits (changer de compte en cours de session Claude Code les fait ignorer), et côté API cinq changements cassent du code écrit pour Sonnet 5 (`thinking: disabled` remplacé par `between_tools`, `tool_choice` forcé refusé, entre autres). Dans Claude Code, l'effort par défaut de Sonnet 5.5 est Medium.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/claude-sonnet-5-5",
+          "libelle": "Introducing Claude Sonnet 5.5",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude",
+          "officielle": true
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "C'est le candidat direct de la piste 11 : passer les sessions de tâches machine simples, comme herbin-mint, sur Sonnet pour garder Opus ou Fable à herbin-trading et étaler tes limites hebdomadaires. Ton modèle Claude Code par défaut reste `opus` (etat.json) : rien ne change tant que tu ne choisis pas Sonnet. Côté effort, c'est un point que ta formation garde à travailler : Sonnet 5.5 démarre en Medium dans Claude Code, et Anthropic indique qu'en Low ou Medium il dépasse le meilleur score de Sonnet 5 sur plusieurs tests pour environ un dixième du coût par tâche de Sonnet 5. Monte l'effort seulement quand la session doit découvrir quelque chose (un bug intermittent), pas pour une consigne claire. Les changements d'API cassants ne te concernent pas : tu n'appelles pas l'API directement.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer Sonnet 5.5 sur herbin-mint pour une tâche machine simple, sans changer le défaut des autres sessions.",
+        "etapes": [
+          "Dans herbin-mint, tape `/model` sans argument : le sélecteur s'ouvre.",
+          "Place-toi sur la ligne Sonnet et appuie sur `s` : le changement ne vaut que pour cette session. `/model sonnet` tapé directement l'enregistrerait comme défaut de toutes les nouvelles sessions, herbin-trading comprise.",
+          "Tape `/effort status` : tu dois lire le niveau en vigueur (Medium par défaut pour Sonnet 5.5, d'après Anthropic). Laisse-le pour une tâche de routine.",
+          "Donne-lui une tâche que tu sais juger, par exemple un bilan d'espace disque, puis compare la réponse et la consommation affichée par `/usage` à une tâche équivalente faite sur Opus.",
+          "Note le résultat dans un rapport daté : un essai unique ne suffit pas à changer ta configuration."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-model",
+        "claude-code-commandes-effort",
+        "claude-code-fonctionnalites-page-model-config"
+      ],
+      "contexte_sections": {
+        "optimisation.pistes": {
+          "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+          "pourquoi": "Piste 11 : Sonnet pour les tâches machine simples afin d'étaler la charge sur les limites hebdomadaires."
+        },
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Rôles de herbin-mint (tâches machine) et herbin-trading (calculs exigeants)."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Friction récurrente : limites d'usage hebdomadaire et Fable."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.284",
+      "ids_bruts": [
+        "claude-code-2.1.284"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.284",
+      "version": "2.1.284",
+      "date_publication": "2026-09-28",
+      "type": "changement_rupture",
+      "resume": "Les sessions interactives en terminal et VS Code démarrent désormais en mode auto quand aucun mode de permission n'est configuré, sur tous les plans (`permissions.defaultMode` reste prioritaire). Ultracode devient une bascule indépendante de `/effort` (`/effort ultracode on|off`) qui ne force plus `xhigh`. Ajouts : Sonnet 5.5, `/mcp reconnect all`, `/rate-limit-options` dans `/help`. Corrections : appels MCP d'une session reprise qui échouaient en « No such tool available » pendant la connexion du serveur (attente de 10 s), « Prompt is too long » persistant après compactage, photo envoyée par Remote Control perdue, statut de `/loop` non affiché.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21284",
+          "libelle": "Changelog Claude Code 2.1.284",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six sessions tournent en terminal dans tmux : si aucune n'a de `permissions.defaultMode`, elles démarreraient en mode auto au prochain redémarrage de leur service, avec le classificateur qui te bloque déjà certaines écritures système ; c'est un changement de comportement à vérifier, pas forcément à refuser. Tes sessions sont lancées par `claude --resume` et appellent le serveur MCP delta-ia : un appel MCP juste après la reprise n'échoue plus pendant que le serveur se connecte. `/mcp reconnect all` relance d'un coup les serveurs en échec, utile après une coupure Wi-Fi. La correction du « Prompt is too long » après compactage concerne ton usage de `/compact`.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Vérifier quel mode de permission tes sessions prendront au prochain démarrage, et le fixer explicitement si tu veux garder le comportement actuel.",
+        "etapes": [
+          "Dans herbin-mint, demande-lui de lire `~/.claude/settings.json` et de dire si `permissions.defaultMode` y figure, et avec quelle valeur.",
+          "Si la clé est présente, rien ne change pour tes sessions.",
+          "Si elle est absente et que tu veux garder le mode manuel, fais ajouter `\"permissions\": { \"defaultMode\": \"default\" }` dans `~/.claude/settings.json`, sans toucher aux autres entrées, puis vérifie le diff.",
+          "Si tu préfères essayer le mode auto, ne change rien : au redémarrage d'une session, le mode affiché en pied d'invite doit indiquer auto ; observe les blocages du classificateur pendant quelques jours avant de décider.",
+          "Après une coupure Wi-Fi, tape `/mcp reconnect all` dans la session concernée pour relancer d'un coup les serveurs MCP en échec."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-permissions-defaultmode",
+        "claude-code-fonctionnalites-page-permission-modes",
+        "claude-code-fonctionnalites-page-auto-mode-config",
+        "claude-code-commandes-mcp",
+        "claude-code-commandes-effort"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Six sessions tmux lancées par claude --resume : concernées par le mode au démarrage et la correction MCP après reprise."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Serveur MCP delta-ia en portée locale dans ~/projets et ~/projets/delta-ia."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Frictions : classificateur du mode auto qui bloque des écritures système, Wi-Fi fragile."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-06-30",
+      "ids_bruts": [
+        "claude-platform-notes-2026-06-30"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Révision de la note Claude Platform du 30/06 (lancement de Sonnet 5)",
+      "version": null,
+      "date_publication": "2026-06-30",
+      "type": "nouveaute",
+      "resume": "La note du 30/06/2026 sur le lancement de Sonnet 5 et plusieurs ajouts à Claude Managed Agents a changé d'empreinte ; son texte actuel précise que le tarif d'introduction de 2 $ / 10 $ par million de jetons est devenu le prix standard le 10/08/2026. La nature exacte de la modification n'est pas identifiable dans le brut.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version Claude Platform",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f"
+}
