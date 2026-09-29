@@ -150,7 +150,9 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
         r.erreur(ou, "`projets_concernes` doit être un tableau de chaînes")
     else:
         hors = [x for x in pc if x not in projets]
-        if hors:
+        # Ancien fichier du jour (même drapeau que les sections) : un projet retiré ou renommé depuis de CONTEXTE.md §2
+        # ne le rend pas invalide ; le fichier du jour garde le refus strict (29/09/2026).
+        if hors and not ctx_disparu_permis:
             r.erreur(ou, f"`projets_concernes` hors de CONTEXTE.md §2 : {hors} (connus : {sorted(projets)})")
     action = e.get("action")
     if action is not None:

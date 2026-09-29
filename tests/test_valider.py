@@ -383,3 +383,24 @@ def test_section_disparue_toleree_dans_les_anciens_fichiers_du_jour(racine, caps
     assert validation(racine, "claude", brut=False) != 0, "le fichier du jour garde le refus strict"
     err = capsys.readouterr().err
     assert f"{JOUR}.json" in err and "ctx-id inconnu" in err and "2026-09-01.json" not in err
+
+
+def test_projet_retire_tolere_dans_les_anciens_fichiers_du_jour(racine, capsys):
+    """29/09/2026 : un ancien fichier du jour qui cite un projet retiré de CONTEXTE.md §2 ne bloque plus le passage
+    suivant ; le fichier du jour garde le refus strict."""
+    chemin, q = _quotidien_valide(racine)
+    ancien = copy.deepcopy(q)
+    ancien["date"] = "2026-09-01"
+    for e in ancien["elements"]:
+        e["projets_concernes"] = ["projet-retire"]
+    (chemin.parent / "2026-09-01.json").write_text(json.dumps(ancien, ensure_ascii=False))
+    chemin, q = _quotidien_valide(racine)  # réécrit le fichier du jour et l'index, qui couvre maintenant 2026-09-01
+    capsys.readouterr()
+    assert validation(racine, "claude", brut=False) == 0, capsys.readouterr()
+    for e in q["elements"]:
+        e["projets_concernes"] = ["projet-retire"]
+    _reecrire(chemin, q)
+    capsys.readouterr()
+    assert validation(racine, "claude", brut=False) != 0, "le fichier du jour garde le refus strict"
+    err = capsys.readouterr().err
+    assert f"{JOUR}.json" in err and "hors de CONTEXTE.md §2" in err and "2026-09-01.json" not in err
