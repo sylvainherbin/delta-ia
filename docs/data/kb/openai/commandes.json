@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-09-28",
+ "maj_le": "2026-09-29",
  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -899,16 +899,16 @@
    "categorie": "commandes",
    "nom": "/clear",
    "gabarit": "complet",
-   "description": "Efface l'affichage du terminal et démarre une nouvelle conversation avec un contexte vierge. La commande réinitialise à la fois l'interface visible et le chat.",
+   "description": "Efface le terminal et ouvre une nouvelle conversation Codex dans la même session CLI. Le transcript visible et le contexte de chat repartent de zéro.",
    "description_source": "Clear the terminal and start a fresh chat. — Reset the visible UI and chat context together when you want a fresh start.",
    "usage": "/clear",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/clear release prep",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans une future session tmux Codex persistante, elle permet de repartir sur un audit neuf sans quitter le TUI."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI Codex n'est pas l'interface de travail actuelle ; `/clear` ne sert donc pas aux audits menés dans l'app de bureau."
    },
    "sources": [
     {
@@ -921,7 +921,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -934,10 +934,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Les audits Codex passent principalement par l'app de bureau ; la CLI autonome n'est pas utilisée."
+    }
+   }
   },
   {
    "id": "codex-commandes-cloud",
@@ -1188,16 +1197,16 @@
    "categorie": "commandes",
    "nom": "codex archive",
    "gabarit": "complet",
-   "description": "Archive une session interactive enregistrée à partir de son identifiant ou de son nom. L'opération conserve la session pour une restauration ultérieure.",
+   "description": "Archive une session interactive enregistrée en la désignant par son identifiant ou son nom. Le transcript reste conservé pour une restauration ultérieure.",
    "description_source": "Archive a saved interactive session by session ID or session name. (maturité : Stable)",
    "usage": "codex archive",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "codex archive <SESSION>",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Nommer puis archiver les audits terminés de trading-sim réduit l'encombrement sans perdre leur historique."
+    "verdict": "ignorer",
+    "pourquoi": "Les audits trading-sim sont formalisés dans des rapports et aucune procédure d'archivage des sessions CLI n'est déclarée."
    },
    "sources": [
     {
@@ -1210,7 +1219,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1223,10 +1232,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits sont conservés comme rapports versionnés, sans besoin déclaré d'archivage CLI."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'usage Codex se concentre dans l'app de bureau."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-cloud",
@@ -1276,16 +1298,16 @@
    "categorie": "commandes",
    "nom": "codex completion",
    "gabarit": "complet",
-   "description": "Génère les scripts de complétion de commandes pour Bash, Zsh, Fish ou PowerShell. Elle aide le shell à proposer sous-commandes et options Codex.",
+   "description": "Génère un script de complétion de la CLI Codex pour Bash, Zsh, Fish ou PowerShell. Une fois configuré dans le shell, ce script propose les sous-commandes et options lors de la saisie.",
    "description_source": "Generate shell completion scripts for Bash, Zsh, Fish, or PowerShell. (maturité : Stable)",
    "usage": "codex completion",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "codex completion zsh > \"${fpath[1]}/_codex\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans les futures sessions Codex sous tmux, la complétion Bash réduit les erreurs de saisie depuis le terminal."
+    "verdict": "ignorer",
+    "pourquoi": "La CLI autonome n'est pas utilisée actuellement ; installer sa complétion Bash n'aiderait aucun audit Codex en cours."
    },
    "sources": [
     {
@@ -1298,7 +1320,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1311,10 +1333,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée par Sylvain."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-debug-app-server-send-message-v2",
@@ -1364,7 +1395,7 @@
    "categorie": "commandes",
    "nom": "codex debug models",
    "gabarit": "complet",
-   "description": "Affiche en JSON le catalogue brut des modèles vu par Codex. L'option `--bundled` limite la sortie au catalogue embarqué dans le binaire sans actualisation distante.",
+   "description": "Affiche en JSON le catalogue de modèles visible par Codex. L'option `--bundled` limite la sortie au catalogue fourni avec le binaire, sans actualisation distante.",
    "description_source": "Print the raw model catalog Codex sees, including an option to inspect only the bundled catalog. (maturité : Experimental)",
    "usage": "codex debug models",
    "usage_nature": "syntaxe",
@@ -1372,8 +1403,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Après un changement du sélecteur dans l'app, comparer le catalogue permet de confirmer que Sol, Astra et Luna restent disponibles pour tes profils."
+    "verdict": "ignorer",
+    "pourquoi": "Les profils Codex utilisés sont déjà relevés dans `docs/data/etat.json` ; aucun besoin actuel d'inspecter le catalogue brut n'est établi."
    },
    "sources": [
     {
@@ -1386,7 +1417,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1399,10 +1430,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.profils": {
+     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+     "pourquoi": "Trois profils Codex sont utilisés et leurs réglages courants figurent dans `docs/data/etat.json`."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-debug-prompt-input",
@@ -1410,7 +1450,7 @@
    "categorie": "commandes",
    "nom": "codex debug prompt-input",
    "gabarit": "complet",
-   "description": "Rend en JSON la liste exacte des contenus visibles par le modèle, avec éventuellement un prompt et des images. Cette commande expérimentale aide à diagnostiquer les instructions découvertes et le contexte d'une session.",
+   "description": "Affiche en JSON la liste exacte des contenus rendus visibles au modèle pour un prompt Codex. La commande sert à vérifier la découverte des instructions et la construction du contexte avant une exécution.",
    "description_source": "Render the model-visible prompt input list as JSON, optionally with a prompt and images. (maturité : Experimental)",
    "usage": "codex debug prompt-input",
    "usage_nature": "syntaxe",
@@ -1419,7 +1459,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur trading-sim, elle permet de vérifier factuellement quelles instructions et pièces entrent dans un audit avant d'accuser une compaction ou un AGENTS.md."
+    "pourquoi": "Sur un audit trading-sim, lancer `codex debug prompt-input` avec le prompt de mission gelé pour vérifier si les instructions attendues figurent dans la liste JSON avant de comparer le verdict d'audit."
    },
    "sources": [
     {
@@ -1432,7 +1472,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1445,10 +1485,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les missions et audits s'appuient sur des documents gelés et des vérifications formelles."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Les missions d'audit sont relayées avec une empreinte SHA-256 et demandent de distinguer le factuel du déduit."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-delete",
@@ -1498,7 +1551,7 @@
    "categorie": "commandes",
    "nom": "codex doctor",
    "gabarit": "complet",
-   "description": "Produit un rapport de diagnostic sur l'installation, la configuration, l'authentification, le runtime, Git, le terminal, app-server et l'inventaire des tâches. La commande est stable et vise les problèmes locaux de Codex.",
+   "description": "Produit un diagnostic de l'installation locale de Codex, de sa configuration et de son authentification. Le rapport couvre aussi le runtime, Git, le terminal, l'app-server et l'inventaire des fils.",
    "description_source": "Generate a diagnostic report for local installation, config, auth, runtime, Git, terminal, app-server, and thread inventory issues. (maturité : Stable)",
    "usage": "codex doctor",
    "usage_nature": "syntaxe",
@@ -1506,8 +1559,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester si la future session Codex sous tmux rencontre un problème d'installation, de terminal ou de serveur applicatif."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun incident local Codex à diagnostiquer n'est décrit pour les audits actuels ; lancer `codex doctor` sans symptôme n'a pas de résultat attendu précis."
    },
    "sources": [
     {
@@ -1520,7 +1573,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1537,10 +1590,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'app de bureau est l'interface courante et aucun incident CLI précis n'y est décrit."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-exec",
@@ -1548,7 +1610,7 @@
    "categorie": "commandes",
    "nom": "codex exec",
    "gabarit": "complet",
-   "description": "Exécute Codex sans interface interactive et écrit le résultat sur la sortie standard ou en JSONL. La commande peut aussi reprendre une session précédente et porte l'alias `codex e`.",
+   "description": "Exécute Codex sans interface interactive pour une tâche qui se termine seule. La sortie peut être formatée pour le terminal ou produite en événements JSONL, et une tâche non interactive peut être reprise.",
    "description_source": "Run Codex non-interactively. Alias: codex e . Stream results to stdout or JSONL and optionally resume previous sessions. (maturité : Stable)",
    "usage": "codex exec",
    "usage_nature": "syntaxe",
@@ -1557,7 +1619,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour les vérifications répétitives de trading-sim, une exécution non interactive peut produire un rapport facile à archiver sans ouvrir une nouvelle tâche dans l'app."
+    "pourquoi": "Sur trading-sim, essayer `codex exec --json` avec une copie d'une mission d'audit gelée et vérifier si les événements JSONL permettent de retrouver le verdict et de tracer l'exécution."
    },
    "sources": [
     {
@@ -1570,7 +1632,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1583,10 +1645,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Les missions d'audit sont des fichiers gelés et leurs verdicts sont lisibles par machine."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Codex sert actuellement aux audits surtout depuis l'app de bureau ; la CLI reste à éprouver."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-execpolicy",
@@ -1594,7 +1669,7 @@
    "categorie": "commandes",
    "nom": "codex execpolicy",
    "gabarit": "complet",
-   "description": "Évalue des fichiers de règles execpolicy et indique si une commande serait autorisée, soumise à confirmation ou bloquée. Cette commande expérimentale teste la politique sans exécuter l'action ciblée.",
+   "description": "Évalue un fichier de règles execpolicy et indique en JSON la décision applicable à une commande. Ce contrôle permet d'examiner une règle sans exécuter la commande ciblée.",
    "description_source": "Evaluate execpolicy rule files and see whether a command would be allowed, prompted, or blocked. (maturité : Experimental)",
    "usage": "codex execpolicy",
    "usage_nature": "syntaxe",
@@ -1603,7 +1678,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La règle Codex actuelle est difficile à relire ; tester les préfixes envisagés avec cette commande expérimentale pourrait aider à la simplifier."
+    "pourquoi": "Sur `~/.codex/rules/default.rules`, essayer `codex execpolicy check` avec une commande d'audit représentative et vérifier si la décision signalée correspond au préfixe court envisagé."
    },
    "sources": [
     {
@@ -1616,7 +1691,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1633,10 +1708,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "La règle Codex actuelle autorise un script entier ; des préfixes courts sont envisagés."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "La simplification de `default.rules` est une piste explicite."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-features",
@@ -1644,7 +1732,7 @@
    "categorie": "commandes",
    "nom": "codex features",
    "gabarit": "complet",
-   "description": "Liste les feature flags connus et peut les activer ou les désactiver durablement dans `config.toml`. Elle rend visibles les fonctions expérimentales ou conditionnelles du binaire installé.",
+   "description": "Liste les indicateurs de fonctionnalités reconnus par Codex. Ses sous-commandes d'activation et de désactivation enregistrent durablement les changements dans `config.toml` pour les sessions suivantes.",
    "description_source": "List feature flags and persistently enable or disable them in config.toml . (maturité : Stable)",
    "usage": "codex features",
    "usage_nature": "syntaxe",
@@ -1652,8 +1740,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Pour l’objectif de pilotage distant de Codex, la liste peut montrer les fonctions disponibles ; n’active rien avec cette commande sans examiner l’effet persistant sur config.toml."
+    "verdict": "ignorer",
+    "pourquoi": "Le projet de pilotage distant de Codex ne désigne aucun indicateur à activer ; une modification par `codex features` persisterait dans `config.toml` sans essai défini."
    },
    "sources": [
     {
@@ -1666,7 +1754,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1679,10 +1767,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Codex en CLI avec tmux et remote control reste un objectif, sans indicateur de fonctionnalité désigné."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-fork",
@@ -1690,7 +1787,7 @@
    "categorie": "commandes",
    "nom": "codex fork",
    "gabarit": "complet",
-   "description": "Crée une nouvelle conversation à partir d'une session interactive précédente tout en conservant le transcript original. La branche permet d'essayer une autre piste sans modifier la session source.",
+   "description": "Crée une nouvelle conversation à partir d'une session interactive Codex enregistrée. La conversation d'origine et son transcript sont conservés pendant que la nouvelle suit une autre piste.",
    "description_source": "Fork a previous interactive session into a new chat, preserving the original transcript. (maturité : Stable)",
    "usage": "codex fork",
    "usage_nature": "syntaxe",
@@ -1698,8 +1795,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur trading-sim, forker un audit permet de tester une hypothèse contradictoire à partir du même contexte sans perdre le verdict initial."
+    "verdict": "ignorer",
+    "pourquoi": "Les audits contradictoires de trading-sim sont déjà cadrés par des missions et rapports séparés ; aucun essai précis de bifurcation CLI n'est prévu."
    },
    "sources": [
     {
@@ -1712,7 +1809,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1725,10 +1822,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits et décisions sont consignés dans des rapports et fichiers versionnés."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Les sessions Codex passent surtout par l'app de bureau."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-login",
@@ -1820,7 +1930,7 @@
    "categorie": "commandes",
    "nom": "codex mcp",
    "gabarit": "complet",
-   "description": "Gère les serveurs Model Context Protocol : liste, ajout, suppression et authentification. Elle centralise la configuration des outils externes exposés à Codex.",
+   "description": "Gère les serveurs Model Context Protocol déclarés pour Codex. La commande permet notamment de les lister, de les ajouter, de les supprimer et de traiter leur authentification.",
    "description_source": "Manage Model Context Protocol servers (list, add, remove, authenticate). (maturité : Stable)",
    "usage": "codex mcp",
    "usage_nature": "syntaxe",
@@ -1828,8 +1938,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tu disposes de `node_repl` mais connais mal tes outils Codex ; lister les serveurs permet de vérifier la configuration avant un audit sans en ajouter sur trading-sim."
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA est déjà déclaré pour le compte Codex ; aucune modification de serveurs MCP locaux n'est prévue pour les audits trading-sim."
    },
    "sources": [
     {
@@ -1842,7 +1952,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1855,10 +1965,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé par Codex et ChatGPT Work."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "L'audit trading-sim suit une politique de capacités restrictive."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-plugin",
@@ -1866,7 +1989,7 @@
    "categorie": "commandes",
    "nom": "codex plugin",
    "gabarit": "complet",
-   "description": "Installe, liste ou supprime les plugins provenant des marketplaces configurées. La commande couvre le cycle local principal des bundles de skills, apps et serveurs MCP.",
+   "description": "Installe, liste ou retire des plugins issus des marketplaces configurées pour Codex. Elle agit sur les bundles locaux qui peuvent réunir skills, apps et serveurs MCP.",
    "description_source": "Install, list, and remove plugins from configured marketplace sources. (maturité : Stable)",
    "usage": "codex plugin",
    "usage_nature": "syntaxe",
@@ -1874,8 +1997,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Plusieurs plugins sont actifs dans ton app ; cette commande permet de vérifier leur équivalent dans la CLI avant le passage sous tmux."
+    "verdict": "ignorer",
+    "pourquoi": "Les plugins actifs dans l'app de bureau sont déjà recensés et aucun ajout ou retrait ne répond à un besoin d'audit identifié."
    },
    "sources": [
     {
@@ -1888,7 +2011,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1901,10 +2024,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Les plugins actifs dans l'app de bureau sont recensés dans CONTEXTE.md."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-plugin-add-plugin-marketplace",
@@ -1954,7 +2086,7 @@
    "categorie": "commandes",
    "nom": "codex plugin list",
    "gabarit": "complet",
-   "description": "Liste les plugins installés ; avec `--json`, la sortie sépare les plugins installés et disponibles. L'option `--available` inclut les plugins non installés et exige la sortie JSON.",
+   "description": "Liste les plugins installés pour Codex. Avec `--json`, la sortie distingue les plugins installés et disponibles ; `--available` inclut les plugins non installés et exige `--json`.",
    "description_source": "List installed plugins. With --json , output has installed and available arrays; --available includes uninstalled marketplace plugins and requires --json .",
    "usage": "codex plugin list",
    "usage_nature": "syntaxe",
@@ -1962,8 +2094,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour vérifier les plugins effectivement accessibles si Codex est lancé sous tmux ; leur inventaire ne débloque pas à lui seul le pilotage distant."
+    "verdict": "ignorer",
+    "pourquoi": "L'inventaire des plugins actifs existe déjà dans CONTEXTE.md ; `codex plugin list` n'apporte pas d'essai lié aux audits actuels."
    },
    "sources": [
     {
@@ -1976,7 +2108,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex plugin",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1993,10 +2125,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "CONTEXTE.md recense déjà les plugins actifs de l'app Codex."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-plugin-marketplace",
@@ -2088,7 +2229,7 @@
    "categorie": "commandes",
    "nom": "codex plugin marketplace list",
    "gabarit": "complet",
-   "description": "Affiche les marketplaces actuellement prises en compte par Codex et le chemin racine de chacune. Elle sert à diagnostiquer les sources de plugins visibles localement.",
+   "description": "Affiche les marketplaces de plugins que Codex prend actuellement en compte. La sortie donne le chemin racine de chacune pour contrôler l'origine des plugins visibles.",
    "description_source": "Show plugin marketplaces Codex is currently considering and the root path for each marketplace.",
    "usage": "codex plugin marketplace list",
    "usage_nature": "syntaxe",
@@ -2096,8 +2237,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Si la liste des plugins diffère entre l'app et la CLI, cette commande montre quelles marketplaces sont réellement chargées sous tmux."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun écart de marketplace entre l'app Codex et la CLI n'est constaté ; cette liste ne répond donc pas à un problème identifié."
    },
    "sources": [
     {
@@ -2110,7 +2251,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex plugin marketplace",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2123,10 +2264,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Les plugins actifs sont connus, sans anomalie de marketplace décrite."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-plugin-marketplace-remove-marketplace-name",
@@ -2335,16 +2485,16 @@
    "categorie": "commandes",
    "nom": "codex resume",
    "gabarit": "complet",
-   "description": "Reprend une session interactive précédente par identifiant ou relance la conversation la plus récente. Elle permet de continuer le transcript plutôt que de reconstruire le contexte.",
+   "description": "Reprend une session interactive Codex par son identifiant ou la conversation la plus récente. L'option `--last` cherche d'abord dans le dossier courant, sauf si `--all` étend la recherche.",
    "description_source": "Continue a previous interactive session by ID or resume the most recent chat. (maturité : Stable)",
    "usage": "codex resume",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "codex resume --last",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour de futures sessions Codex sous tmux, tester la reprise par identifiant après redémarrage vérifierait la continuité recherchée, sans présumer que ce flux existe déjà."
+    "pourquoi": "Dans une session Codex d'essai sous tmux pour trading-sim, fermer puis lancer `codex resume --last` et vérifier que le transcript de cette même session revient après redémarrage."
    },
    "sources": [
     {
@@ -2357,7 +2507,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2370,10 +2520,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Codex en CLI avec tmux et remote control est un objectif déclaré, pas un usage actuel."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée par Sylvain."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-review",
@@ -2436,16 +2599,16 @@
    "categorie": "commandes",
    "nom": "codex sandbox",
    "gabarit": "complet",
-   "description": "Exécute une commande arbitraire dans un sandbox fourni par Codex sur macOS, Linux ou Windows. Elle applique l'isolation Codex sans ouvrir une conversation d'agent.",
+   "description": "Exécute une commande fournie par l'utilisateur dans un sandbox Codex. La sous-commande dispose d'environnements macOS, Linux et Windows selon la plateforme.",
    "description_source": "Run arbitrary commands inside Codex-provided macOS, Linux, or Windows sandboxes. (maturité : Stable)",
    "usage": "codex sandbox",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS, Linux et Windows",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur trading-sim, elle peut rejouer une commande de test en isolation Linux avant de l'autoriser dans une mission plus large."
+    "verdict": "ignorer",
+    "pourquoi": "Les tests trading-sim s'exécutent déjà dans le cadre des missions et aucun contrôle isolé précis avec `codex sandbox` n'est défini."
    },
    "sources": [
     {
@@ -2458,7 +2621,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2471,10 +2634,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les tests du projet sont en `unittest` et les audits suivent des missions formalisées."
+    }
+   }
   },
   {
    "id": "codex-commandes-codex-unarchive",
@@ -2570,7 +2742,7 @@
    "categorie": "commandes",
    "nom": "/compact",
    "gabarit": "complet",
-   "description": "Résume la conversation visible afin de libérer de la place dans la fenêtre de contexte. Le résumé conserve les points jugés essentiels tout en remplaçant l'historique détaillé.",
+   "description": "Résume le chat visible d'une session CLI afin de libérer de la place dans la fenêtre de contexte. Le résumé remplace une partie du détail du transcript pour permettre la suite de la conversation.",
    "description_source": "Summarize the visible chat to free tokens. — Use after long runs so Codex retains key points without blowing the context window.",
    "usage": "/compact",
    "usage_nature": "syntaxe",
@@ -2579,7 +2751,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes audits trading-sim sont longs et coûteux en jetons ; compacter à une frontière claire peut prolonger une session sans repartir de zéro."
+    "pourquoi": "Pendant un audit trading-sim long en CLI, lancer `/compact` après une étape scellée et vérifier que les décisions et empreintes utiles restent accessibles dans la suite de la session."
    },
    "sources": [
     {
@@ -2592,7 +2764,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2605,10 +2777,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Les prompts d'audit très longs ont un coût en jetons récurrent."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits suivent des étapes formelles et des documents gelés."
+    }
+   }
   },
   {
    "id": "codex-commandes-copy",
@@ -2616,7 +2801,7 @@
    "categorie": "commandes",
    "nom": "/copy",
    "gabarit": "complet",
-   "description": "Copie la dernière réponse ou le dernier plan terminé par Codex. Le raccourci `Ctrl+O` fournit la même action sans sélection manuelle dans le terminal.",
+   "description": "Copie la dernière réponse ou le dernier plan terminé dans une session CLI Codex. Le raccourci `Ctrl+O` déclenche la même action sans sélectionner manuellement le texte.",
    "description_source": "Copy the latest completed Codex output. — Grab the latest finished response or plan text without manually selecting it. You can also press Ctrl+O .",
    "usage": "/copy",
    "usage_nature": "syntaxe",
@@ -2624,8 +2809,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Pour transférer un verdict d'audit vers chatgpt-trading-sim depuis une session tmux, la copie directe évite les sélections fragiles dans le terminal."
+    "verdict": "ignorer",
+    "pourquoi": "Les missions et rapports d'audit sont déjà relayés comme fichiers horodatés ; aucun transfert actuel depuis le presse-papiers d'une CLI Codex n'est décrit."
    },
    "sources": [
     {
@@ -2638,7 +2823,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2651,10 +2836,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sylvain relaie des missions et rapports dans des fichiers horodatés."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Codex est surtout utilisé dans l'app de bureau."
+    }
+   }
   },
   {
    "id": "codex-commandes-debug-config",
@@ -2662,7 +2860,7 @@
    "categorie": "commandes",
    "nom": "/debug-config",
    "gabarit": "complet",
-   "description": "Affiche les couches de configuration actives, leur priorité et les contraintes de politique appliquées. Le diagnostic inclut les restrictions réseau expérimentales lorsqu'elles existent.",
+   "description": "Affiche les couches de configuration qui s'appliquent à la session CLI Codex et leur priorité. Le diagnostic indique aussi les exigences de politique et certaines contraintes réseau expérimentales.",
    "description_source": "Print config layer and requirements diagnostics. — Debug precedence and policy requirements, including experimental network constraints.",
    "usage": "/debug-config",
    "usage_nature": "syntaxe",
@@ -2671,7 +2869,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester si le modèle par défaut change encore sur la machine : le diagnostic pourrait identifier la couche de configuration qui l'impose."
+    "pourquoi": "Après un changement du modèle dans l'app Codex, lancer `/debug-config` dans une session CLI d'essai et vérifier quelle couche fournit le modèle et l'effort par défaut."
    },
    "sources": [
     {
@@ -2684,7 +2882,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2697,10 +2895,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "La portée du choix de modèle dans l'app sur le défaut de `config.toml` reste à confirmer."
+    },
+    "config.codex.profils": {
+     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+     "pourquoi": "Les profils et leurs réglages courants sont suivis dans `docs/data/etat.json`."
+    }
+   }
   },
   {
    "id": "codex-commandes-delete",
@@ -2750,7 +2961,7 @@
    "categorie": "commandes",
    "nom": "/diff",
    "gabarit": "complet",
-   "description": "Affiche le diff Git du dépôt courant, y compris les fichiers non encore suivis. Elle permet de relire les modifications produites avant tests ou commit.",
+   "description": "Affiche les différences Git du dépôt courant depuis une session CLI Codex. La vue inclut aussi les fichiers que Git ne suit pas encore pour relire les changements avant tests ou commit.",
    "description_source": "Show the Git diff, including files Git isn’t tracking yet. — Review Codex’s edits before you commit or run tests.",
    "usage": "/diff",
    "usage_nature": "syntaxe",
@@ -2759,7 +2970,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester dans un audit trading-sim pour relire les changements locaux avant la PR ; aucun usage actuel du TUI n'est déclaré."
+    "pourquoi": "Sur la copie locale de trading-sim, lancer `/diff` dans une session CLI d'audit et vérifier si la révision non commitée de la spécification apparaît avec les autres changements locaux."
    },
    "sources": [
     {
@@ -2772,7 +2983,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2785,10 +2996,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Une révision locale non commitée de la spécification reste présente après un audit rejeté."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Le TUI CLI reste à éprouver, l'app de bureau étant l'interface courante."
+    }
+   }
   },
   {
    "id": "codex-commandes-exit",
