@@ -17,8 +17,6 @@ from pathlib import Path
 _RE_TITRE = re.compile(r"^(#{1,3})\s+(.+?)\s*$")
 _RE_CTX = re.compile(r"^\s*<!--\s*ctx-id:\s*([A-Za-z0-9._-]+)\s*-->\s*$")
 _RE_DEPRECIE = re.compile(r"^\s*<!--\s*ctx-id-deprecie:\s*([A-Za-z0-9._-]+)\s*-->\s*$")
-PREFIXE_PROJET = "projet."
-PROJET_HORS = {"projet.vue-ensemble"}  # la section « ## 2. Projets » elle-même n'est pas un projet
 POURQUOI_MAX = 160
 SHA1_VIDE = hashlib.sha1(b"").hexdigest()  # corps vide : section-titre, citer une sous-section
 
@@ -80,13 +78,6 @@ def empreintes(racine) -> dict[str, str]:
 def deprecies(racine) -> set[str]:
     t = _lire(racine)
     return analyser(t)[1] if t is not None else set()
-
-
-def projets(racine) -> list[str]:
-    t = _lire(racine)
-    if t is None:
-        return []
-    return [k for k in sections(t) if k.startswith(PREFIXE_PROJET) and k not in PROJET_HORS]
 
 
 def resoudre(racine, citations: dict[str, str]) -> dict[str, dict]:

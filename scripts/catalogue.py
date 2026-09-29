@@ -6,14 +6,13 @@ Usage :
   catalogue.py inventaire [--perimetre P]                      comptes par produit, catégorie et gabarit
   catalogue.py lots --perimetre P                              découpage en lots (catégorie ou demi-catégorie, D46)
   catalogue.py a-commenter --perimetre P --lot LOT [--tout]    entrées du lot à commenter (JSON sur la sortie)
-  catalogue.py a-commenter --perimetre P --lot perimees        30 entrées au plus (D64-bis) : a) section citée modifiée ou
-                                                               dépréciée ; b) antérieures à D64 en utiliser/tester ;
-                                                               c) filet par âge (90 j + sha1(id) mod 90) ; champ `motif`
+  catalogue.py a-commenter --perimetre P --lot perimees        10 entrées au plus (D64-bis, amendée le 29/09/2026) :
+                                                               a) section citée modifiée ou dépréciée ; adoption déclarée
+                                                               d'un `ignorer` (D67) ; `utiliser` et `tester` d'abord,
+                                                               puis `ignorer` ; champ `motif`
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py adoptions --perimetre P [--dry-run]            D67 : statut_usage `utilise` pour les id de la section
                                                                « Adoptions » de PROGRESSION.md, consigné dans historique
-  catalogue.py a-commenter --perimetre P --lot nouveau-projet:2.6   « ignorer » des fonctionnalités et commandes à relire
-                                                               pour un nouveau projet de CONTEXTE §2 (D64)
   catalogue.py appliquer --perimetre P --fichier commentaires.json
       commentaires = {id: {description, statut_usage, recommandation: {verdict, pourquoi},
                            contexte_sections: {ctx-id: "pourquoi, une ligne, 160 car. max"}, exemple?, disponibilite?}}
@@ -87,12 +86,9 @@ def main(argv=None) -> int:
         else:
             tout = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine), maximum=None)
             if tout:
-                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption", "b", "c")}
+                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption")}
                 print(f"{'perimees':<22} {'(D64bis)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
-                      f"(a section {n['a']}, adoption {n['adoption']}, b antérieures {n['b']}, c âge {n['c']})")
-        for k in cat.nouveaux_projets(a.racine, a.perimetre):
-            n = len(cat.repasse_projet(entrees, k))
-            print(f"{'nouveau-projet:' + k:<22} {'court':<8} {n:>4} entrées « ignorer » à relire (D64)")
+                      f"(a section {n['a']}, adoption {n['adoption']})")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
@@ -105,9 +101,6 @@ def main(argv=None) -> int:
             det = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine))
             lot = {"ids": [x["id"] for x in det]}
             motifs = {x["id"]: x["motif"] for x in det}
-            a.tout = True
-        elif a.lot and a.lot.startswith("nouveau-projet:"):
-            lot = {"ids": cat.repasse_projet(entrees, a.lot.split(":", 1)[1])}
             a.tout = True
         else:
             lot = next((l for l in cat.lots(entrees, a.perimetre) if l["lot"] == a.lot), None)
@@ -152,16 +145,10 @@ def main(argv=None) -> int:
         if not a.fichier:
             p.error("--fichier requis")
         courantes, dep = empreintes_sections(a.racine), deprecies_contexte(a.racine)
-        nouveaux = cat.nouveaux_projets(a.racine, a.perimetre)
 
         def motif_de(e):
-            c = cat.classer(e, courantes, dep, date.today())
-            if c:
-                return c[1]
-            for k in nouveaux:
-                if e["id"] in cat.repasse_projet(entrees, k):
-                    return f"nouveau-projet:{k}"
-            return None
+            c = cat.classer(e, courantes, dep)
+            return c[1] if c else None
         journal = []
         erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,
                                              resoudre=lambda cites: resoudre_sections(a.racine, cites),

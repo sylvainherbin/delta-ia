@@ -558,6 +558,11 @@ def test_d64bis_appliquer_peremption_et_journal(racine_kb, monkeypatch, capsys):
     assert "ctx-id déprécié" in appliquer({"projet.trading-sim": "x"}, 1).err
     capsys.readouterr()
     assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0, "déprécié : encore connu de valider"
+    capsys.readouterr()
+    # section disparue sans dépréciation : l'entrée est périmée, mais la base reste valide tant qu'elle n'est pas réévaluée
+    ctx.write_text(CONTEXTE_KB.replace("<!-- ctx-id: projet.trading-sim -->", "<!-- ctx-id: projet.robot -->"), encoding="utf-8")
+    assert lot() == [(k, "section:projet.trading-sim")]
+    assert valider.main(["--racine", str(racine_kb), "--perimetre", "claude", "--kb"]) == 0, "fiche ancienne non réévaluée : pas d'échec"
 
 
 def test_d60_commentee_sans_empreinte_invalide(racine_kb, monkeypatch, capsys):
@@ -605,13 +610,14 @@ def test_d64bis_analyse_et_erreurs():
 
 
 def test_d64bis_contexte_reel():
-    from deltalib.contexte import analyser, projets
+    from deltalib.contexte import analyser
     s, _ = analyser((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"))
     assert {"profil", "projet.trading-sim", "projet.carnet", "config.codex.profils"} <= set(s)
-    assert "projet.trading-sim" in projets(RACINE) and "projet.vue-ensemble" not in projets(RACINE)
 
 
-def test_d64bis_classement_a_b_c_et_filet_par_age():
+def test_d64bis_classement_a_et_adoption_seulement():
+    """D64-bis amendée le 29/09/2026 : ni antérieures à D64 (b), ni filet par âge (c) ; lot de 10, `utiliser` et
+    `tester` avant `ignorer`."""
     from datetime import timedelta
     from deltalib.contexte import est_perime
     cour = {"projet.trading-sim": "a" * 40, "config.codex": "b" * 40}
@@ -622,33 +628,30 @@ def test_d64bis_classement_a_b_c_et_filet_par_age():
     assert est_perime({}, cour) is False and est_perime(None, cour) is None
     jour = date(2026, 9, 24)
     recent = (jour - timedelta(days=10)).isoformat()
+    vieux = (jour - timedelta(days=400)).isoformat()
 
     def e(k, v, cs, commente=recent):
         return {"id": k, "commentee": True, "recommandation": {"verdict": v}, "contexte_sections": cs, "maj_le": commente,
                 "historique": [{"date": commente, "changement": "commentée"}]}
     ok = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}
-    vieux = (jour - timedelta(days=200)).isoformat()
+    perime = {"config.codex": {"sha1": "z" * 40, "pourquoi": "p"}}
     ent = {k: e(k, *a) for k, a in {
-        "b-legacy": ("tester", None), "a-ignorer": ("ignorer", {"config.codex": {"sha1": "z" * 40, "pourquoi": "p"}}),
-        "a-utiliser": ("utiliser", {"config.codex": {"sha1": "z" * 40, "pourquoi": "p"}}), "ok": ("utiliser", ok),
-        "legacy-ignorer": ("ignorer", None), "vide": ("tester", {}),
-        "c-vieux-ignorer": ("ignorer", None, vieux), "c-vieux-vide": ("tester", {}, vieux)}.items()}
-    det = cat.perimees_detail(ent, cour, set(), jour, maximum=None)
+        "a-ignorer": ("ignorer", perime), "a-tester": ("tester", perime), "a-utiliser": ("utiliser", perime),
+        "ok": ("utiliser", ok), "legacy-utiliser": ("utiliser", None), "legacy-ignorer": ("ignorer", None),
+        "vide": ("tester", {}), "vieux-vide": ("tester", {}, vieux), "vieux-legacy": ("tester", None, vieux),
+        "vieux-ok": ("ignorer", ok, vieux)}.items()}
+    det = cat.perimees_detail(ent, cour, set(), maximum=None)
     assert [(x["id"], x["categorie"], x["motif"]) for x in det] == [
-        ("a-utiliser", "a", "section:config.codex"), ("a-ignorer", "a", "section:config.codex"),
-        ("b-legacy", "b", "legacy"), ("c-vieux-vide", "c", "age"), ("c-vieux-ignorer", "c", "age")]
-    assert len(cat.perimees({f"k{i}": e(f"k{i}", "tester", None) for i in range(40)}, cour, set(), jour)) == 30
-    # échéance : 90 + sha1(id) mod 90 jours après le dernier commentaire, étalée sur 90 jours
-    assert cat.AGE_ETALEMENT_JOURS == 90
-    ech = {cat.echeance_age(e(f"k{i}", "ignorer", {}, "2026-01-01")) for i in range(2000)}
-    assert min(ech) >= date(2026, 4, 1) and max(ech) <= date(2026, 6, 29) and len(ech) == 90
-    # un commentaire révisé repousse l'échéance
-    x_ = e("c-vieux-vide", "tester", {}, vieux)
-    x_["historique"].append({"date": jour.isoformat(), "changement": "commentaire révisé"})
-    assert cat.classer(x_, cour, set(), jour) is None
+        ("a-utiliser", "a", "section:config.codex"), ("a-tester", "a", "section:config.codex"),
+        ("a-ignorer", "a", "section:config.codex")]
+    assert cat.PERIMEES_MAX == 10
+    lot = cat.perimees({**{f"i{i:02}": e(f"i{i:02}", "ignorer", perime) for i in range(12)},
+                        **{f"t{i:02}": e(f"t{i:02}", "tester", perime) for i in range(3)}}, cour, set())
+    assert len(lot) == 10 and lot[:3] == ["t00", "t01", "t02"], "`tester` d'abord, puis `ignorer`, 10 au plus"
+    assert not hasattr(cat, "echeance_age") and not hasattr(cat, "nouveaux_projets")
 
 
-def test_d64bis_migration_des_formats_et_projets(tmp_path):
+def test_d64bis_migration_des_formats(tmp_path):
     ctx = tmp_path / "CONTEXTE.md"
     ctx.write_text(CONTEXTE_KB, encoding="utf-8")
     ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("/c", "/c")], {"doc-a"})
@@ -661,30 +664,22 @@ def test_d64bis_migration_des_formats_et_projets(tmp_path):
     lu = cat.charger(tmp_path, "claude")
     assert lu["claude-code-commandes-a"]["contexte_sections"] is None and lu["claude-code-commandes-b"]["contexte_sections"] is None
     assert lu["claude-code-commandes-c"]["contexte_sections"]["projet.trading-sim"]["pourquoi"] == "p"
-    # projets_connus au format D64 (clés numérotées) : migration vers les ctx-id, sans lot nouveau-projet
-    f = tmp_path / "docs" / "data" / "kb" / "claude" / "commandes.json"
-    d = json.loads(f.read_text()); d["projets_connus"] = ["2.1", "2.2"]; f.write_text(json.dumps(d))
-    assert cat.nouveaux_projets(tmp_path, "claude") == []
-    cat.ecrire(tmp_path, "claude", lu)
-    assert json.loads(f.read_text())["projets_connus"] == ["projet.carnet", "projet.trading-sim"]
 
 
-def test_d64bis_nouveau_projet_repasse_des_ignorer(tmp_path):
+def test_d64bis_nouveau_projet_n_ouvre_plus_de_lot(tmp_path, capsys):
+    import catalogue as cli
     ctx = tmp_path / "CONTEXTE.md"
     ctx.write_text(CONTEXTE_KB, encoding="utf-8")
-    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b"), x("P", "p", categorie="parametres")], {"doc-a"})
+    ent, _ = cat.fusionner({}, [x("/a", "/a"), x("/b", "/b")], {"doc-a"})
     for kk in ent:
         ent[kk].update(commentee=True, recommandation={"verdict": "ignorer", "pourquoi": "p"}, contexte_sections=None)
     cat.ecrire(tmp_path, "claude", ent)
-    assert cat.nouveaux_projets(tmp_path, "claude") == [], "au premier passage, les projets présents sont connus"
     ctx.write_text(CONTEXTE_KB + "\n### 2.3 ceramist — z\n<!-- ctx-id: projet.ceramist -->\n\ny\n", encoding="utf-8")
     cat.ecrire(tmp_path, "claude", ent)
-    assert cat.nouveaux_projets(tmp_path, "claude") == ["projet.ceramist"]
-    assert cat.repasse_projet(ent, "projet.ceramist") == ["claude-code-commandes-a", "claude-code-commandes-b"], "paramètres exclus"
-    for kk in ("claude-code-commandes-a", "claude-code-commandes-b"):
-        ent[kk]["contexte_sections"] = {"projet.ceramist": {"sha1": "c" * 40, "pourquoi": "p"}}
-    cat.ecrire(tmp_path, "claude", ent)
-    assert cat.nouveaux_projets(tmp_path, "claude") == [], "repasse terminée : le projet devient connu"
+    assert "projets_connus" not in json.loads((tmp_path / "docs" / "data" / "kb" / "claude" / "commandes.json").read_text())
+    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(tmp_path)]) == 0
+    out = capsys.readouterr().out
+    assert "nouveau-projet" not in out and "perimees" not in out
 
 
 def test_d64bis_page_skills_et_etat():
@@ -773,13 +768,13 @@ def test_d67_adoption_d_un_ignorer_entre_dans_perimees(tmp_path):
            "a-section": e("a-section", "ignorer", {"projet.trading-sim": {"sha1": "z" * 40, "pourquoi": "p"}}),
            "b-legacy": e("b-legacy", "utiliser")}
     assert cat.appliquer_adoptions(ent, ["adopte-ignorer", "adopte-tester"], jour.isoformat()) == ["adopte-ignorer", "adopte-tester"]
-    det = cat.perimees_detail(ent, cour, set(), jour, maximum=None)
-    assert [(x["id"], x["motif"]) for x in det] == [("a-section", "section:projet.trading-sim"), ("adopte-ignorer", "adoption"),
-                                                   ("b-legacy", "legacy")], "adoption juste après a ; un `tester` adopté n'entre pas"
+    det = cat.perimees_detail(ent, cour, set(), maximum=None)
+    assert [(x["id"], x["motif"]) for x in det] == [("a-section", "section:projet.trading-sim"), ("adopte-ignorer", "adoption")], \
+        "adoption après a à verdict égal ; un `tester` adopté n'entre pas ; antérieure à D64 : plus reprise"
     # une fois recommentée, l'entrée sort du lot, même si le verdict reste `ignorer`
     x_ = ent["adopte-ignorer"]
     x_["historique"].append({"date": jour.isoformat(), "changement": "commentaire révisé"})
-    assert cat.classer(x_, cour, set(), jour) is None
+    assert cat.classer(x_, cour, set()) is None
     import valider
     assert valider.RE_MOTIF.match("adoption")
 

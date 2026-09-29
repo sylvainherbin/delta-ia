@@ -420,8 +420,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
             ce = e["contexte_empreinte"]
             if ce is not None and not (isinstance(ce, str) and re.fullmatch(r"[0-9a-f]{40}", ce)):
                 r.erreur(o, "`contexte_empreinte` : sha1 de CONTEXTE.md (40 hexadécimaux) ou null")
-            if e["contexte_sections"] is not None:
-                verifier_sections(e["contexte_sections"], o, r)
+            if e["contexte_sections"] is not None:  # null : antérieur à D64, jamais réévalué pour autant
+                verifier_sections(e["contexte_sections"], o, r, ctx_disparu_permis=True)
             if e["commentee"] is True and ce is None:
                 r.erreur(o, "entrée commentée sans `contexte_empreinte` (D60)")
             if e["commentee"] is True:
@@ -442,6 +442,7 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     return ids
 
 
+# age, legacy et nouveau-projet ne sont plus produits (D64-bis amendée le 29/09/2026) ; ils restent valides dans le journal existant
 RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|adoption|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
 
 
@@ -560,8 +561,11 @@ def charger_ctx_ids(racine: Path, r: Rapport) -> None:
     CTX_IDS = set(s) | set(dep)
 
 
-def verifier_sections(cs, ou: str, r: Rapport) -> None:
-    """D64-bis : {ctx-id: {sha1, pourquoi}} ; ctx-id connu de CONTEXTE.md, pourquoi non vide, une ligne, 160 car. max."""
+def verifier_sections(cs, ou: str, r: Rapport, ctx_disparu_permis: bool = False) -> None:
+    """D64-bis : {ctx-id: {sha1, pourquoi}} ; ctx-id connu de CONTEXTE.md, pourquoi non vide, une ligne, 160 car. max.
+    `ctx_disparu_permis` (base de référence, D64-bis amendée le 29/09/2026) : une section citée qui a disparu de CONTEXTE.md
+    rend l'entrée périmée (catégorie a, lot `perimees` de 10 entrées) sans être une erreur ; `catalogue.py appliquer`
+    refuse déjà un ctx-id inconnu pour tout nouveau commentaire."""
     if not isinstance(cs, dict):
         r.erreur(ou, "`contexte_sections` : {ctx-id: {sha1, pourquoi}} (D64-bis)")
         return
@@ -574,7 +578,7 @@ def verifier_sections(cs, ou: str, r: Rapport) -> None:
             r.erreur(ou, f"`contexte_sections.{k}` : section au corps vide, cite une sous-section (D64-bis)")
         for err in erreurs_pourquoi(v["pourquoi"]):
             r.erreur(ou, f"`contexte_sections.{k}` : {err}")
-        if CTX_IDS is not None and k not in CTX_IDS:
+        if CTX_IDS is not None and k not in CTX_IDS and not ctx_disparu_permis:
             r.erreur(ou, f"`contexte_sections` : ctx-id inconnu de CONTEXTE.md : {k}")
 
 
