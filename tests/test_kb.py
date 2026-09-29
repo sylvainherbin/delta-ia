@@ -940,3 +940,45 @@ def test_perimees_ordre_adoption_entre_tester_et_ignorer():
             ent[k]["_id"] = k
         res = cat.perimees_detail(ent, {"x": "y"}, set(), maximum=None)
     assert [x["id"] for x in res] == ["a-uti", "a-tes", "adopt", "a-ign"]
+
+
+# --- usage des pages : note d'index, listes, blocs de surface, composants (D44, correctif du 29/09/2026) --------
+
+def _page_oa(docs, chemin, fixture):
+    return extraire(docs["oa-fonctionnalites"], **{f"page:{chemin}": lire(fixture)})
+
+
+def test_usage_ignore_la_note_d_index_llms(docs):
+    (e,) = _page_oa(docs, "cloud", "oa_page_cloud.md")
+    assert e.usage == ("Run tasks in isolated cloud environments, work in parallel, and start work from the web, "
+                       "GitHub, GitLab, Linear, or Slack.") and e.usage_nature == "etapes", "plus « .md » de la note d'en-tête"
+
+
+def test_usage_liste_avec_lignes_de_continuation(docs):
+    (e,) = _page_oa(docs, "import", "oa_page_import.md")
+    assert e.usage.splitlines()[0] == ("1. In the ChatGPT desktop app, open **Settings > Import**. If **Import** isn't "
+                                       "available as a settings section yet, open **General** and find **Import other agent setup**.")
+    assert len(e.usage.splitlines()) == 5 and e.usage_nature == "etapes"
+
+
+def test_usage_liste_d_etapes_avec_blocs_de_code(docs):
+    (e,) = _page_oa(docs, "agent-configuration/agents-md", "oa_page_agents_md.md")
+    assert e.usage_nature == "etapes"
+    assert e.usage.startswith("1. Ensure the directory exists:\nmkdir -p ~/.codex\n2. Create `~/.codex/AGENTS.md`"), e.usage
+    assert "\n# ~/.codex/AGENTS.md\n" in e.usage and "\n3. Run Codex anywhere" in e.usage, "blocs désindentés, étapes gardées"
+    assert "1. **Global scope:**" not in e.usage, "la liste sans code qui précède n'est pas prise"
+
+
+def test_usage_s_arrete_au_bloc_d_une_autre_surface(docs):
+    ent = {x.nom: x for x in extraire(docs["oa-mcp"], page=lire("oa_mcp_surfaces.md"))}
+    web = ent["Use MCP-backed tools in ChatGPT web"]
+    assert web.usage.startswith("In a hosted ChatGPT Work chat, install a") and "codex mcp add" not in web.usage
+    toml = ent["Configure with config.toml"].usage
+    assert toml.startswith("env_vars = ["), "même surface (app,cli,ide) après la balise fermante : le bloc suivant compte"
+
+
+def test_page_faite_d_un_seul_composant_sans_usage():
+    from deltalib.kb.markdown import premier_paragraphe, usage_et_nature
+    lignes = lire("oa_page_index_composant.md").splitlines()
+    assert premier_paragraphe(lignes, 1, len(lignes)) is None, "les attributs d'un composant ne sont pas un paragraphe"
+    assert usage_et_nature(lignes, 1, len(lignes)) == (None, "syntaxe"), "ni « .md » ni attributs : la page est retirée de sources.yaml"
