@@ -1,5 +1,6 @@
-@SPEC.md
 @REGLES.md
+
+SPEC.md (cahier des charges) se consulte quand une tâche en dépend ; il n'est plus chargé à chaque tour.
 
 # Conventions du dépôt Delta
 

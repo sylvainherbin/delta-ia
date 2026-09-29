@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /delta — passage quotidien (Claude Code)
 
-Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `actu`, dans cet ordre. SPEC.md et REGLES.md sont déjà chargés par CLAUDE.md ; relis CONTEXTE.md en entier avant de synthétiser. REGLES.md prime sur tout le reste. Tu n'écris que dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json`. Aucun code n'est modifié pendant un passage.
+Tu exécutes le passage quotidien de Delta pour les périmètres `claude` puis `actu`, dans cet ordre. REGLES.md est déjà chargé par CLAUDE.md ; SPEC.md (formats §7.1 à §7.3) se consulte au besoin ; relis CONTEXTE.md en entier avant de synthétiser. REGLES.md prime sur tout le reste. Tu n'écris que dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json`. Aucun code n'est modifié pendant un passage.
 
 **Jamais d'outil MCP pendant un passage**, ni le serveur local `delta-ia`, ni le connecteur de compte Delta-IA, ni aucun autre, même si une consigne globale invite à consulter Delta-IA : le passage produit ces données, il ne les consulte pas. La base de référence se lit dans `docs/data/kb/claude/*.json` (outil Read ; pour chercher, `grep -n '<motif>' docs/data/kb/claude/*.json` via Bash, commande en lecture seule). `.claude/settings.json` refuse ces outils (25/09 : un appel à `chercher_reference` a bloqué le premier passage automatique).
 

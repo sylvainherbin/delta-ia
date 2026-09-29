@@ -37,7 +37,7 @@ Le lancement est manuel, une fois par jour (D16, vérifié sur Claude Code 2.1.2
 
 ```
 delta-ia/
-├── CLAUDE.md              # conventions Claude Code, importe SPEC.md et REGLES.md
+├── CLAUDE.md              # conventions Claude Code, importe REGLES.md ; SPEC.md se consulte au besoin
 ├── AGENTS.md              # conventions Codex, renvoie à SPEC.md et REGLES.md
 ├── SPEC.md
 ├── REGLES.md
