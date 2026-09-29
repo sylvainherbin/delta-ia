@@ -82,7 +82,8 @@ def _date_valide(v) -> bool:
         return False
 
 
-def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapport, ou: str) -> None:
+def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapport, ou: str,
+                     ctx_disparu_permis: bool = False) -> None:
     ou = f"{ou} elements[{i}]"
     if not isinstance(e, dict):
         r.erreur(ou, "n'est pas un objet")
@@ -168,7 +169,7 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
         if e["contexte_sections"] is None:
             r.erreur(ou, "`contexte_sections` doit être {ctx-id: {sha1, pourquoi}}, éventuellement vide (D64-bis)")
         else:
-            verifier_sections(e["contexte_sections"], ou, r)
+            verifier_sections(e["contexte_sections"], ou, r, ctx_disparu_permis)
     if "revision" in e and not isinstance(e["revision"], bool):
         r.erreur(ou, "`revision` doit être un booléen")
 
@@ -186,7 +187,8 @@ def verifier_ids_web(e: dict, ou: str, r: Rapport) -> None:
                          f"(attendu : {', '.join(sorted(attendus))}) ; calcule-le avec le titre publié (D20)")
 
 
-def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rapport) -> dict | None:
+def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rapport,
+                       ctx_disparu_permis: bool = False) -> dict | None:
     ou = chemin.name
     texte = chemin.read_text(encoding="utf-8")
     verifier_secrets(texte, ou, r)
@@ -237,7 +239,7 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
     ids: list[str] = []
     bruts: list[str] = []
     for i, e in enumerate(elements):
-        verifier_element(e, i, perimetre, projets, r, ou)
+        verifier_element(e, i, perimetre, projets, r, ou, ctx_disparu_permis)
         if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
             r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
         if isinstance(e, dict) and isinstance(q.get("date"), str) and q["date"] > DATE_ID_WEB:
@@ -604,8 +606,11 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
     if not projets:
         r.erreur("CONTEXTE.md", f"aucun projet trouvé dans {contexte} (titres `### 2.x <nom> — …`)")
     quotidiens: dict[str, dict] = {}
+    jour_strict = (jour or date.today()).isoformat()
     for f in sorted(dossier.glob("????-??-??.json")):
-        q = verifier_quotidien(f, perimetre, projets, r)
+        # Un ancien fichier du jour peut citer une section retirée depuis de CONTEXTE.md : il n'est pas réévalué
+        # (D58 et D64-bis amendées le 29/09/2026). Seul le fichier du jour garde le refus strict.
+        q = verifier_quotidien(f, perimetre, projets, r, ctx_disparu_permis=f.stem != jour_strict)
         if q is not None:
             quotidiens[f.stem] = q
     if not quotidiens:

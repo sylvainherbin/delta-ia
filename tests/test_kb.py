@@ -769,8 +769,8 @@ def test_d67_adoption_d_un_ignorer_entre_dans_perimees(tmp_path):
            "b-legacy": e("b-legacy", "utiliser")}
     assert cat.appliquer_adoptions(ent, ["adopte-ignorer", "adopte-tester"], jour.isoformat()) == ["adopte-ignorer", "adopte-tester"]
     det = cat.perimees_detail(ent, cour, set(), maximum=None)
-    assert [(x["id"], x["motif"]) for x in det] == [("a-section", "section:projet.trading-sim"), ("adopte-ignorer", "adoption")], \
-        "adoption après a à verdict égal ; un `tester` adopté n'entre pas ; antérieure à D64 : plus reprise"
+    assert [(x["id"], x["motif"]) for x in det] == [("adopte-ignorer", "adoption"), ("a-section", "section:projet.trading-sim")], \
+        "adoption avant a `ignorer` ; un `tester` adopté n'entre pas ; antérieure à D64 : plus reprise"
     # une fois recommentée, l'entrée sort du lot, même si le verdict reste `ignorer`
     x_ = ent["adopte-ignorer"]
     x_["historique"].append({"date": jour.isoformat(), "changement": "commentaire révisé"})
@@ -925,3 +925,18 @@ def test_claude_tag_retiree_de_la_configuration(docs):
     d = docs["cc-fonctionnalites"]
     assert "claude-tag" not in d.options["pages"]
     assert "15594475-what-is-claude-tag" in docs["claude-apps"].options["pages"], "fonctionnalité couverte par le centre d'aide"
+
+
+def test_perimees_ordre_adoption_entre_tester_et_ignorer():
+    """D64-bis (retouche du 29/09/2026) : a `utiliser`, a `tester`, adoption, puis a `ignorer`."""
+    det = [{"id": "a-ign", "categorie": "a"}, {"id": "adopt", "categorie": "adoption"},
+           {"id": "a-tes", "categorie": "a"}, {"id": "a-uti", "categorie": "a"}]
+    verdicts = {"a-ign": "ignorer", "adopt": "ignorer", "a-tes": "tester", "a-uti": "utiliser"}
+    ent = {k: {"recommandation": {"verdict": v}} for k, v in verdicts.items()}
+    import unittest.mock as m
+    cles = {x["id"]: x for x in det}
+    with m.patch.object(cat, "classer", side_effect=lambda e, c, d=frozenset(): (cles[e["_id"]]["categorie"], "m")):
+        for k in ent:
+            ent[k]["_id"] = k
+        res = cat.perimees_detail(ent, {"x": "y"}, set(), maximum=None)
+    assert [x["id"] for x in res] == ["a-uti", "a-tes", "adopt", "a-ign"]

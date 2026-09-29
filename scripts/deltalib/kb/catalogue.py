@@ -255,8 +255,8 @@ def classer(e: dict, courantes: dict[str, str], deprecies_: set[str] = frozenset
 
 def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], deprecies_: set[str] = frozenset(),
                     maximum: int | None = PERIMEES_MAX) -> list[dict]:
-    """D64-bis (amendée le 29/09/2026) : lot `perimees`, ordonné par verdict (`utiliser`, `tester`, puis `ignorer`),
-    puis catégorie a avant adoption ; `maximum` entrées."""
+    """D64-bis (amendée le 29/09/2026) : lot `perimees`, ordonné a `utiliser`, a `tester`, adoption, puis a `ignorer`
+    (une adoption déclarée par Sylvain est le signal le plus fiable) ; `maximum` entrées."""
     if not courantes:
         return []
     rang = {"utiliser": 0, "tester": 1, "ignorer": 2}
@@ -265,8 +265,12 @@ def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], depreci
         c = classer(e, courantes, deprecies_)
         if c:
             res.append({"id": k, "categorie": c[0], "motif": c[1]})
-    ordre = {"a": 0, "adoption": 1}
-    res.sort(key=lambda x: (rang.get((entrees[x["id"]].get("recommandation") or {}).get("verdict"), 3), ordre[x["categorie"]], x["id"]))
+    def cle(x):
+        if x["categorie"] == "adoption":
+            return (2, 0, x["id"])
+        v = rang.get((entrees[x["id"]].get("recommandation") or {}).get("verdict"), 3)
+        return (v if v < 2 else v + 1, 0, x["id"])
+    res.sort(key=cle)
     return res if maximum is None else res[:maximum]
 
 

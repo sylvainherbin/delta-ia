@@ -361,3 +361,25 @@ def test_id_web_historique_non_verifie():
     v.verifier_quotidien(RACINE / "docs" / "data" / "openai" / "2026-09-23.json", "openai",
                          {"carnet", "trading-sim", "chatgpt-trading-sim", "ceramist", "restoration-id"}, r)
     assert not any("id_web" in m for m in r.erreurs)
+
+
+def test_section_disparue_toleree_dans_les_anciens_fichiers_du_jour(racine, capsys):
+    """D58 et D64-bis amendées le 29/09/2026 : un ancien fichier du jour qui cite une section retirée de CONTEXTE.md
+    ne bloque plus le passage suivant ; le fichier du jour (--date) garde le refus strict."""
+    chemin, q = _quotidien_valide(racine)
+    disparue = {"projet.disparu": {"sha1": "a" * 40, "pourquoi": "Section retirée depuis de CONTEXTE.md."}}
+    ancien = copy.deepcopy(q)
+    ancien["date"] = "2026-09-01"
+    for e in ancien["elements"]:
+        e["contexte_sections"] = disparue
+    (chemin.parent / "2026-09-01.json").write_text(json.dumps(ancien, ensure_ascii=False))
+    chemin, q = _quotidien_valide(racine)  # réécrit le fichier du jour et l'index, qui couvre maintenant 2026-09-01
+    capsys.readouterr()
+    assert validation(racine, "claude", brut=False) == 0, capsys.readouterr()
+    for e in q["elements"]:
+        e["contexte_sections"] = disparue
+    _reecrire(chemin, q)
+    capsys.readouterr()
+    assert validation(racine, "claude", brut=False) != 0, "le fichier du jour garde le refus strict"
+    err = capsys.readouterr().err
+    assert f"{JOUR}.json" in err and "ctx-id inconnu" in err and "2026-09-01.json" not in err
