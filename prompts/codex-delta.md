@@ -52,6 +52,8 @@ Relis les fichiers produits : aucun secret, aucune donnée de tiers identifiable
 
 Enfin compte rendu REGLES §8, 10 lignes au plus : éléments par impact, les `fort` en une ligne chacun, sources en échec (dont les « trou possible »), entrées de la base de référence ajoutées, modifiées ou retirées (D44), redirections de pages signalées par `fetch.py --kb`, points de CONTEXTE.md à mettre à jour (résultat de la confrontation ci-dessus).
 
-## Rapport de fin de tâche (D63)
+## Journal et rapport (D63, amendée le 29/09/2026)
 
-En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+En fin de passage, qu'il aboutisse ou non, ajoute une ligne à `rapports/passages.log`, qui ne fait que grandir : `.venv/bin/python scripts/passages.py --agent codex --perimetre openai --elements <n> --forts <n> --commit <hash court ou aucun>` (le script date la ligne et n'écrit qu'en ajout ; code de garde 0 par défaut).
+
+Un rapport complet ne s'écrit qu'en cas de modification de CONTEXTE.md ou de SPEC.md, d'échec, d'arrêt (STOP, garde, outil refusé) ou de décision à soumettre à Sylvain ; sinon, le compte rendu ci-dessus suffit. Il va dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte ; puis le compte rendu, la cause de l'échec ou de l'arrêt, ou la décision à soumettre, et les points fragiles ou à décider. Ne commite jamais ce dossier. Aucun secret (REGLES §5).

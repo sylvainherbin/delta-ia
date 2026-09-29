@@ -58,6 +58,8 @@ Tu commentes des entrées déjà extraites de la documentation officielle par `s
 
 Réévaluations faites (recalibrage, entrées périmées par motif) et **taux de verdicts changés** (`.venv/bin/python scripts/catalogue.py reevaluations --perimetre claude`, B3) ; lots traités ; entrées commentées par verdict (`utiliser`, `tester`, `ignorer`) et par `statut_usage` ; les `utiliser` en une ligne chacun ; les entrées dont `usage` paraît faux ou incomplet ; les lots restants et l'avancement `n/N` (`catalogue.py inventaire --perimetre claude`).
 
-## Rapport de fin de tâche (D63)
+## Journal et rapport (D63, amendée le 29/09/2026)
 
-En fin de tâche, écris ton compte rendu, identique à celui que tu donnes à Sylvain, dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
+En fin de lancement, qu'il aboutisse ou non, ajoute une ligne à `rapports/passages.log`, qui ne fait que grandir : `.venv/bin/python scripts/passages.py --agent delta-ia --perimetre kb-claude --elements <entrées commentées ou réévaluées> --forts <verdicts utiliser> --commit <hash court du dernier commit ou aucun>` (le script date la ligne et n'écrit qu'en ajout).
+
+Un rapport complet ne s'écrit qu'en cas de modification de CONTEXTE.md ou de SPEC.md, d'échec, d'arrêt (STOP, garde, outil refusé) ou de décision à soumettre à Sylvain ; sinon, le compte rendu ci-dessus suffit. Il va dans rapports/AAAA-MM-JJ_HHMM-<agent>-<tâche>.md, dont la date et l'heure se prennent avec `date +%Y-%m-%d_%H%M` au moment de l'écriture, jamais estimées (agent : delta-ia, codex, dev-delta ; tâche : delta, delta-kb, phase-xx…). En-tête : date et heure, agent, tâche, commits produits, contexte_empreinte ; puis le compte rendu, la cause de l'échec ou de l'arrêt, ou la décision à soumettre, et les points fragiles ou à décider. Ne commite jamais ce dossier. Aucun secret (REGLES §5).
