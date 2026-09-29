@@ -940,3 +940,80 @@ def test_perimees_ordre_adoption_entre_tester_et_ignorer():
             ent[k]["_id"] = k
         res = cat.perimees_detail(ent, {"x": "y"}, set(), maximum=None)
     assert [x["id"] for x in res] == ["a-uti", "a-tes", "adopt", "a-ign"]
+
+
+# --- lot rattrapage-legacy (décidé le 29/09/2026) : `tester` openai d'avant D64 ----------------------------------
+
+def _base_legacy(tmp_path, n=23):
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE_KB, encoding="utf-8")
+    ext = [EntreeExtraite(produit="codex", categorie="commandes", nom=f"/c{i:02}", usage=f"/c{i:02}", description_source="src",
+                          url="https://learn.chatgpt.com/docs/codex/commands", libelle="commands", origine="doc-a")
+           for i in range(n)] + [
+        EntreeExtraite(produit="codex", categorie="commandes", nom=f"/{s}", usage=f"/{s}", description_source="src",
+                       url="https://learn.chatgpt.com/docs/codex/commands", libelle="commands", origine="doc-a")
+        for s in ("ignorer", "vide", "retiree", "sections", "neuve")]
+    ent, _ = cat.fusionner({}, ext, {"doc-a"})
+    for k, e in ent.items():
+        if not k.endswith("-neuve"):
+            e.update(commentee=True, contexte_sections=None, recommandation={"verdict": "tester", "pourquoi": "p"})
+    ent["codex-commandes-ignorer"]["recommandation"] = {"verdict": "ignorer", "pourquoi": "p"}
+    ent["codex-commandes-vide"]["contexte_sections"] = {}
+    ent["codex-commandes-retiree"]["retiree"] = True
+    ent["codex-commandes-sections"]["contexte_sections"] = {"projet.trading-sim": {"sha1": "a" * 40, "pourquoi": "p"}}
+    cat.ecrire(tmp_path, "openai", ent)
+    return ent
+
+
+def test_rattrapage_legacy_selection_et_plafond(tmp_path, capsys):
+    import catalogue as cli
+    ent = _base_legacy(tmp_path)
+    tous = cat.rattrapage_legacy(ent, maximum=None)
+    assert tous == sorted(f"codex-commandes-c{i:02}" for i in range(23)), "exclus : ignorer, {}, retiree, sections, non commentée"
+    assert cat.rattrapage_legacy(ent) == tous[:20], "20 par lancement, tri par id"
+    assert cli.main(["a-commenter", "--perimetre", "openai", "--lot", "rattrapage-legacy", "--racine", str(tmp_path)]) == 0
+    sortie = json.loads(capsys.readouterr().out)
+    assert [x["id"] for x in sortie] == tous[:20] and {x["motif"] for x in sortie} == {"legacy"}
+    assert cli.main(["lots", "--perimetre", "openai", "--racine", str(tmp_path)]) == 0
+    assert "rattrapage-legacy" in (out := capsys.readouterr().out) and "20 entrées ce lancement sur 23 dues" in out
+    # claude : refusé (code 2), et le lot n'apparaît pas
+    ent_c, _ = cat.fusionner({}, [x("/a", "/a")], {"doc-a"})
+    ent_c["claude-code-commandes-a"].update(commentee=True, contexte_sections=None,
+                                            recommandation={"verdict": "tester", "pourquoi": "p"})
+    cat.ecrire(tmp_path, "claude", ent_c)
+    assert cli.main(["a-commenter", "--perimetre", "claude", "--lot", "rattrapage-legacy", "--racine", str(tmp_path)]) == 2
+    assert "réservé au périmètre openai" in capsys.readouterr().err
+    assert cli.main(["lots", "--perimetre", "claude", "--racine", str(tmp_path)]) == 0
+    assert "rattrapage-legacy" not in capsys.readouterr().out
+
+
+def test_rattrapage_legacy_journal_et_extinction(tmp_path, capsys):
+    import catalogue as cli
+    import valider
+    ent = _base_legacy(tmp_path, n=2)
+    f = tmp_path / "c.json"
+    base = {"description": "Commande Codex.", "statut_usage": "inconnu",
+            "recommandation": {"verdict": "ignorer", "pourquoi": "Aucun lien avec les projets de CONTEXTE."}, "contexte_sections": {}}
+    f.write_text(json.dumps({"codex-commandes-c00": base, "codex-commandes-c01": {
+        **base, "recommandation": {"verdict": "tester", "pourquoi": "Essai sur trading-sim : `/c01` pendant un audit."},
+        "contexte_sections": {"projet.trading-sim": "Audits du robot."}}}))
+    assert cli.main(["appliquer", "--perimetre", "openai", "--fichier", str(f), "--racine", str(tmp_path)]) == 0
+    assert "verdicts changés : 1 (50 %)" in capsys.readouterr().out
+    j = [json.loads(l) for l in (tmp_path / "docs" / "data" / "kb" / "openai" / "reevaluations.jsonl").read_text().splitlines()]
+    assert [(l["id"], l["verdict_avant"], l["verdict_apres"], l["motif"]) for l in j] == [
+        ("codex-commandes-c00", "tester", "ignorer", "legacy"), ("codex-commandes-c01", "tester", "tester", "legacy")]
+    assert cat.rattrapage_legacy(cat.charger(tmp_path, "openai")) == [], "lot vide après commentaire"
+    assert cli.main(["lots", "--perimetre", "openai", "--racine", str(tmp_path)]) == 0
+    assert "0 entrées ce lancement sur 0 dues" in capsys.readouterr().out
+    assert cli.main(["inventaire", "--perimetre", "openai", "--racine", str(tmp_path)]) == 0
+    assert "rattrapage-legacy : 0 dues" in capsys.readouterr().out
+    r = valider.Rapport()
+    valider.verifier_journal(tmp_path / "docs" / "data" / "kb" / "openai" / "reevaluations.jsonl", "j", set(ent), r)
+    assert r.erreurs == [], "motif legacy accepté par valider.py"
+    # côté claude, un `tester` d'avant D64 recommenté ne produit pas de ligne `legacy`
+    ent_c, _ = cat.fusionner({}, [x("/a", "/a")], {"doc-a"})
+    ent_c["claude-code-commandes-a"].update(commentee=True, contexte_sections=None,
+                                            recommandation={"verdict": "tester", "pourquoi": "p"})
+    cat.ecrire(tmp_path, "claude", ent_c)
+    f.write_text(json.dumps({"claude-code-commandes-a": base}))
+    assert cli.main(["appliquer", "--perimetre", "claude", "--fichier", str(f), "--racine", str(tmp_path)]) == 0
+    assert not (tmp_path / "docs" / "data" / "kb" / "claude" / "reevaluations.jsonl").exists()

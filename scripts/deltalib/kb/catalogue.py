@@ -279,6 +279,24 @@ def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, depreci
     return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum)]
 
 
+# Lot `rattrapage-legacy` (décidé le 29/09/2026) : rattrapage ponctuel des `tester` openai d'avant D64 (65 % de verdicts
+# changés à la réévaluation, contre 4,5 % côté claude). Il s'éteint seul : une fiche commentée n'a plus de sections null.
+RATTRAPAGE_LEGACY = "rattrapage-legacy"
+RATTRAPAGE_PERIMETRES = ("openai",)
+RATTRAPAGE_MAX = 20
+
+
+def est_legacy_a_rattraper(e: dict) -> bool:
+    """Fiche commentée, non retirée, antérieure à D64 (`contexte_sections` null) et en verdict `tester`."""
+    return (bool(e.get("commentee")) and not e.get("retiree") and e.get("contexte_sections") is None
+            and (e.get("recommandation") or {}).get("verdict") == "tester")
+
+
+def rattrapage_legacy(entrees: dict[str, dict], maximum: int | None = RATTRAPAGE_MAX) -> list[str]:
+    ids = sorted(k for k, e in entrees.items() if est_legacy_a_rattraper(e))
+    return ids if maximum is None else ids[:maximum]
+
+
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
     """Lots D46, D50, D51 : par valeur décroissante ; paramètres en quarts ; catégorie complète coupée en deux
     au-delà du seuil de son gabarit ; skills, plugins et MCP regroupés pour openai."""

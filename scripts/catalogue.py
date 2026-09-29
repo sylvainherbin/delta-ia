@@ -10,6 +10,9 @@ Usage :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
                                                                d'un `ignorer` (D67) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
+  catalogue.py a-commenter --perimetre openai --lot rattrapage-legacy
+                                                               20 entrées au plus, triées par id : `tester` d'avant D64
+                                                               (`contexte_sections` null), motif `legacy` ; openai seul
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py adoptions --perimetre P [--dry-run]            D67 : statut_usage `utilise` pour les id de la section
                                                                « Adoptions » de PROGRESSION.md, consigné dans historique
@@ -66,7 +69,8 @@ def main(argv=None) -> int:
         return code
     if a.commande == "inventaire":
         for per in perimetres:
-            ent = [e for e in cat.charger(a.racine, per).values() if not e.get("retiree")]
+            tous = cat.charger(a.racine, per)
+            ent = [e for e in tous.values() if not e.get("retiree")]
             c = Counter((e["produit"], e["categorie"]) for e in ent)
             print(f"== {per} : {len(ent)} entrées ({sum(1 for e in ent if e['gabarit'] == 'complet')} complet, "
                   f"{sum(1 for e in ent if e['gabarit'] == 'court')} court), {sum(1 for e in ent if e.get('commentee'))} commentées")
@@ -75,6 +79,8 @@ def main(argv=None) -> int:
             for k in CATEGORIES:
                 ligne = [c[(pr, k)] for pr in produits]
                 print("   " + f"{k:>16}" + "".join(f"{n:>16}" for n in ligne) + f"{sum(ligne):>16}")
+            if per in cat.RATTRAPAGE_PERIMETRES:
+                print(f"   {cat.RATTRAPAGE_LEGACY} : {len(cat.rattrapage_legacy(tous, maximum=None))} dues")
         return 0
     if not a.perimetre:
         p.error("--perimetre est obligatoire pour cette commande")
@@ -89,6 +95,9 @@ def main(argv=None) -> int:
                 n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption")}
                 print(f"{'perimees':<22} {'(D64bis)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
                       f"(a section {n['a']}, adoption {n['adoption']})")
+        if a.perimetre in cat.RATTRAPAGE_PERIMETRES:
+            dues = len(cat.rattrapage_legacy(entrees, maximum=None))
+            print(f"{cat.RATTRAPAGE_LEGACY:<22} {'(legacy)':<8} {min(dues, cat.RATTRAPAGE_MAX):>4} entrées ce lancement sur {dues} dues")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
@@ -97,7 +106,14 @@ def main(argv=None) -> int:
         if a.lot == "perimees" and cat.PERIMEES_SUSPENDU:
             print("lot perimees suspendu (catalogue.PERIMEES_SUSPENDU)", file=sys.stderr)
             return 3
-        if a.lot == "perimees":
+        if a.lot == cat.RATTRAPAGE_LEGACY:
+            if a.perimetre not in cat.RATTRAPAGE_PERIMETRES:
+                print(f"lot {cat.RATTRAPAGE_LEGACY} réservé au périmètre openai (décision du 29/09/2026)", file=sys.stderr)
+                return 2
+            lot = {"ids": cat.rattrapage_legacy(entrees)}
+            motifs = {k: "legacy" for k in lot["ids"]}
+            a.tout = True
+        elif a.lot == "perimees":
             det = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine))
             lot = {"ids": [x["id"] for x in det]}
             motifs = {x["id"]: x["motif"] for x in det}
@@ -148,7 +164,11 @@ def main(argv=None) -> int:
 
         def motif_de(e):
             c = cat.classer(e, courantes, dep)
-            return c[1] if c else None
+            if c:
+                return c[1]
+            if a.perimetre in cat.RATTRAPAGE_PERIMETRES and cat.est_legacy_a_rattraper(e):
+                return "legacy"
+            return None
         journal = []
         erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,
                                              resoudre=lambda cites: resoudre_sections(a.racine, cites),
