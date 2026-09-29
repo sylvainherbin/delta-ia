@@ -446,8 +446,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     return ids
 
 
-# age et nouveau-projet ne sont plus produits (D64-bis amendée le 29/09/2026) ; ils restent valides dans le journal existant ;
-# legacy est produit par le lot openai `rattrapage-legacy` (décidé le 29/09/2026)
+# age, legacy et nouveau-projet ne sont plus produits (D64-bis amendée le 29/09/2026 ; rattrapage legacy openai effectué
+# le 29/09/2026, code retiré) ; ils restent valides dans le journal existant
 RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|adoption|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
 
 
