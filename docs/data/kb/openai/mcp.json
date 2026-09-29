@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "mcp",
- "maj_le": "2026-09-23",
+ "maj_le": "2026-09-29",
  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -206,7 +206,7 @@
    "categorie": "mcp",
    "nom": "codex mcp get <name>",
    "gabarit": "complet",
-   "description": "`codex mcp get` affiche la configuration enregistrée d'un serveur précis. L'option `--json` donne l'entrée brute pour une inspection structurée.",
+   "description": "`codex mcp get <name>` affiche la configuration d'un serveur MCP précis. L'option `--json` restitue son entrée brute.",
    "description_source": "Show a specific server configuration. --json prints the raw config entry.",
    "usage": "codex mcp get <name>",
    "usage_nature": "syntaxe",
@@ -214,8 +214,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester si un serveur MCP inattendu apparaît dans une future session d'audit Codex."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin actuel d'inspecter la configuration d'un serveur MCP nommé n'est décrit pour les audits Codex."
    },
    "sources": [
     {
@@ -228,7 +228,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex mcp",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -237,10 +237,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé, sans incident de configuration précis."
+    }
+   }
   },
   {
    "id": "codex-mcp-codex-mcp-list",
@@ -248,7 +257,7 @@
    "categorie": "mcp",
    "nom": "codex mcp list",
    "gabarit": "complet",
-   "description": "`codex mcp list` énumère les serveurs MCP configurés. La sortie `--json` peut servir à comparer deux configurations.",
+   "description": "`codex mcp list` affiche les serveurs MCP enregistrés dans la configuration locale de Codex. L'option `--json` rend cette liste exploitable par un script.",
    "description_source": "List configured MCP servers. Add --json for machine-readable output.",
    "usage": "codex mcp list",
    "usage_nature": "syntaxe",
@@ -257,7 +266,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester avant une future session Codex sous tmux pour vérifier les outils externes réellement configurés."
+    "pourquoi": "Exécuter `codex mcp list --json` avec le binaire de l'app dans le dossier delta-ia, puis comparer la liste à l'accès Delta-IA déclaré ; le résultat attendu est d'identifier les serveurs locaux effectivement configurés."
    },
    "sources": [
     {
@@ -270,7 +279,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex mcp",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -279,10 +288,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La syntaxe doit être vérifiée sur le binaire fourni avec l'app."
+    },
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "L'accès de Codex à Delta-IA est déclaré mais un écart de perception a été relevé."
+    }
+   }
   },
   {
    "id": "codex-mcp-codex-mcp-login-name",
@@ -584,7 +606,7 @@
    "categorie": "mcp",
    "nom": "Configure with config.toml",
    "gabarit": "complet",
-   "description": "Le fichier `config.toml` permet de régler finement chaque serveur MCP au niveau personnel ou du projet. Les clients locaux Codex partagent la configuration de l'hôte.",
+   "description": "`config.toml` permet de définir les serveurs MCP et leurs options pour Codex. La configuration peut être globale dans `~/.codex/config.toml` ou limitée à un projet approuvé dans `.codex/config.toml`.",
    "description_source": "For more fine-grained control, edit ~/.codex/config.toml or a project-scoped .codex/config.toml. See the configuration reference for a searchable list of every supported MCP option.",
    "usage": "env_vars = [\"LOCAL_TOKEN\", { name = \"REMOTE_TOKEN\", source = \"remote\" }]",
    "usage_nature": "syntaxe",
@@ -592,8 +614,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester seulement si le serveur `node_repl` observé doit recevoir une politique d'outil propre aux audits Codex ; le réglage persisterait dans le fichier."
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA est déjà déclaré utilisé par Codex ; aucun besoin de modifier durablement la configuration MCP globale ou celle du projet n'est établi."
    },
    "sources": [
     {
@@ -606,7 +628,7 @@
    "retiree": false,
    "origine": "oa-mcp",
    "groupe": "Use MCP-backed tools in ChatGPT web",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -615,10 +637,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Delta-IA est déclaré accessible à Codex ; le point ouvert porte sur sa perception par l'agent."
+    }
+   }
   },
   {
    "id": "codex-mcp-configure-with-the-cli",
@@ -710,7 +741,7 @@
    "categorie": "mcp",
    "nom": "Plugin-provided MCP servers",
    "gabarit": "complet",
-   "description": "Un plugin installé peut embarquer un serveur MCP dont le lancement vient du manifeste. La configuration utilisateur peut encore limiter son activation et les permissions de ses outils.",
+   "description": "Un plugin installé peut fournir son propre serveur MCP et en définir le lancement dans son manifeste. La configuration utilisateur peut activer le serveur et limiter les outils ou leurs approbations.",
    "description_source": "Installed plugins can bundle MCP servers in their plugin manifest. Those servers are launched from the plugin, so user config doesn't set their transport command. User config can still control on/off state and tool policy under plugins.<plugin>.mcp_servers.<server>.",
    "usage": "[plugins.\"sample@test\".mcp_servers.sample]\nenabled = true\ndefault_tools_approval_mode = \"prompt\"\nenabled_tools = [\"read\", \"search\"]\n\n[plugins.\"sample@test\".mcp_servers.sample.tools.search]\napproval_mode = \"approve\"",
    "usage_nature": "syntaxe",
@@ -718,8 +749,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester si un plugin actif expose des outils inattendus pendant les audits Codex ; la politique enregistrée persisterait entre sessions."
+    "verdict": "ignorer",
+    "pourquoi": "Des plugins Codex sont actifs, mais aucun besoin précis de modifier durablement la politique de leurs serveurs MCP n'est indiqué."
    },
    "sources": [
     {
@@ -732,7 +763,7 @@
    "retiree": false,
    "origine": "oa-mcp",
    "groupe": "Use MCP-backed tools in ChatGPT web",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -741,10 +772,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Des plugins Codex sont actifs, sans changement de politique MCP déclaré."
+    }
+   }
   },
   {
    "id": "codex-mcp-supported-mcp-features",
@@ -752,16 +792,16 @@
    "categorie": "mcp",
    "nom": "Supported MCP features",
    "gabarit": "complet",
-   "description": "Codex accepte les serveurs STDIO et HTTP streamable avec plusieurs modes d'authentification. Il lit aussi les instructions de serveur reçues à l'initialisation.",
+   "description": "Les clients Codex locaux prennent en charge les serveurs MCP STDIO et HTTP streamable avec plusieurs méthodes d'authentification. Codex lit aussi le champ `instructions` transmis par un serveur à l'initialisation.",
    "description_source": "- STDIO servers: Servers that run as a local process (started by a command). - Environment variables - Streamable HTTP servers: Servers that you access at an address. - Bearer token authentication - OAuth authentication, including Client ID Metadata Documents (CIMD) and Dynamic Client Registration (DCR) - ChatGPT session authentication for trusted first-party servers - Server instructions: Codex reads the MCP instructions field returned during initialization and uses it as …",
    "usage": "instructions",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "App de bureau ChatGPT, Codex CLI et extension IDE.",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour vérifier les capacités réellement apportées par `node_repl` si un audit Codex dépend d'un outil MCP."
+    "verdict": "ignorer",
+    "pourquoi": "Cette liste de capacités ne désigne aucun essai concret nécessaire aux audits actuels de Codex ni au connecteur Delta-IA déjà déclaré utilisé."
    },
    "sources": [
     {
@@ -774,7 +814,7 @@
    "retiree": false,
    "origine": "oa-mcp",
    "groupe": "Model Context Protocol",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -783,10 +823,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Delta-IA est déjà déclaré utilisé par Codex."
+    }
+   }
   },
   {
    "id": "codex-mcp-use-mcp-backed-tools-in-chatgpt-web",
@@ -794,16 +843,16 @@
    "categorie": "mcp",
    "nom": "Use MCP-backed tools in ChatGPT web",
    "gabarit": "complet",
-   "description": "Sur ChatGPT web, les outils MCP distants proviennent de plugins installés. Le web ne lit ni les fichiers de configuration Codex locaux ni son menu de commandes.",
+   "description": "ChatGPT Work sur le web peut utiliser les outils MCP distants fournis par des plugins installés. Le site ne reprend pas la configuration MCP locale de Codex ; les outils se gèrent dans l'onglet Plugins.",
    "description_source": "In a hosted ChatGPT Work chat, install a plugin to use its bundled connectors and remote MCP tools. After installation, Chat and Work can use those tools. Workspace administrators can control which plugins and tools are available.",
    "usage": "codex mcp add <server-name> --env VAR1=VALUE1 --env VAR2=VALUE2 -- <stdio server-command>",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "ChatGPT Work sur le web.",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour les audits Work de trading-sim si un connecteur déjà installé doit fournir des sources à la conversation."
+    "verdict": "ignorer",
+    "pourquoi": "Work dispose déjà du connecteur Delta-IA ; aucune installation de plugin MCP web supplémentaire n'est nécessaire pour la mission trading-sim décrite."
    },
    "sources": [
     {
@@ -816,7 +865,7 @@
    "retiree": false,
    "origine": "oa-mcp",
    "groupe": "Model Context Protocol",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -825,10 +874,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work orchestre trading-sim."
+    },
+    "usage.hors-machine": {
+     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "pourquoi": "Work dispose déjà du connecteur Delta-IA."
+    }
+   }
   }
  ]
 }

@@ -2730,7 +2730,7 @@
    "categorie": "fonctionnalites",
    "nom": "Pricing",
    "gabarit": "complet",
-   "description": "ChatGPT Work et Codex partagent leurs crédits et limites d'usage. La page Pricing détaille les offres et les contrôles de consommation disponibles.",
+   "description": "ChatGPT Work et Codex partagent les crédits et les limites d'usage décrits sur cette page. La grille distingue les offres et leurs modalités de consommation.",
    "description_source": "ChatGPT Work and Codex share usage. ChatGPT Work usage inside ChatGPT uses the same pricing, credits, and usage limits as Codex.",
    "usage": ".md",
    "usage_nature": "syntaxe",
@@ -2738,8 +2738,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À consulter pour arbitrer entre Work et Codex lorsque les limites hebdomadaires freinent les audits de trading-sim."
+    "verdict": "utiliser",
+    "pourquoi": "Les limites d'usage freinent déjà les audits de trading-sim : consulter cette grille avant de répartir le travail entre Work et Codex permet de tenir compte de leur consommation commune."
    },
    "sources": [
     {
@@ -2752,7 +2752,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2761,10 +2761,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Les limites hebdomadaires et le coût des audits sont des frictions récurrentes."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work orchestre trading-sim et Codex en audite le travail."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-remote",
@@ -2814,16 +2827,16 @@
    "categorie": "fonctionnalites",
    "nom": "Remote connections",
    "gabarit": "complet",
-   "description": "Les connexions distantes ouvrent depuis mobile ou une autre app des tâches hébergées sur un appareil associé, ou donnent accès à un projet via SSH. Elles réutilisent les permissions et outils de l'hôte.",
+   "description": "Remote permet de reprendre depuis l'app mobile des conversations hébergées sur un Mac ou un PC Windows associé. L'app de bureau peut aussi ouvrir un projet sur un hôte SSH et y exécuter Codex avec les fichiers et permissions de cet hôte.",
    "description_source": "Remote connections let you access work running on another device or machine. In the ChatGPT mobile app, open Remote to work with ChatGPT or Codex chats on a connected Mac or Windows device. You can also continue work from another supported device running the ChatGPT desktop app or connect the app to projects on an SSH host.",
    "usage": "   Host devbox\n     HostName devbox.example.com\n     User you\n     IdentityFile ~/.ssh/id_ed25519",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "ssh devbox",
+   "disponibilite": "Remote mobile : hôte macOS ou Windows ; client iOS ou Android selon déploiement.",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour atteindre un projet sur hôte SSH si une voie compatible Linux se confirme ; le mode mobile documenté vise macOS ou Windows."
+    "verdict": "ignorer",
+    "pourquoi": "L'hôte actuel est sous Linux Mint, alors que l'accès mobile documenté exige un hôte macOS ou Windows ; aucun hôte SSH distinct n'est déclaré pour le projet trading-sim."
    },
    "sources": [
     {
@@ -2836,7 +2849,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2845,10 +2858,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "Le PC utilisé est sous Linux Mint et l'iPhone sert au pilotage distant."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Codex est utilisé dans l'app de bureau ; CLI + tmux + remote control reste un objectif."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-sandboxing",
@@ -2856,16 +2882,16 @@
    "categorie": "fonctionnalites",
    "nom": "Sandbox",
    "gabarit": "complet",
-   "description": "Le sandbox limite les fichiers et le réseau accessibles aux commandes d'une tâche locale. Les approbations contrôlent les franchissements de cette limite.",
+   "description": "Le sandbox borne les fichiers et le réseau accessibles aux commandes lancées par Codex dans les clients locaux. La politique d'approbation détermine quand une action hors de ces limites doit être soumise à validation.",
    "description_source": "The sandbox is the boundary that lets the agent act autonomously without giving it unrestricted access to your machine. When a local chat runs commands in the ChatGPT desktop app, Codex CLI, or IDE extension, those commands run inside a constrained environment instead of running with full access by default.",
    "usage": "sudo apt install bubblewrap",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "sudo apt update\nsudo apt install apparmor-profiles apparmor-utils\nsudo install -m 0644 \\\n  /usr/share/apparmor/extra-profiles/bwrap-userns-restrict \\\n  /etc/apparmor.d/bwrap-userns-restrict\nsudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict",
+   "disponibilite": "Clients locaux Codex ; Linux et WSL2 avec bubblewrap.",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester avec un audit trading-sim en lecture seule pour vérifier que la politique protège le dépôt privé sans bloquer l'inspection."
+    "pourquoi": "Dans l'app Codex, lancer un audit en lecture seule du dépôt trading-sim, puis vérifier qu'une tentative d'écriture demande une approbation ; le résultat attendu est une inspection possible sans modification silencieuse."
    },
    "sources": [
     {
@@ -2878,7 +2904,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2887,10 +2913,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'app de bureau est l'interface Codex utilisée."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt trading-sim est privé et ses audits sont formels."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-sandboxing-auto-review",
@@ -2898,16 +2937,16 @@
    "categorie": "fonctionnalites",
    "nom": "Auto-review",
    "gabarit": "complet",
-   "description": "Auto-review confie certaines demandes d'escalade à un agent relecteur séparé sans changer le sandbox. Le mode exige une politique d'approbation interactive et peut être proposé avec un modèle Daybreak.",
+   "description": "Auto-review confie à un agent relecteur les demandes d'approbation qui franchissent la limite du sandbox. Le sandbox et les permissions restent les mêmes, mais certaines demandes ne sont plus présentées directement à la personne.",
    "description_source": "Auto-review replaces manual approval at the sandbox boundary with a separate reviewer agent. The main Codex agent still runs inside the same sandbox, with the same approval policy and the same network and filesystem limits. The difference is who reviews eligible escalation requests.",
    "usage": "[auto_review]\npolicy = \"\"\"\nYOUR POLICY GOES HERE\n\"\"\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "approval_policy = \"on-request\"\napprovals_reviewer = \"auto_review\"\ndefault_permissions = \":workspace\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester seulement pour une tâche d'audit Codex bien bornée ; ton principe de validation humaine pas à pas impose de vérifier quelles approbations sont déléguées."
+    "verdict": "ignorer",
+    "pourquoi": "La méthode actuelle prévoit une validation humaine pas à pas pour les audits de trading-sim ; déléguer ces approbations changerait cette pratique."
    },
    "sources": [
     {
@@ -2920,7 +2959,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2929,10 +2968,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "La validation humaine pas à pas est une habitude déclarée."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits de trading-sim suivent un processus formel."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-security",
@@ -2940,16 +2992,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex Security",
    "gabarit": "complet",
-   "description": "Codex Security recherche et confirme des vulnérabilités dans du code, puis propose des corrections. Il peut être utilisé comme plugin, outil terminal ou SDK selon la configuration.",
+   "description": "Codex Security recherche et vérifie des vulnérabilités applicatives dans un dépôt. Il propose des corrections et peut être lancé depuis un plugin Codex, une CLI, un SDK ou un dépôt GitHub connecté.",
    "description_source": "Codex Security is an application security agent that helps security and engineering teams find, confirm, and fix vulnerabilities. Use it in Codex, from your terminal, through the TypeScript SDK, or with connected GitHub repositories.",
    "usage": "npx @openai/codex-security --help",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Les scans exigent un accès Codex Security ; le service cloud est en research preview.",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour un contrôle de sécurité ciblé de la console de pilotage si ce besoin apparaît ; l'audit trading-sim actuel porte d'abord sur la logique."
+    "verdict": "ignorer",
+    "pourquoi": "Les besoins déclarés sur trading-sim concernent actuellement l'audit de logique et la vérification formelle ; aucun scénario précis de scan de sécurité applicative n'est identifié."
    },
    "sources": [
     {
@@ -2962,7 +3014,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2971,10 +3023,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits actuels vérifient l'architecture et la logique du simulateur."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-third-party-github",
