@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-09-28",
+ "maj_le": "2026-09-29",
  "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -1282,16 +1282,16 @@
    "categorie": "fonctionnalites",
    "nom": "Agent approvals & security",
    "gabarit": "complet",
-   "description": "Les modes d'approbation et le sandbox limitent les fichiers, commandes et accès réseau que Codex peut utiliser. Les demandes hors de ces limites passent par une validation distincte.",
+   "description": "Le sandbox limite techniquement les fichiers et le réseau accessibles à Codex, tandis que la politique d'approbation règle les demandes avant certaines actions. Un mode lecture seule est documenté pour les sessions interactives qui doivent examiner sans modifier.",
    "description_source": "Codex helps protect your code and data and reduces the risk of misuse.",
    "usage": "sandbox_mode = \"read-only\"\napproval_policy = \"on-request\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "codex --sandbox read-only --ask-for-approval on-request",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester lors des audits trading-sim pour maintenir la validation humaine pas à pas et un périmètre de lecture adapté."
+    "pourquoi": "Pour un audit CLI de trading-sim, essayer `codex --sandbox read-only --ask-for-approval on-request` et vérifier qu'aucune écriture n'est permise ; cela correspondrait à la validation humaine pas à pas avant toute modification."
    },
    "sources": [
     {
@@ -1304,7 +1304,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1313,10 +1313,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex mène des audits formels du dépôt."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sylvain demande diagnostic puis accord explicite avant exécution."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-agent-configuration-agents-md",
@@ -1324,7 +1337,7 @@
    "categorie": "fonctionnalites",
    "nom": "Custom instructions with AGENTS.md",
    "gabarit": "complet",
-   "description": "Codex lit les fichiers AGENTS.md avant une tâche et combine les règles globales avec celles du dépôt et des sous-dossiers. Les instructions proches du dossier courant prennent le pas sur les précédentes.",
+   "description": "Codex lit les fichiers `AGENTS.md` au démarrage et combine les consignes globales avec celles du dépôt puis du dossier courant. Un fichier `AGENTS.override.md` peut remplacer le fichier ordinaire à une portée donnée.",
    "description_source": "Codex reads AGENTS.md files before doing any work. By layering global guidance with project-specific overrides, you can start each task with consistent expectations, no matter which repository you open.",
    "usage": "   mkdir -p ~/.codex",
    "usage_nature": "syntaxe",
@@ -1332,8 +1345,8 @@
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "carnet possède déjà AGENTS.md, mais Codex n'y est pas utilisé ; l'ajout sur trading-sim est délibérément différé."
+    "verdict": "utiliser",
+    "pourquoi": "L'`AGENTS.md` global règle déjà l'usage de Delta-IA par Codex et le dépôt carnet en possède un ; conserver ce mécanisme pour ces usages actuels. L'absence d'`AGENTS.md` sur trading-sim reste un choix explicite."
    },
    "sources": [
     {
@@ -1346,7 +1359,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1355,10 +1368,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "L'AGENTS.md global existe ; carnet en a un, trading-sim n'en a pas par choix."
+    },
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "L'usage de Delta-IA par Codex est réglé dans son AGENTS.md global."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-agent-configuration-rules",
@@ -1366,7 +1392,7 @@
    "categorie": "fonctionnalites",
    "nom": "Rules",
    "gabarit": "complet",
-   "description": "Les rules définissent les préfixes de commandes autorisés, refusés ou soumis à approbation hors sandbox. La documentation présente cette fonction comme expérimentale.",
+   "description": "Les fichiers `.rules` définissent les préfixes de commandes que Codex peut exécuter hors sandbox, refuser ou soumettre à approbation. Les règles sont expérimentales et sont chargées au démarrage depuis les couches de configuration actives.",
    "description_source": "Use rules to control which commands Codex can run outside the sandbox.",
    "usage": "   # Prompt before running commands with the prefix `gh pr view` outside the sandbox.\n   prefix_rule(\n       # The prefix to match.\n       pattern = [\"gh\", \"pr\", \"view\"],\n\n       # The action to take when Codex requests to run a matching command.\n       decision = \"prompt\",\n\n       # Optional rationale for why this rule exists.\n       justification = \"Viewing PRs is allowed with approval\",\n\n       # `match` and `not_match` are optional \"inline unit tests\" where you can\n…",
    "usage_nature": "syntaxe",
@@ -1375,7 +1401,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Ton fichier `default.rules` contient une règle trop longue ; tester des préfixes courts faciliterait sa relecture avant un audit."
+    "pourquoi": "Dans `default.rules`, remplacer lors d'un essai encadré la règle contenant un script d'audit entier par un préfixe court précis, puis vérifier sur un audit trading-sim quelles commandes demandent encore approbation ; la règle est persistante et Codex doit être redémarré."
    },
    "sources": [
     {
@@ -1388,7 +1414,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1397,10 +1423,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "Une seule prefix_rule de 32 Ko autorise actuellement un script d'audit entier."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Des préfixes courts sont envisagés pour rendre default.rules lisible."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits du dépôt sont formels."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-agent-configuration-speed",
@@ -1450,16 +1493,16 @@
    "categorie": "fonctionnalites",
    "nom": "Subagents",
    "gabarit": "complet",
-   "description": "Les sous-agents répartissent des sous-tâches parallèles puis rassemblent leurs résultats. Des agents locaux peuvent avoir des instructions et modèles distincts.",
+   "description": "Les sous-agents peuvent traiter en parallèle des parties indépendantes d'une tâche, puis rendre leurs résultats au fil principal. Dans les clients Codex locaux, des agents spécialisés peuvent avoir leurs propres instructions et modèles, avec une consommation de jetons supplémentaire.",
    "description_source": "ChatGPT Work and Codex can run subagent workflows by spawning specialized agents in parallel and then collecting their results in one response. This can be particularly helpful for complex tasks that are highly parallel, such as codebase exploration or implementing a multi-step feature plan.",
    "usage": "Review this branch with parallel subagents. Spawn one subagent for security risks, one for test gaps, and one for maintainability. Wait for all three, then summarize the findings by category with file references.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "ChatGPT desktop, Codex CLI et extension IDE pour les clients locaux",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour des audits indépendants de trading-sim si le coût en jetons et la charge machine restent acceptables."
+    "pourquoi": "Sur un audit limité de trading-sim, demander deux sous-agents distincts pour les risques de sûreté et les lacunes de tests, puis comparer leurs constats au fil unique ; mesurer si les résultats justifient les jetons supplémentaires."
    },
    "sources": [
     {
@@ -1472,7 +1515,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1481,10 +1524,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits contradictoires sont coûteux en jetons."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Codex audite le travail de Claude et les limites d'usage sont une friction."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-cli-customization",
@@ -1492,16 +1548,16 @@
    "categorie": "fonctionnalites",
    "nom": "CLI customization",
    "gabarit": "complet",
-   "description": "La personnalisation CLI adapte la présentation du TUI et la saisie des commandes. Elle couvre notamment les thèmes et la complétion du shell.",
+   "description": "La personnalisation CLI règle le thème de l'interface, la complétion du shell et l'édition des longs prompts. Les préférences visuelles sont enregistrées par le TUI dans la configuration Codex.",
    "description_source": "The Codex CLI provides terminal-specific options for how interactive sessions look and how you enter commands and prompts.",
    "usage": "codex completion zsh",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "eval \"$(codex completion zsh)\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester lorsque l'objectif Codex CLI sous tmux sera mis en place, pour réduire les erreurs de saisie dans le terminal."
+    "verdict": "ignorer",
+    "pourquoi": "La complétion et le thème du TUI n'ont pas de lien direct établi avec les audits Codex ni avec l'objectif CLI sous tmux."
    },
    "sources": [
     {
@@ -1514,7 +1570,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1523,10 +1579,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau et pas encore la CLI autonome."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "L'objectif CLI avec tmux ne précise aucun besoin de personnalisation visuelle."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-cloud",
@@ -1534,16 +1603,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex cloud",
    "gabarit": "complet",
-   "description": "Codex cloud exécute des tâches dans des environnements isolés et parallèles. Le résultat peut être relu sous forme de diff avant une éventuelle PR.",
+   "description": "Codex cloud exécute des tâches sur un dépôt connecté dans des environnements hébergés isolés. On peut préparer l'environnement, lire les journaux et examiner le diff avant d'ouvrir une PR.",
    "description_source": "Run tasks in isolated cloud environments, work in parallel, and start work from the web, GitHub, GitLab, Linear, or Slack.",
    "usage": ".md",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "Review the summary and diff. Ask Codex to make follow-up changes, or open a pull request when the work is ready.",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour un audit indépendant de trading-sim lorsque l'exécution locale est ralentie par les calculs, sous réserve des règles de confidentialité du dépôt privé."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun usage cloud de Codex n'est déclaré pour trading-sim ; le circuit actuel d'audit passe par l'app de bureau et ne justifie pas une connexion supplémentaire du dépôt privé."
    },
    "sources": [
     {
@@ -1556,7 +1625,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1565,10 +1634,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'essentiel du travail Codex se fait dans l'app de bureau."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt trading-sim est privé et suivi par des audits formels."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-cloud-internet-access",
@@ -1748,16 +1830,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex SDK",
    "gabarit": "complet",
-   "description": "Le SDK pilote Codex depuis une application ou un script TypeScript. Il donne accès à des tâches automatisées et à leur intégration dans des outils existants.",
+   "description": "Le Codex SDK pilote des fils Codex depuis un programme, par exemple pour des tâches automatisées ou une intégration dans un outil. La documentation décrit des bibliothèques TypeScript et Python pour démarrer ou reprendre un fil.",
    "description_source": "If you use Codex through Codex CLI, the IDE extension, or Codex cloud, you can also control it programmatically.",
    "usage": "npm install @openai/codex-sdk",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "pip install openai-codex",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester seulement si la console de pilotage doit orchestrer des audits Codex ; la CLI et Remote Control restent les voies directes de l'objectif actuel."
+    "verdict": "ignorer",
+    "pourquoi": "Aucune intégration programmatique de Codex n'est déclarée pour la console ou trading-sim ; le besoin exprimé est d'abord la CLI avec tmux et le pilotage à distance."
    },
    "sources": [
     {
@@ -1770,7 +1852,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1779,10 +1861,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "L'objectif exprimé est Codex en CLI avec tmux et remote control."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain travaille actuellement surtout dans l'app Codex."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-config-file-config-advanced",
@@ -1942,7 +2037,7 @@
    "categorie": "fonctionnalites",
    "nom": "Cloud environments",
    "gabarit": "complet",
-   "description": "Un environnement cloud prépare les dépendances et outils avant que l'agent ne travaille sur un checkout isolé. Il peut aussi définir des variables et des règles d'accès réseau.",
+   "description": "Un environnement cloud installe les outils et dépendances avant l'exécution de Codex sur le dépôt choisi. Les scripts de préparation ont accès au réseau, tandis que l'accès réseau de l'agent est désactivé par défaut.",
    "description_source": "Use environments to control what Codex installs and runs during cloud chats. For example, you can add dependencies, install tools like linters and formatters, and set environment variables.",
    "usage": "# Install type checker\npip install pyright\n\n# Install dependencies\npoetry install --with test\npnpm install",
    "usage_nature": "syntaxe",
@@ -1950,8 +2045,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester si un audit cloud de trading-sim devient utile ; la préparation devrait refléter son environnement Python standard."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun audit Codex cloud n'est déclaré pour trading-sim ; préparer un environnement hébergé n'a donc pas de résultat attendu dans le travail actuel."
    },
    "sources": [
     {
@@ -1964,7 +2059,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1973,10 +2068,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Les audits Codex se font surtout dans l'app de bureau."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt privé est audité selon un circuit local formel."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-environments-git-worktrees",
@@ -1984,16 +2092,16 @@
    "categorie": "fonctionnalites",
    "nom": "Worktrees",
    "gabarit": "complet",
-   "description": "Les worktrees donnent à plusieurs conversations des checkouts indépendants du même dépôt. Les fichiers et commandes restent sur l'hôte qui possède le projet.",
+   "description": "Les worktrees de l'app donnent à plusieurs conversations des copies de travail distinctes du même dépôt Git sur l'ordinateur connecté. Une conversation peut être déplacée entre son worktree et le checkout local par Handoff.",
    "description_source": "Worktrees let Codex run multiple independent chats in the same project without interfering with each other. The repository, worktree, and commands remain on the computer or remote development environment that contains the project. You can work directly in the ChatGPT desktop app, or use Remote in the ChatGPT mobile app to start, guide, approve, and review worktree chats on a connected computer.",
    "usage": "# .worktreeinclude\n.env\n.env.local\nconfig/secrets.json",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "Select **Worktree** under the composer.",
+   "disponibilite": "Dépôts Git ; ChatGPT desktop et Remote sur ordinateur connecté",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour isoler un audit ou correctif trading-sim de la modification locale non commitée mentionnée dans CONTEXTE.md."
+    "pourquoi": "Dans l'app Codex, démarrer un audit trading-sim en mode Worktree depuis la branche courante et vérifier que la modification locale de spécification reste isolée ; le résultat attendu est un diff d'audit séparé du checkout principal."
    },
    "sources": [
     {
@@ -2006,7 +2114,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2015,10 +2123,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Sylvain utilise l'app de bureau pour ses audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Une modification locale de spécification demeure non commitée."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-environments-local-environment",
@@ -2026,16 +2147,16 @@
    "categorie": "fonctionnalites",
    "nom": "Local environments",
    "gabarit": "complet",
-   "description": "Les environnements locaux de l'app définissent les étapes de préparation d'un worktree et des actions communes au projet. Leur configuration peut être versionnée dans le dépôt.",
+   "description": "Les environnements locaux de l'app définissent des scripts exécutés à la création d'un worktree et des actions communes au projet. La configuration est conservée dans le dossier `.codex` du dépôt et peut être versionnée.",
    "description_source": "Local environments let you configure setup steps for worktrees as well as common actions for a project.",
    "usage": "npm install\nnpm run build",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "npm start",
+   "disponibilite": "Codex dans ChatGPT desktop uniquement",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester si des worktrees Codex sont utilisés pour trading-sim, afin d'y préparer les dépendances nécessaires."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun environnement local Codex n'est déclaré pour trading-sim et la préparation automatisée de worktrees n'est pas un besoin confirmé ; sa configuration écrirait dans le dépôt."
    },
    "sources": [
     {
@@ -2048,7 +2169,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2057,10 +2178,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "L'app Codex est utilisée, sans environnement local déclaré."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt suit des modifications et validations formelles."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-features-codex-micro",
@@ -2110,16 +2244,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex GitHub Action",
    "gabarit": "complet",
-   "description": "Codex GitHub Action exécute la CLI dans un workflow GitHub pour produire des correctifs ou des revues. Son exemple utilise un secret API et une politique de permissions explicite.",
+   "description": "`openai/codex-action@v1` exécute Codex dans un workflow GitHub Actions pour produire une revue ou un correctif. L'exemple officiel emploie un secret de clé API, des permissions explicites et `codex exec`.",
    "description_source": "Use the Codex GitHub Action (openai/codex-action@v1) to run Codex in CI/CD jobs, apply patches, or post reviews from a GitHub Actions workflow. The action installs the Codex CLI, starts the Responses API proxy when you provide an API key, and runs codex exec under the permissions you specify.",
    "usage": "name: Codex pull request review\non:\n  pull_request:\n    types: [opened, synchronize, reopened]\n\njobs:\n  codex:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n    outputs:\n      final_message: ${{ steps.run_codex.outputs.final-message }}\n…",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "uses: openai/codex-action@v1",
+   "disponibilite": "GitHub Actions sur exécuteur Linux ou macOS",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester sur une PR trading-sim si tu décides d'automatiser la revue ; ce projet n'a actuellement aucune CI."
+    "verdict": "ignorer",
+    "pourquoi": "Les audits trading-sim passent par une validation humaine et aucune CI n'est en place ; ajouter un workflow et un secret API ne répond pas à un besoin déclaré."
    },
    "sources": [
     {
@@ -2132,7 +2266,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2141,10 +2275,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sylvain valide les étapes et aucune CI n'est utilisée sur ses projets."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits sont consignés et les décisions suivent un protocole formel."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-import",
@@ -2152,16 +2299,16 @@
    "categorie": "fonctionnalites",
    "nom": "Import from another agent",
    "gabarit": "complet",
-   "description": "L'import transfère depuis un autre agent des instructions, skills, plugins et projets pris en charge. Le flux peut demander de terminer l'autorisation de connexions importées.",
+   "description": "Le flux Import copie vers ChatGPT desktop ou Codex CLI les éléments pris en charge d'un autre agent, comme instructions, réglages, skills et projets. Il laisse la configuration de l'agent source intacte, mais les éléments importés peuvent demander une nouvelle autorisation ou une revue.",
    "description_source": "Use the import flow to bring instructions, settings, skills, plugins, projects, and recent work from another agent into the ChatGPT desktop app or Codex CLI. The desktop app can import from Claude Code, Claude Cowork, or Cursor. Codex CLI can import from Claude Code or Cursor.",
    "usage": "1. In the ChatGPT desktop app, open **Settings > Import**. If **Import** isn't\n2. Select **Import**.\n3. Choose the agents you want to import from, then select **Continue**.\n4. On **Select items to import**, choose what to bring over, then select **Continue**.\n5. After the import finishes, open an imported project or chat to continue working.",
    "usage_nature": "etapes",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "Start a local Codex CLI session and type `/import`.",
+   "disponibilite": "ChatGPT desktop : Claude Code, Claude Cowork, Cursor ; Codex CLI : Claude Code, Cursor",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "À tester pour comparer les réglages Claude Code et Codex, sans écraser les conventions d'audit trading-sim déjà versionnées."
+    "verdict": "ignorer",
+    "pourquoi": "Les conventions Codex et Claude Code ont des rôles distincts dans trading-sim ; aucun transfert de configuration ou de chats n'est demandé pour le circuit d'audit actuel."
    },
    "sources": [
     {
@@ -2174,7 +2321,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2183,10 +2330,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Claude Code exécute et Codex audite sous arbitrage ChatGPT."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les missions et décisions sont déjà versionnées séparément."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-integrated-terminal",
@@ -2194,16 +2354,16 @@
    "categorie": "fonctionnalites",
    "nom": "Integrated terminal",
    "gabarit": "complet",
-   "description": "Le terminal intégré de l'app est lié au projet ou worktree de la conversation. Il sert à lancer validations et commandes Git tout en gardant la sortie visible à ChatGPT.",
+   "description": "Chaque conversation de l'app de bureau dispose d'un terminal lié à son projet ou worktree. Les sorties des commandes restent visibles à ChatGPT pour vérifier des tests, des scripts ou l'état Git.",
    "description_source": "Each chat in the ChatGPT desktop app includes a terminal scoped to its current project or worktree. Open it from the terminal icon in the top-right corner of the app, or press Ctrl+.",
    "usage": ".md",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "git status",
+   "disponibilite": "ChatGPT desktop",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour vérifier localement un diff ou des tests trading-sim pendant un audit dans l'app de bureau."
+    "pourquoi": "Pendant un audit trading-sim dans l'app, ouvrir le terminal intégré et lancer `git status` puis les tests `unittest` ciblés ; le résultat attendu est une vérification du checkout et des tests visible dans le même fil."
    },
    "sources": [
     {
@@ -2216,7 +2376,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2225,10 +2385,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Les audits Codex se déroulent surtout dans l'app de bureau."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le projet utilise unittest et des audits Codex formels."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-long-running-work",
@@ -2236,16 +2409,16 @@
    "categorie": "fonctionnalites",
    "nom": "Long-running work",
    "gabarit": "complet",
-   "description": "Pour un travail long, la documentation recommande un résultat, des contraintes et des critères de fin explicites. Dans l'app de bureau, Goal mode suit la progression d'une tâche multiétape.",
+   "description": "Un travail long se formule avec un résultat, des contraintes et des critères de fin vérifiables dans un même fil. Dans l'app et la CLI, `/goal` affiche la progression et permet de piloter ce but au fil des étapes.",
    "description_source": "For work that may take many steps, give ChatGPT a clear outcome, constraints, and definition of done. Keep related work in the same chat so ChatGPT can use the same context to choose the next step and decide when the work is complete.",
    "usage": "Migrate this codebase from JavaScript to TypeScript. Preserve existing behavior,\ncompile in strict mode without explicit `any` types, and make the full test suite pass.",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "In the ChatGPT desktop app, enter `/goal` to start Goal mode.",
+   "disponibilite": "ChatGPT desktop, Codex CLI, extension IDE et ChatGPT Work web",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour un audit trading-sim à plusieurs étapes, avec critères de clôture vérifiables et sans lancer les campagnes lourdes sans accord."
+    "pourquoi": "Pour un audit de révision de trading-sim, démarrer `/goal` avec les critères de contrôle du protocole puis vérifier que le fil s'arrête quand tous les points sont traités ; cela pourrait réduire les relances manuelles."
    },
    "sources": [
     {
@@ -2258,7 +2431,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2267,10 +2440,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits portent sur des révisions gelées et des critères formels."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sylvain demande un diagnostic vérifiable et une validation pas à pas."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-mcp-server",
@@ -2430,16 +2616,16 @@
    "categorie": "fonctionnalites",
    "nom": "Non-interactive mode",
    "gabarit": "complet",
-   "description": "Le mode non interactif lance une tâche Codex avec `codex exec` sans ouvrir le TUI. Il convient aux scripts avec sandbox et politique d'approbation définies.",
+   "description": "`codex exec` lance une tâche sans ouvrir le TUI et imprime la réponse finale sur la sortie standard. Des options permettent de fixer le sandbox, d'obtenir des événements JSONL et d'imposer un schéma JSON à la réponse finale.",
    "description_source": "Non-interactive mode lets you run Codex from scripts (for example, continuous integration (CI) jobs) without opening the interactive TUI. You invoke it with codex exec.",
    "usage": "codex exec \"summarize the repository structure and list the top 5 risky areas\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "codex exec --ephemeral \"triage this repository and suggest next steps\"",
+   "disponibilite": "Codex CLI",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour automatiser une revue répétable de trading-sim si son coût en jetons reste acceptable."
+    "pourquoi": "Sur une copie de trading-sim, essayer `codex exec --output-schema` avec le schéma des blocs de verdict d'audit ; vérifier que la sortie reste lisible par machine et comparer son coût en jetons à l'audit dans l'app."
    },
    "sources": [
     {
@@ -2452,7 +2638,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2461,10 +2647,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Les verdicts d'audit utilisent des blocs CLÉ = VALEUR lisibles par machine."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Codex audite le travail de Claude et les audits longs coûtent des jetons."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Codex en CLI avec tmux est un objectif déclaré."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-permission-modes",
@@ -2472,16 +2675,16 @@
    "categorie": "fonctionnalites",
    "nom": "Permissions",
    "gabarit": "complet",
-   "description": "Les modes de permission déterminent les actions locales possibles sans intervention et celles qui demandent une approbation. Ils encadrent les écritures, commandes et accès réseau.",
+   "description": "Les modes de permission fixent quelles actions locales l'app et Codex peuvent mener seuls ou soumettre à revue. Le sandbox définit la frontière technique, tandis que les approbations règlent qui valide son franchissement.",
    "description_source": "{/* vale Microsoft.FirstPerson = NO */}",
    "usage": ".md",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "In the CLI, enter `/permissions`.",
+   "disponibilite": "ChatGPT desktop, Codex CLI et extension IDE",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester pour commencer un audit trading-sim avec un périmètre limité, conformément à ta validation humaine pas à pas."
+    "pourquoi": "Dans l'app Codex, ouvrir le menu Permissions pour un audit trading-sim et choisir Ask for approval, puis vérifier qu'une action hors du dossier demande une revue ; cela correspondrait à la validation humaine pas à pas."
    },
    "sources": [
     {
@@ -2494,7 +2697,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2503,10 +2706,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Les audits Codex utilisent surtout l'app de bureau."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Sylvain souhaite diagnostic et accord explicite avant exécution."
+    }
+   }
   },
   {
    "id": "codex-fonctionnalites-page-pricing",

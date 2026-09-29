@@ -5119,7 +5119,7 @@
    "categorie": "commandes",
    "nom": "/status",
    "gabarit": "complet",
-   "description": "Affiche la configuration effective de la session, l'usage des jetons, le modèle, la politique d'approbation, les racines inscriptibles et la capacité de contexte restante. La vue sert à vérifier l'environnement réel avant ou pendant une tâche.",
+   "description": "Affiche la configuration de la session CLI, dont le modèle, la politique d'approbation et les racines inscriptibles. La sortie indique aussi l'usage des jetons et la capacité de contexte restante.",
    "description_source": "Display session configuration and token usage. — Confirm the active model, approval policy, writable roots, and remaining context capacity.",
    "usage": "/status",
    "usage_nature": "syntaxe",
@@ -5128,7 +5128,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester au lancement d'un audit trading-sim en CLI pour vérifier modèle et permissions actifs."
+    "pourquoi": "Dans un essai Codex CLI sous tmux pour trading-sim, lancer `/status` avant l'audit et vérifier le modèle, les permissions et le dossier autorisé ; cela permettrait de repérer un écart avant la lecture du dépôt."
    },
    "sources": [
     {
@@ -5141,7 +5141,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5154,10 +5154,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais Sylvain utilise surtout l'app."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt fait l'objet d'audits Codex formels."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Codex en CLI avec tmux est un objectif déclaré."
+    }
+   }
   },
   {
    "id": "codex-commandes-statusline",
@@ -5165,7 +5182,7 @@
    "categorie": "commandes",
    "nom": "/statusline",
    "gabarit": "complet",
-   "description": "Configure de façon interactive les champs affichés dans le pied du TUI et leur ordre. Les choix, tels que modèle, contexte, limites, Git ou jetons, sont enregistrés dans `config.toml`.",
+   "description": "Configure les champs et l'ordre du pied de l'interface CLI, notamment modèle, contexte, limites et branche Git. Le choix est enregistré dans `tui.status_line` de `config.toml` pour les sessions suivantes.",
    "description_source": "Configure TUI status-line fields interactively. — Pick and reorder footer items (model/context/limits/git/tokens/session) and persist in config.toml.",
    "usage": "/statusline",
    "usage_nature": "syntaxe",
@@ -5174,7 +5191,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Afficher modèle, limites et contexte dans les futures sessions tmux rend visibles les trois dérives qui coûtent le plus pendant tes audits."
+    "pourquoi": "Pour un essai Codex CLI sous tmux sur trading-sim, régler `/statusline` sur modèle, limites et contexte, puis ouvrir une nouvelle session pour vérifier la persistance dans `config.toml` ; c'est un réglage durable."
    },
    "sources": [
     {
@@ -5187,7 +5204,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5196,10 +5213,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Codex en CLI avec tmux est un objectif déclaré."
+    },
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Les limites d'usage sont une friction récurrente."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits du dépôt sont longs et formels."
+    }
+   }
   },
   {
    "id": "codex-commandes-stop",
@@ -5291,7 +5325,7 @@
    "categorie": "commandes",
    "nom": "/title",
    "gabarit": "complet",
-   "description": "Configure les champs du titre de fenêtre ou d'onglet du terminal et leur ordre. Les éléments disponibles incluent projet, état, thread, branche, modèle et progression.",
+   "description": "Choisit les champs et l'ordre du titre de la fenêtre ou de l'onglet du terminal CLI. La sélection est enregistrée dans `tui.terminal_title` de `config.toml` pour les sessions suivantes.",
    "description_source": "Configure terminal window or tab title fields interactively. — Pick and reorder title items such as project, status, thread, branch, model, and task progress.",
    "usage": "/title",
    "usage_nature": "syntaxe",
@@ -5299,8 +5333,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans plusieurs sessions tmux, afficher projet, modèle et tâche dans le titre réduit le risque d'envoyer un audit au mauvais fil."
+    "verdict": "ignorer",
+    "pourquoi": "Le titre de fenêtre n'apporte pas de gain établi à l'objectif Codex CLI sous tmux ; le réglage persiste dans `config.toml` et peut être laissé à sa valeur actuelle."
    },
    "sources": [
     {
@@ -5313,7 +5347,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5322,10 +5356,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "L'objectif déclaré porte sur Codex CLI avec tmux, sans besoin documenté de titre personnalisé."
+    }
+   }
   },
   {
    "id": "codex-commandes-usage",
@@ -5430,7 +5473,7 @@
    "categorie": "commandes",
    "nom": "/worktree",
    "gabarit": "complet",
-   "description": "Crée un nouveau worktree Git et y exécute la conversation. La tâche obtient ainsi un checkout isolé du répertoire de travail principal.",
+   "description": "Lance la conversation dans un nouveau worktree Git. Ce checkout distinct isole les fichiers de la tâche du répertoire de travail principal.",
    "description_source": "Run the chat in a new Git worktree.",
    "usage": "/worktree",
    "usage_nature": "syntaxe",
@@ -5439,7 +5482,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À tester si un correctif trading-sim doit être isolé des changements locaux avant une PR."
+    "pourquoi": "Sur une copie de trading-sim, lancer `/worktree` pour un audit de la branche courante et vérifier que la modification locale de spécification reste dans le checkout principal ; le résultat attendu est un audit isolé sans toucher à cette modification."
    },
    "sources": [
     {
@@ -5452,7 +5495,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5465,10 +5508,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Une modification locale de la spécification reste non commitée après rejet de son audit."
+    },
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Codex sert surtout à auditer le travail de Claude dans l'app de bureau."
+    }
+   }
   }
  ]
 }
