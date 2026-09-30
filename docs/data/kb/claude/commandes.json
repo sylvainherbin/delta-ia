@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 127,
- "commentees": 125,
+ "commentees": 127,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -580,7 +580,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -613,12 +613,16 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "sha1": "7652218ad63336a7a32ace82825e11132407c1c2",
      "pourquoi": "`/btw` figure parmi les commandes tapées observées"
     },
     "env.multi-sessions": {
@@ -2348,7 +2352,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2377,12 +2381,16 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "sha1": "7652218ad63336a7a32ace82825e11132407c1c2",
      "pourquoi": "`/compact` figure parmi les commandes tapées observées"
     },
     "projet.chatgpt-trading-sim": {
@@ -3049,7 +3057,7 @@
    "categorie": "commandes",
    "nom": "/focus",
    "gabarit": "complet",
-   "description": "Bascule la vue focus : seulement ton dernier prompt, un résumé d'une ligne des appels d'outils avec les statistiques de diff, et la réponse finale. Le choix persiste entre sessions (réglage `viewMode`). Uniquement en rendu plein écran.",
+   "description": "Bascule la vue focus : seulement ton dernier prompt, un résumé d'une ligne des appels d'outils (statistiques de diff, sous-agents lancés, notifications de tâches regroupées) et la réponse finale. Le choix persiste entre sessions (réglage `viewMode`) et n'existe qu'en rendu plein écran. Depuis un client Remote Control, `/focus on` ou `/focus off` ne change que la session courante, sans toucher au choix enregistré (v2.1.281 ou plus).",
    "description_source": "Toggle the focus view, which shows only your last prompt, a one-line tool-call summary with edit diffstats, and the final response. The tool-call summary also counts the subagents launched in the turn and collapses completed background-task notifications into a single count. The selection persists across sessions; set viewMode in settings to override it. Only available in fullscreen rendering. From a Remote Control client, run /focus [on|off] to turn the focus view on or off for the current session only, without changing your saved selection; this requires Claude Code v2.1.281 or later. The VS Code extension offers its own Focus view as a command-menu toggle, stored as an extension setting, independent of viewMode",
    "usage": "/focus",
    "usage_nature": "syntaxe",
@@ -3057,8 +3065,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Tu lis les sessions surtout depuis l'iPhone ; cette vue ne concerne que le rendu plein écran du terminal."
+    "verdict": "tester",
+    "pourquoi": "Taper `/focus on` depuis l'iPhone sur la session herbin-trading pendant une mission, puis vérifier que seul le résumé et la réponse finale s'affichent ; la variante Remote Control ne vaut que pour la session, alors que `/focus` au terminal enregistre le choix pour toutes les sessions."
    },
    "sources": [
     {
@@ -3067,7 +3075,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3084,10 +3092,23 @@
     {
      "date": "2026-09-30",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "L'iPhone est l'interface principale de pilotage."
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "herbin-trading exécute les missions longues de trading-sim."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-fork",
@@ -4314,16 +4335,16 @@
    "categorie": "commandes",
    "nom": "/rate-limit-options",
    "gabarit": "complet",
-   "description": "Montre les options quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des crédits ou changer de plan. Claude Code peut ouvrir ce menu de lui-même. Masquée du menu, elle se tape en entier.",
+   "description": "Montre les options quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des crédits ou changer de plan. Claude Code peut ouvrir ce menu de lui-même quand la limite est atteinte au terminal. Les lignes d'attente avec reprise demandent la v2.1.234 ou plus ; abonnement claude.ai requis.",
    "description_source": "Show ways to keep working when a claude.ai usage limit blocks a request: wait and continue automatically when the limit resets, add usage credits, or upgrade your plan. Claude Code can also open this menu on its own when you hit a limit at your own terminal. See Turn automatic continue off. Requires a claude.ai subscription. The wait-and-continue rows require Claude Code v2.1.234 or later",
    "usage": "/rate-limit-options",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "abonnement claude.ai",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu atteins les limites hebdomadaires ; l'option d'attente avec reprise automatique évite qu'une mission herbin-trading reste bloquée jusqu'à ton retour sur l'iPhone."
+    "pourquoi": "À la prochaine limite atteinte sur herbin-trading, taper `/rate-limit-options` et choisir l'attente avec reprise automatique, puis vérifier que la mission repart seule à la réinitialisation sans relance depuis l'iPhone."
    },
    "sources": [
     {
@@ -4332,7 +4353,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4353,10 +4374,23 @@
     {
      "date": "2026-09-30",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes ; pilotage depuis l'iPhone."
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "herbin-trading exécute les missions longues de trading-sim."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-recap",
@@ -4562,7 +4596,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4591,12 +4625,16 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
+     "sha1": "7652218ad63336a7a32ace82825e11132407c1c2",
      "pourquoi": "`/remote-control` figure parmi les commandes tapées observées"
     },
     "methode.travail": {
