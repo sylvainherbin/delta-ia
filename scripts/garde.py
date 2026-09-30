@@ -6,6 +6,8 @@ Contrôles, dans l'ordre :
 2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 85 -> arrêt,
    code 11. Fichier absent, illisible ou modifié il y a plus de 15 minutes : la console est sans doute arrêtée ;
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
+   D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= 80 (relevé frais) ajoute un avertissement, sans arrêt ; ChatGPT
+   n'arrête jamais le passage.
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
    code 12.
 4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
@@ -28,6 +30,7 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 SEUIL_SESSION_5H = 80
 SEUIL_SEMAINE = 85
+SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur ChatGPT
 FRAICHEUR_MAX_MIN = 15
 CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE = 10, 11, 12, 13
 CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "state/")
@@ -77,6 +80,11 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None) -> d
             arret(CODE_QUOTA, f"quota Claude : session 5 h {s5} %, semaine {sem} %")
         else:
             res["controles"].append(f"quotas : session 5 h {s5} %, semaine {sem} % (relevé il y a {age_min:.0f} min)")
+        if age_min <= FRAICHEUR_MAX_MIN:  # D71 : un relevé périmé est déjà signalé, ses pourcentages ne fondent pas d'alerte
+            for produit, pct in (("Claude", sem), ("ChatGPT", _pct(u, "chatgpt", "semaine", "pct"))):
+                if pct is not None and pct >= SEUIL_ALERTE_HEBDO:
+                    res["avertissements"].append(f"quota hebdomadaire {produit} à {pct:g} % — vérifie tes remises à zéro disponibles "
+                                                 "(Paramètres > Utilisation) avant d'économiser (D71)")
 
     # 3. passage claude du jour déjà fait
     quotidien = racine / "docs" / "data" / "claude" / f"{jour.isoformat()}.json"

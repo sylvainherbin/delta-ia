@@ -12,6 +12,8 @@ dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*) plus les igno
 nouveautés absentes restent en attente (code de sortie 4).
 `--kb` : code 3 = échec partiel (des pages ou des documentations en échec, les autres traitées normalement) ;
 code 5 = échec total (aucune page lue, ou toutes les documentations d'un périmètre en échec) ; D68.
+Chaque écriture de `raw/<p>-nouveautes.json` et de `raw/kb/<p>-modifications.json` laisse une copie datée dans
+`raw/historique/AAAA-MM-JJ/` (D72), jamais écrasée ni supprimée ; son échec est un avertissement, pas une erreur.
 """
 
 from __future__ import annotations
@@ -20,7 +22,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -32,6 +34,31 @@ from deltalib.passage import executer  # noqa: E402
 from deltalib.sources import ErreurConfiguration, charger_sources, sources_du_perimetre  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
+
+
+def historiser(chemin: Path, racine: Path, maintenant: datetime | None = None) -> Path | None:
+    """D72 : copie identique du brut dans raw/historique/AAAA-MM-JJ/<nom>-HHMMSS.json (heure locale).
+
+    Jamais d'écrasement (suffixe -2, -3…), jamais de suppression. Un échec n'arrête pas fetch.py : avertissement seul.
+    """
+    try:
+        maintenant = maintenant or datetime.now()
+        dossier = racine / "raw" / "historique" / maintenant.strftime("%Y-%m-%d")
+        dossier.mkdir(parents=True, exist_ok=True)
+        octets = chemin.read_bytes()
+        base = f"{chemin.stem}-{maintenant.strftime('%H%M%S')}"
+        n = 1
+        while True:
+            cible = dossier / (f"{base}.json" if n == 1 else f"{base}-{n}.json")
+            try:
+                with open(cible, "xb") as f:  # « x » : échoue si le nom existe, jamais d'écrasement
+                    f.write(octets)
+                return cible
+            except FileExistsError:
+                n += 1
+    except Exception as e:  # noqa: BLE001 — l'historique est accessoire, il ne doit jamais faire échouer la récupération
+        print(f"! AVERTISSEMENT : historique du brut non écrit ({type(e).__name__}: {e})")
+        return None
 
 
 def _date(s: str) -> date:
@@ -113,6 +140,7 @@ def commande_recuperer(args, racine: Path) -> int:
         print(f"[dry-run] rien n'est écrit ({chemin_brut})")
     else:
         ecrire_json(chemin_brut, brut)
+        historiser(chemin_brut, racine)
     print(f"périmètre {args.perimetre} : {len(bilan.sources_traitees)}/{len(sources)} source(s) traitée(s), "
           f"{bilan.elements_total} élément(s) lus, {len(bilan.nouveautes)} nouveauté(s), "
           f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else "")
@@ -167,6 +195,7 @@ def commande_kb(args, racine: Path) -> int:
         chemin = racine / "raw" / "kb" / f"{perimetre}-modifications.json"
         if not args.dry_run:
             ecrire_json(chemin, res)
+            historiser(chemin, racine)
         print(f"catalogue {perimetre} : {res['total']} entrée(s), {len(res['ajoutees'])} ajoutée(s), "
               f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['description_source_modifiee'])} description(s) "
               f"d'origine modifiée(s), {len(res['retirees'])} retirée(s), "

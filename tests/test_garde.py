@@ -12,10 +12,13 @@ import garde
 J = date(2026, 9, 25)
 
 
-def usage(racine, s5=10, sem=20, age_min=1):
+def usage(racine, s5=10, sem=20, age_min=1, chatgpt=None):
     f = racine / "rapports" / "usage.json"
     f.parent.mkdir(parents=True, exist_ok=True)
-    f.write_text(json.dumps({"claude": {"session_5h": {"pct": s5}, "semaine": {"pct": sem}}}), encoding="utf-8")
+    contenu = {"claude": {"session_5h": {"pct": s5}, "semaine": {"pct": sem}}}
+    if chatgpt is not None:
+        contenu["chatgpt"] = {"semaine": {"pct": chatgpt}}
+    f.write_text(json.dumps(contenu), encoding="utf-8")
     t = time.time() - age_min * 60
     os.utime(f, (t, t))
 
@@ -67,6 +70,71 @@ def test_verrou(racine, capsys):
 def test_seuils_quotas(racine, capsys, s5, sem, attendu):
     usage(racine, s5, sem)
     assert lancer(racine, capsys)[0] == attendu
+
+
+# --- D71 : alerte à 80 % du quota hebdomadaire, sans arrêt ------------------------------------------------
+
+def alertes_hebdo(out):
+    return [l for l in out.splitlines() if "quota hebdomadaire" in l]
+
+
+def test_d71_79_pour_cent_sans_avertissement(racine, capsys):
+    usage(racine, 10, 79, chatgpt=79)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and alertes_hebdo(out) == [] and "GARDE: OK" in out
+
+
+def test_d71_claude_a_80_avertit_sans_arreter(racine, capsys):
+    usage(racine, 10, 80, chatgpt=10)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "GARDE: OK" in out
+    assert alertes_hebdo(out) == ["! AVERTISSEMENT : quota hebdomadaire Claude à 80 % — vérifie tes remises à zéro disponibles "
+                                  "(Paramètres > Utilisation) avant d'économiser (D71)"]
+
+
+def test_d71_chatgpt_a_80_avertit_sans_arreter(racine, capsys):
+    usage(racine, 10, 20, chatgpt=80)
+    code, out = lancer(racine, capsys)
+    assert code == 0
+    assert alertes_hebdo(out) == ["! AVERTISSEMENT : quota hebdomadaire ChatGPT à 80 % — vérifie tes remises à zéro disponibles "
+                                  "(Paramètres > Utilisation) avant d'économiser (D71)"]
+
+
+def test_d71_chatgpt_a_100_ne_bloque_jamais(racine, capsys):
+    usage(racine, 10, 20, chatgpt=100)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "GARDE: OK" in out and "ChatGPT à 100 %" in out
+
+
+def test_d71_les_deux_produits_donnent_deux_avertissements(racine, capsys):
+    usage(racine, 10, 82, chatgpt=92)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and [("Claude" in l, "ChatGPT" in l) for l in alertes_hebdo(out)] == [(True, False), (False, True)]
+
+
+def test_d71_claude_a_85_reste_en_code_11(racine, capsys):
+    usage(racine, 10, 85)
+    code, out = lancer(racine, capsys)
+    assert code == garde.CODE_QUOTA == 11 and "ARRÊT" in out and "quota hebdomadaire Claude à 85 %" in out
+
+
+def test_d71_champ_chatgpt_absent_inchange(racine, capsys):
+    usage(racine, 10, 20)  # pas de bloc chatgpt
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "AVERTISSEMENT" not in out
+
+
+def test_d71_releve_perime_ne_fonde_pas_d_alerte(racine, capsys):
+    usage(racine, 10, 90, age_min=16, chatgpt=95)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "console arrêtée" in out and alertes_hebdo(out) == []
+
+
+def test_d71_l_avertissement_declenche_le_rapport_du_mode_automatique():
+    """D63 amendée : tout `! AVERTISSEMENT` de la garde impose un rapport ; l'avertissement D71 sort sous ce préfixe."""
+    from conftest import RACINE
+    skill = (RACINE / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
+    assert "un avertissement de la garde (`! AVERTISSEMENT`)" in skill
 
 
 def test_usage_perime_continue_mais_signale(racine, capsys):
@@ -199,3 +267,14 @@ def test_d68_grep_lecture_seule_et_settings_local_ignore():
     greps = sorted(r for r in s["allow"] if r.startswith("Bash(grep"))
     assert greps == ["Bash(grep -n *)", "Bash(grep -o *)", "Bash(grep -rn *)"], "grep en lecture seule, formes -n, -rn, -o seulement"
     assert ".claude/settings.local.json" in (RACINE / ".gitignore").read_text(encoding="utf-8").splitlines()
+
+
+def test_d71_d72_inscrites_dans_spec_regles_skills_et_prompts():
+    from conftest import RACINE
+    lire = lambda p: (RACINE / p).read_text(encoding="utf-8")
+    spec, regles = lire("SPEC.md"), lire("REGLES.md")
+    assert "| D71 |" in spec and "| D72 |" in spec and "## 9. Compte et quotas (D71)" in regles
+    assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in spec + regles
+    for f in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md",
+              ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md"):
+        assert "Compte et quotas" in lire(f) and "D71" in lire(f), f
