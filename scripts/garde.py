@@ -6,6 +6,8 @@ Contrôles, dans l'ordre :
 2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 85 -> arrêt,
    code 11. Fichier absent, illisible ou modifié il y a plus de 15 minutes : la console est sans doute arrêtée ;
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
+   D71 : un fichier absent, illisible ou sans `claude.session_5h.pct` / `claude.semaine.pct` (la console le réécrit) est relu
+   une seule fois après 3 s ; s'il reste incomplet, comportement inchangé (« quotas inconnus », aucun arrêt nouveau).
    D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= 80 (relevé frais) ajoute un avertissement, sans arrêt ; ChatGPT
    n'arrête jamais le passage.
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
@@ -24,6 +26,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -32,6 +35,7 @@ SEUIL_SESSION_5H = 80
 SEUIL_SEMAINE = 85
 SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur ChatGPT
 FRAICHEUR_MAX_MIN = 15
+DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
 CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE = 10, 11, 12, 13
 CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "state/")
 
@@ -42,7 +46,25 @@ def _pct(d: dict, *cles) -> float | None:
     return d if isinstance(d, (int, float)) and not isinstance(d, bool) else None
 
 
-def controler(racine: Path, jour: date, maintenant: datetime | None = None) -> dict:
+def _dormir(secondes: float) -> None:  # remplacé dans les tests : aucune attente réelle
+    time.sleep(secondes)
+
+
+def _lire_usage(usage: Path, maintenant: datetime):
+    """(âge en minutes, contenu, erreur) ; complet = session 5 h et semaine de Claude présentes."""
+    try:
+        age_min = (maintenant.timestamp() - usage.stat().st_mtime) / 60
+        u = json.loads(usage.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        return None, None, e
+    return age_min, u, None
+
+
+def _complet(u) -> bool:
+    return u is not None and _pct(u, "claude", "session_5h", "pct") is not None and _pct(u, "claude", "semaine", "pct") is not None
+
+
+def controler(racine: Path, jour: date, maintenant: datetime | None = None, delai_relecture: float = DELAI_RELECTURE_S) -> dict:
     maintenant = maintenant or datetime.now(timezone.utc)
     res = {"jour": jour.isoformat(), "code": 0, "motif": None, "controles": [], "avertissements": [], "fichiers_modifies": []}
 
@@ -60,11 +82,12 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None) -> d
 
     # 2. quotas Claude (console-mur)
     usage = racine / "rapports" / "usage.json"
-    try:
-        age_min = (maintenant.timestamp() - usage.stat().st_mtime) / 60
-        u = json.loads(usage.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as e:
-        res["avertissements"].append(f"usage.json absent ou illisible ({type(e).__name__}) : quotas inconnus, console arrêtée ?")
+    age_min, u, erreur = _lire_usage(usage, maintenant)
+    if not _complet(u):  # D71 : le fichier est réécrit par la console ; une seule relecture, après un délai court et borné
+        _dormir(delai_relecture)
+        age_min, u, erreur = _lire_usage(usage, maintenant)
+    if erreur is not None:
+        res["avertissements"].append(f"usage.json absent ou illisible ({type(erreur).__name__}) : quotas inconnus, console arrêtée ?")
         res["controles"].append("quotas : inconnus (usage.json absent ou illisible) — le passage continue")
     else:
         s5, sem = _pct(u, "claude", "session_5h", "pct"), _pct(u, "claude", "semaine", "pct")

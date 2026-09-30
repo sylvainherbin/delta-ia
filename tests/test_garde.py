@@ -37,6 +37,14 @@ def git(racine, *args):
                    env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"})
 
 
+@pytest.fixture(autouse=True)
+def pauses(monkeypatch):
+    """Aucune attente réelle : les pauses de relecture sont enregistrées, et un scénario peut agir pendant la pause."""
+    appels = []
+    monkeypatch.setattr(garde, "_dormir", lambda s: appels.append(s))
+    return appels
+
+
 @pytest.fixture
 def racine(tmp_path):
     git(tmp_path, "init", "-q")
@@ -278,3 +286,57 @@ def test_d71_d72_inscrites_dans_spec_regles_skills_et_prompts():
     for f in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md",
               ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md"):
         assert "Compte et quotas" in lire(f) and "D71" in lire(f), f
+
+
+# --- D71 : relecture unique de usage.json quand un champ manque (la console le réécrit) ----------------------
+
+def usage_sans_claude(racine, chatgpt=None):
+    f = racine / "rapports" / "usage.json"
+    f.write_text(json.dumps({"claude": {}, **({"chatgpt": {"semaine": {"pct": chatgpt}}} if chatgpt is not None else {})}), encoding="utf-8")
+
+
+def test_d71_champ_absent_puis_present_est_evalue_normalement(racine, capsys, monkeypatch, pauses):
+    usage_sans_claude(racine)
+    monkeypatch.setattr(garde, "_dormir", lambda s: (pauses.append(s), usage(racine, 10, 80, chatgpt=85)))
+    code, out = lancer(racine, capsys)
+    assert code == 0 and pauses == [garde.DELAI_RELECTURE_S] and "quotas inconnus" not in out
+    assert "session 5 h 10 %, semaine 80 %" in out
+    assert [("Claude" in l, "ChatGPT" in l) for l in alertes_hebdo(out)] == [(True, False), (False, True)]
+
+
+def test_d71_champ_absent_puis_present_peut_arreter(racine, capsys, monkeypatch, pauses):
+    usage_sans_claude(racine)
+    monkeypatch.setattr(garde, "_dormir", lambda s: (pauses.append(s), usage(racine, 80, 20)))
+    assert lancer(racine, capsys)[0] == garde.CODE_QUOTA == 11
+
+
+def test_d71_fichier_absent_puis_present(racine, capsys, monkeypatch, pauses):
+    (racine / "rapports" / "usage.json").unlink()
+    monkeypatch.setattr(garde, "_dormir", lambda s: (pauses.append(s), usage(racine, 10, 20)))
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "AVERTISSEMENT" not in out and len(pauses) == 1
+
+
+def test_d71_champ_absent_aux_deux_lectures_comportement_actuel(racine, capsys, pauses):
+    usage_sans_claude(racine)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "GARDE: OK" in out and "quotas inconnus" in out and "AVERTISSEMENT" in out
+    assert pauses == [garde.DELAI_RELECTURE_S], "une seule relecture, jamais de boucle"
+
+
+def test_d71_fichier_illisible_aux_deux_lectures_comportement_actuel(racine, capsys, pauses):
+    (racine / "rapports" / "usage.json").write_text("{tronqué", encoding="utf-8")
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "absent ou illisible" in out and len(pauses) == 1
+
+
+def test_d71_pas_d_attente_quand_la_premiere_lecture_est_complete(racine, capsys, pauses):
+    usage(racine, 10, 20, chatgpt=50)
+    code, out = lancer(racine, capsys)
+    assert code == 0 and pauses == []
+
+
+def test_d71_delai_injectable_et_borne(racine, pauses):
+    usage_sans_claude(racine)
+    garde.controler(racine, J, delai_relecture=0.25)
+    assert pauses == [0.25] and garde.DELAI_RELECTURE_S <= 3
