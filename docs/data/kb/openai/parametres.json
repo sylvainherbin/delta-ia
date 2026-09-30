@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-09-30",
  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -6742,15 +6742,15 @@
    "nom": "codex --model, -m",
    "gabarit": "court",
    "description": "L’option `--model` remplace pour cette session le modèle défini en configuration.",
-   "description_source": "Override the model set in configuration (for example gpt-6-sol ). (valeurs : string)",
+   "description_source": "Override the model set in configuration (for example gpt-6.1-sol ). (valeurs : string)",
    "usage": "codex --model, -m",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans la future CLI tmux, lancer un contrôle bref de trading-sim avec `codex -m gpt-6-luna` ; comparer au profil audit sans le modifier."
+    "pourquoi": "Dans la future CLI sous tmux, lancer avec `codex -m gpt-6.1-sol` une vérification brève de trading-sim et comparer le résultat au profil `audit` sans modifier le défaut."
    },
    "sources": [
     {
@@ -6763,7 +6763,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6776,13 +6776,29 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils d’audit sont déjà utilisés."
+     "pourquoi": "Le profil audit utilise actuellement GPT-6 Sol avec un effort xhigh."
+    },
+    "optimisation.pistes": {
+     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "pourquoi": "Une CLI Codex sous tmux fait partie des objectifs déclarés."
     }
    }
   },
@@ -9072,16 +9088,16 @@
    "categorie": "parametres",
    "nom": "features.context_management.experimental_mode",
    "gabarit": "court",
-   "description": "Le mode expérimental de contexte conserve des notes et un historique interrogeable au lieu d’un résumé unique.",
-   "description_source": "Type : boolean. Enable experimental context management (off by default). Rather than repeatedly compressing context into a single summary, it uses notes and searchable history to preserve accumulated details. Requires ChatGPT sign-in on Plus, Pro, or Pro Lite.",
+   "description": "Le mode expérimental de gestion du contexte est documenté comme non disponible actuellement.",
+   "description_source": "Type : boolean. Experimental context-management setting. The feature is not currently available.",
    "usage": "features.context_management.experimental_mode",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les audits longs consomment des jetons, mais aucun essai mesurable de ce mode expérimental n'est défini pour trading-sim."
+    "pourquoi": "La fonction n’est pas disponible et la CLI autonome n’est pas utilisée."
    },
    "sources": [
     {
@@ -9094,7 +9110,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9111,13 +9127,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits longs et coûteux sont attestés, sans mesure de ce mode expérimental."
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     }
    }
   },
@@ -9666,16 +9690,16 @@
    "categorie": "parametres",
    "nom": "features.network_proxy.domains",
    "gabarit": "court",
-   "description": "La carte des domaines autorise ou refuse les destinations des commandes placées derrière le proxy.",
-   "description_source": "Type : map<string, allow | deny>. Domain policy for sandboxed networking. Unset by default, which means no external destinations are allowed until you add allow rules. Supports exact hosts, *.example.com for subdomains only, .example.com for apex plus subdomains, and global * allow rules; prefer scoped rules because * broadly opens public outbound access. Add deny rules for blocked destinations; deny wins on conflicts.",
+   "description": "La carte des domaines autorise ou refuse les destinations des commandes placées derrière le proxy ; sans domaine autorisé, toutes les destinations externes sont refusées.",
+   "description_source": "Type : map<string, allow | deny>. Domain policy for sandboxed networking. Unset by default, which means no external destinations are allowed until you add allow rules. Supports exact hosts, *.example.com for subdomains only, .example.com for apex plus subdomains, and global * allow rules. Prefer scoped rules because * broadly opens public outbound access. Add deny rules for blocked destinations; deny wins on conflicts.",
    "usage": "features.network_proxy.domains",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La politique de trading-sim interdit les accès web et aucun domaine externe supplémentaire n’est demandé."
+    "pourquoi": "Les audits trading-sim interdisent le réseau et aucun domaine externe supplémentaire n’est demandé."
    },
    "sources": [
     {
@@ -9688,7 +9712,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9697,10 +9721,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits sont locaux, sans réseau ni marché réel."
+    }
+   }
   },
   {
    "id": "codex-parametres-features-network-proxy-enable-socks5",
@@ -14300,7 +14337,7 @@
    "nom": "model",
    "gabarit": "court",
    "description": "Le paramètre `model` fixe le modèle Codex utilisé par défaut.",
-   "description_source": "Type : string. Model to use (e.g., gpt-6-sol).",
+   "description_source": "Type : string. Model to use (e.g., gpt-6.1-sol).",
    "usage": "model",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14308,7 +14345,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Le défaut `gpt-6-sol` est déjà configuré et sert aux audits ; pour un essai ponctuel, `codex --model` évite de changer ce défaut persistant."
+    "pourquoi": "Le défaut `gpt-6-sol` est déjà configuré pour les audits ; employer `--model` pour un essai ponctuel évite de modifier ce choix persistant."
    },
    "sources": [
     {
@@ -14321,7 +14358,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14334,13 +14371,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Le modèle par défaut et les profils sont configurés pour les audits."
+     "pourquoi": "Le modèle par défaut est GPT-6 Sol et les profils explicites séparent audit, rapide et sécurité."
     }
    }
   },

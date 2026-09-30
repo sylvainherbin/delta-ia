@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-09-30",
  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -4099,16 +4099,16 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "Ouvre le choix du modèle actif et, lorsqu'il est proposé, de l'effort de raisonnement. La documentation présente notamment `gpt-6-luna` et `gpt-6-sol` comme choix possibles.",
-   "description_source": "Choose the active model (and reasoning effort, when available). — Switch between models such as gpt-6-luna and gpt-6-sol before running a task.",
+   "description": "La commande `/model` ouvre le choix du modèle actif et, lorsqu’il est proposé, de l’effort de raisonnement. La documentation présente notamment GPT-6.1 Sol comme modèle agentique disponible selon l’offre et le déploiement.",
+   "description_source": "Choose the active model (and reasoning effort, when available). — Use gpt-6-luna or gpt-6.1-sol if shown.",
    "usage": "/model",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans une conversation Codex d'audit trading-sim, essayer `/model` pour choisir un modèle moins coûteux sur une vérification courte puis contrôler le modèle actif avec `/status`. Surveiller aussi le défaut des nouvelles sessions : CONTEXTE.md signale qu'un changement de modèle dans l'app semble l'avoir modifié, sans établir le mécanisme."
+    "pourquoi": "Dans un audit trading-sim non critique, choisir GPT-6.1 Sol avec `/model`, vérifier le modèle actif, puis contrôler que le défaut des nouvelles sessions n’a pas changé."
    },
    "sources": [
     {
@@ -4121,7 +4121,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4138,21 +4138,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'usage actuel de Codex est dans l'app de bureau."
+     "pourquoi": "Le sélecteur de modèle est utilisé et semble avoir déjà changé le défaut des nouvelles conversations."
     },
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Un changement de modèle dans l'app semble avoir modifié le défaut, mécanisme à confirmer."
-    },
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les limites d'usage sont une friction récurrente."
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex réalise des audits contradictoires sur ce projet."
     }
    }
   },
