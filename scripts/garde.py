@@ -8,8 +8,9 @@ Contrôles, dans l'ordre :
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
    D71 : un fichier absent, illisible ou sans `claude.session_5h.pct` / `claude.semaine.pct` (la console le réécrit) est relu
    une seule fois après 3 s ; s'il reste incomplet, comportement inchangé (« quotas inconnus », aucun arrêt nouveau).
-   D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= 80 (relevé frais) ajoute un avertissement, sans arrêt ; ChatGPT
-   n'arrête jamais le passage.
+   D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= 80 ajoute un avertissement, sans arrêt, même sur un relevé périmé
+   (mention « relevé périmé, il y a N min ») ; ChatGPT n'arrête jamais le passage. Quotas Claude inconnus : l'avertissement
+   ajoute « vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71) ».
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
    code 12.
 4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
@@ -36,6 +37,7 @@ SEUIL_SEMAINE = 85
 SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur ChatGPT
 FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
+RAPPEL_CLAUDE = "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)"
 CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE = 10, 11, 12, 13
 CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "state/")
 
@@ -87,7 +89,7 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         _dormir(delai_relecture)
         age_min, u, erreur = _lire_usage(usage, maintenant)
     if erreur is not None:
-        res["avertissements"].append(f"usage.json absent ou illisible ({type(erreur).__name__}) : quotas inconnus, console arrêtée ?")
+        res["avertissements"].append(f"usage.json absent ou illisible ({type(erreur).__name__}) : quotas inconnus, console arrêtée ? {RAPPEL_CLAUDE}")
         res["controles"].append("quotas : inconnus (usage.json absent ou illisible) — le passage continue")
     else:
         s5, sem = _pct(u, "claude", "session_5h", "pct"), _pct(u, "claude", "semaine", "pct")
@@ -96,18 +98,19 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
                                          f"quotas non fiables (dernières valeurs : session 5 h {s5} %, semaine {sem} %)")
             res["controles"].append(f"quotas : relevé périmé ({age_min:.0f} min) — le passage continue")
         elif s5 is None or sem is None:
-            res["avertissements"].append("usage.json sans claude.session_5h.pct ou claude.semaine.pct : quotas inconnus")
+            res["avertissements"].append(f"usage.json sans claude.session_5h.pct ou claude.semaine.pct : quotas inconnus. {RAPPEL_CLAUDE}")
             res["controles"].append("quotas : champs absents — le passage continue")
         elif s5 >= SEUIL_SESSION_5H or sem >= SEUIL_SEMAINE:
             res["controles"].append(f"quotas : session 5 h {s5} % (seuil {SEUIL_SESSION_5H}), semaine {sem} % (seuil {SEUIL_SEMAINE}) — arrêt")
             arret(CODE_QUOTA, f"quota Claude : session 5 h {s5} %, semaine {sem} %")
         else:
             res["controles"].append(f"quotas : session 5 h {s5} %, semaine {sem} % (relevé il y a {age_min:.0f} min)")
-        if age_min <= FRAICHEUR_MAX_MIN:  # D71 : un relevé périmé est déjà signalé, ses pourcentages ne fondent pas d'alerte
-            for produit, pct in (("Claude", sem), ("ChatGPT", _pct(u, "chatgpt", "semaine", "pct"))):
-                if pct is not None and pct >= SEUIL_ALERTE_HEBDO:
-                    res["avertissements"].append(f"quota hebdomadaire {produit} à {pct:g} % — vérifie tes remises à zéro disponibles "
-                                                 "(Paramètres > Utilisation) avant d'économiser (D71)")
+        # D71 : l'alerte vaut aussi sur un relevé périmé (avertissement seulement, jamais d'arrêt sur un relevé périmé)
+        perime = f" (relevé périmé, il y a {age_min:.0f} min)" if age_min > FRAICHEUR_MAX_MIN else ""
+        for produit, pct in (("Claude", sem), ("ChatGPT", _pct(u, "chatgpt", "semaine", "pct"))):
+            if pct is not None and pct >= SEUIL_ALERTE_HEBDO:
+                res["avertissements"].append(f"quota hebdomadaire {produit} à {pct:g} %{perime} — vérifie tes remises à zéro disponibles "
+                                             "(Paramètres > Utilisation) avant d'économiser (D71)")
 
     # 3. passage claude du jour déjà fait
     quotidien = racine / "docs" / "data" / "claude" / f"{jour.isoformat()}.json"

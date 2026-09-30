@@ -132,10 +132,32 @@ def test_d71_champ_chatgpt_absent_inchange(racine, capsys):
     assert code == 0 and "AVERTISSEMENT" not in out
 
 
-def test_d71_releve_perime_ne_fonde_pas_d_alerte(racine, capsys):
-    usage(racine, 10, 90, age_min=16, chatgpt=95)
+def test_d71_releve_perime_avertit_quand_meme_sans_arret(racine, capsys):
+    usage(racine, 10, 90, age_min=16, chatgpt=93)
     code, out = lancer(racine, capsys)
-    assert code == 0 and "console arrêtée" in out and alertes_hebdo(out) == []
+    assert code == 0 and "GARDE: OK" in out and "console arrêtée" in out
+    assert alertes_hebdo(out) == [
+        "! AVERTISSEMENT : quota hebdomadaire Claude à 90 % (relevé périmé, il y a 16 min) — vérifie tes remises à zéro disponibles "
+        "(Paramètres > Utilisation) avant d'économiser (D71)",
+        "! AVERTISSEMENT : quota hebdomadaire ChatGPT à 93 % (relevé périmé, il y a 16 min) — vérifie tes remises à zéro disponibles "
+        "(Paramètres > Utilisation) avant d'économiser (D71)"]
+
+
+def test_d71_releve_perime_sous_80_sans_alerte(racine, capsys):
+    usage(racine, 10, 79, age_min=30, chatgpt=50)
+    assert alertes_hebdo(lancer(racine, capsys)[1]) == []
+
+
+@pytest.mark.parametrize("contenu", [
+    None, "{tronqué", json.dumps({"claude": {}}),
+    json.dumps({"claude": {"session_5h": {"pct": None}, "semaine": {"pct": None}}}),
+    json.dumps({"claude": {"session_5h": {"pct": 10}, "semaine": {}}})])
+def test_d71_quotas_claude_inconnus_rappellent_de_verifier(racine, capsys, contenu):
+    f = racine / "rapports" / "usage.json"
+    f.unlink() if contenu is None else f.write_text(contenu, encoding="utf-8")
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "quotas inconnus" in out
+    assert "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)" in out
 
 
 def test_d71_l_avertissement_declenche_le_rapport_du_mode_automatique():
