@@ -203,12 +203,12 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
 def sujet_d71(entrees: dict[str, dict], modif: dict) -> list[str]:
     """D71, étape 2a : ids des entrées ajoutées ou modifiées (usage, description d'origine) dont le nom, l'usage ou la
     description d'origine touche au compte et aux quotas (mots-clés de `deltalib.sujet_d71`). Aucun jugement."""
-    from ..sujet_d71 import correspond
+    from ..sujet_d71 import correspond_base
     ids = []
     for cle in ("ajoutees", "usage_modifie", "description_source_modifiee"):
         for i in modif.get(cle, []):
             e = entrees.get(i) or {}
-            if i not in ids and correspond(e.get("nom"), e.get("usage"), e.get("description_source")):
+            if i not in ids and correspond_base(e.get("nom"), e.get("usage"), e.get("description_source")):
                 ids.append(i)
     return sorted(ids)
 

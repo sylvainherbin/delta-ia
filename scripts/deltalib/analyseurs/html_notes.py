@@ -209,7 +209,7 @@ def parser_index_articles(texte: str, source) -> list[Element]:
     dix langues). Seules les pages dont le titre ou la description touche au compte et aux quotas (D71,
     `deltalib.sujet_d71`) deviennent des éléments non datés `<source>-<id>` : une page absente de l'état est un nouvel
     article d'aide. Section introuvable, ou aucune ligne reconnue : FormatInattendu, jamais un vide silencieux."""
-    from ..sujet_d71 import mots_trouves
+    from ..sujet_d71 import mots_trouves_index
     lignes = texte.splitlines()
     section = source.options.get("section")
     if section:
@@ -228,7 +228,7 @@ def parser_index_articles(texte: str, source) -> list[Element]:
     for m in articles:
         titre = re.sub(r"\\([()\[\]])", r"\1", m.group("titre")).strip()
         desc = (m.group("desc") or "").strip()
-        mots = mots_trouves(titre, desc)
+        mots = mots_trouves_index(titre, desc)
         ident = _id_article(m.group("url"))
         if not mots or ident in vus:
             continue

@@ -26,53 +26,87 @@ def lire(p):
     return json.loads(p.read_text(encoding="utf-8"))
 
 
-# --- filtre commun (c) ---------------------------------------------------------------------------------------------
+# --- filtres : liste de l'index d'aide (b2) et liste de la base de référence (c) ----------------------------------
 
 @pytest.mark.parametrize("texte", ["What is a limit reset?", "Remises à zéro de Codex", "Buy more credits", "Forfait Max",
-                                   "Claude API pricing", "Réinitialisation des limites", "Enterprise plans", "Free trial"])
-def test_sujet_pertinent_reconnu(texte):
-    assert sujet_d71.correspond(texte)
+                                   "Claude API pricing", "Réinitialisation des limites", "Enterprise plans", "Free trial",
+                                   "Models, usage, and limits in Claude Code", "How do usage and length limits work?"])
+def test_index_sujet_pertinent_reconnu(texte):
+    assert sujet_d71.correspond_index(texte)
 
 
-@pytest.mark.parametrize("texte", ["What is Claude Tag?", "Verify your phone number", "Configure the terminal title", ""])
-def test_sujet_hors_sujet_non_reconnu(texte):
-    assert not sujet_d71.correspond(texte)
+@pytest.mark.parametrize("texte", ["What is Claude Tag?", "Verify your phone number", "Configure the terminal title", "",
+                                   "Usage Policy", "Claude Code usage analytics"])
+def test_index_hors_sujet_non_reconnu(texte):
+    assert not sujet_d71.correspond_index(texte)
 
 
 def test_mots_entiers_seulement():
-    assert not sujet_d71.correspond("planning", "replanned", "offering", "pricey")
-
-
-@pytest.mark.parametrize("texte", ["Finances : check your credit score", "Finances : votre score de crédit",
-                                   "Use plan mode to review changes", "Utilise le mode plan avant d'écrire"])
-def test_expression_exclue_seule_n_est_pas_retenue(texte):
-    assert not sujet_d71.correspond(texte)
+    assert not sujet_d71.correspond_index("planning", "replanned", "offering", "pricey")
+    assert not sujet_d71.correspond_base("quotation", "billingual")
 
 
 @pytest.mark.parametrize("texte", ["Use plan mode to review changes", "Utilise le mode plan avant d'écrire"])
 def test_exclusion_plan_mode_est_effective(texte, monkeypatch):
+    assert not sujet_d71.correspond_index(texte)
     monkeypatch.setattr(sujet_d71, "_EXCLUS", [])  # sans l'exclusion, le même texte est retenu : le test prouve bien quelque chose
-    assert sujet_d71.correspond(texte)
+    assert sujet_d71.correspond_index(texte)
+
+
+@pytest.mark.parametrize("texte", ["Finances : check your credit score", "Finances : votre score de crédit"])
+def test_expression_exclue_seule_n_est_pas_retenue(texte):
+    assert not sujet_d71.correspond_index(texte) and not sujet_d71.correspond_base(texte)
 
 
 @pytest.mark.parametrize("texte, mot", [
-    ("Finances : your credit score and your usage limits", "limit"),
+    ("Finances : your credit score and your usage limits", "usage limit"),
     ("Finances : votre score de crédit et vos crédits", "crédits"),
     ("Plan mode is free, but the Max plan has weekly limits", "plan"),
     ("Utilise le mode plan ; ton forfait Max a une limite hebdomadaire", "forfait"),
 ])
 def test_exclusion_porte_sur_l_expression_pas_sur_le_texte(texte, mot):
     """Un texte qui contient l'expression exclue ET un vrai mot-clé D71 reste marqué."""
-    assert mot in sujet_d71.mots_trouves(texte)
+    assert mot in sujet_d71.mots_trouves_index(texte)
 
 
-def test_limit_est_un_mot_cle_mais_pas_usage_seul():
-    assert sujet_d71.correspond("How do usage and length limits work?") and sujet_d71.correspond("Models, usage, and limits in Claude Code")
-    assert not sujet_d71.correspond("Usage Policy") and not sujet_d71.correspond("Claude Code usage analytics")
+def test_deux_listes_constantes_distinctes():
+    base, index = set(sujet_d71.MOTS_CLES_BASE), set(sujet_d71.MOTS_CLES_INDEX)
+    assert base < index and {"limit", "plan", "reset", "offer", "offre", "limite"} <= index - base
+    assert not {"limit", "plan", "reset", "offer", "offre", "limite", "usage"} & base
+    assert {"usage limit", "rate limit", "limit reset", "extra usage", "free trial", "remise à zéro", "quota", "credits", "crédits",
+            "billing", "subscription", "abonnement", "pricing", "price", "tarif", "forfait", "promotion", "réinitialisation"} == base
+    assert "credit score" in sujet_d71.EXCLUSIONS and "plan mode" in sujet_d71.EXCLUSIONS
 
 
-def test_constantes_modifiables_hors_du_code():
-    assert "remise à zéro" in sujet_d71.MOTS_CLES and "credit score" in sujet_d71.EXCLUSIONS
+@pytest.mark.parametrize("nom, usage, description", [
+    ("auto-compact-token-limit", "auto-compact-token-limit = 120000", "Token limit that triggers automatic compaction."),
+    ("tool-output-token-limit", "tool_output_token_limit = 10000", "Maximum tokens kept from a tool output. Limit applies per call."),
+    ("bash-max-output-length", "BASH_MAX_OUTPUT_LENGTH=30000", "Limits the characters of bash output kept in context."),
+    ("/plan", "/plan", "Enter plan mode. Available on paid plans."),
+    ("/clear", "/clear", "Reset the conversation context."),
+    ("reset-font-size", "reset-font-size", "Reset the font size to the default."),
+    ("/feedback-offer", "/feedback", "We offer a way to send feedback. Offre de retour."),
+])
+def test_base_reglage_technique_avec_mot_ambigu_seul_n_est_pas_marque(nom, usage, description):
+    assert not sujet_d71.correspond_base(nom, usage, description)
+    assert catalogue.sujet_d71({"x": {"nom": nom, "usage": usage, "description_source": description}}, {"ajoutees": ["x"]}) == []
+
+
+@pytest.mark.parametrize("nom, usage, description", [
+    ("/usage", "/usage", "Show your plan usage limits and when they reset."),
+    ("/extra-usage", "/extra-usage", "Turn on extra usage when you reach a limit."),
+    ("/cost", "/cost", "Session cost and quota."),
+    ("billing", "", "Gérer la facturation et l'abonnement."),
+    ("promotion", "", "Offre promotionnelle : promotion sur les forfaits Pro."),
+])
+def test_base_expressions_sans_double_sens_marquees(nom, usage, description):
+    assert sujet_d71.correspond_base(nom, usage, description)
+
+
+def test_index_garde_les_mots_ambigus_la_base_non():
+    titre = "Models, usage, and limits in Claude Code"
+    assert sujet_d71.correspond_index(titre) and not sujet_d71.correspond_base(titre)
+    assert sujet_d71.correspond_index("What is the Pro plan?") and not sujet_d71.correspond_base("What is the Pro plan?")
 
 
 def entrees(**noms):
@@ -82,9 +116,10 @@ def entrees(**noms):
 def test_catalogue_sujet_d71_marque_les_entrees_pertinentes():
     e = entrees(a=("/usage", "/usage", "Show your plan usage limits"), b=("/color", "/color", "Change the prompt bar color"),
                 c=("finances", "credit score", "View your credit score"), d=("/cost", "/cost", "Session cost and quota"),
-                e=("Plan mode", "claude --permission-mode plan", "Enter plan mode"), f=("finances", "credit score", "View your credit score and usage limits"))
-    modif = {"ajoutees": ["a", "b", "e"], "usage_modifie": ["c", "f"], "description_source_modifiee": ["d", "a"], "retirees": ["b"]}
-    # b hors sujet, c et e ne portent que l'expression exclue, f garde un vrai mot-clé, a une seule fois
+                e=("Plan mode", "claude --permission-mode plan", "Enter plan mode"), f=("finances", "credit score", "View your credit score and usage limits"),
+                g=("tool-output-token-limit", "tool_output_token_limit", "Maximum tokens kept from a tool output."))
+    modif = {"ajoutees": ["a", "b", "e", "g"], "usage_modifie": ["c", "f"], "description_source_modifiee": ["d", "a"], "retirees": ["b"]}
+    # b hors sujet, c et e ne portent que l'expression exclue, g n'a que « limit » (réglage technique), f garde un vrai mot-clé, a une seule fois
     assert catalogue.sujet_d71(e, modif) == ["a", "d", "f"]
 
 
@@ -94,18 +129,26 @@ def test_catalogue_sujet_d71_liste_vide_sans_entree_pertinente():
     assert catalogue.sujet_d71(e, {}) == []
 
 
-def test_fetch_kb_ecrit_sujet_d71_dans_le_fichier_de_modifications(tmp_path, monkeypatch, capsys):
+def test_fetch_kb_ecrit_sujet_d71_dans_le_fichier_de_modifications(tmp_path, monkeypatch):
     from test_kb import YAML, lancer_kb
     (tmp_path / "sources.yaml").write_text(YAML, encoding="utf-8")
     assert lancer_kb(tmp_path, monkeypatch) == 0
     for p in ("claude", "openai"):
         modif = lire(tmp_path / "raw" / "kb" / f"{p}-modifications.json")
-        assert "sujet_d71" in modif and set(modif["sujet_d71"]) <= set(modif["ajoutees"])
-        assert modif["sujet_d71"] == sorted(modif["sujet_d71"])
-    sortie = capsys.readouterr().out
-    marques = {p: lire(tmp_path / "raw" / "kb" / f"{p}-modifications.json")["sujet_d71"] for p in ("claude", "openai")}
-    assert marques["claude"], "les commandes réelles /usage, /cost, /extra-usage touchent aux limites et au coût"
-    assert all(f"SUJET D71 {p} : {', '.join(ids)}" in sortie for p, ids in marques.items() if ids)
+        entrees_p = catalogue.charger(tmp_path, p)
+        attendu = sorted(i for i in modif["ajoutees"] if sujet_d71.correspond_base(
+            entrees_p[i].get("nom"), entrees_p[i].get("usage"), entrees_p[i].get("description_source")))
+        assert modif["sujet_d71"] == attendu and set(attendu) <= set(modif["ajoutees"])
+
+
+def test_fetch_kb_affiche_la_ligne_sujet_d71(tmp_path, monkeypatch, capsys):
+    from test_kb import YAML, lancer_kb
+    (tmp_path / "sources.yaml").write_text(YAML, encoding="utf-8")
+    monkeypatch.setattr(catalogue, "sujet_d71", lambda entrees, modif: sorted(modif["ajoutees"])[:2])
+    assert lancer_kb(tmp_path, monkeypatch, None, "claude-code") == 0
+    modif = lire(tmp_path / "raw" / "kb" / "claude-modifications.json")
+    assert len(modif["sujet_d71"]) == 2
+    assert f"~ SUJET D71 claude : {', '.join(modif['sujet_d71'])}" in capsys.readouterr().out
 
 
 # --- (b1) sources à sections suivies -------------------------------------------------------------------------------
@@ -327,5 +370,5 @@ def test_les_skills_citent_chaque_id_de_sujet_d71(fichier, perimetre):
 def test_d73_inscrite_dans_la_spec():
     from conftest import RACINE
     spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
-    assert "| D73 |" in spec and "`sujet_d71`" in spec and "amorcage_silencieux" in spec and "D71" in spec.split("| D73 |")[1]
+    assert "| D73 |" in spec and "`MOTS_CLES_BASE`" in spec and "`MOTS_CLES_INDEX`" in spec and "`sujet_d71`" in spec and "amorcage_silencieux" in spec and "D71" in spec.split("| D73 |")[1]
     assert "Claude (compte et quotas, D73)" in spec

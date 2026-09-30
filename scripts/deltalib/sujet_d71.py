@@ -1,9 +1,13 @@
 """D71, étape 2a : repère sans jugement ce qui touche au compte et aux quotas (limites, remises à zéro, crédits,
-offres, tarifs, forfaits). Filtre commun au champ `sujet_d71` de la base de référence (catalogue.mettre_a_jour) et à la
-détection des nouveaux articles d'aide (analyseur `index_articles`).
+offres, tarifs, forfaits). Deux listes de mots-clés, deux usages :
+
+- `MOTS_CLES_INDEX` : titres et descriptions de l'index d'un centre d'aide (analyseur `index_articles`). Titres courts
+  et ciblés : les mots à double sens (`limit`, `plan`, `reset`, `offer`) y rattrapent des articles utiles.
+- `MOTS_CLES_BASE` : fiches de la base de référence (`sujet_d71` de catalogue.mettre_a_jour). Nom, usage et description
+  d'origine y mêlent réglages techniques et texte libre : seulement des expressions sans double sens.
 
 Mots entiers, insensibles à la casse et aux accents ; le trait d'union et la barre valent une espace. Le pluriel est
-toléré (`s` ou `x` après chaque mot) : les titres d'aide disent « Enterprise plans », « limites », « remises à zéro ».
+toléré (`s` ou `x` après chaque mot) : les titres d'aide disent « Enterprise plans », « limits », « remises à zéro ».
 """
 
 from __future__ import annotations
@@ -11,12 +15,20 @@ from __future__ import annotations
 import re
 import unicodedata
 
-MOTS_CLES = (
+# Mots sans double sens, communs aux deux listes.
+_COMMUNS = (
     # anglais
-    "limit", "usage limit", "rate limit", "limit reset", "reset", "quota", "credits", "extra usage", "plan", "pricing", "price",
-    "billing", "subscription", "promotion", "offer", "free trial",
+    "usage limit", "rate limit", "limit reset", "extra usage", "free trial", "quota", "credits", "billing", "subscription",
+    "pricing", "price", "promotion",
     # français
-    "limite", "remise à zéro", "réinitialisation", "crédits", "forfait", "tarif", "abonnement", "offre",
+    "remise à zéro", "réinitialisation", "crédits", "forfait", "tarif", "abonnement",
+)
+
+MOTS_CLES_BASE = _COMMUNS
+
+MOTS_CLES_INDEX = _COMMUNS + (
+    "limit", "reset", "plan", "offer",  # double sens dans une fiche technique, ciblés dans un titre d'article d'aide
+    "limite", "offre",
 )
 
 # Bruit connu : la fonction Finances de ChatGPT parle de « credit score » (23/09) ; « plan mode » (commande /plan de Claude
@@ -35,17 +47,31 @@ def _motif(expression: str) -> re.Pattern:
     return re.compile(r"(?<![a-z0-9])" + r"\s+".join(mots) + r"(?![a-z0-9])")
 
 
-_MOTIFS = [(m, _motif(m)) for m in MOTS_CLES]
+_MOTIFS_BASE = [(m, _motif(m)) for m in MOTS_CLES_BASE]
+_MOTIFS_INDEX = [(m, _motif(m)) for m in MOTS_CLES_INDEX]
 _EXCLUS = [_motif(m) for m in EXCLUSIONS]
 
 
-def mots_trouves(*textes: str | None) -> list[str]:
-    """Mots-clés présents dans l'ensemble des textes, une fois les expressions exclues retirées ; liste vide si rien ne correspond."""
+def _trouves(motifs: list, textes: tuple) -> list[str]:
     t = _normaliser(" \n ".join(x for x in textes if x))
     for exclusion in _EXCLUS:
         t = exclusion.sub(" ", t)
-    return [mot for mot, p in _MOTIFS if p.search(t)]
+    return [mot for mot, p in motifs if p.search(t)]
 
 
-def correspond(*textes: str | None) -> bool:
-    return bool(mots_trouves(*textes))
+def mots_trouves_index(*textes: str | None) -> list[str]:
+    """Mots-clés de l'index d'aide présents dans les textes, une fois les expressions exclues retirées."""
+    return _trouves(_MOTIFS_INDEX, textes)
+
+
+def mots_trouves_base(*textes: str | None) -> list[str]:
+    """Mots-clés de la base de référence présents dans les textes, une fois les expressions exclues retirées."""
+    return _trouves(_MOTIFS_BASE, textes)
+
+
+def correspond_index(*textes: str | None) -> bool:
+    return bool(mots_trouves_index(*textes))
+
+
+def correspond_base(*textes: str | None) -> bool:
+    return bool(mots_trouves_base(*textes))
