@@ -2,7 +2,7 @@
  "perimetre": "openai",
  "categorie": "commandes",
  "maj_le": "2026-09-30",
- "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+ "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
   "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
@@ -15,7 +15,7 @@
   "projet.restoration-id": "fa8476b43814e6dd02af96a248e178016f655ad4",
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-  "config.claude-code.skills": "7652218ad63336a7a32ace82825e11132407c1c2",
+  "config.claude-code.skills": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
   "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
@@ -25,7 +25,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+  "optimisation.pistes": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
@@ -340,7 +340,7 @@
    "categorie": "commandes",
    "nom": "codex://settings/connections/<connection-type>",
    "gabarit": "complet",
-   "description": "Ouvre les réglages d’un type de connexion ordinateur, appareil ou SSH dans l’app Codex. Le type de connexion est fourni dans le chemin du lien.",
+   "description": "Le lien `codex://settings/connections/<connection-type>` ouvre dans l’app les réglages d’une connexion ordinateur, appareil ou SSH. La valeur finale du chemin choisit le type de connexion affiché.",
    "description_source": "Computer, device, or SSH connection settings.",
    "usage": "codex://settings/connections/<connection-type>",
    "usage_nature": "syntaxe",
@@ -348,8 +348,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans l’app Codex sur Linux, ouvrir `codex://settings/connections/computer` et vérifier si le PC peut être déclaré pour l’accès depuis l’iPhone ; aucune connexion distante n’est attestée."
+    "verdict": "ignorer",
+    "pourquoi": "Le contrôle mobile documenté exige un hôte macOS ou Windows, alors que la machine est sous Linux, et aucun hôte SSH distinct n’est déclaré."
    },
    "sources": [
     {
@@ -362,7 +362,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -395,17 +395,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "La machine principale fonctionne sous Linux Mint."
+    },
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L’app Codex est utilisée sur Linux ; son pilotage distant n’est pas encore opérationnel."
-    },
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’accès à Codex depuis l’iPhone reste un objectif déclaré."
+     "pourquoi": "L’app Codex est utilisée localement et aucun hôte SSH distinct n’est déclaré."
     }
    }
   },
@@ -1038,7 +1042,7 @@
    "categorie": "commandes",
    "nom": "codex",
    "gabarit": "complet",
-   "description": "Lance l’interface terminal interactive de Codex avec les options globales et, éventuellement, un prompt ou des images. La documentation propose des réglages explicites de sandbox et d’approbation pour le travail local.",
+   "description": "La commande `codex` lance l’interface terminal interactive avec les options globales et, éventuellement, un prompt ou des images. Elle permet de fixer explicitement le sandbox et la politique d’approbation pour une session locale.",
    "description_source": "Launch the terminal UI. Accepts the global flags above plus an optional prompt or image attachments. (maturité : Stable)",
    "usage": "codex",
    "usage_nature": "syntaxe",
@@ -1047,7 +1051,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La CLI autonome n’est pas utilisée aujourd’hui, mais `codex` est le point d’entrée direct pour l’objectif déclaré de sessions sous tmux. Vérifier la syntaxe avec le binaire de l’app avant l’essai."
+    "pourquoi": "La CLI n’est pas utilisée aujourd’hui, mais `codex` est le point d’entrée direct de l’objectif CLI sous tmux ; vérifier la syntaxe avec le binaire livré par l’app avant l’essai."
    },
    "sources": [
     {
@@ -1060,7 +1064,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1093,16 +1097,20 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
      "pourquoi": "La CLI autonome est installée mais non utilisée ; le binaire de l’app sert de référence pour la syntaxe."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "Codex CLI sous tmux avec pilotage distant reste un objectif déclaré."
     }
    }
@@ -1669,7 +1677,7 @@
    "categorie": "commandes",
    "nom": "codex execpolicy",
    "gabarit": "complet",
-   "description": "Évalue un fichier de règles execpolicy et indique en JSON la décision applicable à une commande. Ce contrôle permet d'examiner une règle sans exécuter la commande ciblée.",
+   "description": "La commande expérimentale `codex execpolicy` évalue des fichiers de règles et rend en JSON la décision la plus stricte applicable à une commande. `codex execpolicy check` permet ainsi d’examiner une règle sans exécuter la commande ciblée.",
    "description_source": "Evaluate execpolicy rule files and see whether a command would be allowed, prompted, or blocked. (maturité : Experimental)",
    "usage": "codex execpolicy",
    "usage_nature": "syntaxe",
@@ -1678,7 +1686,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur `~/.codex/rules/default.rules`, essayer `codex execpolicy check` avec une commande d'audit représentative et vérifier si la décision signalée correspond au préfixe court envisagé."
+    "pourquoi": "Sur `~/.codex/rules/default.rules`, lancer `codex execpolicy check` avec une commande d’audit représentative et vérifier si la décision correspond au préfixe court envisagé."
    },
    "sources": [
     {
@@ -1691,7 +1699,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1712,17 +1720,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.regles-globales": {
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
-     "pourquoi": "La règle Codex actuelle autorise un script entier ; des préfixes courts sont envisagés."
+     "pourquoi": "La règle Codex actuelle autorise un script entier de 32 Ko."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La simplification de `default.rules` est une piste explicite."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "La simplification de `default.rules` en préfixes courts est une piste explicite."
     }
    }
   },
@@ -2410,7 +2422,7 @@
    "categorie": "commandes",
    "nom": "codex remote-control",
    "gabarit": "complet",
-   "description": "Démarre ou gère le Remote Control du serveur applicatif local et peut produire un code d’appairage temporaire. `start` lance le daemon, `stop` l’arrête et `pair` affiche un code pour un client géré ou un flux SSH.",
+   "description": "La commande expérimentale `codex remote-control` démarre ou gère le Remote Control du serveur applicatif local. `start` lance le daemon, `stop` l’arrête et `pair` produit un code d’appairage temporaire pour un client géré ou un flux SSH.",
    "description_source": "Run or manage remote control for the local app-server, or create a short-lived pairing code. (maturité : Experimental)",
    "usage": "codex remote-control",
    "usage_nature": "syntaxe",
@@ -2419,7 +2431,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tester `codex remote-control start` puis `codex remote-control pair` avec le binaire de l’app et vérifier si l’iPhone peut accéder à la session ; cet accès n’est pas encore établi."
+    "pourquoi": "Avec le binaire de l’app, lancer `codex remote-control start` puis `codex remote-control pair` dans une session d’essai et vérifier si un client iPhone accepte le code ; l’accès n’est pas établi."
    },
    "sources": [
     {
@@ -2432,7 +2444,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2465,17 +2477,25 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L’app de bureau est utilisée et le pilotage CLI distant n’est pas encore opérationnel."
+     "pourquoi": "L’app est utilisée et le pilotage CLI distant n’est pas encore opérationnel."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Le pilotage de Codex depuis l’iPhone reste un objectif déclaré."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Le pilotage de Codex sous tmux depuis l’iPhone reste un objectif déclaré."
+    },
+    "usage.hors-machine": {
+     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "pourquoi": "L’iPhone est l’interface privilégiée pour le pilotage à distance."
     }
    }
   },
@@ -2485,16 +2505,16 @@
    "categorie": "commandes",
    "nom": "codex resume",
    "gabarit": "complet",
-   "description": "Reprend une session interactive Codex par son identifiant ou la conversation la plus récente. L'option `--last` cherche d'abord dans le dossier courant, sauf si `--all` étend la recherche.",
+   "description": "La commande `codex resume` reprend une session interactive par identifiant ou rouvre la conversation la plus récente. `--last` limite d’abord la recherche au dossier courant, sauf si `--all` l’étend à toutes les sessions.",
    "description_source": "Continue a previous interactive session by ID or resume the most recent chat. (maturité : Stable)",
    "usage": "codex resume",
    "usage_nature": "syntaxe",
    "exemple": "codex resume --last",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans une session Codex d'essai sous tmux pour trading-sim, fermer puis lancer `codex resume --last` et vérifier que le transcript de cette même session revient après redémarrage."
+    "pourquoi": "Dans une session Codex d’essai sous tmux pour trading-sim, fermer puis lancer `codex resume --last` et vérifier que le transcript de cette même session revient."
    },
    "sources": [
     {
@@ -2507,7 +2527,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2524,17 +2544,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Codex en CLI avec tmux et remote control est un objectif déclaré, pas un usage actuel."
-    },
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée par Sylvain."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
+    "optimisation.pistes": {
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "La reprise d’une session Codex sous tmux participe à l’objectif de pilotage distant."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le projet fait l’objet d’audits Codex formels."
     }
    }
   },
@@ -2860,7 +2888,7 @@
    "categorie": "commandes",
    "nom": "/debug-config",
    "gabarit": "complet",
-   "description": "Affiche les couches de configuration qui s'appliquent à la session CLI Codex et leur priorité. Le diagnostic indique aussi les exigences de politique et certaines contraintes réseau expérimentales.",
+   "description": "La commande `/debug-config` affiche l’ordre et l’état des couches de configuration appliquées à la session CLI. Elle montre aussi les sources de politique et les contraintes configurées, dont les règles, MCP et paramètres réseau expérimentaux.",
    "description_source": "Print config layer and requirements diagnostics. — Debug precedence and policy requirements, including experimental network constraints.",
    "usage": "/debug-config",
    "usage_nature": "syntaxe",
@@ -2869,7 +2897,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après un changement du modèle dans l'app Codex, lancer `/debug-config` dans une session CLI d'essai et vérifier quelle couche fournit le modèle et l'effort par défaut."
+    "pourquoi": "Après un changement du modèle dans l’app Codex, lancer `/debug-config` dans une session CLI d’essai et vérifier quelle couche fournit le modèle et l’effort effectifs."
    },
    "sources": [
     {
@@ -2882,7 +2910,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2899,17 +2927,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La portée du choix de modèle dans l'app sur le défaut de `config.toml` reste à confirmer."
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "Un changement de modèle dans l’app semble avoir modifié le défaut global ; le mécanisme reste à confirmer."
     },
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils et leurs réglages courants sont suivis dans `docs/data/etat.json`."
+     "pourquoi": "Les profils et leurs réglages courants sont suivis séparément dans `docs/data/etat.json`."
     }
    }
   },
@@ -4795,16 +4827,16 @@
    "categorie": "commandes",
    "nom": "/resume",
    "gabarit": "complet",
-   "description": "Affiche les conversations enregistrées et reprend celle qui est choisie. La commande recharge le transcript antérieur pour continuer le même travail.",
+   "description": "La commande `/resume` ouvre la liste des conversations enregistrées et reprend celle qui est choisie. Elle recharge le transcript antérieur en conservant l’historique d’origine.",
    "description_source": "Resume a saved chat from your session list. — Continue work from a previous CLI session without starting over.",
    "usage": "/resume",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après une session d’audit Codex CLI sous tmux, saisir `/resume` et vérifier que le fil et son transcript réapparaissent après fermeture ; aucun usage actuel n’est établi."
+    "pourquoi": "Après une session d’audit Codex CLI sous tmux, saisir `/resume` et vérifier que le fil et son transcript réapparaissent après fermeture."
    },
    "sources": [
     {
@@ -4817,7 +4849,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4850,17 +4882,25 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée actuellement."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "La reprise d’une session Codex sous tmux participe à l’objectif de pilotage distant."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le projet fait l’objet d’audits Codex formels."
     }
    }
   },
@@ -5123,16 +5163,16 @@
    "categorie": "commandes",
    "nom": "/status",
    "gabarit": "complet",
-   "description": "Affiche la configuration de la session CLI, dont le modèle, la politique d'approbation et les racines inscriptibles. La sortie indique aussi l'usage des jetons et la capacité de contexte restante.",
+   "description": "La commande `/status` affiche le modèle actif, la politique d’approbation, les racines inscriptibles et l’usage des jetons de la session CLI. Lors d’une connexion distante, elle indique aussi l’adresse distante et la version du serveur.",
    "description_source": "Display session configuration and token usage. — Confirm the active model, approval policy, writable roots, and remaining context capacity.",
    "usage": "/status",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans un essai Codex CLI sous tmux pour trading-sim, lancer `/status` avant l'audit et vérifier le modèle, les permissions et le dossier autorisé ; cela permettrait de repérer un écart avant la lecture du dépôt."
+    "pourquoi": "Dans un essai Codex CLI sous tmux pour trading-sim, lancer `/status` avant l’audit et vérifier le modèle, les permissions et le dossier autorisé."
    },
    "sources": [
     {
@@ -5145,7 +5185,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5162,21 +5202,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais Sylvain utilise surtout l'app."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
+    "optimisation.pistes": {
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt fait l'objet d'audits Codex formels."
-    },
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Codex en CLI avec tmux est un objectif déclaré."
+     "pourquoi": "Le dépôt fait l’objet d’audits Codex formels."
     }
    }
   },
