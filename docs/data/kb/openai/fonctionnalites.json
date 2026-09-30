@@ -1047,16 +1047,16 @@
    "categorie": "fonctionnalites",
    "nom": "Sites",
    "gabarit": "complet",
-   "description": "Sites crée, héberge et modifie des sites ou applications depuis ChatGPT. La bêta applique des limites d’usage selon l’offre.",
+   "description": "Sites crée, héberge, modifie et partage des sites, applications web ou jeux depuis ChatGPT. La bêta applique des limites propres à l’offre et tout déploiement produit une URL de production, même si une version peut être enregistrée sans publication pour être relue.",
    "description_source": "Sites is in public beta and is available with ChatGPT Plus, Pro, Business, Enterprise and Edu plans. Plan-specific usage limits apply across all Sites during the beta. ChatGPT shows the current limits and notifies you as you approach one. Reaching a limit can prevent you from creating a Site, adding storage, or keeping a high-usage Site public, but you can still edit and manage existing Sites.",
    "usage": "Build a project request dashboard for my operations team. Let team members submit requests, see who owns each one, update the status, and filter the list. Require people to sign in with their workspace account, and keep the request data saved between visits.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "ChatGPT Plus, Pro, Business, Enterprise et Edu ; app de bureau et web",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "ceramist et delta-ia disposent déjà d’un hébergement GitHub Pages ; aucun besoin de migration vers Sites n’est déclaré."
+    "pourquoi": "ceramist est déjà publié sur GitHub Pages et aucun besoin de migration vers Sites n’est déclaré."
    },
    "sources": [
     {
@@ -1090,17 +1090,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "projet.ceramist": {
      "sha1": "77a460848e4f24c9bd151f2e5141a2593c2d3a67",
-     "pourquoi": "Le portfolio est publié sur GitHub Pages."
-    },
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Le site Delta est déjà déployé via GitHub Pages."
+     "pourquoi": "Le portfolio est un site statique déjà publié sur GitHub Pages."
     }
    }
   },
@@ -1577,16 +1577,16 @@
    "categorie": "fonctionnalites",
    "nom": "Speed",
    "gabarit": "complet",
-   "description": "Le mode Fast augmente la vitesse au prix d’une consommation de crédits accrue selon le modèle. ChatGPT Work et Codex partagent les mêmes limites d’usage.",
+   "description": "Le mode Fast accélère les modèles pris en charge en échange d’une consommation supérieure : 2,5 fois l’allocation incluse ou 2 fois les crédits achetés par rapport au mode Standard. ChatGPT Work et Codex partagent les mêmes limites d’usage.",
    "description_source": "You can increase model speed in Codex in exchange for higher usage.",
    "usage": "/fast",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "App ChatGPT Desktop, Codex CLI et extension IDE, selon le modèle, l’offre et le déploiement",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les limites d’usage sont déjà une friction et rien ne justifie ce surcoût pour trading-sim."
+    "pourquoi": "Les limites d’usage et le coût des longs audits sont déjà des frictions ; rien ne justifie le coefficient de consommation de Fast pour trading-sim."
    },
    "sources": [
     {
@@ -1628,13 +1628,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Les limites hebdomadaires constituent déjà une friction importante."
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Les limites d’usage et le coût en jetons des longs audits sont des frictions récurrentes."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits contradictoires du projet ont un coût élevé en jetons."
     }
    }
   },
@@ -1699,16 +1707,16 @@
    "categorie": "fonctionnalites",
    "nom": "CLI customization",
    "gabarit": "complet",
-   "description": "La personnalisation CLI règle le thème de l'interface, la complétion du shell et l'édition des longs prompts. Les préférences visuelles sont enregistrées par le TUI dans la configuration Codex.",
+   "description": "La personnalisation de la CLI règle le thème de la TUI, la complétion du shell et l’éditeur utilisé pour les longs prompts. Les thèmes sont enregistrés dans la configuration et les complétions doivent être chargées par le shell.",
    "description_source": "The Codex CLI provides terminal-specific options for how interactive sessions look and how you enter commands and prompts.",
    "usage": "codex completion zsh",
    "usage_nature": "syntaxe",
    "exemple": "eval \"$(codex completion zsh)\"",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La complétion et le thème du TUI n'ont pas de lien direct établi avec les audits Codex ni avec l'objectif CLI sous tmux."
+    "pourquoi": "La complétion et le thème n’ont pas de lien direct établi avec les audits Codex ni avec l’objectif fonctionnel sous tmux."
    },
    "sources": [
     {
@@ -1721,7 +1729,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1734,17 +1742,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain utilise l'app de bureau et pas encore la CLI autonome."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L'objectif CLI avec tmux ne précise aucun besoin de personnalisation visuelle."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif CLI sous tmux ne précise aucun besoin de personnalisation visuelle ou de complétion."
     }
    }
   },
@@ -2038,7 +2050,7 @@
    "categorie": "fonctionnalites",
    "nom": "Codex SDK",
    "gabarit": "complet",
-   "description": "Le Codex SDK pilote des fils Codex depuis un programme, par exemple pour des tâches automatisées ou une intégration dans un outil. La documentation décrit des bibliothèques TypeScript et Python pour démarrer ou reprendre un fil.",
+   "description": "Le Codex SDK permet à un programme de démarrer, poursuivre ou reprendre des fils Codex pour automatiser des tâches ou intégrer Codex dans un outil. La documentation fournit une bibliothèque TypeScript côté serveur et une bibliothèque Python qui pilote le serveur applicatif local.",
    "description_source": "If you use Codex through Codex CLI, the IDE extension, or Codex cloud, you can also control it programmatically.",
    "usage": "npm install @openai/codex-sdk",
    "usage_nature": "syntaxe",
@@ -2047,7 +2059,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucune intégration programmatique de Codex n'est déclarée pour la console ou trading-sim ; le besoin exprimé est d'abord la CLI avec tmux et le pilotage à distance."
+    "pourquoi": "Aucune intégration programmatique de Codex n’est déclarée pour trading-sim ou la console ; le besoin actuel porte d’abord sur la CLI sous tmux et Remote Control."
    },
    "sources": [
     {
@@ -2060,7 +2072,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2073,17 +2085,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L'objectif exprimé est Codex en CLI avec tmux et remote control."
-    },
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain travaille actuellement surtout dans l'app Codex."
+     "pourquoi": "Sylvain travaille surtout dans l’app et n’utilise pas la CLI autonome."
+    },
+    "optimisation.pistes": {
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif déclaré est Codex en CLI sous tmux avec Remote Control, pas un client SDK."
     }
    }
   },

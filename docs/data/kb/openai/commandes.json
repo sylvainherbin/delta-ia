@@ -1748,16 +1748,16 @@
    "categorie": "commandes",
    "nom": "codex features",
    "gabarit": "complet",
-   "description": "Liste les indicateurs de fonctionnalités reconnus par Codex. Ses sous-commandes d'activation et de désactivation enregistrent durablement les changements dans `config.toml` pour les sessions suivantes.",
+   "description": "La commande `codex features` liste les indicateurs de fonctionnalités reconnus par Codex. Ses sous-commandes d’activation et de désactivation enregistrent durablement leurs changements dans `config.toml`.",
    "description_source": "List feature flags and persistently enable or disable them in config.toml . (maturité : Stable)",
    "usage": "codex features",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le projet de pilotage distant de Codex ne désigne aucun indicateur à activer ; une modification par `codex features` persisterait dans `config.toml` sans essai défini."
+    "pourquoi": "L’objectif Codex sous tmux ne désigne aucun indicateur à activer ; modifier `config.toml` sans essai ciblé créerait un effet persistant inutile."
    },
    "sources": [
     {
@@ -1770,7 +1770,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1787,13 +1787,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Codex en CLI avec tmux et remote control reste un objectif, sans indicateur de fonctionnalité désigné."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Codex sous tmux et Remote Control reste un objectif, sans indicateur de fonctionnalité désigné."
     }
    }
   },
@@ -3339,16 +3347,16 @@
    "categorie": "commandes",
    "nom": "/hooks",
    "gabarit": "complet",
-   "description": "Affiche les hooks de cycle de vie configurés dans Codex et leur état de confiance. Le navigateur permet de faire confiance à un hook nouveau ou modifié, ou de désactiver un hook non géré.",
+   "description": "La commande `/hooks` affiche les hooks de cycle de vie configurés dans Codex et leur état de confiance. Elle permet de faire confiance à un hook nouveau ou modifié, ou de désactiver un hook non géré avant son exécution.",
    "description_source": "View and manage lifecycle hooks. — Inspect configured hooks, trust new or changed hooks, or disable non-managed hooks before they run.",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Aucun hook Codex n'est signalé comme utilisé dans l'audit trading-sim ; `/hooks` sert à gérer des hooks déjà configurés et ne crée pas les contrôles envisagés."
+    "verdict": "tester",
+    "pourquoi": "Après avoir ajouté sur une copie de trading-sim le hook `PreToolUse` d’essai, ouvrir `/hooks`, vérifier sa source et son empreinte, l’autoriser puis le désactiver après le test."
    },
    "sources": [
     {
@@ -3361,7 +3369,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3374,17 +3382,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les contrôles de trading-sim sont actuellement décrits comme des vérifications formelles."
+     "pourquoi": "Le projet fournit le scénario de contrôle répété à tester sur une copie."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La transformation des contrôles répétés en hooks n'est qu'une piste."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Les contrôles répétés de trading-sim sont explicitement candidats à des hooks."
     }
    }
   },
@@ -5381,16 +5397,16 @@
    "categorie": "commandes",
    "nom": "/title",
    "gabarit": "complet",
-   "description": "Choisit les champs et l'ordre du titre de la fenêtre ou de l'onglet du terminal CLI. La sélection est enregistrée dans `tui.terminal_title` de `config.toml` pour les sessions suivantes.",
+   "description": "La commande `/title` choisit et ordonne les champs du titre de la fenêtre ou de l’onglet terminal. La sélection est enregistrée dans `tui.terminal_title` de `config.toml` pour les sessions suivantes.",
    "description_source": "Configure terminal window or tab title fields interactively. — Pick and reorder title items such as project, status, thread, branch, model, and task progress.",
    "usage": "/title",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le titre de fenêtre n'apporte pas de gain établi à l'objectif Codex CLI sous tmux ; le réglage persiste dans `config.toml` et peut être laissé à sa valeur actuelle."
+    "pourquoi": "Aucun besoin de titre terminal personnalisé n’est décrit pour l’objectif Codex sous tmux ; conserver la valeur actuelle évite un réglage persistant sans bénéfice établi."
    },
    "sources": [
     {
@@ -5403,7 +5419,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5416,13 +5432,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L'objectif déclaré porte sur Codex CLI avec tmux, sans besoin documenté de titre personnalisé."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif Codex sous tmux ne mentionne pas de besoin de titre personnalisé."
     }
    }
   },
