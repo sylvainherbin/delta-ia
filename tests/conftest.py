@@ -43,6 +43,18 @@ CORRESPONDANCES = {
     "https://arstechnica.com/ai/feed/": ("deepmind.xml", "application/rss+xml; charset=UTF-8"),
 }
 
+# Étape 2a : articles d'aide suivis (tous servis par l'extrait réel de l'article « What is a limit reset? »), index llms.txt
+ARTICLES_AIDE = ("11647753-how-do-usage-and-length-limits-work", "9797557-usage-limit-best-practices", "17007452-what-is-a-limit-reset",
+                 "14246112-buy-usage-bundles", "12429409-manage-usage-credits-for-paid-claude-plans",
+                 "14552983-models-usage-and-limits-in-claude-code", "11145838-use-claude-code-with-your-pro-or-max-plan",
+                 "15424964-claude-fable-models-on-your-plan", "15036540-use-the-claude-agent-sdk-with-your-claude-plan",
+                 "11049741-what-is-the-max-plan")
+for _slug in ARTICLES_AIDE:
+    CORRESPONDANCES[f"https://support.claude.com/en/articles/{_slug}.md"] = ("aide_limit_reset.md", "text/markdown; charset=utf-8")
+CORRESPONDANCES["https://support.claude.com/llms.txt"] = ("aide_llms_claude.txt", "text/plain; charset=utf-8")
+CORRESPONDANCES["https://learn.chatgpt.com/llms.txt"] = ("oa_llms_index.txt", "text/plain; charset=utf-8")
+CORRESPONDANCES["https://learn.chatgpt.com/docs/developer-commands.md?surface=cli"] = ("oa_devcmd_usage.md", "text/markdown; charset=utf-8")
+
 
 class FauxClient:
     """Sert les échantillons enregistrés à la place du réseau. `pannes` : url -> exception ou (texte, type)."""

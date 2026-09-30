@@ -200,6 +200,8 @@ def commande_kb(args, racine: Path) -> int:
               f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['description_source_modifiee'])} description(s) "
               f"d'origine modifiée(s), {len(res['retirees'])} retirée(s), "
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
+        if res["sujet_d71"]:  # D71, étape 2a : à citer en une ligne dans la veille du jour
+            print(f"  ~ SUJET D71 {perimetre} : {', '.join(res['sujet_d71'])}")
         for e in res["echecs"]:
             print(f"  ! ÉCHEC   {e['doc']}" + (f" / {e['page']}" if e.get("page") else "") + f" : {e['erreur']}")
             code = max(code, 3)

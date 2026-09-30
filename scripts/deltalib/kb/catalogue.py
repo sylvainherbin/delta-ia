@@ -200,6 +200,19 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
     return res, modif
 
 
+def sujet_d71(entrees: dict[str, dict], modif: dict) -> list[str]:
+    """D71, étape 2a : ids des entrées ajoutées ou modifiées (usage, description d'origine) dont le nom, l'usage ou la
+    description d'origine touche au compte et aux quotas (mots-clés de `deltalib.sujet_d71`). Aucun jugement."""
+    from ..sujet_d71 import correspond
+    ids = []
+    for cle in ("ajoutees", "usage_modifie", "description_source_modifiee"):
+        for i in modif.get(cle, []):
+            e = entrees.get(i) or {}
+            if i not in ids and correspond(e.get("nom"), e.get("usage"), e.get("description_source")):
+                ids.append(i)
+    return sorted(ids)
+
+
 def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
                   surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
@@ -210,6 +223,7 @@ def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fi
         ecrire(racine, perimetre, entrees)
     return {"perimetre": perimetre, "genere_le": maintenant_iso(), "docs_extraites": sorted(ok), "echecs": echecs,
             "avertissements": avertissements,
+            "sujet_d71": sujet_d71(entrees, modif),
             "total": len(entrees), "a_commenter": sorted(k for k, e in entrees.items() if not e.get("commentee") and not e.get("retiree")),
             **modif}
 

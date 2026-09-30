@@ -11,7 +11,7 @@ from .analyseurs import ANALYSEURS
 from .dates import analyser_date, aujourd_hui, maintenant_iso
 from .etat import charger_etat, detecter, premier_passage, sources_connues
 from .http import Client
-from .modeles import Element, ErreurSource, empreinte_contenu
+from .modeles import Element, ErreurSource, FormatInattendu, empreinte_contenu
 from .sources import Source
 
 FENETRE_PREMIER_PASSAGE_JOURS = 30
@@ -133,6 +133,13 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
                 fenetre_par_source[s.id] = depuis or (jour - timedelta(days=FENETRE_AMORCAGE_SOURCE_JOURS))
                 journal.info("source %s sans trace dans l'état : amorçage à partir du %s", s.id, fenetre_par_source[s.id])
     nouveautes, ignores = detecter(elements, etat, fenetre, fenetre_par_source)
+    # Étape 2a : une source à option `amorcage_silencieux` (index d'articles d'aide, éléments non datés) n'annonce rien à
+    # sa première lecture : l'existant va dans `ignores`, `--valider` l'inscrit comme référence pour les passages suivants.
+    silencieuses = {s.id for s in sources if s.options.get("amorcage_silencieux") and s.id in traitees
+                    and (premier_passage(etat) or s.id in amorcees)}
+    if silencieuses:
+        ignores = sorted(set(ignores) | {e.id for e in nouveautes if e.source_id in silencieuses})
+        nouveautes = [e for e in nouveautes if e.source_id not in silencieuses]
     lire_articles(nouveautes, sources, client, echecs)
     vus = etat.get("vus", {})
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
@@ -143,17 +150,33 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
                  ignores_sources, amorcees)
 
 
+TAILLE_MAX_MARKDOWN = 6000
+
+
+def texte_markdown(texte: str) -> str:
+    """Étape 2a : début d'un article d'aide en Markdown, pour `contenu` ; page vide ou HTML reçue : FormatInattendu."""
+    if not texte.strip() or "<html" in texte[:500].lower():
+        raise FormatInattendu("article Markdown vide ou page HTML reçue")
+    lignes = [l for l in texte.splitlines() if not l.startswith("> For the complete documentation index")]
+    res = "\n".join(lignes).strip()
+    return res if len(res) <= TAILLE_MAX_MARKDOWN else res[:TAILLE_MAX_MARKDOWN].rsplit("\n", 1)[0] + "\n[… texte tronqué]"
+
+
 def lire_articles(nouveautes: list[Element], sources: list[Source], client: Client, echecs: list[Echec]) -> None:
     """A1 (26/09) : pour une source à option `lire_articles`, chaque nouvel article est lu (un GET) et son texte
     principal remplace le résumé de la liste dans `contenu`. Un article illisible garde le résumé et remonte en
     `sources_en_echec` (partiel), jamais en contenu vide."""
     from .analyseurs.html_notes import texte_article
-    lues = {s.id for s in sources if s.options.get("lire_articles")}
+    lues = {s.id: s.options["lire_articles"] for s in sources if s.options.get("lire_articles")}
     for e in nouveautes:
         if e.source_id not in lues or not e.url:
             continue
         try:
-            e.contenu = texte_article(client.get(e.url, accept="text/html").texte)
+            if lues[e.source_id] == "markdown":  # étape 2a : article d'aide servi en Markdown (`<url>.md`)
+                e.contenu = texte_markdown(client.get(e.url if e.url.endswith(".md") else e.url + ".md",
+                                                      accept="text/markdown").texte)
+            else:
+                e.contenu = texte_article(client.get(e.url, accept="text/html").texte)
         except ErreurSource as err:
             echecs.append(Echec(e.source_id, e.url, f"article illisible : {type(err).__name__}: {err}", partiel=True))
             journal.warning("source %s : article %s illisible : %s", e.source_id, e.url, err)

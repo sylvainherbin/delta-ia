@@ -11,7 +11,7 @@ Le format est détecté d'après la réponse si l'option est absente.
 from __future__ import annotations
 
 import re
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
@@ -166,7 +166,7 @@ def parser_sections_suivies(texte: str, source) -> list[Element]:
     Section introuvable ou vide : FormatInattendu."""
     from ..kb.markdown import sections as decouper
     lignes, secs = decouper(texte)
-    base = source.url[:-3] if source.url.endswith(".md") else source.url
+    base = re.sub(r"\.md(?=\?|$)", "", source.url)
     res: list[Element] = []
     for conf in source.options.get("sections") or []:
         rx = re.compile(conf["titre"], re.I)
@@ -189,11 +189,64 @@ def parser_sections_suivies(texte: str, source) -> list[Element]:
     return res
 
 
+_RE_LIEN_INDEX = re.compile(r"^\s*[-*]\s*\[(?P<titre>.+?)\]\((?P<url>https?://[^)\s]+)\)\s*(?::\s*(?P<desc>.*))?$")
+_RE_ARTICLE_AIDE = re.compile(r"/articles/(\d+)")
+
+
+def _id_article(url: str) -> str:
+    """Identifiant natif stable d'une page d'un index llms.txt : numéro d'article d'aide (un changement de titre ou de
+    slug ne crée pas un nouvel article), sinon le chemin de la page sans extension ni requête."""
+    m = _RE_ARTICLE_AIDE.search(url)
+    if m:
+        return m.group(1)
+    chemin = urlparse(url).path.strip("/")
+    return re.sub(r"[^A-Za-z0-9]+", "-", chemin.removesuffix(".md")).strip("-") or url
+
+
+def parser_index_articles(texte: str, source) -> list[Element]:
+    """Étape 2a (30/09) : index llms.txt d'un centre d'aide (une ligne `- [Titre](url): description` par page).
+    `options.section` limite la lecture à une section `## <nom>` (le centre d'aide Claude répète chaque article dans
+    dix langues). Seules les pages dont le titre ou la description touche au compte et aux quotas (D71,
+    `deltalib.sujet_d71`) deviennent des éléments non datés `<source>-<id>` : une page absente de l'état est un nouvel
+    article d'aide. Section introuvable, ou aucune ligne reconnue : FormatInattendu, jamais un vide silencieux."""
+    from ..sujet_d71 import mots_trouves
+    lignes = texte.splitlines()
+    section = source.options.get("section")
+    if section:
+        debut = next((i for i, l in enumerate(lignes) if re.fullmatch(rf"##\s+{re.escape(section)}\s*", l)), None)
+        if debut is None:
+            raise FormatInattendu(f"section « {section} » introuvable dans l'index : gabarit changé ?")
+        fin = next((i for i in range(debut + 1, len(lignes)) if re.match(r"##(?!#)", lignes[i])), len(lignes))
+        lignes = lignes[debut + 1:fin]
+    articles = [m for m in (_RE_LIEN_INDEX.match(l) for l in lignes) if m]
+    if not articles:
+        raise FormatInattendu("index sans aucune ligne « - [titre](url) » : gabarit changé ?")
+    nom = source.options.get("nom") or "Nouvel article d'aide"
+    base_url = source.options.get("url_publique")
+    res: list[Element] = []
+    vus: set[str] = set()
+    for m in articles:
+        titre = re.sub(r"\\([()\[\]])", r"\1", m.group("titre")).strip()
+        desc = (m.group("desc") or "").strip()
+        mots = mots_trouves(titre, desc)
+        ident = _id_article(m.group("url"))
+        if not mots or ident in vus:
+            continue
+        vus.add(ident)
+        url = m.group("url").removesuffix(".md")
+        contenu = desc or f"{titre} (page de l'index {source.url})."
+        res.append(Element(id=f"{source.id}-{ident}", produit=source.produit, titre=f"{nom} — {titre}", version=None,
+                           date_publication=None, url=url, contenu=f"{contenu}\nMots-clés D71 : {', '.join(mots)}.",
+                           source_id=source.id, officielle=source.officielle))
+    return res
+
+
 PARSEURS = {
     "markdown_date": parser_markdown_date,
     "html_date": parser_html_date,
     "html_time_liens": parser_html_time_liens,
     "sections_suivies": parser_sections_suivies,
+    "index_articles": parser_index_articles,
 }
 
 

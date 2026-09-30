@@ -58,19 +58,27 @@ def test_apres_valider_zero_nouveaute(racine):
     assert lire(etat)["vus"] == lire(avant and etat)["vus"]
 
 
+# Étape 2a : pages d'aide suivies par section, non datées : elles arrivent une fois au premier passage, comme openai-tarifs
+SOURCES_AIDE_SUIVIES = {"claude-aide-limites", "claude-aide-limites-bonnes-pratiques", "claude-aide-remise-a-zero", "claude-aide-bundles",
+                        "claude-aide-credits", "claude-aide-limites-claude-code", "claude-aide-claude-code-pro-max",
+                        "claude-aide-fable-forfait", "claude-aide-agent-sdk-forfait", "claude-aide-forfait-max"}
+
+
 def test_premier_passage_ignore_les_anciens_et_les_valide_aussi(racine):
     """Sans état, seuls les 30 derniers jours sont des nouveautés ; les anciens partent dans `ignores`."""
     lancer(racine, "--perimetre", "claude")
     brut = lire(racine / "raw" / "claude-nouveautes.json")
-    assert all(e["date_publication"] >= "2026-08-24" for e in brut["nouveautes"])
-    assert brut["ignores"] == []  # les échantillons ne contiennent que des entrées récentes
+    assert all(e["date_publication"] >= "2026-08-24" for e in brut["nouveautes"] if e["date_publication"])
+    assert {e["source_id"] for e in brut["nouveautes"] if not e["date_publication"]} <= SOURCES_AIDE_SUIVIES  # étape 2a
+    # les échantillons ne contiennent que des entrées récentes ; seul l'index d'aide (amorçage silencieux, étape 2a) est ignoré
+    assert brut["ignores"] and all(i.startswith("claude-aide-index-") for i in brut["ignores"])
 
 
 def test_depuis_restreint_la_fenetre(racine):
     lancer(racine, "--perimetre", "claude", "--depuis", "2026-09-20")
     brut = lire(racine / "raw" / "claude-nouveautes.json")
     assert brut["fenetre_depuis"] == "2026-09-20"
-    assert all(e["date_publication"] >= "2026-09-20" for e in brut["nouveautes"])
+    assert all(e["date_publication"] >= "2026-09-20" for e in brut["nouveautes"] if e["date_publication"])
     assert brut["ignores"], "les éléments antérieurs sont listés pour être validés"
 
 

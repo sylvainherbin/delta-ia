@@ -103,7 +103,7 @@ def test_d3_element_non_date_jamais_ignore_par_la_fenetre(tmp_path, monkeypatch,
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient({url: (html, "text/html")}))
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-20"])
     brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
-    non_dates = [e for e in brut["nouveautes"] if e["date_publication"] is None]
+    non_dates = [e for e in brut["nouveautes"] if e["date_publication"] is None and not e["source_id"].startswith("claude-aide-")]
     assert len(non_dates) == 1 and non_dates[0]["titre"] == "Previewing the Model Hardware Standard"
 
 
@@ -252,7 +252,7 @@ def test_d30_source_nouvelle_amorcee_sur_sept_jours(tmp_path, monkeypatch, date_
     ecrire_json(tmp_path / "state" / "openai.json", etat)
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"]) == 0
     brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
-    assert brut["sources_amorcees"] == ["openai-tarifs", "releasebot-chatgpt"] and brut["fenetre_depuis"] is None
+    assert brut["sources_amorcees"] == ["openai-tarifs", "openai-usage-commande", "openai-aide-index", "releasebot-chatgpt"] and brut["fenetre_depuis"] is None
     rb = [e for e in brut["nouveautes"] if e["source_id"] == "releasebot-chatgpt"]
     assert rb and all(e["date_publication"] >= "2026-09-16" for e in rb)  # J-7 depuis la date figée 2026-09-23
     anciens = [i for i in brut["ignores"] if i.startswith("releasebot-")]
