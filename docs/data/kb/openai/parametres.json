@@ -3017,16 +3017,16 @@
    "categorie": "parametres",
    "nom": "codex app-server --ws-auth",
    "gabarit": "court",
-   "description": "L’option `codex app-server --ws-auth` choisit l’authentification des clients WebSocket du serveur applicatif.",
+   "description": "L’option `codex app-server --ws-auth` choisit le mode d’authentification des clients WebSocket du serveur applicatif.",
    "description_source": "Authentication mode for app-server WebSocket clients. If omitted, WebSocket auth is disabled; non-local listeners warn during startup. (valeurs : capability-token | signed-bearer-token)",
    "usage": "codex app-server --ws-auth",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun client WebSocket ni serveur applicatif Codex n’est prévu ; ajouter ce mode d’authentification introduirait un secret sans besoin établi."
+    "pourquoi": "Aucun client WebSocket ni serveur applicatif Codex n’est prévu ; ce réglage introduirait une gestion de jeton sans besoin établi."
    },
    "sources": [
     {
@@ -3039,7 +3039,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex app-server",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3064,13 +3064,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’objectif de pilotage Codex ne prévoit aucun client WebSocket app-server."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif Codex sous tmux avec Remote Control ne prévoit aucun client app-server."
     }
    }
   },
@@ -3882,16 +3890,16 @@
    "categorie": "parametres",
    "nom": "codex completion SHELL",
    "gabarit": "court",
-   "description": "La commande `codex completion SHELL` produit les complétions pour le shell choisi sur la sortie standard.",
+   "description": "La commande `codex completion SHELL` produit sur la sortie standard les complétions du shell choisi.",
    "description_source": "Shell to generate completions for. Output prints to stdout. (valeurs : bash | zsh | fish | power-shell | elvish)",
    "usage": "codex completion SHELL",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n’est pas utilisée et l’objectif tmux avec Remote Control ne dépend pas de complétions shell."
+    "pourquoi": "La CLI autonome n’est pas utilisée et les complétions shell ne débloquent ni les audits ni le pilotage Codex depuis l’iPhone."
    },
    "sources": [
     {
@@ -3904,7 +3912,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex completion",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3929,17 +3937,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
      "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’objectif tmux avec Remote Control ne dépend pas des complétions shell."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif Codex sous tmux avec Remote Control ne dépend pas des complétions shell."
     }
    }
   },
@@ -4582,10 +4594,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun défaut d’authentification ou de terminal Codex CLI n’est décrit ; lancer un diagnostic préalable n’a pas de scénario nécessaire."
+    "pourquoi": "Aucun défaut de la CLI Codex n’est décrit ; produire un diagnostic JSON sans incident précis n’aurait pas de résultat attendu à vérifier."
    },
    "sources": [
     {
@@ -4598,7 +4610,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex doctor",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4627,13 +4639,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’objectif de future session CLI sous tmux ne signale aucun défaut à diagnostiquer."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "La future utilisation sous tmux est un objectif, sans défaut CLI actuellement signalé."
     }
    }
   },
@@ -7097,16 +7117,16 @@
    "categorie": "parametres",
    "nom": "codex --remote",
    "gabarit": "court",
-   "description": "L’option `--remote` connecte certaines commandes Codex CLI à un serveur applicatif distant par WebSocket ou socket Unix.",
+   "description": "L’option `--remote` connecte certaines commandes Codex CLI à un app-server par WebSocket ou socket Unix.",
    "description_source": "Connect to a remote app-server endpoint over WebSocket or a Unix socket. Supported for codex , codex resume , codex fork , codex archive , codex delete , and codex unarchive ; other subcommands reject remote mode. (valeurs : ws://host:port | wss://host:port | unix:// | unix://PATH)",
    "usage": "codex --remote",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le contexte ne prévoit aucun app-server distant ; cette option de protocole ne remplace pas le Remote Control recherché depuis l’iPhone."
+    "pourquoi": "Aucun app-server distant n’est prévu et ce protocole ne fournit pas le Remote Control recherché pour le pilotage depuis l’iPhone."
    },
    "sources": [
     {
@@ -7119,7 +7139,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7148,13 +7168,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée ; le pilotage distant n’est pas opérationnel."
+    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Le pilotage distant recherché repose sur Remote Control, sans app-server déclaré."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif vise Remote Control sous tmux, pas une connexion à un app-server."
     }
    }
   },
@@ -7164,16 +7192,16 @@
    "categorie": "parametres",
    "nom": "codex --remote-auth-token-env",
    "gabarit": "court",
-   "description": "L’option `--remote-auth-token-env` lit dans une variable d’environnement le jeton envoyé à un app-server distant compatible.",
+   "description": "L’option `--remote-auth-token-env` lit dans une variable d’environnement le jeton envoyé lors d’une connexion `--remote` compatible.",
    "description_source": "Read a bearer token from this environment variable and send it when connecting with --remote . Requires --remote ; tokens are only sent over wss:// URLs or local-only ws:// URLs. (valeurs : ENV_VAR)",
    "usage": "codex --remote-auth-token-env",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun app-server distant n’est prévu ; cette option introduirait un secret sans aider à établir Remote Control sur l’iPhone."
+    "pourquoi": "Aucun app-server distant n’est prévu ; ajouter un jeton ne contribuerait pas au Remote Control recherché depuis l’iPhone."
    },
    "sources": [
     {
@@ -7186,7 +7214,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7211,16 +7239,20 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée et le pilotage distant n’est pas opérationnel."
+     "pourquoi": "La CLI autonome est installée mais non utilisée ; le pilotage distant n’est pas opérationnel."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "L’objectif de pilotage Codex ne décrit aucun app-server WebSocket."
     }
    }
@@ -7273,16 +7305,16 @@
    "categorie": "parametres",
    "nom": "codex resume --include-non-interactive",
    "gabarit": "court",
-   "description": "L’option `codex resume --include-non-interactive` ajoute les exécutions non interactives au sélecteur et au choix de `--last`.",
+   "description": "L’option `codex resume --include-non-interactive` ajoute les sessions non interactives au sélecteur et au choix de `--last`.",
    "description_source": "Include non-interactive sessions in the picker and --last selection. (valeurs : boolean)",
    "usage": "codex resume --include-non-interactive",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun usage de sessions Codex non interactives à reprendre n’est déclaré ; l’objectif tmux vise d’abord la CLI interactive."
+    "pourquoi": "Aucune session Codex non interactive à reprendre n’est déclarée ; l’objectif sous tmux concerne d’abord une session CLI interactive."
    },
    "sources": [
     {
@@ -7295,7 +7327,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7320,17 +7352,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée actuellement."
+     "pourquoi": "La CLI autonome est installée mais non utilisée ; l’essentiel des fils est dans l’app."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’objectif de session tmux concerne la reprise interactive."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif sous tmux ne mentionne pas de session non interactive à reprendre."
     }
    }
   },
@@ -9352,7 +9388,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun hook n’est installé ; activer ce commutateur seul ne définit ni le contrôle SHA-256 ni le contrôle `PYTHONDONTWRITEBYTECODE` envisagés."
+    "pourquoi": "Aucun hook Codex n’est configuré ; activer ce commutateur seul ne mettrait en œuvre aucun des contrôles répétés envisagés."
    },
    "sources": [
     {
@@ -9365,7 +9401,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9390,17 +9426,17 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Aucun hook n’est actuellement installé."
-    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Les contrôles SHA-256 et PYTHONDONTWRITEBYTECODE pourraient devenir des hooks."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Les contrôles SHA-256 et PYTHONDONTWRITEBYTECODE restent des candidats éventuels à des hooks."
     }
    }
   },
@@ -10975,7 +11011,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La reprise des fils Codex doit d’abord être testée sans modifier la conservation des transcriptions ; aucun défaut d’historique n’est signalé."
+    "pourquoi": "Aucun défaut de conservation des fils Codex n’est signalé ; modifier cet historique ne débloquerait pas l’objectif CLI sous tmux."
    },
    "sources": [
     {
@@ -10988,7 +11024,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11013,17 +11049,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée ; des fils existent dans l’app."
+     "pourquoi": "Des fils Codex existent surtout dans l’app, sans défaut d’historique signalé."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La reprise sous tmux reste un objectif non encore atteint."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif CLI sous tmux avec Remote Control ne dépend pas de ce réglage d’historique."
     }
    }
   },
@@ -11042,7 +11082,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun hook n’est installé et les contrôles manuels envisagés ne concernent pas l’interruption d’un tour."
+    "pourquoi": "Les contrôles répétés envisagés portent sur les missions et l’environnement Python, pas sur l’interruption d’un tour Codex."
    },
    "sources": [
     {
@@ -11055,7 +11095,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11080,16 +11120,16 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Aucun hook n’est actuellement installé."
-    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "Les contrôles manuels cités comme candidats aux hooks ne portent pas sur les interruptions."
     }
    }
@@ -11193,7 +11233,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le contrôle des commandes avant exécution correspond mieux à la piste décrite ; `PostToolUse` ne peut pas annuler les effets déjà produits."
+    "pourquoi": "Les contrôles répétés envisagés doivent prévenir une mauvaise exécution ; `PostToolUse` intervient après les effets et ne peut pas les annuler."
    },
    "sources": [
     {
@@ -11206,7 +11246,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11231,16 +11271,16 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Aucun hook n’est actuellement installé."
-    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "Les contrôles SHA-256 et PYTHONDONTWRITEBYTECODE sont encore manuels."
     }
    }
