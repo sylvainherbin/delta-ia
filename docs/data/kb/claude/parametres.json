@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-09-30",
  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 630,
- "commentees": 627,
+ "commentees": 619,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -577,7 +577,7 @@
    "nom": "allowedMcpServers",
    "gabarit": "court",
    "description": "Réglage géré qui dresse la liste des serveurs MCP autorisés ; tout serveur hors liste est bloqué, connecteurs claude.ai compris.",
-   "description_source": "Allowlist the MCP servers people can add. Claude Code blocks any server that doesn't match an entry wherever it's defined, including plugin servers, servers passed with --mcp-config, and servers from claude.ai.",
+   "description_source": "Allowlist the MCP servers people can add. Claude Code blocks any server that doesn't match an entry wherever it's defined, including plugin servers, servers a user passes with --mcp-config, and servers from claude.ai.",
    "usage": "{\n  \"allowedMcpServers\": [\n    { \"serverCommand\": [\"npx\", \"-y\", \"@modelcontextprotocol/server-filesystem\"] }\n  ]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -594,11 +594,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -607,6 +607,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -2047,7 +2051,7 @@
    "nom": "API_FORCE_IDLE_TIMEOUT",
    "gabarit": "court",
    "description": "Variable qui modifie le délai de 5 minutes après lequel une réponse en flux sans aucun octet est abandonnée ; `0` le supprime.",
-   "description_source": "Override the 5-minute body idle timeout that aborts a streaming model response when no bytes arrive. Set to 0 to turn the timeout off, for example when a slow gateway or local model pauses longer than 5 minutes between chunks, or 1 to keep it on for every provider. When unset, the timeout is active on providers other than the direct Anthropic API and Claude Platform on AWS. The stream watchdogs run independently of it and abort a long silent pause even when you set 0 here",
+   "description_source": "Override the 5-minute body idle timeout that aborts a streaming model response when no bytes arrive. Set to 0 to turn the timeout off, for example when a slow gateway or local model pauses longer than 5 minutes between chunks, or 1 to keep it on for every provider. When unset, the timeout is active on providers other than the direct Anthropic API, Claude Platform on AWS, and Amazon Bedrock with CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1 set. The stream watchdogs run independently of it and abort a long silent pause even when you set 0 here",
    "usage": "API_FORCE_IDLE_TIMEOUT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2064,11 +2068,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2077,6 +2081,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -11561,7 +11569,7 @@
    "nom": "CLAUDE_CODE_TMPDIR",
    "gabarit": "court",
    "description": "Variable qui déplace le dossier des fichiers temporaires internes.",
-   "description_source": "Override the temp directory used for internal temp files. Claude Code appends /claude-{uid}/ on Unix or /claude/ on Windows to this path. Default: /tmp on macOS, os.tmpdir() on Linux and Windows. On macOS and Linux, sandboxed Bash subprocesses receive a short fallback $TMPDIR under the system default when your override is a long path, since some tools fail when temp paths get too long. Unsandboxed Bash commands inherit your shell's $TMPDIR when it is set. Claude Code's own temp files always use your override. Set it in your shell, user settings, or managed settings. Ignored in project and local settings",
+   "description_source": "Override the temp directory used for internal temp files. Claude Code appends /claude-{uid}/ to this path on Unix, or /claude/ on Windows. Default: /tmp on macOS, os.tmpdir() on Linux and Windows. On macOS and Linux, sandboxed Bash subprocesses receive a short fallback $TMPDIR under the system default when your override is a long path, since some tools fail when temp paths get too long. Unsandboxed Bash commands inherit your shell's $TMPDIR when it is set. On native Windows, when your shell doesn't set $TMPDIR, a Bash command that references $TMPDIR receives your override, or %TEMP% when you haven't set one. Claude Code's own temp files always use your override. Set it in your shell, user settings, or managed settings. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_TMPDIR",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11578,11 +11586,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11591,6 +11599,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -14310,7 +14322,7 @@
    "nom": "DISABLE_PROMPT_CACHING_OPUS",
    "gabarit": "court",
    "description": "Variable qui désactive le cache de prompt pour les modèles Opus.",
-   "description_source": "Set to 1 to disable prompt caching for Opus models",
+   "description_source": "Set to 1 to disable prompt caching for the default Opus model",
    "usage": "DISABLE_PROMPT_CACHING_OPUS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14327,11 +14339,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14340,6 +14352,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -14357,7 +14373,7 @@
    "nom": "DISABLE_PROMPT_CACHING_SONNET",
    "gabarit": "court",
    "description": "Variable qui désactive le cache de prompt pour les modèles Sonnet.",
-   "description_source": "Set to 1 to disable prompt caching for Sonnet models",
+   "description_source": "Set to 1 to disable prompt caching for the default Sonnet model",
    "usage": "DISABLE_PROMPT_CACHING_SONNET",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14374,11 +14390,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14387,6 +14403,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22070,7 +22090,7 @@
    "nom": "permissions.blockReadsOutsideWorkingDirectories",
    "gabarit": "court",
    "description": "Réglage qui interdit à Read, Grep, Glob et LSP de lire hors des dossiers de travail, dans tous les modes.",
-   "description_source": "Stop Claude from reading paths outside the session's working directories with the Read, Grep, Glob, and LSP tools, in every permission mode including bypassPermissions. A Bash command that reads a matching path through a file command Claude Code recognizes, such as cat, prompts you even in auto mode and bypassPermissions mode. Requires Claude Code v2.1.257 or later.",
+   "description_source": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or …",
    "usage": "{\n  \"permissions\": {\n    \"blockReadsOutsideWorkingDirectories\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22087,11 +22107,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22100,6 +22120,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26256,7 +26280,7 @@
    "nom": "strictPluginOnlyCustomization.agents",
    "gabarit": "court",
    "description": "Réglage qui verrouille les agents : plus de chargement depuis `~/.claude/agents/` et `.claude/agents/`.",
-   "description_source": "Lock the agents surface. Claude Code stops loading agents from ~/.claude/agents/ and .claude/agents/, and keeps loading plugin agents, built-in agents, and agents in the managed policy directory.",
+   "description_source": "Lock the agents surface. Claude Code stops loading agents from ~/.claude/agents/, .claude/agents/, and --add-dir directories. It keeps loading plugin agents, built-in agents, and agents in the managed policy directory.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"agents\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26273,11 +26297,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26286,6 +26310,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26387,7 +26415,7 @@
    "nom": "strictPluginOnlyCustomization.skills",
    "gabarit": "court",
    "description": "Réglage qui verrouille les skills : plus de chargement depuis `~/.claude/skills/`, `.claude/skills/` ni des skills synchronisés de claude.ai.",
-   "description_source": "Lock the skills surface. Claude Code stops loading skills from ~/.claude/skills/ and .claude/skills/, custom commands from ~/.claude/commands/ and .claude/commands/, skills under --add-dir directories, and skills synced from your claude.ai account, and keeps loading plugin skills, bundled skills, and skills in the managed policy directory.",
+   "description_source": "Lock the skills surface. Claude Code stops loading skills from ~/.claude/skills/ and .claude/skills/, custom commands from ~/.claude/commands/ and .claude/commands/, skills and commands under --add-dir directories, and skills synced from your claude.ai account. It keeps loading plugin skills, bundled skills, and skills in the managed policy directory.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"skills\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26404,11 +26432,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26417,6 +26445,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

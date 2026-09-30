@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-09-30",
  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 80,
+ "commentees": 79,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -491,7 +491,7 @@
    "nom": "Use Claude Code in the cloud",
    "gabarit": "complet",
    "description": "Une session cloud tourne sur l'infrastructure d'Anthropic au lieu de la machine locale, sur un clone du dépôt GitHub ; on la lance depuis claude.ai/code, l'onglet Code de l'app mobile, l'app de bureau ou `claude --cloud`, et `--teleport` la rapatrie dans le terminal. Elle peut aussi corriger automatiquement une PR sur échec de CI ou commentaire de revue.",
-   "description_source": "Run Claude Code sessions in the cloud from your browser, phone, desktop app, or terminal, move them with --cloud and --teleport, and auto-fix pull requests.",
+   "description_source": "Run Claude Code sessions in the cloud from your browser, phone, Desktop app, or terminal, move them with --cloud and --teleport, and auto-fix pull requests.",
    "usage": "claude --cloud \"Fix the authentication bug in src/auth/login.ts\"",
    "usage_nature": "syntaxe",
    "exemple": "claude --cloud \"Execute the migration plan in docs/migration-plan.md\"",
@@ -508,11 +508,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -525,6 +525,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -1629,9 +1633,9 @@
    "categorie": "fonctionnalites",
    "nom": "Customize keyboard shortcuts",
    "gabarit": "complet",
-   "description": "`/keybindings` crée ou ouvre `~/.claude/keybindings.json`, où l'on associe des touches à des actions par contexte (Chat, etc.) ou en désactive, avec un schéma JSON pour l'autocomplétion.",
+   "description": "`/keybindings` crée ou ouvre `~/.claude/keybindings.json`, où l'on associe des touches à des actions par contexte (Chat, etc.) ou en désactive (valeur `null`), avec un schéma JSON pour l'autocomplétion.",
    "description_source": "Customize keyboard shortcuts in Claude Code with a keybindings configuration file.",
-   "usage": "{\n  \"$schema\": \"https://www.schemastore.org/claude-code-keybindings.json\",\n  \"$docs\": \"https://code.claude.com/docs/en/keybindings\",\n  \"bindings\": [\n    {\n      \"context\": \"Chat\",\n      \"bindings\": {\n        \"ctrl+e\": \"chat:externalEditor\",\n        \"ctrl+u\": null\n      }\n    }\n  ]\n…",
+   "usage": "{\n  \"$schema\": \"https://www.schemastore.org/claude-code-keybindings.json\",\n  \"$docs\": \"https://code.claude.com/docs/en/keybindings\",\n  \"bindings\": [\n    {\n      \"context\": \"Chat\",\n      \"bindings\": {\n        \"ctrl+e\": \"chat:externalEditor\",\n        \"ctrl+s\": null\n      }\n    }\n  ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -1651,7 +1655,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1660,10 +1664,23 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Pilotage à distance : l'iPhone est l'interface principale."
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-large-codebases",
@@ -1715,7 +1732,7 @@
    "gabarit": "complet",
    "description": "Deux mécanismes portent le savoir d'une session à l'autre : les fichiers CLAUDE.md (ou AGENTS.md) écrits par l'utilisateur, avec imports `@chemin` et règles `.claude/rules/` par type de fichier, et la mémoire automatique où Claude note corrections et préférences. Les deux sont chargés en début de conversation comme contexte, pas comme contrainte.",
    "description_source": "Give Claude persistent instructions with CLAUDE.md or AGENTS.md files, and let Claude accumulate learnings automatically with auto memory.",
-   "usage": "See @README for project overview and @package.json for available npm commands for this project.\n\n# Additional Instructions\n- git workflow @docs/git-instructions.md",
+   "usage": "- API conventions @Design\\ Docs/api-conventions.md",
    "usage_nature": "syntaxe",
    "exemple": "# Individual Preferences\n- @~/.claude/my-project-instructions.md",
    "disponibilite": null,
@@ -1735,7 +1752,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1772,21 +1789,29 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "23 mémoires (racine) + 4 (trading-sim), très utilisées"
+     "pourquoi": "Mémoire automatique : 23 mémoires (racine) + 4 (trading-sim), très utilisée."
     },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "CLAUDE.md limité à `@AGENTS.md`"
+     "pourquoi": "CLAUDE.md de carnet limité à @AGENTS.md."
     },
     "optimisation.pistes": {
      "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 1 : règles transversales à centraliser dans ~/.claude/CLAUDE.md sur accord"
+     "pourquoi": "Piste 1 : règles transversales à centraliser dans ~/.claude/CLAUDE.md, sur accord de Sylvain."
     }
    }
   },

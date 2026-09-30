@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-30",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-09-30T05:15:00+00:00",
+  "synthese": "Claude Code 2.1.285, déjà installée, arrête désormais les commandes Bash lancées en arrière-plan au bout de leur `timeout` (30 min par défaut, 2 h au plus) : si une campagne trading-sim passe par une commande d'arrière-plan de herbin-trading, elle serait coupée, à vérifier avant la prochaine. La même version ajoute `claude --desktop`, qui ouvre Claude Desktop sur le dossier ou la session en cours, et corrige plusieurs pertes de messages et de pièces jointes envoyés par Remote Control depuis l'iPhone.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.285",
+      "ids_bruts": [
+        "claude-code-2.1.285"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.285",
+      "version": "2.1.285",
+      "date_publication": "2026-09-29",
+      "type": "changement_rupture",
+      "resume": "Les commandes Bash et PowerShell lancées en arrière-plan (`run_in_background`) s'arrêtent désormais à leur `timeout`, 30 min par défaut et 2 h au plus ; Claude est prévenu de l'arrêt. Ajouts : `claude --desktop` (ouvre Claude Desktop sur le dossier courant, ou sur une session avec `--continue` / `--resume <id>`), `claude plugin configure`, variable `CLAUDE_CODE_DISABLE_WEB_FETCH`, réglage géré `allowedProviders`. Corrections : pièces jointes Remote Control perdues après un échec de téléchargement (deux nouvelles tentatives), message marqué lu dès réception et message en file perdu à la fermeture du terminal, hooks synchrones bloqués par un processus d'arrière-plan, sous-agents fork qui ne gardaient pas le mode plan ; `/resume` ouvre maintenant une session qui tourne en arrière-plan au lieu de refuser.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21285",
+          "libelle": "Changelog Claude Code 2.1.285",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Le point défavorable : une commande Bash d'arrière-plan qui dépasse son `timeout` est maintenant tuée. Si herbin-trading lance une campagne trading-sim comme commande d'arrière-plan de Claude Code (et non comme service de `calculs.slice` indépendant de la session), une campagne de plus de 30 min serait coupée sans que tu l'aies demandé. Côté iPhone, tes sessions tmux pilotées par Remote Control ne perdent plus un message resté en file quand le terminal quitte : il arrive à la reprise suivante, et une photo jointe est retentée deux fois avant d'être abandonnée. `claude --desktop` ouvre Claude Desktop, où tu utilises Claude Design, directement sur le dossier ou la session en cours.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Vérifier comment herbin-trading lance les campagnes longues avant la prochaine, pour qu'elles ne soient pas coupées par la nouvelle limite des commandes d'arrière-plan.",
+        "etapes": [
+          "Dans herbin-trading, demande : « Comment as-tu lancé la dernière campagne : commande Bash en arrière-plan de Claude Code, ou service `systemd-run` dans `calculs.slice` ? ». Un service systemd n'est pas concerné par la limite.",
+          "Si c'est une commande d'arrière-plan et que la campagne dure plus de 30 min, fais préciser dans la mission un lancement par `systemd-run` dans `calculs.slice` (commande exacte à faire valider par herbin-mint lors de la revue machine), surveillé ensuite par Monitor ; une commande d'arrière-plan ne peut de toute façon pas dépasser 2 h.",
+          "Pour vérifier : pendant la campagne suivante, `/tasks` dans herbin-trading ne doit plus lister la campagne comme commande d'arrière-plan de la session.",
+          "Pour essayer `claude --desktop` : dans un terminal ouvert sur `~/projets/delta-ia`, tape `claude --desktop --continue` ; Claude Desktop doit s'ouvrir sur la dernière session de ce dossier."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-fonctionnalites-page-desktop",
+        "claude-code-fonctionnalites-page-remote-control",
+        "claude-code-commandes-resume"
+      ],
+      "contexte_sections": {
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Campagnes exhaustives longues exécutées par herbin-trading : exposées à l'arrêt des commandes d'arrière-plan."
+        },
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Sessions tmux pilotées par Remote Control depuis l'iPhone ; herbin-trading exécute les campagnes."
+        },
+        "config.claude-code.skills": {
+          "sha1": "7652218ad63336a7a32ace82825e11132407c1c2",
+          "pourquoi": "Usage intensif de Claude Design dans Claude Desktop : claude --desktop y ouvre la session en cours."
+        }
+      }
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546"
+}

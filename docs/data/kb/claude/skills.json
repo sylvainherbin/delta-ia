@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-09-30",
  "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -29,9 +29,103 @@
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
- "total": 21,
- "commentees": 20,
+ "total": 24,
+ "commentees": 23,
  "entrees": [
+  {
+   "id": "claude-code-skills-artifact-capabilities",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/artifact-capabilities",
+   "gabarit": "complet",
+   "description": "Skill intégré qui charge la référence des capacités d'exécution d'un artefact publié : appel de tes connecteurs, téléchargement de fichier proposé au lecteur, et la liste de celles que ton compte autorise. Claude le charge normalement de lui-même avant de construire une page qui en utilise une ; l'appel manuel sert à consulter cette liste.",
+   "description_source": "Skill. Load the reference for the runtime capabilities a published artifact can use, such as calling your connectors or offering a file download, including which ones your account has. Claude normally loads it on its own before building a page that uses one. Available where artifacts are",
+   "usage": "/artifact-capabilities",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tu utilises les artefacts, mais Claude charge ce skill seul quand une page en a besoin ; l'appeler toi-même n'apporte rien à tes projets actuels."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "pourquoi": "Sylvain utilise les artefacts de Claude."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-09-30",
+   "historique": [
+    {
+     "date": "2026-09-30",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-skills-artifact-diagramming",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/artifact-diagramming",
+   "gabarit": "complet",
+   "description": "Skill intégré qui charge les consignes de Claude pour les schémas dans les artefacts : quand un schéma aide, quoi dessiner, et comment écrire un SVG en ligne qui reste lisible en thème clair et sombre. Il exige Claude Code 2.1.221 ou plus.",
+   "description_source": "Skill. Load diagramming guidance for Claude to follow in artifacts: when a diagram helps, what to draw, and how to write inline SVG that stays legible in light and dark themes. Requires Claude Code v2.1.221 or later",
+   "usage": "/artifact-diagramming",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude le charge de lui-même pour un schéma d'artefact ; aucun de tes projets ne demande de schéma publié à la main."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "pourquoi": "Sylvain utilise les artefacts de Claude."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-09-30",
+   "historique": [
+    {
+     "date": "2026-09-30",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
+    }
+   ]
+  },
   {
    "id": "claude-code-skills-batch",
    "produit": "claude-code",
@@ -93,16 +187,16 @@
    "categorie": "skills",
    "nom": "/claude-api",
    "gabarit": "complet",
-   "description": "Skill de référence sur l'API Claude et les Managed Agents, chargé automatiquement quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`), changent de version majeure du SDK (`upgrade`), auditent les prompts (`prompt-audit`), analysent les coûts d'API (`cost-optimize`) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
-   "description_source": "Skill. Load Claude API and Managed Agents reference material for your project's language. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. Run migrate to update existing Claude API code to a newer model. Run upgrade to move your project's Anthropic SDK dependency across a major version, currently the Python anthropic package from 0.x to 1.x. Run managed-agents-onboard for a walkthrough that creates a new Managed Agent. Run prompt-audit to flag instructions written for older models in your prompts, skills, and tool descriptions and propose fixes as a diff. Run cost-optimize to profile where your project's Claude API spend goes and propose savings from options such as prompt caching, trimming unneeded input and output tokens, batch processing, effort, and model choice, one change at a time. Run build-eval to build an eval set for your Claude-powered app, and hillclimb to iteratively improve the app against an existing eval. The prompt-audit subcommand requires Claude Code v2.1.221 or later, upgrade requires v2.1.236 or later, cost-optimize requires v2.1.247 or later, and build-eval and hillclimb require v2.1.259 or later",
-   "usage": "/claude-api [migrate|upgrade|managed-agents-onboard|prompt-audit|cost-optimize|build-eval|hillclimb]",
+   "description": "Skill de référence sur l'API Claude et les Managed Agents, dans le langage du projet ; il s'active aussi de lui-même quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`, `preserved-thinking-migration`), changent de version du SDK (`upgrade`), lancent les Managed Agents (`managed-agents-onboard`), auditent les prompts (`prompt-audit`), analysent les coûts (`cost-optimize`) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
+   "description_source": "Skill. Load Claude API and Managed Agents reference material for your project's language. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. For what each subcommand does and the version it requires, see Work on Claude API projects",
+   "usage": "/claude-api [migrate|upgrade|managed-agents-onboard|prompt-audit|cost-optimize|build-eval|hillclimb|preserved-thinking-migration]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne mentionne aucun projet qui appelle l'API Claude."
+    "pourquoi": "Aucun de tes projets n'appelle l'API Claude directement."
    },
    "sources": [
     {
@@ -115,7 +209,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -124,10 +218,73 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {}
+  },
+  {
+   "id": "claude-code-skills-claude-in-chrome",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/claude-in-chrome",
+   "gabarit": "complet",
+   "description": "Skill intégré qui fait exécuter une tâche dans ton navigateur par Claude in Chrome : tester une page, remplir un formulaire, lire les journaux de la console. Il n'est disponible que si l'intégration Chrome est active pour la session (par exemple `claude --chrome`) ou si Claude Code peut proposer d'installer l'extension.",
+   "description_source": "Skill. Have Claude carry out a task in your browser, such as testing a page, filling a form, or reading console logs, through Claude in Chrome. Available when Chrome integration is enabled for the session, for example with claude --chrome, or when Claude Code can offer to install the extension",
+   "usage": "/claude-in-chrome [task]",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "L'extension Chrome est souvent déconnectée chez toi, et tes sessions tmux tournent sans `--chrome` ; aucun de tes projets n'a de test de page qui en dépende aujourd'hui."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "pourquoi": "Friction récurrente : extension Chrome souvent déconnectée."
+    },
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Sessions tmux lancées par claude --resume --remote-control, sans option --chrome citée."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-09-30",
+   "historique": [
+    {
+     "date": "2026-09-30",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-skills-code-review",
