@@ -43,11 +43,32 @@ def test_mots_entiers_seulement():
     assert not sujet_d71.correspond("planning", "replanned", "offering", "pricey")
 
 
-@pytest.mark.parametrize("texte", ["Finances : check your credit score and credits", "Finances : votre score de crédit et vos crédits"])
-def test_exclusion_credit_score_respectee(texte, monkeypatch):
+@pytest.mark.parametrize("texte", ["Finances : check your credit score", "Finances : votre score de crédit",
+                                   "Use plan mode to review changes", "Utilise le mode plan avant d'écrire"])
+def test_expression_exclue_seule_n_est_pas_retenue(texte):
     assert not sujet_d71.correspond(texte)
+
+
+@pytest.mark.parametrize("texte", ["Use plan mode to review changes", "Utilise le mode plan avant d'écrire"])
+def test_exclusion_plan_mode_est_effective(texte, monkeypatch):
     monkeypatch.setattr(sujet_d71, "_EXCLUS", [])  # sans l'exclusion, le même texte est retenu : le test prouve bien quelque chose
     assert sujet_d71.correspond(texte)
+
+
+@pytest.mark.parametrize("texte, mot", [
+    ("Finances : your credit score and your usage limits", "limit"),
+    ("Finances : votre score de crédit et vos crédits", "crédits"),
+    ("Plan mode is free, but the Max plan has weekly limits", "plan"),
+    ("Utilise le mode plan ; ton forfait Max a une limite hebdomadaire", "forfait"),
+])
+def test_exclusion_porte_sur_l_expression_pas_sur_le_texte(texte, mot):
+    """Un texte qui contient l'expression exclue ET un vrai mot-clé D71 reste marqué."""
+    assert mot in sujet_d71.mots_trouves(texte)
+
+
+def test_limit_est_un_mot_cle_mais_pas_usage_seul():
+    assert sujet_d71.correspond("How do usage and length limits work?") and sujet_d71.correspond("Models, usage, and limits in Claude Code")
+    assert not sujet_d71.correspond("Usage Policy") and not sujet_d71.correspond("Claude Code usage analytics")
 
 
 def test_constantes_modifiables_hors_du_code():
@@ -60,9 +81,11 @@ def entrees(**noms):
 
 def test_catalogue_sujet_d71_marque_les_entrees_pertinentes():
     e = entrees(a=("/usage", "/usage", "Show your plan usage limits"), b=("/color", "/color", "Change the prompt bar color"),
-                c=("finances", "credit score", "View your credit score and credits"), d=("/cost", "/cost", "Session cost and quota"))
-    modif = {"ajoutees": ["a", "b"], "usage_modifie": ["c"], "description_source_modifiee": ["d", "a"], "retirees": ["b"]}
-    assert catalogue.sujet_d71(e, modif) == ["a", "d"]  # b hors sujet, c exclu, a une seule fois
+                c=("finances", "credit score", "View your credit score"), d=("/cost", "/cost", "Session cost and quota"),
+                e=("Plan mode", "claude --permission-mode plan", "Enter plan mode"), f=("finances", "credit score", "View your credit score and usage limits"))
+    modif = {"ajoutees": ["a", "b", "e"], "usage_modifie": ["c", "f"], "description_source_modifiee": ["d", "a"], "retirees": ["b"]}
+    # b hors sujet, c et e ne portent que l'expression exclue, f garde un vrai mot-clé, a une seule fois
+    assert catalogue.sujet_d71(e, modif) == ["a", "d", "f"]
 
 
 def test_catalogue_sujet_d71_liste_vide_sans_entree_pertinente():
@@ -116,23 +139,70 @@ def test_commande_usage_de_codex_suivie(sources):
     assert "/debug-config" not in e.contenu, "la section s'arrête à la suivante"
 
 
-def test_section_modifiee_donne_une_revision(tmp_path, monkeypatch, date_figee):
+TITRE_ETAT_INITIAL = "État initial des pages compte et quotas suivies"
+
+
+def aide(brut, index=False):
+    return [n for n in brut["nouveautes"] if n["source_id"].startswith("claude-aide-") and (index or n["source_id"] != "claude-aide-index")]
+
+
+def test_premier_passage_un_seul_element_etat_initial_une_ligne_par_page(tmp_path, monkeypatch, date_figee):
     (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-20"])
     brut = lire(tmp_path / "raw" / "claude-nouveautes.json")
-    aide = {n["id"] for n in brut["nouveautes"] if n["source_id"].startswith("claude-aide-") and n["source_id"] != "claude-aide-index"}
-    assert len(aide) == 10, "premier passage : l'état actuel de chaque article arrive une fois"
+    (etat,) = aide(brut, index=True)  # un seul élément pour dix pages et l'index, ni dix éléments ni silence
+    assert etat["titre"] == TITRE_ETAT_INITIAL and etat["date_publication"] is None and etat["officielle"] and not etat["revision"]
+    lignes = [l for l in etat["contenu"].splitlines() if l.startswith("- ")]
+    pages = [l for l in lignes if not l.startswith("- Index ")]
+    assert len(pages) == 10 and len(set(pages)) == 10, "une ligne par page"
+    assert all("https://support.claude.com/en/articles/" in l for l in pages)
+    assert any("What is a limit reset?" in l and "17007452" in l for l in pages)
+    (ligne_index,) = [l for l in lignes if l.startswith("- Index ")]
+    assert "https://support.claude.com/llms.txt" in ligne_index and "enregistré(s) comme référence" in ligne_index
+    # les pages vont dans `ignores` avec leur empreinte : l'état est tenu page par page
+    ids_pages = {f"{src}-article" for src in ("claude-aide-limites", "claude-aide-remise-a-zero", "claude-aide-forfait-max")}
+    assert ids_pages <= set(brut["ignores"]) and all(brut["empreintes"][i] for i in ids_pages)
     ecrire_quotidien(tmp_path, "claude", brut, "2026-09-26")
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider", "--date", "2026-09-26"]) == 0
+    vus = lire(tmp_path / "state" / "claude.json")["vus"]
+    assert ids_pages <= set(vus) and all(vus[i]["empreinte"] for i in ids_pages) and etat["id"] in vus
+    # passage suivant, rien n'a changé : l'état initial ne revient pas
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
-    assert not [n for n in lire(tmp_path / "raw" / "claude-nouveautes.json")["nouveautes"] if n["source_id"].startswith("claude-aide-")]
+    assert not aide(lire(tmp_path / "raw" / "claude-nouveautes.json"), index=True)
+
+
+def test_section_modifiee_donne_une_revision(tmp_path, monkeypatch, date_figee):
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-20"])
+    ecrire_quotidien(tmp_path, "claude", lire(tmp_path / "raw" / "claude-nouveautes.json"), "2026-09-26")
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider", "--date", "2026-09-26"]) == 0
     change = ARTICLE.replace("Click \"Reset for free\"", "Click \"Reset now\"")
     assert change != ARTICLE
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient({URL_ARTICLE_RESET: (change, "text/markdown")}))
     fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
-    rev = [n for n in lire(tmp_path / "raw" / "claude-nouveautes.json")["nouveautes"] if n["source_id"].startswith("claude-aide-")]
-    assert [(n["id"], n["revision"]) for n in rev] == [("claude-aide-remise-a-zero-article", True)]
+    rev = aide(lire(tmp_path / "raw" / "claude-nouveautes.json"), index=True)
+    assert [(n["id"], n["revision"], n["titre"] == TITRE_ETAT_INITIAL) for n in rev] == [("claude-aide-remise-a-zero-article", True, False)]
+
+
+def test_nouvelle_page_ajoutee_plus_tard_a_son_propre_etat_initial(tmp_path, monkeypatch, date_figee):
+    """Une source-page ajoutée après le premier passage arrive dans un nouvel élément d'état initial, pas en silence."""
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-20"])
+    brut = lire(tmp_path / "raw" / "claude-nouveautes.json")
+    ecrire_quotidien(tmp_path, "claude", brut, "2026-09-26")
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--valider", "--date", "2026-09-26"])
+    etat_f = tmp_path / "state" / "claude.json"
+    e = lire(etat_f)
+    for sid in ("claude-aide-forfait-max",):  # la source est oubliée de l'état : comme si elle venait d'être ajoutée
+        e["sources"].pop(sid, None)
+        e["vus"] = {k: v for k, v in e["vus"].items() if v.get("source_id") != sid}
+    etat_f.write_text(json.dumps(e), encoding="utf-8")
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "claude"])
+    (etat,) = aide(lire(tmp_path / "raw" / "claude-nouveautes.json"), index=True)
+    assert etat["titre"] == TITRE_ETAT_INITIAL and "Forfait Max" in etat["contenu"] and "Index " not in etat["contenu"]
 
 
 def test_page_d_aide_en_echec_va_dans_sources_en_echec(tmp_path, monkeypatch, date_figee):
@@ -251,6 +321,7 @@ def test_les_skills_citent_chaque_id_de_sujet_d71(fichier, perimetre):
     assert f"chaque id de la liste `sujet_d71` de `raw/kb/{perimetre}-modifications.json`" in texte and "SUJET D71" in texte
     assert "nouvel article d'aide" in texte and "type: nouveaute" in texte
     assert "sans jugement" in texte
+    assert "« État initial des pages compte et quotas suivies »" in texte and "un seul élément `fort`" in texte
 
 
 def test_d73_inscrite_dans_la_spec():

@@ -70,8 +70,8 @@ def test_premier_passage_ignore_les_anciens_et_les_valide_aussi(racine):
     brut = lire(racine / "raw" / "claude-nouveautes.json")
     assert all(e["date_publication"] >= "2026-08-24" for e in brut["nouveautes"] if e["date_publication"])
     assert {e["source_id"] for e in brut["nouveautes"] if not e["date_publication"]} <= SOURCES_AIDE_SUIVIES  # étape 2a
-    # les échantillons ne contiennent que des entrées récentes ; seul l'index d'aide (amorçage silencieux, étape 2a) est ignoré
-    assert brut["ignores"] and all(i.startswith("claude-aide-index-") for i in brut["ignores"])
+    # les échantillons ne contiennent que des entrées récentes ; seules les pages et l'index d'aide (état initial, étape 2a) sont ignorés
+    assert brut["ignores"] and all(i.startswith("claude-aide-") for i in brut["ignores"])
 
 
 def test_depuis_restreint_la_fenetre(racine):

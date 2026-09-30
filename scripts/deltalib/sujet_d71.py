@@ -13,14 +13,16 @@ import unicodedata
 
 MOTS_CLES = (
     # anglais
-    "usage limit", "rate limit", "limit reset", "reset", "quota", "credits", "extra usage", "plan", "pricing", "price",
+    "limit", "usage limit", "rate limit", "limit reset", "reset", "quota", "credits", "extra usage", "plan", "pricing", "price",
     "billing", "subscription", "promotion", "offer", "free trial",
     # français
     "limite", "remise à zéro", "réinitialisation", "crédits", "forfait", "tarif", "abonnement", "offre",
 )
 
-# Bruit connu : la fonction Finances de ChatGPT parle de « credit score » (23/09). Une expression exclue écarte l'ensemble du texte.
-EXCLUSIONS = ("credit score", "score de crédit")
+# Bruit connu : la fonction Finances de ChatGPT parle de « credit score » (23/09) ; « plan mode » (commande /plan de Claude
+# Code) ne parle pas de forfait. Une exclusion porte sur l'expression seulement : elle est retirée du texte avant la recherche,
+# un texte qui contient aussi un vrai mot-clé reste retenu. « usage » seul n'est pas un mot-clé (il ramène la Usage Policy).
+EXCLUSIONS = ("credit score", "score de crédit", "plan mode", "mode plan")
 
 
 def _normaliser(texte: str) -> str:
@@ -38,10 +40,10 @@ _EXCLUS = [_motif(m) for m in EXCLUSIONS]
 
 
 def mots_trouves(*textes: str | None) -> list[str]:
-    """Mots-clés présents dans l'ensemble des textes ; liste vide si rien ne correspond ou si une exclusion s'applique."""
+    """Mots-clés présents dans l'ensemble des textes, une fois les expressions exclues retirées ; liste vide si rien ne correspond."""
     t = _normaliser(" \n ".join(x for x in textes if x))
-    if not t or any(p.search(t) for p in _EXCLUS):
-        return []
+    for exclusion in _EXCLUS:
+        t = exclusion.sub(" ", t)
     return [mot for mot, p in _MOTIFS if p.search(t)]
 
 

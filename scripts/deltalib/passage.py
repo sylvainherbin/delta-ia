@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -135,11 +136,13 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     nouveautes, ignores = detecter(elements, etat, fenetre, fenetre_par_source)
     # Étape 2a : une source à option `amorcage_silencieux` (index d'articles d'aide, éléments non datés) n'annonce rien à
     # sa première lecture : l'existant va dans `ignores`, `--valider` l'inscrit comme référence pour les passages suivants.
-    silencieuses = {s.id for s in sources if s.options.get("amorcage_silencieux") and s.id in traitees
-                    and (premier_passage(etat) or s.id in amorcees)}
+    premieres = {s.id for s in sources if s.id in traitees and (premier_passage(etat) or s.id in amorcees)}
+    silencieuses = {s.id for s in sources if s.options.get("amorcage_silencieux") and s.id in premieres}
+    reference_silencieuse = {sid: sum(1 for e in nouveautes if e.source_id == sid) for sid in silencieuses}
     if silencieuses:
         ignores = sorted(set(ignores) | {e.id for e in nouveautes if e.source_id in silencieuses})
         nouveautes = [e for e in nouveautes if e.source_id not in silencieuses]
+    nouveautes, ignores = regrouper_etat_initial(perimetre, sources, premieres, nouveautes, ignores, reference_silencieuse)
     lire_articles(nouveautes, sources, client, echecs)
     vus = etat.get("vus", {})
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
@@ -148,6 +151,45 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     empreintes = {e.id: e.empreinte for e in elements if e.empreinte and (e.id in ignores or e in nouveautes)}
     return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes,
                  ignores_sources, amorcees)
+
+
+def _ligne_page(e: Element) -> str:
+    """Une ligne pour l'état initial : titre, adresse et première phrase de la page (160 caractères au plus)."""
+    resume = next((l.strip() for l in e.contenu.splitlines() if l.strip() and not l.lstrip().startswith(("#", ">", "|", "-", "*", "<"))), "")
+    resume = resume if len(resume) <= 160 else resume[:157].rsplit(" ", 1)[0] + "…"
+    return f"- {e.titre} ({e.url})" + (f" : {resume}" if resume else "")
+
+
+def regrouper_etat_initial(perimetre: str, sources: list[Source], premieres: set[str], nouveautes: list[Element],
+                           ignores: list[str], reference_silencieuse: dict[str, int]) -> tuple[list[Element], list[str]]:
+    """Étape 2a : les sources à option `etat_initial` (valeur = titre de l'élément) n'annoncent pas chacune leur état à la
+    première lecture : un seul élément, une ligne par page, remplace leurs nouveautés. Les pages elles-mêmes vont dans
+    `ignores` (avec leur empreinte) : `--valider` les inscrit, et une modification ultérieure revient en révision page
+    par page. Les index d'articles lus en silence y figurent en une ligne (nombre d'articles enregistrés comme référence)."""
+    groupes: dict[str, list[Source]] = {}
+    for s in sources:
+        titre = s.options.get("etat_initial")
+        if titre and s.id in premieres:
+            groupes.setdefault(titre, []).append(s)
+    for titre, membres in groupes.items():
+        ids = {m.id for m in membres}
+        pages = [e for e in nouveautes if e.source_id in ids and not e.revision]
+        lignes = [_ligne_page(e) for e in pages]
+        lignes += [f"- Index {m.url} : {reference_silencieuse[m.id]} article(s) de ce sujet enregistré(s) comme référence ; "
+                   "les prochains nouveaux articles seront signalés un par un"
+                   for m in membres if reference_silencieuse.get(m.id)]
+        if not lignes:
+            continue
+        premier = pages[0] if pages else None
+        ident = f"etat-initial-{perimetre}-{hashlib.sha1(','.join(sorted(ids)).encode()).hexdigest()[:8]}"
+        element = Element(id=ident, produit=(premier.produit if premier else membres[0].produit), titre=titre, version=None,
+                          date_publication=None, url=(premier.url if premier else membres[0].url),
+                          contenu=f"Première lecture des pages suivies : état actuel de {len(pages)} page(s) d'aide (D71).\n" + "\n".join(lignes),
+                          source_id=(premier.source_id if premier else membres[0].id), officielle=all(m.officielle for m in membres))
+        retirees = {e.id for e in pages}
+        nouveautes = [element] + [e for e in nouveautes if e.id not in retirees]
+        ignores = sorted(set(ignores) | retirees)
+    return nouveautes, ignores
 
 
 TAILLE_MAX_MARKDOWN = 6000
