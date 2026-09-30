@@ -251,3 +251,10 @@ def test_les_skills_citent_chaque_id_de_sujet_d71(fichier, perimetre):
     assert f"chaque id de la liste `sujet_d71` de `raw/kb/{perimetre}-modifications.json`" in texte and "SUJET D71" in texte
     assert "nouvel article d'aide" in texte and "type: nouveaute" in texte
     assert "sans jugement" in texte
+
+
+def test_d73_inscrite_dans_la_spec():
+    from conftest import RACINE
+    spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
+    assert "| D73 |" in spec and "`sujet_d71`" in spec and "amorcage_silencieux" in spec and "D71" in spec.split("| D73 |")[1]
+    assert "Claude (compte et quotas, D73)" in spec
