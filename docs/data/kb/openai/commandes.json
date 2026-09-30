@@ -419,7 +419,7 @@
    "categorie": "commandes",
    "nom": "codex://settings/connections/ssh/add?name=<ssh-config-host>",
    "gabarit": "complet",
-   "description": "Ouvre l’ajout dans Codex d’un hôte SSH déjà déclaré dans la configuration SSH locale. Le paramètre `name` désigne l’alias à importer.",
+   "description": "Le lien `codex://settings/connections/ssh/add?name=<ssh-config-host>` ouvre l’ajout dans Codex d’un hôte déjà déclaré dans la configuration SSH locale. Le paramètre `name` doit correspondre à l’alias SSH à importer.",
    "description_source": "Adds a host from your SSH config to Codex.",
    "usage": "codex://settings/connections/ssh/add?name=<ssh-config-host>",
    "usage_nature": "syntaxe",
@@ -441,7 +441,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -474,16 +474,20 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
      "pourquoi": "Aucun usage d’une connexion SSH gérée par Codex n’est attesté."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
      "pourquoi": "L’objectif de pilotage distant ne précise aucun hôte SSH."
     }
    }
@@ -5230,16 +5234,16 @@
    "categorie": "commandes",
    "nom": "/statusline",
    "gabarit": "complet",
-   "description": "Configure les champs et l'ordre du pied de l'interface CLI, notamment modèle, contexte, limites et branche Git. Le choix est enregistré dans `tui.status_line` de `config.toml` pour les sessions suivantes.",
+   "description": "La commande `/statusline` configure et ordonne les champs du pied de la TUI, notamment le modèle, le contexte, les limites, Git et les jetons. Le choix est enregistré dans `tui.status_line` de `config.toml` et persiste pour les sessions suivantes.",
    "description_source": "Configure TUI status-line fields interactively. — Pick and reorder footer items (model/context/limits/git/tokens/session) and persist in config.toml.",
    "usage": "/statusline",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un essai Codex CLI sous tmux sur trading-sim, régler `/statusline` sur modèle, limites et contexte, puis ouvrir une nouvelle session pour vérifier la persistance dans `config.toml` ; c'est un réglage durable."
+    "pourquoi": "Dans un essai Codex CLI sous tmux sur trading-sim, afficher modèle, limites et contexte puis restaurer l’ordre initial ; utiliser `/status` si une inspection sans réglage persistant suffit."
    },
    "sources": [
     {
@@ -5252,7 +5256,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5265,21 +5269,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Codex en CLI avec tmux est un objectif déclaré."
+    "config.codex.interface": {
+     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "methode.travail": {
      "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les limites d'usage sont une friction récurrente."
+     "pourquoi": "Les limites d’usage et le coût en jetons des longs audits sont des frictions récurrentes."
     },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits du dépôt sont longs et formels."
+    "optimisation.pistes": {
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
     }
    }
   },

@@ -3539,13 +3539,13 @@
    "categorie": "parametres",
    "nom": "codex --cd, -C",
    "gabarit": "court",
-   "description": "L’option `--cd` ou `-C` choisit le répertoire dans lequel Codex commence la tâche.",
+   "description": "L’option `--cd` ou `-C` choisit le répertoire de travail de Codex avant le traitement de la demande.",
    "description_source": "Set the working directory for the agent before it starts processing your request. (valeurs : path)",
    "usage": "codex --cd, -C",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
     "pourquoi": "Lancer le binaire Codex de l’app avec `-C /home/herbin/projets/trading-sim`, puis vérifier dans `/status` que ce dossier est l’espace de travail."
@@ -3561,7 +3561,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3590,17 +3590,25 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Les essais de syntaxe visent le binaire de l’app, la CLI autonome n’étant pas utilisée."
+     "pourquoi": "La CLI autonome n’est pas utilisée ; la syntaxe doit être vérifiée avec le binaire livré par l’app."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt est un projet approuvé et fait l’objet d’audits Codex."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Les sessions Codex CLI persistantes sous tmux restent un objectif."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Les sessions Codex CLI sous tmux restent un objectif."
     }
    }
   },
@@ -6586,13 +6594,13 @@
    "categorie": "parametres",
    "nom": "codex login status subcommand",
    "gabarit": "court",
-   "description": "La sous-commande `codex login status` indique le mode d’authentification actif et rend un succès lorsque la connexion est établie.",
+   "description": "La sous-commande `codex login status` indique le mode d’authentification actif et rend un code de succès lorsque la connexion est établie.",
    "description_source": "Print the active authentication mode and exit with 0 when logged in. (valeurs : codex login status)",
    "usage": "codex login status subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
     "pourquoi": "Avant un premier audit CLI de trading-sim sous tmux, exécuter `codex login status` avec le binaire de l’app et confirmer le mode de connexion sans afficher de secret."
@@ -6608,7 +6616,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6637,17 +6645,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Les essais de syntaxe visent le binaire de l’app, la CLI autonome n’étant pas utilisée."
+     "pourquoi": "La CLI autonome n’est pas utilisée ; la syntaxe doit être vérifiée avec le binaire livré par l’app."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Les sessions Codex CLI persistantes sous tmux restent un objectif."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Les sessions Codex CLI sous tmux restent un objectif."
     }
    }
   },
@@ -6741,7 +6753,7 @@
    "categorie": "parametres",
    "nom": "codex --model, -m",
    "gabarit": "court",
-   "description": "L’option `--model` remplace pour cette session le modèle défini en configuration.",
+   "description": "L’option `--model` ou `-m` remplace pour cette session le modèle défini dans la configuration.",
    "description_source": "Override the model set in configuration (for example gpt-6.1-sol ). (valeurs : string)",
    "usage": "codex --model, -m",
    "usage_nature": "syntaxe",
@@ -6750,7 +6762,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans la future CLI sous tmux, lancer avec `codex -m gpt-6.1-sol` une vérification brève de trading-sim et comparer le résultat au profil `audit` sans modifier le défaut."
+    "pourquoi": "Dans la future CLI sous tmux, lancer avec `codex -m gpt-6.1-sol` une vérification brève de trading-sim et comparer son verdict au profil `audit` sans modifier le modèle par défaut."
    },
    "sources": [
     {
@@ -6784,9 +6796,13 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
@@ -6794,11 +6810,11 @@
     },
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Le profil audit utilise actuellement GPT-6 Sol avec un effort xhigh."
+     "pourquoi": "Le profil audit est utilisé et son réglage courant est suivi dans `docs/data/etat.json`."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Une CLI Codex sous tmux fait partie des objectifs déclarés."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
     }
    }
   },
@@ -6808,16 +6824,16 @@
    "categorie": "parametres",
    "nom": "codex --no-alt-screen",
    "gabarit": "court",
-   "description": "L’option `--no-alt-screen` conserve le terminal principal au lieu d’utiliser l’écran alternatif de la TUI.",
+   "description": "L’option `--no-alt-screen` conserve le terminal principal au lieu d’utiliser l’écran alternatif de la TUI pour cette exécution.",
    "description_source": "Disable alternate screen mode for the TUI (overrides tui.alternate_screen for this run). (valeurs : boolean)",
    "usage": "codex --no-alt-screen",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans tmux, comparer le défilement de `codex --no-alt-screen` au mode normal et vérifier si l’historique du terminal reste lisible."
+    "pourquoi": "Dans une session tmux d’essai, comparer le défilement de `codex --no-alt-screen` au mode normal et vérifier si l’historique du terminal reste lisible après fermeture."
    },
    "sources": [
     {
@@ -6830,7 +6846,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6859,17 +6875,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée actuellement."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "L’objectif Codex sous tmux donne un scénario concret pour comparer les deux modes d’écran."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "L’objectif Codex sous tmux fournit le scénario de comparaison des deux modes d’écran."
     }
    }
   },
@@ -7314,10 +7334,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après avoir quitté un audit CLI dans trading-sim, exécuter `codex resume --last` et vérifier que le même fil reprend dans tmux."
+    "pourquoi": "Après avoir quitté un audit CLI dans trading-sim, exécuter `codex resume --last` depuis le même dossier et vérifier que le même fil reprend dans tmux."
    },
    "sources": [
     {
@@ -7330,7 +7350,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7359,17 +7379,25 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée actuellement."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Le dépôt fait l’objet d’audits Codex formels."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La reprise d’une session sous tmux participe à l’objectif de pilotage Codex distant."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "La reprise sous tmux participe à l’objectif de pilotage Codex distant."
     }
    }
   },
@@ -11253,7 +11281,7 @@
    "categorie": "parametres",
    "nom": "Hook PreToolUse",
    "gabarit": "court",
-   "description": "Le hook `PreToolUse` peut contrôler une commande, une édition ou un appel d’outil avant son exécution.",
+   "description": "Le hook `PreToolUse` peut inspecter et, pour les chemins pris en charge, bloquer ou réécrire une commande, une édition ou un appel d’outil avant son exécution.",
    "description_source": "PreToolUse can intercept Bash, file edits performed through apply_patch, MCP tool calls, and other local function tools. See Tool coverage for the supported paths and exceptions.",
    "usage": "{\n  \"hookSpecificOutput\": {\n    \"hookEventName\": \"PreToolUse\",\n    \"permissionDecision\": \"deny\",\n    \"permissionDecisionReason\": \"Destructive command blocked by hook.\"\n  }\n}",
    "usage_nature": "syntaxe",
@@ -11262,7 +11290,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur `trading-sim`, tester un `PreToolUse` limité à Bash qui refuse une commande d’audit omettant `PYTHONDONTWRITEBYTECODE=1`, puis vérifier qu’une commande conforme passe."
+    "pourquoi": "Sur une copie de trading-sim, tester un hook Codex limité à Bash qui refuse une commande d’audit omettant `PYTHONDONTWRITEBYTECODE=1`, puis vérifier qu’une commande conforme passe."
    },
    "sources": [
     {
@@ -11275,7 +11303,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11300,17 +11328,17 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Aucun hook n’est actuellement installé."
-    },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Le contrôle manuel PYTHONDONTWRITEBYTECODE est explicitement candidat à un hook."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "Le contrôle manuel `PYTHONDONTWRITEBYTECODE=1` est explicitement candidat à un hook."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -19347,16 +19375,16 @@
    "categorie": "parametres",
    "nom": "tui.resume_cwd",
    "gabarit": "court",
-   "description": "Le réglage `tui.resume_cwd` choisit le répertoire courant ou celui de la session lors d’une reprise ou d’un fork.",
+   "description": "Le réglage `tui.resume_cwd` choisit le répertoire courant ou celui enregistré par la session lors d’une reprise ou d’un fork.",
    "description_source": "Type : current | session. Working directory to use when resuming or forking a session. When unset, Codex asks you to choose if your current directory differs from the session's saved directory.",
    "usage": "tui.resume_cwd",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après une coupure d’une session Codex CLI sous tmux, reprendre depuis un autre dossier et vérifier avec la valeur `session` que le répertoire enregistré est rétabli."
+    "pourquoi": "Après une coupure d’une session Codex CLI sous tmux, reprendre depuis un autre dossier et vérifier avec `session` que le répertoire enregistré est rétabli ; supprimer ensuite le réglage si ce choix persistant n’est pas voulu."
    },
    "sources": [
     {
@@ -19369,7 +19397,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-09-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19394,17 +19422,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-09-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée actuellement."
+     "pourquoi": "La CLI autonome est installée mais non utilisée."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "La reprise fiable d’une session sous tmux participe à l’objectif de pilotage Codex distant."
+     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "pourquoi": "La reprise fiable sous tmux participe à l’objectif de pilotage Codex distant."
     }
    }
   },
