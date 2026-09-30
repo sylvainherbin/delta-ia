@@ -193,7 +193,7 @@ pilotage, pas ici.
 | Skills claude.ai synchronisés | ask-the-council, orchestrator, red-team, scientific-adversary, context-engine, courriel-labo, docs/pdf/xlsx/pptx… ; ask-the-council ×1, les autres non invoqués dans Claude Code | [observé] |
 | Commandes, agents, hooks perso | un agent perso `executant` (`~/projets/.claude/agents/`, niveau projet ; modèle indiqué dans sa définition), créé et testé une fois le 25/09/2026, verdict du pilote neutre, non adopté dans le workflow ; commandes : aucune ; hooks : aucun (hook de test `check-bash.sh` installé le 26/09 par prof, retiré le 27/09) | [observé] |
 | Modèle des sous-agents | politique actuelle du pilote Routage (25/09) : modèle choisi explicitement dans la définition de chaque sous-agent plutôt qu'un défaut global `CLAUDE_CODE_SUBAGENT_MODEL` ; réévaluable si des essais montrent l'intérêt d'un défaut global | [déclaré] |
-| Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé | [observé] |
+| Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé ; plugin `frontend-design@claude-plugins-official` installé le 30/09/2026 en portée utilisateur, pour essai, **non adopté** (révision : relevé du pilote, non reportée ici, D65) | [observé] ; essai [déclaré par le pilote] |
 | Claude Design (Claude Desktop, en mode Claude Code) | Sylvain l'utilise **intensivement**, depuis une session Claude Desktop « Refonte console mobile Delta » : c'est le constructeur de Delta System Experience (paliers 1 à 5 installés le 29/09/2026 dans `~/projets/delta-desktop/system-experience/`) et de la Console de pilotage (`carnet-console`, en React avec Vite). Il veut **découvrir toutes les possibilités** de Claude Design. Le langage visuel Delta repose sur des jetons de couleur : monochrome, violet `#a78bfa` (présence et porte), cyan `#22d3ee` (acquis), rouge `#ff6b61` (anomalie). La Console étant en React, `/design-sync` devient pertinent. **Conséquence pour la veille : Claude Design, `/design`, `/design-sync` et `/design-login` ne sont plus « à ignorer » ; ils sont à recommander et à expliquer concrètement.** | usage et souhait [déclaré, 29/09] ; paliers, jetons de couleur, Console en React [observé] ; pertinence de `/design-sync` [déduit] |
 | Usage réel des outils | Bash ≈2 900 appels (très dominant), Write 219, Edit 177, Monitor 151, ReadNotifications 146, Read 133, WebFetch 31, SendMessage 23, WebSearch 19, Workflow 13, Skill 7, Agent 2 ; commandes tapées : `/btw`, `/remote-control`, `/compact` | [observé, 14 transcripts] |
 
@@ -342,7 +342,11 @@ cette consultation en pratique.
     GitHub Actions minimal ne coûterait rien sur un dépôt public.
 11. **Limite Fable** [déduit] : la consommation Fable/Opus approche les plafonds hebdomadaires ;
     le choix du modèle et du niveau d'effort par session (Sonnet pour les tâches machine
-    simples) pourrait étaler la charge.
+    simples) pourrait étaler la charge. Le modèle par défaut Sonnet est **voulu** par Sylvain
+    [déclaré, 30/09/2026, relevé du pilote]. Formule validée pour les missions de construction
+    de trading-sim : Sonnet avec Opus en conseiller (`/advisor opus`) ; le conseiller ne survit
+    pas à une reprise de session, herbin-mint le réactive avant chaque mission qui l'utilise
+    puis retire `advisorModel` des réglages globaux [déclaré].
 12. **Codex en CLI + tmux + remote control** [déclaré] : c'est l'objectif, pas encore atteint.
     Une nouveauté Codex qui le permettrait serait une alerte prioritaire.
 
