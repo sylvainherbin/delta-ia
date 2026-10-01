@@ -160,6 +160,20 @@ def commande_recuperer(args, racine: Path) -> int:
     return 0
 
 
+def lignes_ajouts_base(perimetre: str, res: dict) -> list[str]:
+    """Étape 2c : entrées ajoutées à la base, à citer dans la veille sans jugement. Jusqu'à SEUIL_AJOUTS_PAR_LIGNE ajouts, une
+    seule ligne qui les nomme tous ; au-delà, un décompte par catégorie (la liste complète reste dans `ajouts_a_citer` du fichier
+    raw/kb/<périmètre>-modifications.json)."""
+    from deltalib.kb.catalogue import SEUIL_AJOUTS_PAR_LIGNE
+    ajouts = res.get("ajouts_a_citer") or []
+    if not ajouts:
+        return []
+    if len(ajouts) <= SEUIL_AJOUTS_PAR_LIGNE:
+        return [f"  + AJOUTS BASE {perimetre} : {', '.join(ajouts)}"]
+    cats = ", ".join(f"{c} {n}" for c, n in (res.get("ajouts_par_categorie") or {}).items())
+    return [f"  + AJOUTS BASE {perimetre} : {len(ajouts)} ({cats})"]
+
+
 def commande_kb(args, racine: Path) -> int:
     """D44 : pages de référence -> raw/kb/ (empreintes) -> catalogue docs/data/kb/<p>/ -> raw/kb/<p>-modifications.json."""
     from deltalib.kb import catalogue
@@ -202,8 +216,8 @@ def commande_kb(args, racine: Path) -> int:
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
         if res["sujet_d71"]:  # D71, étape 2a : à citer en une ligne dans la veille du jour
             print(f"  ~ SUJET D71 {perimetre} : {', '.join(res['sujet_d71'])}")
-        if res["ajouts_a_citer"]:  # étape 2c : entrées ajoutées à la base, à citer en une ligne chacune, sans jugement
-            print(f"  + AJOUTS BASE {perimetre} : {', '.join(res['ajouts_a_citer'])}")
+        for ligne in lignes_ajouts_base(perimetre, res):
+            print(ligne)
         for e in res["echecs"]:
             print(f"  ! ÉCHEC   {e['doc']}" + (f" / {e['page']}" if e.get("page") else "") + f" : {e['erreur']}")
             code = max(code, 3)

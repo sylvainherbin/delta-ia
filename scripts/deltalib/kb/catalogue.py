@@ -213,6 +213,18 @@ def sujet_d71(entrees: dict[str, dict], modif: dict) -> list[str]:
     return sorted(ids)
 
 
+SEUIL_AJOUTS_PAR_LIGNE = 30  # étape 2c : au-delà, fetch.py n'imprime qu'un décompte par catégorie
+
+
+def ajouts_par_categorie(ids: list[str], entrees: dict[str, dict]) -> dict[str, int]:
+    """Nombre d'ajouts par catégorie de la base (champ `categorie` de l'entrée), du plus fourni au moins fourni."""
+    n: dict[str, int] = {}
+    for i in ids:
+        cat = (entrees.get(i) or {}).get("categorie") or "autre"
+        n[cat] = n.get(cat, 0) + 1
+    return dict(sorted(n.items(), key=lambda kv: (-kv[1], kv[0])))
+
+
 def ajouts_a_citer(modif: dict, deja_cites: list[str], base_existante: bool) -> list[str]:
     """Étape 2c : ids des entrées ajoutées à la base (réglages, commandes, raccourcis, etc.) à citer chacun en une ligne
     dans la veille du jour, sans jugement. Hors `sujet_d71` (déjà cités avec l'impact de D71) ; vide quand la base n'existait
@@ -232,9 +244,11 @@ def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fi
     if ecrire_fichiers:
         ecrire(racine, perimetre, entrees)
     d71 = sujet_d71(entrees, modif)
+    ajouts = ajouts_a_citer(modif, d71, bool(existantes))
     return {"perimetre": perimetre, "genere_le": maintenant_iso(), "docs_extraites": sorted(ok), "echecs": echecs,
             "avertissements": avertissements,
-            "sujet_d71": d71, "ajouts_a_citer": ajouts_a_citer(modif, d71, bool(existantes)),
+            "sujet_d71": d71, "ajouts_a_citer": ajouts,
+            "ajouts_par_categorie": ajouts_par_categorie(ajouts, entrees),
             "total": len(entrees), "a_commenter": sorted(k for k, e in entrees.items() if not e.get("commentee") and not e.get("retiree")),
             **modif}
 

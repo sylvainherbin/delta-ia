@@ -189,15 +189,150 @@ def test_page_au_format_inattendu_va_dans_sources_en_echec(tmp_path, monkeypatch
     assert "FormatInattendu" in echec["erreur"] and "introuvable" in echec["erreur"]
 
 
-def test_openai_premier_passage_et_amorcage_complet_avec_depuis(tmp_path, monkeypatch, date_figee):
+TITRE_ETAT_INITIAL = "État initial des dépréciations OpenAI en cours"
+ID_CYBER = "openai-deprecations-2026-09-11-gpt-5-4-cyber"
+
+
+def test_openai_premier_passage_avec_depuis_regroupe_en_un_element(tmp_path, monkeypatch, date_figee):
     dossiers(tmp_path)
     _, brut = passage(tmp_path, monkeypatch, "openai", None, "--depuis", "2026-09-01")
-    n = {e["id"]: e for e in deprec(brut, "openai-deprecations")}
-    assert set(n) == {"openai-deprecations-2026-09-11-gpt-5-4-cyber", "openai-deprecations-preavis",
-                      "openai-deprecations-update-to-openai-s-self-serve-fine-tuning"}
+    (etat,) = deprec(brut, "openai-deprecations")
+    assert etat["titre"] == TITRE_ETAT_INITIAL
+    assert {i for i in brut["ignores"] if i.startswith("openai-deprecations-")} >= {ID_CYBER, "openai-deprecations-preavis"}
+    assert "GPT-5.4-Cyber" in etat["contenu"] and "2026-06-11" not in etat["contenu"]
     _, brut = passage(tmp_path, monkeypatch, "openai", None, "--depuis", "2026-06-01")
-    n = {e["id"]: e for e in deprec(brut, "openai-deprecations")}
-    assert "openai-deprecations-2026-06-11-gpt-5-and-o3-model-deprecations" in n and "openai-deprecations-2026-05-08-gpt-5-2-chat-latest-and-gpt-5-3-chat-latest-model-snapshots" not in n
+    (etat,) = deprec(brut, "openai-deprecations")
+    assert "GPT-5 and o3 model deprecations" in etat["contenu"] and "gpt-5.2-chat-latest" not in etat["contenu"]
+
+
+# --- étape 2c, décision A : amorcage_jours par source, état initial en un seul élément ---------------------------
+
+@pytest.fixture
+def jour_2c(monkeypatch):
+    """Les échantillons datent du 2026-10-01 : le jour du passage est figé là, pas au 23/09 de date_figee."""
+    import deltalib.passage as ps
+    from datetime import date
+    monkeypatch.setattr(ps, "aujourd_hui", lambda: date(2026, 10, 1))
+
+
+def etat_non_vide(tmp_path):
+    """L'état du périmètre existe déjà (une autre source y a des traces) : openai-deprecations est une source nouvelle (D30)."""
+    from deltalib.etat import ecrire_json
+    dossiers(tmp_path)
+    ecrire_json(tmp_path / "state" / "openai.json", {"version": 1, "maj_le": "2026-09-30T10:00:00+00:00",
+                                                       "vus": {"rust-v0.156.1": {"source_id": "codex-cli-releases"}}})
+
+
+def test_option_amorcage_jours_lue_et_defaut_inchange(sources):
+    assert sources["openai-deprecations"].options["amorcage_jours"] == 120
+    assert sources["openai-deprecations"].options["etat_initial"] == TITRE_ETAT_INITIAL
+    assert "amorcage_jours" not in sources["anthropic-deprecations"].options and "etat_initial" not in sources["anthropic-deprecations"].options
+    assert [s.id for s in sources.values() if "amorcage_jours" in s.options] == ["openai-deprecations"]
+
+
+def test_fenetre_amorcage_defaut_j_moins_7_et_option_et_depuis(sources):
+    from datetime import date
+    from deltalib.passage import fenetre_amorcage, FENETRE_AMORCAGE_SOURCE_JOURS
+    j = date(2026, 10, 1)
+    assert FENETRE_AMORCAGE_SOURCE_JOURS == 7
+    assert fenetre_amorcage(sources["anthropic-deprecations"], j, None) == date(2026, 9, 24), "défaut J-7 inchangé"
+    assert fenetre_amorcage(sources["releasebot-chatgpt"], j, None) == date(2026, 9, 24)
+    assert fenetre_amorcage(sources["openai-deprecations"], j, None) == date(2026, 6, 3), "120 jours"
+    assert fenetre_amorcage(sources["openai-deprecations"], j, date(2026, 9, 1)) == date(2026, 9, 1), "--depuis prime"
+
+
+def test_source_nouvelle_avec_amorcage_jours_arrive_en_un_seul_element(tmp_path, monkeypatch, jour_2c):
+    etat_non_vide(tmp_path)
+    _, brut = passage(tmp_path, monkeypatch, "openai")
+    assert "openai-deprecations" in brut["sources_amorcees"]
+    (etat,) = deprec(brut, "openai-deprecations")
+    assert etat["titre"] == TITRE_ETAT_INITIAL and etat["date_publication"] is None and etat["officielle"]
+    lignes = [l for l in etat["contenu"].splitlines() if l.startswith("- ")]
+    # annonces ouvertes des 120 derniers jours (03/06 et après) + préavis et mise à jour fine-tuning (non datés)
+    assert len(lignes) == 9 and any("GPT-5.4-Cyber" in l for l in lignes) and any("Agent Builder" in l for l in lignes)
+    assert not any("gpt-5.2-chat-latest" in l for l in lignes), "plus ancien que 120 jours : ignoré"
+    ids = {i for i in brut["ignores"] if i.startswith("openai-deprecations-")}
+    assert ID_CYBER in ids and "openai-deprecations-preavis" in ids and len(ids) > 9, "les annonces plus anciennes vont aussi dans ignores"
+    assert all(brut["empreintes"].get(i) for i in (ID_CYBER, "openai-deprecations-preavis")), "tenues par empreinte, page par page"
+    # la source garde son état : valider puis une annonce modifiée revient seule, en révision
+    valider(tmp_path, monkeypatch, "openai", brut, "2026-10-01")
+    _, brut2 = passage(tmp_path, monkeypatch, "openai")
+    assert not deprec(brut2, "openai-deprecations")
+    page = PAGE_OPENAI.replace("will be removed from the API on October 1, 2026", "will be removed from the API on October 15, 2026")
+    assert page != PAGE_OPENAI
+    _, brut3 = passage(tmp_path, monkeypatch, "openai", {URL_OPENAI: (page, "text/markdown")})
+    assert [(n["id"], n["revision"]) for n in deprec(brut3, "openai-deprecations")] == [(ID_CYBER, True)]
+
+
+def test_autre_source_nouvelle_garde_la_fenetre_j_moins_7(tmp_path, monkeypatch, jour_2c):
+    etat_non_vide(tmp_path)
+    _, brut = passage(tmp_path, monkeypatch, "claude")  # état claude vide : premier passage du périmètre
+    from deltalib.etat import ecrire_json
+    ecrire_json(tmp_path / "state" / "claude.json", {"version": 1, "maj_le": "2026-09-30T10:00:00+00:00",
+                                                       "vus": {"claude-code-2.1.281": {"source_id": "claude-code-changelog"}}})
+    _, brut = passage(tmp_path, monkeypatch, "claude")
+    assert "anthropic-deprecations" in brut["sources_amorcees"]
+    datees = [n for n in deprec(brut, "anthropic-deprecations") if n["date_publication"]]
+    assert [n["id"] for n in datees] == [ID_SONNET], "seule l'annonce des 7 derniers jours arrive ; pas d'état initial regroupé"
+    assert not [n for n in brut["nouveautes"] if n["titre"].startswith("État initial des dépréciations")]
+
+
+def test_premier_passage_du_perimetre_la_source_garde_sa_propre_fenetre(tmp_path, monkeypatch, jour_2c):
+    dossiers(tmp_path)  # état openai vide : fenêtre de 30 jours pour le périmètre, 120 pour openai-deprecations
+    _, brut = passage(tmp_path, monkeypatch, "openai")
+    (etat,) = deprec(brut, "openai-deprecations")
+    assert "GPT-5 and o3 model deprecations" in etat["contenu"], "11/06 : hors des 30 jours du périmètre, dans les 120 de la source"
+
+
+# --- étape 2c, décision B : au-delà de 30 ajouts, un décompte par catégorie ---------------------------------------
+
+def res_ajouts(n, cats):
+    ids = [f"claude-code-{c}-x{i}" for i, c in enumerate(cats[:n])]
+    entrees = {i: {"categorie": c} for i, c in zip(ids, cats)}
+    return {"ajouts_a_citer": ids, "ajouts_par_categorie": catalogue.ajouts_par_categorie(ids, entrees)}
+
+
+def test_seuil_30_une_ligne_par_ajout_31_un_decompte_par_categorie():
+    assert catalogue.SEUIL_AJOUTS_PAR_LIGNE == 30
+    r30 = res_ajouts(30, ["parametres"] * 30)
+    (l30,) = fetch.lignes_ajouts_base("claude", r30)
+    assert l30.startswith("  + AJOUTS BASE claude : claude-code-parametres-x0, ") and l30.count("claude-code-") == 30
+    r31 = res_ajouts(31, ["parametres"] * 20 + ["commandes"] * 11)
+    (l31,) = fetch.lignes_ajouts_base("claude", r31)
+    assert l31 == "  + AJOUTS BASE claude : 31 (parametres 20, commandes 11)"
+    assert len(r31["ajouts_a_citer"]) == 31, "la liste complète reste dans ajouts_a_citer"
+    assert fetch.lignes_ajouts_base("claude", {"ajouts_a_citer": []}) == []
+
+
+def test_ajouts_par_categorie_du_plus_fourni_au_moins_fourni_lu_dans_la_base():
+    entrees = {"a": {"categorie": "commandes"}, "b": {"categorie": "parametres"}, "c": {"categorie": "parametres"}, "d": {}}
+    assert catalogue.ajouts_par_categorie(["a", "b", "c", "d", "inconnu"], entrees) == {"parametres": 2, "autre": 2, "commandes": 1}
+
+
+def test_gros_ajout_ecrit_le_decompte_a_l_ecran_et_la_liste_dans_le_fichier(tmp_path, monkeypatch, capsys):
+    from test_kb import YAML, lancer_kb, lire as lire_page
+    (tmp_path / "sources.yaml").write_text(YAML, encoding="utf-8")
+    url = "https://code.claude.com/docs/en/settings-reference.md"
+    assert lancer_kb(tmp_path, monkeypatch, None, "claude-code") == 0  # création de l'inventaire : rien à citer
+    capsys.readouterr()
+    monkeypatch.setattr(catalogue, "SEUIL_AJOUTS_PAR_LIGNE", 0)  # tout ajout dépasse le seuil : on observe la forme du décompte
+    page = lire_page("cc_settings.md").replace("## Enterprise and managed settings", NOUVEAUX + "\n## Enterprise and managed settings", 1)
+    assert lancer_kb(tmp_path, monkeypatch, {url: page}, "claude-code") == 0
+    sortie = capsys.readouterr().out
+    m = modifs_kb(tmp_path)
+    n = len(m["ajouts_a_citer"])
+    assert n >= 1 and sum(m["ajouts_par_categorie"].values()) == n and set(m["ajouts_par_categorie"]) == {"parametres"}
+    ligne = [l for l in sortie.splitlines() if "AJOUTS BASE claude" in l]
+    assert ligne == [f"  + AJOUTS BASE claude : {n} (parametres {n})"], "décompte seul à l'écran, les ids restent dans le fichier"
+
+
+def test_skills_disent_le_decompte_par_categorie():
+    from conftest import RACINE
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "Au-delà de 30 ids, `fetch.py --kb` n'imprime plus qu'un décompte par catégorie" in t, f
+    for f in (".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        assert "État initial des dépréciations OpenAI en cours" in (RACINE / f).read_text(encoding="utf-8"), f
 
 
 # --- ajouts de la base de référence ------------------------------------------------------------------------------

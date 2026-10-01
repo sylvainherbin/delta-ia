@@ -490,13 +490,18 @@ sources:
       modifié ou une date de retrait changée fait revenir l'annonce en révision. Identifiant `<source>-<date>-<titre
       slugifié>`, `<source>-<titre slugifié>` pour une annonce sans date : un titre réécrit crée un nouvel élément.
       Amorçage D30 sur J-7 : les annonces datées plus anciennes (dont les retraits encore à venir) vont dans `ignores` ;
-      pour les recevoir au premier passage, lancer `fetch.py --perimetre openai --depuis 2026-09-01`. Le préavis, non daté,
-      arrive une fois en entier. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
+      option `amorcage_jours: 120` (D30 prend sinon J-7) : au premier passage, les annonces encore ouvertes des 120
+      derniers jours (retraits à venir : GPT-5.4-Cyber le 01/10, transcription, audio, GPT-5 et o3, prompts, évaluations et
+      Agent Builder le 30/11) arrivent, regroupées en UN élément « état initial » (option `etat_initial`, une ligne par
+      annonce) au lieu d'un par annonce ; les annonces plus anciennes vont dans `ignores`. Le préavis, non daté, arrive
+      avec elles. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
       introuvable remonte en `sources_en_echec`. À observer 7 passages réels avant `ok`.
     options:
       format: annonces_datees
       nom: Dépréciations des modèles OpenAI
       suivre_revisions: true
+      amorcage_jours: 120
+      etat_initial: "État initial des dépréciations OpenAI en cours"
       sections:
         - {id: preavis, titre: "^Model deprecation notice periods$"}
       parents:

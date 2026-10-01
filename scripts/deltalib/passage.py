@@ -16,7 +16,7 @@ from .modeles import Element, ErreurSource, FormatInattendu, empreinte_contenu
 from .sources import Source
 
 FENETRE_PREMIER_PASSAGE_JOURS = 30
-FENETRE_AMORCAGE_SOURCE_JOURS = 7  # D30 : une source sans trace dans l'état est amorcée sur J-7
+FENETRE_AMORCAGE_SOURCE_JOURS = 7  # D30 : une source sans trace dans l'état est amorcée sur J-7, sauf option de source `amorcage_jours`
 journal = logging.getLogger("delta")
 
 
@@ -60,6 +60,12 @@ class Bilan:
             "empreintes": self.empreintes,
             "sources_en_echec": [e.en_dict() for e in self.echecs],
         }
+
+
+def fenetre_amorcage(source: Source, jour: date, depuis: date | None) -> date:
+    """D30 : début de la fenêtre d'amorçage d'une source sans trace : `--depuis`, sinon J moins l'option de source
+    `amorcage_jours` (étape 2c : 120 pour les dépréciations, dont les annonces restent ouvertes des mois), sinon J-7."""
+    return depuis or (jour - timedelta(days=int(source.options.get("amorcage_jours", FENETRE_AMORCAGE_SOURCE_JOURS))))
 
 
 def recuperer(sources: list[Source], client: Client, borne: str | None = None
@@ -131,8 +137,12 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
         for s in sources:
             if s.id in traitees and s.id not in connues:
                 amorcees.append(s.id)
-                fenetre_par_source[s.id] = depuis or (jour - timedelta(days=FENETRE_AMORCAGE_SOURCE_JOURS))
+                fenetre_par_source[s.id] = fenetre_amorcage(s, jour, depuis)
                 journal.info("source %s sans trace dans l'état : amorçage à partir du %s", s.id, fenetre_par_source[s.id])
+    elif depuis is None:  # premier passage du périmètre : fenêtre de 30 jours, sauf pour une source qui déclare la sienne
+        for s in sources:
+            if s.id in traitees and "amorcage_jours" in s.options:
+                fenetre_par_source[s.id] = fenetre_amorcage(s, jour, None)
     nouveautes, ignores = detecter(elements, etat, fenetre, fenetre_par_source)
     # Étape 2a : une source à option `amorcage_silencieux` (index d'articles d'aide, éléments non datés) n'annonce rien à
     # sa première lecture : l'existant va dans `ignores`, `--valider` l'inscrit comme référence pour les passages suivants.
@@ -184,7 +194,7 @@ def regrouper_etat_initial(perimetre: str, sources: list[Source], premieres: set
         ident = f"etat-initial-{perimetre}-{hashlib.sha1(','.join(sorted(ids)).encode()).hexdigest()[:8]}"
         element = Element(id=ident, produit=(premier.produit if premier else membres[0].produit), titre=titre, version=None,
                           date_publication=None, url=(premier.url if premier else membres[0].url),
-                          contenu=f"Première lecture des pages suivies : état actuel de {len(pages)} page(s) d'aide (D71).\n" + "\n".join(lignes),
+                          contenu=f"Première lecture des sources suivies : état actuel de {len(pages)} élément(s) (pages d'aide, annonces).\n" + "\n".join(lignes),
                           source_id=(premier.source_id if premier else membres[0].id), officielle=all(m.officielle for m in membres))
         retirees = {e.id for e in pages}
         nouveautes = [element] + [e for e in nouveautes if e.id not in retirees]
