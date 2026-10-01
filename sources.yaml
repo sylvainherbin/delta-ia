@@ -338,21 +338,25 @@ sources:
     perimetre: claude
     produit: claude
     type: json
-    url: https://status.anthropic.com/api/v2/incidents.json
-    statut: bloque
+    url: https://status.claude.com/api/v2/incidents.json
+    statut: a_valider
     officielle: true
     note: >-
-      Testé le 2026-10-01 depuis le conteneur de la session de développement, contenu jamais lu : status.anthropic.com
-      répond 301 vers https://status.claude.com/ (le domaine a changé) ; la connexion à status.claude.com est refusée par la
-      politique d'egress du conteneur (CONNECT 403, `connect_rejected`), pas par le site. Non contourné. À retester depuis
-      la machine de Sylvain avant tout passage à `a_valider` : `history.rss`, `history.atom` et `api/v2/incidents.json`
-      (schéma Statuspage supposé identique à celui de status.openai.com, non vérifié). L'analyseur `format: statuspage` est
-      testé uniquement sur l'échantillon réel d'OpenAI. Si le retest réussit, remplacer l'URL par
-      https://status.claude.com/api/v2/incidents.json et passer le statut à `a_valider`.
+      Testé le 2026-10-01 depuis la machine de Sylvain : 200, application/json, 194 Ko, 50 incidents du 22/07 au
+      29/09/2026 (schéma Statuspage : id, name, status, impact, created_at, resolved_at, incident_updates, components) ;
+      la panne Claude du 29/09 (« Elevated errors on claude.ai, Claude Code, Claude Cowork and the Claude API ») y figure et
+      est lue par l'analyseur `statuspage` (échantillon réel dans tests/fixtures/status_claude_incidents.json).
+      status.anthropic.com redirige en 301 vers https://status.claude.com/ (le domaine a changé). Repli :
+      https://status.claude.com/history.rss (200, 39 Ko). La session cloud de l'étape 2b avait classé cette source `bloque`
+      sur un échec d'egress de son conteneur (CONNECT 403), pas sur un refus du site. Un incident ne remonte qu'une fois,
+      à son ouverture (`suivre_revisions: false`) ; les incidents d'impact `none` sont ignorés (`ignorer_impacts`, 4 sur
+      50) ; un incident ouvert à `none` puis aggravé arrive au passage où son impact change. Produit déduit du nom :
+      `claude-code` si « claude code » y figure, sinon `claude`.
     options:
       format: statuspage
       url_publique: https://status.claude.com
-      suivre_revisions: true
+      suivre_revisions: false
+      ignorer_impacts: [none]
       produits_par_mot:
         claude-code: ["claude code"]
 
@@ -496,12 +500,15 @@ sources:
       est la même page ; `pubDate` = dernière mise à jour, pas l'ouverture ; liens avec double barre `//incidents/`, qui
       redirige en 308 vers le lien propre). Date de l'élément = ouverture de l'incident (UTC). Impact lu : `none`, `minor`,
       `major`, `critical`. Produit déduit du nom de l'incident : `codex` si « codex » y figure, sinon `chatgpt` (une
-      panne d'API sans mention reste en `chatgpt`). Retrouve « Issues with Codex » (25/09, impact `critical`). Bruit à
-      surveiller : 2 à 5 incidents par jour ; un incident revient en révision à chaque mise à jour (`suivre_revisions`).
+      panne d'API sans mention reste en `chatgpt`). Retrouve « Issues with Codex » (25/09, impact `critical`). Bruit
+      maîtrisé : 2 à 5 incidents par jour ; un incident ne remonte qu'une fois, à son ouverture (`suivre_revisions: false`), et
+      les incidents d'impact `none` sont ignorés (`ignorer_impacts`, 7 sur 25 le 2026-10-01) ; un incident ouvert à `none`
+      puis aggravé arrive au passage où son impact change.
     options:
       format: statuspage
       url_publique: https://status.openai.com
-      suivre_revisions: true
+      suivre_revisions: false
+      ignorer_impacts: [none]
       produits_par_mot:
         codex: [codex]
 

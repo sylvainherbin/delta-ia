@@ -4,12 +4,16 @@ Atlassian Statuspage (status.claude.com) et incident.io (status.openai.com, qui 
 `{"page": {...}, "incidents": [{id, name, status, impact, created_at, resolved_at?, incident_updates: [...]}]}`.
 Un incident est un élément ; sa date est celle de l'ouverture (`created_at`, UTC), jamais celle de la dernière mise
 à jour. Le contenu reprend l'impact, le statut et toutes les mises à jour dans l'ordre chronologique : avec l'option
-`suivre_revisions`, un nouveau message ou un passage à « resolved » revient en révision.
+`suivre_revisions` (désactivée pour les deux pages d'état, 01/10 : un incident ne remonte qu'une fois, à son ouverture),
+un nouveau message ou un passage à « resolved » reviendrait en révision.
 
 Options :
 - `url_publique` : base des permaliens (`<base>/incidents/<id>`) ; sinon `page.url`, sinon l'URL de la source ;
 - `produits_par_mot` : `{produit: [mots]}` testés dans l'ordre sur le nom de l'incident (minuscules) ; sans
-  correspondance, le produit de la source.
+  correspondance, le produit de la source ;
+- `ignorer_impacts` : impacts dont l'incident n'est pas un élément (ex. `[none]`) ; l'impact est lu à chaque passage,
+  un incident ouvert à `none` puis aggravé arrive donc, une fois, au passage où son impact change. La date la plus
+  ancienne (détection de trou, D4) reste celle de tous les incidents lus.
 
 Endpoint hors documentation de l'éditeur pour incident.io : toute dérive de structure est une erreur explicite.
 """
@@ -66,6 +70,7 @@ def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
     if not incidents:
         raise FormatInattendu("liste `incidents` vide : jamais un résultat vide silencieux")
     base = _base(donnees, source)
+    ignores = {str(i).lower() for i in (source.options.get("ignorer_impacts") or [])}
     elements: list[Element] = []
     dates: list[str] = []
     for it in incidents:
@@ -78,6 +83,8 @@ def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
         if date_iso is None:
             raise FormatInattendu(f"`created_at` illisible dans l'incident {it['id']!r} : {it['created_at']!r}")
         dates.append(date_iso)
+        if str(it.get("impact") or "").lower() in ignores:
+            continue
         elements.append(Element(
             id=f"{source.id}-{it['id']}",
             produit=produit_de(str(it["name"]), source),

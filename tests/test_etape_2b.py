@@ -1,7 +1,7 @@
 """Étape 2b (01/10/2026) : blog claude.com, pages d'état. Échantillons réels du 2026-10-01, client simulé.
 
-`anthropic-status` (status.claude.com) n'a pas d'échantillon : la connexion est refusée par l'egress du conteneur de
-développement. Son format n'est donc testé que sur la page d'état d'OpenAI, de même schéma Statuspage.
+`anthropic-status` (status.claude.com) : la session cloud n'avait pas pu l'atteindre (egress du conteneur) ; l'échantillon
+réel du 2026-10-01 (extrait de 3 incidents, dont la panne du 29/09) a été relevé depuis la machine de Sylvain.
 """
 
 import json
@@ -16,6 +16,8 @@ from deltalib.sources import Source, sources_du_perimetre
 
 BLOG = (FIXTURES / "claude_blog.html").read_text(encoding="utf-8")
 INCIDENTS = json.loads((FIXTURES / "status_openai_incidents.json").read_text(encoding="utf-8"))
+INCIDENTS_CLAUDE = json.loads((FIXTURES / "status_claude_incidents.json").read_text(encoding="utf-8"))
+ID_PANNE_29_09 = "4xvtc2gnq73l"
 
 
 # --- claude.com/blog ----------------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ def test_blog_passage_lit_marketplace_et_tag(tmp_path, monkeypatch):
 def test_statuspage_openai_reel(sources, client):
     s = sources["openai-status"]
     r = ANALYSEURS[s.type](s, client)
-    assert len(r.elements) == 25 and r.plus_ancienne == "2026-09-13"
+    assert len(r.elements) == 18 and r.plus_ancienne == "2026-09-13"  # 25 incidents lus, 7 d'impact none ignorés
     par_titre = {e.titre: e for e in r.elements}
     codex = par_titre["Issues with Codex"]  # panne du 25/09, 22:58 à 23:54 UTC
     assert codex.produit == "codex" and codex.date_publication == "2026-09-25" and codex.officielle is True
@@ -156,11 +158,13 @@ def test_statuspage_repli_rss_openai(sources):
 
 def test_sources_2b_declarees(sources):
     for sid, statut, perimetre in (("claude-blog", "a_valider", "claude"), ("openai-status", "a_valider", "openai"),
-                                   ("anthropic-status", "bloque", "claude")):
+                                   ("anthropic-status", "a_valider", "claude")):
         s = sources[sid]
         assert (s.statut, s.perimetre, s.officielle) == (statut, perimetre, True) and "Testé le 2026-10-01" in s.note
     actives = {s.id for s in sources_du_perimetre(list(sources.values()), "claude")}
-    assert "claude-blog" in actives and "anthropic-status" not in actives, "une source bloquée n'est pas traitée"
+    assert {"claude-blog", "anthropic-status"} <= actives
+    assert sources["anthropic-status"].url == "https://status.claude.com/api/v2/incidents.json"
+    assert "egress" in sources["anthropic-status"].note and "2026-10-01" in sources["anthropic-status"].note
 
 
 def test_passage_openai_lit_les_incidents(tmp_path, monkeypatch):
@@ -169,6 +173,88 @@ def test_passage_openai_lit_les_incidents(tmp_path, monkeypatch):
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--depuis", "2026-09-24"]) == 0
     brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
     inc = [n for n in brut["nouveautes"] if n["source_id"] == "openai-status"]
-    assert {n["titre"] for n in inc} >= {"Issues with Codex", "Elevated Error Rates on GPT-6 Astra Pro"}
-    assert all(n["empreinte"] for n in inc), "suivre_revisions : chaque incident porte son empreinte"
+    titres = {n["titre"] for n in inc}
+    assert "Issues with Codex" in titres
+    assert "Elevated Error Rates on GPT-6 Astra Pro" not in titres, "impact none : ignoré (ignorer_impacts)"
+    assert not any(n["empreinte"] for n in inc), "suivre_revisions désactivé : aucun incident n'est suivi par empreinte"
     assert not [e for e in brut["sources_en_echec"] if e["id"] == "openai-status"]
+
+
+# --- status.claude.com : échantillon réel (extrait de 3 incidents du 2026-10-01) -----------------------------------
+
+def test_statuspage_claude_reel_la_panne_du_29_09_est_lue(sources):
+    s = sources["anthropic-status"]
+    r = ANALYSEURS[s.type](s, FauxClient())
+    par_id = {e.id: e for e in r.elements}
+    panne = par_id[f"anthropic-status-{ID_PANNE_29_09}"]
+    assert panne.titre == "Elevated errors on claude.ai, Claude Code, Claude Cowork and the Claude API"
+    assert panne.date_publication == "2026-09-29" and panne.officielle is True
+    assert panne.url == f"https://status.claude.com/incidents/{ID_PANNE_29_09}"
+    assert panne.produit == "claude-code", "le nom cite « Claude Code » : produits_par_mot de la source"
+    assert panne.contenu.startswith("Impact : major ; statut : resolved ; ouvert le 2026-09-29T") and "résolu le" in panne.contenu
+    assert "Composants : " in panne.contenu
+    assert r.plus_ancienne == "2026-09-16", "la date la plus ancienne compte aussi l'incident ignoré (détection de trou)"
+
+
+def test_statuspage_claude_reel_passage_complet(tmp_path, monkeypatch, date_figee):
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-16"]) == 0  # l'extrait commence le 16/09
+    brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
+    ids = {n["id"] for n in brut["nouveautes"] if n["source_id"] == "anthropic-status"}
+    assert f"anthropic-status-{ID_PANNE_29_09}" in ids
+    assert not [e for e in brut["sources_en_echec"] if e["id"] == "anthropic-status"]
+
+
+# --- bruit des pages d'état : impact none ignoré, un incident ne remonte qu'à son ouverture -----------------------
+
+def test_incidents_d_impact_none_sont_ignores(sources):
+    for sid, donnees, attendus in (("openai-status", INCIDENTS, 7), ("anthropic-status", INCIDENTS_CLAUDE, 1)):
+        s = sources[sid]
+        assert s.options["ignorer_impacts"] == ["none"]
+        elements, _ = statuspage.parser_statuspage(donnees, s)
+        nones = [i for i in donnees["incidents"] if i["impact"] == "none"]
+        assert len(nones) == attendus
+        assert len(elements) == len(donnees["incidents"]) - attendus
+        assert not {f"{sid}-{i['id']}" for i in nones} & {e.id for e in elements}
+
+
+def test_incident_aggrave_arrive_quand_son_impact_n_est_plus_none(sources):
+    s = sources["anthropic-status"]
+    modifie = json.loads(json.dumps(INCIDENTS_CLAUDE))
+    cible = next(i for i in modifie["incidents"] if i["impact"] == "none")
+    avant, _ = statuspage.parser_statuspage(modifie, s)
+    cible["impact"] = "minor"
+    apres, _ = statuspage.parser_statuspage(modifie, s)
+    assert f"anthropic-status-{cible['id']}" not in {e.id for e in avant}
+    assert f"anthropic-status-{cible['id']}" in {e.id for e in apres}
+
+
+def test_sans_ignorer_impacts_tout_incident_est_lu(sources):
+    s = sources["openai-status"]
+    sans = Source(id=s.id, perimetre=s.perimetre, produit=s.produit, type=s.type, url=s.url, statut=s.statut,
+                  officielle=True, options={k: v for k, v in s.options.items() if k != "ignorer_impacts"})
+    assert len(statuspage.parser_statuspage(INCIDENTS, sans)[0]) == 25
+
+
+def test_un_incident_ne_remonte_qu_a_son_ouverture(tmp_path, monkeypatch, sources, date_figee):
+    for sid in ("openai-status", "anthropic-status"):
+        assert sources[sid].options["suivre_revisions"] is False
+    (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
+    from conftest import ecrire_quotidien
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--depuis", "2026-09-24"])
+    brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert [n for n in brut["nouveautes"] if n["source_id"] == "openai-status"]
+    ecrire_quotidien(tmp_path, "openai", brut, "2026-10-01")
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--valider", "--date", "2026-10-01"]) == 0
+    # un incident déjà vu reçoit une mise à jour : il ne revient pas en révision
+    modifie = json.loads(json.dumps(INCIDENTS))
+    cible = next(i for i in modifie["incidents"] if i["name"] == "Elevated errors in ChatGPT Space Pages")
+    cible["status"] = "resolved"
+    cible["resolved_at"] = "2026-10-01T03:00:00Z"
+    cible["incident_updates"].insert(0, {"id": "x", "body": "Recovered.", "created_at": "2026-10-01T03:00:00Z", "status": "resolved"})
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient({"https://status.openai.com/api/v2/incidents.json": (json.dumps(modifie), "application/json")}))
+    fetch.main(["--racine", str(tmp_path), "--perimetre", "openai"])
+    brut = json.loads((tmp_path / "raw" / "openai-nouveautes.json").read_text())
+    assert not [n for n in brut["nouveautes"] if n["source_id"] == "openai-status"]

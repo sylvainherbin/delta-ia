@@ -61,6 +61,7 @@ CORRESPONDANCES["https://claude.com/blog/claude-marketplace"] = ("claude_blog_ar
 CORRESPONDANCES["https://claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels"] = (
     "claude_blog_article_tag.html", "text/html; charset=utf-8")
 CORRESPONDANCES["https://status.openai.com/api/v2/incidents.json"] = ("status_openai_incidents.json", "application/json; charset=utf-8")
+CORRESPONDANCES["https://status.claude.com/api/v2/incidents.json"] = ("status_claude_incidents.json", "application/json; charset=utf-8")
 CORRESPONDANCES["https://status.openai.com/history.rss"] = ("status_openai_history.rss", "application/rss+xml")
 
 

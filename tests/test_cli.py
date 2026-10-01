@@ -60,7 +60,7 @@ def test_sources_yaml_reel_est_valide():
     assert len(sources) >= 15
     assert all("Testé le 2026-" in s.note for s in sources), "chaque source déclare la date de son test"
     bloquees = [s.id for s in sources if s.statut == "bloque"]
-    assert bloquees == ["anthropic-status", "chatgpt-release-notes"]  # 2b : status.claude.com refusé par l'egress du conteneur de dev
+    assert bloquees == ["chatgpt-release-notes"]  # anthropic-status : a_valider depuis le retest du 01/10 sur la machine de Sylvain
     for s in sources:
         if "learn.chatgpt.com" in s.url:
             assert "sans préavis" in s.note, "endpoint non documenté : la note doit prévenir"
