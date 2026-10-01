@@ -59,6 +59,36 @@ sources:
       nom: Claude Platform
       suivre_revisions: true
 
+  - id: anthropic-deprecations
+    perimetre: claude
+    produit: claude
+    type: html
+    url: https://platform.claude.com/docs/en/about-claude/model-deprecations.md
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-10-01 depuis le conteneur de dev : 200, text/markdown, 14 127 octets, empreinte identique sur
+      deux lectures successives. Variante HTML : même URL sans `.md` (200, 433 Ko). docs.anthropic.com/en/docs/about-claude/model-deprecations
+      redirige ici (301 puis 307, 200 ; variante `.md` incluse). Page officielle des dépréciations de l'API
+      (étape 2c) : section « Model status » (tableau modèle, état, date de dépréciation, retrait au plus tôt), section
+      « Notifications » (préavis d'au moins 60 jours) et une annonce par titre `### AAAA-MM-JJ: titre` sous « Deprecation
+      history » (12 éléments au premier passage dont 10 annonces ; la plus récente : 2026-09-30, Sonnet 4.5, retrait
+      le 30/11/2026). Suivie par empreinte (O2) : une note « retired » ajoutée à une annonce, une ligne du tableau ou
+      un nouveau modèle fait revenir l'élément en révision (`revision: true`). Identifiant d'annonce `<source>-<date>-<titre
+      slugifié>` : un titre réécrit crée un nouvel élément. Amorçage D30 sur J-7 : les annonces plus anciennes vont dans
+      `ignores` ; le tableau d'état, non daté, arrive une fois en entier. Format analysé par `annonces_datees`
+      (nouveau, `analyseurs/html_notes.py`). Gabarit non contractuel : un parent ou une section introuvable remonte en
+      `sources_en_echec`. À observer 7 passages réels avant `ok`.
+    options:
+      format: annonces_datees
+      nom: Dépréciations des modèles Claude
+      suivre_revisions: true
+      sections:
+        - {id: statut-modeles, titre: "^Model status$"}
+        - {id: preavis, titre: "^Notifications$"}
+      parents:
+        - {titre: "^Deprecation history$"}
+
   - id: anthropic-newsroom
     perimetre: claude
     produit: claude
@@ -440,6 +470,38 @@ sources:
         - {id: limites, titre: "^What are the usage limits for my plan\\?$"}
         - {id: limites-atteintes, titre: "^What happens when you hit usage limits\\?$"}
         - {id: credits, titre: "^What are tokens and credits\\?$"}
+
+  - id: openai-deprecations
+    perimetre: openai
+    produit: codex
+    type: html
+    url: https://developers.openai.com/api/docs/deprecations.md
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-10-01 depuis le conteneur de dev : 200, text/markdown, 37 993 octets, empreinte identique sur
+      deux lectures successives. Variante HTML : https://developers.openai.com/api/docs/deprecations (200, 483 Ko).
+      platform.openai.com/docs/deprecations redirige ici (301 ; variante `.md` incluse). Page officielle des
+      dépréciations de l'API (étape 2c) : section « Model deprecation notice periods » (préavis : 6 mois pour un modèle
+      disponible en général, 3 mois pour une variante, 2 semaines pour un aperçu) et une annonce par titre
+      `### AAAA-MM-JJ: titre`, sous « Upcoming deprecations » (annonces en attente, y compris sans date : « Update to
+      OpenAI’s self-serve fine-tuning ») et « Past deprecations » (annonces datées seulement) : 36 éléments au premier
+      passage, la plus récente 2026-09-11 (gpt-5.4-cyber, retrait le 2026-10-01). Suivie par empreinte (O2) : un tableau
+      modifié ou une date de retrait changée fait revenir l'annonce en révision. Identifiant `<source>-<date>-<titre
+      slugifié>`, `<source>-<titre slugifié>` pour une annonce sans date : un titre réécrit crée un nouvel élément.
+      Amorçage D30 sur J-7 : les annonces datées plus anciennes (dont les retraits encore à venir) vont dans `ignores` ;
+      pour les recevoir au premier passage, lancer `fetch.py --perimetre openai --depuis 2026-09-01`. Le préavis, non daté,
+      arrive une fois en entier. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
+      introuvable remonte en `sources_en_echec`. À observer 7 passages réels avant `ok`.
+    options:
+      format: annonces_datees
+      nom: Dépréciations des modèles OpenAI
+      suivre_revisions: true
+      sections:
+        - {id: preavis, titre: "^Model deprecation notice periods$"}
+      parents:
+        - {titre: "^Upcoming deprecations$", sans_date: true}
+        - {titre: "^Past deprecations$"}
 
   - id: openai-usage-commande
     perimetre: openai

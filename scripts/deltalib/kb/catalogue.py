@@ -213,17 +213,28 @@ def sujet_d71(entrees: dict[str, dict], modif: dict) -> list[str]:
     return sorted(ids)
 
 
+def ajouts_a_citer(modif: dict, deja_cites: list[str], base_existante: bool) -> list[str]:
+    """Étape 2c : ids des entrées ajoutées à la base (réglages, commandes, raccourcis, etc.) à citer chacun en une ligne
+    dans la veille du jour, sans jugement. Hors `sujet_d71` (déjà cités avec l'impact de D71) ; vide quand la base n'existait
+    pas encore : la création initiale de l'inventaire n'est pas une nouveauté."""
+    if not base_existante:
+        return []
+    return sorted(i for i in modif.get("ajoutees", []) if i not in deja_cites)
+
+
 def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
                   surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
     avertissements: list[dict] = []
     extraites, ok, echecs = extraire(racine, docs, surcharge, avertissements)
-    entrees, modif = fusionner(charger(racine, perimetre), extraites, ok)
+    existantes = charger(racine, perimetre)
+    entrees, modif = fusionner(existantes, extraites, ok)
     if ecrire_fichiers:
         ecrire(racine, perimetre, entrees)
+    d71 = sujet_d71(entrees, modif)
     return {"perimetre": perimetre, "genere_le": maintenant_iso(), "docs_extraites": sorted(ok), "echecs": echecs,
             "avertissements": avertissements,
-            "sujet_d71": sujet_d71(entrees, modif),
+            "sujet_d71": d71, "ajouts_a_citer": ajouts_a_citer(modif, d71, bool(existantes)),
             "total": len(entrees), "a_commenter": sorted(k for k, e in entrees.items() if not e.get("commentee") and not e.get("retiree")),
             **modif}
 

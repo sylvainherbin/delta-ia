@@ -6,6 +6,8 @@ Formats (option `format`) :
 - `html_date`     : même logique sur une page HTML (<h3> datés, <p><b>Titre</b></p>).
 - `html_time_liens` : chaque <time> dans un <a> : le lien est l'URL et l'identifiant, le titre est l'intertitre.
 - `html_blog_liste` : liste Webflow/Finsweet du blog claude.com (étape 2b) : un élément par article de la première page.
+- `annonces_datees` : pages de dépréciations des modèles (étape 2c) : une annonce par titre `### AAAA-MM-JJ: titre` sous les
+  sections parentes déclarées, plus, si déclarées, des sections suivies en entier (tableau d'état des modèles, préavis).
 Le format est détecté d'après la réponse si l'option est absente.
 """
 
@@ -229,6 +231,62 @@ def parser_sections_suivies(texte: str, source) -> list[Element]:
     return res
 
 
+def _slug(texte: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", texte.lower()).strip("-")[:60].strip("-")
+
+
+_RE_TITRE_ANNONCE = re.compile(r"^(\d{4}-\d{2}-\d{2})\s*:\s*(.*)$")
+
+
+def parser_annonces_datees(texte: str, source) -> list[Element]:
+    """Étape 2c (01/10) : page de dépréciations, en Markdown. `options.parents` liste les sections parentes
+    ({titre: regex, sans_date: bool}) ; chaque titre de niveau suivant est une annonce, élément `<source>-<date>-<slug>`
+    (date lue dans le titre `AAAA-MM-JJ: titre`, jamais devinée). Une annonce sans date n'est retenue que sous un parent
+    `sans_date: true` (annonces en attente), son identifiant est alors `<source>-<slug>` et sa date `null`. Le corps
+    comprend les sous-titres : une note « retired » ajoutée ou un tableau modifié fait revenir l'annonce en révision
+    (`suivre_revisions`). `options.sections` (facultatif, même format que `sections_suivies`) ajoute des sections suivies
+    en entier. Parent introuvable, titre de date invalide ou aucune annonce ni section : FormatInattendu."""
+    from ..kb.markdown import sections as decouper
+    lignes, secs = decouper(texte)
+    base = re.sub(r"\.md(?=\?|$)", "", source.options.get("url_publique", source.url))
+    res: list[Element] = parser_sections_suivies(texte, source) if source.options.get("sections") else []
+    vus = {e.id for e in res}
+    parents = source.options.get("parents") or []
+    if not parents and not res:
+        raise FormatInattendu("aucune section parente ni section suivie déclarée (options.parents, options.sections)")
+    for conf in parents:
+        rx = re.compile(conf["titre"], re.I)
+        parent = next((s for s in secs if rx.search(s.titre)), None)
+        if parent is None:
+            raise FormatInattendu(f"section « {conf['titre']} » introuvable : gabarit changé ?")
+        for sec in secs:
+            if sec.niveau != parent.niveau + 1 or not (parent.debut < sec.debut < parent.fin):
+                continue
+            m = _RE_TITRE_ANNONCE.match(sec.titre)
+            if m:
+                date_iso = analyser_date(m.group(1))
+                if date_iso is None:
+                    raise FormatInattendu(f"titre d'annonce avec une date invalide : {sec.titre!r}")
+                ident = f"{source.id}-{date_iso}-{_slug(m.group(2)) or 'annonce'}"
+            elif conf.get("sans_date"):
+                date_iso, ident = None, f"{source.id}-{_slug(sec.titre) or 'annonce'}"
+            else:
+                continue
+            corps = "\n".join(lignes[sec.debut + 1:sec.fin]).strip()
+            if not corps:
+                raise FormatInattendu(f"annonce « {sec.titre} » sans contenu")
+            n, unique = 2, ident
+            while unique in vus:  # deux annonces du même jour au titre identique : suffixe stable selon l'ordre de la page
+                unique, n = f"{ident}-{n}", n + 1
+            vus.add(unique)
+            res.append(Element(id=unique, produit=source.produit, titre=f"{_nom(source)} — {sec.titre}", version=None,
+                               date_publication=date_iso, url=base, contenu=corps, source_id=source.id,
+                               officielle=source.officielle))
+    if not res:
+        raise FormatInattendu("aucune annonce ni section suivie trouvée : gabarit changé ?")
+    return res
+
+
 _RE_LIEN_INDEX = re.compile(r"^\s*[-*]\s*\[(?P<titre>.+?)\]\((?P<url>https?://[^)\s]+)\)\s*(?::\s*(?P<desc>.*))?$")
 _RE_ARTICLE_AIDE = re.compile(r"/articles/(\d+)")
 
@@ -287,6 +345,7 @@ PARSEURS = {
     "html_time_liens": parser_html_time_liens,
     "sections_suivies": parser_sections_suivies,
     "index_articles": parser_index_articles,
+    "annonces_datees": parser_annonces_datees,
     "html_blog_liste": lambda html, source: parser_blog_liste(html, source)[0],
 }
 
@@ -298,7 +357,7 @@ def analyser(source, client, borne: str | None = None) -> ResultatSource:
         fmt = "markdown_date" if reponse.est_markdown else "html_date"
     if fmt not in PARSEURS:
         raise FormatInattendu(f"format d'analyse inconnu : {fmt!r}")
-    if fmt == "markdown_date" and "<html" in reponse.texte[:500].lower():
+    if fmt in ("markdown_date", "annonces_datees") and "<html" in reponse.texte[:500].lower():
         raise FormatInattendu("page HTML reçue alors que du Markdown était attendu")
     if fmt == "html_blog_liste":
         elements, plus_ancienne = parser_blog_liste(reponse.texte, source)

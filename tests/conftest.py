@@ -64,6 +64,10 @@ CORRESPONDANCES["https://status.openai.com/api/v2/incidents.json"] = ("status_op
 CORRESPONDANCES["https://status.claude.com/api/v2/incidents.json"] = ("status_claude_incidents.json", "application/json; charset=utf-8")
 CORRESPONDANCES["https://status.openai.com/history.rss"] = ("status_openai_history.rss", "application/rss+xml")
 
+# Étape 2c : pages officielles des dépréciations de modèles (échantillons réels du 2026-10-01)
+CORRESPONDANCES["https://platform.claude.com/docs/en/about-claude/model-deprecations.md"] = ("deprec_anthropic.md", "text/markdown; charset=utf-8")
+CORRESPONDANCES["https://developers.openai.com/api/docs/deprecations.md"] = ("deprec_openai.md", "text/markdown; charset=utf-8")
+
 
 class FauxClient:
     """Sert les échantillons enregistrés à la place du réseau. `pannes` : url -> exception ou (texte, type)."""
