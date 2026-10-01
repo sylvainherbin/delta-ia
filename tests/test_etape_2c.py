@@ -336,7 +336,9 @@ def test_skills_disent_le_decompte_par_categorie():
         t = (RACINE / f).read_text(encoding="utf-8")
         assert "Au-delà de 30 ids, `fetch.py --kb` n'imprime plus qu'un décompte par catégorie" in t, f
     for f in (".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
-        assert "État initial des dépréciations OpenAI en cours" in (RACINE / f).read_text(encoding="utf-8"), f
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "État initial des dépréciations OpenAI en cours" in t, f
+        assert "« déjà retirés » et ne déclenchent aucune action" in t and "seuls les retraits à venir" in t, f
 
 
 # --- ajouts de la base de référence ------------------------------------------------------------------------------
