@@ -1,11 +1,12 @@
-# EXEMPLE (D70) — non installé. L'heure est un choix de Sylvain (étape 1 des accords demandés) : 04:30 n'est qu'un exemple.
+# EXEMPLE (D70) — non installé. Heure choisie par Sylvain le 01/10/2026 : 04 h 00, heure locale. Fenêtre sans commit de Dev-delta
+# ni de prof : 03 h 30 à 08 h 00.
 # À copier dans ~/.config/systemd/user/ sous le nom delta-passage.timer, puis `systemctl --user enable --now delta-passage.timer`
 # seulement après le feu vert de Sylvain. Linger : `loginctl show-user herbin -p Linger` doit répondre `Linger=yes`.
 [Unit]
 Description=Delta — lance la chaîne de passages automatiques (D70) chaque nuit
 
 [Timer]
-OnCalendar=*-*-* 04:30:00
+OnCalendar=*-*-* 04:00:00
 # Persistent=true : si la machine était éteinte à l'heure prévue, la chaîne part au démarrage suivant. La garde (code 12) évite
 # qu'un rattrapage refasse un passage déjà fait ce jour-là.
 Persistent=true

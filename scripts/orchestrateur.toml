@@ -2,6 +2,14 @@
 # Aucun secret ici. Les modèles, efforts et délais sont des choix de Sylvain : les modifier ici, rien d'autre à toucher.
 
 [chaine]
+# Étapes actives de la chaîne, dans l'ordre de la section [etapes.*] ; la supervision tourne TOUJOURS en dernier, elle n'a pas
+# à figurer ici. Trois paliers de déploiement (D70, décision de Sylvain du 01/10/2026) : on passe de l'un au suivant en
+# remplaçant cette seule ligne, sans toucher au code, après avoir contrôlé le matin (rapports/passages.log, rapports/auto/).
+#   palier 1, nuit de réception           : ["delta"]                                          (/delta puis la supervision)
+#   palier 2, jours 1 et 2                : ["delta", "codex-delta"]                           (+ $delta)
+#   palier 3, après deux jours propres    : ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]   (+ les étapes kb)
+# Un retour en arrière est le même geste en sens inverse ; vider la liste ne lance que la supervision.
+etapes_actives = ["delta"]
 verrou = ".git/delta-passage.lock"   # tenu par scripts/passage-auto.sh (flock) pendant toute la chaîne ; testé par la garde (code 14)
 arret_delai_s = 10                   # après SIGTERM, attente avant SIGKILL sur tout le groupe de processus de l'étape
 sortie_dossier = "rapports/auto"     # une sortie par étape et par jour ; rapports/ n'est jamais commité

@@ -420,6 +420,25 @@ class Chaine:
         return 1 if echec else 0
 
 
+def etapes_a_lancer(cfg: dict, etapes: list[Etape], option: str | None = None) -> list[Etape]:
+    """Étapes de cette exécution. `--etapes a,b` (essais) ne garde que celles-là ; sinon la liste `chaine.etapes_actives` de la
+    configuration (paliers de déploiement) ; sans liste, toutes. La supervision reste lancée dans le cas de la configuration."""
+    noms = {e.nom for e in etapes}
+    if option:
+        voulues = [x.strip() for x in option.split(",") if x.strip()]
+        inconnues = [x for x in voulues if x not in noms]
+        if inconnues:
+            raise ValueError(f"étape(s) inconnue(s) {inconnues}")
+        return [e for e in etapes if e.nom in voulues]
+    actives = cfg["chaine"].get("etapes_actives")
+    if actives is None:
+        return etapes
+    inconnues = [x for x in actives if x not in noms or x == "supervision"]
+    if inconnues:
+        raise ValueError(f"chaine.etapes_actives : étape(s) inconnue(s) ou implicite(s) {inconnues} (la supervision tourne toujours)")
+    return [e for e in etapes if e.supervision or e.nom in actives]
+
+
 def ecrire_pid(racine: Path, cfg: dict) -> None:
     """Écrit le PID dans le fichier de verrou déjà tenu par passage-auto.sh : la garde y compare DELTA_CHAINE_PID."""
     (racine / cfg["chaine"]["verrou"]).write_text(f"{os.getpid()}\n", encoding="utf-8")
@@ -434,13 +453,11 @@ def main(argv=None) -> int:
     a = p.parse_args(argv)
     cfg = charger_config(a.config)
     etapes = construire_etapes(cfg, a.racine)
-    if a.etapes:
-        voulues = [x.strip() for x in a.etapes.split(",") if x.strip()]
-        inconnues = [x for x in voulues if x not in {e.nom for e in etapes}]
-        if inconnues:
-            print(f"orchestrateur.py : étape(s) inconnue(s) {inconnues}", file=sys.stderr)
-            return 2
-        etapes = [e for e in etapes if e.nom in voulues]
+    try:
+        etapes = etapes_a_lancer(cfg, etapes, a.etapes)
+    except ValueError as e:
+        print(f"orchestrateur.py : {e}", file=sys.stderr)
+        return 2
     if a.liste:
         for e in etapes:
             print(f"{e.nom} (délai {e.delai_s / 60:g} min) : " + " ".join(

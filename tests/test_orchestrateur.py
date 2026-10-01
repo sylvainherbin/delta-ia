@@ -587,4 +587,79 @@ def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
 def test_passage_auto_option_liste_n_appelle_rien(depot_sh):
     r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
                        capture_output=True, text=True)
-    assert r.returncode == 0 and r.stdout.count("\n") == 5 and "supervision" in r.stdout
+    assert r.returncode == 0 and r.stdout.count("\n") == 2 and "supervision" in r.stdout, "palier 1 : /delta et la supervision"
+    assert r.stdout.startswith("delta (délai 1 min)")  # la configuration de test raccourcit les délais
+
+
+# --- paliers de déploiement : étapes actives par configuration (01/10/2026) ------------------------------------------
+
+TOUTES = ["delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision"]
+
+
+def noms(cfg_modif=None, option=None):
+    cfg = orc.charger_config()
+    if cfg_modif is not None:
+        cfg["chaine"]["etapes_actives"] = cfg_modif
+    return [e.nom for e in orc.etapes_a_lancer(cfg, orc.construire_etapes(cfg, RACINE), option)]
+
+
+def test_palier_1_nuit_de_reception_est_la_configuration_livree():
+    assert orc.charger_config()["chaine"]["etapes_actives"] == ["delta"]
+    assert noms() == ["delta", "supervision"]
+
+
+def test_paliers_2_et_3_sans_toucher_au_code():
+    assert noms(["delta", "codex-delta"]) == ["delta", "codex-delta", "supervision"]
+    assert noms(["delta", "codex-delta", "delta-kb", "codex-delta-kb"]) == TOUTES
+    assert noms(["codex-delta", "delta"]) == ["delta", "codex-delta", "supervision"], "l'ordre de la chaîne ne dépend pas de la liste"
+
+
+def test_liste_vide_ne_lance_que_la_supervision_et_sans_liste_tout_tourne():
+    assert noms([]) == ["supervision"]
+    cfg = orc.charger_config()
+    del cfg["chaine"]["etapes_actives"]
+    assert [e.nom for e in orc.etapes_a_lancer(cfg, orc.construire_etapes(cfg, RACINE))] == TOUTES
+
+
+def test_option_etapes_prime_sur_la_configuration_pour_les_essais():
+    assert noms(option="codex-delta") == ["codex-delta"]
+    assert noms(option="delta,supervision") == ["delta", "supervision"]
+
+
+def test_etape_inconnue_ou_supervision_dans_la_liste_est_refusee():
+    cfg = orc.charger_config()
+    etapes = orc.construire_etapes(cfg, RACINE)
+    for mauvaise in (["delta", "inconnue"], ["supervision"]):
+        cfg["chaine"]["etapes_actives"] = mauvaise
+        with pytest.raises(ValueError):
+            orc.etapes_a_lancer(cfg, etapes)
+    with pytest.raises(ValueError):
+        orc.etapes_a_lancer(cfg, etapes, "inconnue")
+
+
+def test_orchestrateur_refuse_une_configuration_incorrecte_code_2(depot_sh):
+    toml = depot_sh.toml.read_text().replace('etapes_actives = ["delta"]', 'etapes_actives = ["delta", "nimporte"]')
+    depot_sh.toml.write_text(toml)
+    r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "nimporte" in r.stderr
+
+
+def test_le_fichier_documente_les_trois_paliers():
+    t = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
+    for attendu in ("palier 1, nuit de réception", "palier 2, jours 1 et 2", "palier 3, après deux jours propres",
+                    'etapes_actives = ["delta"]', "sans toucher au code", "TOUJOURS en dernier"):
+        assert attendu in t, attendu
+
+
+def test_timer_a_04h00_et_fenetre_sans_commit_documentee():
+    timer = (RACINE / "deploy" / "systemd" / "delta-passage.timer.exemple").read_text(encoding="utf-8")
+    assert "OnCalendar=*-*-* 04:00:00" in timer and "Persistent=true" in timer and "04:30" not in timer
+    for f in ("CLAUDE.md", "AGENTS.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "de 03 h 30 à 08 h 00" in t and "04 h 00" in t and "heures fixées par Sylvain" not in t, f
+
+
+def test_supervision_connait_les_etapes_actives():
+    t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "`etapes_actives` de `scripts/orchestrateur.toml`" in t and "une étape inactive n'a aucune ligne" in t
