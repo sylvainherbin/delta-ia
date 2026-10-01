@@ -1,0 +1,492 @@
+"""D70 : orchestrateur des passages automatiques. Aucun appel réel à `claude` ni à `codex` : les étapes sont de faux agents
+(petits scripts Python) qui modifient un dépôt de test avec son `origin` local. La vraie garde tourne avant chaque étape."""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import textwrap
+import time
+from datetime import date
+from pathlib import Path
+
+import pytest
+
+import orchestrateur as orc
+from conftest import RACINE
+
+JOUR = date(2026, 10, 2)
+
+FAUX_AGENT = r'''
+import json, os, subprocess, sys, time
+mode = sys.argv[1]
+
+def git(*a):
+    subprocess.run(["git", *a], check=True, capture_output=True,
+                   env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"})
+
+def ecrire(chemin, texte):
+    os.makedirs(os.path.dirname(chemin) or ".", exist_ok=True)
+    open(chemin, "w").write(texte)
+
+def claude_ok(denials=()):
+    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "permission_denials": list(denials), "result": "ok"}))
+
+def passage(dossier, fichier, pousser=True):
+    ecrire(f"{dossier}/{fichier}", f"{fichier}\n")
+    git("add", dossier); git("commit", "-qm", f"delta: {fichier}")
+    if pousser:
+        git("push", "-q", "origin", "HEAD:refs/heads/main")
+
+if mode == "ok":
+    passage(sys.argv[2], sys.argv[3]); claude_ok()
+elif mode == "ok-codex":
+    passage(sys.argv[2], sys.argv[3])
+elif mode == "ok-sans-commit":
+    claude_ok()
+elif mode == "echec":
+    ecrire(f"{sys.argv[2]}/index.json", "modifié par une étape en échec\n")
+    ecrire(f"{sys.argv[2]}/nouveau.json", "{}\n")
+    ecrire("notes.txt", "touché hors périmètre\n")
+    print("échec simulé", file=sys.stderr); sys.exit(3)
+elif mode == "sale-hors-chemins":
+    ecrire("notes.txt", "touché hors périmètre\n"); claude_ok()
+elif mode == "non-pousse":
+    passage(sys.argv[2], sys.argv[3], pousser=False); claude_ok()
+elif mode == "refus":
+    claude_ok([{"tool_name": "Bash", "tool_use_id": "t1", "tool_input": {"command": "ls /etc | head -3"}}])
+elif mode == "pas-json":
+    print("ceci n'est pas du JSON")
+elif mode == "verrou-git":
+    ecrire(".git/index.lock", ""); claude_ok()
+elif mode == "dort":
+    subprocess.Popen([sys.executable, "-c", "import time; time.sleep(4); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
+    time.sleep(60)
+elif mode == "enfant-en-fond":
+    subprocess.Popen([sys.executable, "-c", "import time; time.sleep(3); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
+    claude_ok()
+elif mode == "supervision":
+    ecrire("rapports/supervision-lancee.txt", "oui\n"); claude_ok()
+elif mode == "env":
+    ecrire("rapports/env-vu.txt", os.environ.get("DELTA_CHAINE_PID", "") + "|" + os.environ.get("PATH", "") + "|" + os.environ.get("GIT_OPTIONAL_LOCKS", "-")); claude_ok()
+else:
+    sys.exit(99)
+'''
+
+
+class Depot(type(Path())):
+    """Chemin du dépôt de test, qui porte aussi l'aide `sh` et le faux agent."""
+
+
+@pytest.fixture
+def depot(tmp_path):
+    racine = Depot(tmp_path / "depot")
+    origin = tmp_path / "origin.git"
+    racine.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+    sh = lambda *a, cwd=racine: subprocess.run(a, cwd=cwd, check=True, capture_output=True, env=env)
+    sh("git", "init", "-q", "-b", "main")
+    sh("git", "init", "-q", "--bare", str(origin), cwd=tmp_path)
+    (racine / ".gitignore").write_text("rapports/\nraw/\n__pycache__/\n.venv/\n")
+    for f in ("docs/data/claude/index.json", "docs/data/actu/index.json", "docs/data/openai/index.json", "docs/data/kb/claude/x.json",
+              "docs/data/kb/openai/x.json", "docs/data/versions.json", "docs/data/etat.json", "state/claude.json", "state/actu.json",
+              "state/openai.json", "notes.txt", "CONTEXTE.md"):
+        (racine / f).parent.mkdir(parents=True, exist_ok=True)
+        (racine / f).write_text("{}\n")
+    (racine / "scripts").mkdir()
+    shutil.copy(RACINE / "scripts" / "garde.py", racine / "scripts" / "garde.py")
+    (tmp_path / "faux_agent.py").write_text(FAUX_AGENT)
+    sh("git", "add", "-A")
+    sh("git", "commit", "-qm", "init")
+    sh("git", "remote", "add", "origin", str(origin))
+    sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    sh("git", "fetch", "-q", "origin")
+    (racine / "rapports").mkdir()
+    usage = racine / "rapports" / "usage.json"
+    usage.write_text(json.dumps({"claude": {"session_5h": {"pct": 5}, "semaine": {"pct": 20}}, "chatgpt": {"semaine": {"pct": 10}}}))
+    racine.faux = tmp_path / "faux_agent.py"
+    racine.sh = sh
+    return racine
+
+
+@pytest.fixture
+def cfg(tmp_path):
+    c = orc.charger_config()
+    c["chaine"]["arret_delai_s"] = 1
+    return c
+
+
+def etape(depot, nom, mode, *args, agent="claude", delai=20, garde="delta", kb=None, supervision=False, checkout=(), clean=()):
+    return orc.Etape(nom=nom, agent=agent, commande=[sys.executable, str(depot.faux), mode, *args], delai_s=delai,
+                     garde=None if supervision else garde, kb=kb, supervision=supervision, checkout=list(checkout), clean=list(clean))
+
+
+def chaine(depot, cfg, etapes, **kw):
+    return orc.Chaine(depot, cfg, etapes, jour=JOUR, **kw)
+
+
+def journal(depot):
+    f = depot / "rapports" / "passages.log"
+    return [l.split(" | ") for l in f.read_text(encoding="utf-8").splitlines()] if f.exists() else []
+
+
+def codes(depot):
+    """{périmètre: code} des lignes `orchestrateur`."""
+    return {l[2]: int(l[5]) for l in journal(depot) if l[1] == "orchestrateur"}
+
+
+def ahead(depot):
+    return int(depot.sh("git", "rev-list", "--count", "origin/main..HEAD").stdout.decode().strip())
+
+
+DELTA_CLAUDE = ("docs/data/claude",)
+
+
+# --- succès --------------------------------------------------------------------------------------------------
+
+def test_chaine_reussie_toutes_les_etapes_dans_l_ordre(depot, cfg):
+    etapes = [
+        etape(depot, "delta", "ok", "docs/data/claude", "a.json", checkout=DELTA_CLAUDE),
+        etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"),
+        etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"),
+        etape(depot, "codex-delta-kb", "ok-codex", "docs/data/kb/openai", "d.json", agent="codex", garde="codex-delta-kb", kb="openai"),
+        etape(depot, "supervision", "supervision", supervision=True),
+    ]
+    assert chaine(depot, cfg, etapes, compte_lots=lambda r, p: 3).executer() == 0
+    assert codes(depot) == {"delta": 0, "codex-delta": 0, "delta-kb": 0, "codex-delta-kb": 0, "supervision": 0, "chaine": 0}
+    assert [l[2] for l in journal(depot)] == ["delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision", "chaine"]
+    assert ahead(depot) == 0 and not depot.sh("git", "status", "--porcelain").stdout
+    assert (depot / "rapports" / "supervision-lancee.txt").exists()
+    # le commit de chaque étape est dans la ligne du journal, la sortie dans rapports/auto/
+    lignes = {l[2]: l for l in journal(depot)}
+    assert lignes["delta"][4] != "aucun" and lignes["supervision"][4] == "aucun"
+    assert (depot / "rapports" / "auto" / "2026-10-02-delta.log").exists()
+
+
+def test_l_environnement_est_fixe_et_ne_fuit_pas(depot, cfg, monkeypatch):
+    monkeypatch.setenv("SECRET_DE_TEST", "ne-doit-pas-passer")
+    e = etape(depot, "supervision", "env", supervision=True)
+    chaine(depot, cfg, [e]).executer()
+    pid, path, verrous = (depot / "rapports" / "env-vu.txt").read_text().split("|")
+    assert pid == str(os.getpid()) and verrous == "0", "GIT_OPTIONAL_LOCKS=0 pour la supervision"
+    assert path.startswith(os.path.expanduser("~/.local/bin")) and "SECRET" not in path
+    assert "ne-doit-pas-passer" not in "".join(p.read_text() for p in (depot / "rapports" / "auto").glob("*.log"))
+    assert "SECRET_DE_TEST" not in orc.environnement(cfg)
+
+
+# --- échec, arrêt propre limité aux chemins de l'étape ---------------------------------------------------------
+
+def test_echec_arret_propre_limite_aux_chemins_de_l_etape(depot, cfg):
+    etapes = [etape(depot, "delta", "echec", "docs/data/claude", checkout=["docs/data/claude"], clean=["docs/data/claude"]),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert (depot / "docs/data/claude/index.json").read_text() == "{}\n", "fichier suivi remis en place"
+    assert not (depot / "docs/data/claude/nouveau.json").exists(), "fichier non suivi de l'étape supprimé"
+    assert (depot / "notes.txt").read_text() == "touché hors périmètre\n", "un fichier hors des chemins de l'étape n'est jamais touché"
+    # l'arbre reste sale à cause de notes.txt : la chaîne le dit (126) au lieu de le nettoyer
+    assert codes(depot)["delta"] == orc.CODE_ETAT and codes(depot)["chaine"] == 1
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+    assert "arrêt propre : git checkout -- docs/data/claude" in log and "git clean -f -- docs/data/claude" in log
+
+
+def test_echec_simple_code_de_sortie_et_chaine_arretee(depot, cfg):
+    depot.sh("git", "checkout", "-q", "--", "notes.txt")
+    e1 = etape(depot, "delta", "echec", "docs/data/claude", checkout=["docs/data/claude", "notes.txt"], clean=["docs/data/claude"])
+    e2 = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "z.json", agent="codex", garde="codex-delta")
+    etapes = [e1, e2, etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 3, "code de sortie de l'agent, arbre remis en place"
+    assert codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE, "chaîne arrêtée : étape suivante non lancée"
+    assert ahead(depot) == 0 and not (depot / "docs/data/openai/z.json").exists()
+    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision est lancée même après un échec"
+
+
+def test_supervision_lancee_meme_apres_une_garde_qui_arrete(depot, cfg):
+    (depot / ".git" / "index.lock").write_text("")  # verrou git : la garde (code 10) arrête la chaîne
+    etapes = [etape(depot, "delta", "ok", "docs/data/claude", "a.json"), etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 10 and (depot / "rapports" / "supervision-lancee.txt").exists()
+    assert (depot / ".git" / "index.lock").exists(), "jamais supprimé par l'orchestrateur (D21)"
+
+
+# --- délai dépassé, processus enfants ---------------------------------------------------------------------------
+
+def test_delai_depasse_tue_tout_le_groupe_de_processus(depot, cfg, tmp_path):
+    survivant = tmp_path / "survivant.txt"
+    e = etape(depot, "delta", "dort", str(survivant), delai=1)
+    t0 = time.time()
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert time.time() - t0 < 15
+    assert codes(depot)["delta"] == orc.CODE_DELAI
+    time.sleep(5)  # l'enfant aurait écrit son fichier au bout de 4 s s'il avait survécu
+    assert not survivant.exists()
+
+
+def test_enfant_en_arriere_plan_apres_une_etape_reussie_est_tue(depot, cfg, tmp_path):
+    survivant = tmp_path / "survivant2.txt"
+    assert chaine(depot, cfg, [etape(depot, "delta", "enfant-en-fond", str(survivant))]).executer() == 0
+    time.sleep(4.5)
+    assert not survivant.exists()
+
+
+def test_binaire_introuvable_est_une_erreur_explicite(depot, cfg):
+    e = orc.Etape(nom="delta", agent="claude", commande=["/nulle/part/claude", "-p", "x"], delai_s=5, garde="delta")
+    assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)["delta"] == orc.CODE_BINAIRE
+
+
+# --- critères de succès d'une étape Claude ---------------------------------------------------------------------
+
+def test_permission_refusee_fait_echouer_l_etape(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "refus")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_PERMISSION
+    assert "ls /etc" in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+
+
+def test_sortie_claude_illisible_fait_echouer_l_etape(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "pas-json")]).executer() == 1
+    assert codes(depot)["delta"] != 0
+
+
+def test_evaluer_claude_exige_success_et_aucun_is_error():
+    ok = orc.Resultat(0, json.dumps({"subtype": "success", "is_error": False, "permission_denials": []}), "", False, 1)
+    assert orc.evaluer_claude(ok)[0] == 0
+    for d in ({"subtype": "error_max_turns", "is_error": False, "permission_denials": []},
+              {"subtype": "success", "is_error": True, "permission_denials": []}):
+        assert orc.evaluer_claude(orc.Resultat(0, json.dumps(d), "", False, 1))[0] == 1
+    assert orc.evaluer_claude(orc.Resultat(2, json.dumps({"subtype": "success", "is_error": False}), "", False, 1))[0] == 2
+
+
+# --- état final : jamais de push, jamais d'index.lock supprimé, arbre propre ------------------------------------
+
+def test_commit_non_pousse_arrete_la_chaine_code_15(depot, cfg):
+    etapes = [etape(depot, "delta", "non-pousse", "docs/data/claude", "a.json"),
+              etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 15 and codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE
+    assert ahead(depot) == 1, "l'orchestrateur ne pousse jamais : le commit reste local"
+    assert (depot / "rapports" / "supervision-lancee.txt").exists()
+
+
+def test_chaine_arretee_sur_15_au_depart_une_etape_ne_pousse_pas_le_commit_d_une_autre(depot, cfg):
+    depot.sh("git", "commit", "-q", "--allow-empty", "-m", "local non validé")  # déjà présent avant la chaîne
+    etapes = [etape(depot, "delta", "ok", "docs/data/claude", "a.json"), etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 15, "la garde arrête la chaîne avant toute étape"
+    assert not (depot / "docs/data/claude/a.json").exists() and ahead(depot) == 1
+
+
+def test_index_lock_laisse_par_une_etape_n_est_jamais_supprime(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "verrou-git")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT and (depot / ".git" / "index.lock").exists()
+
+
+def test_arbre_sale_hors_des_chemins_meme_apres_succes_arrete_la_chaine(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "sale-hors-chemins", checkout=["docs/data/claude"])]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT
+    assert (depot / "notes.txt").read_text() == "touché hors périmètre\n"
+
+
+
+# --- garde : étapes sautées, quota ------------------------------------------------------------------------------
+
+def test_quota_claude_saute_les_etapes_claude_et_pas_codex(depot, cfg):
+    (depot / "rapports" / "usage.json").write_text(json.dumps({"claude": {"session_5h": {"pct": 95}, "semaine": {"pct": 20}},
+                                                               "chatgpt": {"semaine": {"pct": 100}}}))
+    etapes = [etape(depot, "delta", "ok", "docs/data/claude", "a.json"),
+              etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")]
+    assert chaine(depot, cfg, etapes).executer() == 0, "une étape sautée par la garde (11) n'est pas un échec"
+    assert codes(depot)["delta"] == 11 and codes(depot)["codex-delta"] == 0, "aucun arrêt Codex sur seuil, même à 100 %"
+    assert not (depot / "docs/data/claude/a.json").exists() and (depot / "docs/data/openai/b.json").exists()
+
+
+def test_passage_du_jour_deja_fait_est_saute_code_12(depot, cfg):
+    f = depot / "docs" / "data" / "openai" / f"{JOUR.isoformat()}.json"
+    f.write_text(json.dumps({"genere_le": "2026-10-02T04:30:00+02:00"}))
+    depot.sh("git", "add", str(f))
+    depot.sh("git", "commit", "-qm", "openai du jour")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    e = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")
+    assert chaine(depot, cfg, [e]).executer() == 0 and codes(depot)["codex-delta"] == 12
+
+
+# --- étapes kb ----------------------------------------------------------------------------------------------------
+
+def test_etapes_kb_sautees_sans_lot_du_ligne_a_zero(depot, cfg):
+    etapes = [etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"),
+              etape(depot, "codex-delta-kb", "ok-codex", "docs/data/kb/openai", "d.json", agent="codex", garde="codex-delta-kb", kb="openai")]
+    assert chaine(depot, cfg, etapes, compte_lots=lambda r, p: 0).executer() == 0
+    assert codes(depot) == {"delta-kb": orc.CODE_SANS_LOT, "codex-delta-kb": orc.CODE_SANS_LOT, "chaine": 0}
+    assert not (depot / "docs/data/kb/claude/c.json").exists()
+    lignes = [l for l in journal(depot) if l[1] == "orchestrateur" and l[2] != "chaine"]
+    assert all(l[3] == "0 éléments (0 fort)" and l[4] == "aucun" for l in lignes)
+
+
+def test_lots_dus_lit_la_vraie_base(depot):
+    """lots_dus s'appuie sur catalogue (lot perimees et lots ordinaires) : sur la base réelle du dépôt, un entier positif ou nul."""
+    n = orc.lots_dus(RACINE, "claude")
+    assert isinstance(n, int) and n >= 0
+
+
+# --- journal ---------------------------------------------------------------------------------------------------------
+
+def test_journal_format_et_ajout_seulement(depot, cfg):
+    f = depot / "rapports" / "passages.log"
+    f.write_text("2026-10-01_0707 | delta-ia | claude | 1 éléments (0 fort) | 6876aea | 0\n")
+    chaine(depot, cfg, [etape(depot, "delta", "ok-sans-commit")]).executer()
+    lignes = f.read_text().splitlines()
+    assert lignes[0] == "2026-10-01_0707 | delta-ia | claude | 1 éléments (0 fort) | 6876aea | 0", "jamais réécrit"
+    for l in lignes[1:]:
+        champs = l.split(" | ")
+        assert len(champs) == 6 and champs[1] == "orchestrateur" and champs[3] == "0 éléments (0 fort)"
+    assert [l.split(" | ")[2] for l in lignes[1:]] == ["delta", "chaine"]
+
+
+def test_l_orchestrateur_ne_touche_jamais_a_raw(depot, cfg):
+    (depot / "raw" / "historique" / "2026-10-01").mkdir(parents=True)
+    h = depot / "raw" / "historique" / "2026-10-01" / "claude-nouveautes-070000.json"
+    h.write_text("{}")
+    avant = h.stat().st_mtime_ns
+    chaine(depot, cfg, [etape(depot, "delta", "echec", "docs/data/claude", checkout=["docs/data/claude"], clean=["docs/data/claude"])]).executer()
+    assert h.exists() and h.stat().st_mtime_ns == avant
+
+
+# --- configuration réelle : syntaxe vérifiée sur les --help des versions installées ------------------------------
+
+def test_commandes_reelles_syntaxe_et_interdits():
+    cfg = orc.charger_config()
+    etapes = {e.nom: e for e in orc.construire_etapes(cfg, RACINE)}
+    assert list(etapes) == ["delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision"]
+    tout = " ".join(" ".join(e.commande) for e in etapes.values())
+    for interdit in ("--dangerously", "bypassPermissions", "--approve-for-me", "danger-full-access", "--allow-dangerously-skip-permissions"):
+        assert interdit not in tout, interdit
+    for nom in ("delta", "delta-kb", "supervision"):
+        c = etapes[nom].commande
+        assert c[1] == "-p" and "--permission-mode" in c and c[c.index("--permission-mode") + 1] == "dontAsk"
+        assert c[c.index("--permission-prompts") + 1] == "none" and "--strict-mcp-config" in c
+        assert c[c.index("--output-format") + 1] == "json"
+    assert etapes["delta"].commande[etapes["delta"].commande.index("--setting-sources") + 1] == "project"
+    sup = etapes["supervision"].commande
+    assert sup[sup.index("--setting-sources") + 1] == "" and sup[sup.index("--settings") + 1].endswith(".claude/supervision.settings.json")
+    assert sup[2] == (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    for nom in ("codex-delta", "codex-delta-kb"):
+        c = etapes[nom].commande
+        assert c[1:3] == ["exec", "--ignore-user-config"] and c[0] == "/usr/lib/chatgpt/resources/codex"
+        assert 'default_permissions="delta_auto"' in c and 'approval_policy="never"' in c
+        assert 'permissions.delta_auto.network.enabled=true' in c and 'permissions.delta_auto.extends=":workspace"' in c
+        assert 'permissions.delta_auto.filesystem={":workspace_roots"={".git"="write"}}' in c
+    assert etapes["delta"].commande[-6:] == ["--model", "sonnet", "--effort", "high", "--setting-sources", "project"]
+    assert etapes["delta-kb"].commande[etapes["delta-kb"].commande.index("--model") + 1] == "opus"
+    assert all(e.delai_s == 45 * 60 for n, e in etapes.items() if n != "supervision") and etapes["supervision"].delai_s == 15 * 60
+
+
+def test_arret_propre_declare_comme_en_d68():
+    cfg = orc.charger_config()
+    e = {x.nom: x for x in orc.construire_etapes(cfg, RACINE)}
+    assert e["delta"].checkout == ["docs/data/versions.json", "docs/data/etat.json", "docs/data/claude", "docs/data/actu",
+                                   "docs/data/kb/claude", "state/claude.json", "state/actu.json"]
+    assert e["delta"].clean == ["docs/data/claude", "docs/data/actu"]
+    assert e["codex-delta"].checkout == ["docs/data/openai", "docs/data/kb/openai", "state/openai.json"]
+    assert e["delta-kb"].checkout == e["delta-kb"].clean == ["docs/data/kb/claude"]
+    assert e["codex-delta-kb"].checkout == e["codex-delta-kb"].clean == ["docs/data/kb/openai"]
+    assert e["supervision"].checkout == [] and e["supervision"].clean == []
+    for n in ("delta", "codex-delta", "delta-kb", "codex-delta-kb"):  # jamais raw/, rapports/, PROGRESSION, CONTEXTE, SPEC, REGLES, scripts
+        assert all(c.startswith(("docs/data/", "state/")) for c in e[n].checkout + e[n].clean)
+
+
+def test_supervision_settings_lecture_seule():
+    s = json.loads((RACINE / ".claude" / "supervision.settings.json").read_text(encoding="utf-8"))["permissions"]
+    for r in s["allow"]:
+        assert r.startswith(("Bash(git log", "Bash(git status", "Bash(git rev-parse", "Bash(git rev-list", "Bash(find rapports", "Bash(tail -n",
+                             "Bash(date +", "Edit(rapports/*-supervision.md)")), r
+    assert "Edit(rapports/*-supervision.md)" in s["allow"] and len([r for r in s["allow"] if r.startswith("Edit(")]) == 1
+    assert {"Bash(git push *)", "Bash(git commit *)", "Bash(find * -exec *)", "Bash(find * -delete*)", "Bash(git * --output*)"} <= set(s["deny"])
+    assert not any("python" in r or "passages" in r or r.startswith("Bash(git add") for r in s["allow"])
+
+
+def test_nouvelles_regles_du_projet_sans_joker_dangereux():
+    s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
+    for r in ("Bash(.venv/bin/python scripts/catalogue.py lots *)", "Bash(.venv/bin/python scripts/catalogue.py a-commenter *)",
+              "Bash(.venv/bin/python scripts/catalogue.py adoptions *)", "Bash(.venv/bin/python scripts/catalogue.py reevaluations *)",
+              "Bash(git add docs/data/kb/claude)", 'Bash(git commit -m "delta-kb(claude): *")'):
+        assert r in s["allow"], r
+    assert not any("bypassPermissions" in r or "dangerously" in r for r in s["allow"] + s["deny"])
+
+
+@pytest.mark.parametrize("fichier", [".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md", ".agents/skills/delta-kb/SKILL.md"])
+def test_skills_ont_leur_section_mode_automatique_d70(fichier):
+    t = (RACINE / fichier).read_text(encoding="utf-8")
+    assert "## Mode automatique (D70)" in t and "--etape" in t and "Aucune question" in t
+    assert "orchestrateur remet lui-même en place" in t, "le nettoyage est celui de l'orchestrateur, pas d'un LLM"
+    assert "un seul push" in t.lower() or "`git push` une seule fois" in t
+
+
+def test_delta_n_exclut_plus_le_kb_en_automatique():
+    t = (RACINE / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
+    assert "ne tourne jamais en mode automatique" not in t and "étape suivante de la chaîne D70" in t
+
+
+# --- passage-auto.sh : verrou de la chaîne ---------------------------------------------------------------------------
+
+# Le faux binaire lit sa durée de sommeil dans un fichier : l'environnement des étapes est fixé par l'orchestrateur, jamais hérité.
+FAUX_BIN = '#!/bin/sh\nsleep "$(cat "$(dirname "$0")/sommeil" 2>/dev/null || echo 0)"\necho \'{"type":"result","subtype":"success","is_error":false,"permission_denials":[]}\'\n'
+
+
+@pytest.fixture
+def depot_sh(depot, tmp_path):
+    """Le dépôt de test reçoit scripts/, un .venv/bin/python (celui des tests) et une configuration dont les binaires sont faux."""
+    shutil.copytree(RACINE / "scripts", depot / "scripts", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__"))
+    (depot / ".venv" / "bin").mkdir(parents=True)
+    os.symlink(sys.executable, depot / ".venv" / "bin" / "python")
+    faux = tmp_path / "faux-bin.sh"
+    faux.write_text(FAUX_BIN)
+    faux.chmod(0o755)
+    depot.sommeil = tmp_path / "sommeil"
+    (depot / "prompts").mkdir(exist_ok=True)
+    (depot / "prompts" / "supervision.md").write_text("supervision")
+    toml = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
+    toml = toml.replace('bin = "~/.local/bin/claude"', f'bin = "{faux}"').replace('bin = "/usr/lib/chatgpt/resources/codex"', f'bin = "{faux}"')
+    toml = toml.replace("delai_min = 45", "delai_min = 1")
+    (tmp_path / "faux.toml").write_text(toml)
+    depot.sh("git", "add", "-A")
+    depot.sh("git", "commit", "-qm", "scripts")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    depot.toml = tmp_path / "faux.toml"
+    return depot
+
+
+def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
+    r = depot_sh
+    env = dict(os.environ)
+    r.sommeil.write_text("10")
+    cmd = [str(r / "scripts" / "passage-auto.sh"), "--config", str(r.toml), "--etapes", "delta"]
+    premiere = subprocess.Popen(cmd, cwd=r, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    verrou = r / ".git" / "delta-passage.lock"
+    for _ in range(100):
+        if verrou.exists() and verrou.read_text().strip():
+            break
+        time.sleep(0.1)
+    pid = int(verrou.read_text().strip())
+    assert pid == premiere.pid, "le PID écrit est celui de l'orchestrateur (exec garde le PID du script)"
+    seconde = subprocess.run(cmd, cwd=r, env=env, capture_output=True, text=True)
+    assert seconde.returncode == 14 and "déjà en cours" in seconde.stderr
+    # une relance manuelle de la garde pendant la chaîne s'arrête net (14) ; un appel de la chaîne (même PID) passe
+    manuel = subprocess.run([sys.executable, str(r / "scripts" / "garde.py"), "--racine", str(r), "--date", JOUR.isoformat()],
+                            capture_output=True, text=True, env={k: v for k, v in os.environ.items() if k != "DELTA_CHAINE_PID"})
+    assert manuel.returncode == 14
+    de_la_chaine = subprocess.run([sys.executable, str(r / "scripts" / "garde.py"), "--racine", str(r), "--date", JOUR.isoformat()],
+                                  capture_output=True, text=True, env={**os.environ, "DELTA_CHAINE_PID": str(pid)})
+    assert "cet appel en fait partie" in de_la_chaine.stdout
+    out, err = premiere.communicate(timeout=60)
+    assert premiere.returncode == 0, err
+    # le verrou est relâché à la fin : la chaîne suivante part
+    r.sommeil.write_text("0")
+    troisieme = subprocess.run(cmd, cwd=r, env=env, capture_output=True, text=True)
+    assert troisieme.returncode == 0, troisieme.stderr
+
+
+def test_passage_auto_option_liste_n_appelle_rien(depot_sh):
+    r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.count("\n") == 5 and "supervision" in r.stdout

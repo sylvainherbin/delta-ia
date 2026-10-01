@@ -9,9 +9,20 @@ model: opus
 
 Tu commentes par lots la base de référence `docs/data/kb/claude/` (produits `claude` et `claude-code`), générée une seule fois puis maintenue par les passages quotidiens (D44). Lis d'abord `SPEC.md` §7.4, `REGLES.md` (qui prime) et `CONTEXTE.md` en entier. Tu n'écris que dans `docs/data/kb/claude/` et dans `raw/kb/`.
 
+## Mode automatique (D70)
+
+Cette section ne s'applique **que si la consigne la demande explicitement** (« mode automatique (D70) »), par exemple depuis l'orchestrateur `scripts/passage-auto.sh`, qui lance `claude -p` après les passages `/delta` et `$delta`. Sans cette demande, ignore-la : le lancement manuel est inchangé. En mode automatique, les règles ci-dessous priment sur le reste du fichier ; tout le reste s'applique.
+
+1. **Garde d'abord.** `date +%F` donne `J` (recopie la valeur : aucune substitution `$(…)`), puis `.venv/bin/python scripts/garde.py --etape delta-kb --date J`. Code différent de 0 (10 verrou, 11 quota Claude, 13 arbre non propre, 14 chaîne déjà en cours, 15 commits non poussés, 2 argument) : aucune autre commande, pas de pull ; arrête-toi. L'orchestrateur a déjà contrôlé la garde et sauté l'étape s'il n'y avait aucun lot dû.
+2. **Aucune question.** N'appelle jamais `AskUserQuestion` et n'attends aucune réponse. Tout ce qui demanderait un choix de Sylvain (conflit git, règle ambiguë, fichier inattendu) arrête le lancement.
+3. **Commandes autorisées seulement**, écrites telles quelles, une par appel, sans `&&`, `;`, `|`, redirection ni `$(…)` : `date +%F`, `date +%Y-%m-%d_%H%M`, `.venv/bin/python scripts/garde.py …`, `git pull --rebase`, `.venv/bin/python scripts/catalogue.py <lots|a-commenter|adoptions|reevaluations|appliquer> …`, `.venv/bin/python scripts/valider.py …`, `.venv/bin/python scripts/passages.py …`, `git add docs/data/kb/claude`, `git commit -m "delta-kb(claude): …"`, `git push`. Lis avec l'outil Read ; cherche avec `grep -n` ; la sortie de `a-commenter` se lit directement, sans la rediriger vers un fichier. N'écris qu'avec Write ou Edit dans `raw/kb/commentaires-auto-<lot>-<n>.json` (les deux-points du lot remplacés par un tiret), appliqué par `catalogue.py appliquer`. Aucun outil MCP, aucune recherche web. Une commande hors de cette liste est refusée : ne la tente pas.
+4. **Ampleur du lancement (D46 adaptée)** : les adoptions déclarées (D67), le lot `perimees` (10 entrées au plus), puis **un seul** lot ordinaire au plus ; pas de recalibrage ponctuel. Si aucun lot n'a d'entrée à commenter, termine sans commit.
+5. **Commits, un seul push, à la fin.** `git add docs/data/kb/claude`, puis `git commit -m "delta-kb(claude): lot <lot> — <n> entrées commentées"` (adoptions : `delta-kb(claude): adoptions (PROGRESSION.md)`), message sur une ligne, sans autre option ; `git push` une seule fois. **Toute erreur arrête le lancement sans push** : commande en code non nul, outil refusé, `valider.py --kb` qui échoue encore après correction. N'exécute aucune commande de nettoyage (`git checkout`, `git clean`, `git reset`, `git stash`) : l'orchestrateur remet lui-même en place `docs/data/kb/claude` après un échec ; dis seulement ce qui reste local.
+6. **Journal toujours, aucun rapport.** Une ligne dans `rapports/passages.log` en fin de lancement, même après une erreur : `.venv/bin/python scripts/passages.py --agent delta-ia --perimetre kb-claude --elements <n> --forts <n> --commit <hash court ou aucun> --garde <code de la garde>`. Tu n'écris aucun rapport : l'orchestrateur garde ta sortie dans `rapports/auto/` et la supervision relit le tout ; ton message final dit en quelques lignes ce qui a été fait, ce qui reste local et ce qui échoue.
+
 ## 0. Préparation
 
-- Si `.git/index.lock` existe, arrête-toi et signale-le. Ne lance jamais delta-kb pendant un passage quotidien (`/delta` pour Claude Code, `$delta` pour Codex) (D21).
+- Si `.git/index.lock` existe, arrête-toi et signale-le. Ne lance jamais delta-kb pendant un passage quotidien (`/delta` pour Claude Code, `$delta` pour Codex) (D21), sauf par l'orchestrateur (D70), qui l'enchaîne après eux.
 - `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
 - Python : `.venv/bin/python`. Modèle recommandé : Opus 5.5 (fixé par cette skill), pour épargner la limite Fable.
 

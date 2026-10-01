@@ -3,6 +3,9 @@
 
 Contrôles, dans l'ordre :
 1. `.git/index.lock` présent : un autre passage ou une autre session tient le dépôt (D21) -> arrêt, code 10.
+1 bis. D70 : `.git/delta-passage.lock` tenu (flock) par l'orchestrateur `scripts/passage-auto.sh` et cet appel n'en fait pas
+   partie -> arrêt, code 14. La garde teste le verrou, elle ne le prend pas (ouverture en lecture seule, flock non bloquant,
+   relâché aussitôt). Un appel de la chaîne s'identifie par `DELTA_CHAINE_PID`, égal au PID écrit dans le fichier de verrou.
 2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 85 -> arrêt,
    code 11. Fichier absent, illisible ou modifié il y a plus de 15 minutes : la console est sans doute arrêtée ;
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
@@ -17,6 +20,13 @@ Contrôles, dans l'ordre :
    (`docs/data/claude/`, `docs/data/actu/`, `state/`) -> arrêt, code 13, avec la liste des fichiers. Un reste
    d'arrêt (versions.json, etat.json, fichier du jour non commité) ou un CONTEXTE.md non commité bloquerait le pull.
 
+5. D70 : au moins un commit local absent de `origin/main` (`git rev-list --count origin/main..HEAD`) -> arrêt, code 15 :
+   une étape ne doit jamais pousser le commit non validé d'une autre. Sans `origin/main` (dépôt sans distant, tests), non évalué.
+
+`--etape {delta,codex-delta,delta-kb,codex-delta-kb}` (D70) adapte les contrôles 2 et 3 à l'étape de la chaîne : le quota
+Claude (code 11) ne vaut que pour les étapes Claude ; le code 12 regarde le fichier du jour de l'étape (`delta` : claude,
+`codex-delta` : openai) et n'existe pas pour les étapes kb. Sans `--etape`, comportement D68 (quota Claude, fichier claude).
+
 Code 0 : le passage peut tourner (éventuels avertissements affichés). Code 2 : argument invalide.
 Sortie : une ligne par contrôle, puis `GARDE: OK` ou `GARDE: ARRÊT (<motif>)` ; `--json` pour un bilan structuré.
 """
@@ -24,7 +34,9 @@ Sortie : une ligne par contrôle, puis `GARDE: OK` ou `GARDE: ARRÊT (<motif>)` 
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
+import os
 import subprocess
 import sys
 import time
@@ -38,8 +50,11 @@ SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur Chat
 FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
 RAPPEL_CLAUDE = "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)"
-CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE = 10, 11, 12, 13
-CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "state/")
+CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE, CODE_CHAINE, CODE_NON_POUSSE = 10, 11, 12, 13, 14, 15
+CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "docs/data/openai/", "docs/data/kb/", "state/")
+VERROU_CHAINE = Path(".git") / "delta-passage.lock"
+# D70 : par étape de la chaîne, (quota Claude applicable, dossier de données du fichier du jour pour le code 12 ou None)
+ETAPES = {"delta": (True, "claude"), "codex-delta": (False, "openai"), "delta-kb": (True, None), "codex-delta-kb": (False, None)}
 
 
 def _pct(d: dict, *cles) -> float | None:
@@ -66,9 +81,43 @@ def _complet(u) -> bool:
     return u is not None and _pct(u, "claude", "session_5h", "pct") is not None and _pct(u, "claude", "semaine", "pct") is not None
 
 
-def controler(racine: Path, jour: date, maintenant: datetime | None = None, delai_relecture: float = DELAI_RELECTURE_S) -> dict:
+def verrou_chaine(racine: Path) -> tuple[bool, int | None]:
+    """(tenu, pid écrit dans le fichier) ; lecture seule : le fichier n'est ni créé ni modifié."""
+    chemin = racine / VERROU_CHAINE
+    try:
+        fd = os.open(chemin, os.O_RDONLY)
+    except OSError:
+        return False, None
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            try:
+                return True, int(os.read(fd, 32).decode().strip() or 0) or None
+            except ValueError:
+                return True, None
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        return False, None
+    finally:
+        os.close(fd)
+
+
+def commits_non_pousses(racine: Path) -> int | None:
+    """Nombre de commits locaux absents de origin/main ; None si origin/main n'existe pas ou git est illisible."""
+    try:
+        r = subprocess.run(["git", "--no-optional-locks", "-C", str(racine), "rev-list", "--count", "origin/main..HEAD"],
+                           capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return int(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip().isdigit() else None
+
+
+def controler(racine: Path, jour: date, maintenant: datetime | None = None, delai_relecture: float = DELAI_RELECTURE_S,
+              etape: str | None = None) -> dict:
     maintenant = maintenant or datetime.now(timezone.utc)
-    res = {"jour": jour.isoformat(), "code": 0, "motif": None, "controles": [], "avertissements": [], "fichiers_modifies": []}
+    res = {"jour": jour.isoformat(), "etape": etape, "code": 0, "motif": None, "controles": [], "avertissements": [],
+           "fichiers_modifies": []}
+    quota_claude, dossier_jour = ETAPES[etape] if etape else (True, "claude")
 
     def arret(code, motif):
         if not res["code"]:
@@ -81,6 +130,16 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         arret(CODE_VERROU, "verrou .git/index.lock")
     else:
         res["controles"].append("verrou : absent")
+
+    # 1 bis. verrou de la chaîne (D70)
+    tenu, pid = verrou_chaine(racine)
+    if not tenu:
+        res["controles"].append("chaîne : verrou absent")
+    elif pid is not None and os.environ.get("DELTA_CHAINE_PID") == str(pid):
+        res["controles"].append(f"chaîne : verrou tenu par l'orchestrateur (pid {pid}), cet appel en fait partie")
+    else:
+        res["controles"].append(f"chaîne : .git/delta-passage.lock tenu (pid {pid or 'inconnu'}) par une autre chaîne — arrêt (D70)")
+        arret(CODE_CHAINE, "chaîne de passages en cours (.git/delta-passage.lock)")
 
     # 2. quotas Claude (console-mur)
     usage = racine / "rapports" / "usage.json"
@@ -100,7 +159,7 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         elif s5 is None or sem is None:
             res["avertissements"].append(f"usage.json sans claude.session_5h.pct ou claude.semaine.pct : quotas inconnus. {RAPPEL_CLAUDE}")
             res["controles"].append("quotas : champs absents — le passage continue")
-        elif s5 >= SEUIL_SESSION_5H or sem >= SEUIL_SEMAINE:
+        elif quota_claude and (s5 >= SEUIL_SESSION_5H or sem >= SEUIL_SEMAINE):
             res["controles"].append(f"quotas : session 5 h {s5} % (seuil {SEUIL_SESSION_5H}), semaine {sem} % (seuil {SEUIL_SEMAINE}) — arrêt")
             arret(CODE_QUOTA, f"quota Claude : session 5 h {s5} %, semaine {sem} %")
         else:
@@ -112,10 +171,10 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
                 res["avertissements"].append(f"quota hebdomadaire {produit} à {pct:g} %{perime} — vérifie tes remises à zéro disponibles "
                                              "(Paramètres > Utilisation) avant d'économiser (D71)")
 
-    # 3. passage claude du jour déjà fait
-    quotidien = racine / "docs" / "data" / "claude" / f"{jour.isoformat()}.json"
+    # 3. passage du jour déjà fait (fichier du jour de l'étape : claude par défaut, openai pour codex-delta, aucun pour les étapes kb)
+    quotidien = racine / "docs" / "data" / dossier_jour / f"{jour.isoformat()}.json" if dossier_jour else None
     genere = None
-    if quotidien.exists():
+    if quotidien is not None and quotidien.exists():
         try:
             genere = json.loads(quotidien.read_text(encoding="utf-8")).get("genere_le")
         except (OSError, ValueError):
@@ -127,9 +186,11 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
             fait = (g.astimezone() if g.tzinfo else g).date() == jour
         except ValueError:
             fait = False
-    if fait:
+    if dossier_jour is None:
+        res["controles"].append("passage du jour : sans objet pour cette étape")
+    elif fait:
         res["controles"].append(f"passage du jour : déjà fait (genere_le {genere}) — arrêt")
-        arret(CODE_DEJA_FAIT, f"passage claude du {jour.isoformat()} déjà fait ({genere})")
+        arret(CODE_DEJA_FAIT, f"passage {dossier_jour} du {jour.isoformat()} déjà fait ({genere})")
     else:
         res["controles"].append("passage du jour : pas encore fait")
 
@@ -140,7 +201,7 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
     except (OSError, subprocess.SubprocessError) as e:
         res["controles"].append(f"arbre de travail : état git illisible ({type(e).__name__}) — arrêt")
         arret(CODE_ARBRE, "état git illisible")
-        return res
+        return res  # sans état git, les commits non poussés ne se lisent pas non plus
     sales = []
     for ligne in sortie.splitlines():
         etat, chemin = ligne[:2], ligne[3:].split(" -> ")[-1]
@@ -155,12 +216,23 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         arret(CODE_ARBRE, f"arbre de travail non propre ({len(sales)} fichier(s))")
     else:
         res["controles"].append("arbre de travail : propre")
+
+    # 5. commits locaux non poussés (D70)
+    n = commits_non_pousses(racine)
+    if n is None:
+        res["controles"].append("commits non poussés : non évalué (pas de origin/main)")
+    elif n > 0:
+        res["controles"].append(f"commits non poussés : {n} commit(s) local(aux) absent(s) de origin/main — arrêt (D70)")
+        arret(CODE_NON_POUSSE, f"{n} commit(s) local(aux) non poussé(s)")
+    else:
+        res["controles"].append("commits non poussés : aucun")
     return res
 
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="garde.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--date", help="date du passage J, AAAA-MM-JJ (défaut : aujourd'hui)")
+    p.add_argument("--etape", choices=sorted(ETAPES), help="étape de la chaîne D70 (adapte le quota Claude et le fichier du jour)")
     p.add_argument("--json", action="store_true")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
@@ -169,7 +241,7 @@ def main(argv=None) -> int:
     except ValueError:
         print(f"garde.py : date invalide {a.date!r} (AAAA-MM-JJ attendu)", file=sys.stderr)
         return 2
-    res = controler(a.racine, jour)
+    res = controler(a.racine, jour, etape=a.etape)
     if a.json:
         print(json.dumps(res, ensure_ascii=False, indent=1))
     else:

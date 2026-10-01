@@ -1,0 +1,18 @@
+# EXEMPLE (D70) — non installé. À copier par herbin-mint, sur accord de Sylvain, dans ~/.config/systemd/user/ sous le nom
+# delta-passage.service, puis `systemctl --user daemon-reload`. Rien n'a été écrit dans ~/.config/systemd/ par Dev-delta.
+#
+# WorkingDirectory doit rester exactement /home/herbin/projets/delta-ia : c'est le chemin dont Claude Code a accepté la
+# confiance ; un lien symbolique ou un worktree la perdrait et la liste `allow` de .claude/settings.json serait ignorée
+# (les commandes seraient alors refusées : l'étape échoue sans rien casser).
+[Unit]
+Description=Delta — chaîne de passages automatiques (D70) : /delta, $delta, /delta-kb, $delta-kb, supervision
+Documentation=file:%h/projets/delta-ia/SPEC.md
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/projets/delta-ia
+ExecStart=%h/projets/delta-ia/scripts/passage-auto.sh
+# Quatre étapes de 45 min au plus plus la supervision de 15 min, plus les arrêts : 4 h couvrent la chaîne entière.
+TimeoutStartSec=4h
+KillMode=control-group
+Nice=5

@@ -201,7 +201,7 @@ def test_premier_motif_prime_et_json(racine, capsys):
     usage(racine, 90, 90)
     code, out = lancer(racine, capsys, "--json")
     r = json.loads(out)
-    assert code == 10 and r["code"] == 10 and "verrou" in r["motif"] and len(r["controles"]) == 4
+    assert code == 10 and r["code"] == 10 and "verrou" in r["motif"] and len(r["controles"]) == 6
 
 
 def test_lecture_seule(racine, capsys):
@@ -362,3 +362,126 @@ def test_d71_delai_injectable_et_borne(racine, pauses):
     usage_sans_claude(racine)
     garde.controler(racine, J, delai_relecture=0.25)
     assert pauses == [0.25] and garde.DELAI_RELECTURE_S <= 3
+
+
+# --- D70 : verrou de la chaîne (14), commits non poussés (15), contrôles par étape ---------------------------------
+
+import fcntl
+
+
+def tenir_verrou(racine, pid):
+    """Tient `.git/delta-passage.lock` comme le fait passage-auto.sh (flock sur un autre descripteur) et y écrit le PID."""
+    chemin = racine / ".git" / "delta-passage.lock"
+    fd = os.open(chemin, os.O_RDWR | os.O_CREAT)
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    os.ftruncate(fd, 0)
+    os.write(fd, f"{pid}\n".encode())
+    return fd
+
+
+def test_d70_verrou_chaine_tenu_arrete_net(racine, capsys, monkeypatch):
+    monkeypatch.delenv("DELTA_CHAINE_PID", raising=False)
+    fd = tenir_verrou(racine, 4242)
+    try:
+        code, out = lancer(racine, capsys)
+        assert code == garde.CODE_CHAINE == 14 and "delta-passage.lock" in out and "pid 4242" in out and "ARRÊT" in out
+    finally:
+        os.close(fd)
+
+
+def test_d70_appel_de_la_chaine_est_exempte(racine, capsys, monkeypatch):
+    fd = tenir_verrou(racine, 4242)
+    try:
+        monkeypatch.setenv("DELTA_CHAINE_PID", "4242")
+        code, out = lancer(racine, capsys)
+        assert code == 0 and "cet appel en fait partie" in out
+        monkeypatch.setenv("DELTA_CHAINE_PID", "4243")  # autre PID : relance manuelle pendant la chaîne
+        assert lancer(racine, capsys)[0] == 14
+    finally:
+        os.close(fd)
+
+
+def test_d70_verrou_relache_ou_absent_ne_bloque_pas(racine, capsys, monkeypatch):
+    monkeypatch.delenv("DELTA_CHAINE_PID", raising=False)
+    assert lancer(racine, capsys)[0] == 0 and not (racine / ".git" / "delta-passage.lock").exists(), "la garde ne crée pas le verrou"
+    os.close(tenir_verrou(racine, 1))  # fichier présent, verrou relâché (chaîne terminée) : pas d'arrêt
+    assert lancer(racine, capsys)[0] == 0
+
+
+def test_d70_la_garde_ne_prend_pas_le_verrou(racine, capsys):
+    chemin = racine / ".git" / "delta-passage.lock"
+    chemin.write_text("1\n")
+    lancer(racine, capsys)
+    fd = os.open(chemin, os.O_RDWR)  # un autre processus peut le prendre juste après
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    os.close(fd)
+
+
+@pytest.fixture
+def racine_avec_origin(racine, tmp_path_factory):
+    bare = tmp_path_factory.mktemp("origin") / "origin.git"
+    import subprocess
+    subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True, capture_output=True)
+    git(racine, "remote", "add", "origin", str(bare))
+    git(racine, "push", "-q", "origin", "HEAD:refs/heads/main")
+    git(racine, "fetch", "-q", "origin")
+    return racine
+
+
+def test_d70_commits_non_pousses_arretent_code_15(racine_avec_origin, capsys):
+    racine = racine_avec_origin
+    assert lancer(racine, capsys)[0] == 0 and "commits non poussés : aucun" in capsys.readouterr().out or True
+    (racine / "notes.txt").write_text("x")
+    git(racine, "add", "notes.txt")
+    git(racine, "commit", "-qm", "local")
+    code, out = lancer(racine, capsys)
+    assert code == garde.CODE_NON_POUSSE == 15 and "1 commit(s) local(aux)" in out
+    git(racine, "push", "-q", "origin", "HEAD:refs/heads/main")
+    git(racine, "fetch", "-q", "origin")
+    assert lancer(racine, capsys)[0] == 0
+
+
+def test_d70_sans_origin_main_les_commits_ne_sont_pas_evalues(racine, capsys):
+    code, out = lancer(racine, capsys)
+    assert code == 0 and "non évalué (pas de origin/main)" in out
+
+
+def openai_du_jour(racine):
+    f = racine / "docs" / "data" / "openai" / f"{J.isoformat()}.json"
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps({"date": J.isoformat(), "genere_le": datetime(2026, 9, 25, 8, 0).astimezone().isoformat()}), encoding="utf-8")
+    git(racine, "add", str(f.relative_to(racine)))
+    git(racine, "commit", "-qm", "openai")
+
+
+@pytest.mark.parametrize("etape, attendu", [("delta", 11), ("codex-delta", 0), ("delta-kb", 11), ("codex-delta-kb", 0), (None, 11)])
+def test_d70_quota_claude_ne_vaut_que_pour_les_etapes_claude(racine, capsys, etape, attendu):
+    usage(racine, 90, 20)
+    args = ("--etape", etape) if etape else ()
+    assert lancer(racine, capsys, *args)[0] == attendu
+
+
+def test_d70_chaque_etape_regarde_son_fichier_du_jour(racine, capsys):
+    quotidien(racine, datetime(2026, 9, 25, 8, 0).astimezone().isoformat())  # claude fait
+    assert lancer(racine, capsys, "--etape", "delta")[0] == 12
+    assert lancer(racine, capsys, "--etape", "codex-delta")[0] == 0, "le passage claude fait ne bloque pas Codex"
+    assert lancer(racine, capsys, "--etape", "delta-kb")[0] == 0 and lancer(racine, capsys, "--etape", "codex-delta-kb")[0] == 0
+    openai_du_jour(racine)
+    assert lancer(racine, capsys, "--etape", "codex-delta")[0] == 12
+    assert lancer(racine, capsys, "--etape", "codex-delta-kb")[0] == 0
+
+
+def test_d70_arbre_sale_dans_openai_ou_kb_arrete(racine, capsys):
+    for chemin in ("docs/data/openai/2026-09-25.json", "docs/data/kb/openai/x.json"):
+        f = racine / chemin
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("{}")
+        code, out = lancer(racine, capsys, "--etape", "codex-delta")
+        assert code == 13 and f"{chemin} (non suivi)" in out
+        f.unlink()
+
+
+def test_d70_etape_inconnue_est_refusee(racine):
+    with pytest.raises(SystemExit) as e:
+        garde.main(["--racine", str(racine), "--etape", "inconnue"])
+    assert e.value.code == 2

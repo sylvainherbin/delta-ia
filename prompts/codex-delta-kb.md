@@ -2,9 +2,20 @@
 
 Tu commentes par lots la base de référence `docs/data/kb/openai/` (produits `chatgpt` et `codex`), générée une seule fois puis maintenue par les passages quotidiens (D44). Lis d'abord `SPEC.md` §7.4, `REGLES.md` (qui prime) et `CONTEXTE.md` en entier. Tu n'écris que dans `docs/data/kb/openai/` et dans `raw/kb/`.
 
+## Mode automatique (D70)
+
+Cette section ne s'applique **que si la consigne la demande explicitement** (« mode automatique (D70) »), par exemple depuis l'orchestrateur `scripts/passage-auto.sh`, qui lance `codex exec` sous un profil de permissions explicite (écriture dans le dépôt et son `.git`, réseau, jamais d'approbation) après les passages `/delta` et `$delta`. Sans cette demande, ignore-la : le lancement manuel est inchangé. En mode automatique, ces règles priment sur le reste du fichier ; tout le reste s'applique.
+
+1. **Garde d'abord.** `date +%F` donne `J`, puis `.venv/bin/python scripts/garde.py --etape codex-delta-kb --date J`. Code différent de 0 (10 verrou, 13 arbre non propre, 14 chaîne déjà en cours, 15 commits non poussés, 2 argument) : aucune autre commande, pas de pull ; arrête-toi. L'orchestrateur a déjà contrôlé la garde et sauté l'étape s'il n'y avait aucun lot dû. Il n'y a pas de quota Codex (D70) : un avertissement de la garde ne s'arrête pas.
+2. **Aucune question.** Tout ce qui demanderait un choix de Sylvain arrête le lancement.
+3. **Commandes autorisées seulement** : `date`, `.venv/bin/python scripts/garde.py …`, `git pull --rebase`, `.venv/bin/python scripts/catalogue.py <lots|a-commenter|adoptions|reevaluations|appliquer> …`, `.venv/bin/python scripts/valider.py …`, `.venv/bin/python scripts/passages.py …`, `git add docs/data/kb/openai`, `git commit -m "delta-kb(openai): …"`, `git push`, et la lecture de fichiers (`cat`, `sed -n`, `grep -n`, `ls`). Jamais `.venv/bin/python -c`, `--force`, `git add -A`, `git reset`, `git checkout`, `git clean`, `git stash`, `rm`. N'écris que dans `raw/kb/commentaires-auto-<lot>-<n>.json` (appliqué par `catalogue.py appliquer`) et, par ce script, dans `docs/data/kb/openai/`.
+4. **Ampleur du lancement (D46 adaptée)** : les adoptions déclarées (D67), le lot `perimees` (10 entrées au plus), puis **un seul** lot ordinaire au plus ; pas de recalibrage ponctuel (les points 2 et 3 de la section 1 ne s'appliquent pas). Si aucun lot n'a d'entrée à commenter, termine sans commit.
+5. **Commits, un seul push, à la fin.** `git add docs/data/kb/openai`, puis `git commit -m "delta-kb(openai): lot <lot> — <n> entrées commentées"` (adoptions : `delta-kb(openai): adoptions (PROGRESSION.md)`), message sur une ligne ; `git push` une seule fois. **Toute erreur arrête le lancement sans push** (commande en code non nul, `valider.py --kb` qui échoue encore après correction, commande refusée). N'exécute aucune commande de nettoyage : l'orchestrateur remet lui-même en place `docs/data/kb/openai` ; dis seulement ce qui reste local.
+6. **Journal toujours, aucun rapport.** Une ligne dans `rapports/passages.log` en fin de lancement, même après une erreur : `.venv/bin/python scripts/passages.py --agent codex --perimetre kb-openai --elements <n> --forts <n> --commit <hash court ou aucun> --garde <code de la garde>`. Tu n'écris aucun rapport : l'orchestrateur garde ta sortie dans `rapports/auto/` et la supervision relit le tout ; ton message final dit en quelques lignes ce qui a été fait, ce qui reste local et ce qui échoue.
+
 ## 0. Préparation
 
-- Si `.git/index.lock` existe, arrête-toi et signale-le. Ne lance jamais delta-kb pendant un passage quotidien (`$delta` pour Codex, `/delta` pour Claude Code) (D21).
+- Si `.git/index.lock` existe, arrête-toi et signale-le. Ne lance jamais delta-kb pendant un passage quotidien (`$delta` pour Codex, `/delta` pour Claude Code) (D21), sauf par l'orchestrateur (D70), qui l'enchaîne après eux.
 - `git pull --rebase` ; en cas de conflit, arrête-toi et signale.
 - Python : `.venv/bin/python`.
 

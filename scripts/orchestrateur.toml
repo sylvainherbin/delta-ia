@@ -1,0 +1,85 @@
+# Delta — configuration de l'orchestrateur des passages automatiques (D70), lue par scripts/orchestrateur.py.
+# Aucun secret ici. Les modèles, efforts et délais sont des choix de Sylvain : les modifier ici, rien d'autre à toucher.
+
+[chaine]
+verrou = ".git/delta-passage.lock"   # tenu par scripts/passage-auto.sh (flock) pendant toute la chaîne ; testé par la garde (code 14)
+arret_delai_s = 10                   # après SIGTERM, attente avant SIGKILL sur tout le groupe de processus de l'étape
+sortie_dossier = "rapports/auto"     # une sortie par étape et par jour ; rapports/ n'est jamais commité
+path = ["~/.local/bin", "/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"]
+
+[claude]
+bin = "~/.local/bin/claude"
+# Chaque étape Claude : -p ... --permission-mode dontAsk --permission-prompts none --strict-mcp-config --output-format json,
+# stdin fermé. Les étapes /delta et /delta-kb ne chargent que les réglages du projet (.claude/settings.json, dont la liste
+# `allow`) ; la supervision n'en charge aucun et reçoit sa propre liste (.claude/supervision.settings.json).
+sources_etapes = "project"
+
+[codex]
+# Binaire de l'app de bureau (CONTEXTE.md : la syntaxe se vérifie sur lui, pas sur celui du PATH ; version 0.159.2 le 01/10/2026,
+# sans dépendance à node, donc indépendant du PATH de nvm sous systemd). Les --help de exec sont identiques sur les deux binaires.
+bin = "/usr/lib/chatgpt/resources/codex"
+# Configuration explicite passée par -c avec --ignore-user-config : le réglage global de ~/.codex/config.toml
+# (danger-full-access, approval_policy never) n'est jamais chargé. Profil de permissions « delta_auto » : lecture du système,
+# écriture dans le dépôt et dans son .git (nécessaire à git commit), réseau (fetch.py, git pull, git push), jamais d'approbation.
+# Interdits dans ce fichier : --approve-for-me, --dangerously-bypass-approvals-and-sandbox, --dangerously-bypass-hook-trust.
+config = [
+  'default_permissions="delta_auto"',
+  'approval_policy="never"',
+  'permissions.delta_auto.extends=":workspace"',
+  'permissions.delta_auto.network.enabled=true',
+  'permissions.delta_auto.filesystem={":workspace_roots"={".git"="write"}}',
+  'model="gpt-6.1-sol"',
+  'model_reasoning_effort="high"',
+]
+
+# --- étapes, dans l'ordre ; chacune ne démarre qu'à la fin de la précédente ---------------------------------------
+
+[etapes.delta]
+agent = "claude"
+garde = "delta"
+modele = "sonnet"
+effort = "high"
+delai_min = 45
+prompt = "Lis .claude/skills/delta/SKILL.md et exécute le passage en mode automatique (D68), sans poser de question."
+# Arrêt propre (D68) : seuls ces chemins sont remis en place, jamais autre chose.
+checkout = ["docs/data/versions.json", "docs/data/etat.json", "docs/data/claude", "docs/data/actu", "docs/data/kb/claude",
+            "state/claude.json", "state/actu.json"]
+clean = ["docs/data/claude", "docs/data/actu"]
+
+[etapes.codex-delta]
+agent = "codex"
+garde = "codex-delta"
+delai_min = 45
+prompt = "Lis .agents/skills/delta/SKILL.md et exécute le passage en mode automatique (D70), sans poser de question."
+checkout = ["docs/data/openai", "docs/data/kb/openai", "state/openai.json"]
+clean = ["docs/data/openai"]
+
+[etapes.delta-kb]
+agent = "claude"
+garde = "delta-kb"
+kb = "claude"                        # étape sautée (ligne à 0, code 129) quand aucun lot n'est dû
+modele = "opus"                      # la skill /delta-kb fixe Opus 5.5 (épargne la limite Fable)
+effort = "high"
+delai_min = 45
+prompt = "Lis .claude/skills/delta-kb/SKILL.md et exécute le lancement en mode automatique (D70), sans poser de question."
+checkout = ["docs/data/kb/claude"]
+clean = ["docs/data/kb/claude"]
+
+[etapes.codex-delta-kb]
+agent = "codex"
+garde = "codex-delta-kb"
+kb = "openai"
+delai_min = 45
+prompt = "Lis .agents/skills/delta-kb/SKILL.md et exécute le lancement en mode automatique (D70), sans poser de question."
+checkout = ["docs/data/kb/openai"]
+clean = ["docs/data/kb/openai"]
+
+# Supervision : toujours lancée en dernier, même si une étape a échoué ; lecture seule stricte.
+[etapes.supervision]
+agent = "claude"
+supervision = true
+modele = "sonnet"
+effort = "medium"
+delai_min = 15
+prompt_fichier = "prompts/supervision.md"
+settings = ".claude/supervision.settings.json"

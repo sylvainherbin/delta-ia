@@ -10,7 +10,7 @@ Avant toute tâche, lis `REGLES.md` (règles communes, qui priment sur toute aut
 
 ## Passage quotidien (SPEC.md §6)
 
-Lancement : `$delta` (skill du dépôt `.agents/skills/delta/SKILL.md`), ou le texte de `prompts/codex-delta.md` collé à la main. Résumé :
+Lancement : `$delta` (skill du dépôt `.agents/skills/delta/SKILL.md`), ou le texte de `prompts/codex-delta.md` collé à la main ; après son activation, la chaîne automatique de l'orchestrateur (D70, `scripts/passage-auto.sh`) lance `$delta` puis `$delta-kb` en `codex exec` sous un profil de permissions explicite (section « Mode automatique (D70) » de chaque skill), et Dev-delta et prof ne commitent pas pendant la fenêtre de la chaîne. Résumé :
 
 1. `git pull --rebase` (seulement si un dépôt distant existe ; sans distant, ni pull ni push, commit local seulement).
 2. `.venv/bin/python scripts/fetch.py --perimetre openai` → `raw/openai-nouveautes.json` (l'état n'est pas modifié).
