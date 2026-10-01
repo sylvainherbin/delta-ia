@@ -78,10 +78,16 @@ sources:
       slugifié>` : un titre réécrit crée un nouvel élément. Amorçage D30 sur J-7 : les annonces plus anciennes vont dans
       `ignores` ; le tableau d'état, non daté, arrive une fois en entier. Format analysé par `annonces_datees`
       (nouveau, `analyseurs/html_notes.py`). Gabarit non contractuel : un parent ou une section introuvable remonte en
-      `sources_en_echec`. À observer 7 passages réels avant `ok`.
+      `sources_en_echec`. À observer 7 passages réels avant `ok`. Étape 2d : option `echeances` ; les retraits des tableaux
+      des annonces (colonne « Retirement date ») donnent des éléments `echeance-anthropic-deprecations-<modèle>-<date>-j14`
+      et `-j1` (`deltalib/echeances.py`). Le tableau d'état des modèles n'en produit pas (« Not sooner than » est une borne,
+      pas un retrait annoncé). Ancres des titres vérifiées le 2026-10-01 sur la page HTML : `4.5` donne `4-5`
+      (`ancre_points: tiret`).
     options:
       format: annonces_datees
       nom: Dépréciations des modèles Claude
+      echeances: true
+      ancre_points: tiret
       suivre_revisions: true
       sections:
         - {id: statut-modeles, titre: "^Model status$"}
@@ -498,10 +504,15 @@ sources:
       évaluations, Agent Builder, retrait le 30/11). Retraits à venir couverts : GPT-5.4-Cyber le 01/10, transcription,
       audio, GPT-5 et o3, images GPT, et ces trois-là ; quelques retraits déjà passés (05/05, deux du 22/04) y figurent
       aussi. Le préavis, non daté, arrive avec elles. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
-      introuvable remonte en `sources_en_echec`. À observer 7 passages réels avant `ok`.
+      introuvable remonte en `sources_en_echec`. À observer 7 passages réels avant `ok`. Étape 2d : option `echeances` ; les
+      retraits des tableaux (« Shutdown date »), et les étapes datées des tableaux « Date / Update » (fonctionnalités :
+      Evals, Agent Builder, prompts réutilisables, fine-tuning), donnent des éléments
+      `echeance-openai-deprecations-<modèle>-<date>-j14` et `-j1` (`deltalib/echeances.py`). Ancres vérifiées le 2026-10-01
+      sur la page HTML : `5.4` donne `54` (réglage par défaut).
     options:
       format: annonces_datees
       nom: Dépréciations des modèles OpenAI
+      echeances: true
       suivre_revisions: true
       amorcage_jours: 180
       etat_initial: "État initial des dépréciations OpenAI en cours"

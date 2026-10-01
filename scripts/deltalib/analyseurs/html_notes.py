@@ -8,6 +8,7 @@ Formats (option `format`) :
 - `html_blog_liste` : liste Webflow/Finsweet du blog claude.com (étape 2b) : un élément par article de la première page.
 - `annonces_datees` : pages de dépréciations des modèles (étape 2c) : une annonce par titre `### AAAA-MM-JJ: titre` sous les
   sections parentes déclarées, plus, si déclarées, des sections suivies en entier (tableau d'état des modèles, préavis).
+  Option `echeances: true` (étape 2d) : les retraits des tableaux de chaque annonce sont aussi extraits (`deltalib.echeances`).
 Le format est détecté d'après la réponse si l'option est absente.
 """
 
@@ -238,6 +239,28 @@ def _slug(texte: str) -> str:
 _RE_TITRE_ANNONCE = re.compile(r"^(\d{4}-\d{2}-\d{2})\s*:\s*(.*)$")
 
 
+def _annonces(secs, source):
+    """Annonces des sections parentes déclarées (`options.parents`) : (section, date ISO ou None, identifiant de base).
+    Une annonce sans date n'est retenue que sous un parent `sans_date: true`. Parent introuvable ou date invalide :
+    FormatInattendu. Partagé par `parser_annonces_datees` et l'extraction des retraits (`deltalib.echeances`)."""
+    for conf in source.options.get("parents") or []:
+        rx = re.compile(conf["titre"], re.I)
+        parent = next((s for s in secs if rx.search(s.titre)), None)
+        if parent is None:
+            raise FormatInattendu(f"section « {conf['titre']} » introuvable : gabarit changé ?")
+        for sec in secs:
+            if sec.niveau != parent.niveau + 1 or not (parent.debut < sec.debut < parent.fin):
+                continue
+            m = _RE_TITRE_ANNONCE.match(sec.titre)
+            if m:
+                date_iso = analyser_date(m.group(1))
+                if date_iso is None:
+                    raise FormatInattendu(f"titre d'annonce avec une date invalide : {sec.titre!r}")
+                yield sec, date_iso, f"{source.id}-{date_iso}-{_slug(m.group(2)) or 'annonce'}"
+            elif conf.get("sans_date"):
+                yield sec, None, f"{source.id}-{_slug(sec.titre) or 'annonce'}"
+
+
 def parser_annonces_datees(texte: str, source) -> list[Element]:
     """Étape 2c (01/10) : page de dépréciations, en Markdown. `options.parents` liste les sections parentes
     ({titre: regex, sans_date: bool}) ; chaque titre de niveau suivant est une annonce, élément `<source>-<date>-<slug>`
@@ -251,37 +274,19 @@ def parser_annonces_datees(texte: str, source) -> list[Element]:
     base = re.sub(r"\.md(?=\?|$)", "", source.options.get("url_publique", source.url))
     res: list[Element] = parser_sections_suivies(texte, source) if source.options.get("sections") else []
     vus = {e.id for e in res}
-    parents = source.options.get("parents") or []
-    if not parents and not res:
+    if not (source.options.get("parents") or []) and not res:
         raise FormatInattendu("aucune section parente ni section suivie déclarée (options.parents, options.sections)")
-    for conf in parents:
-        rx = re.compile(conf["titre"], re.I)
-        parent = next((s for s in secs if rx.search(s.titre)), None)
-        if parent is None:
-            raise FormatInattendu(f"section « {conf['titre']} » introuvable : gabarit changé ?")
-        for sec in secs:
-            if sec.niveau != parent.niveau + 1 or not (parent.debut < sec.debut < parent.fin):
-                continue
-            m = _RE_TITRE_ANNONCE.match(sec.titre)
-            if m:
-                date_iso = analyser_date(m.group(1))
-                if date_iso is None:
-                    raise FormatInattendu(f"titre d'annonce avec une date invalide : {sec.titre!r}")
-                ident = f"{source.id}-{date_iso}-{_slug(m.group(2)) or 'annonce'}"
-            elif conf.get("sans_date"):
-                date_iso, ident = None, f"{source.id}-{_slug(sec.titre) or 'annonce'}"
-            else:
-                continue
-            corps = "\n".join(lignes[sec.debut + 1:sec.fin]).strip()
-            if not corps:
-                raise FormatInattendu(f"annonce « {sec.titre} » sans contenu")
-            n, unique = 2, ident
-            while unique in vus:  # deux annonces du même jour au titre identique : suffixe stable selon l'ordre de la page
-                unique, n = f"{ident}-{n}", n + 1
-            vus.add(unique)
-            res.append(Element(id=unique, produit=source.produit, titre=f"{_nom(source)} — {sec.titre}", version=None,
-                               date_publication=date_iso, url=base, contenu=corps, source_id=source.id,
-                               officielle=source.officielle))
+    for sec, date_iso, ident in _annonces(secs, source):
+        corps = "\n".join(lignes[sec.debut + 1:sec.fin]).strip()
+        if not corps:
+            raise FormatInattendu(f"annonce « {sec.titre} » sans contenu")
+        n, unique = 2, ident
+        while unique in vus:  # deux annonces du même jour au titre identique : suffixe stable selon l'ordre de la page
+            unique, n = f"{ident}-{n}", n + 1
+        vus.add(unique)
+        res.append(Element(id=unique, produit=source.produit, titre=f"{_nom(source)} — {sec.titre}", version=None,
+                           date_publication=date_iso, url=base, contenu=corps, source_id=source.id,
+                           officielle=source.officielle))
     if not res:
         raise FormatInattendu("aucune annonce ni section suivie trouvée : gabarit changé ?")
     return res
@@ -359,6 +364,15 @@ def analyser(source, client, borne: str | None = None) -> ResultatSource:
         raise FormatInattendu(f"format d'analyse inconnu : {fmt!r}")
     if fmt in ("markdown_date", "annonces_datees") and "<html" in reponse.texte[:500].lower():
         raise FormatInattendu("page HTML reçue alors que du Markdown était attendu")
+    if fmt == "annonces_datees" and source.options.get("echeances"):
+        elements = PARSEURS[fmt](reponse.texte, source)
+        resultat = ResultatSource(elements)
+        try:  # étape 2d : une extraction qui échoue ne prive pas la source de ses annonces, elle est signalée
+            from ..echeances import extraire_retraits
+            resultat.retraits, resultat.retraits_signales = extraire_retraits(reponse.texte, source)
+        except Exception as e:  # noqa: BLE001
+            resultat.partiel = f"échéances : extraction des retraits en échec ({type(e).__name__}: {e})"
+        return resultat
     if fmt == "html_blog_liste":
         elements, plus_ancienne = parser_blog_liste(reponse.texte, source)
         return ResultatSource(elements, plus_ancienne=plus_ancienne)

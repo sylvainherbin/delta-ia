@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pathlib import Path
@@ -68,9 +69,10 @@ def fenetre_amorcage(source: Source, jour: date, depuis: date | None) -> date:
     return depuis or (jour - timedelta(days=int(source.options.get("amorcage_jours", FENETRE_AMORCAGE_SOURCE_JOURS))))
 
 
-def recuperer(sources: list[Source], client: Client, borne: str | None = None
+def recuperer(sources: list[Source], client: Client, borne: str | None = None, retraits: dict | None = None
               ) -> tuple[list[Element], list[Echec], list[str], list[str]]:
-    """Interroge chaque source ; un échec n'arrête pas les autres. Retourne (éléments, échecs, traitées, ignorés)."""
+    """Interroge chaque source ; un échec n'arrête pas les autres. Retourne (éléments, échecs, traitées, ignorés).
+    `retraits` (facultatif, étape 2d) reçoit, par identifiant de source, (source, retraits extraits, signalements)."""
     elements: list[Element] = []
     echecs: list[Echec] = []
     traitees: list[str] = []
@@ -90,6 +92,8 @@ def recuperer(sources: list[Source], client: Client, borne: str | None = None
         if resultat.partiel:
             journal.warning("source %s partielle : %s", s.id, resultat.partiel)
             echecs.append(Echec(s.id, s.url, resultat.partiel, partiel=True))
+        if retraits is not None and resultat.retraits is not None:
+            retraits[s.id] = (s, resultat.retraits, resultat.retraits_signales)
         if s.options.get("suivre_revisions"):
             for e in resultat.elements:
                 e.empreinte = empreinte_contenu(e.contenu)
@@ -127,7 +131,8 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
         journal.info("premier passage sans état : fenêtre limitée à partir du %s", fenetre)
     # D4 : la borne est la date du dernier `--valider`, sinon le début de la fenêtre
     borne = analyser_date(etat.get("maj_le")) or (fenetre.isoformat() if fenetre else None)
-    elements, echecs, traitees, ignores_hist = recuperer(sources, client, borne)
+    retraits_sources: dict = {}
+    elements, echecs, traitees, ignores_hist = recuperer(sources, client, borne, retraits_sources)
     # D30 : une source active sans aucune trace dans l'état reçoit la fenêtre d'amorçage (--depuis, sinon J-7),
     # même si l'état du périmètre existe déjà ; ses éléments plus anciens vont dans `ignores`.
     amorcees: list[str] = []
@@ -153,6 +158,7 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
         ignores = sorted(set(ignores) | {e.id for e in nouveautes if e.source_id in silencieuses})
         nouveautes = [e for e in nouveautes if e.source_id not in silencieuses]
     nouveautes, ignores = regrouper_etat_initial(perimetre, sources, premieres, nouveautes, ignores, reference_silencieuse)
+    nouveautes = echeances_du_jour(retraits_sources, etat, jour, echecs) + nouveautes  # non datées : en tête, comme `detecter` (D3)
     lire_articles(nouveautes, sources, client, echecs)
     vus = etat.get("vus", {})
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
@@ -161,6 +167,25 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     empreintes = {e.id: e.empreinte for e in elements if e.empreinte and (e.id in ignores or e in nouveautes)}
     return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes,
                  ignores_sources, amorcees)
+
+
+_RE_DATE_ECHEANCE = re.compile(r"(\d{4}-\d{2}-\d{2})-j\d+$")
+
+
+def echeances_du_jour(retraits_sources: dict, etat: dict, jour: date, echecs: list[Echec]) -> list[Element]:
+    """Étape 2d : éléments d'échéance des sources qui déclarent `echeances`. Hors de la fenêtre d'amorçage et du regroupement
+    de l'état initial (leur identifiant `echeance-…` est propre à l'échéance, pas à l'annonce) : seul le suivi des identifiants
+    déjà vus (`detecter`, `state/<p>.json`) écarte une échéance déjà signalée. Triées par date de retrait croissante."""
+    from .echeances import produire_echeances
+    produits: list[Element] = []
+    for s, retraits, signales in retraits_sources.values():
+        elements, message = produire_echeances(s, retraits, signales, jour)
+        if message:
+            journal.warning("source %s : %s", s.id, message)
+            echecs.append(Echec(s.id, s.url, message, partiel=True))
+        produits.extend(elements)
+    nouvelles, _ = detecter(produits, etat, None)
+    return sorted(nouvelles, key=lambda e: (_RE_DATE_ECHEANCE.search(e.id).group(1), e.id))
 
 
 def _ligne_page(e: Element) -> str:

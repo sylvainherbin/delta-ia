@@ -110,3 +110,5 @@ class ResultatSource:
     partiel: str | None = None  # message si une partie de la source a échoué (ex. dates indisponibles)
     ignores: list[str] = field(default_factory=list)  # identifiants d'historique à inscrire sans les traiter (D3)
     plus_ancienne: str | None = None  # date la plus ancienne vue par l'analyseur, pour la détection de trou (D4)
+    retraits: list | None = None  # étape 2d : retraits extraits (`deltalib.echeances.Retrait`) si la source déclare `echeances`
+    retraits_signales: list = field(default_factory=list)  # étape 2d : signalements d'extraction (`echeances.Signalement`)
