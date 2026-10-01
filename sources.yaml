@@ -490,17 +490,20 @@ sources:
       modifié ou une date de retrait changée fait revenir l'annonce en révision. Identifiant `<source>-<date>-<titre
       slugifié>`, `<source>-<titre slugifié>` pour une annonce sans date : un titre réécrit crée un nouvel élément.
       Amorçage D30 sur J-7 : les annonces datées plus anciennes (dont les retraits encore à venir) vont dans `ignores` ;
-      option `amorcage_jours: 120` (D30 prend sinon J-7) : au premier passage, les annonces encore ouvertes des 120
-      derniers jours (retraits à venir : GPT-5.4-Cyber le 01/10, transcription, audio, GPT-5 et o3, prompts, évaluations et
-      Agent Builder le 30/11) arrivent, regroupées en UN élément « état initial » (option `etat_initial`, une ligne par
-      annonce) au lieu d'un par annonce ; les annonces plus anciennes vont dans `ignores`. Le préavis, non daté, arrive
-      avec elles. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
+      option `amorcage_jours: 180` (D30 prend sinon J-7) : au premier passage, les annonces des 180 derniers jours
+      arrivent, regroupées en UN élément « état initial » (option `etat_initial`, une ligne par annonce) au lieu d'un par
+      annonce ; les plus anciennes vont dans `ignores`. 180 jours = le préavis maximal de la page (6 mois pour un modèle
+      disponible en général) : une annonce encore ouverte ne peut guère être plus ancienne, et le premier passage réel
+      a lieu à partir du 02/10/2026, quand 120 jours auraient déjà écarté les annonces du 03/06 (prompts réutilisables,
+      évaluations, Agent Builder, retrait le 30/11). Retraits à venir couverts : GPT-5.4-Cyber le 01/10, transcription,
+      audio, GPT-5 et o3, images GPT, et ces trois-là ; quelques retraits déjà passés (05/05, deux du 22/04) y figurent
+      aussi. Le préavis, non daté, arrive avec elles. Format analysé par `annonces_datees`. Gabarit non contractuel : un parent ou une section
       introuvable remonte en `sources_en_echec`. À observer 7 passages réels avant `ok`.
     options:
       format: annonces_datees
       nom: Dépréciations des modèles OpenAI
       suivre_revisions: true
-      amorcage_jours: 120
+      amorcage_jours: 180
       etat_initial: "État initial des dépréciations OpenAI en cours"
       sections:
         - {id: preavis, titre: "^Model deprecation notice periods$"}

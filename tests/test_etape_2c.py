@@ -209,10 +209,10 @@ def test_openai_premier_passage_avec_depuis_regroupe_en_un_element(tmp_path, mon
 
 @pytest.fixture
 def jour_2c(monkeypatch):
-    """Les échantillons datent du 2026-10-01 : le jour du passage est figé là, pas au 23/09 de date_figee."""
+    """Les échantillons datent du 2026-10-01 ; le premier passage réel a lieu au plus tôt le 02/10 : c'est ce jour qui est figé."""
     import deltalib.passage as ps
     from datetime import date
-    monkeypatch.setattr(ps, "aujourd_hui", lambda: date(2026, 10, 1))
+    monkeypatch.setattr(ps, "aujourd_hui", lambda: date(2026, 10, 2))
 
 
 def etat_non_vide(tmp_path):
@@ -224,7 +224,7 @@ def etat_non_vide(tmp_path):
 
 
 def test_option_amorcage_jours_lue_et_defaut_inchange(sources):
-    assert sources["openai-deprecations"].options["amorcage_jours"] == 120
+    assert sources["openai-deprecations"].options["amorcage_jours"] == 180
     assert sources["openai-deprecations"].options["etat_initial"] == TITRE_ETAT_INITIAL
     assert "amorcage_jours" not in sources["anthropic-deprecations"].options and "etat_initial" not in sources["anthropic-deprecations"].options
     assert [s.id for s in sources.values() if "amorcage_jours" in s.options] == ["openai-deprecations"]
@@ -233,11 +233,11 @@ def test_option_amorcage_jours_lue_et_defaut_inchange(sources):
 def test_fenetre_amorcage_defaut_j_moins_7_et_option_et_depuis(sources):
     from datetime import date
     from deltalib.passage import fenetre_amorcage, FENETRE_AMORCAGE_SOURCE_JOURS
-    j = date(2026, 10, 1)
+    j = date(2026, 10, 2)  # premier passage réel au plus tôt
     assert FENETRE_AMORCAGE_SOURCE_JOURS == 7
-    assert fenetre_amorcage(sources["anthropic-deprecations"], j, None) == date(2026, 9, 24), "défaut J-7 inchangé"
-    assert fenetre_amorcage(sources["releasebot-chatgpt"], j, None) == date(2026, 9, 24)
-    assert fenetre_amorcage(sources["openai-deprecations"], j, None) == date(2026, 6, 3), "120 jours"
+    assert fenetre_amorcage(sources["anthropic-deprecations"], j, None) == date(2026, 9, 25), "défaut J-7 inchangé"
+    assert fenetre_amorcage(sources["releasebot-chatgpt"], j, None) == date(2026, 9, 25)
+    assert fenetre_amorcage(sources["openai-deprecations"], j, None) == date(2026, 4, 5), "180 jours"
     assert fenetre_amorcage(sources["openai-deprecations"], j, date(2026, 9, 1)) == date(2026, 9, 1), "--depuis prime"
 
 
@@ -248,11 +248,14 @@ def test_source_nouvelle_avec_amorcage_jours_arrive_en_un_seul_element(tmp_path,
     (etat,) = deprec(brut, "openai-deprecations")
     assert etat["titre"] == TITRE_ETAT_INITIAL and etat["date_publication"] is None and etat["officielle"]
     lignes = [l for l in etat["contenu"].splitlines() if l.startswith("- ")]
-    # annonces ouvertes des 120 derniers jours (03/06 et après) + préavis et mise à jour fine-tuning (non datés)
-    assert len(lignes) == 9 and any("GPT-5.4-Cyber" in l for l in lignes) and any("Agent Builder" in l for l in lignes)
-    assert not any("gpt-5.2-chat-latest" in l for l in lignes), "plus ancien que 120 jours : ignoré"
+    # le 02/10, 180 jours remontent au 05/04 : les trois annonces du 03/06 (retrait le 30/11) et celle du 02/06 y sont encore ;
+    # 8 annonces ouvertes datées + 3 retraits déjà passés (08/05, deux du 22/04) + préavis et mise à jour fine-tuning (non datés)
+    assert len(lignes) == 13 and any("GPT-5.4-Cyber" in l for l in lignes)
+    for sujet in ("Reusable prompts", "Evals platform", "Agent Builder", "GPT Image model deprecations"):
+        assert any(sujet in l for l in lignes), sujet
+    assert not any("Sora 2" in l for l in lignes), "24/03 : plus ancien que 180 jours, ignoré"
     ids = {i for i in brut["ignores"] if i.startswith("openai-deprecations-")}
-    assert ID_CYBER in ids and "openai-deprecations-preavis" in ids and len(ids) > 9, "les annonces plus anciennes vont aussi dans ignores"
+    assert ID_CYBER in ids and "openai-deprecations-preavis" in ids and len(ids) > 13, "les annonces plus anciennes vont aussi dans ignores"
     assert all(brut["empreintes"].get(i) for i in (ID_CYBER, "openai-deprecations-preavis")), "tenues par empreinte, page par page"
     # la source garde son état : valider puis une annonce modifiée revient seule, en révision
     valider(tmp_path, monkeypatch, "openai", brut, "2026-10-01")
@@ -278,10 +281,11 @@ def test_autre_source_nouvelle_garde_la_fenetre_j_moins_7(tmp_path, monkeypatch,
 
 
 def test_premier_passage_du_perimetre_la_source_garde_sa_propre_fenetre(tmp_path, monkeypatch, jour_2c):
-    dossiers(tmp_path)  # état openai vide : fenêtre de 30 jours pour le périmètre, 120 pour openai-deprecations
+    dossiers(tmp_path)  # état openai vide : fenêtre de 30 jours pour le périmètre, 180 pour openai-deprecations
     _, brut = passage(tmp_path, monkeypatch, "openai")
     (etat,) = deprec(brut, "openai-deprecations")
-    assert "GPT-5 and o3 model deprecations" in etat["contenu"], "11/06 : hors des 30 jours du périmètre, dans les 120 de la source"
+    assert "GPT-5 and o3 model deprecations" in etat["contenu"], "11/06 : hors des 30 jours du périmètre, dans les 180 de la source"
+    assert "Agent Builder" in etat["contenu"], "03/06 : retrait le 30/11, encore ouvert le 02/10"
 
 
 # --- étape 2c, décision B : au-delà de 30 ajouts, un décompte par catégorie ---------------------------------------
