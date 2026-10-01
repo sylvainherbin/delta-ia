@@ -139,7 +139,7 @@ Comportement de `fetch.py` :
 Git (D9) :
 - Tant qu'il n'y a pas de dépôt distant (phase 2) : ni pull ni push, commit local seulement.
 - Une fois le distant créé : lancer `/delta` ou le prompt Codex vaut accord de push, sur les seuls chemins de l'agent.
-- En session de développement : push seulement sur accord explicite de Sylvain.
+- En session de développement : push après l'OK du chef Delta-IA (autorisation permanente de Sylvain du 02/10/2026), un seul push, jamais `--force`, après les tests et `valider.py`.
 
 Le passage est **idempotent** : relancer le même jour fusionne avec le fichier existant au lieu de créer un doublon.
 
@@ -293,7 +293,7 @@ Prises par la session Delta-IA (relecteur) par délégation de Sylvain, après r
 | D6 | Vocabulaire : périmètre (`claude` \| `openai` \| `actu`) distinct de produit (`claude` \| `claude-code` \| `chatgpt` \| `codex` \| `actu`) | §3 |
 | D7 | Statuts `ok`, `a_valider` (observation, 7 passages), `desactive`, `bloque` | §5 |
 | D8 | OpenAI News : filtre `Product, Release, ChatGPT, API` inchangé, catégorie `API` en produit `chatgpt` ; chiffres recomptés dans `sources.yaml` | `sources.yaml` |
-| D9 | Git : pas de pull ni push sans distant ; `/delta` ou le prompt Codex vaut accord de push sur les chemins de l'agent ; en développement, push sur accord de Sylvain | §6, `CLAUDE.md`, `AGENTS.md` |
+| D9 | Git : pas de pull ni push sans distant ; `/delta` ou le prompt Codex vaut accord de push sur les chemins de l'agent ; en développement, push après l'OK du chef Delta-IA (autorisation permanente de Sylvain du 02/10/2026) | §6, `CLAUDE.md`, `AGENTS.md` |
 | D10 | Premier passage réel de la phase 2 avec `--depuis` J-7, jamais avant D3 | §6 |
 | D11 | Type `json`, statut `desactive`, champs `officielle` et `options` ajoutés à SPEC.md ; REGLES.md inchangé | §5 |
 | D2bis | `general.json` est le changelog Codex : `codex` par défaut, `chatgpt` seulement si « chatgpt » apparaît sans « codex » | §6 |
