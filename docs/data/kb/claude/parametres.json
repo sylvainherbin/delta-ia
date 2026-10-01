@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-09-30",
+ "maj_le": "2026-10-01",
  "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -29,8 +29,8 @@
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
- "total": 630,
- "commentees": 619,
+ "total": 634,
+ "commentees": 616,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -615,6 +615,48 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-allowedproviders",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "allowedProviders",
+   "gabarit": "court",
+   "description": "Réglage géré qui liste les fournisseurs par lesquels la machine peut joindre Claude (API Anthropic, Amazon Bedrock, passerelle LLM) ; une session sur un fournisseur absent de la liste est refusée au démarrage, à la connexion et au contact suivant de l'API.",
+   "description_source": "List the services a machine may reach Claude through, such as the Anthropic API, Amazon Bedrock, or an LLM gateway. A session on a provider that isn't listed is refused at startup, at login, and when it next contacts the API, so switching to an unlisted provider mid-session is refused too. The refusal message names what selected the provider and the steps to continue. Requires Claude Code v2.1.285 or later.",
+   "usage": "{\n  \"allowedProviders\": [\"anthropic\", \"bedrock\"]\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réglage d'administration pour les organisations multi-fournisseurs ; tu passes par ton abonnement Max sans autre fournisseur, il ne change rien à tes sessions."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#allowedproviders",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Authentication and providers",
+   "maj_le": "2026-10-01",
+   "historique": [
+    {
+     "date": "2026-10-01",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-allowedtools",
@@ -3355,7 +3397,7 @@
    "nom": "BASH_DEFAULT_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai par défaut des commandes Bash longues, 2 minutes.",
-   "description_source": "Default timeout for long-running bash commands (default: 120000, or 2 minutes)",
+   "description_source": "Default timeout for a foreground Bash or PowerShell tool command, in milliseconds (default: 120000, or 2 minutes). A default longer than 30 minutes also becomes the default time limit for background commands. The background time limit requires Claude Code v2.1.285 or later",
    "usage": "BASH_DEFAULT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3372,11 +3414,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3385,6 +3427,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -3439,7 +3485,7 @@
    "nom": "BASH_MAX_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai maximal qu'un modèle peut donner à une commande Bash, 10 minutes par défaut.",
-   "description_source": "Maximum timeout the model can set for long-running bash commands (default: 600000, or 10 minutes). The effective ceiling is the larger of this and BASH_DEFAULT_TIMEOUT_MS",
+   "description_source": "Maximum timeout the model can set for a foreground Bash or PowerShell tool command, in milliseconds (default: 600000, or 10 minutes). The effective ceiling is the larger of this and BASH_DEFAULT_TIMEOUT_MS. An effective ceiling longer than 2 hours also becomes the maximum time limit for background commands. The background time limit requires Claude Code v2.1.285 or later",
    "usage": "BASH_MAX_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3456,11 +3502,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3469,6 +3515,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -6551,6 +6601,48 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-disable-model-access-fallback",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK",
+   "gabarit": "court",
+   "description": "À 1, empêche Claude Code sur Amazon Bedrock et la Google Cloud Agent Platform de basculer vers un modèle plus ancien quand le compte perd l'accès au modèle en cours de session ; la requête refusée échoue aussitôt.",
+   "description_source": "Set to 1 to stop Claude Code on Amazon Bedrock and Google Cloud's Agent Platform from switching to an older model when your account loses access to a session's model mid-session; the refused request fails at once instead. A fallback model chain you configure still switches on that refusal, and the startup model checks still fall back at launch. Requires Claude Code v2.1.285 or later",
+   "usage": "CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Amazon Bedrock, Google Cloud Agent Platform",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ne concerne que Bedrock et Google Cloud, que tu n'utilises pas."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-01",
+   "historique": [
+    {
+     "date": "2026-10-01",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-disable-mouse",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -8520,7 +8612,7 @@
    "nom": "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
    "gabarit": "court",
    "description": "Variable qui fixe le nombre maximal de jetons de sortie de la plupart des requêtes.",
-   "description_source": "Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code defaults to 32000 for model IDs it doesn't recognize, such as gateway-specific names, and lowers values above a model's cap to the cap. Increasing this value reduces the effective context window available before auto-compaction triggers",
+   "description_source": "Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code lowers a value above a model's cap to the cap. For a model ID Claude Code can't resolve to a model it knows, the default is 32000 and the cap is 128000. Increasing this value reduces the effective context window available before auto-compaction triggers",
    "usage": "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8537,11 +8629,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8550,6 +8642,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -10897,6 +10993,48 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-skip-model-access-memory",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY",
+   "gabarit": "court",
+   "description": "À 1, désactive la mémoire locale (jusqu'à un jour) des modèles que le compte ne peut pas appeler, tenue par les vérifications de démarrage sur Amazon Bedrock et la Google Cloud Agent Platform.",
+   "description_source": "The startup model checks on Amazon Bedrock and Google Cloud's Agent Platform remember on this machine which models they found your account can't invoke, for up to a day. Set to 1 to turn that memory off. Requires Claude Code v2.1.285 or later",
+   "usage": "CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Amazon Bedrock, Google Cloud Agent Platform",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ne concerne que Bedrock et Google Cloud, que tu n'utilises pas."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-01",
+   "historique": [
+    {
+     "date": "2026-10-01",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-skip-prompt-history",
@@ -13430,6 +13568,53 @@
     },
     {
      "date": "2026-09-26",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-desktop",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "--desktop",
+   "gabarit": "court",
+   "description": "Ouvre Claude Desktop sur le dossier courant, ou sur une session avec `--continue` ou `--resume <id>`, sans démarrer de session dans le terminal ; réservé à macOS et Windows x64, avec un abonnement Claude, depuis Claude Code 2.1.285.",
+   "description_source": "Open the Claude Desktop app on the current directory and exit without starting a session in the terminal. Add --continue, or --resume with a session ID, to open that session in Desktop instead. --resume here takes only a session ID, not a name or transcript path. Takes no prompt and no other flags except --verbose and the --debug flags, since the app starts the session itself. Available on macOS and x64 Windows when you're signed in with a Claude subscription. Requires Claude Code v2.1.285 or later — claude --desktop",
+   "usage": "--desktop",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "macOS et Windows x64, abonnement Claude",
+   "statut_usage": "non_utilise",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ta machine est sous Linux Mint, plateforme que la documentation n'inclut pas (macOS et Windows x64 seulement) : l'option ne peut pas ouvrir ton Claude Desktop installé en paquet Debian."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/cli-reference",
+     "libelle": "cli-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "pourquoi": "OS Linux Mint 22.1 et Claude Desktop en paquet Debian : hors des plateformes de --desktop."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-cli",
+   "groupe": "CLI flags",
+   "maj_le": "2026-10-01",
+   "historique": [
+    {
+     "date": "2026-10-01",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-01",
      "changement": "commentée"
     }
    ]
@@ -21730,7 +21915,7 @@
    "nom": "--permission-mode",
    "gabarit": "court",
    "description": "Option CLI du mode de permission de départ (`default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`).",
-   "description_source": "Begin in a specified permission mode. Accepts default, acceptEdits, plan, auto, dontAsk, bypassPermissions, or manual as an alias for default. The manual alias selects the permission mode the UI labels Manual and requires Claude Code v2.1.200 or later; claude --help lists it in place of default, and both values work. Overrides defaultMode from settings files. Without this flag or --dangerously-skip-permissions, a new session starts in the permission mode described in which permission mode a session starts in. For -p, that's default when nothing is configured — claude --permission-mode plan",
+   "description_source": "Begin in a specified permission mode. Accepts default, acceptEdits, plan, auto, dontAsk, bypassPermissions, or manual as an alias for default. The manual alias selects the permission mode the UI labels Manual and requires Claude Code v2.1.200 or later; claude --help lists it in place of default, and both values work. Overrides defaultMode from settings files. Without this flag or --dangerously-skip-permissions, a new session starts in the permission mode described in which permission mode a session starts in, which also covers what a -p run starts in — claude --permission-mode plan",
    "usage": "--permission-mode",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21747,11 +21932,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21764,6 +21949,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22657,7 +22846,7 @@
    "nom": "--print",
    "gabarit": "court",
    "description": "Option CLI qui répond sans mode interactif (`claude -p \"requête\"`), base de l'usage programmatique.",
-   "description_source": "Print response without interactive mode (see Agent SDK documentation for programmatic usage details) — claude -p \"query\"",
+   "description_source": "Print response without interactive mode (see Agent SDK documentation for programmatic usage details). For --resume on a background session that is still running, see Resume a session — claude -p \"query\"",
    "usage": "--print, -p",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22674,11 +22863,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22687,6 +22876,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -23509,7 +23702,7 @@
    "nom": "--resume",
    "gabarit": "court",
    "description": "Option CLI qui reprend une session par ID, par nom ou par chemin de transcript `.jsonl`, ou ouvre un sélecteur.",
-   "description_source": "Resume a specific session by ID or name, or show an interactive picker to choose a session. In place of an ID, you can pass the absolute path to a session's .jsonl transcript file. The picker and name search include sessions that added this directory with /add-dir. When you pass a session ID, Claude Code searches the current project directory and its git worktrees, then every other project on this machine. Before v2.1.223, the ID search covered only the current project directory and its git worktrees. Background sessions appear in the picker marked with bg — claude --resume auth-refactor",
+   "description_source": "Resume a specific session by ID or name, or show an interactive picker to choose a session. In place of an ID, you can pass the absolute path to a session's .jsonl transcript file. The picker and name search include sessions that added this directory with /add-dir. When you pass a session ID, Claude Code searches the current project directory and its git worktrees, then every other project on this machine. Before v2.1.223, the ID search covered only the current project directory and its git worktrees. Background sessions appear in the picker marked with bg. Resuming one that is still running opens that session in this terminal through claude attach, and a prompt you pass on the command line goes to it as its next turn. Before v2.1.285, Claude Code refused and printed the claude attach command to run instead — claude --resume auth-refactor",
    "usage": "--resume, -r",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23526,11 +23719,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23543,6 +23736,10 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
@@ -25943,7 +26140,7 @@
    "nom": "spinnerTipsOverride",
    "gabarit": "court",
    "description": "Réglage qui ajoute tes propres astuces à la rotation du spinner, ou remplace celles intégrées.",
-   "description_source": "Add your own tips to the spinner tips that Claude Code shows while Claude works, or replace the built-in tips with yours. Claude Code puts your tips in the same rotation as the built-in ones: it picks the tip that has gone unshown the longest, skips tips still in their cooldown, and breaks ties by priority.",
+   "description_source": "Add your own tips to the spinner tips that Claude Code shows while Claude works, or replace the built-in tips with yours. Claude Code puts your tips in the same rotation as the built-in ones.",
    "usage": "{\n  \"spinnerTipsOverride\": {\n    \"label\": \"Acme tip\",\n    \"tips\": [\n      \"Run /review before opening a PR\",\n      {\n        \"id\": \"gateway-errors\",\n        \"text\": \"Seeing 5xx errors? Check the gateway status page first\",\n        \"cooldownSessions\": 5,\n        \"priority\": 2\n      }\n    ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25960,11 +26157,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25973,6 +26170,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-01",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

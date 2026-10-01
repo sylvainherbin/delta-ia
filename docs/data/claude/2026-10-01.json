@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-01",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-01T05:20:00+00:00",
+  "synthese": "Compte et quotas d'abord : Delta suit désormais dix pages d'aide Claude sur les limites, les remises à zéro (limit resets), les crédits, les bundles et le crédit mensuel Agent SDK ; la page Fable confirme que la promotion « 50 % de la limite hebdomadaire sur Claude Fable 5 sans surcoût » est terminée. Ta semaine Claude est à 62 %, remise à zéro le 04/10 à 16 h UTC : vérifie dans Paramètres > Utilisation si une remise à zéro t'est proposée avant d'en avoir besoin. Claude Code 2.1.286, déjà installée, corrige des pertes de tours au `--resume` de tes sessions tmux et deux pertes de messages Remote Control, et fait lancer automatiquement une skill nommée `verify` avant chaque commit. Sonnet 4.5 est déprécié sur l'API (retrait le 30/11/2026), sans effet sur ton usage. Correction : `claude --desktop`, proposé hier, n'existe que sur macOS et Windows x64, pas sur ta Linux Mint.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "etat-initial-claude-1833029f",
+      "ids_bruts": [
+        "etat-initial-claude-1833029f"
+      ],
+      "produit": "claude",
+      "titre": "Compte et quotas : état initial des pages d'aide Claude suivies",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Première lecture de dix pages d'aide Claude et de l'index llms.txt (58 articles du sujet enregistrés comme référence) :\n- Remise à zéro des limites : accordée de temps en temps aux plans éligibles, elle remet tes limites d'usage à plein quand tu choisis de l'utiliser.\n- Modèles, usage et limites dans Claude Code : quel modèle est utilisé, comment l'usage est compté.\n- Bonnes pratiques des limites d'usage : le nombre de messages dépend du plan.\n- Limites d'usage et de longueur : deux types de limites distincts.\n- Forfait Max : page des plans Max individuels.\n- Modèles Claude Fable sur le forfait : la promotion qui permettait d'utiliser jusqu'à 50 % de la limite hebdomadaire sur Claude Fable 5 sans surcoût est terminée.\n- Crédits d'usage (Pro, Max 5x, Max 20x) : continuer après avoir atteint la limite.\n- Bundles d'usage : crédits prépayés, jusqu'à 30 % moins chers que le tarif standard des crédits d'usage.\n- Claude Code avec un plan Pro ou Max.\n- Agent SDK : les forfaits Claude reçoivent un crédit mensuel Agent SDK, qui couvre l'Agent SDK et la commande `claude -p`.\n- Base de référence (sujet D71, repérée par le mot « subscription ») : fiche `--desktop` ajoutée, réservée aux abonnés Claude sur macOS et Windows x64 ; elle ne s'applique pas à ta Linux Mint, ce qui corrige l'essai `claude --desktop --continue` proposé dans la veille du 30/09.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/17007452-what-is-a-limit-reset#what-is-a-limit-reset",
+          "libelle": "What is a limit reset?",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan#claude-fable-models-on-your-plan",
+          "libelle": "Claude Fable models on your plan",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/14246112-buy-usage-bundles#buy-usage-bundles",
+          "libelle": "Buy usage bundles",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan#use-the-claude-agent-sdk-with-your-claude-plan",
+          "libelle": "Use the Claude Agent SDK with your Claude plan",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code#models-usage-and-limits-in-claude-code",
+          "libelle": "Models, usage, and limits in Claude Code",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan#what-is-the-max-plan",
+          "libelle": "What is the Max plan?",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tu es en Max (5x) et les limites hebdomadaires et Fable sont une de tes frictions récurrentes. Ces pages sont la référence pour trois leviers : la remise à zéro (si une t'est proposée, elle remet ta limite à plein au moment où tu la déclenches), les crédits d'usage et les bundles (payants, pour continuer après la limite), et le crédit mensuel Agent SDK, distinct de ta limite, qui couvre `claude -p`. Point défavorable : la promotion Fable à 50 % de la limite hebdomadaire sans surcoût est finie ; la page ne donne pas la date de fin dans l'extrait lu. Au relevé de ce matin, ta semaine Claude est à 62 % (remise à zéro le 04/10 à 16 h UTC), Fable à 0 %.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Vérifier dans Paramètres > Utilisation de claude.ai si une remise à zéro est disponible et si le crédit Agent SDK apparaît, avant la prochaine mission lourde de trading-sim et au plus tard avant le 04/10.",
+        "etapes": [
+          "Ouvre claude.ai > Paramètres > Utilisation : note si une remise à zéro des limites est proposée, et ne la déclenche que quand ta semaine approche du plafond (elle remet la limite à plein au moment où tu l'utilises).",
+          "Sur la même page, regarde si un crédit mensuel Agent SDK est affiché ; s'il l'est, les appels `claude -p` sont imputés dessus.",
+          "Avant de prévoir une mission Fable sur trading-sim, tiens compte de la fin de la promotion Fable : relis la page « Claude Fable models on your plan » pour les conditions actuelles.",
+          "Dans une session Claude Code, `/usage` montre ce qui compte dans ta limite Max (5x)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-usage",
+        "claude-code-commandes-usage-credits",
+        "claude-code-parametres-desktop"
+      ],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+          "pourquoi": "Demande déclarée : signaler en priorité offres, crédits, promotions et remises à zéro, avec conditions et dates."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
+        },
+        "optimisation.pistes": {
+          "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+          "pourquoi": "Piste 11 : consommation Fable/Opus proche des plafonds hebdomadaires, missions trading-sim avec Opus en conseiller."
+        },
+        "env.machine": {
+          "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+          "pourquoi": "Linux Mint : --desktop (macOS et Windows x64) ne s'applique pas."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.286",
+      "ids_bruts": [
+        "claude-code-2.1.286"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.286",
+      "version": "2.1.286",
+      "date_publication": "2026-09-30",
+      "type": "nouveaute",
+      "resume": "Une skill de projet ou utilisateur nommée `verify` est désormais lancée par Claude juste avant chaque commit (sauf commits de docs ou de tests seuls). Corrections : `claude --resume` et `--continue` pouvaient perdre tous les tours après une salve d'appels d'outils parallèles quand la session précédente avait planté ; un message Remote Control arrivé pendant la fermeture reste en file pour la reprise ; Claude est prévenu quand une pièce jointe Remote Control n'arrive pas ; un modèle refusé par l'API est relancé une fois sur le modèle précédent du même niveau. Changements : `--bare` ne connecte plus que les serveurs MCP nommés en ligne de commande ; une requête API en échec envoie au plus 14 requêtes au total ; l'avis de repli de modèle dit si le contexte passe de 1M à 200K jetons.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21286",
+          "libelle": "Changelog Claude Code 2.1.286",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six sessions tmux démarrent par `claude --resume <id> --remote-control` : la perte de tous les tours après un plantage pendant des appels d'outils parallèles est corrigée, et un message envoyé depuis l'iPhone pendant qu'une session se ferme n'est plus perdu. La nouveauté utile est la skill `verify` : sur carnet, où tu commites très souvent et où `node --test` et `oxlint` ne tournent qu'en local, une skill `verify` ferait lancer les tests par Claude avant chaque commit, sans hook ni CI. C'est aussi un cas concret pour ton module 5 (skill ou hook) : ici c'est Claude qui décide de l'appeler, ce n'est pas un hook.",
+      "projets_concernes": [
+        "carnet"
+      ],
+      "action": {
+        "description": "Créer une skill `verify` dans carnet pour que Claude lance tests et lint avant chaque commit.",
+        "etapes": [
+          "Dans la session herbin-carnet, demande : « Crée `.claude/skills/verify/SKILL.md` : nom `verify`, description \"Lance les tests et le lint de carnet avant un commit\", corps : lancer `node --test` puis `oxlint`, et ne pas commiter si l'un échoue. »",
+          "Pourquoi une skill et pas un hook : Claude Code 2.1.286 dit à Claude de lancer une skill nommée `verify` juste avant de commiter ; Claude la déclenche lui-même, et elle est ignorée pour un commit qui ne touche que la doc ou les tests.",
+          "Pour vérifier : demande ensuite une petite correction dans carnet avec commit ; avant le `git commit`, la session doit invoquer la skill `verify` et afficher le résultat des tests.",
+          "Si ça te gêne pour les commits de données automatiques (« Synchro carnet »), précise dans la description de la skill qu'elle ne s'applique qu'aux commits de code."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-resume",
+        "claude-code-fonctionnalites-page-remote-control",
+        "claude-code-parametres-bare",
+        "claude-code-commandes-skills"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Sessions tmux lancées par claude --resume --remote-control et pilotées depuis l'iPhone."
+        },
+        "projet.carnet": {
+          "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+          "pourquoi": "Tests node --test et lint oxlint locaux, sans CI, commits fréquents : cas d'usage direct d'une skill verify."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-09-30",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-30"
+      ],
+      "produit": "claude",
+      "titre": "Claude Sonnet 4.5 déprécié sur l'API, retrait le 30/11/2026",
+      "version": null,
+      "date_publication": "2026-09-30",
+      "type": "depreciation",
+      "resume": "Anthropic annonce la dépréciation de Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`), avec un retrait de l'API Claude prévu le 30 novembre 2026, et recommande de migrer vers Claude Sonnet 5.5.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702"
+}
