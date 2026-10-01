@@ -5,6 +5,7 @@ Identifiant (D1) : `oa-<id natif>`, commun aux flux general, codex-app et ios, p
 Produit (D2bis, option `produit_par_entree`) : codex par défaut ; chatgpt si « chatgpt » apparaît dans le titre ou
 les sujets sans « codex ».
 Option `format: releasebot` : point `__data.json` d'une page releasebot.io (D25), une entrée par date.
+Option `format: statuspage` : `/api/v2/incidents.json` d'une page d'état (étape 2b), voir `statuspage.py`.
 """
 
 from __future__ import annotations
@@ -140,6 +141,9 @@ def analyser(source, client, borne: str | None = None) -> ResultatSource:
         donnees = json.loads(reponse.texte)
     except ValueError as e:
         raise FormatInattendu(f"JSON invalide ({reponse.content_type or 'type inconnu'}) : {e}") from e
+    if source.options.get("format") == "statuspage":
+        from .statuspage import analyser_json
+        return analyser_json(donnees, source)
     if source.options.get("format") == "releasebot":
         elements, plus_ancienne = parser_releasebot(donnees, source)
         return ResultatSource(elements, plus_ancienne=plus_ancienne)

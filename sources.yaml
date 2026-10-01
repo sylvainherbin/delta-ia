@@ -312,6 +312,50 @@ sources:
       lire_articles: markdown
       amorcage_silencieux: true
 
+  - id: claude-blog
+    perimetre: claude
+    produit: claude
+    type: html
+    url: https://claude.com/blog
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-10-01 : 200, text/html, 805 Ko, identique octet pour octet sur deux lectures successives. Aucun flux
+      (blog/rss.xml, blog/rss, blog/feed, rss.xml : 404 ; aucun <link rel="alternate"> de flux), aucune balise <time> :
+      page Webflow dont la liste `.blog_cms_list` porte, par article, titre, date en toutes lettres, catégorie et lien dans
+      des attributs Finsweet `fs-list-field` (15 articles par page, 17 pages ; seule la première est lue, du 15 au
+      30/09/2026 ; la pagination utilise un hachage Webflow `?d7430fcd_page=2`, non contractuel). Retrouve les billets
+      « Claude Marketplace » (23/09) et « Claude Tag now supports personal connectors in channels » (24/09) : aucun élément
+      publié dans docs/data/claude/ ni docs/data/actu/ (23/09 au 01/10) ne les cite, et aucune URL claude.com/blog n'y figure
+      (recherche du 2026-10-01 ; la newsroom et les notes de version de l'époque n'ont pas été relues). Option `lire_articles: true` (A1) : le texte de chaque nouvel article se lit avec `texte_article`
+      (testé sur ces deux billets : 5 172 et 4 644 caractères). Un changement de gabarit remonte en `sources_en_echec`.
+      Doublon probable avec la newsroom pour les annonces de modèles : la déduplication reste à l'agent.
+    options:
+      format: html_blog_liste
+      lire_articles: true
+
+  - id: anthropic-status
+    perimetre: claude
+    produit: claude
+    type: json
+    url: https://status.anthropic.com/api/v2/incidents.json
+    statut: bloque
+    officielle: true
+    note: >-
+      Testé le 2026-10-01 depuis le conteneur de la session de développement, contenu jamais lu : status.anthropic.com
+      répond 301 vers https://status.claude.com/ (le domaine a changé) ; la connexion à status.claude.com est refusée par la
+      politique d'egress du conteneur (CONNECT 403, `connect_rejected`), pas par le site. Non contourné. À retester depuis
+      la machine de Sylvain avant tout passage à `a_valider` : `history.rss`, `history.atom` et `api/v2/incidents.json`
+      (schéma Statuspage supposé identique à celui de status.openai.com, non vérifié). L'analyseur `format: statuspage` est
+      testé uniquement sur l'échantillon réel d'OpenAI. Si le retest réussit, remplacer l'URL par
+      https://status.claude.com/api/v2/incidents.json et passer le statut à `a_valider`.
+    options:
+      format: statuspage
+      url_publique: https://status.claude.com
+      suivre_revisions: true
+      produits_par_mot:
+        claude-code: ["claude code"]
+
   # ---------------------------------------------------------------- openai
   - id: codex-cli-releases
     perimetre: openai
@@ -436,6 +480,30 @@ sources:
       nom: Nouvel article d'aide
       lire_articles: markdown
       amorcage_silencieux: true
+
+  - id: openai-status
+    perimetre: openai
+    produit: chatgpt
+    type: json
+    url: https://status.openai.com/api/v2/incidents.json
+    statut: a_valider
+    officielle: true
+    note: >-
+      Testé le 2026-10-01 : 200, application/json, 38,6 Ko, 25 incidents du 13/09 au 30/09/2026 (schéma Statuspage :
+      id, name, status, impact, created_at, resolved_at, incident_updates ; pas de `components`). Hypothèse « la page d'état
+      expose un flux machine » confirmée pour OpenAI (incident.io). Repli : https://status.openai.com/history.rss (200,
+      application/rss+xml, 95 Ko, 96 incidents depuis le 07/07/2026, composants affectés dans la description ; `feed.rss`
+      est la même page ; `pubDate` = dernière mise à jour, pas l'ouverture ; liens avec double barre `//incidents/`, qui
+      redirige en 308 vers le lien propre). Date de l'élément = ouverture de l'incident (UTC). Impact lu : `none`, `minor`,
+      `major`, `critical`. Produit déduit du nom de l'incident : `codex` si « codex » y figure, sinon `chatgpt` (une
+      panne d'API sans mention reste en `chatgpt`). Retrouve « Issues with Codex » (25/09, impact `critical`). Bruit à
+      surveiller : 2 à 5 incidents par jour ; un incident revient en révision à chaque mise à jour (`suivre_revisions`).
+    options:
+      format: statuspage
+      url_publique: https://status.openai.com
+      suivre_revisions: true
+      produits_par_mot:
+        codex: [codex]
 
   - id: openai-changelog-ios
     perimetre: openai

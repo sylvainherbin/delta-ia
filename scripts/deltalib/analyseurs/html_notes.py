@@ -5,6 +5,7 @@ Formats (option `format`) :
   titrée par ses intertitres en gras `**Titre**` s'il y en a.
 - `html_date`     : même logique sur une page HTML (<h3> datés, <p><b>Titre</b></p>).
 - `html_time_liens` : chaque <time> dans un <a> : le lien est l'URL et l'identifiant, le titre est l'intertitre.
+- `html_blog_liste` : liste Webflow/Finsweet du blog claude.com (étape 2b) : un élément par article de la première page.
 Le format est détecté d'après la réponse si l'option est absente.
 """
 
@@ -128,6 +129,45 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
     return elements
 
 
+def parser_blog_liste(html: str, source) -> tuple[list[Element], str | None]:
+    """Étape 2b (01/10/2026) : liste des articles de claude.com/blog (Webflow + attributs Finsweet `fs-list-field`).
+    Chaque `.blog_cms_list .blog_cms_item` porte un titre (`heading`), une date en toutes lettres (`date`), une
+    catégorie (`category`) et un lien `fs-list-element="item-link"` : l'URL absolue est l'identifiant (D1), le texte
+    de l'article s'y lit avec l'option `lire_articles`. Seule la première page (15 articles) est lue : la plus
+    ancienne date vue est rendue pour la détection de trou (D4). Liste absente, carte sans titre, sans lien ou sans
+    date reconnaissable : FormatInattendu, jamais une liste vide silencieuse."""
+    soup = BeautifulSoup(html, "html.parser")
+    liste = soup.select_one(".blog_cms_list")
+    if liste is None:
+        raise FormatInattendu("liste `.blog_cms_list` introuvable : gabarit du blog changé ?")
+    cartes = liste.select(".blog_cms_item")
+    if not cartes:
+        raise FormatInattendu("liste du blog sans aucune carte `.blog_cms_item` : gabarit changé ?")
+    elements: list[Element] = []
+    vus: set[str] = set()
+    dates: list[str] = []
+    for c in cartes:
+        titre_el = c.select_one('[fs-list-field="heading"]')
+        lien = c.select_one('a[fs-list-element="item-link"][href]') or c.select_one('a[href^="/blog/"]')
+        date_el = c.select_one('[fs-list-field="date"]')
+        if titre_el is None or not titre_el.get_text(strip=True) or lien is None or date_el is None:
+            raise FormatInattendu("carte du blog sans titre, lien ou date : gabarit changé ?")
+        url = urljoin(source.url, lien["href"])
+        date_iso = analyser_date(date_el.get_text(" ", strip=True))
+        if date_iso is None:
+            raise FormatInattendu(f"date illisible dans la carte {url} : {date_el.get_text(' ', strip=True)!r}")
+        if url in vus:
+            continue
+        vus.add(url)
+        dates.append(date_iso)
+        categories = [x.get_text(" ", strip=True) for x in c.select('[fs-list-field="category"]')]
+        elements.append(Element(id=url, produit=source.produit, titre=titre_el.get_text(" ", strip=True), version=None,
+                                date_publication=date_iso, url=url,
+                                contenu=("Catégorie : " + ", ".join(categories)) if categories else "",
+                                source_id=source.id, officielle=source.officielle))
+    return elements, min(dates)
+
+
 TAILLE_MAX_ARTICLE = 20000  # caractères gardés du texte principal d'un article (le début porte l'essentiel)
 TAILLE_MIN_ARTICLE = 200
 
@@ -247,6 +287,7 @@ PARSEURS = {
     "html_time_liens": parser_html_time_liens,
     "sections_suivies": parser_sections_suivies,
     "index_articles": parser_index_articles,
+    "html_blog_liste": lambda html, source: parser_blog_liste(html, source)[0],
 }
 
 
@@ -259,4 +300,7 @@ def analyser(source, client, borne: str | None = None) -> ResultatSource:
         raise FormatInattendu(f"format d'analyse inconnu : {fmt!r}")
     if fmt == "markdown_date" and "<html" in reponse.texte[:500].lower():
         raise FormatInattendu("page HTML reçue alors que du Markdown était attendu")
+    if fmt == "html_blog_liste":
+        elements, plus_ancienne = parser_blog_liste(reponse.texte, source)
+        return ResultatSource(elements, plus_ancienne=plus_ancienne)
     return ResultatSource(PARSEURS[fmt](reponse.texte, source))
