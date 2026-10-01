@@ -14,13 +14,15 @@ Pour chaque étape, sans aucun LLM :
    groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`) ;
 4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux, aucun `permission_denials` ;
    étape Codex : code 0. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
-   aucun commit local absent de `origin/main`), sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
+   aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
+   inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
+   sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
    jamais un `.git/index.lock` (D21) et ne touche jamais à `raw/` (historique du brut, D72) ;
 5. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
    `rapports/auto/AAAA-MM-JJ-<étape>.log` (jamais l'environnement).
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
-fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude) ; 126 état final non conforme (arbre sale, `.git/index.lock`) ;
+fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude) ; 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
@@ -30,6 +32,7 @@ Aucun appel à `claude` ou `codex` hors de `lancer()` ; les tests y injectent de
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import pwd
@@ -182,6 +185,31 @@ def etat_depot(racine: Path, distant: bool = True) -> dict:
             "en_avance": int(n) if code == 0 and n.isdigit() else None}
 
 
+def empreinte_git(racine: Path) -> dict[str, str]:
+    """Empreinte de l'intégrité de git : {« config » ou « hooks/<chemin> » : sha256 du contenu}. Avec `.git` en écriture pour
+    Codex, un hook ou un réglage ajouté pendant une étape s'exécuterait plus tard hors du bac à sable (git commit de Claude ou
+    de Sylvain). Les noms comptent autant que les contenus : un fichier ajouté ou supprimé change l'empreinte."""
+    code, gitdir = git(racine, "rev-parse", "--absolute-git-dir")
+    if code != 0 or not gitdir:
+        return {"?": "git illisible"}
+    base = Path(gitdir)
+    res: dict[str, str] = {}
+    config = base / "config"
+    res["config"] = hashlib.sha256(config.read_bytes()).hexdigest() if config.is_file() else "absent"
+    hooks = base / "hooks"
+    if hooks.is_dir():
+        for f in sorted(p for p in hooks.rglob("*") if p.is_file() or p.is_symlink()):
+            try:
+                res[f"hooks/{f.relative_to(hooks)}"] = hashlib.sha256(f.read_bytes()).hexdigest()
+            except OSError:
+                res[f"hooks/{f.relative_to(hooks)}"] = "illisible"
+    return res
+
+
+def differences_git(avant: dict[str, str], apres: dict[str, str]) -> list[str]:
+    return sorted(k for k in set(avant) | set(apres) if avant.get(k) != apres.get(k))
+
+
 def arret_propre(racine: Path, etape: Etape) -> list[str]:
     """D68, D70 : remet en place les seuls chemins de l'étape, un par un ; renvoie les commandes jouées (pour le journal)."""
     jouees = []
@@ -294,14 +322,24 @@ def garde(racine: Path, etape: Etape, jour: date, env: dict) -> tuple[int, str]:
         return (r.returncode or 2), f"garde illisible : {r.stderr.strip()[:200]}"
 
 
+def adoptions_en_attente(racine: Path, perimetre: str, entrees: dict) -> int:
+    """D67 : entrées de ce périmètre citées dans la section « Adoptions » de PROGRESSION.md et pas encore passées en `utilise`
+    (équivalent, sans rien écrire, de `catalogue.py adoptions --dry-run`)."""
+    from deltalib.kb import catalogue as cat
+    from deltalib.kb.modeles import PRODUITS_PAR_PERIMETRE
+    miens = [k for k in cat.adoptions(racine) if any(k.startswith(f"{pr}-") for pr in PRODUITS_PAR_PERIMETRE[perimetre])]
+    copie = {k: dict(v) for k, v in entrees.items()}  # appliquer_adoptions modifie ce qu'on lui donne : jamais la base réelle
+    return len(cat.appliquer_adoptions(copie, [k for k in miens if k in copie]))
+
+
 def lots_dus(racine: Path, perimetre: str) -> int:
-    """Nombre d'entrées dues pour une étape kb : lot `perimees` (D64-bis) plus entrées à commenter des lots ordinaires.
-    Limite connue : une adoption déclarée dans PROGRESSION.md sans autre travail dû ne déclenche pas l'étape."""
+    """Nombre d'éléments dus pour une étape kb : adoptions déclarées dans PROGRESSION.md pas encore appliquées (le signal le
+    plus fiable), lot `perimees` (D64-bis) et entrées à commenter des lots ordinaires."""
     sys.path.insert(0, str(racine / "scripts"))
     from deltalib.contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections
     from deltalib.kb import catalogue as cat
     entrees = cat.charger(racine, perimetre)
-    dues = 0
+    dues = adoptions_en_attente(racine, perimetre, entrees)
     if not cat.PERIMEES_SUSPENDU:
         dues += len(cat.perimees_detail(entrees, empreintes_sections(racine), deprecies_contexte(racine), maximum=None))
     dues += sum(l["a_commenter"] for l in cat.lots(entrees, perimetre))
@@ -337,6 +375,7 @@ class Chaine:
         if etape.kb and self.compte_lots(racine, etape.kb) == 0:
             return self._fin(etape, CODE_SANS_LOT, True, False, "aucun lot dû")
         avant = tete_courte(racine)
+        git_avant = empreinte_git(racine)
         res = lancer(etape, racine, env, self.cfg["chaine"]["arret_delai_s"])
         code, detail = evaluer(etape, res)
         jouees: list[str] = []
@@ -355,6 +394,10 @@ class Chaine:
             elif etat["en_avance"]:
                 code, stop = 15, True
                 detail = f"{etat['en_avance']} commit(s) local(aux) non poussé(s) : la chaîne s'arrête, rien n'est poussé"
+        modifies = differences_git(git_avant, empreinte_git(racine))
+        if modifies:  # priorité sur tout autre motif : l'intégrité de git ne se rétablit pas automatiquement
+            code, stop = CODE_ETAT, True
+            detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
         if code != 0 and not stop and not etape.supervision:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)
         ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees)

@@ -66,6 +66,14 @@ elif mode == "dort":
 elif mode == "enfant-en-fond":
     subprocess.Popen([sys.executable, "-c", "import time; time.sleep(3); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
     claude_ok()
+elif mode == "ajoute-hook":
+    ecrire(".git/hooks/pre-commit", "#!/bin/sh\necho piégé\n"); claude_ok()
+elif mode == "modifie-config":
+    open(".git/config", "a").write("[alias]\n\tci = !echo piégé\n"); claude_ok()
+elif mode == "modifie-hook":
+    open(".git/hooks/pre-push", "a").write("echo piégé\n"); claude_ok()
+elif mode == "supprime-hook":
+    os.remove(".git/hooks/pre-push"); claude_ok()
 elif mode == "supervision":
     ecrire("rapports/supervision-lancee.txt", "oui\n"); claude_ok()
 elif mode == "env":
@@ -233,6 +241,96 @@ def test_enfant_en_arriere_plan_apres_une_etape_reussie_est_tue(depot, cfg, tmp_
 def test_binaire_introuvable_est_une_erreur_explicite(depot, cfg):
     e = orc.Etape(nom="delta", agent="claude", commande=["/nulle/part/claude", "-p", "x"], delai_s=5, garde="delta")
     assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)["delta"] == orc.CODE_BINAIRE
+
+
+# --- intégrité de git : hooks et config (Codex a .git en écriture) ----------------------------------------------
+
+def chaine_deux_etapes_puis_supervision(depot, cfg, mode):
+    etapes = [etape(depot, "delta", mode), etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    return chaine(depot, cfg, etapes).executer()
+
+
+@pytest.mark.parametrize("mode, fichier", [("ajoute-hook", "hooks/pre-commit"), ("modifie-config", "config"),
+                                           ("modifie-hook", "hooks/pre-push"), ("supprime-hook", "hooks/pre-push")])
+def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fichier):
+    (depot / ".git" / "hooks").mkdir(exist_ok=True)
+    if mode in ("modifie-hook", "supprime-hook"):
+        (depot / ".git" / "hooks" / "pre-push").write_text("#!/bin/sh\n")  # hook préexistant
+    assert chaine_deux_etapes_puis_supervision(depot, cfg, mode) == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT == 126
+    assert codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE, "la chaîne s'arrête"
+    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+    assert "hooks ou config git modifiés" in log and fichier in log and "rien n'est rétabli" in log
+    if mode == "ajoute-hook":
+        assert (depot / ".git" / "hooks" / "pre-commit").exists(), "l'orchestrateur ne supprime ni ne rétablit rien"
+
+
+def test_hooks_et_config_inchanges_ne_changent_rien(depot, cfg):
+    (depot / ".git" / "hooks").mkdir(exist_ok=True)
+    (depot / ".git" / "hooks" / "pre-push").write_text("#!/bin/sh\n")
+    assert chaine_deux_etapes_puis_supervision(depot, cfg, "ok-sans-commit") == 0
+    assert codes(depot)["delta"] == 0 and codes(depot)["codex-delta"] == 0
+
+
+def test_empreinte_git_noms_et_contenus(depot):
+    (depot / ".git" / "hooks").mkdir(exist_ok=True)
+    base = orc.empreinte_git(depot)
+    assert "config" in base and orc.empreinte_git(depot) == base
+    (depot / ".git" / "hooks" / "post-commit").write_text("a")
+    ajout = orc.empreinte_git(depot)
+    assert orc.differences_git(base, ajout) == ["hooks/post-commit"]
+    (depot / ".git" / "hooks" / "post-commit").write_text("b")
+    assert orc.differences_git(ajout, orc.empreinte_git(depot)) == ["hooks/post-commit"], "le contenu compte, pas seulement le nom"
+    (depot / ".git" / "hooks" / "sous").mkdir()
+    (depot / ".git" / "hooks" / "sous" / "x").write_text("c")
+    assert "hooks/sous/x" in orc.empreinte_git(depot), "sous-dossiers compris"
+    # un fichier suivi ou non suivi du dépôt n'entre pas dans l'empreinte
+    (depot / "notes.txt").write_text("autre")
+    assert "notes.txt" not in orc.empreinte_git(depot)
+
+
+def test_supervision_est_prevenue_du_code_126_git():
+    t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "hooks ou config git modifiés" in t and ".git/hooks/" in t and ".git/config" in t
+
+
+# --- adoptions déclarées : comptées parmi les lots dus ---------------------------------------------------------
+
+def base_kb(racine, statut):
+    d = racine / "docs" / "data" / "kb" / "claude"
+    d.mkdir(parents=True, exist_ok=True)
+    entree = {"id": "claude-code-commandes-foo", "categorie": "commandes", "nom": "/foo", "commentee": True, "retiree": False,
+              "statut_usage": statut, "historique": []}
+    (d / "commandes.json").write_text(json.dumps({"perimetre": "claude", "categorie": "commandes", "entrees": [entree]}), encoding="utf-8")
+
+
+def progression(racine, ids):
+    lignes = "\n".join(f"| `{i}` | note |" for i in ids)
+    (racine / "PROGRESSION.md").write_text(f"# Progression\n\n## Adoptions\n\n| Id de l'entrée | Note |\n|---|---|\n{lignes}\n\n## Autre\n", encoding="utf-8")
+
+
+def test_adoption_declaree_en_attente_compte_comme_lot_du(tmp_path):
+    base_kb(tmp_path, "inconnu")
+    assert orc.lots_dus(tmp_path, "claude") == 0, "rien n'est dû sans adoption déclarée"
+    progression(tmp_path, ["claude-code-commandes-foo"])
+    assert orc.lots_dus(tmp_path, "claude") == 1, "adoption déclarée, pas encore appliquée : l'étape kb doit partir"
+    assert orc.adoptions_en_attente(tmp_path, "openai", {}) == 0, "une adoption d'un autre périmètre ne compte pas"
+
+
+def test_adoption_deja_appliquee_ou_id_inconnu_ne_compte_pas(tmp_path):
+    base_kb(tmp_path, "utilise")
+    progression(tmp_path, ["claude-code-commandes-foo", "claude-code-commandes-inexistante"])
+    assert orc.lots_dus(tmp_path, "claude") == 0
+
+
+def test_lots_dus_ne_modifie_jamais_la_base(tmp_path):
+    base_kb(tmp_path, "inconnu")
+    progression(tmp_path, ["claude-code-commandes-foo"])
+    avant = (tmp_path / "docs/data/kb/claude/commandes.json").read_bytes()
+    orc.lots_dus(tmp_path, "claude")
+    assert (tmp_path / "docs/data/kb/claude/commandes.json").read_bytes() == avant
 
 
 # --- critères de succès d'une étape Claude ---------------------------------------------------------------------
