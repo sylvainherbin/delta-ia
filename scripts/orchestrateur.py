@@ -12,8 +12,12 @@ Pour chaque étape, sans aucun LLM :
 2. étapes kb : sautées (code 129) quand aucun lot n'est dû ;
 3. lancement dans son propre groupe de processus, sous délai maximal ; dépassement ou échec : SIGTERM puis SIGKILL sur tout le
    groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`) ;
-4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux, aucun `permission_denials` ;
-   étape Codex : code 0. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
+4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Un refus de
+   permission (`permission_denials` non vide) est fatal (code 125) SAUF si tout le reste est conforme : le résultat est
+   `success`, l'état final est propre (126), et chaque commit attendu de l'étape (`commits_attendus`, sujets de la
+   configuration) figure dans `git log` depuis le début de l'étape avec `origin/main` qui les contient. Le refus devient alors
+   un avertissement (ligne `<étape>-refus`, code 125) : une étape qui s'arrête proprement après un refus (aucun commit) reste
+   un échec ; Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
    inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
@@ -22,7 +26,8 @@ Pour chaque étape, sans aucun LLM :
    `rapports/auto/AAAA-MM-JJ-<étape>.log` (jamais l'environnement).
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
-fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude) ; 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
+fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 125 est un avertissement (refus non
+fatal, étape réussie avec ses commits poussés) ; 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
@@ -63,6 +68,7 @@ class Etape:
     commande: list[str]             # complète ; construite par construire_etapes, ou fausse dans les tests
     delai_s: float
     garde: str | None = None        # valeur de `garde.py --etape` ; None : pas de garde (supervision)
+    commits_attendus: list[str] = field(default_factory=list)  # débuts de sujets de commit que l'étape doit produire (refus non fatal)
     kb: str | None = None           # périmètre kb : étape sautée quand aucun lot n'est dû
     supervision: bool = False
     checkout: list[str] = field(default_factory=list)
@@ -157,6 +163,7 @@ def construire_etapes(cfg: dict, racine: Path = RACINE) -> list[Etape]:
         cmd = commande_claude(cfg, e, racine, prompt) if e["agent"] == "claude" else commande_codex(cfg, e, racine, prompt)
         etapes.append(Etape(nom=nom, agent=e["agent"], commande=cmd, delai_s=e["delai_min"] * 60, garde=e.get("garde"),
                             kb=e.get("kb"), supervision=bool(e.get("supervision")), checkout=list(e.get("checkout", [])),
+                            commits_attendus=list(e.get("commits_attendus", [])),
                             clean=list(e.get("clean", []))))
     return etapes
 
@@ -172,6 +179,12 @@ def git(racine: Path, *args: str, env: dict | None = None) -> tuple[int, str]:
 def tete_courte(racine: Path) -> str:
     code, sortie = git(racine, "rev-parse", "--short", "HEAD")
     return sortie if code == 0 and sortie else "aucun"
+
+
+def sujets_depuis(racine: Path, depuis: str) -> list[str]:
+    """Sujets des commits ajoutés à HEAD depuis `depuis` (un `git pull --rebase` de l'étape peut y mêler des commits d'autrui)."""
+    code, sortie = git(racine, "log", "--format=%s", f"{depuis}..HEAD")
+    return sortie.splitlines() if code == 0 and sortie else []
 
 
 def etat_depot(racine: Path, distant: bool = True) -> dict:
@@ -265,17 +278,23 @@ def lancer(etape: Etape, racine: Path, env: dict, delai_arret_s: float = 10.0) -
                     (datetime.now() - debut).total_seconds())
 
 
+def refus_permission(res: Resultat) -> list[str]:
+    """Commandes ou fichiers dont la permission a été refusée (`permission_denials` du JSON de Claude), vide si rien ou illisible."""
+    try:
+        refus = json.loads(res.stdout).get("permission_denials") or []
+    except (ValueError, AttributeError):
+        return []
+    return [str((r.get("tool_input") or {}).get("command") or (r.get("tool_input") or {}).get("file_path") or r.get("tool_name"))[:160]
+            for r in refus if isinstance(r, dict)]
+
+
 def evaluer_claude(res: Resultat) -> tuple[int, str]:
-    """(code, détail) : 0 seulement si exit 0, JSON lisible, subtype success, is_error faux, aucun refus de permission."""
+    """(code, détail) : 0 seulement si exit 0, JSON lisible, subtype success, is_error faux. Les refus de permission se jugent
+    à part (`refus_permission`, voir `Chaine.executer_etape`) : fatals sauf étape complète avec ses commits poussés."""
     try:
         d = json.loads(res.stdout)
     except ValueError:
         return (res.code if res.code else 1), "sortie Claude illisible (JSON attendu)"
-    refus = d.get("permission_denials") or []
-    if refus:
-        cmds = [str((r.get("tool_input") or {}).get("command") or (r.get("tool_input") or {}).get("file_path") or r.get("tool_name"))
-                for r in refus if isinstance(r, dict)]
-        return CODE_PERMISSION, f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(c[:120] for c in cmds[:5])
     if res.code != 0:
         return res.code, f"code de sortie {res.code}"
     if d.get("is_error") or d.get("subtype") != "success":
@@ -378,6 +397,10 @@ class Chaine:
         git_avant = empreinte_git(racine)
         res = lancer(etape, racine, env, self.cfg["chaine"]["arret_delai_s"])
         code, detail = evaluer(etape, res)
+        refus = refus_permission(res) if etape.agent == "claude" else []
+        if refus and code != 0:  # étape déjà en échec : le refus s'ajoute à la cause, il reste fatal
+            detail = f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(refus[:5]) + f" ; {detail}"
+            code = CODE_PERMISSION
         jouees: list[str] = []
         etat = etat_depot(racine, self.distant)
         stop = False
@@ -394,6 +417,20 @@ class Chaine:
             elif etat["en_avance"]:
                 code, stop = 15, True
                 detail = f"{etat['en_avance']} commit(s) local(aux) non poussé(s) : la chaîne s'arrête, rien n'est poussé"
+        avertissement = None
+        if refus and code == 0 and not stop:  # étape réussie avec des refus : fatal sauf commits attendus produits et poussés
+            sujets = sujets_depuis(racine, avant)
+            manquants = [p for p in etape.commits_attendus if not any(x.startswith(p) for x in sujets)]
+            if not etape.commits_attendus or manquants or etat["en_avance"] != 0:
+                cause = ("aucun commit attendu déclaré pour cette étape" if not etape.commits_attendus else
+                         f"commit(s) attendu(s) absent(s) : {', '.join(manquants)}" if manquants else
+                         "commits non poussés ou origin/main illisible")
+                code = CODE_PERMISSION
+                detail = (f"{len(refus)} permission(s) refusée(s) et l'étape n'a pas produit son résultat ({cause}) : "
+                          + " ; ".join(refus[:5]))
+            else:
+                avertissement = f"{len(refus)} permission(s) refusée(s), non fatale(s) : " + " ; ".join(refus[:5])
+                detail = "ok avec avertissement : " + avertissement
         modifies = differences_git(git_avant, empreinte_git(racine))
         if modifies:  # priorité sur tout autre motif : l'intégrité de git ne se rétablit pas automatiquement
             code, stop = CODE_ETAT, True
@@ -402,7 +439,10 @@ class Chaine:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)
         ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees)
         apres = tete_courte(racine)
-        return self._fin(etape, code, code == 0, stop, detail, apres if apres != avant else "aucun")
+        issue = self._fin(etape, code, code == 0, stop, detail, apres if apres != avant else "aucun")
+        if avertissement and code == 0:  # avertissement journalisé : la supervision le relève, la chaîne continue
+            journaliser(racine, f"{etape.nom}-refus", "aucun", CODE_PERMISSION)
+        return issue
 
     def executer(self) -> int:
         arret_par: str | None = None

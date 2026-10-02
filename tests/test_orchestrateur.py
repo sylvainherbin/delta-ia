@@ -30,12 +30,14 @@ def ecrire(chemin, texte):
     os.makedirs(os.path.dirname(chemin) or ".", exist_ok=True)
     open(chemin, "w").write(texte)
 
+REFUS = {"tool_name": "Bash", "tool_use_id": "t1", "tool_input": {"command": "for l in 1 2; do sed -n \"$l p\" f; done"}}
+
 def claude_ok(denials=()):
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "permission_denials": list(denials), "result": "ok"}))
 
-def passage(dossier, fichier, pousser=True):
+def passage(dossier, fichier, pousser=True, sujet=None):
     ecrire(f"{dossier}/{fichier}", f"{fichier}\n")
-    git("add", dossier); git("commit", "-qm", f"delta: {fichier}")
+    git("add", dossier); git("commit", "-qm", sujet or f"delta: {fichier}")
     if pousser:
         git("push", "-q", "origin", "HEAD:refs/heads/main")
 
@@ -56,6 +58,17 @@ elif mode == "non-pousse":
     passage(sys.argv[2], sys.argv[3], pousser=False); claude_ok()
 elif mode == "refus":
     claude_ok([{"tool_name": "Bash", "tool_use_id": "t1", "tool_input": {"command": "ls /etc | head -3"}}])
+elif mode == "refus-commit":   # refus de permission, mais l'étape a produit et poussé son commit attendu
+    passage(sys.argv[2], sys.argv[3], sujet="delta(claude): 2026-10-02 — 1 éléments (0 fort)"); claude_ok([REFUS])
+elif mode == "refus-mauvais-sujet":
+    passage(sys.argv[2], sys.argv[3], sujet="autre chose"); claude_ok([REFUS])
+elif mode == "refus-non-pousse":
+    passage(sys.argv[2], sys.argv[3], pousser=False, sujet="delta(claude): 2026-10-02 — 1 éléments (0 fort)"); claude_ok([REFUS])
+elif mode == "refus-sale":
+    passage(sys.argv[2], sys.argv[3], sujet="delta(claude): 2026-10-02 — 1 éléments (0 fort)")
+    ecrire("notes.txt", "touché hors périmètre\n"); claude_ok([REFUS])
+elif mode == "refus-echec":
+    print(json.dumps({"type": "result", "subtype": "error_max_turns", "is_error": False, "permission_denials": [REFUS]}))
 elif mode == "pas-json":
     print("ceci n'est pas du JSON")
 elif mode == "verrou-git":
@@ -125,9 +138,10 @@ def cfg(tmp_path):
     return c
 
 
-def etape(depot, nom, mode, *args, agent="claude", delai=20, garde="delta", kb=None, supervision=False, checkout=(), clean=()):
+def etape(depot, nom, mode, *args, agent="claude", delai=20, garde="delta", kb=None, supervision=False, checkout=(), clean=(), attendus=()):
     return orc.Etape(nom=nom, agent=agent, commande=[sys.executable, str(depot.faux), mode, *args], delai_s=delai,
-                     garde=None if supervision else garde, kb=kb, supervision=supervision, checkout=list(checkout), clean=list(clean))
+                     garde=None if supervision else garde, kb=kb, supervision=supervision, checkout=list(checkout), clean=list(clean),
+                     commits_attendus=list(attendus))
 
 
 def chaine(depot, cfg, etapes, **kw):
@@ -335,10 +349,70 @@ def test_lots_dus_ne_modifie_jamais_la_base(tmp_path):
 
 # --- critères de succès d'une étape Claude ---------------------------------------------------------------------
 
-def test_permission_refusee_fait_echouer_l_etape(depot, cfg):
-    assert chaine(depot, cfg, [etape(depot, "delta", "refus")]).executer() == 1
-    assert codes(depot)["delta"] == orc.CODE_PERMISSION
+ATTENDUS = ("delta(claude):",)
+
+
+def test_refus_sans_commit_reste_fatal_code_125(depot, cfg):
+    """Le cas du 04:02 : après un refus, la skill s'arrête proprement ; subtype success ne suffit pas, rien n'a été produit."""
+    assert chaine(depot, cfg, [etape(depot, "delta", "refus", attendus=ATTENDUS)]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_PERMISSION == 125
     assert "ls /etc" in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+    assert "l'étape n'a pas produit son résultat" in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+
+
+def test_refus_avec_commit_attendu_pousse_est_un_avertissement(depot, cfg):
+    e = etape(depot, "delta", "refus-commit", "docs/data/claude", "a.json", attendus=ATTENDUS)
+    assert chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)]).executer() == 0
+    assert codes(depot) == {"delta": 0, "delta-refus": 125, "supervision": 0, "chaine": 0}, "ligne d'avertissement, chaîne sans échec"
+    lignes = {l[2]: l for l in journal(depot)}
+    assert lignes["delta"][4] != "aucun" and lignes["delta-refus"][4] == "aucun"
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+    assert "ok avec avertissement : 1 permission(s) refusée(s), non fatale(s)" in log and "sed -n" in log
+    assert ahead(depot) == 0 and (depot / "docs/data/claude/a.json").exists()
+
+
+def test_refus_avec_commit_d_un_autre_sujet_reste_fatal(depot, cfg):
+    """Un commit d'autrui (un pull de l'étape) ou un mauvais sujet ne vaut pas résultat de l'étape."""
+    e = etape(depot, "delta", "refus-mauvais-sujet", "docs/data/claude", "a.json", attendus=ATTENDUS)
+    assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)["delta"] == 125
+    assert "commit(s) attendu(s) absent(s) : delta(claude):" in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+
+
+def test_refus_sans_commit_attendu_declare_reste_fatal(depot, cfg):
+    e = etape(depot, "delta", "refus-commit", "docs/data/claude", "a.json")  # aucun commits_attendus
+    assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)["delta"] == 125
+
+
+def test_refus_avec_arbre_sale_donne_126_pas_un_avertissement(depot, cfg):
+    e = etape(depot, "delta", "refus-sale", "docs/data/claude", "a.json", attendus=ATTENDUS, checkout=["docs/data/claude"])
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT and "delta-refus" not in codes(depot)
+
+
+def test_refus_avec_commit_non_pousse_donne_15(depot, cfg):
+    e = etape(depot, "delta", "refus-non-pousse", "docs/data/claude", "a.json", attendus=ATTENDUS)
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot)["delta"] == 15 and "delta-refus" not in codes(depot)
+
+
+def test_refus_et_resultat_en_erreur_reste_fatal_125(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "refus-echec", attendus=ATTENDUS)]).executer() == 1
+    assert codes(depot)["delta"] == 125
+    assert "permission(s) refusée(s)" in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
+
+
+def test_la_chaine_continue_apres_un_avertissement_de_refus(depot, cfg):
+    etapes = [etape(depot, "delta", "refus-commit", "docs/data/claude", "a.json", attendus=ATTENDUS),
+              etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")]
+    assert chaine(depot, cfg, etapes).executer() == 0
+    assert codes(depot)["codex-delta"] == 0 and (depot / "docs/data/openai/b.json").exists()
+
+
+def test_refus_permission_lit_les_commandes_et_les_fichiers():
+    j = json.dumps({"permission_denials": [{"tool_name": "Bash", "tool_input": {"command": "ls /etc"}},
+                                           {"tool_name": "Write", "tool_input": {"file_path": "raw/x.json"}}]})
+    assert orc.refus_permission(orc.Resultat(0, j, "", False, 1)) == ["ls /etc", "raw/x.json"]
+    assert orc.refus_permission(orc.Resultat(0, "pas du json", "", False, 1)) == []
 
 
 def test_sortie_claude_illisible_fait_echouer_l_etape(depot, cfg):
@@ -587,7 +661,7 @@ def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
 def test_passage_auto_option_liste_n_appelle_rien(depot_sh):
     r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
                        capture_output=True, text=True)
-    assert r.returncode == 0 and r.stdout.count("\n") == 2 and "supervision" in r.stdout, "palier 1 : /delta et la supervision"
+    assert r.returncode == 0 and r.stdout.count("\n") == 5 and "supervision" in r.stdout, "paliers 2 et 3 : quatre étapes et la supervision"
     assert r.stdout.startswith("delta (délai 1 min)")  # la configuration de test raccourcit les délais
 
 
@@ -603,9 +677,10 @@ def noms(cfg_modif=None, option=None):
     return [e.nom for e in orc.etapes_a_lancer(cfg, orc.construire_etapes(cfg, RACINE), option)]
 
 
-def test_palier_1_nuit_de_reception_est_la_configuration_livree():
-    assert orc.charger_config()["chaine"]["etapes_actives"] == ["delta"]
-    assert noms() == ["delta", "supervision"]
+def test_paliers_2_et_3_actives_d_un_coup_le_02_10():
+    assert orc.charger_config()["chaine"]["etapes_actives"] == ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]
+    assert noms() == TOUTES
+    assert noms(["delta"]) == ["delta", "supervision"], "le palier 1 reste un retour arrière d'une ligne"
 
 
 def test_paliers_2_et_3_sans_toucher_au_code():
@@ -638,7 +713,8 @@ def test_etape_inconnue_ou_supervision_dans_la_liste_est_refusee():
 
 
 def test_orchestrateur_refuse_une_configuration_incorrecte_code_2(depot_sh):
-    toml = depot_sh.toml.read_text().replace('etapes_actives = ["delta"]', 'etapes_actives = ["delta", "nimporte"]')
+    toml = depot_sh.toml.read_text().replace('etapes_actives = ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]', 'etapes_actives = ["delta", "nimporte"]')
+    assert "nimporte" in toml
     depot_sh.toml.write_text(toml)
     r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
                        capture_output=True, text=True)
@@ -648,7 +724,7 @@ def test_orchestrateur_refuse_une_configuration_incorrecte_code_2(depot_sh):
 def test_le_fichier_documente_les_trois_paliers():
     t = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
     for attendu in ("palier 1, nuit de réception", "palier 2, jours 1 et 2", "palier 3, après deux jours propres",
-                    'etapes_actives = ["delta"]', "sans toucher au code", "TOUJOURS en dernier"):
+                    'etapes_actives = ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]', "sans toucher au code", "TOUJOURS en dernier"):
         assert attendu in t, attendu
 
 
@@ -663,3 +739,42 @@ def test_timer_a_04h00_et_fenetre_sans_commit_documentee():
 def test_supervision_connait_les_etapes_actives():
     t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
     assert "`etapes_actives` de `scripts/orchestrateur.toml`" in t and "une étape inactive n'a aucune ligne" in t
+
+
+# --- correctif du refus de 04:02 (02/10/2026) -----------------------------------------------------------------------
+
+def test_commits_attendus_declares_par_etape():
+    e = {x.nom: x for x in orc.construire_etapes(orc.charger_config(), RACINE)}
+    assert e["delta"].commits_attendus == ["delta(claude):", "delta(actu):"]
+    assert e["codex-delta"].commits_attendus == ["delta(openai):"]
+    assert e["delta-kb"].commits_attendus == ["delta-kb(claude):"] and e["codex-delta-kb"].commits_attendus == ["delta-kb(openai):"]
+    assert e["supervision"].commits_attendus == []
+
+
+def test_settings_projet_lectures_git_sans_sed_ni_git_diff():
+    s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
+    for r in ("Bash(git log *)", "Bash(git show *)", "Bash(git status)", "Bash(git status --short)"):
+        assert r in s["allow"], r
+    assert "Bash(git * --output*)" in s["deny"], "git log et git show acceptent --output=fichier"
+    assert not any(r.startswith("Bash(sed") or "sed -n" in r for r in s["allow"]), "pas de sed : sed -n -i et sed -n 'w f' écrivent"
+    assert not any(r.startswith("Bash(git diff") for r in s["allow"]), "git diff accepte --output="
+
+
+@pytest.mark.parametrize("fichier", [".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md",
+                                     ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md"])
+def test_skills_reprennent_un_refus_de_lecture_au_lieu_d_arreter(fichier):
+    t = (RACINE / fichier).read_text(encoding="utf-8")
+    assert "Un refus de lecture ne tue pas le passage" in t and "UNE fois" in t
+    assert "deuxième refus pour le même besoin" in t and "en écriture" in t
+    assert "outil refusé" in t or "commande refusée" in t
+
+
+def test_skills_claude_lisent_la_base_avec_read():
+    for f in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "`Read` avec `offset` et `limit`" in t and "jamais de boucle shell" in t, f
+
+
+def test_supervision_sait_lire_la_ligne_refus():
+    t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "<étape>-refus" in t and "AVERTISSEMENT" in t and "125 permission refusée, fatale" in t
