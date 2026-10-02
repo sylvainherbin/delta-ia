@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-01",
+ "maj_le": "2026-10-02",
  "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -29,8 +29,8 @@
   "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
  },
  "contexte_deprecies": [],
- "total": 634,
- "commentees": 616,
+ "total": 638,
+ "commentees": 611,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -2385,6 +2385,53 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-appendplugins",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "appendPlugins",
+   "gabarit": "court",
+   "description": "Clé de réglages qui liste les plugins gérés dont les mods passent après tous ceux que l'utilisateur installe ; un id présent aussi dans `prependPlugins` passe en tête.",
+   "description_source": "List the managed plugins whose mods run after every mod a user installs, in the listed order. An id listed in both prependPlugins and appendPlugins is prepended. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's.",
+   "usage": "{\n  \"extraKnownMarketplaces\": {\n    \"acme-tools\": {\n      \"source\": { \"source\": \"directory\", \"path\": \"/opt/acme/claude-plugins\" }\n    }\n  },\n  \"enabledPlugins\": { \"acme-audit@acme-tools\": true },\n  \"appendPlugins\": [\"acme-audit@acme-tools\"]\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Pendant de `prependPlugins` pour les administrateurs ; sans plugin propre ni réglages gérés, il ne change rien chez toi."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#appendplugins",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "pourquoi": "Aucun plugin propre, frontend-design seul en essai non adopté : pas de mods gérés à ordonner."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Plugins and skills",
+   "maj_le": "2026-10-02",
+   "historique": [
+    {
+     "date": "2026-10-02",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-askuserquestiontimeout",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -4300,7 +4347,7 @@
    "nom": "CLAUDE_AX_PREPARK_MS",
    "gabarit": "court",
    "description": "Variable qui règle, en mode lecteur d'écran, l'attente avant l'écriture d'une ligne.",
-   "description_source": "In screen reader mode, how many milliseconds Claude Code waits, with the cursor at the start of the line, before it writes a new or changed line. Default 50. Set 0 to write immediately. Claude Code caps the wait at 5000. Requires Claude Code v2.1.233 or later",
+   "description_source": "In screen reader mode, how many milliseconds Claude Code waits before it writes a new or changed line. Default 0, so Claude Code doesn't wait. Before v2.1.287, the default was 50. Claude Code caps the wait at 5000. Requires Claude Code v2.1.233 or later",
    "usage": "CLAUDE_AX_PREPARK_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4317,11 +4364,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4330,6 +4377,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -5924,6 +5975,53 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-disable-auth-refresh-lock",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui, à 1, fait lancer à chaque processus Claude Code sa propre commande `gcpAuthRefresh` ou `awsAuthRefresh` au lieu d'attendre qu'un autre la termine (Claude Code 2.1.286 ou plus).",
+   "description_source": "Set to 1 to make a Claude Code process run its gcpAuthRefresh or awsAuthRefresh command itself instead of waiting while another process runs it. Requires Claude Code v2.1.286 or later",
+   "usage": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ne sert qu'avec une authentification Google Cloud ou AWS (Vertex, Bedrock) ; tu passes par ton abonnement Max."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
+     "pourquoi": "Abonnement Claude Max (5x), pas d'accès par Vertex ni Bedrock décrit."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-02",
+   "historique": [
+    {
+     "date": "2026-10-02",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-disable-auto-memory",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -7252,6 +7350,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-web-fetch",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_WEB_FETCH",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui, à 1, désactive l'outil WebFetch tout en laissant WebSearch disponible (Claude Code 2.1.285 ou plus).",
+   "description_source": "Set to 1 to turn off the WebFetch tool. The WebSearch tool stays available. Requires Claude Code v2.1.285 or later",
+   "usage": "CLAUDE_CODE_DISABLE_WEB_FETCH",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sur trading-sim, `.claude/settings.json` interdit déjà WebFetch et WebSearch : la règle de refus couvre plus, et reste versionnée dans le dépôt."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Politique de capacités : settings.json interdit déjà WebFetch, WebSearch, navigateur et connecteurs."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-02",
+   "historique": [
+    {
+     "date": "2026-10-02",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-workflows",
@@ -10258,7 +10403,7 @@
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN",
    "gabarit": "court",
    "description": "Variable qui reprend automatiquement un tour interrompu à la reprise d'une session, en mode SDK.",
-   "description_source": "Set to 1 to automatically resume if the previous session ended mid-turn. Used in SDK mode so the model continues without requiring the SDK to re-send the prompt. To turn this off, unset the variable or set it to 0. Before v2.1.221, Claude Code ignored 0 and other falsy values, so setting 0 still triggered the resume in non-interactive mode and unsetting the variable was the only way to turn it off",
+   "description_source": "Set to 1 to automatically resume if the previous session ended mid-turn. Used in SDK mode so the model continues without requiring the SDK to re-send the prompt. To turn this off, unset the variable or set it to 0. For the VS Code chat panel, see Continue conversations after a reload",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10275,11 +10420,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10288,6 +10433,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -22840,6 +22989,53 @@
    "contexte_sections": {}
   },
   {
+   "id": "claude-code-parametres-prependplugins",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "prependPlugins",
+   "gabarit": "court",
+   "description": "Clé de réglages (surtout des réglages gérés) qui liste les plugins dont les mods passent avant tous ceux que l'utilisateur installe, dans l'ordre donné ; il faut y nommer `sec-default@builtin` pour garder la garde intégrée.",
+   "description_source": "List the managed plugins whose mods run before every mod a user installs, in the listed order. When you set this key in managed settings, name sec-default@builtin in the list to keep the built-in guard. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's. See Install your organization's mods and set the order for those conditions and for how the two …",
+   "usage": "{\n  \"extraKnownMarketplaces\": {\n    \"acme-tools\": {\n      \"source\": { \"source\": \"directory\", \"path\": \"/opt/acme/claude-plugins\" }\n    }\n  },\n  \"enabledPlugins\": { \"acme-guard@acme-tools\": true },\n  \"prependPlugins\": [\"acme-guard@acme-tools\", \"sec-default@builtin\"]\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réglage d'organisation pour ordonner des mods gérés ; tu n'as ni réglages gérés ni plugin propre, rien à ordonner."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#prependplugins",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "pourquoi": "Aucun plugin propre, frontend-design seul en essai non adopté : pas de mods gérés à ordonner."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Plugins and skills",
+   "maj_le": "2026-10-02",
+   "historique": [
+    {
+     "date": "2026-10-02",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-print",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -23897,7 +24093,7 @@
    "nom": "sandbox.allowUnsandboxedCommands",
    "gabarit": "court",
    "description": "Réglage qui autorise ou non Claude à relancer hors bac à sable une commande bloquée.",
-   "description_source": "Let Claude retry a command outside the sandbox with the dangerouslyDisableSandbox parameter after the sandbox blocks it. Set it to false so Claude Code ignores that parameter completely and every command Claude runs must be sandboxed or appear in excludedCommands. The /sandbox Overrides tab shows that state as Strict sandbox mode. Use false in managed settings for policies that require strict sandboxing.",
+   "description_source": "Let Claude retry a command outside the sandbox with the dangerouslyDisableSandbox parameter after the sandbox blocks it. When it's false, Claude Code ignores that parameter. While the sandbox is running, commands Claude runs are then sandboxed unless they match an excludedCommands entry. The /sandbox Overrides tab shows that state as Strict sandbox mode. A false in managed settings turns on strict sandbox mode for the developers it covers.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"allowUnsandboxedCommands\": false\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23914,11 +24110,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23931,6 +24127,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -24427,7 +24627,7 @@
    "nom": "sandbox.excludedCommands",
    "gabarit": "court",
    "description": "Réglage des commandes exécutées hors du bac à sable, avec la syntaxe des règles `Bash(...)`.",
-   "description_source": "Name commands that Claude Code runs outside the sandbox, such as tools that don't work under it. Each entry uses the same syntax as the content of a Bash(...) permission rule: an exact command, a prefix such as docker *, or a wildcard pattern.",
+   "description_source": "Name commands that Claude Code runs outside the sandbox, such as tools that don't work under it. Each entry uses the same syntax as the content of a Bash(...) permission rule: an exact command, a prefix such as docker *, or a wildcard pattern. A pattern with no wildcard is an exact match, so docker matches only docker with no arguments.",
    "usage": "{\n  \"sandbox\": {\n    \"excludedCommands\": [\"docker *\"]\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24444,11 +24644,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24461,6 +24661,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -24473,7 +24677,7 @@
    "nom": "sandbox.failIfUnavailable",
    "gabarit": "court",
    "description": "Réglage qui fait échouer le démarrage si le bac à sable activé ne peut pas démarrer.",
-   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start, because a dependency is missing or the platform is unsupported. Without it, Claude Code shows a warning and runs commands unsandboxed. Use it in managed settings when your organization requires sandboxing as a hard gate.",
+   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start, because a dependency is missing or the platform is unsupported. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"failIfUnavailable\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24490,11 +24694,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24507,6 +24711,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25005,7 +25213,7 @@
    "nom": "sandbox.network.allowLocalBinding",
    "gabarit": "court",
    "description": "Réglage macOS qui autorise les commandes isolées à écouter sur des ports localhost.",
-   "description_source": "Let sandboxed commands bind to localhost ports on macOS, for example to start a dev server.",
+   "description_source": "Let sandboxed commands on macOS listen on network ports, for example to start a dev server, and connect to any port on localhost. A command that listens on a non-loopback address accepts connections from other machines. The key has no effect on Linux and WSL2, where each sandboxed command has its own loopback interface. To reach a server on the host from Linux or WSL2, see A command fails to reach a server on localhost.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowLocalBinding\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25022,11 +25230,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25035,6 +25243,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25192,7 +25404,7 @@
    "nom": "sandbox.network.httpProxyPort",
    "gabarit": "court",
    "description": "Réglage qui envoie le trafic HTTP du bac à sable vers ton propre proxy.",
-   "description_source": "Point the sandbox at your own HTTP proxy instead of the one Claude Code runs. Organizations do this to inspect HTTPS traffic, apply their own filtering rules, or log every request. When unset, Claude Code starts its own proxy for HTTP traffic.",
+   "description_source": "Point the sandbox at your own HTTP proxy instead of the one Claude Code runs. Organizations do this to inspect HTTPS traffic, apply their own filtering rules, or log requests. Your proxy takes over filtering, and Claude Code stops applying its domain lists and network prompts to traffic sent there. When unset, Claude Code starts its own proxy for HTTP traffic.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"httpProxyPort\": 8080\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25209,11 +25421,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25222,6 +25434,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25234,7 +25450,7 @@
    "nom": "sandbox.network.socksProxyPort",
    "gabarit": "court",
    "description": "Réglage qui envoie le trafic SOCKS du bac à sable vers ton propre proxy SOCKS5.",
-   "description_source": "Point the sandbox at your own SOCKS5 proxy instead of the one Claude Code runs. When unset, Claude Code starts its own proxy for SOCKS traffic.",
+   "description_source": "Point the sandbox at your own SOCKS5 proxy instead of the one Claude Code runs. Your proxy takes over filtering, and Claude Code stops applying its domain lists and network prompts to traffic sent there. When unset, Claude Code starts its own proxy for SOCKS traffic.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"socksProxyPort\": 8081\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25251,11 +25467,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25264,6 +25480,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25276,7 +25496,7 @@
    "nom": "sandbox.network.strictAllowlist",
    "gabarit": "court",
    "description": "Réglage qui refuse, sans demander, les hôtes hors de la liste autorisée du bac à sable.",
-   "description_source": "Deny sandboxed commands access to hosts outside the allowlist instead of prompting for approval. The allowlist is allowedDomains plus domains from WebFetch(domain:...) allow rules, or only the managed settings entries when allowManagedDomainsOnly is set. Requires Claude Code v2.1.219 or later.",
+   "description_source": "Deny sandboxed commands access to hosts outside the allowlist instead of prompting for approval. The allowlist is allowedDomains plus domains from WebFetch(domain:...) allow rules, or only the managed settings entries when allowManagedDomainsOnly is set. Locks that apply without an admin-required sandbox covers a repository's entries. …",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"strictAllowlist\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25293,11 +25513,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25310,6 +25530,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

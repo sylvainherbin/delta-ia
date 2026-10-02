@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-09-29",
+ "maj_le": "2026-10-02",
  "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 41,
- "commentees": 35,
+ "commentees": 36,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -1594,16 +1594,16 @@
    "categorie": "mcp",
    "nom": "Get started with custom connectors using remote MCP",
    "gabarit": "complet",
-   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant de son choix, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis.",
+   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis. L'ajout demande désormais de choisir le mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in ») et, avec connexion, la façon dont Claude s'identifie au serveur OAuth (identité publiée de Claude recommandée, enregistrement automatique ou client OAuth propre).",
    "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector.",
-   "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click the \"Add\" button.\n3. Hover over “Custom,” then select “Web.”\n4. Add your connector's remote MCP server URL.\n5. Optionally, click “Advanced settings” to specify an OAuth Client ID and OAuth Client Secret for your server.\n6. Finish configuring your connector by clicking \"Add.\"",
+   "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": "Free (un connecteur), Pro, Max, Team, Enterprise",
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "delta-ia est un serveur MCP distant : c'est ce mécanisme qui le rendrait disponible dans l'app Claude et sur l'iPhone ; il s'applique ensuite à toutes tes sessions Claude Code, trading-sim compris, sauf refus explicite."
+    "verdict": "utiliser",
+    "pourquoi": "Ton connecteur de compte Delta-IA passe par ce mécanisme ; il s'applique à toutes tes sessions Claude Code, trading-sim compris tant que son settings.json ne le refuse pas."
    },
    "sources": [
     {
@@ -1612,11 +1612,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-02",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1629,10 +1629,23 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-02",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets, écart trading-sim sans deny."
+    }
+   }
   },
   {
    "id": "claude-mcp-page-11176164-use-connectors-to-extend-claude-s-capabilities",
