@@ -39,7 +39,7 @@ façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille ch
 | Réseau | Wi-Fi seul (clé USB TP-Link), débit plafonné vers 9 Mbit/s, pas de repli cellulaire | [observé] |
 | Outils CLI | git, gh, Python, tmux, nvm (Node via le bundle Codex), `python3.12-venv` ; pas de `sqlite3` ; `pytest` absent du système, présent seulement dans `delta-ia/.venv` | [observé] |
 | Claude Code | installation native | [observé] |
-| Codex | codex-cli, livré avec l'app de bureau ChatGPT ; se met à jour avec elle, jamais séparément | [observé] |
+| Codex | deux binaires : celui livré avec l'app de bureau ChatGPT (qui se met à jour avec elle ; utilisé par la chaîne D70 et par l'app) et la CLI npm du PATH (session tmux `codex`, mise à jour par npm) | [observé] |
 | Apps de bureau | Claude Desktop et ChatGPT Desktop (Electron), installées en paquets Debian | [observé] |
 | Mobile | iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS) | [observé] |
 | Versions installées | voir `docs/data/versions.json` du dépôt delta-ia (relevé automatique à chaque passage), seule source à jour | [observé] |
@@ -229,8 +229,8 @@ delta-ia.
 
 | Élément | Contenu | Nature |
 |---|---|---|
-| Interface | app de bureau, parce que le trio CLI + tmux + remote control ne fonctionne pas encore pour Codex | [déclaré] |
-| CLI autonome (`codex` du PATH) | installée par npm (nvm), mise à jour à la dernière publiée le 02/10/2026, mais non utilisée par Sylvain ; version différente de celle livrée avec l'app de bureau (`/usr/lib/chatgpt/resources/codex`), versions : voir `docs/data/versions.json`. Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire de l'app de bureau, jamais sur celui du PATH ; les deux partagent le même `$CODEX_HOME` (`~/.codex`), donc les données (sessions, `queue`) restent cohérentes entre les deux. **Essai remote-control du 02/10/2026** : `codex remote-control start` démarre un daemon local qui s'enregistre chez OpenAI sous le nom de la machine, puis sa liaison est refusée en boucle par une erreur 409 « Remote app server already online » ; le binaire de l'app de bureau a la même commande, sans option pour choisir le nom du serveur, donc un second daemon ne peut pas prendre la place de l'app sans l'arrêter (déduit : le serveur déjà en ligne est celui de l'app). Le trio CLI + tmux + remote control n'est donc pas atteint | [déclaré] pour l'usage ; [observé] pour le partage de `$CODEX_HOME` et l'essai du 02/10 |
+| Interface | CLI sous tmux avec remote control depuis l'iPhone, depuis le 02/10/2026 ; l'app de bureau n'est plus lancée au démarrage, et si elle est ouverte elle prend le nom de la machine (erreur 409 pour la CLI) | [déclaré] ; essai du 02/10 [observé] |
+| CLI autonome (`codex` du PATH) | installée par npm (nvm), mise à jour à la dernière publiée le 02/10/2026 et utilisée sous tmux depuis cette date ; version différente de celle livrée avec l'app de bureau (`/usr/lib/chatgpt/resources/codex`), versions : voir `docs/data/versions.json`. Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire qu'utilise la session concernée : celui du PATH pour la session tmux `codex`, celui de l'app de bureau pour la chaîne D70 et pour l'app ; les deux partagent le même `$CODEX_HOME` (`~/.codex`), donc les données (sessions, `queue`) restent cohérentes entre les deux. **Essai remote-control du 02/10/2026** : avec l'app de bureau ouverte, `codex remote-control start` démarre un daemon local qui s'enregistre chez OpenAI sous le nom de la machine, mais sa liaison est refusée en boucle par une erreur 409 « Remote app server already online » (le serveur déjà en ligne est celui de l'app de bureau). L'app de bureau fermée, le même démarrage passe en « connected » : depuis l'app ChatGPT sur iPhone, Sylvain écrit dans les conversations Codex de la machine, dont celle d'une session CLI sous tmux. Une session CLI sous tmux ne crée sa conversation qu'au premier message, et un seul appareil tient une conversation à la fois. **Le trio CLI + tmux + remote control est donc atteint** : le démarrage automatique de l'app de bureau est retiré et le service utilisateur `codex-session.service` (tmux `-L codex`) est actif ; la chaîne D70 utilise le binaire de l'app de bureau, sans dépendre de l'app ouverte | [déclaré] pour l'usage ; [observé] pour le partage de `$CODEX_HOME` et l'essai du 02/10 |
 | Projets approuvés | trading-sim et un dossier de travail Codex daté | [observé] |
 | Activité | installé le 17/09 ; fils nommés « Auditer l'architecture », « Arbitrage », « Auditeur », « Console » ; 6 sessions CLI, l'essentiel se passe dans l'app de bureau | [observé] |
 | Modèle cité dans les audits passés | GPT-5.6 Sol, raisonnement high | [observé : rapport d'audit] |
@@ -347,8 +347,11 @@ cette consultation en pratique.
     de trading-sim : Sonnet avec Opus en conseiller (`/advisor opus`) ; le conseiller ne survit
     pas à une reprise de session, herbin-mint le réactive avant chaque mission qui l'utilise
     puis retire `advisorModel` des réglages globaux [déclaré].
-12. **Codex en CLI + tmux + remote control** [déclaré] : c'est l'objectif, pas encore atteint.
-    Une nouveauté Codex qui le permettrait serait une alerte prioritaire.
+12. **Codex en CLI + tmux + remote control** [observé] : objectif atteint le 02/10/2026 (service utilisateur
+    `codex-session.service`, tmux `-L codex`, `codex remote-control start` puis `codex resume --last`). Limites observées : la
+    conversation d'une session CLI n'est créée qu'au premier message, un seul appareil tient une conversation à la fois, et le
+    démarrage automatique n'est pas encore éprouvé sur un redémarrage. Une nouveauté Codex qui change ces limites serait une
+    alerte prioritaire.
 
 ---
 
@@ -366,7 +369,7 @@ sont signalés au fil du tableau.
 | Mémoire claude.ai | activée et jugée utile | [déclaré] |
 | Skills claude.ai | surtout **red-team** ; les autres peu ou pas | [déclaré] |
 | ChatGPT | abonnement Pro ; utilisé aussi hors trading-sim (console de pilotage), principalement pour **auditer le travail de Claude** | [déclaré] |
-| Codex | app de bureau ; profils audit / rapide / securite tous utilisés | [déclaré] |
+| Codex | CLI sous tmux avec remote control (app de bureau non lancée au démarrage) ; profils audit / rapide / securite tous utilisés | [déclaré] |
 | Priorité | trading-sim | [déclaré] |
 | Irritant | méconnaissance des commandes et fonctionnalités, donc un usage sous-optimal | [déclaré] |
 | restoration-id | pas d'évolution pour l'instant | [déclaré] |
