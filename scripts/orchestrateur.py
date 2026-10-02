@@ -17,7 +17,7 @@ Pour chaque étape, sans aucun LLM :
    `success`, l'état final est propre (126), et chaque commit attendu de l'étape (`commits_attendus`, sujets de la
    configuration) figure dans `git log` depuis le début de l'étape avec `origin/main` qui les contient. Le refus devient alors
    un avertissement (ligne `<étape>-refus`, code 125) : une étape qui s'arrête proprement après un refus (aucun commit) reste
-   un échec ; Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
+   un échec. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
    inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
