@@ -7,8 +7,10 @@ Détection sur la machine, sans chemin supposé :
   fichiers donnée par `dpkg -L`). Il suit le canal de l'app (pré-versions propres, ex. 0.155.0-alpha.16.4 avec l'app
   26.917) : statut `embarque`, jamais comparé aux releases stables ;
 - Codex CLI autonome (terminal) : `codex` du PATH, sinon des installations globales npm de nvm
-  (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable de l'app. Installée
-  mais non utilisée [déclaré] : statut `non_utilise`, dernière stable donnée pour information, sans alerte de retard ;
+  (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable de l'app. Utilisée par
+  Sylvain depuis le 02/10/2026 (session tmux en remote control) [déclaré], D75 : suivi normal, comparée à la dernière
+  stable de codex-cli-releases (à jour ou en retard). Elle se met à jour par npm, sans l'app : un retard ne se rattrape
+  pas tout seul, d'où l'alerte ;
 - ChatGPT Desktop, Claude Desktop : version du paquet Debian (`dpkg-query -W`).
 Une version introuvable vaut null, avec la raison.
 
@@ -207,10 +209,11 @@ def detecter(racine: Path, client=None) -> list[dict]:
                 + " : il suit le canal de l'app, avec ses propres pré-versions, et se met à jour avec elle ;"
                   " non comparé aux releases stables de codex-cli-releases."))
     stables_cli = _stables(versions_publiees(racine, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai"))
-    ligne("Codex CLI (terminal, non utilisée)", codex_terminal(), stables_cli, "codex-cli-releases", statut="non_utilise",
-          note="CLI autonome installée mais non utilisée [déclaré] : "
-               + (f"dernière stable publiée {stables_cli[-1]}, pour information, " if stables_cli else "")
-               + "sans alerte de retard.")
+    ligne("Codex CLI (terminal)", codex_terminal(), stables_cli, "codex-cli-releases",
+          note="CLI autonome utilisée par Sylvain [déclaré] (session tmux en remote control depuis le 02/10/2026), mise à jour par npm "
+               "et non avec l'app : un retard ne se rattrape pas tout seul. "
+               + (f"Comparée à la dernière stable publiée {stables_cli[-1]}." if stables_cli else
+                  "Aucune stable publiée connue de Delta : pas de comparaison."))
     app, raison_app = versions_app_chatgpt(racine, client)
     ligne("ChatGPT Desktop", paquet_chatgpt, app, "openai-changelog-codex-app", composantes=2,
           note=note_app(paquet_chatgpt, app),
