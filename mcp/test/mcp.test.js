@@ -78,7 +78,11 @@ test("chercher_reference et fiche_reference", async () => {
 
 test("etat_versions et a_tester", async () => {
   const v = (await appel("etat_versions")).corps.result.structuredContent;
-  assert.deepEqual(v.outils.map((o) => o.outil), ["Claude Code", "Codex (app ChatGPT)", "Codex CLI (terminal)", "ChatGPT Desktop", "Claude Desktop"]);
+  const noms = v.outils.map((o) => o.outil);
+  // D75 : « Codex CLI (terminal) » ; l'ancien nom « … non utilisée) » reste accepté jusqu'au prochain /delta, qui réécrit versions.json.
+  assert.equal(noms.length, 5);
+  assert.deepEqual([noms[0], noms[1], noms[3], noms[4]], ["Claude Code", "Codex (app ChatGPT)", "ChatGPT Desktop", "Claude Desktop"]);
+  assert.ok(noms[2].startsWith("Codex CLI (terminal"), noms[2]);
   const a = (await appel("a_tester")).corps.result;
   assert.equal(a.isError, false);
 });
