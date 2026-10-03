@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-09-30",
+ "maj_le": "2026-10-03",
  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -38,7 +38,7 @@
    "categorie": "fonctionnalites",
    "nom": "ChatGPT desktop app",
    "gabarit": "complet",
-   "description": "L'app de bureau réunit ChatGPT, Work et Codex dans un même espace. Elle permet d'ouvrir des projets locaux, de suivre plusieurs tâches et de consulter les fichiers produits.",
+   "description": "L'app de bureau réunit ChatGPT, Work et Codex dans un espace donnant accès aux projets, aux fichiers et aux outils connectés. Elle permet de suivre plusieurs conversations et d'inspecter les résultats produits.",
    "description_source": "Run projects in parallel, work with files, use your computer, and keep long-running work moving from one desktop workspace.",
    "usage": "1. **Install the ChatGPT desktop app.** [Download ChatGPT](https://chatgpt.com/download/) for macOS or Windows, or follow the [Linux installation guide](https://learn.chatgpt.com/docs/linux/linux-app).\n2. **Open ChatGPT and sign in.** Open the app, then sign in with your ChatGPT account.\n3. **Choose where to work.** Start a chat, create a project, or open a folder. ChatGPT can use the files and context in the location you choose. [Learn about chats and projects](https://learn.chatgpt.com/docs/projects).\n4. **Send your first message.** Choose ChatGPT or Codex. In ChatGPT, use the toggle above the composer to select Chat or Work. In Codex, start with New chat. For a quick question, point to New chat and select the Quick chat icon on its right. Then describe the result you want and add any files or context ChatGPT needs. [Learn how to use ChatGPT](https://learn.chatgpt.com/docs/use-chatgpt).",
    "usage_nature": "etapes",
@@ -47,7 +47,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises déjà l'app de bureau pour Codex et les connecteurs ; garde ce point d'entrée pour les audits de trading-sim."
+    "pourquoi": "Tu utilises ChatGPT Desktop pour les connecteurs ; conserve cet accès lorsque tu en as besoin pour Work sur trading-sim. D'après l'essai du 02/10, l'app ouverte occupe l'enregistrement distant de la machine et provoque une erreur 409 pour la CLI : ferme-la pour reprendre le pilotage de Codex sous tmux depuis l'iPhone."
    },
    "sources": [
     {
@@ -60,7 +60,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -81,13 +81,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "ChatGPT Desktop sert aux connecteurs et Work est réservé à trading-sim."
+    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app de bureau sert de point d'entrée à Codex pour les audits."
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "Codex est utilisé sous tmux ; l'app ouverte bloque la liaison distante de la CLI par une erreur 409."
     }
    }
   },
@@ -531,16 +539,16 @@
    "categorie": "fonctionnalites",
    "nom": "ChatGPT Voice",
    "gabarit": "complet",
-   "description": "ChatGPT Voice permet de parler à Chat, Work ou Codex dans l’app de bureau pour lancer, suivre ou réorienter une tâche. Après appairage avec un hôte de bureau, l’accès par Remote sur iOS dépend du plan et du déploiement.",
+   "description": "ChatGPT Voice permet de converser avec Chat, Work ou Codex dans l'app de bureau pour lancer, suivre ou réorienter des tâches. L'accès sur iOS via Remote demande un appairage avec un hôte de bureau, et la disponibilité dépend du forfait, du déploiement et des réglages de l'espace ; la dictée de texte est une fonction distincte.",
    "description_source": "Powered by GPT-Live, ChatGPT Voice lets you talk through ideas and coordinate tasks in Chat, Work, and Codex in the ChatGPT desktop app. Start work, check progress, or change direction without switching back to typing.",
    "usage": "1. Open the Codex task you want to discuss in the ChatGPT desktop app, or start a new chat or task.\n2. Select **Start voice chat** in an existing task, or **Start new voice chat** in a new chat or task.\n3. The first time you start a voice chat, allow microphone access, choose a voice, and review screen context on macOS.\n4. Start talking. Select **Stop voice chat** when you finish.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "App de bureau : Plus, Pro, Business, Edu et Enterprise ; iOS via Remote après appairage, selon déploiement et réglages de l'espace.",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans Work, dicter une brève consigne pour une mission trading-sim, puis vérifier que sa transcription préserve les contraintes avant exécution."
+    "pourquoi": "Avant l'essai, vérifie que Start voice chat est disponible avec ton compte Pro ; dans Work, demande oralement le résumé d'une mission trading-sim déjà écrite, sans lancer son exécution, puis compare les contraintes restituées au fichier. Pour le pilotage habituel de la CLI depuis l'iPhone, l'essai doit tenir compte du conflit observé lorsque l'app de bureau est ouverte."
    },
    "sources": [
     {
@@ -553,7 +561,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -594,17 +602,25 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Work rédige les missions et arbitre les audits trading-sim."
+     "pourquoi": "Work rédige les missions trading-sim dans des fichiers et arbitre les audits."
     },
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Sylvain pilote certains travaux depuis un iPhone."
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "Compte ChatGPT Pro et pilotage depuis l'iPhone."
+    },
+    "config.codex.interface": {
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "L'app de bureau ouverte provoque une erreur 409 pour la liaison distante de la CLI."
     }
    }
   },
@@ -724,16 +740,16 @@
    "categorie": "fonctionnalites",
    "nom": "Image inputs",
    "gabarit": "complet",
-   "description": "Les images jointes à un prompt apportent un contexte visuel comme une capture d'erreur ou un diagramme. La demande doit préciser ce qui est à examiner et le résultat attendu.",
+   "description": "Les images jointes au prompt apportent un contexte visuel, par exemple une capture d'erreur, une interface ou un diagramme. En CLI, `-i` ou `--image` accepte des fichiers image ; le prompt doit préciser les zones à examiner, les contraintes et le résultat attendu.",
    "description_source": "Add images to a prompt when the task depends on visual context, such as an error screenshot, interface design, architecture diagram, or existing asset. Explain what ChatGPT should inspect and what outcome you want; don't rely on the image alone to communicate the task.",
    "usage": "codex -i screenshot.png \"Explain this error and suggest the smallest fix\"\ncodex --image before.png,after.png \"Compare these states and list the regressions\"",
    "usage_nature": "syntaxe",
-   "exemple": "Compare this checkout screen with the design. Fix spacing and typography only; do not change behavior. Verify the result with a new screenshot.",
+   "exemple": "Compare this checkout screen with the design. Fix spacing and typography only;\ndo not change behavior. Verify the result with a new screenshot.",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit visuel de la console de pilotage, joindre deux captures avant/après et demander uniquement les régressions visibles ; vérifier la liste sur les images."
+    "pourquoi": "Pour un audit visuel de la console de pilotage construite par Claude, essaie `codex --image before.png,after.png \"Compare these states and list the regressions\"` avec deux captures correspondantes, puis vérifie chaque régression proposée sur les images. Cet essai utilise ta CLI sous tmux sans demander d'ouvrir l'app de bureau."
    },
    "sources": [
     {
@@ -746,7 +762,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -763,17 +779,25 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Codex sert aussi à auditer le travail de Claude hors trading-sim."
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "ChatGPT et Codex auditent le travail de Claude sur la console de pilotage."
+    },
+    "config.codex.interface": {
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "Codex est utilisé en CLI sous tmux."
     },
     "methode.travail": {
      "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les audits croisés et la vérification humaine font partie de la méthode."
+     "pourquoi": "La méthode prévoit des audits croisés et une validation humaine."
     }
    }
   },
@@ -783,16 +807,16 @@
    "categorie": "fonctionnalites",
    "nom": "ChatGPT desktop app for Linux",
    "gabarit": "complet",
-   "description": "L'app de bureau ChatGPT pour Linux est proposée en preview avec des paquets selon la distribution et l'architecture. Elle donne accès aux projets locaux, fichiers et tâches Codex.",
+   "description": "L'app ChatGPT pour Linux est disponible en preview avec des paquets x64 et ARM64 pour les distributions listées dans la documentation. L'installation configure un dépôt OpenAI signé pour les mises à jour par le gestionnaire de paquets ; Linux Mint ne figure pas dans la liste des distributions prises en charge.",
    "description_source": "The ChatGPT desktop app for Linux is available in preview. Install the package for your Linux distribution and processor architecture, then sign in with your ChatGPT account to work with projects, local files, and Codex.",
    "usage": "uname -m",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Linux en preview : Ubuntu 24.04 LTS et 26.04 LTS, Debian 13, Fedora 43 et 44, Arch Linux à jour ; x64 et ARM64.",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'app de bureau est déjà utilisée sous Linux Mint ; lors d'une réinstallation, vérifier la compatibilité du paquet car Mint ne figure pas parmi les distributions officiellement listées."
+    "pourquoi": "L'app est déjà installée en paquet Debian sur ta machine Linux Mint et sert aux connecteurs ; vérifie la compatibilité du paquet avant une réinstallation, qui configure aussi un dépôt signé. Pour le pilotage de Codex sous tmux depuis l'iPhone, garde le démarrage automatique de l'app désactivé, conformément à ton choix du 02/10."
    },
    "sources": [
     {
@@ -805,7 +829,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -822,13 +846,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
-     "pourquoi": "La machine principale fonctionne sous Linux Mint, hors liste officielle des distributions prises en charge."
+     "sha1": "5fa0b41bfd6b5c4fa2d3368879dd62550fd30402",
+     "pourquoi": "Linux Mint 22.1 et ChatGPT Desktop installé en paquet Debian."
+    },
+    "usage.hors-machine": {
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "ChatGPT Desktop est utilisé pour les connecteurs."
+    },
+    "config.codex.interface": {
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "L'app n'est plus lancée au démarrage afin de laisser la liaison distante à Codex CLI."
     }
    }
   },
@@ -976,16 +1012,16 @@
    "categorie": "fonctionnalites",
    "nom": "Projects and chats",
    "gabarit": "complet",
-   "description": "Les projets regroupent les conversations et leur contexte, y compris des dossiers locaux dans l’app de bureau. Ils facilitent la reprise d’un travail lié à plusieurs fichiers.",
+   "description": "Les projets regroupent les conversations et leur contexte ; dans l'app de bureau, les projets locaux donnent accès à des dossiers de la machine. En CLI, le projet correspond au dossier de lancement ou à celui désigné par `--cd`, sans vue ChatGPT Projects.",
    "description_source": "Use a project to organize related chats and give ChatGPT the context it needs. The Projects view in the ChatGPT desktop app includes ChatGPT projects and local projects that connect to folders on your computer.",
    "usage": "codex",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "L’app Codex est déjà reliée à des dépôts locaux ; conserver un projet par dépôt aide à séparer les verdicts des audits trading-sim."
+    "verdict": "tester",
+    "pourquoi": "Pour un audit trading-sim dans ta session CLI sous tmux, essaie `codex --cd /home/herbin/projets/trading-sim` et demande d'identifier le dépôt sans le modifier : le résultat attendu est le bon dépôt identifié comme dossier de travail. Le contexte ne confirme pas l'usage de la vue ChatGPT Projects."
    },
    "sources": [
     {
@@ -998,7 +1034,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1027,17 +1063,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex est utilisé dans l’app de bureau sur des projets locaux."
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "Codex sert aux audits dans la CLI sous tmux depuis le 02/10."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt trading-sim fait l’objet d’audits séparés."
+     "pourquoi": "trading-sim est un dépôt local privé soumis à des audits."
     }
    }
   },
@@ -1291,7 +1331,7 @@
    "categorie": "fonctionnalites",
    "nom": "Web search",
    "gabarit": "complet",
-   "description": "La recherche web intégrée apporte des sources actuelles à ChatGPT. Les résultats trouvés restent des contenus non fiables que l'agent doit vérifier.",
+   "description": "La recherche web intégrée fournit des sources à examiner comme des données non fiables. Dans Codex CLI, la recherche est en cache par défaut ; `--search` demande des résultats en direct pour un lancement, tandis que `web_search` dans `config.toml` fixe un défaut persistant.",
    "description_source": "ChatGPT includes a first-party web search tool. Treat all web results as untrusted input.",
    "usage": "codex --search \"Summarize the latest release notes for this dependency\"",
    "usage_nature": "syntaxe",
@@ -1300,7 +1340,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour une affirmation sur une fonction Codex pendant un audit croisé, demander la source primaire avec la recherche web, puis vérifier le passage cité avant de conclure."
+    "pourquoi": "Pendant un audit de la console, essaie `codex --search` avec une question précise sur une fonction Codex après consultation de Delta-IA si disponible, puis vérifie le passage dans la source primaire avant de conclure. L'option CLI limite le choix de recherche en direct à ce lancement, sans modifier le défaut persistant du fichier de configuration."
    },
    "sources": [
     {
@@ -1313,7 +1353,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1330,17 +1370,21 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.codex.regles-globales": {
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
-     "pourquoi": "Les affirmations sur Codex doivent être recoupées avec la source primaire."
+     "pourquoi": "Consulter Delta-IA hors passages Delta, puis recouper les affirmations avec une source primaire."
     },
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Codex sert principalement aux audits croisés du travail de Claude."
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "Codex audite le travail de Claude, notamment sur la console de pilotage."
     }
    }
   },
@@ -1971,16 +2015,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex CLI",
    "gabarit": "complet",
-   "description": "Codex CLI inspecte et modifie un dépôt local depuis le terminal. Elle fonctionne en interface interactive ou avec `codex exec` pour les scripts et les automatisations.",
+   "description": "Codex CLI inspecte les fichiers, modifie le code et exécute les outils locaux depuis le terminal. Elle peut être utilisée en conversation interactive ou avec `codex exec` dans des scripts et des automatisations.",
    "description_source": "Inspect code, make changes, run commands, and automate repeatable work without leaving your terminal.",
    "usage": "curl -fsSL https://chatgpt.com/codex/install.sh | sh",
    "usage_nature": "syntaxe",
    "exemple": "Tell me about this project",
-   "disponibilite": "Linux, macOS et Windows",
-   "statut_usage": "non_utilise",
+   "disponibilite": "Linux via l'installateur ; installation npm également documentée.",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Codex CLI sous tmux est un objectif déclaré, même si la CLI autonome installée n’est pas utilisée aujourd’hui ; cette fiche décrit le point d’entrée sans recommander une réinstallation."
+    "pourquoi": "La CLI npm est désormais ton interface Codex sous tmux, pilotée depuis l'iPhone pour les audits du travail de Claude ; conserve cette installation déjà utilisée. La chaîne D70 emploie le binaire de l'app, distinct, sans nécessiter que l'app soit ouverte."
    },
    "sources": [
     {
@@ -1993,7 +2037,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2030,17 +2074,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée ; Codex est surtout utilisé dans l’app."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Codex CLI sous tmux avec pilotage distant reste un objectif déclaré."
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "CLI npm sous tmux utilisée depuis le 02/10 avec remote control ; D70 utilise le binaire de l'app."
     }
    }
   },
@@ -2176,16 +2220,16 @@
    "categorie": "fonctionnalites",
    "nom": "Config basics",
    "gabarit": "complet",
-   "description": "La configuration de base fixe des valeurs personnelles dans `~/.codex/config.toml` et des surcharges de projet dans `.codex/config.toml`. Les couches de projet ne sont chargées que pour les projets approuvés.",
+   "description": "Les valeurs personnelles de Codex sont enregistrées dans `~/.codex/config.toml` et peuvent être surchargées par la configuration des projets approuvés dans `.codex/config.toml`. Les options CLI sont prioritaires sur les configurations de projet, les profils sélectionnés et les valeurs personnelles.",
    "description_source": "Codex reads configuration details from more than one location. Your personal defaults live in ~/.codex/config.toml, and you can add project overrides with .codex/config.toml files. For security, Codex loads project .codex/ layers only when you trust the project.",
    "usage": "model = \"gpt-6.1-sol\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "approval_policy = \"on-request\"",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Le modèle par défaut et les profils sont déjà configurés ; vérifier la priorité des couches évite un changement involontaire du défaut."
+    "pourquoi": "Tu utilises les profils audit, rapide et securite au quotidien ; vérifie la priorité des couches lorsqu'un audit croisé n'emploie pas les réglages attendus. Une modification du fichier utilisateur persiste comme défaut ; pour un essai ponctuel dans la CLI sous tmux, préfère une option CLI ou une surcharge `--config` sans modifier ce fichier."
    },
    "sources": [
     {
@@ -2198,7 +2242,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2227,17 +2271,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Le modèle par défaut et trois profils sont configurés."
+     "pourquoi": "Les trois profils audit, rapide et securite sont utilisés quotidiennement."
     },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Un changement dans l’app semble avoir modifié le défaut de nouvelles conversations."
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "La CLI sous tmux est l'interface utilisée pour les audits."
     }
    }
   },
@@ -2660,16 +2708,16 @@
    "categorie": "fonctionnalites",
    "nom": "Integrated terminal",
    "gabarit": "complet",
-   "description": "Chaque conversation de l’app de bureau dispose d’un terminal lié à son projet ou worktree. Les sorties restent visibles à ChatGPT pour vérifier des tests, scripts ou l’état Git.",
+   "description": "Chaque conversation de l'app de bureau dispose d'un terminal lié au projet ou au worktree courant, accessible par New tab puis Terminal. ChatGPT peut lire sa sortie pour examiner les résultats des scripts, tests et commandes Git.",
    "description_source": "Each chat in the ChatGPT desktop app includes a terminal scoped to its current project or worktree. Select New tab, then Terminal, or press Ctrl+.",
    "usage": "git status",
    "usage_nature": "syntaxe",
-   "exemple": "git status",
+   "exemple": "git pull --rebase",
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "L’app Codex est utilisée pour auditer des dépôts locaux ; le terminal intégré conserve commandes et résultats dans le même fil."
+    "verdict": "ignorer",
+    "pourquoi": "Ton usage actuel de Codex passe par la CLI sous tmux et ChatGPT Desktop sert aux connecteurs ; aucun usage du terminal intégré ni besoin supplémentaire n'est déclaré."
    },
    "sources": [
     {
@@ -2682,7 +2730,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2707,17 +2755,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L’app de bureau Codex est utilisée sur des projets locaux."
+     "sha1": "208d4cd173102a847df7471f89b95d43fee23c20",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, sans lancement automatique de l'app."
     },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits incluent des tests et vérifications Git locales."
+    "usage.hors-machine": {
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "ChatGPT Desktop sert uniquement aux connecteurs."
     }
    }
   },
