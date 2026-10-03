@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 129,
- "commentees": 128,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -101,7 +101,7 @@
    "categorie": "commandes",
    "nom": "/advisor",
    "gabarit": "complet",
-   "description": "Active ou coupe l'outil advisor, qui consulte un second modèle (fable, opus, sonnet ou un ID complet) aux moments clés d'une tâche. Sans argument, ouvre un sélecteur ; via Remote Control ou sans terminal interactif, il faut passer le modèle ou `off` en argument. `fable` exige l'accès à Fable.",
+   "description": "Active ou coupe l'outil advisor, qui consulte un second modèle (fable, opus, sonnet ou un ID complet) aux moments clés d'une tâche. Sans argument, ouvre un sélecteur ; via Remote Control ou sans terminal interactif, il faut passer le modèle ou `off` en argument (Claude Code 2.1.260 ou plus). `fable` exige l'accès à Fable.",
    "description_source": "Enable or disable the advisor tool, which consults a second model for guidance at key moments during a task. Accepts fable, opus, sonnet, or a full model ID. fable requires Fable access. Without an argument, opens a picker. In a session without an interactive terminal, or over Remote Control, pass the model or off as an argument; with no argument there, the command prints the current advisor as text. These forms require Claude Code v2.1.260 or later",
    "usage": "/advisor [model|off]",
    "usage_nature": "syntaxe",
@@ -110,7 +110,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est ta formule validée pour les missions de construction de trading-sim : Sonnet avec `/advisor opus`. Le conseiller ne survit pas à une reprise de session, d'où sa réactivation par herbin-mint avant chaque mission, puis le retrait de `advisorModel` des réglages globaux."
+    "pourquoi": "C'est ta formule validée pour les missions de construction de trading-sim : Sonnet avec `/advisor opus`. Le conseiller ne survit pas à une reprise de session, d'où sa réactivation par herbin-mint avant chaque mission, puis le retrait de `advisorModel` des réglages globaux ; depuis l'iPhone (Remote Control), tape `/advisor opus` avec l'argument."
    },
    "sources": [
     {
@@ -123,7 +123,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -160,17 +160,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint prépare et herbin-trading exécute les missions trading-sim."
+     "pourquoi": "herbin-mint prépare et herbin-trading exécute les missions trading-sim, pilotées depuis l'iPhone en Remote Control."
     }
    }
   },
@@ -186,10 +190,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La commande n'apporte rien en 2.1.280 ; les subagents à créer (piste 5 de CONTEXTE : relais de mission, revue machine) se décrivent directement dans `~/.claude/agents/`."
+    "pourquoi": "La commande n'affiche plus qu'un rappel ; ton agent perso `executant` se trouve déjà dans `~/projets/.claude/agents/`, et un éventuel agent pour les gestes de la piste 5 se décrirait directement dans ce dossier."
    },
    "sources": [
     {
@@ -198,7 +202,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -215,10 +219,23 @@
     {
      "date": "2026-10-03",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "pourquoi": "Un agent perso `executant` dans ~/projets/.claude/agents/, testé une fois le 25/09, non adopté."
+    },
+    "optimisation.pistes": {
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 5 : gestes répétés (relais de mission, revue machine) sans commande ni agent adopté."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-artifacts",
@@ -2887,7 +2904,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2944,13 +2961,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; choix du modèle et de l'effort par session pour étaler la charge des limites."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
@@ -3975,7 +3996,7 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante.",
+   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante ; en mode `-p`, l'argument ne vaut que pour la session et n'est pas enregistré.",
    "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when Claude Code asks you to confirm the switch. Once you confirm the switch, if Claude Code asks, Claude Code applies the change without waiting for the current response to finish. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Also available in non-interactive mode (-p) with a model argument instead of the picker, where it applies to the current session only and isn't saved as your default; requires Claude Code v2.1.205 or later",
    "usage": "/model [model]",
    "usage_nature": "syntaxe",
@@ -3984,7 +4005,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Sonnet est désormais ton défaut voulu ; pour passer une seule session sur Opus ou Fable (une mission lourde sur herbin-trading), ouvre le sélecteur et appuie sur `s`, car `/model` enregistrerait ce choix comme défaut de toutes les nouvelles sessions et écraserait Sonnet."
+    "pourquoi": "Sonnet est ton défaut voulu ; pour passer une seule session sur Opus ou Fable (une mission lourde sur herbin-trading), ouvre le sélecteur et appuie sur `s`, car `/model` enregistrerait ce choix comme défaut de toutes les nouvelles sessions et écraserait Sonnet."
    },
    "sources": [
     {
@@ -3997,7 +4018,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4046,12 +4067,16 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
     },
     "env.multi-sessions": {
