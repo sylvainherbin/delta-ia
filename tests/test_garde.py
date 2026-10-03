@@ -74,7 +74,9 @@ def test_verrou(racine, capsys):
     assert code == garde.CODE_VERROU == 10 and "index.lock" in out and "ARRÊT" in out
 
 
-@pytest.mark.parametrize("s5, sem, attendu", [(80, 10, 11), (79, 84, 0), (10, 85, 11), (95, 95, 11)])
+@pytest.mark.parametrize("s5, sem, attendu", [
+    (10, 97, 0), (10, 98, 11), (80, 10, 11), (79, 97, 0), (10, 95, 0), (95, 95, 11), (99, 99, 11),
+])
 def test_seuils_quotas(racine, capsys, s5, sem, attendu):
     usage(racine, s5, sem)
     assert lancer(racine, capsys)[0] == attendu
@@ -120,10 +122,10 @@ def test_d71_les_deux_produits_donnent_deux_avertissements(racine, capsys):
     assert code == 0 and [("Claude" in l, "ChatGPT" in l) for l in alertes_hebdo(out)] == [(True, False), (False, True)]
 
 
-def test_d71_claude_a_85_reste_en_code_11(racine, capsys):
-    usage(racine, 10, 85)
+def test_d71_claude_a_98_reste_en_code_11(racine, capsys):
+    usage(racine, 10, 98)
     code, out = lancer(racine, capsys)
-    assert code == garde.CODE_QUOTA == 11 and "ARRÊT" in out and "quota hebdomadaire Claude à 85 %" in out
+    assert code == garde.CODE_QUOTA == 11 and "ARRÊT" in out and "quota hebdomadaire Claude à 98 %" in out
 
 
 def test_d71_champ_chatgpt_absent_inchange(racine, capsys):

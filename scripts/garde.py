@@ -6,7 +6,7 @@ Contrôles, dans l'ordre :
 1 bis. D70 : `.git/delta-passage.lock` tenu (flock) par l'orchestrateur `scripts/passage-auto.sh` et cet appel n'en fait pas
    partie -> arrêt, code 14. La garde teste le verrou, elle ne le prend pas (ouverture en lecture seule, flock non bloquant,
    relâché aussitôt). Un appel de la chaîne s'identifie par `DELTA_CHAINE_PID`, égal au PID écrit dans le fichier de verrou.
-2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 85 -> arrêt,
+2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 98 -> arrêt,
    code 11. Fichier absent, illisible ou modifié il y a plus de 15 minutes : la console est sans doute arrêtée ;
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
    D71 : un fichier absent, illisible ou sans `claude.session_5h.pct` / `claude.semaine.pct` (la console le réécrit) est relu
@@ -45,7 +45,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 SEUIL_SESSION_5H = 80
-SEUIL_SEMAINE = 85
+SEUIL_SEMAINE = 98
 SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur ChatGPT
 FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
