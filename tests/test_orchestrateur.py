@@ -89,6 +89,14 @@ elif mode == "supprime-hook":
     os.remove(".git/hooks/pre-push"); claude_ok()
 elif mode == "supervision":
     ecrire("rapports/supervision-lancee.txt", "oui\n"); claude_ok()
+elif mode.startswith("supervision-refus"):
+    ecrire(sys.argv[2], sys.argv[3])
+    if mode == "supervision-refus-sale":
+        ecrire("notes.txt", "touché hors périmètre\n")
+    print(json.dumps({"type": "result", "subtype": "error_max_turns" if mode == "supervision-refus-erreur" else "success",
+                      "is_error": mode == "supervision-refus-is-error", "permission_denials": [REFUS]}))
+    if mode == "supervision-refus-exit":
+        sys.exit(2)
 elif mode == "env":
     ecrire("rapports/env-vu.txt", os.environ.get("DELTA_CHAINE_PID", "") + "|" + os.environ.get("PATH", "") + "|" + os.environ.get("GIT_OPTIONAL_LOCKS", "-")); claude_ok()
 else:
@@ -350,6 +358,66 @@ def test_lots_dus_ne_modifie_jamais_la_base(tmp_path):
 # --- critères de succès d'une étape Claude ---------------------------------------------------------------------
 
 ATTENDUS = ("delta(claude):",)
+
+
+@pytest.mark.parametrize("preexistant", [False, True])
+def test_refus_supervision_avec_rapport_ecrit_pendant_etape_est_un_avertissement(depot, cfg, preexistant):
+    rapport = depot / "rapports" / f"{JOUR}_0416-supervision.md"
+    if preexistant:
+        rapport.write_text("ancien rapport\n")
+        ancien = time.time() - 3600
+        os.utime(rapport, (ancien, ancien))
+    e = etape(depot, "supervision", "supervision-refus", str(rapport), "RAS\n", supervision=True)
+    assert chaine(depot, cfg, [e]).executer() == 0
+    assert codes(depot) == {"supervision": 0, "supervision-refus": 125, "chaine": 0}
+    assert [l[2] for l in journal(depot)] == ["supervision", "supervision-refus", "chaine"]
+    assert all(l[4] == "aucun" for l in journal(depot)), "la supervision ne commite jamais"
+    assert rapport.read_text() == "RAS\n"
+    log = (depot / "rapports" / "auto" / f"{JOUR}-supervision.log").read_text()
+    assert "ok avec avertissement : 1 permission(s) refusée(s), non fatale(s)" in log
+
+
+@pytest.mark.parametrize("ancien_rapport", [False, True], ids=["sans-rapport", "rapport-anterieur"])
+def test_refus_supervision_sans_rapport_ecrit_pendant_etape_reste_fatal(depot, cfg, ancien_rapport):
+    if ancien_rapport:
+        rapport = depot / "rapports" / f"{JOUR}_0416-supervision.md"
+        rapport.write_text("rapport antérieur\n")
+        ancien = time.time() - 3600
+        os.utime(rapport, (ancien, ancien))
+    e = etape(depot, "supervision", "refus", supervision=True)
+    c = chaine(depot, cfg, [e])
+    assert c.executer() == 1
+    assert codes(depot) == {"supervision": 125, "chaine": 1}
+    assert "aucun rapport de supervision écrit pendant l'étape" in c.issues[0].detail
+    log = (depot / "rapports" / "auto" / f"{JOUR}-supervision.log").read_text()
+    assert "aucun rapport de supervision écrit pendant l'étape" in log
+
+
+@pytest.mark.parametrize("nom, contenu", [
+    (f"{JOUR}_0416-supervision.md", ""),
+    ("2026-10-01_0416-supervision.md", "rapport d'un autre jour\n"),
+    (f"{JOUR}_heure-supervision.md", "heure mal formée\n"),
+    (f"{JOUR}_0416-delta.md", "rapport d'une autre étape\n"),
+])
+def test_refus_supervision_rapport_vide_ou_mal_nomme_ne_suffit_pas(depot, cfg, nom, contenu):
+    e = etape(depot, "supervision", "supervision-refus", str(depot / "rapports" / nom), contenu, supervision=True)
+    c = chaine(depot, cfg, [e])
+    assert c.executer() == 1
+    assert codes(depot) == {"supervision": 125, "chaine": 1}
+    assert "aucun rapport de supervision écrit pendant l'étape" in c.issues[0].detail
+
+
+@pytest.mark.parametrize("mode, code", [
+    ("supervision-refus-sale", 126),
+    ("supervision-refus-erreur", 125),
+    ("supervision-refus-is-error", 125),
+    ("supervision-refus-exit", 125),
+])
+def test_refus_supervision_rapport_ne_masque_pas_un_echec(depot, cfg, mode, code):
+    rapport = depot / "rapports" / f"{JOUR}_0416-supervision.md"
+    e = etape(depot, "supervision", mode, str(rapport), "rapport écrit\n", supervision=True)
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot) == {"supervision": code, "chaine": 1}
 
 
 def test_refus_sans_commit_reste_fatal_code_125(depot, cfg):
@@ -773,8 +841,25 @@ def test_skills_claude_lisent_la_base_avec_read():
     for f in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md"):
         t = (RACINE / f).read_text(encoding="utf-8")
         assert "`Read` avec `offset` et `limit`" in t and "jamais de boucle shell" in t, f
+        if f == ".claude/skills/delta/SKILL.md":
+            assert "Toute retouche du fichier du jour, de `index.json` ou d'un autre JSON" in t
+            assert "Edit (ou Write pour un fichier entier)" in t
+            assert "jamais avec `.venv/bin/python -` / heredoc ni avec `python -c`" in t
+            assert "Seule exception" in t and "calcul `id_web`" in t
+            assert "une commande simple par appel, sans boucle" in t
 
 
 def test_supervision_sait_lire_la_ligne_refus():
     t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
     assert "<étape>-refus" in t and "AVERTISSEMENT" in t and "125 permission refusée, fatale" in t
+
+
+def test_supervision_impose_une_commande_simple_et_lit_les_fichiers_avec_read():
+    t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "une commande simple par appel" in t and "ls raw/" not in t
+    assert "`ls`, `grep`, `cat` et `sed` ne sont pas autorisés" in t
+    assert "Un refus ne se retente pas" in t and "sans boucle" in t
+    for point in ("5. Fraîcheur", "7. Échéances"):
+        ligne = next(l for l in t.splitlines() if l.startswith(point))
+        assert "Read" in ligne and "chemin exact" in ligne
+    assert "`limit` court" in t

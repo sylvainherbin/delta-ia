@@ -15,9 +15,12 @@ Pour chaque étape, sans aucun LLM :
 4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Un refus de
    permission (`permission_denials` non vide) est fatal (code 125) SAUF si tout le reste est conforme : le résultat est
    `success`, l'état final est propre (126), et chaque commit attendu de l'étape (`commits_attendus`, sujets de la
-   configuration) figure dans `git log` depuis le début de l'étape avec `origin/main` qui les contient. Le refus devient alors
-   un avertissement (ligne `<étape>-refus`, code 125) : une étape qui s'arrête proprement après un refus (aucun commit) reste
-   un échec. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié, pas de `.git/index.lock`,
+   configuration) figure dans `git log` depuis le début de l'étape avec `origin/main` qui les contient. Pour la supervision,
+   qui ne commite jamais, le résultat attendu est un rapport non vide `rapports/<jour>_HHMM-supervision.md` du jour de la
+   chaîne, créé ou modifié pendant l'étape (mtime >= début de l'étape). Le refus devient alors un avertissement (ligne
+   `<étape>-refus`, code 125) ; sans ce rapport pour la supervision, ou sans les commits attendus pour les autres étapes,
+   il reste fatal même après un arrêt propre. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié,
+   pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
    inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
@@ -27,7 +30,8 @@ Pour chaque étape, sans aucun LLM :
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
 fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 125 est un avertissement (refus non
-fatal, étape réussie avec ses commits poussés) ; 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
+fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
+126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
@@ -290,7 +294,8 @@ def refus_permission(res: Resultat) -> list[str]:
 
 def evaluer_claude(res: Resultat) -> tuple[int, str]:
     """(code, détail) : 0 seulement si exit 0, JSON lisible, subtype success, is_error faux. Les refus de permission se jugent
-    à part (`refus_permission`, voir `Chaine.executer_etape`) : fatals sauf étape complète avec ses commits poussés."""
+    à part (`refus_permission`, voir `Chaine.executer_etape`) : fatals sauf étape complète avec ses commits poussés
+    ou son rapport de supervision écrit pendant l'étape."""
     try:
         d = json.loads(res.stdout)
     except ValueError:
@@ -327,6 +332,19 @@ def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Result
 
 def journaliser(racine: Path, perimetre: str, commit: str, code: int) -> None:
     passages.ajouter(racine, passages.ligne(AGENT_JOURNAL, perimetre, 0, 0, commit, code))
+
+
+def rapport_supervision_ecrit(racine: Path, jour: date, debut: float) -> bool:
+    """Au moins un rapport du jour, non vide, créé ou modifié depuis le début de l'étape."""
+    for rapport in (racine / "rapports").glob(f"{jour.isoformat()}_[0-9][0-9][0-9][0-9]-supervision.md"):
+        try:
+            if rapport.is_file():
+                etat = rapport.stat()
+                if etat.st_size > 0 and etat.st_mtime >= debut:
+                    return True
+        except OSError:
+            continue
+    return False
 
 
 # ------------------------------------------------------------------------------------------------------ garde, kb
@@ -395,6 +413,7 @@ class Chaine:
             return self._fin(etape, CODE_SANS_LOT, True, False, "aucun lot dû")
         avant = tete_courte(racine)
         git_avant = empreinte_git(racine)
+        debut = datetime.now().timestamp()
         res = lancer(etape, racine, env, self.cfg["chaine"]["arret_delai_s"])
         code, detail = evaluer(etape, res)
         refus = refus_permission(res) if etape.agent == "claude" else []
@@ -418,13 +437,21 @@ class Chaine:
                 code, stop = 15, True
                 detail = f"{etat['en_avance']} commit(s) local(aux) non poussé(s) : la chaîne s'arrête, rien n'est poussé"
         avertissement = None
-        if refus and code == 0 and not stop:  # étape réussie avec des refus : fatal sauf commits attendus produits et poussés
-            sujets = sujets_depuis(racine, avant)
-            manquants = [p for p in etape.commits_attendus if not any(x.startswith(p) for x in sujets)]
-            if not etape.commits_attendus or manquants or etat["en_avance"] != 0:
-                cause = ("aucun commit attendu déclaré pour cette étape" if not etape.commits_attendus else
-                         f"commit(s) attendu(s) absent(s) : {', '.join(manquants)}" if manquants else
-                         "commits non poussés ou origin/main illisible")
+        if refus and code == 0 and not stop:  # étape réussie avec des refus : le résultat attendu doit avoir été produit
+            cause = None
+            if etape.supervision:
+                if not rapport_supervision_ecrit(racine, self.jour, debut):
+                    cause = "aucun rapport de supervision écrit pendant l'étape"
+                elif etat["en_avance"] != 0:
+                    cause = "commits non poussés ou origin/main illisible"
+            else:
+                sujets = sujets_depuis(racine, avant)
+                manquants = [p for p in etape.commits_attendus if not any(x.startswith(p) for x in sujets)]
+                if not etape.commits_attendus or manquants or etat["en_avance"] != 0:
+                    cause = ("aucun commit attendu déclaré pour cette étape" if not etape.commits_attendus else
+                             f"commit(s) attendu(s) absent(s) : {', '.join(manquants)}" if manquants else
+                             "commits non poussés ou origin/main illisible")
+            if cause:
                 code = CODE_PERMISSION
                 detail = (f"{len(refus)} permission(s) refusée(s) et l'étape n'a pas produit son résultat ({cause}) : "
                           + " ; ".join(refus[:5]))
