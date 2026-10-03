@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-03",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-03T02:10:00+00:00",
+  "synthese": "Compte et quotas d'abord : ta limite hebdomadaire Claude est à 83 % (remise à zéro le 04/10 à 16 h UTC), donc vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ; la promotion artefacts (10 messages à moitié prix sur la limite de 5 heures, dans l'app Claude seulement) court jusqu'au 15/10, et la page d'aide des crédits d'usage a de nouveau été révisée sans que l'extrait lu montre quelle phrase a changé. Claude Code 2.1.288, déjà installée, corrige plusieurs défauts de reprise de session (`--resume`) et de Remote Control qui touchent tes six sessions tmux, et renomme `claude project purge` en `claude purge`. Le reste de la journée (formation d'ingénieurs en entreprise, notes plateforme révisées) ne change rien à ton usage.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-aide-credits-article",
+      "ids_bruts": [
+        "claude-aide-credits-article"
+      ],
+      "produit": "claude",
+      "titre": "Crédits d'usage des plans payants : page d'aide révisée une deuxième fois",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle révision de la page « Manage usage credits for paid Claude plans » (déjà signalée le 02/10). Le texte lu indique : après la limite du plan, la suite est facturée au tarif standard de l'API et la limite de session se remet à zéro toutes les cinq heures comme d'habitude ; plafond de rachat de 2 000 $ par jour ; les crédits n'expirent en général pas, mais dans certaines juridictions comme le Japon ils expirent six mois après l'achat à partir du 10 septembre 2026. L'extrait lu ne permet pas de dire quelle phrase a changé.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ta limite hebdomadaire est à 83 % et ne se remet à zéro que le 04/10 à 16 h UTC. Si les crédits d'usage sont activés sur ton compte, ils s'appliquent à Claude et à Claude Code, et la suite de ton travail serait facturée au tarif API ; rien dans CONTEXTE.md n'indique que tu les aies activés. Sinon, tu restes bloqué à la limite, sans frais.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Avant la remise à zéro du 04/10 (16 h UTC), vérifier dans Paramètres > Utilisation si les crédits d'usage sont activés et, s'ils le sont, leur plafond mensuel.",
+        "etapes": [
+          "Ouvre claude.ai > Paramètres > Utilisation : regarde tes remises à zéro disponibles avant d'économiser, puis la section Usage credits.",
+          "Si les crédits sont activés, règle un plafond mensuel avec « Adjust limit » plutôt que « Set to unlimited », et regarde si le rechargement automatique est actif.",
+          "S'ils ne le sont pas, rien à faire."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-usage-credits"
+      ],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+          "pourquoi": "Demande déclarée : signaler en priorité crédits et offres, avec leurs conditions."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-code-2.1.288",
+      "ids_bruts": [
+        "claude-code-2.1.288"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.288 : reprises de session et Remote Control fiabilisés, `claude purge`",
+      "version": "2.1.288",
+      "date_publication": "2026-10-02",
+      "type": "nouveaute",
+      "resume": "Corrige la reprise de session : `--resume` ne perd plus les fichiers restaurés par un compactage, une dernière réponse non enregistrée, un transcript tronqué, ni la réflexion antérieure d'une conversation commencée en 2.1.286 ou avant. Remote Control : un nettoyage n'archive plus une session encore connectée ou rattachée par un autre processus, et la reprise après expiration d'un identifiant serveur garde les sessions connectées. Les sessions non interactives (`-p`) et les sous-agents continuent depuis la réponse partielle après un délai d'API, et la limite de durée des commandes en arrière-plan ne s'applique plus qu'aux sessions sans surveillance (`-p`, SDK, CI, cloud). Le classificateur du mode auto ignore une variable `ANTHROPIC_DEFAULT_SONNET_MODEL` qui désigne Sonnet 5.5 ou Opus 5.5 et utilise Sonnet 5. `claude project purge` devient `claude purge` (l'ancien nom marche encore). Ajouts : `/code-review --max-findings <n>|all`, Ctrl+F pour chercher une session par nom dans la vue agents, `CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS`. Correctifs de sécurité : un `rm` dangereux dans un `bash -c` ne passe plus sans demande en mode bypassPermissions, et un hook PreToolUse ou PermissionRequest qui échoue bloque désormais l'appel au lieu d'être ignoré. Base de référence, 4 entrées ajoutées : `claude purge [path]` (supprime l'état local d'un projet, `--dry-run` pour prévisualiser ; l'entrée `claude project purge` est retirée), le skill `/plugin-authoring` (référence pour écrire un mod, 2.1.287 ou plus), `CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS` (n'envoie plus la sortie structurée à une passerelle qui la rejette) et `CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES` (limite les réémissions d'une requête sans streaming expirée).",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21288",
+          "libelle": "Changelog Claude Code 2.1.288",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes six sessions tmux sont relancées par `claude --resume <id> --remote-control` : les correctifs de reprise et de nettoyage Remote Control les concernent directement, surtout avec un Wi-Fi fragile qui coupe les sessions. Si une de tes sessions fixe `ANTHROPIC_DEFAULT_SONNET_MODEL` sur Sonnet 5.5, le classificateur du mode auto utilisera désormais Sonnet 5 à sa place, sans changer le modèle de ta session. Pour le module 5 : le point sur les hooks (un hook en échec bloque maintenant l'appel) rend un hook mal écrit plus coûteux, comme le hook `pkill -f` retiré le 27/09.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Rien d'obligatoire ; vérifier si une variable `ANTHROPIC_DEFAULT_SONNET_MODEL` est définie dans l'environnement de tes sessions.",
+        "etapes": [
+          "Dans une session, demande à Claude de lancer `env` et de chercher `ANTHROPIC_DEFAULT_SONNET_MODEL` : si elle est vide, ce changement ne te concerne pas.",
+          "Si tu veux nettoyer l'état local d'un projet : `claude purge ~/projets/<dossier> --dry-run` d'abord ; la suppression est irréversible."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-purge-path",
+        "claude-code-skills-code-review",
+        "claude-code-commandes-review",
+        "claude-code-fonctionnalites-page-claude-directory",
+        "claude-code-commandes-mcp",
+        "claude-code-parametres-claude-code-disable-structured-outputs",
+        "claude-code-commandes-plugin-authoring",
+        "claude-code-parametres-claude-code-nonstreaming-timeout-retries"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "ed09aece97334b3647314b21c924226298790c41",
+          "pourquoi": "Six sessions lancées par `claude --resume <id> --remote-control` : reprise et Remote Control corrigés."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Wi-Fi fragile qui coupe les sessions à distance, parmi les frictions."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-08-19",
+      "ids_bruts": [
+        "claude-platform-notes-2026-08-19"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — notes du 19/08 révisées (outils computer et browser, Files API, Skills API)",
+      "version": null,
+      "date_publication": "2026-08-19",
+      "type": "amelioration",
+      "resume": "Révision des notes du 19 août : l'outil computer use sort de la bêta (`computer_toolset_20260801`), un outil browser use (`browser_toolset_20260801`) est lancé, et la Files API, les Agent Skills et l'Admin API de gestion des utilisateurs Claude Enterprise sortent de la bêta (l'en-tête bêta n'est plus requis). Pour Claude Managed Agents : filtrage des domaines de `web_search` et `web_fetch`, magasins de mémoire dans les bacs à sable auto-hébergés, nouvel affichage des sessions dans la Console. L'extrait lu ne permet pas de dire quelle phrase a changé.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://www.anthropic.com/news/claude-frontier-academy",
+      "raison": "Programme de formation d'ingénieurs pour grandes entreprises (cohortes sectorielles)"
+    }
+  ],
+  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066"
+}

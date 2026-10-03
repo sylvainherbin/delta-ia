@@ -1,11 +1,11 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-02",
- "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+ "maj_le": "2026-10-03",
+ "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-  "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+  "env.machine": "5fa0b41bfd6b5c4fa2d3368879dd62550fd30402",
   "env.multi-sessions": "ed09aece97334b3647314b21c924226298790c41",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
@@ -19,18 +19,18 @@
   "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
-  "config.codex.interface": "df56f075d6430903783090d81fe79cdaa5706cef",
+  "config.codex.interface": "208d4cd173102a847df7471f89b95d43fee23c20",
   "config.codex.profils": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
   "config.codex.skills": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-  "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
+  "optimisation.pistes": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+  "usage.hors-machine": "094c45aa9d9507647de1778984e71d4302567ccf"
  },
  "contexte_deprecies": [],
- "total": 127,
- "commentees": 127,
+ "total": 129,
+ "commentees": 128,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -181,7 +181,7 @@
    "nom": "/agents",
    "gabarit": "complet",
    "description": "Depuis la v2.1.198, `/agents` affiche seulement un rappel : demander à Claude de créer ou gérer des subagents, ou éditer directement `.claude/agents/` ou `~/.claude/agents/`. L'interface interactive de gestion n'existe plus que jusqu'à la v2.1.197.",
-   "description_source": "As of v2.1.198, running /agents prints a reminder to ask Claude to create or manage subagents, or to edit .claude/agents/ or ~/.claude/agents/ directly. On v2.1.197 and earlier, opens an interactive interface for creating and managing subagent configurations",
+   "description_source": "Print a reminder to ask Claude to create or manage subagents, or to edit .claude/agents/ or ~/.claude/agents/ directly. On v2.1.197 and earlier, opens an interactive interface for creating and managing subagent configurations",
    "usage": "/agents",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -198,11 +198,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -211,6 +211,10 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -1807,10 +1811,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1819,10 +1823,61 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-commandes-claude-purge-path",
+   "produit": "claude-code",
+   "categorie": "commandes",
+   "nom": "claude purge [path]",
+   "gabarit": "complet",
+   "description": "Supprime tout l'état local de Claude Code pour un projet : transcriptions, listes de tâches, journaux de débogage, historique d'édition de fichiers, lignes d'historique de prompts et l'entrée du projet dans `~/.claude.json`. Sans `[path]`, ouvre une liste interactive ; `--dry-run` prévisualise, `-y` saute la confirmation, `-i` confirme chaque élément, `--all` vise tous les projets. Remplace l'ancien nom `claude project purge`, qui fonctionne encore et affiche un avis.",
+   "description_source": "Delete all local Claude Code state for a project: transcripts, task lists, debug logs, file-edit history, prompt history lines, and the project's entry in ~/.claude.json. Omit [path] to pick from an interactive list. Flags: --dry-run to preview, -y/--yes to skip confirmation, -i/--interactive to confirm each item, --all for every project. See Clear local data — claude purge ~/work/repo --dry-run",
+   "usage": "claude purge [path]",
+   "usage_nature": "syntaxe",
+   "exemple": "claude purge ~/work/repo --dry-run",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Destructif et sans scénario d'essai précis dans CONTEXTE.md ; si tu y recours un jour, lance d'abord `claude purge ~/projets/<dossier> --dry-run`, car les transcriptions des sessions herbin-* y passeraient."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/cli-reference",
+     "libelle": "cli-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "ed09aece97334b3647314b21c924226298790c41",
+     "pourquoi": "Les six sessions herbin-* gardent leurs transcriptions dans l'état local du projet."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-cli",
+   "groupe": "CLI commands",
+   "maj_le": "2026-10-03",
+   "historique": [
+    {
+     "date": "2026-10-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-claude-query",
@@ -3766,8 +3821,8 @@
    "nom": "/mcp",
    "gabarit": "complet",
    "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur, `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs.",
-   "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, pass reconnect <server> to reconnect one disconnected server, or pass enable/disable with a server name or all to change connection state without opening the dialog. Also available in non-interactive mode (-p), where running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
-   "usage": "/mcp [reconnect <server>|enable|disable [<server>|all]]",
+   "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. Also available in non-interactive mode (-p), where running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
+   "usage": "/mcp [reconnect (<server>|all)|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -3787,7 +3842,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3800,10 +3855,31 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 9 : connecteurs connectés mais jamais appelés dans Claude Code."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Écart trading-sim : le connecteur de compte Delta-IA y est reçu malgré la règle sans accès web."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-memory",
@@ -4201,6 +4277,53 @@
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-commandes-plugin-authoring",
+   "produit": "claude-code",
+   "categorie": "commandes",
+   "nom": "/plugin-authoring",
+   "gabarit": "complet",
+   "description": "Charge la référence dont Claude se sert pour écrire un mod. Claude peut la charger seul quand tu lui demandes un mod. C'est un skill d'un plugin intégré, désactivable dans `/plugin`. Demande Claude Code 2.1.287 ou plus.",
+   "description_source": "Load the reference Claude works from to write a mod. Claude can load it on its own when you ask for a mod. This is a skill from a built-in plugin, which you can turn off in /plugin. Requires Claude Code v2.1.287 or later",
+   "usage": "/plugin-authoring",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sert à écrire un mod, et aucun mod n'est en projet dans CONTEXTE.md ; à reprendre si tu veux remplacer un hook par un mod."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "pourquoi": "Aucun hook, commande ni plugin propre : pas de mod à écrire pour l'instant."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-10-03",
+   "historique": [
+    {
+     "date": "2026-10-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-powerup",
@@ -4837,9 +4960,9 @@
    "categorie": "commandes",
    "nom": "/review",
    "gabarit": "complet",
-   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument, avec les mêmes niveaux d'effort et options. Sans niveau, reprend le dernier niveau de `low` à `max` que tu as tapé ; `/code-review ultra` lance la revue approfondie dans le cloud.",
+   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument, avec les mêmes niveaux d'effort et options, dont `--max-findings n|all|default`. Sans niveau, reprend le dernier niveau de `low` à `max` que tu as tapé ; `/code-review ultra` lance la revue approfondie dans le cloud.",
    "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review a diff locally for the exact rules. For a deep cloud review, use /code-review ultra. Before v2.1.223, /review was a separate command that ran a single-pass, read-only review of a GitHub pull request by number, listing open PRs to pick from when run with no argument; from v2.1.186 through v2.1.201, it ran the same multi-agent engine as /code-review medium",
-   "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [pr#|branch|path]",
+   "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [--max-findings n|all|default] [pr#|branch|path]",
    "usage_nature": "syntaxe",
    "exemple": "/review 1234",
    "disponibilite": null,
@@ -4859,7 +4982,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4868,10 +4991,18 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-commandes-rewind",

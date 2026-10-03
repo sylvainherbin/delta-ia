@@ -1,11 +1,11 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-10-02",
- "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+ "maj_le": "2026-10-03",
+ "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-  "env.machine": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+  "env.machine": "5fa0b41bfd6b5c4fa2d3368879dd62550fd30402",
   "env.multi-sessions": "ed09aece97334b3647314b21c924226298790c41",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
@@ -19,18 +19,18 @@
   "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
   "config.claude-code.regles-globales": "8ad784ceee39d5708afc21ecced26f59b7edadb9",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
-  "config.codex.interface": "df56f075d6430903783090d81fe79cdaa5706cef",
+  "config.codex.interface": "208d4cd173102a847df7471f89b95d43fee23c20",
   "config.codex.profils": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
   "config.codex.skills": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "9020d04cf1671edf67d940e6a547e5777279dd35",
-  "optimisation.pistes": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-  "usage.hors-machine": "23a4e1519303a94f92274e1c8fc91b0e065d496a"
+  "optimisation.pistes": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+  "usage.hors-machine": "094c45aa9d9507647de1778984e71d4302567ccf"
  },
  "contexte_deprecies": [],
  "total": 24,
- "commentees": 23,
+ "commentees": 22,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -292,9 +292,9 @@
    "categorie": "skills",
    "nom": "/code-review",
    "gabarit": "complet",
-   "description": "Skill de relecture du diff courant, ou d'une PR, d'une branche ou d'un chemin, à la recherche de bugs de correction ; selon le modèle et l'effort, il signale aussi des nettoyages. `--fix` applique les constats dans l'arbre de travail, `--comment` les publie sur la PR, `ultra` lance une relecture approfondie dans le cloud. Alias : `/review`.",
+   "description": "Skill de relecture du diff courant, ou d'une PR, d'une branche ou d'un chemin, à la recherche de bugs de correction ; selon le modèle et l'effort, il signale aussi des nettoyages. `--fix` applique les constats dans l'arbre de travail, `--comment` les publie sur la PR, `--max-findings n|all|default` change le nombre de constats rapportés (choix conservé jusqu'à `default`), `ultra` lance une relecture approfondie dans le cloud. Alias : `/review`.",
    "description_source": "Skill. Review the current diff, or a PR number, branch, or path you pass, for correctness bugs. Depending on your model and effort level, the review also covers cleanup opportunities. Pass --fix to apply findings, --comment to post them on the GitHub PR or GitLab merge request, or ultra to run a deep cloud review. Posting to a GitLab merge request requires Claude Code v2.1.257 or later. With ultra on a github.com PR target, pass --post to preselect posting the finished findings to the PR in the launch dialog; --post requires Claude Code v2.1.227 or later. See Review a diff locally for the effort levels, targeting, and how it relates to /simplify. Alias: /review",
-   "usage": "/code-review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [pr#|branch|path]",
+   "usage": "/code-review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [--max-findings n|all|default] [pr#|branch|path]",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -314,7 +314,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -323,10 +323,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Projet prioritaire, audits Codex et coût élevé des audits contradictoires."
+    }
+   }
   },
   {
    "id": "claude-code-skills-dataviz",
@@ -335,7 +348,7 @@
    "nom": "/dataviz",
    "gabarit": "complet",
    "description": "Skill de conception de graphiques et tableaux de bord : Claude choisit la forme du graphique selon les données, attribue les couleurs par rôle et vérifie la palette (daltonisme, contraste) avec un script fourni. La palette neutre par défaut est à remplacer par la sienne.",
-   "description_source": "Skill. Design guidance for charts, graphs, and dashboards. Claude picks the chart form for the data, assigns color by role, validates the palette for colorblind safety and contrast with a bundled script, and applies mark, interaction, and accessibility rules. Uses a brand-neutral placeholder palette that you replace with your own. Requires Claude Code v2.1.198 or later",
+   "description_source": "Skill. Design guidance for charts, graphs, and dashboards. Claude picks the chart form for the data, assigns color by role, validates the palette for colorblind safety and contrast with a bundled script, and applies mark, interaction, and accessibility rules. Uses a brand-neutral placeholder palette that you replace with your own",
    "usage": "/dataviz [request]",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -352,11 +365,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -365,6 +378,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
