@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-03",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-03T04:05:53+02:00",
+  "synthese": "Le nouveau guide GPT-6 rappelle que les modes Fast et Ultrafast ont un surcoût et recommande de mesurer la qualité, le délai et le coût avant de retenir un réglage plus exigeant : vérifie l’utilisation avant le prochain audit long de trading-sim. L’incident ChatGPT du 2 octobre sur l’exécution de code, l’analyse de données et la création de fichiers est résolu ; si un document de mission a été produit pendant cette plage, vérifie son intégrité avant de le relayer. Aucune nouveauté Codex CLI ni modification de fiche de référence n’a été détectée.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "https://openai.com/index/practical-guide-building-gpt-6",
+      "ids_bruts": ["https://openai.com/index/practical-guide-building-gpt-6"],
+      "produit": "chatgpt",
+      "titre": "Guide GPT-6 : contrôler le coût avant d’augmenter vitesse ou effort",
+      "version": null,
+      "date_publication": "2026-10-02",
+      "type": "actu",
+      "resume": "OpenAI publie un guide de choix des modèles, de l’effort et des consignes. Il rappelle que Fast et Ultrafast accélèrent le travail avec un surcoût, indépendamment de l’effort de raisonnement ; les niveaux Extra high et Max sont à retenir seulement si le gain mesuré justifie le temps et le coût supplémentaires. Le guide ne constitue pas une nouvelle offre tarifaire.",
+      "sources": [
+        {"url": "https://openai.com/index/practical-guide-building-gpt-6/", "libelle": "Guide officiel de la famille GPT-6", "officielle": true},
+        {"url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands", "libelle": "Référence officielle des commandes Codex, dont /usage", "officielle": true}
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Les audits de trading-sim sont coûteux en jetons. Le relevé du 3 octobre indique Astra max par défaut, Sol xhigh dans audit et Sol low dans rapide : compare le résultat d’une vérification courte avant d’augmenter l’effort ou la vitesse. Aucun niveau de service explicite n’est renseigné ; cela ne permet pas de conclure quelle vitesse utilise une conversation.",
+      "projets_concernes": ["trading-sim"],
+      "action": {
+        "description": "Avant le prochain audit long, vérifier l’utilisation et le coût d’un éventuel mode accéléré.",
+        "etapes": [
+          "Dans ta session Codex CLI, saisir /usage et relever l’utilisation ainsi que les remises à zéro disponibles.",
+          "Lire les sections Match the model to the workload et Define the output you need du guide avant un essai de vitesse ou d’effort supérieur.",
+          "Pour un essai sur une vérification courte de trading-sim, comparer le verdict, le délai et l’utilisation avant et après ; conserver le réglage supérieur seulement si le gain est utile."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": ["codex-fonctionnalites-page-agent-configuration-speed", "codex-fonctionnalites-page-model-selection", "codex-commandes-usage"],
+      "contexte_sections": {
+        "config.codex.interface": {"sha1": "208d4cd173102a847df7471f89b95d43fee23c20", "pourquoi": "La CLI sous tmux est désormais l’interface utilisée ; /usage se consulte dans cette session."},
+        "config.codex.profils": {"sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f", "pourquoi": "audit et rapide sont utilisés ; leurs valeurs courantes sont lues dans etat.json."},
+        "projet.trading-sim": {"sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342", "pourquoi": "Les audits contradictoires coûtent beaucoup de jetons ; une vérification courte permet un essai concret."},
+        "methode.travail": {"sha1": "9020d04cf1671edf67d940e6a547e5777279dd35", "pourquoi": "Les limites hebdomadaires et le coût des longs prompts d’audit sont des frictions récurrentes."}
+      }
+    },
+    {
+      "id": "openai-status-01M3YNNVTSCXS8YM2V1YMHMVSE",
+      "ids_bruts": ["openai-status-01M3YNNVTSCXS8YM2V1YMHMVSE"],
+      "produit": "chatgpt",
+      "titre": "Incident d’analyse de données et de création de fichiers ChatGPT résolu",
+      "version": null,
+      "date_publication": "2026-10-02",
+      "type": "correction",
+      "resume": "Certains utilisateurs ont rencontré des erreurs lors de l’exécution de code, de l’analyse de données ou de la création de fichiers dans ChatGPT. Le suivi a été ouvert le 2 octobre 2026 à 16 h 03 UTC et déclaré résolu à 16 h 51 UTC ; OpenAI indique que les services touchés ont entièrement récupéré.",
+      "sources": [{"url": "https://status.openai.com/incidents/01M3YNNVTSCXS8YM2V1YMHMVSE", "libelle": "Suivi officiel de l’incident ChatGPT", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Work prépare les missions et les noyaux transmis pour trading-sim. Si tu as demandé un fichier pendant cette plage, ouvre-le et vérifie qu’il est complet avant de le relayer ; rien ne prouve que tes propres conversations aient été touchées.",
+      "projets_concernes": ["trading-sim", "chatgpt-trading-sim"],
+      "action": {
+        "description": "Avant le prochain relais de mission, contrôler les fichiers éventuellement produits pendant l’incident.",
+        "etapes": [
+          "Dans Work, consulter les réponses qui ont créé un fichier le 2 octobre entre 18 h 03 et 18 h 51, heure Europe/Amsterdam.",
+          "Si une réponse concernée existe, ouvrir la pièce jointe et vérifier son contenu complet ; redemander sa génération si elle manque ou si une erreur est affichée.",
+          "Vérifier ensuite l’empreinte SHA-256 du fichier final selon ta procédure habituelle avant de transmettre la mission."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": ["chatgpt-fonctionnalites-page-artifacts-viewer"],
+      "contexte_sections": {
+        "projet.chatgpt-trading-sim": {"sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73", "pourquoi": "Work produit les missions et les noyaux conservés dans l’espace d’orchestration de trading-sim."},
+        "methode.travail": {"sha1": "9020d04cf1671edf67d940e6a547e5777279dd35", "pourquoi": "Les missions sont des fichiers horodatés et hachés, relayés entre les trois IA."}
+      }
+    }
+  ],
+  "ecartes": [
+    {"id": "releasebot-65404", "raison": "Extension de l’application sectorielle Finances aux comptes Free et Go aux États-Unis, écartée selon D24 ; le brut n’annonce aucune modification de tarif, quota ou remise à zéro. Source : https://releasebot.io/updates/openai/chatgpt"}
+  ],
+  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066"
+}
