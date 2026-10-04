@@ -14,7 +14,9 @@ from .dates import analyser_date, aujourd_hui, maintenant_iso
 from .etat import charger_etat, detecter, premier_passage, sources_connues
 from .http import Client
 from .modeles import Element, ErreurSource, FormatInattendu, empreinte_contenu
+from .revisions import comparer_phrases, textes_precedents
 from .sources import Source
+from .textes import normaliser_contenu
 
 FENETRE_PREMIER_PASSAGE_JOURS = 30
 FENETRE_AMORCAGE_SOURCE_JOURS = 7  # D30 : une source sans trace dans l'état est amorcée sur J-7, sauf option de source `amorcage_jours`
@@ -45,6 +47,8 @@ class Bilan:
     empreintes: dict = field(default_factory=dict)
     ignores_sources: dict = field(default_factory=dict)
     sources_amorcees: list[str] = field(default_factory=list)
+    ignores_raisons: dict[str, str] = field(default_factory=dict)
+    contenus_suivis: dict[str, str] = field(default_factory=dict)
 
     def en_dict(self) -> dict:
         return {
@@ -57,8 +61,10 @@ class Bilan:
             "nouveautes": [e.en_dict() for e in self.nouveautes],
             "ignores": self.ignores,
             "ignores_sources": self.ignores_sources,
+            "ignores_raisons": self.ignores_raisons,
             "sources_amorcees": self.sources_amorcees,
             "empreintes": self.empreintes,
+            "contenus_suivis": self.contenus_suivis,
             "sources_en_echec": [e.en_dict() for e in self.echecs],
         }
 
@@ -149,6 +155,17 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
             if s.id in traitees and "amorcage_jours" in s.options:
                 fenetre_par_source[s.id] = fenetre_amorcage(s, jour, None)
     nouveautes, ignores = detecter(elements, etat, fenetre, fenetre_par_source)
+    # D76 : les textes restent en lecture seule jusqu'à --valider, même lors d'un amorçage.
+    precedents = textes_precedents(chemin_etat.parent.parent, perimetre,
+                                   {e.id: etat["vus"][e.id]["empreinte"] for e in nouveautes if e.revision})
+    ignores_raisons = {}
+    for e in nouveautes:
+        if e.revision and e.id in precedents:
+            e.changements = comparer_phrases(precedents[e.id], e.contenu)
+            if not any(e.changements[k] for k in ("ajoutees", "retirees", "modifiees")):
+                ignores.append(e.id)
+                ignores_raisons[e.id] = "revision_de_forme"
+    nouveautes = [e for e in nouveautes if e.id not in ignores_raisons]
     # Étape 2a : une source à option `amorcage_silencieux` (index d'articles d'aide, éléments non datés) n'annonce rien à
     # sa première lecture : l'existant va dans `ignores`, `--valider` l'inscrit comme référence pour les passages suivants.
     premieres = {s.id for s in sources if s.id in traitees and (premier_passage(etat) or s.id in amorcees)}
@@ -164,9 +181,10 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
     par_id = {e.id: e for e in elements}
     ignores_sources = {i: (par_id[i].source_id if i in par_id else _source_de_l_historique(i, sources)) for i in ignores}
-    empreintes = {e.id: e.empreinte for e in elements if e.empreinte and (e.id in ignores or e in nouveautes)}
+    empreintes = {e.id: e.empreinte for e in elements if e.empreinte}
+    contenus_suivis = {e.id: normaliser_contenu(e.contenu).strip() for e in elements if e.empreinte}
     return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes,
-                 ignores_sources, amorcees)
+                 ignores_sources, amorcees, ignores_raisons, contenus_suivis)
 
 
 _RE_DATE_ECHEANCE = re.compile(r"(\d{4}-\d{2}-\d{2})-j\d+$")

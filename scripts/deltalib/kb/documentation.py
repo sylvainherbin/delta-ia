@@ -15,6 +15,7 @@ import yaml
 from ..dates import maintenant_iso
 from ..http import Client
 from ..modeles import ErreurSource
+from ..textes import normaliser_contenu
 from .extracteurs import EXTRACTEURS
 from .modeles import PERIMETRE_DU_PRODUIT
 
@@ -97,7 +98,7 @@ def chemin_cache(racine: Path, doc: DocSource, nom: str) -> Path:
 
 
 def empreinte(texte: str) -> str:
-    return hashlib.sha1(texte.encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha1(normaliser_contenu(texte).encode("utf-8")).hexdigest()[:16]
 
 
 def lire_cache(racine: Path, doc: DocSource, surcharge: dict | None = None) -> dict[str, str]:

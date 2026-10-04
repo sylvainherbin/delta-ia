@@ -8,7 +8,7 @@ from deltalib.analyseurs import ANALYSEURS, github_changelog, github_releases, h
 from deltalib.modeles import ErreurReseau, FormatInattendu
 
 CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle",
-          "empreinte", "revision"}
+          "empreinte", "revision", "changements"}
 
 
 def test_tous_les_types_ont_un_analyseur():

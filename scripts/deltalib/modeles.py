@@ -7,6 +7,8 @@ import re
 import unicodedata
 from dataclasses import asdict, dataclass, field
 
+from .textes import normaliser_contenu
+
 PRODUITS = ("claude", "claude-code", "chatgpt", "codex", "actu")
 PERIMETRES = ("claude", "openai", "actu")
 TYPES = ("github_changelog", "github_releases", "html", "rss", "json")
@@ -57,7 +59,7 @@ def empreinte_contexte(racine) -> str | None:
 
 def empreinte_contenu(texte: str) -> str:
     """Empreinte du contenu, pour détecter une révision d'une entrée déjà vue (option `suivre_revisions`)."""
-    return hashlib.sha1((texte or "").strip().encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha1(normaliser_contenu(texte).strip().encode("utf-8")).hexdigest()[:16]
 
 
 def cle_version(version: str) -> tuple:
@@ -82,6 +84,7 @@ class Element:
     officielle: bool
     empreinte: str | None = None  # renseignée si la source suit les révisions
     revision: bool = False  # True si l'élément était connu mais son contenu a changé
+    changements: dict | None = None  # D76 : phrases ajoutées, retirées, modifiées ; None sans texte précédent
 
     def __post_init__(self) -> None:
         if self.produit not in PRODUITS:
@@ -98,7 +101,7 @@ class Element:
     def en_dict(self) -> dict:
         d = asdict(self)
         ordre = ["id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id",
-                 "officielle", "empreinte", "revision"]
+                 "officielle", "empreinte", "revision", "changements"]
         return {k: d[k] for k in ordre}
 
 

@@ -107,7 +107,7 @@ def commande_valider(perimetre: str, racine: Path, dry_run: bool, jour: date | N
         print(f"le fichier {chemin_quotidien} n'est pas celui du périmètre {perimetre!r} au {jour}", file=sys.stderr)
         return 2
     etat = charger_etat(chemin_etat)
-    etat, bilan = valider(etat, brut, quotidien)
+    etat, bilan = valider(etat, brut, quotidien, racine=None if dry_run else racine)
     prefixe = "[dry-run] " if dry_run else ""
     print(f"{prefixe}état {chemin_etat} : {bilan['inscrits']} inscrit(s), {bilan['revises']} révisé(s), "
           f"{len(etat['vus'])} au total ; {len(bilan['en_attente'])} nouveauté(s) en attente")

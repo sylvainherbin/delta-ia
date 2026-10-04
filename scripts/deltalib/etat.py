@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .dates import maintenant_iso
 from .modeles import Element
+from .revisions import ecrire_cache
 
 VERSION_ETAT = 1
 
@@ -96,12 +97,13 @@ def ids_couverts(quotidien: dict) -> tuple[set[str], set[str]]:
     return bruts, ecartes
 
 
-def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
+def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = None) -> tuple[dict, dict]:
     """Fait avancer l'état d'après le fichier quotidien de l'agent (D5, D13).
 
     Inscrits : les nouveautés brutes reprises dans `ids_bruts` ou `ecartes`, les `ignores` du fichier brut,
     les identifiants `web-*`. Les nouveautés brutes absentes restent en attente et sont listées.
     Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids], borne_avancee}.
+    D76 : avec `racine`, conserve les textes suivis validés dans raw/revisions/ ; sans elle, aucune écriture (dry-run).
     """
     vus = etat.setdefault("vus", {})
     empreintes = brut.get("empreintes") or {}
@@ -136,6 +138,7 @@ def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
         else:
             bilan["inconnus"].append(ident)  # ni dans le brut, ni dans l'état, ni issu du web : suspect
     sources_ignores = brut.get("ignores_sources") or {}
+    raisons_ignores = brut.get("ignores_raisons") or {}
     for ident in brut.get("ignores", []):
         if ident not in vus:
             # la source est conservée : c'est la trace qui évite de ré-amorcer la source au passage suivant (D30)
@@ -143,6 +146,20 @@ def valider(etat: dict, brut: dict, quotidien: dict) -> tuple[dict, dict]:
             if ident in empreintes:
                 vus[ident]["empreinte"] = empreintes[ident]
             bilan["inscrits"] += 1
+        elif (raisons_ignores.get(ident) == "revision_de_forme" and empreintes.get(ident)
+              and vus[ident].get("empreinte") != empreintes[ident]):
+            vus[ident]["empreinte"] = empreintes[ident]
+            vus[ident]["revise_le"] = horodatage
+            bilan["revises"] += 1
+    if racine is not None:
+        # Les entrées identiques déjà vues peuvent aussi amorcer leur cache ; un texte
+        # nouveau encore en attente ne doit jamais remplacer la version validée.
+        contenus = dict(brut.get("contenus_suivis") or {})
+        contenus.update({ident: e["contenu"] for ident, e in par_id.items() if isinstance(e.get("contenu"), str)})
+        for ident, texte in contenus.items():
+            empreinte = (par_id.get(ident) or {}).get("empreinte") or empreintes.get(ident)
+            if empreinte and vus.get(ident, {}).get("empreinte") == empreinte and ident not in bilan["en_attente"]:
+                ecrire_cache(racine, brut["perimetre"], ident, texte)
     traces = etat.setdefault("sources", {})
     for sid in brut.get("sources_traitees", []):  # D30 : trace de chaque source traitée, couverte ou non
         traces.setdefault(sid, {"vue_le": horodatage})
