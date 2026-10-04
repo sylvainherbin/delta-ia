@@ -8,7 +8,7 @@ Usage :
   catalogue.py a-commenter --perimetre P --lot LOT [--tout]    entrées du lot à commenter (JSON sur la sortie)
   catalogue.py a-commenter --perimetre P --lot perimees        10 entrées au plus (D64-bis, amendée le 29/09/2026) :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
-                                                               d'un `ignorer` (D67) ; `utiliser` et `tester` d'abord,
+                                                               d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py adoptions --perimetre P [--dry-run]            D67 : statut_usage `utilise` pour les id de la section
@@ -80,15 +80,23 @@ def main(argv=None) -> int:
         p.error("--perimetre est obligatoire pour cette commande")
     entrees = cat.charger(a.racine, a.perimetre)
     contexte = empreinte_contexte(a.racine)
+    try:
+        rejugements = cat.charger_rejugements(a.racine) if a.commande in ("lots", "a-commenter", "appliquer") else {}
+    except ValueError as err:
+        print(f"! {err}", file=sys.stderr)
+        return 1
     if a.commande == "lots":
+        dus = sum(cat.motif_rejugement(e, rejugements) is not None for e in entrees.values())
+        print(f"{'rejugements':<22} {'(D78)':<8} {dus:>4} fiches dues")
         if cat.PERIMEES_SUSPENDU:
             print(f"{'perimees':<22} suspendu")
         else:
-            tout = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine), maximum=None)
+            tout = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine), maximum=None,
+                                      rejugements=rejugements)
             if tout:
-                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption")}
-                print(f"{'perimees':<22} {'(D64bis)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
-                      f"(a section {n['a']}, adoption {n['adoption']})")
+                n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption", "rejugement")}
+                print(f"{'perimees':<22} {'(D64bis/D78)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
+                      f"(a section {n['a']}, adoption {n['adoption']}, rejugement {n['rejugement']})")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
@@ -98,7 +106,8 @@ def main(argv=None) -> int:
             print("lot perimees suspendu (catalogue.PERIMEES_SUSPENDU)", file=sys.stderr)
             return 3
         if a.lot == "perimees":
-            det = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine))
+            det = cat.perimees_detail(entrees, empreintes_sections(a.racine), deprecies_contexte(a.racine),
+                                     rejugements=rejugements)
             lot = {"ids": [x["id"] for x in det]}
             motifs = {x["id"]: x["motif"] for x in det}
             a.tout = True
@@ -147,7 +156,7 @@ def main(argv=None) -> int:
         courantes, dep = empreintes_sections(a.racine), deprecies_contexte(a.racine)
 
         def motif_de(e):
-            c = cat.classer(e, courantes, dep)
+            c = cat.classer(e, courantes, dep, rejugements)
             return c[1] if c else None
         journal = []
         erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,

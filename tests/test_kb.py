@@ -935,7 +935,7 @@ def test_perimees_ordre_adoption_entre_tester_et_ignorer():
     ent = {k: {"recommandation": {"verdict": v}} for k, v in verdicts.items()}
     import unittest.mock as m
     cles = {x["id"]: x for x in det}
-    with m.patch.object(cat, "classer", side_effect=lambda e, c, d=frozenset(): (cles[e["_id"]]["categorie"], "m")):
+    with m.patch.object(cat, "classer", side_effect=lambda e, c, d=frozenset(), rejugements=None: (cles[e["_id"]]["categorie"], "m")):
         for k in ent:
             ent[k]["_id"] = k
         res = cat.perimees_detail(ent, {"x": "y"}, set(), maximum=None)

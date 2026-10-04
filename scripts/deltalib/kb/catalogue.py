@@ -12,8 +12,11 @@ Fusion (D40, D44) :
 from __future__ import annotations
 
 import json
+import sys
 from datetime import date
 from pathlib import Path
+
+import yaml
 
 from ..dates import maintenant_iso
 from ..contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections, format_valide, sections_perimees
@@ -265,6 +268,60 @@ PERIMEES_MAX = 10  # D64-bis (amendée le 29/09/2026) : réévaluations priorita
 PERIMEES_SUSPENDU = False
 
 
+def charger_rejugements(racine: Path) -> dict[str, dict[str, str]]:
+    """D78 : dernière demande par id, tous périmètres confondus ; un id inconnu est seulement signalé."""
+    chemin = racine / "kb-rejugements.yaml"
+    if not chemin.exists():
+        return {}
+    try:
+        demandes = yaml.safe_load(chemin.read_text(encoding="utf-8"))
+    except yaml.YAMLError as err:
+        raise ValueError(f"kb-rejugements.yaml : YAML invalide : {err}") from err
+    if demandes is None:
+        return {}
+    if not isinstance(demandes, list):
+        raise ValueError("kb-rejugements.yaml : liste de demandes {date, motif, ids} attendue")
+    if not demandes:
+        return {}
+    connus = {k for per in PRODUITS_PAR_PERIMETRE for k in charger(racine, per)}
+    res, inconnus = {}, set()
+    for n, demande in enumerate(demandes, 1):
+        ou = f"kb-rejugements.yaml : demande {n}"
+        if not isinstance(demande, dict):
+            raise ValueError(f"{ou} : {{date, motif, ids}} attendu")
+        jour = str(demande.get("date", ""))  # safe_load accepte aussi les dates YAML non citées
+        try:
+            if date.fromisoformat(jour).isoformat() != jour:
+                raise ValueError
+        except ValueError as err:
+            raise ValueError(f"{ou} : date AAAA-MM-JJ attendue") from err
+        motif, ids = demande.get("motif"), demande.get("ids")
+        if not isinstance(motif, str) or not motif.strip() or "\n" in motif or "\r" in motif:
+            raise ValueError(f"{ou} : motif non vide sur une ligne attendu")
+        if not isinstance(ids, list) or not all(isinstance(k, str) and k.strip() for k in ids):
+            raise ValueError(f"{ou} : liste d'ids attendue")
+        for k in ids:
+            if k not in connus:
+                inconnus.add(k)
+            elif k not in res or jour >= res[k]["date"]:
+                res[k] = {"date": jour, "motif": motif.strip()}
+    if inconnus:
+        print(f"! kb-rejugements.yaml : id inconnus dans la base : {', '.join(sorted(inconnus))}", file=sys.stderr)
+    return res
+
+
+def motif_rejugement(e: dict, rejugements: dict | None) -> str | None:
+    """D78 : seule la date du dernier commentaire éteint la demande, jamais `maj_le` (adoption, source…)."""
+    demande = (rejugements or {}).get(e.get("id"))
+    if not demande or not e.get("commentee") or e.get("retiree"):
+        return None
+    dernier = max((h["date"] for h in e.get("historique", [])
+                   if h.get("changement") in ("commentée", "commentaire révisé", "réévaluée")), default="")
+    if dernier < demande["date"]:
+        return f"rejugement demandé ({demande['motif']})"
+    return None
+
+
 def adoptee_non_revue(e: dict) -> bool:
     """D67 : adoption déclarée (statut_usage `utilise`) sur un verdict `ignorer`, sans commentaire postérieur."""
     if e.get("statut_usage") != "utilise" or (e.get("recommandation") or {}).get("verdict") != "ignorer":
@@ -277,9 +334,10 @@ def adoptee_non_revue(e: dict) -> bool:
     return False
 
 
-def classer(e: dict, courantes: dict[str, str], deprecies_: set[str] = frozenset()) -> tuple[str, str] | None:
-    """(catégorie a|adoption, motif du journal) si l'entrée est à réévaluer, sinon None (D64-bis, amendée le 29/09/2026).
-    a) section citée modifiée, disparue ou dépréciée ; adoption) `ignorer` adopté par Sylvain (D67).
+def classer(e: dict, courantes: dict[str, str], deprecies_: set[str] = frozenset(),
+            rejugements: dict | None = None) -> tuple[str, str] | None:
+    """(catégorie a|adoption|rejugement, motif du journal) si l'entrée est à réévaluer, sinon None.
+    a) section citée modifiée, disparue ou dépréciée ; adoption) `ignorer` adopté par Sylvain (D67) ; demande D78.
     Une entrée antérieure à D64 (null) ou sans section citée ({}) n'est jamais reprise pour un changement de CONTEXTE."""
     if not e.get("commentee") or e.get("retiree"):
         return None
@@ -289,19 +347,24 @@ def classer(e: dict, courantes: dict[str, str], deprecies_: set[str] = frozenset
         return "a", f"section:{touchees[0]}"
     if adoptee_non_revue(e):
         return "adoption", "adoption"
+    motif = motif_rejugement(e, rejugements)
+    if motif:
+        return "rejugement", motif
     return None
 
 
 def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], deprecies_: set[str] = frozenset(),
-                    maximum: int | None = PERIMEES_MAX) -> list[dict]:
-    """D64-bis (amendée le 29/09/2026) : lot `perimees`, ordonné a `utiliser`, a `tester`, adoption, puis a `ignorer`
+                    maximum: int | None = PERIMEES_MAX, *, rejugements: dict | None = None) -> list[dict]:
+    """D64-bis et D78 : lot `perimees`, ordonné `utiliser`, `tester`, adoption, puis `ignorer`
     (une adoption déclarée par Sylvain est le signal le plus fiable) ; `maximum` entrées."""
-    if not courantes:
-        return []
     rang = {"utiliser": 0, "tester": 1, "ignorer": 2}
     res = []
     for k, e in entrees.items():
-        c = classer(e, courantes, deprecies_)
+        if courantes:
+            c = classer(e, courantes, deprecies_, rejugements)
+        else:  # sans CONTEXTE, D64-bis reste inactif ; une demande explicite D78 reste exploitable
+            motif = motif_rejugement(e, rejugements)
+            c = ("rejugement", motif) if motif else None
         if c:
             res.append({"id": k, "categorie": c[0], "motif": c[1]})
     def cle(x):
@@ -314,8 +377,8 @@ def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], depreci
 
 
 def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, deprecies_: set[str] = frozenset(),
-             maximum: int = PERIMEES_MAX) -> list[str]:
-    return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum)]
+             maximum: int = PERIMEES_MAX, *, rejugements: dict | None = None) -> list[str]:
+    return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum, rejugements=rejugements)]
 
 
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
@@ -358,7 +421,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
     `resoudre` (D64-bis) : fonction {ctx-id: pourquoi} -> {ctx-id: {sha1, pourquoi}} ; quand elle est fournie, chaque
     commentaire doit citer `contexte_sections` ({} si le jugement ne dépend d'aucune section).
     `journal` (B3) : reçoit une ligne {date, id, verdict_avant, verdict_apres, motif} par réévaluation ; `motif_de(entrée)`
-    donne le motif (section:<ctx-id>, adoption)."""
+    donne le motif (section:<ctx-id>, adoption, rejugement demandé (<motif>))."""
     jour = jour or date.today().isoformat()
     erreurs = []
     for k, c in commentaires.items():

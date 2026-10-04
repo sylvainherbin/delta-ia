@@ -465,7 +465,7 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
 
 # age, legacy et nouveau-projet ne sont plus produits (D64-bis amendée le 29/09/2026 ; rattrapage legacy openai effectué
 # le 29/09/2026, code retiré) ; ils restent valides dans le journal existant
-RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|adoption|age|legacy|nouveau-projet:[A-Za-z0-9._-]+)$")
+RE_MOTIF = re.compile(r"^(?:section:[A-Za-z0-9._-]+|adoption|age|legacy|nouveau-projet:[A-Za-z0-9._-]+|rejugement demandé \([^\r\n]+\))$")
 
 
 def verifier_journal(chemin: Path, ou: str, ids: set[str], r: Rapport) -> None:

@@ -378,7 +378,8 @@ def lots_dus(racine: Path, perimetre: str) -> int:
     entrees = cat.charger(racine, perimetre)
     dues = adoptions_en_attente(racine, perimetre, entrees)
     if not cat.PERIMEES_SUSPENDU:
-        dues += len(cat.perimees_detail(entrees, empreintes_sections(racine), deprecies_contexte(racine), maximum=None))
+        dues += len(cat.perimees_detail(entrees, empreintes_sections(racine), deprecies_contexte(racine), maximum=None,
+                                       rejugements=cat.charger_rejugements(racine)))
     dues += sum(l["a_commenter"] for l in cat.lots(entrees, perimetre))
     return dues
 
