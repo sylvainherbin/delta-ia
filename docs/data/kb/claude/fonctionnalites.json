@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-03",
+ "maj_le": "2026-10-04",
  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -30,7 +30,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 103,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -612,16 +612,16 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude coordinate ongoing work with Projects",
    "gabarit": "complet",
-   "description": "Un projet est une conversation au long cours où Claude lance un fil (session cloud) par tâche, chacun avec les dépôts, les instructions et la mémoire du projet, et un volet Overview montre ce qui est fini ou attend une réponse. Il travaille sur des dépôts GitHub et des fichiers téléversés, pas sur la machine locale, et consomme les limites du plan plus vite qu'une session seule.",
+   "description": "Un projet est une conversation au long cours où Claude coordonne un flux de tâches liées : il lance un fil par tâche, en général une session cloud qui part des dépôts GitHub, fichiers, instructions et mémoire du projet, et le volet Overview montre les fils terminés, les pull requests prêtes et ceux qui attendent une réponse. Un fil peut aussi tourner sur ta machine via Remote Control quand la tâche en a besoin ; les fils cloud ne reprennent rien de la configuration Claude Code locale. Un projet consomme les mêmes limites du plan que les autres sessions, et plus vite.",
    "description_source": "Hand Claude a stream of related tasks in one conversation and let it run them as parallel cloud sessions that share repositories, instructions, and memory.",
    "usage": "This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.\n\n- Branch from main and open one draft pull request per thread.\n- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.\n- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.\n- Don't merge, force-push, or change CI configuration without asking me in the thread.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta publique, déploiement progressif) ; claude.ai/code, onglet Code de l'app de bureau, app iOS",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "CONTEXTE range les Projets parmi les fonctions à explorer ; le déploiement commence par les comptes sans projets claude.ai existants, or Sylvain en a trois, donc l'accès pourrait arriver plus tard. Carnet, public et sur GitHub, serait le candidat, pas trading-sim qui dépend de la machine."
+    "pourquoi": "Le déploiement commence par les comptes sans Projets claude.ai, or tu en as trois : vérifie si « Projects » apparaît dans la barre latérale de claude.ai/code, sinon la liste d'attente. Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone, en surveillant Paramètres > Utilisation, car un projet use plus vite les limites hebdomadaires."
    },
    "sources": [
     {
@@ -630,11 +630,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-01",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -651,10 +651,27 @@
     {
      "date": "2026-10-01",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "3 Projets claude.ai existants ; Projets en profondeur à explorer ; app iPhone pour piloter."
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "Dépôt public sur GitHub, candidat à des fils cloud."
+    },
+    "optimisation.pistes": {
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 11 : limites hebdomadaires approchées, à surveiller avant tout usage parallèle."
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-security",
@@ -2373,16 +2390,16 @@
    "categorie": "fonctionnalites",
    "nom": "Configure the sandboxed Bash tool",
    "gabarit": "complet",
-   "description": "Le bac à sable Bash isole au niveau du système les fichiers et domaines que les commandes peuvent toucher, pour les exécuter sans demande d'autorisation. `/sandbox` ouvre le panneau de réglage ; sous Linux, il faut installer `bubblewrap` et `socat`.",
+   "description": "Le bac à sable Bash est une limite appliquée par le système autour des commandes shell de Claude (Bash, Monitor et leurs sous-processus) : écriture limitée au dossier de travail et au dossier temporaire, réseau coupé sauf domaines autorisés, ce qui permet de les exécuter sans demande d'autorisation. Les outils Read, Edit, Write, WebFetch, les hooks et les serveurs MCP restent hors du bac à sable. `/sandbox` ouvre le panneau de réglage ; sous Linux, il faut `bubblewrap` et `socat`, et sans eux les commandes tournent sans bac à sable, sauf si `sandbox.failIfUnavailable` vaut `true`.",
    "description_source": "Restrict the files and network hosts Claude Code's shell commands can reach with the built-in sandbox. Turn it on, set the boundary, and fix what it breaks.",
    "usage": "    /sandbox",
    "usage_nature": "syntaxe",
-   "exemple": "sudo apt-get install bubblewrap socat",
-   "disponibilite": "macOS, Linux et WSL2",
+   "exemple": "claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'",
+   "disponibilite": "Linux, WSL2",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Le mode auto sert déjà à éviter les invites, et CONTEXTE ne décrit aucun besoin d'isolation supplémentaire des fichiers ou du réseau."
+    "verdict": "tester",
+    "pourquoi": "Sur trading-sim, la règle « aucun accès web » ne couvre que WebFetch, WebSearch et les connecteurs : une session lancée avec `claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` couperait aussi le réseau des commandes Bash (un `curl` doit échouer), sans rien écrire ; choisir un mode dans `/sandbox` l'enregistre dans `.claude/settings.local.json`, et le réglage durable de ce dépôt passe par Work."
    },
    "sources": [
     {
@@ -2391,11 +2408,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2408,10 +2425,27 @@
     {
      "date": "2026-10-02",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Politique de capacités : WebFetch, WebSearch, navigateur et connecteurs interdits."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Règle « aucun accès web en Lot 001 » ; réglages de trading-sim gouvernés par Work."
+    },
+    "env.machine": {
+     "sha1": "5fa0b41bfd6b5c4fa2d3368879dd62550fd30402",
+     "pourquoi": "Linux Mint 22.1 : bubblewrap et socat requis."
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-scheduled-tasks",
@@ -2658,7 +2692,7 @@
    "categorie": "fonctionnalites",
    "nom": "Create custom subagents",
    "gabarit": "complet",
-   "description": "Un sous-agent est un assistant spécialisé qui travaille dans sa propre fenêtre de contexte, avec son invite système, ses outils et ses permissions, puis ne rend qu'un résumé ; il se définit dans un fichier Markdown à en-tête YAML, dans `~/.claude/agents/` ou `.claude/agents/`. Son modèle se résout dans cet ordre : paramètre `model` passé à l'appel, champ `model` de la définition (`inherit` = modèle de la session), `CLAUDE_CODE_SUBAGENT_MODEL`, puis modèle de la session ; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` écrase tout. `/tasks` montre le modèle d'un sous-agent en cours.",
+   "description": "Un sous-agent est un assistant spécialisé qui travaille dans sa propre fenêtre de contexte, avec son invite système, ses outils et ses permissions, puis ne rend qu'un résumé à la session principale. Il se définit dans un fichier Markdown à en-tête YAML, dans `~/.claude/agents/` (personnel) ou `.claude/agents/` (projet), et peut fixer son propre modèle avec `model:`.",
    "description_source": "Create and use specialized AI subagents in Claude Code for task-specific workflows and improved context management.",
    "usage": "    Create a personal code-improver subagent in ~/.claude/agents/ that scans\n    files and suggests improvements for readability, performance, and best\n    practices. It should explain each issue, show the current code, and\n    provide an improved version. Make it read-only and have it use Sonnet.",
    "usage_nature": "syntaxe",
@@ -2667,7 +2701,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Ton agent `executant` a été testé une fois sans être adopté ; un second essai viserait la revue machine d'une campagne (piste 5) : un sous-agent en lecture seule (`tools: Read, Glob, Grep`) avec son propre `model:` dans la définition, lancé depuis herbin-mint, dont on vérifierait le modèle dans `/tasks`."
+    "pourquoi": "Ton agent `executant` a été testé une fois sans être adopté ; un second essai viserait la revue machine d'une campagne (piste 5) : un sous-agent en lecture seule (`tools: Read, Glob, Grep`), avec son `model:` dans la définition, lancé depuis herbin-mint."
    },
    "sources": [
     {
@@ -2680,7 +2714,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2721,21 +2755,25 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "agent perso executant testé une fois le 25/09, non adopté ; politique : modèle fixé dans chaque définition"
+     "pourquoi": "Agent perso executant testé le 25/09, non adopté ; modèle fixé dans chaque définition de sous-agent."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "piste 5 : revue machine d'une campagne, geste répété sans commande perso"
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 5 : revue machine d'une campagne, geste répété sans commande ni agent perso."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint fait la revue machine des calculs lourds avant lancement"
+     "pourquoi": "herbin-mint fait la revue machine des calculs lourds avant lancement."
     }
    }
   },
@@ -5305,7 +5343,7 @@
    "categorie": "fonctionnalites",
    "nom": "What are artifacts and how do I use them?",
    "gabarit": "complet",
-   "description": "Un artefact est ce que Claude produit pour être montré (design, présentation, document, tableau de bord, petit outil) : il s'ouvre à côté de la conversation, se modifie, se reprend et se partage. On peut partir d'un modèle (Docs, Slides, Design) ; depuis Claude Code, on publie le résultat d'une session ; sur iPhone, on le consulte dans l'onglet Artifacts sans pouvoir le modifier. Les artefacts de chat antérieurs au 16 septembre 2026 deviennent « anciens » : ils fonctionnent encore mais on n'en crée plus.",
+   "description": "Un artefact est ce que Claude produit pour être montré (design, présentation, document, tableau de bord, petit outil) : il s'ouvre à côté de la conversation, se modifie, se reprend et se partage. On le demande dans n'importe quelle conversation, Claude Code compris, ou on part d'un modèle de l'onglet « Artifacts » ; pour repartir d'un artefact publié, on copie son code dans une nouvelle conversation et on décrit les changements voulus.",
    "description_source": "An artifact is anything Claude makes for you that you'd put in front of someone: a design, a deck, a document, a dashboard, or a small interactive tool. It opens beside your conversation, and you can edit it, come back to it, and share it with others. Ask for one in any conversation with Claude, including in Claude Code, or start from a template in the “Artifacts” tab.",
    "usage": "1. Open the published artifact and click \"Copy\" to copy its code.\n2. Start a new chat, paste the code, and describe the changes you want. For example: \"Here's the code for a quiz game. Change the questions to be about movies and add a timer.\"\n3. Refine the new artifact the same way you would any artifact you made yourself.",
    "usage_nature": "etapes",
@@ -5314,7 +5352,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises déjà les artefacts, et Claude Design en est l'un des modèles ; sur l'iPhone, ton interface principale, ils se consultent dans l'onglet Artifacts, mais la modification et le partage demandent le web ou Claude Desktop."
+    "pourquoi": "Tu utilises déjà les artefacts dans Claude, et Claude Design, que tu utilises intensivement, en produit ; l'iPhone sert surtout à piloter tes sessions, donc la modification se fait plutôt dans Claude Desktop."
    },
    "sources": [
     {
@@ -5327,7 +5365,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5372,17 +5410,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Claude : artefacts utilisés ; app iPhone surtout pour piloter les sessions."
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "Claude : artefacts utilisés ; app iPhone surtout pour piloter les sessions Claude Code ; Claude Desktop : toutes ses fonctions utiles voulues."
     },
     "config.claude-code.skills": {
      "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Claude Design, modèle d'artefact, utilisé intensivement."
+     "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop."
     }
    }
   },
@@ -5392,7 +5434,7 @@
    "categorie": "fonctionnalites",
    "nom": "What are projects?",
    "gabarit": "complet",
-   "description": "Un Projet est un espace avec son historique de conversations, ses documents et ses instructions. Une nouvelle version en bêta, d'abord dans Claude Code, fait du projet une seule conversation qui découpe le travail en tâches ; les Projets existants continuent de fonctionner et seront migrés plus tard sur Pro et Max.",
+   "description": "Un Projet est un espace qui regroupe un historique de conversations, des documents et des instructions communes. Une nouvelle version en bêta, déployée d'abord dans Claude Code, change le fonctionnement des Projets ; les Projets existants continuent de fonctionner comme avant.",
    "description_source": "Note: A new version of projects is now available in beta, rolling out in stages starting with Claude Code. Existing projects keep working as they do today. See The new version of projects (beta) below.",
    "usage": "**Note:** A new version of projects is now available in beta, rolling out in stages starting with Claude Code. Existing projects keep working as they do today. See **[The new version of projects (beta)](#h_e9fb2a161e)** below.",
    "usage_nature": "etapes",
@@ -5401,7 +5443,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Sylvain a trois Projets claude.ai, dont « Web app ia » actif le 23/09 ; y garder instructions et documents de référence évite de les redonner à chaque conversation."
+    "pourquoi": "Tu as trois Projets claude.ai, dont « Web app ia » pour la veille ; y garder instructions et documents de référence évite de les redonner à chaque conversation, et l'usage « en profondeur » des Projets reste sur ta liste à explorer."
    },
    "sources": [
     {
@@ -5414,7 +5456,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5439,13 +5481,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "3 Projets claude.ai, dont « Web app ia » actif le 23/09"
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "3 Projets claude.ai, dont « Web app ia » ; Projets en profondeur à explorer."
     }
    }
   },

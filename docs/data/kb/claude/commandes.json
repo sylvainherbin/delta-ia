@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-03",
+ "maj_le": "2026-10-04",
  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -243,7 +243,7 @@
    "categorie": "commandes",
    "nom": "/artifacts",
    "gabarit": "complet",
-   "description": "Liste les artefacts que tu possèdes ou qui te sont partagés, puis permet d'en attacher un à la session, de l'ouvrir dans le navigateur ou de copier son lien. Disponible là où les artefacts le sont.",
+   "description": "Liste les artefacts que tu possèdes ou qui te sont partagés, puis permet d'en attacher un à la session, de l'ouvrir dans le navigateur ou de copier son lien. Disponible là où les artefacts le sont ; demande Claude Code v2.1.208 au moins, et v2.1.216 pour attacher avec Entrée.",
    "description_source": "List the artifacts you own or that are shared with you, then attach one to the session, open it in your browser, or copy its link. Available where artifacts are. Requires Claude Code v2.1.208 or later; attaching with Enter requires v2.1.216",
    "usage": "/artifacts",
    "usage_nature": "syntaxe",
@@ -252,7 +252,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu utilises les artefacts dans l'app Claude : `/artifacts` puis Entrée dans la session delta-ia attacherait un artefact de la veille sans recopier son contenu à la main."
+    "pourquoi": "Tu utilises les artefacts dans Claude : dans la session herbin-delta, `/artifacts` puis Entrée sur une maquette de Claude Design l'attacherait à la session sans recopier son contenu à la main."
    },
    "sources": [
     {
@@ -265,7 +265,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -290,17 +290,25 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Claude : artefacts utilisés"
+     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "pourquoi": "Claude : artefacts utilisés."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "session delta-ia pour les passages de la veille"
+     "pourquoi": "herbin-delta (Dev-delta) développe la web app delta-ia."
+    },
+    "config.claude-code.skills": {
+     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "pourquoi": "Claude Design utilisé intensivement pour les interfaces Delta."
     }
    }
   },
@@ -3388,7 +3396,7 @@
    "categorie": "commandes",
    "nom": "/hooks",
    "gabarit": "complet",
-   "description": "Affiche la configuration des hooks, classée par événement d'outil.",
+   "description": "Affiche la configuration des hooks chargés dans la session.",
    "description_source": "View hook configurations",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
@@ -3397,7 +3405,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une fois écrit le hook `PreToolUse` qui vérifie le `.sha256` d'une mission herbin-trading, taper `/hooks` pour confirmer qu'il est chargé sur le bon événement avant le premier lancement."
+    "pourquoi": "Une fois écrit un hook `PreToolUse` qui vérifie le `.sha256` d'une mission herbin-trading (piste 3), taper `/hooks` pour confirmer qu'il est chargé avant le premier lancement."
    },
    "sources": [
     {
@@ -3410,7 +3418,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3431,17 +3439,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Hooks : aucun ; hook de test retiré le 27/09."
+     "pourquoi": "Hooks : aucun ; hook de test installé le 26/09, retiré le 27/09."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 3 : SHA-256 des missions contrôlé à la main, premier contrôle à automatiser."
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 3 : aucun hook ; vérification SHA-256 des missions faite à la main."
     }
    }
   },

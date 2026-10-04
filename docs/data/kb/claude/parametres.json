@@ -15929,7 +15929,7 @@
    "categorie": "parametres",
    "nom": "--effort",
    "gabarit": "court",
-   "description": "Option CLI qui fixe le niveau d'effort de la session (`low` à `max`, ou `ultracode`) sans rien enregistrer, en priorité sur `effortLevel` et `modelSettings`.",
+   "description": "Option CLI qui fixe le niveau d'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), en priorité sur `modelSettings` et `effortLevel`, sans rien enregistrer.",
    "description_source": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. Overrides the modelSettings and effortLevel settings for this session and does not persist — claude --effort high",
    "usage": "--effort",
    "usage_nature": "syntaxe",
@@ -15938,7 +15938,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Lancer herbin-mint avec `--effort low` pour ses tâches système et comparer la consommation dans `/usage` sur une semaine, sans toucher aux autres sessions (piste 11)."
+    "pourquoi": "Ajouter `--effort low` à la commande `claude --resume … --remote-control herbin-mint` du service de herbin-mint, puis comparer la consommation hebdomadaire dans `/usage` sans toucher aux autres sessions (piste 11)."
    },
    "sources": [
     {
@@ -15951,7 +15951,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15988,17 +15988,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 11 : limites hebdomadaires approchées ; choix d'effort par session pour étaler la charge."
     },
     "env.multi-sessions": {
      "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint gère la machine, tâches plutôt simples"
+     "pourquoi": "Sessions lancées par `claude --resume <id> --remote-control herbin-<nom>` ; herbin-mint gère la machine."
     }
    }
   },
@@ -16017,7 +16021,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "`etat.json` relève cette clé absente avec Sonnet par défaut : fixer `\"effortLevel\": \"medium\"` et garder `/effort xhigh` pour les missions de construction trading-sim permettrait de mesurer dans `/usage` si les limites tiennent mieux (piste 11)."
+    "pourquoi": "Fixer `\"effortLevel\": \"medium\"` avec Sonnet par défaut et garder un effort plus haut pour les missions de construction trading-sim permettrait de mesurer dans `/usage` si les limites hebdomadaires tiennent mieux (piste 11)."
    },
    "sources": [
     {
@@ -16030,7 +16034,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16063,17 +16067,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.claude-code": {
      "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
-     "pourquoi": "Modèle sonnet et clé effortLevel absente relevés dans etat.json."
+     "pourquoi": "Effort par défaut relevé dans etat.json."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; limites hebdomadaires approchées ; missions trading-sim en Sonnet + `/advisor opus`."
     }
    }
   },
@@ -16671,7 +16679,7 @@
    "categorie": "parametres",
    "nom": "env",
    "gabarit": "court",
-   "description": "Réglage `env` qui définit des variables d'environnement pour chaque session et pour les sous-processus qu'elle lance, sauf quelques-unes que les réglages de projet et locaux ne peuvent pas poser.",
+   "description": "Réglage `env` qui définit des variables d'environnement pour chaque session et pour les sous-processus qu'elle lance ; les réglages de projet et locaux ne peuvent pas en poser certaines.",
    "description_source": "Set environment variables for every session and for the subprocesses Claude Code starts from it. Most variables in the environment variables reference can go here, which is how you apply one to every session or roll it out to your team. Project and local settings can't set some of them.",
    "usage": "{\n  \"env\": {\n    \"DISABLE_AUTO_COMPACT\": \"1\",\n    \"ANTHROPIC_BASE_URL\": \"https://proxy.example.com\"\n  }\n}",
    "usage_nature": "syntaxe",
@@ -16680,7 +16688,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Mettre `\"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}` dans `~/.claude/settings.json` (donc pour toutes les sessions), puis vérifier qu'aucun `__pycache__` n'apparaît après un `unittest` de trading-sim : ce contrôle manuel de la piste 3 disparaîtrait."
+    "pourquoi": "`\"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}` dans `~/.claude/settings.json` vaut pour toutes les sessions (dans `.claude/settings.json` de trading-sim, pour ce projet seul) : vérifier qu'aucun `__pycache__` n'apparaît après un `unittest` supprimerait ce contrôle manuel (piste 3)."
    },
    "sources": [
     {
@@ -16693,7 +16701,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16726,13 +16734,17 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 encore contrôlé à la main."
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 contrôlé à la main."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -18895,7 +18907,7 @@
    "categorie": "parametres",
    "nom": "Hook PreToolUse",
    "gabarit": "court",
-   "description": "Événement de hook déclenché après la préparation des paramètres d'un outil et avant son exécution ; filtrable par nom d'outil, MCP compris.",
+   "description": "Événement de hook déclenché après la préparation des paramètres d'un outil et avant son exécution, filtrable par nom d'outil, outils MCP compris.",
    "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on any tool name except EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
    "usage": "{\n  \"hook_event_name\": \"PreToolUse\",\n  \"tool_name\": \"Write\",\n  \"tool_input\": {\n    \"file_path\": \"C:\\\\project\\\\src\\\\index.ts\",\n    \"content\": \"...\"\n  },\n  ...\n}",
    "usage_nature": "syntaxe",
@@ -18904,7 +18916,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Un hook de test sur `Bash` a été essayé le 26/09 puis retiré ; le prochain essai viserait la piste 3 : refuser le lancement d'une mission sur herbin-trading tant que son fichier `.sha256` ne correspond pas."
+    "pourquoi": "Après le hook de test retiré le 27/09, un essai utile viserait la piste 3 : bloquer sur herbin-trading le lancement d'une mission dont le fichier `.sha256` ne correspond pas."
    },
    "sources": [
     {
@@ -18917,7 +18929,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18954,17 +18966,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "hooks : aucun ; un hook de test installé le 26/09 a été retiré le 27/09"
+     "pourquoi": "Hooks : aucun ; hook de test installé le 26/09, retiré le 27/09."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "piste 3 : aucun hook ; SHA-256 des missions et PYTHONDONTWRITEBYTECODE contrôlés à la main"
+     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "pourquoi": "Piste 3 : vérification SHA-256 des missions faite à la main, candidate à un hook."
     }
    }
   },
