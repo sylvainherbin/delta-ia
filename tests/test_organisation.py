@@ -195,7 +195,7 @@ def test_cli_avec_faux_operer_dans_path(tmp_path, monkeypatch, vues):
 
 
 @pytest.mark.parametrize("contenu, motif", [
-    ("m-000000000001", "m-[0-9a-f]{12}"), ("cc-socks", "cc-socks"), ("claude-session@", "claude-session@"),
+    ("m-000000000001", "m-[0-9a-f]{12}"), ("cc-socks", "cc-socks"),
 ])
 @pytest.mark.parametrize("chemin", ["etat.json", "claude/notes.txt", "kb/openai/notes.json"])
 def test_controle_refuse_chaque_motif_dans_tout_docs_data(tmp_path, contenu, motif, chemin):
@@ -208,7 +208,17 @@ def test_controle_refuse_chaque_motif_dans_tout_docs_data(tmp_path, contenu, mot
     assert f"docs/data/{chemin}" in rapport.erreurs[0] and motif in rapport.erreurs[0]
 
 
-@pytest.mark.parametrize("contenu", ["m-000000000001", "cc-socks", "claude-session@"])
+@pytest.mark.parametrize("chemin", ["etat.json", "claude/notes.txt", "kb/openai/notes.json"])
+def test_controle_autorise_le_modele_unite_systemd(tmp_path, chemin):
+    cible = tmp_path / "docs" / "data" / chemin
+    cible.parent.mkdir(parents=True)
+    cible.write_text("Modèle d'unité systemd : claude-session@.service", encoding="utf-8")
+    rapport = valider.Rapport()
+    valider.verifier_organisation_privee(tmp_path, rapport)
+    assert rapport.erreurs == []
+
+
+@pytest.mark.parametrize("contenu", ["m-000000000001", "cc-socks"])
 def test_cli_validation_refuse_une_trace_dans_un_autre_perimetre(tmp_path, capsys, contenu):
     (tmp_path / "CONTEXTE.md").write_text((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"), encoding="utf-8")
     ecrire_quotidien(tmp_path, "openai", {}, "2026-10-04")
@@ -223,6 +233,9 @@ def test_cli_validation_refuse_une_trace_dans_un_autre_perimetre(tmp_path, capsy
     assert "docs/data/claude/notes.txt" in capsys.readouterr().err
 
 
-@pytest.mark.parametrize("perimetre", ["claude", "openai", "actu"])
-def test_donnees_actuelles_passent(perimetre):
-    assert valider.main(["--racine", str(RACINE), "--perimetre", perimetre]) == 0
+@pytest.mark.parametrize("perimetre, options", [
+    ("claude", []), ("openai", []), ("actu", []),
+    ("claude", ["--kb"]), ("openai", ["--kb"]),  # pas de base de référence actu (SPEC §3)
+])
+def test_donnees_actuelles_passent(perimetre, options):
+    assert valider.main(["--racine", str(RACINE), "--perimetre", perimetre, *options]) == 0

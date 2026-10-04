@@ -1,9 +1,13 @@
 """D65 : état volatil des outils -> docs/data/etat.json, et son contrôle."""
 
 import json
+import subprocess
 from pathlib import Path
 
+import pytest
+
 import etat
+import organisation
 import valider
 
 
@@ -76,3 +80,62 @@ def test_etat_dans_skill_et_spec():
     assert skill.index("scripts/versions.py") < skill.index("scripts/etat.py")
     assert "docs/data/etat.json" in (racine / "SPEC.md").read_text(encoding="utf-8")
     assert "docs/data/etat.json" in (racine / "prompts" / "codex-delta.md").read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def etat_factice(tmp_path, monkeypatch):
+    releve = etat.relever(maison_factice(tmp_path / "maison"), lister_mcp=faux_mcp)
+    monkeypatch.setattr(etat, "relever", lambda: releve)
+    return releve
+
+
+@pytest.mark.parametrize("panne", [
+    None,
+    FileNotFoundError("chemin-prive"),
+    subprocess.CompletedProcess([], 7, "sortie-privee", "erreur-privee"),
+    subprocess.TimeoutExpired("operer", 20, output="sortie-privee"),
+    subprocess.CompletedProcess([], 0, "JSON cassé : sortie-privee", ""),
+])
+def test_main_lit_organisation_apres_etat_sans_alterer_son_json(tmp_path, monkeypatch, capsys, etat_factice, panne):
+    chemin_etat = tmp_path / "docs" / "data" / "etat.json"
+    attendu = (json.dumps(etat_factice, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    chemin_organisation = tmp_path / "raw" / "organisation.json"
+    chemin_organisation.parent.mkdir()
+    chemin_organisation.write_text('{"statut":"ok","roles":["ancien-releve"]}', encoding="utf-8")
+    appels = []
+
+    def lancer(args, **options):
+        assert chemin_etat.read_bytes() == attendu, "le relevé D65 doit être écrit avant la lecture OPÉRER"
+        assert args == ["operer", "--json", "qui" if not appels else "etat"]
+        assert options == {"capture_output": True, "text": True, "encoding": "utf-8", "timeout": 20, "shell": False}
+        appels.append(args[-1])
+        if args[-1] == "qui":
+            vue = {"vue": "qui", "roles": []}
+        elif panne is not None:
+            if isinstance(panne, Exception):
+                raise panne
+            return panne
+        else:
+            vue = {"vue": "etat", "elements": [], "totaux": {"missions": 0}}
+        return subprocess.CompletedProcess(args, 0, json.dumps(vue), "")
+
+    monkeypatch.setattr(organisation.subprocess, "run", lancer)
+    assert etat.main(["--racine", str(tmp_path)]) == 0
+    assert appels == ["qui", "etat"]
+    assert chemin_etat.read_bytes() == attendu
+    releve = json.loads(chemin_organisation.read_text(encoding="utf-8"))
+    assert releve["statut"] == ("ok" if panne is None else "echec")
+    sortie = capsys.readouterr()
+    assert ("! AVERTISSEMENT" in sortie.out) == (panne is not None)
+    assert all(prive not in json.dumps(releve) + sortie.out + sortie.err for prive in ("prive", "ancien-releve"))
+
+
+def test_dry_run_ne_lit_pas_organisation_et_n_ecrit_rien(tmp_path, monkeypatch, capsys, etat_factice):
+    def interdit(*args, **kwargs):
+        pytest.fail("--dry-run ne doit pas lire OPÉRER")
+
+    monkeypatch.setattr(organisation, "ecrire_releve", interdit)
+    assert etat.main(["--dry-run", "--racine", str(tmp_path)]) == 0
+    assert json.loads(capsys.readouterr().out) == etat_factice
+    assert not (tmp_path / "raw").exists()
+    assert not (tmp_path / "docs").exists()

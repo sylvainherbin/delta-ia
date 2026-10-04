@@ -106,17 +106,22 @@ def relever() -> dict:
     return {"releve_le": maintenant_iso(), **vue}
 
 
-def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="organisation.py", description=__doc__)
-    p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
-    args = p.parse_args(argv)
+def ecrire_releve(racine: Path) -> None:
+    """Collecte commune à etat.py et à la commande autonome organisation.py."""
     organisation = relever()
-    ecrire_json(args.racine / "raw" / "organisation.json", organisation)
+    ecrire_json(racine / "raw" / "organisation.json", organisation)
     if organisation["statut"] == "echec":
         print(f"! AVERTISSEMENT : organisation OPÉRER non lue ({organisation['raison']})")
     else:
         print(f"Organisation OPÉRER : {len(organisation['roles'])} rôle(s), "
               f"{len(organisation['projets'])} projet(s) -> raw/organisation.json")
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="organisation.py", description=__doc__)
+    p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
+    args = p.parse_args(argv)
+    ecrire_releve(args.racine)
     return 0
 
 

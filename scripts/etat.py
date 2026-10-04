@@ -9,6 +9,7 @@ Relevé sur la machine, au même endroit que versions.py dans /delta :
 - présence et date des instructions globales `~/.claude/CLAUDE.md` et `~/.codex/AGENTS.md`.
 Chaque relevé : {valeur, source, raison} ; `raison` est renseignée quand la valeur est null (illisible, absente).
 Aucun secret (REGLES §5) : ni `env`, ni arguments de commande, ni paramètres d'URL ; pas de quotas (rapports/usage.json).
+En fin d'exécution, organisation.py écrit aussi raw/organisation.json (D77), hors --dry-run.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.dates import maintenant_iso  # noqa: E402
+import organisation  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 MAISON = Path(os.path.expanduser("~"))
@@ -176,6 +178,7 @@ def main(argv=None) -> int:
     print(f"Claude Code : {o['Claude Code']['modele_par_defaut']['valeur']} | Codex : {o['Codex']['modele_par_defaut']['valeur']} "
           f"({len(o['Codex']['profils']['elements'])} profils) | MCP : "
           + ", ".join(f"{d} {len(v['elements'])}" for d, v in etat["mcp_claude_code"].items()) + f" -> {chemin}")
+    organisation.ecrire_releve(a.racine)
     return 0
 
 
