@@ -46,6 +46,7 @@ RE_SECRETS = [
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|-----BEGIN"), "clé privée (-----BEGIN)"),
     (re.compile(r"https?://[^\s\"'<>]*[?&/;#](?:[A-Za-z_-]*(?:token|key|secret)[A-Za-z_-]*)=[^\s\"'<>&]+", re.I), "URL contenant token, key ou secret"),
 ]
+RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks", rb"claude-session@")]
 
 
 class Rapport:
@@ -267,6 +268,22 @@ def verifier_secrets(texte: str, ou: str, r: Rapport) -> None:
         m = motif.search(texte)
         if m:
             r.erreur(ou, f"secret possible ({libelle}) : {m.group(0)[:24]}…")
+
+
+def verifier_organisation_privee(racine: Path, r: Rapport) -> None:
+    """D77 : aucune trace opérationnelle OPÉRER dans les fichiers publics, tous périmètres compris."""
+    for chemin in sorted((racine / "docs" / "data").rglob("*")):
+        if not chemin.is_file():
+            continue
+        ou = str(chemin.relative_to(racine))
+        try:
+            contenu = chemin.read_bytes()
+        except OSError:
+            r.erreur(ou, "fichier illisible pour le contrôle OPÉRER (D77)")
+            continue
+        for motif in RE_ORGANISATION_PRIVEE:
+            if motif.search(contenu):
+                r.erreur(ou, f"donnée OPÉRER interdite (D77), motif : {motif.pattern.decode('ascii')}")
 
 
 def verifier_couverture(q: dict, chemin_brut: Path, r: Rapport) -> None:
@@ -603,6 +620,7 @@ def ids_kb(racine: Path, perimetre: str) -> set[str] | None:
 
 def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, contexte: Path) -> Rapport:
     r = Rapport()
+    verifier_organisation_privee(racine, r)
     charger_ctx_ids(racine, r)
     dossier = racine / "docs" / "data" / DOSSIERS[perimetre]
     projets = projets_du_contexte(contexte)
@@ -650,6 +668,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     if args.kb:
         rapport = Rapport()
+        verifier_organisation_privee(args.racine, rapport)
         charger_ctx_ids(args.racine, rapport)
         ids = verifier_kb(args.racine, args.perimetre, rapport)
         if rapport.ok:
