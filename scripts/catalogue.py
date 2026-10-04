@@ -6,7 +6,7 @@ Usage :
   catalogue.py inventaire [--perimetre P]                      comptes par produit, catégorie et gabarit
   catalogue.py lots --perimetre P                              découpage en lots (catégorie ou demi-catégorie, D46)
   catalogue.py a-commenter --perimetre P --lot LOT [--tout]    entrées du lot à commenter (JSON sur la sortie)
-  catalogue.py a-commenter --perimetre P --lot perimees        10 entrées au plus (D64-bis, amendée le 29/09/2026) :
+  catalogue.py a-commenter --perimetre P --lot perimees        plafond effectif indiqué par lots (D64-bis/D78) :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
                                                                d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
@@ -95,8 +95,10 @@ def main(argv=None) -> int:
                                       rejugements=rejugements)
             if tout:
                 n = {c: sum(1 for x in tout if x["categorie"] == c) for c in ("a", "adoption", "rejugement")}
-                print(f"{'perimees':<22} {'(D64bis/D78)':<8} {min(len(tout), cat.PERIMEES_MAX):>4} entrées ce lancement sur {len(tout)} dues "
-                      f"(a section {n['a']}, adoption {n['adoption']}, rejugement {n['rejugement']})")
+                plafond = cat.plafond_perimees(entrees, rejugements)
+                source = ", rattrapage D78" if plafond > cat.PERIMEES_MAX else ""
+                print(f"{'perimees':<22} {'(D64bis/D78)':<8} {min(len(tout), plafond):>4} entrées ce lancement sur {len(tout)} dues "
+                      f"(a section {n['a']}, adoption {n['adoption']}, rejugement {n['rejugement']}) ; plafond {plafond}{source}")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0

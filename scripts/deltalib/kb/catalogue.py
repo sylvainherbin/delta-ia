@@ -15,6 +15,7 @@ import json
 import sys
 from datetime import date
 from pathlib import Path
+from typing import Literal
 
 import yaml
 
@@ -268,8 +269,9 @@ PERIMEES_MAX = 10  # D64-bis (amendée le 29/09/2026) : réévaluations priorita
 PERIMEES_SUSPENDU = False
 
 
-def charger_rejugements(racine: Path) -> dict[str, dict[str, str]]:
-    """D78 : dernière demande par id, tous périmètres confondus ; un id inconnu est seulement signalé."""
+def charger_rejugements(racine: Path) -> dict[str, list[dict]]:
+    """D78 : demandes par id, tous périmètres confondus ; un id inconnu est seulement signalé.
+    Toutes les demandes sont conservées pour éteindre leurs plafonds indépendamment."""
     chemin = racine / "kb-rejugements.yaml"
     if not chemin.exists():
         return {}
@@ -300,11 +302,14 @@ def charger_rejugements(racine: Path) -> dict[str, dict[str, str]]:
             raise ValueError(f"{ou} : motif non vide sur une ligne attendu")
         if not isinstance(ids, list) or not all(isinstance(k, str) and k.strip() for k in ids):
             raise ValueError(f"{ou} : liste d'ids attendue")
-        for k in ids:
+        plafond = demande.get("plafond", PERIMEES_MAX)
+        if type(plafond) is not int or not 10 <= plafond <= 50:
+            raise ValueError(f"{ou} : plafond entier de 10 à 50 attendu")
+        for k in dict.fromkeys(ids):
             if k not in connus:
                 inconnus.add(k)
-            elif k not in res or jour >= res[k]["date"]:
-                res[k] = {"date": jour, "motif": motif.strip()}
+            else:
+                res.setdefault(k, []).append({"date": jour, "motif": motif.strip(), "plafond": plafond})
     if inconnus:
         print(f"! kb-rejugements.yaml : id inconnus dans la base : {', '.join(sorted(inconnus))}", file=sys.stderr)
     return res
@@ -312,7 +317,8 @@ def charger_rejugements(racine: Path) -> dict[str, dict[str, str]]:
 
 def motif_rejugement(e: dict, rejugements: dict | None) -> str | None:
     """D78 : seule la date du dernier commentaire éteint la demande, jamais `maj_le` (adoption, source…)."""
-    demande = (rejugements or {}).get(e.get("id"))
+    # À date égale, la dernière demande du YAML prévaut pour le motif.
+    demande = max(reversed((rejugements or {}).get(e.get("id"), [])), key=lambda d: d["date"], default=None)
     if not demande or not e.get("commentee") or e.get("retiree"):
         return None
     dernier = max((h["date"] for h in e.get("historique", [])
@@ -320,6 +326,16 @@ def motif_rejugement(e: dict, rejugements: dict | None) -> str | None:
     if dernier < demande["date"]:
         return f"rejugement demandé ({demande['motif']})"
     return None
+
+
+def plafond_perimees(entrees: dict[str, dict], rejugements: dict | None = None) -> int:
+    """Plafond D78 des demandes encore dues dans le périmètre, même si la section est aussi périmée."""
+    plafond = PERIMEES_MAX
+    for k, e in entrees.items():
+        for demande in (rejugements or {}).get(k, []):
+            if motif_rejugement(e, {k: [demande]}) is not None:
+                plafond = max(plafond, demande.get("plafond", PERIMEES_MAX))
+    return plafond
 
 
 def adoptee_non_revue(e: dict) -> bool:
@@ -354,9 +370,12 @@ def classer(e: dict, courantes: dict[str, str], deprecies_: set[str] = frozenset
 
 
 def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], deprecies_: set[str] = frozenset(),
-                    maximum: int | None = PERIMEES_MAX, *, rejugements: dict | None = None) -> list[dict]:
+                    maximum: int | None | Literal["auto"] = "auto", *, rejugements: dict | None = None) -> list[dict]:
     """D64-bis et D78 : lot `perimees`, ordonné `utiliser`, `tester`, adoption, puis `ignorer`
-    (une adoption déclarée par Sylvain est le signal le plus fiable) ; `maximum` entrées."""
+    (une adoption déclarée par Sylvain est le signal le plus fiable) ; plafond effectif par défaut,
+    `maximum=None` pour compter toutes les entrées dues."""
+    if maximum == "auto":
+        maximum = plafond_perimees(entrees, rejugements)
     rang = {"utiliser": 0, "tester": 1, "ignorer": 2}
     res = []
     for k, e in entrees.items():
@@ -377,7 +396,7 @@ def perimees_detail(entrees: dict[str, dict], courantes: dict[str, str], depreci
 
 
 def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, deprecies_: set[str] = frozenset(),
-             maximum: int = PERIMEES_MAX, *, rejugements: dict | None = None) -> list[str]:
+             maximum: int | None | Literal["auto"] = "auto", *, rejugements: dict | None = None) -> list[str]:
     return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum, rejugements=rejugements)]
 
 
