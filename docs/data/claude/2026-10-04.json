@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-04",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-04T02:20:00+00:00",
+  "synthese": "Compte et quotas d'abord : ta limite hebdomadaire Claude est à 92 % (remise à zéro le 04/10 à 16 h UTC), donc vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ; la page d'aide des crédits d'usage a été révisée une troisième fois, sans que l'extrait lu montre quelle phrase a changé. Claude Code 2.1.289, déjà installée, corrige des cas où une règle deny ou ask de Bash ou de Read était contournée (sandbox auto-allow, lien symbolique) et plusieurs défauts des mods et plugins ; rien d'urgent pour tes sessions. Aucune fiche de la base ajoutée ou retirée aujourd'hui.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-aide-credits-article",
+      "ids_bruts": [
+        "claude-aide-credits-article"
+      ],
+      "produit": "claude",
+      "titre": "Crédits d'usage des plans payants : page d'aide révisée une troisième fois",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle révision de la page « Manage usage credits for paid Claude plans » (déjà signalée les 02/10 et 03/10). Le texte lu indique : après la limite du plan, la suite est facturée au tarif standard de l'API et la limite de session se remet à zéro toutes les cinq heures comme d'habitude ; plafond de rachat de 2 000 $ par jour ; les crédits n'expirent en général pas, mais dans certaines juridictions comme le Japon ils expirent six mois après l'achat à partir du 10 septembre 2026. L'extrait lu ne permet pas de dire quelle phrase a changé.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ta limite hebdomadaire est à 92 % et ne se remet à zéro que le 04/10 à 16 h UTC. Si les crédits d'usage sont activés sur ton compte, ils s'appliquent à Claude et à Claude Code, et la suite de ton travail serait facturée au tarif API ; rien dans CONTEXTE.md n'indique que tu les aies activés. Sinon, tu restes bloqué à la limite, sans frais.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Avant la remise à zéro du 04/10 (16 h UTC), vérifier dans Paramètres > Utilisation si les crédits d'usage sont activés et, s'ils le sont, leur plafond mensuel.",
+        "etapes": [
+          "Ouvre claude.ai > Paramètres > Utilisation : regarde tes remises à zéro disponibles avant d'économiser, puis la section Usage credits.",
+          "Si les crédits sont activés, règle un plafond mensuel avec « Adjust limit » plutôt que « Set to unlimited », et regarde si le rechargement automatique est actif.",
+          "S'ils ne le sont pas, rien à faire."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-usage-credits"
+      ],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+          "pourquoi": "Demande déclarée : signaler en priorité crédits et offres, avec leurs conditions."
+        },
+        "methode.travail": {
+          "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+          "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-code-2.1.289",
+      "ids_bruts": [
+        "claude-code-2.1.289"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.289 : règles deny/ask mieux appliquées, correctifs des mods et plugins",
+      "version": "2.1.289",
+      "date_publication": "2026-10-03",
+      "type": "amelioration",
+      "resume": "Correctifs de permissions : les règles Bash deny et ask ne sont plus ignorées quand une commande est précédée d'une variable d'environnement à valeur développée (`TZ=\"$HOME\" rm -rf build`) ou d'une simple affectation de variable sous sandbox auto-allow, ni sur une partie imbriquée d'une commande composée face à l'approbation d'un mod installé sur machine gérée ; les règles Read deny s'appliquent aussi aux fichiers @-mentionnés, modifiés ou sélectionnés dans l'IDE via un lien symbolique. Le terminal ne se fige plus sur de courts blocs de code contenant beaucoup de balises `<script>` non fermées. [VSCode] retour en arrière sur un changement de `claude auth status` de 2.1.288 qui pouvait multiplier les déconnexions. Le reste (une vingtaine de lignes) concerne les mods et plugins (affichage, rechargement, `claude plugin validate`) ; ajout de `agent.spawn` pour les coéquipiers et des états inactif et en attente dans `$.agent.list()`.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21289",
+          "libelle": "Changelog Claude Code 2.1.289",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Déjà installée d'après `versions.json`. Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch et les connecteurs (CONTEXTE.md §2.2) : ces correctifs resserrent l'application des règles deny sans rien changer à ta façon de travailler. Les points sur les mods et plugins ne te concernent pas tant que tu n'en écris pas.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.interface": {
+          "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
+          "pourquoi": "Réglages et autorisations de `settings.json` décrits ; aucun plugin propre."
+        }
+      }
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066"
+}
