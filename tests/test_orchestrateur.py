@@ -99,6 +99,15 @@ elif mode.startswith("supervision-refus"):
         sys.exit(2)
 elif mode == "env":
     ecrire("rapports/env-vu.txt", os.environ.get("DELTA_CHAINE_PID", "") + "|" + os.environ.get("PATH", "") + "|" + os.environ.get("GIT_OPTIONAL_LOCKS", "-")); claude_ok()
+elif mode.startswith("quota"):   # Codex refuse de tourner : limite d'usage atteinte (message réel du 05/10)
+    if mode == "quota-sale":
+        ecrire("notes.txt", "touché hors périmètre\n")
+    if mode == "quota-avance":
+        passage(sys.argv[2], sys.argv[3], pousser=False)
+    texte = "ERROR: You\u2019ve hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Oct 9th, 2026 11:14 PM."
+    if mode == "quota-droite":
+        texte = texte.replace("\u2019", "'").replace("You've", "YOU'VE").replace("try again at Oct 9th, 2026 11:14 PM", "retry later")
+    print(texte, file=sys.stderr); sys.exit(1)
 else:
     sys.exit(99)
 '''
@@ -539,6 +548,53 @@ def test_quota_claude_saute_les_etapes_claude_et_pas_codex(depot, cfg):
     assert chaine(depot, cfg, etapes).executer() == 0, "une étape sautée par la garde (11) n'est pas un échec"
     assert codes(depot)["delta"] == 11 and codes(depot)["codex-delta"] == 0, "aucun arrêt Codex sur seuil, même à 100 %"
     assert not (depot / "docs/data/claude/a.json").exists() and (depot / "docs/data/openai/b.json").exists()
+
+
+# --- quota Codex épuisé : étape sautée (130), la chaîne continue (incident codex-delta:1) -----------------------------
+
+def codex_puis_claude(depot, mode_codex, mode_claude="ok"):
+    return [etape(depot, "codex-delta", mode_codex, "docs/data/openai", "b.json", agent="codex", garde=None),
+            etape(depot, "delta-kb", mode_claude, "docs/data/kb/claude", "k.json", garde=None),
+            etape(depot, "supervision", "supervision", supervision=True)]
+
+
+@pytest.mark.parametrize("mode, reprise", [("quota", "Oct 9th, 2026 11:14 PM"), ("quota-droite", None)])
+def test_quota_codex_epuise_est_saute_130_et_la_chaine_continue(depot, cfg, mode, reprise):
+    c = chaine(depot, cfg, codex_puis_claude(depot, mode))
+    assert c.executer() == 0
+    assert codes(depot) == {"codex-delta": orc.CODE_QUOTA_EPUISE, "delta-kb": 0, "supervision": 0, "chaine": 0}
+    assert (depot / "docs/data/kb/claude/k.json").exists(), "l'étape Claude suivante est lancée"
+    issue = c.issues[0]
+    assert issue.ok and not issue.arret_chaine and orc.CODE_QUOTA_EPUISE == 130
+    if reprise:
+        assert reprise in issue.detail
+    else:
+        assert "reprise annoncée" not in issue.detail, "aucune date devinée"
+    assert "usage limit" in (depot / "rapports" / "auto" / "2026-10-02-codex-delta.log").read_text(encoding="utf-8", errors="replace").lower()
+
+
+@pytest.mark.parametrize("mode, code", [("quota-sale", orc.CODE_ETAT), ("quota-avance", 15)])
+def test_quota_codex_avec_arbre_sale_ou_commit_en_avance_reste_un_echec(depot, cfg, mode, code):
+    assert chaine(depot, cfg, codex_puis_claude(depot, mode)).executer() == 1
+    c = codes(depot)
+    assert c["codex-delta"] == code and c["delta-kb"] == orc.CODE_NON_LANCEE and c["chaine"] == 1
+
+
+def test_texte_de_quota_sur_une_etape_claude_n_est_pas_concerne(depot, cfg):
+    etapes = [etape(depot, "delta", "quota", garde=None), etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 1 and codes(depot)["delta-kb"] == orc.CODE_NON_LANCEE
+
+
+def test_codex_en_echec_sans_message_de_quota_arrete_la_chaine(depot, cfg):
+    depot.sh("git", "checkout", "-q", "--", "notes.txt")
+    etapes = [etape(depot, "codex-delta", "echec", "docs/data/openai", agent="codex", garde=None, checkout=["docs/data/openai", "notes.txt"],
+                    clean=["docs/data/openai"]),
+              etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["codex-delta"] == 3 and codes(depot)["delta-kb"] == orc.CODE_NON_LANCEE
 
 
 def test_passage_du_jour_deja_fait_est_saute_code_12(depot, cfg):

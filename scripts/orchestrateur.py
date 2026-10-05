@@ -32,7 +32,8 @@ Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 1
 fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 125 est un avertissement (refus non
 fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
-127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ; autre : code de sortie de l'agent.
+127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ;
+130 sautée, quota de l'agent épuisé (refus constaté de Codex, arbre propre, sans seuil : la chaîne continue) ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
 Aucun appel à `claude` ou `codex` hors de `lancer()` ; les tests y injectent de fausses commandes.
@@ -45,6 +46,7 @@ import hashlib
 import json
 import os
 import pwd
+import re
 import signal
 import subprocess
 import sys
@@ -62,6 +64,9 @@ CONFIG = Path(__file__).resolve().parent / "orchestrateur.toml"
 AGENT_JOURNAL = "orchestrateur"
 
 CODE_DELAI, CODE_PERMISSION, CODE_ETAT, CODE_BINAIRE, CODE_NON_LANCEE, CODE_SANS_LOT = 124, 125, 126, 127, 128, 129
+CODE_QUOTA_EPUISE = 130  # Codex refuse de tourner (limite d'usage atteinte) : étape sautée, la chaîne continue
+SIGNATURE_QUOTA_CODEX = re.compile(r"You[’']ve hit your usage limit", re.IGNORECASE)
+REPRISE_QUOTA_CODEX = re.compile(r"try again at ([^\r\n]*?)\.?\s*$", re.IGNORECASE | re.MULTILINE)
 CODES_GARDE_SAUTEE = (11, 12)  # l'étape est sautée, la chaîne continue ; tout autre code de garde arrête la chaîne
 
 
@@ -317,6 +322,19 @@ def evaluer(etape: Etape, res: Resultat) -> tuple[int, str]:
     return (0, "ok") if res.code == 0 else (res.code, f"code de sortie {res.code}")
 
 
+def quota_codex_epuise(res: Resultat) -> bool:
+    return bool(SIGNATURE_QUOTA_CODEX.search(res.stdout) or SIGNATURE_QUOTA_CODEX.search(res.stderr))
+
+
+def reprise_quota_codex(res: Resultat) -> str | None:
+    """Date de reprise citée par Codex (« try again at … »), telle quelle ; None si elle ne se lit pas."""
+    for texte in (res.stderr, res.stdout):
+        m = REPRISE_QUOTA_CODEX.search(texte)
+        if m and m.group(1).strip():
+            return m.group(1).strip()
+    return None
+
+
 def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Resultat, code: int, detail: str,
                   jouees: list[str]) -> Path:
     dossier = racine / cfg["chaine"]["sortie_dossier"]
@@ -465,14 +483,20 @@ class Chaine:
                 avertissement = f"{len(refus)} permission(s) refusée(s), non fatale(s) : " + " ; ".join(refus[:5])
                 detail = "ok avec avertissement : " + avertissement
         modifies = differences_git(git_avant, empreinte_git(racine))
+        quota = (etape.agent == "codex" and code != 0 and code not in (CODE_DELAI, CODE_BINAIRE) and not stop and not modifies
+                 and not etat["sales"] and not etat["en_avance"] and quota_codex_epuise(res))
+        if quota:  # refus constaté de l'agent (pas un seuil) : étape sautée, la chaîne continue
+            code = CODE_QUOTA_EPUISE
+            reprise = reprise_quota_codex(res)
+            detail = "sautée : quota de l'agent épuisé (Codex a refusé de tourner)" + (f" ; reprise annoncée : {reprise}" if reprise else "")
         if modifies:  # priorité sur tout autre motif : l'intégrité de git ne se rétablit pas automatiquement
             code, stop = CODE_ETAT, True
             detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
-        if code != 0 and not stop and not etape.supervision:
+        if code != 0 and code != CODE_QUOTA_EPUISE and not stop and not etape.supervision:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)
         ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees)
         apres = tete_courte(racine)
-        issue = self._fin(etape, code, code == 0, stop, detail, apres if apres != avant else "aucun")
+        issue = self._fin(etape, code, code in (0, CODE_QUOTA_EPUISE), stop, detail, apres if apres != avant else "aucun")
         if avertissement and code == 0:  # avertissement journalisé : la supervision le relève, la chaîne continue
             journaliser(racine, f"{etape.nom}-refus", "aucun", CODE_PERMISSION)
         return issue
