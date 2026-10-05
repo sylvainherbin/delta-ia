@@ -178,7 +178,10 @@ def main(argv=None) -> int:
     print(f"Claude Code : {o['Claude Code']['modele_par_defaut']['valeur']} | Codex : {o['Codex']['modele_par_defaut']['valeur']} "
           f"({len(o['Codex']['profils']['elements'])} profils) | MCP : "
           + ", ".join(f"{d} {len(v['elements'])}" for d, v in etat["mcp_claude_code"].items()) + f" -> {chemin}")
-    organisation.ecrire_releve(a.racine)
+    try:
+        organisation.ecrire_releve(a.racine)
+    except Exception as err:
+        print(f"! AVERTISSEMENT : organisation OPÉRER non écrite ({err})")
     return 0
 
 

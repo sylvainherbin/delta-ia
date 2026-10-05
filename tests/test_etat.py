@@ -130,6 +130,16 @@ def test_main_lit_organisation_apres_etat_sans_alterer_son_json(tmp_path, monkey
     assert all(prive not in json.dumps(releve) + sortie.out + sortie.err for prive in ("prive", "ancien-releve"))
 
 
+def test_main_garde_son_code_si_organisation_ne_s_ecrit_pas(tmp_path, monkeypatch, capsys, etat_factice):
+    def echec(racine):
+        raise OSError("disque plein")
+
+    monkeypatch.setattr(organisation, "ecrire_releve", echec)
+    assert etat.main(["--racine", str(tmp_path)]) == 0
+    assert "! AVERTISSEMENT : organisation OPÉRER non écrite (disque plein)" in capsys.readouterr().out
+    assert (tmp_path / "docs" / "data" / "etat.json").exists()
+
+
 def test_dry_run_ne_lit_pas_organisation_et_n_ecrit_rien(tmp_path, monkeypatch, capsys, etat_factice):
     def interdit(*args, **kwargs):
         pytest.fail("--dry-run ne doit pas lire OPÉRER")
