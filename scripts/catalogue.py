@@ -11,6 +11,10 @@ Usage :
                                                                d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
+  catalogue.py rejugements [--perimetre P] [--json]            D78 : suivi du rattrapage, lecture seule, sans réseau ;
+                                                               par demande et par périmètre : ids listés, dus, recommentés,
+                                                               inconnus, active ; plafond effectif ; passages restants (estimation,
+                                                               ceil(dues du lot perimees / plafond), sections D64-bis comprises)
   catalogue.py adoptions --perimetre P [--dry-run]            D67 : statut_usage `utilise` pour les id de la section
                                                                « Adoptions » de PROGRESSION.md, consigné dans historique
   catalogue.py appliquer --perimetre P --fichier commentaires.json
@@ -42,12 +46,13 @@ RACINE = Path(__file__).resolve().parent.parent
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="catalogue.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations", "adoptions"])
+    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations", "adoptions", "rejugements"])
     p.add_argument("--depuis", help="avec reevaluations : AAAA-MM-JJ (défaut : aujourd'hui)")
     p.add_argument("--perimetre", choices=["claude", "openai"])
     p.add_argument("--lot")
     p.add_argument("--tout", action="store_true", help="avec a-commenter : inclure les entrées déjà commentées")
     p.add_argument("--fichier", type=Path)
+    p.add_argument("--json", action="store_true", help="avec rejugements : sortie structurée")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     p.add_argument("--sources", type=Path, default=None, help=argparse.SUPPRESS)
@@ -75,6 +80,28 @@ def main(argv=None) -> int:
             for k in CATEGORIES:
                 ligne = [c[(pr, k)] for pr in produits]
                 print("   " + f"{k:>16}" + "".join(f"{n:>16}" for n in ligne) + f"{sum(ligne):>16}")
+        return 0
+    if a.commande == "rejugements":
+        try:
+            suivi = cat.suivi_rejugements(a.racine, perimetres, empreintes_sections(a.racine), deprecies_contexte(a.racine))
+        except ValueError as err:
+            print(f"! {err}", file=sys.stderr)
+            return 1
+        if a.json:
+            json.dump(suivi, sys.stdout, ensure_ascii=False, indent=1)
+            print()
+        elif not any(v["demandes"] for v in suivi.values()):
+            print("aucune demande")
+        else:
+            for per, v in suivi.items():
+                for d in v["demandes"]:
+                    print(f"{per} | {d['date']} | {'active' if d['active'] else 'éteinte'} | listés {len(d['ids_listes'])}, "
+                          f"dus {len(d['ids_dus'])}, recommentés {len(d['ids_recommentes'])}, inconnus {len(d['ids_inconnus'])} | "
+                          f"plafond demande {d['plafond']} | {d['motif']}")
+                    if d["ids_inconnus"]:
+                        print(f"   inconnus : {', '.join(d['ids_inconnus'])}")
+                print(f"{per} | plafond effectif {v['plafond_effectif']} ; {v['dus_total_perimees']} dues (lot perimees) ; "
+                      f"passages restants ≈ {v['passages_restants_estimes']} (estimation)")
         return 0
     if not a.perimetre:
         p.error("--perimetre est obligatoire pour cette commande")
