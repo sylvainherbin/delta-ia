@@ -825,7 +825,7 @@ def test_toutes_les_pages_en_echec(docs):
 # --- Redirections : jamais suivies en silence (24/09) ---------------------------------------------------------------
 
 @pytest.mark.parametrize("statut", [301, 302, 307, 308])
-def test_client_note_les_redirections(statut):
+def test_client_note_les_redirections(statut, sockets_locaux):
     import threading
     from http.server import BaseHTTPRequestHandler, HTTPServer
     from deltalib.http import Client
