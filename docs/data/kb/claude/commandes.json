@@ -37,7 +37,7 @@
  },
  "contexte_deprecies": [],
  "total": 131,
- "commentees": 130,
+ "commentees": 131,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -117,7 +117,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est ta formule validée pour les missions de construction de trading-sim : Sonnet avec `/advisor opus`. Le conseiller ne survit pas à une reprise de session, d'où sa réactivation par herbin-mint avant chaque mission, puis le retrait de `advisorModel` des réglages globaux ; depuis l'iPhone (Remote Control), tape `/advisor opus` avec l'argument."
+    "pourquoi": "Sonnet avec Opus en conseiller est ta formule pour les missions de construction trading-sim et pour les devs (`mission-dev --advisor`, `regler-advisor`) ; le conseiller ne survit pas à un `/clear`, d'où le réglage avant chaque mission. Depuis l'iPhone (Remote Control), tape `/advisor opus` avec l'argument."
    },
    "sources": [
     {
@@ -130,7 +130,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -171,17 +171,21 @@
     {
      "date": "2026-10-03",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
+    "methode.missions": {
+     "sha1": "e0ca84ff2130f1a4a39eec6bbd2dac65c3ae78f2",
+     "pourquoi": "`mission-dev --advisor` et `regler-advisor` règlent le conseiller Opus ; il ne survit pas à un `/clear`."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint prépare et herbin-trading exécute les missions trading-sim, pilotées depuis l'iPhone en Remote Control."
+    "optimisation.pistes": {
+     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
+     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
     }
    }
   },
@@ -607,7 +611,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; sur une longue session comme herbin-trading, une vérification ponctuelle posée en `/btw` ne gonfle pas le contexte de la mission."
+    "pourquoi": "Tu la tapes déjà ; sur une session de chef ou de dev en pleine mission, une vérification posée en `/btw` ne s'ajoute pas au contexte de la mission."
    },
    "sources": [
     {
@@ -620,7 +624,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -661,17 +665,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "`/btw` figure parmi les commandes tapées observées"
+     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "pourquoi": "`/btw` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions longues de trading-sim"
+    "methode.organisation": {
+     "sha1": "8ddc3d8dabde3830034d7a2198db1432e13ad5a5",
+     "pourquoi": "Chefs et devs mènent des missions successives dans des sessions durables."
     }
    }
   },
@@ -871,7 +879,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est la base de tes six services `claude-session@…`, qui lancent `claude --resume <id> --remote-control herbin-<nom>` sous tmux ; rien à changer."
+    "pourquoi": "C'est la base de tes services `claude-session@<nom>`, qui lancent `claude --resume <id> --remote-control <nom>` sous tmux ; rien à changer."
    },
    "sources": [
     {
@@ -884,7 +892,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -905,13 +913,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "six services systemd lancent `claude --resume <id> --remote-control herbin-<nom>` dans tmux"
+     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "pourquoi": "Services `claude-session@<nom>` : `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée."
     }
    }
   },
@@ -2060,7 +2072,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est le mécanisme de reprise de tes six sessions systemd (`claude --resume <id>`) ; rien à changer."
+    "pourquoi": "C'est le mécanisme de reprise de tes services `claude-session@<nom>` (`claude --resume <id>`) ; rien à changer."
    },
    "sources": [
     {
@@ -2073,7 +2085,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2094,13 +2106,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "chaque service relance sa session par `claude --resume <id>`"
+     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
     }
    }
   },
@@ -2414,10 +2430,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "En fin de mission sur herbin-trading, un rapport daté puis `/clear <nom>` repart d'un contexte vide, moins coûteux à chaque tour, et la mission reste retrouvable par `/resume` ; `/compact` sert seulement quand la même mission continue."
+    "pourquoi": "`mission-dev` vide déjà le dev par `/clear` avant chaque mission ; le conseiller est perdu au passage, d'où `--advisor`. Passer un nom (`/clear <mission>`) garderait la mission précédente retrouvable dans `/resume`."
    },
    "sources": [
     {
@@ -2430,7 +2446,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2459,17 +2475,21 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Limites d'usage hebdomadaires ; rapports datés qui gardent l'essentiel d'une mission."
+    "methode.missions": {
+     "sha1": "e0ca84ff2130f1a4a39eec6bbd2dac65c3ae78f2",
+     "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant une mission ; le conseiller ne survit pas à un `/clear`."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute des missions successives dans une session de longue durée."
+    "methode.organisation": {
+     "sha1": "8ddc3d8dabde3830034d7a2198db1432e13ad5a5",
+     "pourquoi": "Un dev est vidé avant chaque mission."
     }
    }
   },
@@ -2534,7 +2554,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; sur les longues sessions trading-sim, préciser en argument ce qu'il faut garder (mission en cours, verdicts d'audit `CLÉ = VALEUR`) évite de les perdre au résumé."
+    "pourquoi": "Tu la tapes déjà ; sur une longue session trading-sim, préciser en argument ce qu'il faut garder (mission en cours, verdicts d'audit `CLÉ = VALEUR`) évite de les perdre au résumé."
    },
    "sources": [
     {
@@ -2547,7 +2567,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2584,17 +2604,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "`/compact` figure parmi les commandes tapées observées"
+     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "pourquoi": "`/compact` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "verdicts en blocs `CLÉ = VALEUR` à conserver d'une mission à l'autre"
+     "pourquoi": "Verdicts en blocs `CLÉ = VALEUR` lisibles par machine, à conserver d'une étape à l'autre."
     }
    }
   },
@@ -2998,7 +3022,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Avec Sonnet par défaut, relever l'effort pour une mission de construction trading-sim et le laisser au défaut sur herbin-mint répartirait tes limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
+    "pourquoi": "Tes services fixent un effort par rôle ; `/effort status` le vérifie depuis l'iPhone et `/effort <niveau>` le relève pour une seule mission lourde, ce qui étale les limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
    },
    "sources": [
     {
@@ -3011,7 +3035,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3072,17 +3096,21 @@
     {
      "date": "2026-10-03",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; choix du modèle et de l'effort par session pour étaler la charge des limites."
-    },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Sessions herbin-mint et herbin-trading aux besoins d'effort différents."
+     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "pourquoi": "Selon le rôle, chaque session a un modèle, un effort et des réglages de lancement propres."
+    },
+    "optimisation.pistes": {
+     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
+     "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge des limites."
     }
    }
   },
@@ -4116,7 +4144,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Sonnet est ton défaut voulu ; pour passer une seule session sur Opus ou Fable (une mission lourde sur herbin-trading), ouvre le sélecteur et appuie sur `s`, car `/model` enregistrerait ce choix comme défaut de toutes les nouvelles sessions et écraserait Sonnet."
+    "pourquoi": "Sonnet est ton défaut voulu ; pour passer une seule session sur Opus ou Fable, ouvre le sélecteur et appuie sur `s`, car `/model <modèle>` enregistrerait ce choix comme défaut de toutes les nouvelles sessions et écraserait Sonnet."
    },
    "sources": [
     {
@@ -4129,7 +4157,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4182,17 +4210,21 @@
     {
      "date": "2026-10-03",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
+     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
+     "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; Opus seulement en conseiller des missions de construction."
     },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions longues de trading-sim."
+     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    }
   },
@@ -4887,7 +4919,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; c'est le lien entre l'iPhone et une session lancée sans l'option `--remote-control`."
+    "pourquoi": "Tu la tapes déjà ; c'est le lien entre l'iPhone et une session lancée sans l'option `--remote-control`, par exemple une session `dev` ou `school` démarrée à la demande à la main."
    },
    "sources": [
     {
@@ -4900,7 +4932,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4937,17 +4969,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "`/remote-control` figure parmi les commandes tapées observées"
+     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "pourquoi": "`/remote-control` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "l'iPhone est l'interface principale de pilotage"
+     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "pourquoi": "L'iPhone est l'interface principale de pilotage (Remote Control, notifications push)."
     }
    }
   },
@@ -5284,7 +5320,7 @@
    "categorie": "commandes",
    "nom": "/scroll-speed",
    "gabarit": "complet",
-   "description": "Règle la vitesse de défilement de la molette, avec une règle pour prévisualiser le changement. Uniquement en rendu plein écran, pas dans le terminal des IDE JetBrains.",
+   "description": "Règle la vitesse de défilement de la molette de façon interactive. Disponible seulement en rendu plein écran, pas dans le terminal des IDE JetBrains.",
    "description_source": "Adjust mouse wheel scroll speed interactively. Available in fullscreen rendering only and not in the JetBrains IDE terminal",
    "usage": "/scroll-speed",
    "usage_nature": "syntaxe",
@@ -5293,7 +5329,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'affichage du terminal, sans effet sur le pilotage depuis l'iPhone."
+    "pourquoi": "Réglage de confort d'affichage au terminal, sans lien avec tes projets ni avec tes habitudes de travail."
    },
    "sources": [
     {
@@ -5302,7 +5338,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -5319,10 +5355,14 @@
     {
      "date": "2026-10-06",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-commandes-security-review",
@@ -6132,7 +6172,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les limites hebdomadaires et Fable sont une friction récurrente ; `/usage` avant une mission lourde sur herbin-trading montre ce qui reste et ce qui compte dans ton plan Max (5x)."
+    "pourquoi": "Les limites hebdomadaires sont une friction récurrente : avant une mission longue, vérifie avec `/usage` ce qui reste de ton plan Max (5x) et ce qui compte dedans. La chaîne de nuit s'arrête au-delà de 98 % de la semaine ou de 80 % de la session 5 h."
    },
    "sources": [
     {
@@ -6145,7 +6185,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6162,17 +6202,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage hebdomadaire et Fable parmi les frictions récurrentes"
+     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
     },
     "profil": {
      "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-     "pourquoi": "abonnement Claude Max (5x)"
+     "pourquoi": "Abonnement Claude Max (5x)."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "2a5ed8102e55a6427b57ca2c9b27cf0677d07fd2",
+     "pourquoi": "Garde de la chaîne D70 : arrêt au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h."
     }
    }
   },

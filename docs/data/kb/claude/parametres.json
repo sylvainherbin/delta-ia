@@ -235,7 +235,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -248,17 +248,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "settings.json : notifications push des agents activées"
+     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "pourquoi": "settings.json : notifications push des agents activées."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "pilotage depuis l'iPhone, notifications push"
+     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "pourquoi": "Pilotage depuis l'iPhone, notifications push."
     }
    }
   },
@@ -2965,7 +2969,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ta mémoire automatique est très utilisée (23 + 4 mémoires) : la laisser active."
+    "pourquoi": "Ta mémoire automatique est très utilisée (environ 70 mémoires dans `~/projets` et 7 dans `~` au 04/10) : la laisser active."
    },
    "sources": [
     {
@@ -2978,7 +2982,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2991,13 +2995,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "mémoire automatique : 23 + 4 mémoires, très utilisée"
+     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "pourquoi": "Mémoire automatique : environ 70 + 7 mémoires au 04/10, très utilisée."
     }
    }
   },
@@ -22676,7 +22684,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes réglages l'emploient déjà : `sudo -A` limité à apt, timeshift et findmnt, et sur trading-sim refus de WebFetch, WebSearch, du navigateur et des connecteurs."
+    "pourquoi": "Tes réglages l'emploient déjà : listes allow et deny par rôle (`chef-settings.json` pour les chefs), `sudo -A` borné dans `settings.json`, et sur trading-sim refus de WebFetch, WebSearch, du navigateur et des connecteurs."
    },
    "sources": [
     {
@@ -22689,7 +22697,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22698,17 +22706,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "464b07898e821d25c5b0f6a77647f52c0087f3b8",
+     "pourquoi": "Listes allow par rôle ; chef-settings.json avec règles deny."
+    },
     "config.claude-code.interface": {
-     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "autorisations `sudo -A` limitées à apt / timeshift / findmnt"
+     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "pourquoi": "settings.json : `sudo -A` limité à apt / timeshift / findmnt."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur, connecteurs"
+     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur et connecteurs."
     }
    }
   },
@@ -22774,7 +22790,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes autorisations `sudo -A` pour apt, timeshift et findmnt passent par cette liste ; à garder aussi étroite."
+    "pourquoi": "Ta liste globale y range `sudo -A` borné, les lectures git et système et les commandes du workflow Delta (`mission-dev`, `mission-codex`, `operer ack`) ; la chaîne de nuit a une liste par étape."
    },
    "sources": [
     {
@@ -22787,7 +22803,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22796,13 +22812,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "autorisations `sudo -A` limitées à apt / timeshift / findmnt"
+     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "pourquoi": "Liste allow globale : `sudo -A` borné, lectures sans effet, commandes du workflow Delta."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "2a5ed8102e55a6427b57ca2c9b27cf0677d07fd2",
+     "pourquoi": "Une liste `allow` par étape de la chaîne D70 ; une commande refusée donne le code 125."
     }
    }
   },
@@ -23878,7 +23902,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes six services lancent `claude --resume <id> --remote-control herbin-<nom>` : c'est le cœur de ton pilotage depuis l'iPhone."
+    "pourquoi": "Tes services lancent `claude --resume <id> --remote-control <nom>` : c'est le cœur de ton pilotage depuis l'iPhone."
    },
    "sources": [
     {
@@ -23891,7 +23915,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23904,13 +23928,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "`claude --resume <id> --remote-control herbin-<nom>` dans chaque service"
+     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "pourquoi": "`claude --resume <id> --remote-control <nom>` dans chaque service `claude-session@<nom>`."
     }
    }
   },
@@ -28116,7 +28144,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28125,13 +28153,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "c8bc7fb7962436212d9a5ca432c2d764b3c390e4",
-     "pourquoi": "settings.json : thème sombre"
+     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "pourquoi": "settings.json : thème sombre."
     }
    }
   },
