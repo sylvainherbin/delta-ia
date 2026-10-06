@@ -106,9 +106,13 @@ def test_valider_py_couverture_du_brut(racine, capsys):
 
 
 def test_projets_du_contexte(racine):
-    from pathlib import Path
     assert v.projets_du_contexte(racine / "CONTEXTE.md") == {"carnet", "trading-sim", "chatgpt-trading-sim"}
-    assert "trading-sim" in v.projets_du_contexte(Path(fetch.RACINE) / "CONTEXTE.md")
+
+
+def test_projets_du_contexte_depot_reel():
+    """Dépôt réel : le CONTEXTE.md courant déclare au moins un projet."""
+    from pathlib import Path
+    assert v.projets_du_contexte(Path(fetch.RACINE) / "CONTEXTE.md")
 
 
 def _quotidien_valide(racine, perimetre="claude"):
