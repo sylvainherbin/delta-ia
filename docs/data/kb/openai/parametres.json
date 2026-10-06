@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-01",
+ "maj_le": "2026-10-06",
  "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -18096,16 +18096,16 @@
    "categorie": "parametres",
    "nom": "service_tier",
    "gabarit": "court",
-   "description": "Choisit le niveau de service préféré pour les nouveaux tours.",
+   "description": "Définit le niveau de service préféré pour les nouveaux tours, avec `fast` traduit en valeur de requête `priority`.",
    "description_source": "Type : string. Preferred service tier for new turns. Use fast or another tier advertised by the active model; fast maps to the request value priority.",
    "usage": "service_tier",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "La configuration relevée fixe le niveau de service priority ; le conserver pour les audits Codex où la latence compte."
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de vitesse supérieure n'est déclaré pour tes audits sous tmux ; avant toute activation de `fast`, vérifie son surcoût d'usage par rapport à Standard et tes limites restantes."
    },
    "sources": [
     {
@@ -18118,7 +18118,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18127,13 +18127,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+    },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les audits et limites d'usage rendent le niveau de service pertinent."
+     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "pourquoi": "Les limites hebdomadaires et les longs prompts d'audit sont des frictions récurrentes."
     }
    }
   },
