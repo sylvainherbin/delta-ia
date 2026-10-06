@@ -98,7 +98,7 @@ def etat_factice(tmp_path, monkeypatch):
 ])
 def test_main_lit_organisation_apres_etat_sans_alterer_son_json(tmp_path, monkeypatch, capsys, etat_factice, panne):
     chemin_etat = tmp_path / "docs" / "data" / "etat.json"
-    attendu = (json.dumps(etat_factice, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    attendu = (json.dumps({"pertinent_pour_profil": False, **etat_factice}, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     chemin_organisation = tmp_path / "raw" / "organisation.json"
     chemin_organisation.parent.mkdir()
     chemin_organisation.write_text('{"statut":"ok","roles":["ancien-releve"]}', encoding="utf-8")
@@ -146,6 +146,6 @@ def test_dry_run_ne_lit_pas_organisation_et_n_ecrit_rien(tmp_path, monkeypatch, 
 
     monkeypatch.setattr(organisation, "ecrire_releve", interdit)
     assert etat.main(["--dry-run", "--racine", str(tmp_path)]) == 0
-    assert json.loads(capsys.readouterr().out) == etat_factice
+    assert json.loads(capsys.readouterr().out) == {"pertinent_pour_profil": False, **etat_factice}
     assert not (tmp_path / "raw").exists()
     assert not (tmp_path / "docs").exists()

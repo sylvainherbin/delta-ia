@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from deltalib import profil  # noqa: E402
 from deltalib.dates import maintenant_iso  # noqa: E402
 import organisation  # noqa: E402
 
@@ -166,7 +167,7 @@ def main(argv=None) -> int:
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
-    etat = relever()
+    etat = {"pertinent_pour_profil": profil.charger(a.racine)["releves_machine"], **relever()}  # D79 : false sans profil.yaml
     texte = json.dumps(etat, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
         print(texte)
