@@ -11,7 +11,7 @@ import pytest
 
 import organisation
 import valider
-from conftest import ecrire_quotidien
+from conftest import FIXTURES_PROFILS, ecrire_quotidien
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -255,7 +255,7 @@ def test_controle_autorise_le_modele_unite_systemd(tmp_path, chemin):
 
 @pytest.mark.parametrize("contenu", ["m-000000000001", "cc-socks"])
 def test_cli_validation_refuse_une_trace_dans_un_autre_perimetre(tmp_path, capsys, contenu):
-    (tmp_path / "CONTEXTE.md").write_text((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"), encoding="utf-8")
+    (tmp_path / "CONTEXTE.md").write_text((FIXTURES_PROFILS / "camille" / "CONTEXTE.md").read_text(encoding="utf-8"), encoding="utf-8")
     ecrire_quotidien(tmp_path, "openai", {}, "2026-10-04")
     args = ["--racine", str(tmp_path), "--perimetre", "openai"]
     assert valider.main(args) == 0
@@ -272,5 +272,6 @@ def test_cli_validation_refuse_une_trace_dans_un_autre_perimetre(tmp_path, capsy
     ("claude", []), ("openai", []), ("actu", []),
     ("claude", ["--kb"]), ("openai", ["--kb"]),  # pas de base de référence actu (SPEC §3)
 ])
-def test_donnees_actuelles_passent(perimetre, options):
+def test_depot_reel_donnees_actuelles_passent(perimetre, options):
+    """Dépôt réel : les données et le CONTEXTE.md de ce dépôt (Sylvain) passent la validation."""
     assert valider.main(["--racine", str(RACINE), "--perimetre", perimetre, *options]) == 0

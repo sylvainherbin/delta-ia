@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 import fetch
-from conftest import FauxClient, RACINE
+from conftest import FIXTURES_PROFILS, FauxClient, RACINE
 from deltalib.http import Reponse
 from deltalib.kb import catalogue as cat
 from deltalib.kb.documentation import charger_documentation, recuperer
@@ -610,9 +610,17 @@ def test_d64bis_analyse_et_erreurs():
 
 
 def test_d64bis_contexte_reel():
+    """Dépôt réel : le CONTEXTE.md courant s'analyse et garde ses sections de base (profil, projets de niveau 3)."""
     from deltalib.contexte import analyser
     s, _ = analyser((RACINE / "CONTEXTE.md").read_text(encoding="utf-8"))
-    assert {"profil", "projet.trading-sim", "projet.carnet", "config.codex.profils"} <= set(s)
+    assert "profil" in s
+    assert any(v["niveau"] == 3 and k.startswith("projet.") for k, v in s.items())
+
+
+def test_d64bis_contexte_fixture_camille():
+    from deltalib.contexte import analyser
+    s, _ = analyser((FIXTURES_PROFILS / "camille" / "CONTEXTE.md").read_text(encoding="utf-8"))
+    assert {"profil", "projet.atelier-resa", "projet.site-vitrine", "config.codex"} <= set(s)
 
 
 def test_d64bis_classement_a_et_adoption_seulement():

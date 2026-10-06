@@ -16,6 +16,7 @@ from deltalib.modeles import ErreurReseau  # noqa: E402
 from deltalib.sources import charger_sources  # noqa: E402
 
 FIXTURES = Path(__file__).parent / "fixtures"
+FIXTURES_PROFILS = FIXTURES / "profils"  # D82 : profils fictifs (camille, neutre), indépendants du CONTEXTE.md réel
 AUJOURD_HUI = date(2026, 9, 23)  # date d'enregistrement des échantillons : la fenêtre de 30 jours en dépend
 
 # URL réelle (telle que dans sources.yaml) -> (fichier d'échantillon, Content-Type)
