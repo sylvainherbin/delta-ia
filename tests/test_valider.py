@@ -445,3 +445,14 @@ def test_projet_retire_tolere_dans_les_anciens_fichiers_du_jour(racine, capsys):
     assert validation(racine, "claude", brut=False) != 0, "le fichier du jour garde le refus strict"
     err = capsys.readouterr().err
     assert f"{JOUR}.json" in err and "hors de CONTEXTE.md §2" in err and "2026-09-01.json" not in err
+
+
+def test_skills_sans_stop_sur_regle_ambigue_ni_avant_de_lancer():
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    for chemin in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md",
+                   ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md"):
+        t = (racine / chemin).read_text(encoding="utf-8")
+        assert "Avant de lancer" not in t, chemin
+        assert "règle ambiguë du dépôt ou un fichier inattendu" in t and "ne l'arrête pas" in t, chemin
+        assert "à soumettre à Sylvain" not in t, chemin

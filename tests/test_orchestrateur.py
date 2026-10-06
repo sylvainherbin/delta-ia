@@ -845,10 +845,10 @@ def test_orchestrateur_refuse_une_configuration_incorrecte_code_2(depot_sh):
     assert r.returncode == 2 and "nimporte" in r.stderr
 
 
-def test_le_fichier_documente_les_trois_paliers():
+def test_le_fichier_documente_le_deploiement_termine():
     t = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
-    for attendu in ("palier 1, nuit de réception", "palier 2, jours 1 et 2", "palier 3, après deux jours propres",
-                    'etapes_actives = ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]', "sans toucher au code", "TOUJOURS en dernier"):
+    for attendu in ("Déploiement terminé le 02/10/2026 : les cinq étapes sont actives",
+                    'etapes_actives = ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]', "TOUJOURS en dernier"):
         assert attendu in t, attendu
 
 
