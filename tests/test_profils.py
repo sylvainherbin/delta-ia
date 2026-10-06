@@ -1,7 +1,6 @@
 """D82 : profils fictifs (camille, neutre) — la veille ne dépend pas du CONTEXTE.md de Sylvain. Sans LLM.
 
-Les tests qui attendent G1 (skills), G2 (valider par ctx-id) ou G3 (deltalib.profil) sont en xfail non strict ;
-le chef retire les marques à la fusion.
+Les marques xfail « attend G1/G2/G3 » ont été retirées à l'intégration de G1 à G4 : ces tests doivent passer.
 """
 
 from __future__ import annotations
@@ -61,7 +60,6 @@ def test_besoins_camille():
     assert re.findall(r"\*\*(B\d)\*\*", texte) == [f"B{i}" for i in range(1, 8)]
 
 
-@pytest.mark.xfail(strict=False, reason="attend G2 (valider reconnaît les projets par ctx-id, D81)")
 @pytest.mark.parametrize("dossier, attendu", [(CAMILLE, {"atelier-resa", "site-vitrine"}), (NEUTRE, set())])
 def test_valider_reconnait_les_projets(dossier, attendu):
     assert valider.projets_du_contexte(dossier / "CONTEXTE.md") == attendu
@@ -71,7 +69,6 @@ def _valeur(profil, cle):
     return profil[cle] if isinstance(profil, dict) else getattr(profil, cle)
 
 
-@pytest.mark.xfail(strict=False, reason="attend G3 (deltalib.profil, D79)")
 def test_profil_camille():
     from deltalib import profil
     p = profil.charger(CAMILLE / "profil.yaml")
@@ -80,7 +77,6 @@ def test_profil_camille():
     assert _valeur(p, "releves_machine") is False
 
 
-@pytest.mark.xfail(strict=False, reason="attend G3 (deltalib.profil, D79)")
 def test_profil_neutre_valeurs_par_defaut():
     from deltalib import profil
     p = profil.charger(NEUTRE / "profil.yaml")  # fichier absent : valeurs par défaut sûres
@@ -98,7 +94,6 @@ def _fichiers_skills():
     return sorted(fichiers)
 
 
-@pytest.mark.xfail(strict=False, reason="attend G1 (skills sans données de Sylvain en dur, D80)")
 @pytest.mark.parametrize("fichier", _fichiers_skills(), ids=lambda f: str(f.relative_to(RACINE)))
 def test_skills_sans_donnees_de_sylvain(fichier):
     texte = fichier.read_text(encoding="utf-8").lower()
