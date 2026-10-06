@@ -55,6 +55,11 @@ CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "docs/data/openai/", 
 VERROU_CHAINE = Path(".git") / "delta-passage.lock"
 # D70 : par étape de la chaîne, (quota Claude applicable, dossier de données du fichier du jour pour le code 12 ou None)
 ETAPES = {"delta": (True, "claude"), "codex-delta": (False, "openai"), "delta-kb": (True, None), "codex-delta-kb": (False, None)}
+# D83 : avec --etape, le code 13 ne regarde que les chemins qu'écrit l'étape (SPEC §3) ; sans --etape, tous les chemins de passage
+_CLAUDE = ("docs/data/claude/", "docs/data/actu/", "docs/data/kb/claude/", "docs/data/versions.json", "docs/data/etat.json",
+           "state/claude.json", "state/actu.json")
+_OPENAI = ("docs/data/openai/", "docs/data/kb/openai/", "state/openai.json")
+CHEMINS_ETAPE = {"delta": _CLAUDE, "delta-kb": ("docs/data/kb/claude/",), "codex-delta": _OPENAI, "codex-delta-kb": ("docs/data/kb/openai/",)}
 
 
 def _pct(d: dict, *cles) -> float | None:
@@ -203,8 +208,11 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         arret(CODE_ARBRE, "état git illisible")
         return res  # sans état git, les commits non poussés ne se lisent pas non plus
     sales = []
+    chemins_etape = CHEMINS_ETAPE.get(etape)
     for ligne in sortie.splitlines():
         etat, chemin = ligne[:2], ligne[3:].split(" -> ")[-1]
+        if chemins_etape is not None and not chemin.startswith(chemins_etape):
+            continue
         if etat == "??":
             if chemin.startswith(CHEMINS_PASSAGE):
                 sales.append(f"{chemin} (non suivi)")

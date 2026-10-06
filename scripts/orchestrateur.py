@@ -142,10 +142,10 @@ def environnement(cfg: dict, supervision: bool = False, extra: dict | None = Non
 
 
 def commande_claude(cfg: dict, e: dict, racine: Path, prompt: str) -> list[str]:
-    """Syntaxe du `claude --help` de la version installée (2.1.286) : -p, --permission-mode dontAsk, --permission-prompts none
-    (tout ce qui demanderait une approbation est refusé, jamais accordé), --strict-mcp-config (aucun serveur MCP),
-    --output-format json (le résultat porte `permission_denials`). Jamais --dangerously-skip-permissions ni bypassPermissions."""
-    c = [_chemin(cfg["claude"]["bin"]), "-p", prompt, "--permission-mode", "dontAsk", "--permission-prompts", "none",
+    """Syntaxe du `claude --help` de la version installée (2.1.286) : -p, --permission-mode bypassPermissions (étapes Claude
+    depuis le 06/10/2026, décision de Sylvain, D83), --strict-mcp-config (aucun serveur MCP), --output-format json (le résultat
+    porte `permission_denials`, traité comme avant). Jamais --dangerously-skip-permissions."""
+    c = [_chemin(cfg["claude"]["bin"]), "-p", prompt, "--permission-mode", "bypassPermissions",
          "--strict-mcp-config", "--output-format", "json"]
     if e.get("modele"):
         c += ["--model", e["modele"]]

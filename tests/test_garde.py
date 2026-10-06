@@ -483,6 +483,25 @@ def test_d70_arbre_sale_dans_openai_ou_kb_arrete(racine, capsys):
         f.unlink()
 
 
+def test_d83_arbre_sale_hors_perimetre_de_l_etape_ne_bloque_pas(racine, capsys):
+    (racine / "docs" / "data" / "versions.json").write_text('{"modifie": true}\n')
+    (racine / "CONTEXTE.md").write_text("modifié\n")
+    f = racine / "docs" / "data" / "openai" / "2026-09-25.json"
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text("{}")
+    assert lancer(racine, capsys, "--etape", "codex-delta-kb")[0] == 0   # versions.json est un chemin Claude, CONTEXTE.md aucun
+    code, out = lancer(racine, capsys, "--etape", "delta")               # le fichier openai n'est pas à cette étape
+    assert code == 13 and "docs/data/versions.json (M)" in out and "openai" not in out and "CONTEXTE.md" not in out
+    assert lancer(racine, capsys)[0] == 13                                # sans --etape : comportement D68 inchangé
+
+
+def test_d83_arbre_sale_dans_l_etape_bloque_toujours(racine, capsys):
+    (racine / "docs" / "data" / "etat.json").write_text('{"x": 1}\n')
+    code, out = lancer(racine, capsys, "--etape", "delta")
+    assert code == 13 and "docs/data/etat.json (M)" in out
+    assert lancer(racine, capsys, "--etape", "codex-delta")[0] == 0 and lancer(racine, capsys, "--etape", "delta-kb")[0] == 0
+
+
 def test_d70_etape_inconnue_est_refusee(racine):
     with pytest.raises(SystemExit) as e:
         garde.main(["--racine", str(racine), "--etape", "inconnue"])

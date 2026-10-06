@@ -8,4 +8,4 @@ def test_missions_operer_dans_claude_md():
     assert "[OPÉRER]" in claude
     assert "comme une mission de Delta" in claude
     assert "operer ack <id>" in claude
-    assert "accord direct de Sylvain" in claude
+    assert "accord direct de Sylvain" not in claude  # phrase retirée le 06/10/2026 (D83)
