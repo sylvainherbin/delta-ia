@@ -36,6 +36,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.dates import maintenant_iso  # noqa: E402
+from deltalib import profil as profil_mod  # noqa: E402
 from deltalib.modeles import cle_version  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -229,6 +230,8 @@ def main(argv=None) -> int:
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
     lignes = detecter(a.racine)
+    pertinent = profil_mod.charger(a.racine)["releves_machine"]  # D79 : false sans profil.yaml
+    lignes = [{"pertinent_pour_profil": pertinent, **l} for l in lignes]
     for l in lignes:
         print(f"{l['outil']:<16} {str(l['version']):<22} dernière publiée {str(l['derniere_publiee']):<10} {l['statut']:<9} "
               f"| {l['methode']}" + (f" | {l['raison']}" if l.get("raison") else ""))

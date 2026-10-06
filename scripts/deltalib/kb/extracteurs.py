@@ -7,19 +7,54 @@ Chaque extracteur reçoit la documentation (`DocSource`) et les fichiers récup�
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from .. import profil
 from ..modeles import FormatInattendu
 from .markdown import (Section, cellules, nettoyer, premier_paragraphe, premiere_liste, sections, tableaux,
                        usage_de, usage_et_nature)
 from .modeles import EntreeExtraite
 
-_RE_PLATEFORME_EXCLUE = re.compile(r"macOS|\bmac\b|Windows|WSL|\bCmd\b|Cmd\+|Option\+|iTerm", re.I)
+_RACINE = Path(__file__).resolve().parents[3]
+# D79 : motifs de plateforme par système exclu (`profil.yaml`, base.exclure_systemes)
+_MOTIFS_SYSTEMES = {
+    "macos": r"macOS|\bmac\b|\bCmd\b|Cmd\+|Option\+|iTerm",
+    "windows": r"Windows|WSL",
+}
+_systemes_exclus: list[str] | None = None
+
+
+def systemes_exclus() -> list[str]:
+    """Systèmes exclus de la base (D42, D79) ; lus une fois dans `profil.yaml` de la racine du dépôt."""
+    global _systemes_exclus
+    if _systemes_exclus is None:
+        _systemes_exclus = profil.charger(_RACINE)["base"]["exclure_systemes"]
+    return _systemes_exclus
+
+
+def definir_systemes_exclus(systemes: list[str] | None) -> None:
+    """Remplace la liste en cours (tests) ; None force une relecture de `profil.yaml`."""
+    global _systemes_exclus
+    _systemes_exclus = None if systemes is None else [s.lower() for s in systemes]
+
+
+def _re_plateformes() -> re.Pattern | None:
+    motifs = [m for s, m in _MOTIFS_SYSTEMES.items() if s in systemes_exclus()]
+    return re.compile("|".join(motifs), re.I) if motifs else None
 
 
 def _rx(motif: str | None):
     return re.compile(motif, re.I) if motif else None
+
+
+def _rx_exclure(motif: str | None):
+    """Comme `_rx`, mais les jetons `windows` et `macos` d'une alternance simple ne comptent que si le système est exclu (D79)."""
+    if motif and "(" not in motif:
+        jetons = [j for j in motif.split("|") if j.lower() not in _MOTIFS_SYSTEMES or j.lower() in systemes_exclus()]
+        motif = "|".join(jetons)
+    return _rx(motif)
 
 
 def _texte(fichiers: dict, nom: str = "page") -> str:
@@ -41,7 +76,8 @@ def _sections_retenues(secs: list[Section], motif: str | None) -> list[Section]:
 
 
 def _variante_exclue(v: str) -> bool:
-    return not re.search(r"Linux", v) and bool(_RE_PLATEFORME_EXCLUE.search(v))
+    rx = _re_plateformes()
+    return not re.search(r"Linux", v) and bool(rx and rx.search(v))
 
 
 def _garder_linux(usage: str) -> bool:
@@ -56,7 +92,7 @@ def tableau(doc, fichiers: dict) -> list[EntreeExtraite]:
     o = doc.options
     texte = _texte(fichiers)
     lignes, secs = sections(texte)
-    exclure = _rx(o.get("exclure"))
+    exclure = _rx_exclure(o.get("exclure"))
     if o.get("section"):
         spans = _sections_retenues(secs, o["section"])
         if not spans:
@@ -114,7 +150,7 @@ def sections_page(doc, fichiers: dict) -> list[EntreeExtraite]:
     niveaux = {int(n) for n in str(o.get("niveau", 3)).split(",")}
     parent = _rx(o.get("parent"))
     exclure_sec = _rx(o.get("exclure_sections"))
-    exclure = _rx(o.get("exclure"))
+    exclure = _rx_exclure(o.get("exclure"))
     res: list[EntreeExtraite] = []
     for s in secs:
         if s.niveau not in niveaux:
@@ -309,7 +345,7 @@ def configtable(doc, fichiers: dict) -> list[EntreeExtraite]:
     zone = texte[debut:fin if fin > debut else len(texte)]
     if "<ConfigTable" not in zone:
         raise FormatInattendu("aucun composant <ConfigTable> dans la section")
-    exclure = _rx(o.get("exclure"))
+    exclure = _rx_exclure(o.get("exclure"))
     positions = [m.start() for m in re.finditer(r"\bkey:\s*\"", zone)]
     res: list[EntreeExtraite] = []
     for k, p in enumerate(positions):
@@ -334,7 +370,7 @@ def configtable(doc, fichiers: dict) -> list[EntreeExtraite]:
 
 def _classer_table_codex(nom: str) -> tuple[str, str] | None:
     """(catégorie, contexte) d'un tableau ConfigTable de la page CLI, ou None s'il est exclu (D42)."""
-    if re.search(r"Mac|Windows", nom):
+    if (("macos" in systemes_exclus() and "Mac" in nom) or ("windows" in systemes_exclus() and "Windows" in nom)):
         return None
     if nom.startswith("mcp"):
         return ("mcp", "codex mcp")
@@ -383,7 +419,8 @@ def codex_cli(doc, fichiers: dict) -> list[EntreeExtraite]:
                 continue
             cle, valeurs, details = c[0], c[1], c[2]
             if nom_table == "commandOverview":
-                if re.search(r"macOS|Windows", details) and "Linux" not in details:
+                if "Linux" not in details and any(
+                        (s == "macos" and "macOS" in details) or (s == "windows" and "Windows" in details) for s in systemes_exclus()):
                     continue
                 ajouter("commandes", cle, cle, f"{details} (maturité : {valeurs})", groupe, ancre)
             elif categorie == "commandes" or (categorie == "mcp" and nom_table.endswith("Commands")):

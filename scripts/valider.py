@@ -508,9 +508,11 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
     attendus = {"outil", "version", "detectee_le", "methode", "derniere_publiee", "source_derniere", "statut"}
     for i, l in enumerate(lignes):
         o = f"{ou}[{i}]"
-        if not isinstance(l, dict) or not attendus <= set(l) or set(l) - attendus - {"raison", "note"}:
-            r.erreur(o, f"champs attendus {sorted(attendus)} (+ raison, note)")
+        if not isinstance(l, dict) or not attendus <= set(l) or set(l) - attendus - {"raison", "note", "pertinent_pour_profil"}:
+            r.erreur(o, f"champs attendus {sorted(attendus)} (+ raison, note, pertinent_pour_profil)")
             continue
+        if "pertinent_pour_profil" in l and not isinstance(l["pertinent_pour_profil"], bool):
+            r.erreur(o, "`pertinent_pour_profil` doit être un booléen (D79)")
         if l["statut"] not in ("a_jour", "en_retard", "inconnu", "embarque", "non_utilise"):
             r.erreur(o, f"statut inconnu : {l['statut']!r}")
         if l["version"] is None and not l.get("raison"):
@@ -549,6 +551,8 @@ def verifier_etat(racine: Path, r: Rapport) -> None:
         return
     if not isinstance(e["releve_le"], str) or "T" not in e["releve_le"]:
         r.erreur(ou, "`releve_le` doit être un horodatage ISO 8601")
+    if "pertinent_pour_profil" in e and not isinstance(e["pertinent_pour_profil"], bool):
+        r.erreur(ou, "`pertinent_pour_profil` doit être un booléen (D79)")
 
     def parcourir(n, chemin_):
         if isinstance(n, dict):
