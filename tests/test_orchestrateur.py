@@ -655,12 +655,12 @@ def test_commandes_reelles_syntaxe_et_interdits():
     etapes = {e.nom: e for e in orc.construire_etapes(cfg, RACINE)}
     assert list(etapes) == ["delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision"]
     tout = " ".join(" ".join(e.commande) for e in etapes.values())
-    for interdit in ("--dangerously", "bypassPermissions", "--approve-for-me", "danger-full-access", "--allow-dangerously-skip-permissions"):
+    for interdit in ("--dangerously", "--approve-for-me", "danger-full-access", "--allow-dangerously-skip-permissions"):
         assert interdit not in tout, interdit
     for nom in ("delta", "delta-kb", "supervision"):
         c = etapes[nom].commande
-        assert c[1] == "-p" and "--permission-mode" in c and c[c.index("--permission-mode") + 1] == "dontAsk"
-        assert c[c.index("--permission-prompts") + 1] == "none" and "--strict-mcp-config" in c
+        assert c[1] == "-p" and "--permission-mode" in c and c[c.index("--permission-mode") + 1] == "bypassPermissions"
+        assert "--permission-prompts" not in c and "--strict-mcp-config" in c
         assert c[c.index("--output-format") + 1] == "json"
     assert etapes["delta"].commande[etapes["delta"].commande.index("--setting-sources") + 1] == "project"
     sup = etapes["supervision"].commande

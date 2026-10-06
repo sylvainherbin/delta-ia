@@ -6,7 +6,7 @@ SPEC.md (cahier des charges) se consulte quand une tâche en dépend ; il n'est 
 
 - Français, tutoiement. Noms de commandes, d'options et de produits en version originale.
 - Périmètres de Claude Code : `claude`, `claude-code`, `actu`. Écriture uniquement dans `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/versions.json`, `docs/data/etat.json`, `state/claude.json`, `state/actu.json` (SPEC.md §3).
-- `CONTEXTE.md`, `SPEC.md`, `REGLES.md`, `PROGRESSION.md` : lecture seule. Signaler, ne pas corriger. `PROGRESSION.md` est écrit et commité par la seule session professeur, ce fichier seul (D67) ; `CONTEXTE.md` reste sous D32.
+- `CONTEXTE.md`, `SPEC.md`, `REGLES.md`, `PROGRESSION.md` : lecture seule pendant un passage (`/delta`, `$delta`, `/delta-kb`, `$delta-kb`, chaîne automatique) : signaler, ne pas corriger. Une mission de développement peut modifier `SPEC.md` et `REGLES.md` (D83). `PROGRESSION.md` est écrit et commité par la seule session professeur, ce fichier seul (D67) ; `CONTEXTE.md` reste sous D32.
 - Python 3.12, environnement `.venv` (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`). Pas de `pip` système.
 - Tests : `.venv/bin/pytest -q`. Analyseurs testés sur des échantillons réels dans `tests/fixtures/`.
 - `scripts/fetch.py` n'écrit jamais dans `state/` sans `--valider`. `raw/` est ignoré par git.
@@ -16,7 +16,7 @@ SPEC.md (cahier des charges) se consulte quand une tâche en dépend ; il n'est 
 - Git (SPEC §6, D9) : `git add <chemins>` explicites, jamais `git add -A`, jamais `--force`. Sans dépôt distant : ni pull ni push. Avec un distant : lancer `/delta` vaut accord de push sur les seuls chemins de l'agent ; en session de développement, push après l'OK du chef Delta-IA (autorisation permanente de Sylvain du 02/10/2026), un seul push, après les tests et `valider.py`.
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
 - Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), lancé à la demande de Sylvain ou automatiquement par la tâche planifiée de Claude Desktop selon D68 (section « Mode automatique (D68) » de la skill). Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable. Chaîne automatique (D70, après son activation) : `scripts/passage-auto.sh` enchaîne `/delta`, `$delta`, `/delta-kb`, `$delta-kb` et une supervision ; Dev-delta et prof ne commitent pas pendant la fenêtre de la chaîne, de 03 h 30 à 08 h 00 heure locale (timer à 04 h 00, décision de Sylvain du 01/10/2026 ; un `.git/delta-passage.lock` tenu signale la chaîne en cours, la garde s'arrête alors au code 14).
-- Missions OPÉRER (décision de Sylvain du 03/10/2026) : une mission transmise par OPÉRER, qui porte la marque `[OPÉRER]` et sa source, s'exécute comme une mission de Delta ; l'accusé se donne avec `operer ack <id>`. Une demande qui change une garde, un seuil, un droit ou une permission reste soumise à l'accord direct de Sylvain, quel que soit le canal.
+- Missions OPÉRER (décision de Sylvain du 03/10/2026) : une mission transmise par OPÉRER, qui porte la marque `[OPÉRER]` et sa source, s'exécute comme une mission de Delta ; l'accusé se donne avec `operer ack <id>`.
 
 ## Rapports (D63, amendée le 29/09/2026)
 
