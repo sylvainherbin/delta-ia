@@ -62,15 +62,18 @@ class Rapport:
 
 
 def projets_du_contexte(chemin: Path) -> set[str]:
-    """Noms de projets : titres `### 2.x <nom> — …` de CONTEXTE.md §2."""
+    """Noms de projets (D81) : sections de niveau 3 de CONTEXTE.md dont le ctx-id est `projet.<nom>`.
+
+    Une structure ctx-id invalide donne un ensemble vide : `charger_ctx_ids` la signale déjà.
+    """
     if not chemin.exists():
         return set()
-    projets: set[str] = set()
-    for ligne in chemin.read_text(encoding="utf-8").splitlines():
-        m = re.match(r"^###\s+2\.\d+\s+([^\s—]+(?:\s+[^\s—]+)*?)\s+—", ligne)
-        if m:
-            projets.add(m.group(1).strip())
-    return projets
+    try:
+        sections = analyser_contexte(chemin.read_text(encoding="utf-8"))[0]
+    except ContexteInvalide:
+        return set()
+    return {cle[len("projet."):] for cle, s in sections.items()
+            if s["niveau"] == 3 and cle.startswith("projet.") and len(cle) > len("projet.")}
 
 
 def _date_valide(v) -> bool:
@@ -624,8 +627,8 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
     charger_ctx_ids(racine, r)
     dossier = racine / "docs" / "data" / DOSSIERS[perimetre]
     projets = projets_du_contexte(contexte)
-    if not projets:
-        r.erreur("CONTEXTE.md", f"aucun projet trouvé dans {contexte} (titres `### 2.x <nom> — …`)")
+    if not contexte.exists():
+        r.erreur("CONTEXTE.md", f"fichier introuvable : {contexte}")
     quotidiens: dict[str, dict] = {}
     jour_strict = (jour or date.today()).isoformat()
     for f in sorted(dossier.glob("????-??-??.json")):

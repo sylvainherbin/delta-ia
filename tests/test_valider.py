@@ -111,6 +111,43 @@ def test_projets_du_contexte(racine):
     assert "trading-sim" in v.projets_du_contexte(Path(fetch.RACINE) / "CONTEXTE.md")
 
 
+def test_projets_du_contexte_reel():
+    from pathlib import Path
+    assert v.projets_du_contexte(Path(fetch.RACINE) / "CONTEXTE.md") == {
+        "carnet", "trading-sim", "chatgpt-trading-sim", "ceramist", "restoration-id"}
+
+
+def test_projets_formats_varies_et_niveau_2(tmp_path):
+    c = tmp_path / "CONTEXTE.md"
+    c.write_text("## Projets\n<!-- ctx-id: projets -->\n\n### 1.1 atelier-resa (client)\n<!-- ctx-id: projet.atelier-resa -->\n\n"
+                 "### Mon projet\n<!-- ctx-id: projet.mon-projet -->\n\n## Vue\n<!-- ctx-id: projet.vue-ensemble -->\n\n"
+                 "### Autre\n<!-- ctx-id: outils.autre -->\n", encoding="utf-8")
+    assert v.projets_du_contexte(c) == {"atelier-resa", "mon-projet"}
+
+
+def test_contexte_sans_projet_valide(tmp_path):
+    c = tmp_path / "CONTEXTE.md"
+    c.write_text("## Moi\n<!-- ctx-id: moi -->\n\n### Outils\n<!-- ctx-id: outils -->\n", encoding="utf-8")
+    assert v.projets_du_contexte(c) == set()
+    r = v.Rapport()
+    v.charger_ctx_ids(tmp_path, r)
+    assert r.ok
+
+
+def test_contexte_sans_projet_bout_en_bout(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    for e in q["elements"]:
+        e.update(projets_concernes=[], contexte_sections={})
+    _reecrire(chemin, q)
+    (racine / "CONTEXTE.md").write_text("## Moi\n<!-- ctx-id: moi -->\n\ntexte\n", encoding="utf-8")
+    assert validation(racine, "claude", brut=False) == 0
+    assert "aucun projet" not in capsys.readouterr().err
+    q["elements"][0]["projets_concernes"] = ["projet-fantome"]
+    _reecrire(chemin, q)
+    assert validation(racine, "claude", brut=False) == 1
+    assert "hors de CONTEXTE.md" in capsys.readouterr().err
+
+
 def _quotidien_valide(racine, perimetre="claude"):
     brut = brut_de(racine, perimetre)
     chemin = ecrire_quotidien(racine, perimetre, brut, JOUR)
