@@ -101,10 +101,28 @@ def test_brut_de_la_base_de_reference(racine_kb, monkeypatch):  # noqa: F811
         assert (racine_kb / "raw" / "historique" / f).read_bytes() == origine.read_bytes()
 
 
+CHEMIN_HISTORIQUE = "raw/historique/2026-09-30/claude-nouveautes-174512.json"
+
+
+def _ignore_par_git(racine) -> int:
+    return subprocess.run(["git", "-C", str(racine), "check-ignore", "-q", CHEMIN_HISTORIQUE], capture_output=True).returncode
+
+
 def test_raw_historique_est_ignore_par_git():
     racine = Path(fetch.RACINE)
-    r = subprocess.run(["git", "-C", str(racine), "check-ignore", "-q", "raw/historique/2026-09-30/claude-nouveautes-174512.json"])
-    assert r.returncode == 0
+    dans_depot = subprocess.run(["git", "-C", str(racine), "rev-parse", "--is-inside-work-tree"], capture_output=True)
+    if dans_depot.returncode != 0:
+        pytest.skip("hors dépôt git")
+    assert _ignore_par_git(racine) == 0
+
+
+def test_check_ignore_distingue_ignore_et_non_ignore(tmp_path):
+    """Dépôt temporaire : le contrôle échoue (code 1) si raw/historique/ n'est pas ignoré, réussit (0) s'il l'est."""
+    subprocess.run(["git", "-C", str(tmp_path), "init", "-q"], check=True, capture_output=True)
+    (tmp_path / ".gitignore").write_text("rapports/\n")
+    assert _ignore_par_git(tmp_path) == 1
+    (tmp_path / ".gitignore").write_text("raw/*\n!raw/.gitkeep\n")
+    assert _ignore_par_git(tmp_path) == 0
 
 
 def test_la_garde_ne_voit_pas_raw_historique(tmp_path):

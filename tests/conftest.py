@@ -98,6 +98,24 @@ class FauxClient:
         return Reponse(url, 200, content_type, (FIXTURES / fichier).read_text(encoding="utf-8"))
 
 
+def sockets_locaux_permis() -> bool:
+    """Vrai si le bac à sable laisse ouvrir un socket local (PermissionError / EPERM / EACCES sinon)."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("127.0.0.1", 0))
+        return True
+    except OSError:  # PermissionError en est une sous-classe
+        return False
+
+
+@pytest.fixture
+def sockets_locaux():
+    """À demander par tout test qui ouvre un socket local : ignoré quand le bac à sable l'interdit."""
+    if not sockets_locaux_permis():
+        pytest.skip("sockets locaux interdits par le bac à sable")
+
+
 @pytest.fixture
 def sources():
     return {s.id: s for s in charger_sources(RACINE / "sources.yaml")}
