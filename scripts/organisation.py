@@ -65,13 +65,27 @@ def _elements(vue: dict, cle: str) -> list[dict]:
     return valeurs
 
 
-def reduire(qui: dict, etat: dict) -> dict:
+def est_depot(dossier: str) -> bool:
+    """Un dossier est un dépôt de projet s'il contient un `.git` (fichier ou dossier)."""
+    return (Path(dossier) / ".git").exists()
+
+
+def projet_du_dossier(dossier: str | None, depot=None) -> str | None:
+    """Dernier segment du dossier seulement s'il est un dépôt ; la racine commune des projets donne None."""
+    if not dossier:
+        return None
+    if (depot or est_depot)(dossier):
+        return Path(dossier).name or None
+    return None
+
+
+def reduire(qui: dict, etat: dict, depot=None) -> dict:
     roles = []
     for role in _elements(qui, "roles"):
         dossier = _texte(role, "dossier", "qui")
         roles.append({
             "role": _texte(role, "role", "qui", obligatoire=True),
-            "projet": (Path(dossier).name or None) if dossier else None,
+            "projet": projet_du_dossier(dossier, depot),
             "modele": _texte(role, "modele", "qui"),
             "effort": _texte(role, "effort", "qui"),
             "presence": _texte(role, "presence", "qui"),
@@ -96,11 +110,11 @@ def reduire(qui: dict, etat: dict) -> dict:
     return {"roles": roles, "projets": dict(sorted(projets.items())), "totaux": etat["totaux"]}
 
 
-def relever() -> dict:
+def relever(depot=None) -> dict:
     try:
         qui = lire_vue("qui")
         etat = lire_vue("etat")
-        vue = {"statut": "ok", **reduire(qui, etat)}
+        vue = {"statut": "ok", **reduire(qui, etat, depot)}
     except LectureImpossible as erreur:
         vue = {"statut": "echec", "raison": str(erreur)}
     return {"releve_le": maintenant_iso(), **vue}

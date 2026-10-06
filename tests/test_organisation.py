@@ -16,6 +16,12 @@ from conftest import ecrire_quotidien
 RACINE = Path(__file__).resolve().parent.parent
 
 
+@pytest.fixture(autouse=True)
+def depots_factices(monkeypatch):
+    # Pas d'accès au disque : seuls les dossiers « exemple » sont des dépôts (présence d'un .git simulée).
+    monkeypatch.setattr(organisation, "est_depot", lambda dossier: dossier.rstrip("/").endswith("/exemple"))
+
+
 @pytest.fixture
 def vues():
     # Structure vérifiée avec `operer --json qui` et `operer --json etat` ; valeurs fictives.
@@ -27,6 +33,8 @@ def vues():
                  "socket": "socket-factice", "unite": "claude-session@factice.service", "tmux": "tmux-factice",
                  "session": "session-factice", "session_figee": "session-figee-factice",
                  "source": "/home/factice/cc-socks/source", "reglages": {"prive": "reglages-factices"}},
+                {"role": "racine", "dossier": "/home/factice/projets", "modele": "opus",
+                 "effort": "medium", "presence": "présente"},
                 {"role": "auditeur", "dossier": None, "modele": None, "effort": None, "presence": "inconnue"},
                 {"role": "sans-dossier"},
             ], "fichier_reglages": "/home/factice/reglages.json",
@@ -82,6 +90,7 @@ def test_vue_reduite_correcte(monkeypatch, vues):
         "statut": "ok",
         "roles": [
             {"role": "chef-exemple", "projet": "exemple", "modele": "opus", "effort": "medium", "presence": "présente"},
+            {"role": "racine", "projet": None, "modele": "opus", "effort": "medium", "presence": "présente"},
             {"role": "auditeur", "projet": None, "modele": None, "effort": None, "presence": "inconnue"},
             {"role": "sans-dossier", "projet": None, "modele": None, "effort": None, "presence": None},
         ],
@@ -92,6 +101,32 @@ def test_vue_reduite_correcte(monkeypatch, vues):
         "totaux": vues["etat"]["totaux"],
     }
     assert vues == avant
+
+
+def test_projet_du_dossier_depot_ou_racine():
+    depot = lambda dossier: dossier.endswith("/exemple")  # noqa: E731
+    assert organisation.projet_du_dossier("/home/factice/projets/exemple", depot) == "exemple"
+    assert organisation.projet_du_dossier("/home/factice/projets", depot) is None
+    assert organisation.projet_du_dossier(None, depot) is None
+
+
+def test_projet_du_dossier_lit_le_git_reel(tmp_path, monkeypatch):
+    monkeypatch.undo()  # retire le faux est_depot : lecture réelle du disque
+    racine, depot, worktree = tmp_path / "projets", tmp_path / "projets" / "exemple", tmp_path / "projets" / "autre"
+    depot.mkdir(parents=True)
+    (depot / ".git").mkdir()
+    worktree.mkdir()
+    (worktree / ".git").write_text("gitdir: ailleurs", encoding="utf-8")  # .git fichier (worktree)
+    assert organisation.projet_du_dossier(str(depot)) == "exemple"
+    assert organisation.projet_du_dossier(str(worktree)) == "autre"
+    assert organisation.projet_du_dossier(str(racine)) is None
+
+
+def test_projets_sans_cle_nulle(monkeypatch, vues):
+    simuler(monkeypatch, vues)
+    releve = organisation.relever()
+    assert None not in releve["projets"] and "projets" not in releve["projets"]
+    assert all(r["projet"] != "projets" for r in releve["roles"])
 
 
 def test_champs_et_contenus_exclus(monkeypatch, vues):
