@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-06",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-06T02:25:00+00:00",
+  "synthese": "Compte et quotas : rien de nouveau dans les sources suivies ; Claude semaine 29 % (remise à zéro le 11/10 à 16 h UTC), session 5 h 23 %, ChatGPT semaine 13 % (remise à zéro le 12/10 à 08 h UTC), aucun seuil de 80 % atteint. Claude Code 2.1.290, déjà installée, durcit plusieurs contrôles de permissions Bash (`rg`, `git grep` avec jokers, `ps`, `pyright`) : si la chaîne de nuit lance l'une de ces commandes sous `dontAsk`, elle serait refusée au lieu de passer, à vérifier après le passage de 04:00. La même version ajoute `claude attach <id|name>` et `claude logs <id|name>` acceptant un fragment du nom de session, et la base gagne ces deux fiches (plus la variable CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS, qui ajoute des événements `session_state_changed` au flux stream-json), toutes trois en verdict `ignorer`. Un incident résolu sur Claude Mythos 5.1 et Claude Fable 5.1 (30 minutes d'erreurs élevées le 05/10) et un champ `line` de l'API Models complètent la journée ; ni l'un ni l'autre ne change ton usage.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.290",
+      "ids_bruts": [
+        "claude-code-2.1.290"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.290 : contrôles de permissions Bash durcis, `claude attach` et `claude logs` par nom de session",
+      "version": "2.1.290",
+      "date_publication": "2026-10-05",
+      "type": "amelioration",
+      "resume": "Les contrôles Bash demandent désormais une approbation pour des commandes jusque-là acceptées : `rg` ou `git grep` dont les arguments contiennent des jokers que le shell développerait, certaines formes de `ps`, `pyright` (plus traité comme lecture seule) et des commandes dont les noms de variables sont lus autrement par zsh que par bash ; les règles Read deny s'appliquent aussi aux jokers dans certaines options et aux images collées. Les refus du mode auto ne suggèrent plus de règle qui contournerait le classifieur pour tout un outil, et le mode plan ne laisse plus le classifieur approuver des outils de connecteur qui écrivent. Ajouts : `claude attach <id|name>` et `claude logs <id|name>` acceptent un fragment du nom de la session en cours, `/code-review` à effort moyen rapporte aussi les nettoyages et les conventions de CLAUDE.md sur Opus 5.5 et Sonnet 5.5, le budget WebSearch d'une session interactive se recharge (100 appels par heure) au lieu de s'arrêter à 200. Correctifs : tâches planifiées (`/loop`) qui ne revenaient pas à la reprise après un compactage, Monitor sous sandbox qui sautait l'invite de permission, plusieurs défauts de la vue agents et des mods.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21290",
+          "libelle": "Changelog Claude Code 2.1.290",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La chaîne de nuit D70 tourne avec `--permission-mode dontAsk` et une liste `allow` par étape : une commande qui réclame maintenant une approbation y serait refusée (code 125) au lieu de s'exécuter. Les passages lisent la base avec `grep -n` et des jokers ; la note ne nomme que `rg` et `git grep`, donc rien n'indique que `grep` soit touché, mais le premier passage de nuit sous 2.1.290 (07/10 à 04:00) le dira. Sur `claude attach` et `claude logs`, tes sessions durables sont des sessions tmux sous systemd : ces commandes, faites pour les sessions d'arrière-plan, ne les remplacent pas.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Après la chaîne du 07/10 à 04:00, chercher un code 125 dans `rapports/passages.log` ; s'il y en a un sur une étape Claude, noter la commande refusée et la transmettre à Dev-delta pour une règle `allow` dans `scripts/orchestrateur.toml`.",
+        "etapes": [
+          "Ouvre `rapports/passages.log` et regarde les lignes du 07/10 : un code de garde ou de sortie 125 signale un refus de permission.",
+          "Lis la sortie correspondante dans `rapports/auto/` pour relever la commande refusée.",
+          "Si c'est une commande de lecture, demande à Dev-delta d'ajouter la règle `allow` exacte dans la liste de l'étape concernée ; sans 125, rien à faire."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-attach-id-name",
+        "claude-code-commandes-claude-logs-id-name",
+        "claude-code-parametres-claude-code-emit-session-state-events"
+      ],
+      "contexte_sections": {
+        "methode.chaine-nuit": {
+          "sha1": "2a5ed8102e55a6427b57ca2c9b27cf0677d07fd2",
+          "pourquoi": "Chaîne de nuit en `dontAsk` avec liste allow par étape : un refus donne le code 125."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "464b07898e821d25c5b0f6a77647f52c0087f3b8",
+          "pourquoi": "Classifieur du mode auto et listes allow par rôle : les refus et suggestions de règle changent."
+        },
+        "env.multi-sessions": {
+          "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+          "pourquoi": "Sessions durables en tmux sous systemd, pas des sessions d'arrière-plan visées par attach et logs."
+        }
+      }
+    },
+    {
+      "id": "anthropic-status-bhphxz3vr58g",
+      "ids_bruts": [
+        "anthropic-status-bhphxz3vr58g"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Mythos 5.1 et Claude Fable 5.1",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "correction",
+      "resume": "Incident d'impact « major » sur claude.ai, l'API Claude, Claude Code et Claude Cowork : erreurs élevées sur les requêtes vers Claude Mythos 5.1 et Claude Fable 5.1, du 05/10 à 12 h 40 UTC à 13 h 10 UTC ; ouvert à 13 h 05, résolu à 13 h 21 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/bhphxz3vr58g",
+          "libelle": "Anthropic status — Elevated errors for Claude Mythos 5.1 and Claude Fable 5.1",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-01",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-01"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 01/10 : champ `line` dans l'API Models",
+      "version": null,
+      "date_publication": "2026-10-01",
+      "type": "nouveaute",
+      "resume": "`GET /v1/models` et `GET /v1/models/{model_id}` renvoient désormais un champ `line`, la famille du modèle (Claude Opus 4.5 et Claude Opus 4.6 donnent tous deux `opus`), pour regrouper les modèles sans analyser leurs identifiants ; `line` vaut `null` pour un modèle sans famille.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://claude.com/blog/how-cresta-turned-cx-expertise-into-an-agent-builder-on-the-claude-agent-sdk",
+      "raison": "Témoignage client sectoriel (agents de service client), sans changement d'outil ni de condition d'usage"
+    }
+  ],
+  "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09"
+}

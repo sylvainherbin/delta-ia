@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-05",
+ "maj_le": "2026-10-06",
  "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
  "contexte_sections": {
   "profil": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
@@ -36,8 +36,8 @@
   "usage.hors-machine": "fbd853357c6c4baef15c6a2469c4d7a459aa1394"
  },
  "contexte_deprecies": [],
- "total": 644,
- "commentees": 603,
+ "total": 645,
+ "commentees": 599,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -2445,7 +2445,7 @@
    "nom": "askUserQuestionTimeout",
    "gabarit": "court",
    "description": "Réglage qui fait continuer seule, après un délai d'inactivité, une question à choix restée sans réponse, avec les options déjà cochées.",
-   "description_source": "Let an unanswered AskUserQuestion dialog auto-continue after a period of idle time, submitting whatever options you had already selected. Set it when you step away and want Claude to continue without you. With the default, questions wait until you answer them. For when the timer pauses or never starts, see Question auto-continue timeout. Requires Claude Code v2.1.200 or later.",
+   "description_source": "Let an unanswered AskUserQuestion dialog auto-continue after a period of idle time, submitting whatever options you had already selected. Set it when you step away and want Claude to continue without you. With the default, questions wait until you answer them. For when the timer pauses or never starts, see Question auto-continue timeout.",
    "usage": "{\n  \"askUserQuestionTimeout\": \"5m\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2466,7 +2466,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2478,6 +2478,10 @@
     },
     {
      "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-06",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -3681,7 +3685,7 @@
    "nom": "BETA_TRACING_ENDPOINT",
    "gabarit": "court",
    "description": "Variable qui désigne le point de collecte OTLP des traces détaillées en bêta.",
-   "description_source": "OTLP endpoint for detailed beta tracing: with ENABLE_BETA_TRACING_DETAILED=1, logs and traces go there instead of to the configured exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings",
+   "description_source": "OTLP/HTTP endpoint for detailed beta tracing: with ENABLE_BETA_TRACING_DETAILED=1, logs and traces go there instead of to the configured exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings",
    "usage": "BETA_TRACING_ENDPOINT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3698,11 +3702,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3711,6 +3715,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -7634,6 +7642,48 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-emit-session-state-events",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS",
+   "gabarit": "court",
+   "description": "Variable d'environnement à 1 qui ajoute au flux de messages des événements `session_state_changed` portant l'état de la session ; exige l'Agent SDK, ou `--print` avec `--output-format stream-json` et `--verbose`.",
+   "description_source": "Set to 1 to add session_state_changed messages, which carry the session's state, to the message stream. Requires either the Agent SDK or --print, --output-format stream-json, and --verbose",
+   "usage": "CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Sert à qui consomme le flux stream-json d'un hôte SDK ; CONTEXTE.md ne décrit aucun hôte de ce genre, les appels `claude -p` de la chaîne D70 n'en ont pas l'usage."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-06",
+   "historique": [
+    {
+     "date": "2026-10-06",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-enable-auto-mode",
@@ -13688,7 +13738,7 @@
    "nom": "--dangerously-load-development-channels",
    "gabarit": "court",
    "description": "Option qui active des canaux hors liste approuvée, pour le développement local.",
-   "description_source": "Enable channels that are not on the approved allowlist, for local development. Accepts plugin:<name>@<marketplace> and server:<name> entries. Prompts for confirmation — claude --dangerously-load-development-channels server:webhook",
+   "description_source": "Enable channels that are not on the approved allowlist, for local development. Accepts plugin:<name>@<marketplace> and server:<name> entries. Prompts for confirmation, so it takes effect in interactive sessions. With -p, Claude Code ignores the flag — claude --dangerously-load-development-channels server:webhook",
    "usage": "--dangerously-load-development-channels",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -13705,11 +13755,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13718,6 +13768,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -14081,7 +14135,7 @@
    "nom": "desktopSessionCleanupPeriodDays",
    "gabarit": "court",
    "description": "Réglage qui fixe l'âge maximal des transcripts des sessions lancées depuis Claude Desktop ou Cowork ; sans lui, ils sont gardés.",
-   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. When managed settings set cleanupPeriodDays, …",
+   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. [Cleaned up …",
    "usage": "{\n  \"desktopSessionCleanupPeriodDays\": 90\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14098,11 +14152,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14111,6 +14165,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -16373,7 +16431,7 @@
    "nom": "ENABLE_BETA_TRACING_DETAILED",
    "gabarit": "court",
    "description": "Variable qui active, avec `BETA_TRACING_ENDPOINT`, un traçage bêta détaillé réservé aux organisations sur liste d'autorisation.",
-   "description_source": "Set to 1, together with BETA_TRACING_ENDPOINT, to turn on detailed beta tracing, which adds content-bearing span attributes and the claude_code.hook span. Interactive CLI sessions also require your organization to be allowlisted for the beta. Both variables are ignored in project and local settings",
+   "description_source": "Set to 1, and set BETA_TRACING_ENDPOINT to your OTLP/HTTP collector endpoint, to turn on detailed beta tracing, which adds content-bearing span attributes and the claude_code.hook span. Interactive CLI sessions also require your organization to be allowlisted for the beta. Both variables are ignored in project and local settings",
    "usage": "ENABLE_BETA_TRACING_DETAILED",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -16390,11 +16448,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16403,6 +16461,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -20803,7 +20865,7 @@
    "nom": "--max-budget-usd",
    "gabarit": "court",
    "description": "Option CLI qui fixe en dollars un plafond de dépense d'API, sous-agents compris, en mode `-p`.",
-   "description_source": "Maximum dollar amount to spend on API calls before stopping (print mode only). Spend from subagents counts toward the cap. When you return to a conversation with --continue or --resume, totals restored from earlier runs don't count toward it. Once spend reaches the cap, spawning another subagent fails with Budget limit reached, and Claude Code stops background subagents that are still running; the cap-enforcement behaviors require Claude Code v2.1.217 or later — claude -p --max-budget-usd 5.00 \"query\"",
+   "description_source": "Maximum dollar amount to spend on API calls before stopping (print mode only). Claude Code checks the cap against its client-side cost estimate, which can differ from your bill. Spend from subagents counts toward the cap. When you return to a conversation with --continue or --resume, totals restored from earlier runs don't count toward it. Once spend reaches the cap, spawning another subagent fails with Budget limit reached, and Claude Code stops background subagents that are still running; the cap-enforcement behaviors require Claude Code v2.1.217 or later — claude -p --max-budget-usd 5.00 \"query\"",
    "usage": "--max-budget-usd",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20820,11 +20882,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20833,6 +20895,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
