@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-06",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-06T04:06:39+02:00",
+  "synthese": "Un incident ChatGPT Work, susceptible d’affecter aussi les tâches planifiées, reste sous surveillance au moment de la collecte : si tu y prépares une mission de trading-sim, vérifie son achèvement avant de la transmettre. L’incident sur les conversations ChatGPT du 5 octobre est résolu. Codex CLI 0.160.1 corrige uniquement l’environnement de démarrage de serveurs MCP stdio sur des exécuteurs Windows ; aucun changement concernant ta configuration Linux n’est établi.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "openai-status-01M45E0JFFJZ6EQ3BWYPW74R2Z",
+      "ids_bruts": ["openai-status-01M45E0JFFJZ6EQ3BWYPW74R2Z"],
+      "produit": "chatgpt",
+      "titre": "Erreurs ChatGPT Work : incident encore sous surveillance",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "changement_rupture",
+      "resume": "OpenAI signale des erreurs accrues dans Work depuis le 5 octobre à 7 h 03 UTC, avec un effet possible sur les tâches planifiées. Une mitigation a été appliquée et le suivi est passé en surveillance à 9 h 50 UTC ; le brut collecté le 6 octobre à 2 h 06 UTC ne contient pas de résolution.",
+      "sources": [{"url": "https://status.openai.com/incidents/01M45E0JFFJZ6EQ3BWYPW74R2Z", "libelle": "Suivi officiel de l’incident Work", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "ChatGPT, appelé Work dans ton organisation, conçoit et arbitre les missions de trading-sim. Si ces échanges passent par le mode Work touché, vérifie qu’une demande a livré son résultat avant de relayer la mission ; le suivi ne permet pas d’affirmer que tes échanges ont été affectés.",
+      "projets_concernes": ["trading-sim", "chatgpt-trading-sim"],
+      "action": {
+        "description": "Avant le prochain relais de mission, contrôler le résultat des demandes effectuées dans le mode Work.",
+        "etapes": [
+          "Ouvrir le suivi https://status.openai.com/incidents/01M45E0JFFJZ6EQ3BWYPW74R2Z pour lire le dernier statut.",
+          "Si tu as utilisé le mode Work depuis le 5 octobre à 9 h 03, heure Europe/Amsterdam, ouvrir les demandes concernées et vérifier qu’elles ont livré la réponse ou le fichier attendu.",
+          "Si une demande a échoué, la relancer après rétablissement ; contrôler le document final et son SHA-256 selon ta procédure habituelle avant transmission."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": ["chatgpt-fonctionnalites-page-get-started-with-work"],
+      "contexte_sections": {
+        "projet.chatgpt-trading-sim": {"sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73", "pourquoi": "ChatGPT appelé Work conçoit et arbitre les missions ; l’emploi du mode Work touché reste conditionnel."},
+        "methode.travail": {"sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9", "pourquoi": "Les missions sont des fichiers horodatés et hachés, transmis entre les trois IA."}
+      }
+    },
+    {
+      "id": "openai-status-01M46G248GGHV9RSAJE82BZY1X",
+      "ids_bruts": ["openai-status-01M46G248GGHV9RSAJE82BZY1X"],
+      "produit": "chatgpt",
+      "titre": "Erreurs dans les conversations ChatGPT : incident résolu",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "correction",
+      "resume": "Certaines conversations ChatGPT ont subi un taux d’erreurs accru le 5 octobre à partir de 16 h 58 UTC. OpenAI a appliqué une mitigation à 17 h 55 UTC et déclaré les services rétablis le 6 octobre à 0 h 01 UTC.",
+      "sources": [{"url": "https://status.openai.com/incidents/01M46G248GGHV9RSAJE82BZY1X", "libelle": "Suivi officiel des erreurs de conversations ChatGPT", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Les conversations ChatGPT servent à concevoir et arbitrer trading-sim. Si un échange de mission a échoué pendant cette plage, il peut être repris après le rétablissement ; aucune donnée ne prouve que tes propres conversations aient été touchées.",
+      "projets_concernes": ["trading-sim", "chatgpt-trading-sim"],
+      "action": {
+        "description": "Avant de relayer une mission, reprendre les éventuels échanges ChatGPT en erreur pendant l’incident.",
+        "etapes": [
+          "Consulter les échanges de mission du 5 octobre à 18 h 58 au 6 octobre à 2 h 01, heure Europe/Amsterdam.",
+          "Si une demande est restée en erreur ou sans réponse, la renvoyer et relire le résultat final avant de transmettre la mission."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": ["chatgpt-fonctionnalites-page-use-chatgpt"],
+      "contexte_sections": {
+        "projet.chatgpt-trading-sim": {"sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73", "pourquoi": "ChatGPT est l’architecte et l’arbitre des missions de trading-sim."}
+      }
+    },
+    {
+      "id": "rust-v0.160.1",
+      "ids_bruts": ["rust-v0.160.1"],
+      "produit": "codex",
+      "titre": "Codex CLI 0.160.1 : environnement MCP des exécuteurs Windows",
+      "version": "0.160.1",
+      "date_publication": "2026-10-05",
+      "type": "correction",
+      "resume": "La release préserve SYSTEMROOT, TEMP et TMP au lancement de serveurs MCP stdio distants lorsqu’un environnement distant est configuré explicitement. Cela permet à un hôte Unix de conserver l’environnement de démarrage de l’exécuteur Windows ; la note ne décrit aucun autre changement.",
+      "sources": [{"url": "https://github.com/openai/codex/releases/tag/rust-v0.160.1", "libelle": "Release officielle Codex CLI 0.160.1", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": ["codex-fonctionnalites-page-codex-cli", "codex-mcp-supported-mcp-features"],
+      "contexte_sections": {
+        "config.codex.mcp": {"sha1": "489642bb494856f784b36b93dd05732ae846b6d2", "pourquoi": "Aucun usage d’un exécuteur MCP Windows distant n’est décrit dans la configuration durable."},
+        "config.codex.interface": {"sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b", "pourquoi": "La CLI autonome et le binaire embarqué sont distincts ; la release ne donne pas leur version installée."}
+      }
+    },
+    {
+      "id": "openai-status-01M461GYDMCVJJK8330PVCH42C",
+      "ids_bruts": ["openai-status-01M461GYDMCVJJK8330PVCH42C"],
+      "produit": "chatgpt",
+      "titre": "Enregistrement et édition de Pages : incident résolu",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "correction",
+      "resume": "Certains utilisateurs ne pouvaient pas enregistrer leurs modifications de Pages ou se reconnecter aux sessions d’édition en direct. Le suivi a été ouvert le 5 octobre à 12 h 44 UTC et déclaré résolu à 13 h 04 UTC.",
+      "sources": [{"url": "https://status.openai.com/incidents/01M461GYDMCVJJK8330PVCH42C", "libelle": "Suivi officiel de l’incident Pages", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "openai-status-01M47AFBNRNXKJWN549T3PMYV8",
+      "ids_bruts": ["openai-status-01M47AFBNRNXKJWN549T3PMYV8"],
+      "produit": "chatgpt",
+      "titre": "Connexion à la plateforme API et API d’administration : incident résolu",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "correction",
+      "resume": "OpenAI a signalé des erreurs accrues de connexion à la plateforme API et dans les API d’administration le 6 octobre à 0 h 40 UTC. Une mitigation a été appliquée, puis tous les services concernés ont été déclarés rétablis à 1 h 35 UTC.",
+      "sources": [{"url": "https://status.openai.com/incidents/01M47AFBNRNXKJWN549T3PMYV8", "libelle": "Suivi officiel de l’incident plateforme API", "officielle": true}],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {"id": "https://openai.com/index/new-chatgpt-ads-format-and-measurement", "raison": "Annonce de format publicitaire et d’outils de mesure, d’attribution et de suitability destinés aux annonceurs ; marketing écarté selon D24. Le résumé collecté n’annonce aucun changement de forfait, quota ou tarif."}
+  ],
+  "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09"
+}
