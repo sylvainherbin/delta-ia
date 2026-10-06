@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-06",
+  "perimetre": "actu",
+  "agent": "claude-code",
+  "genere_le": "2026-10-06T02:40:00+00:00",
+  "synthese": "Aucune information de compte, de quota ou de tarif aujourd'hui. Le point le plus proche de ton usage : un ingénieur d'Anthropic décrit la nouvelle version de Cowork, dont le modèle et la machine virtuelle tournent dans le cloud (travail qui continue ordinateur fermé, utilisable depuis un téléphone), à rapprocher de ton intérêt déclaré pour Cowork. Deux lectures moins directes : une analyse des essaims d'agents (environ deux fois plus de jetons pour 4 agents à performance égale, mais plus vite) et un article sur les failles de confiance entre agents reliés par MCP.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Oct/5/felix-rieseberg/"
+      ],
+      "produit": "actu",
+      "titre": "Cowork : la nouvelle version exécute aussi la machine virtuelle dans le cloud",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "nouveaute",
+      "resume": "Felix Rieseberg (Anthropic), cité par Simon Willison : l'« ancienne » version de Cowork exécute l'inférence dans le cloud mais les appels d'outils dans une machine virtuelle fournie par Anthropic installée sur l'ordinateur, avec un coût en disque, batterie et performances, et un travail qui s'arrête quand on ferme le portable. La « nouvelle » version exécute l'inférence et la machine virtuelle dans le cloud, avec un bac à sable par session sans état partagé ; l'app de bureau ne sert que pour les accès aux fichiers de l'appareil. La citation renvoie à une page d'aide, non lue ici.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+          "libelle": "Simon Willison — Quoting Felix Rieseberg",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "faible",
+      "pour_toi": "CONTEXTE.md range Cowork parmi les fonctions de Claude que tu veux explorer pour développer tes projets. Cette version cloud supprime le coût local de la machine virtuelle, ce qui compte sur ta machine modeste (14 Gio de RAM), et garde le travail en cours portable fermé ; rien n'indique encore que ces sessions échangent avec tes sessions Claude Code.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
+          "pourquoi": "Cowork cité parmi les fonctions de Claude à explorer ; lien avec les sessions Claude Code d'intérêt déclaré."
+        },
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Machine modeste (14 Gio de RAM) : le coût local d'une machine virtuelle compte."
+        }
+      }
+    },
+    {
+      "id": "https://importai.substack.com/p/import-ai-475-swarm-scaling-google",
+      "ids_bruts": [
+        "https://importai.substack.com/p/import-ai-475-swarm-scaling-google"
+      ],
+      "produit": "actu",
+      "titre": "Import AI 475 : essaims d'agents, SynthID Bio, banc d'essai de laboratoire automatisé",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "actu",
+      "resume": "Relayant Toby Ord, la lettre dit que les essaims d'agents sont une forme d'inférence à grande échelle utile surtout pour la vitesse : un essaim de 4 agents a besoin d'environ deux fois plus de jetons au total pour la même performance, mais de moitié moins par agent, donc finit en théorie en moitié moins de temps ; passer à 10 fois plus d'agents rapporte 3 à 5 fois plus de performance, non 10 fois. Elle cite aussi SynthID Bio (tatouage de séquences de protéines, Google DeepMind) et le banc SciUniverse, où Claude Fable 5.1 (xhigh) mène avec 45,3 % de réussite et 40,61 $ par tâche, devant GPT-5 Astra (xhigh, 32,5 %, 52,37 $) et Claude Opus 5 (xhigh, 30,5 %, 46,31 $).",
+      "sources": [
+        {
+          "url": "https://importai.substack.com/p/import-ai-475-swarm-scaling-google",
+          "libelle": "Import AI 475",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "faible",
+      "pour_toi": "Ta consigne du 04/10 réserve les workflows multi-agents à un accord de Sylvain, et tes limites hebdomadaires sont une friction connue : l'analyse relayée dit qu'un essaim paie sa vitesse en jetons, ce qui pèserait sur ton quota si tu en lançais un.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Consigne du 04/10 : workflows multi-agents seulement sur accord ; le coût en jetons d'un essaim s'y rattache."
+        }
+      }
+    },
+    {
+      "id": "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/",
+      "ids_bruts": [
+        "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/"
+      ],
+      "produit": "actu",
+      "titre": "Injection d'instructions d'un agent à l'autre via la confiance entre agents MCP",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "actu",
+      "resume": "Au cours des cinq derniers mois, Google et quatre autres organisations ont reconnu des failles où un agent compromis d'un réseau interne transmet des instructions malveillantes aux autres agents, qui lui font confiance ; c'est une injection d'instructions qui vise un agent précis (traduction, analyse de données) et non le modèle. Le chercheur indépendant Syed Anas Mohiuddin a testé des agents de Google, JP Morgan Chase, Weaviate, Rapid7, de la direction interministérielle du numérique française et du gouvernement fédéral américain, avec des attaques de démonstration sur des failles de confiance du protocole MCP. L'extrait lu est tronqué (« Read full article ») : les détails techniques et les correctifs ne sont pas connus ici.",
+      "sources": [
+        {
+          "url": "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/",
+          "libelle": "Ars Technica — MCP for agent-to-agent comms may be the riskiest protocol you've never heard of",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "faible",
+      "pour_toi": "Tes sessions Claude Code reçoivent des connecteurs MCP de compte et le connecteur Delta-IA, et les sessions se parlent par `SendMessage` ; si un agent y fait confiance au contenu d'un autre sans le contrôler, le schéma décrit s'y appliquerait. CONTEXTE.md ne dit pas que ce soit le cas, d'où une simple veille.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Connecteurs MCP de compte et serveur delta-ia branchés sur les sessions Claude Code."
+        },
+        "env.multi-sessions": {
+          "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+          "pourquoi": "Sessions qui se parlent via SendMessage et ListAgents."
+        }
+      }
+    },
+    {
+      "id": "https://simonwillison.net/2026/Sep/28/llm-anthropic/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Sep/28/llm-anthropic/"
+      ],
+      "produit": "actu",
+      "titre": "llm-anthropic 0.30 : Claude Sonnet 5.5, `llm anthropic refresh` et `llm anthropic count`",
+      "version": "0.30",
+      "date_publication": "2026-09-28",
+      "type": "nouveaute",
+      "resume": "Le greffon llm-anthropic ajoute Claude Sonnet 5.5, la commande `llm anthropic refresh` qui rafraîchit la liste des modèles Anthropic depuis leur API, et `llm anthropic count`, qui donne le nombre de jetons d'un prompt avec l'API gratuite de comptage avant l'envoi.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Sep/28/llm-anthropic/",
+          "libelle": "Simon Willison — llm-anthropic 0.30",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://arstechnica.com/apple/2026/10/command-line-tool-quickly-removes-apple-intelligence-from-macos-27/",
+      "raison": "Outil tiers pour désactiver Apple Intelligence sous macOS 27, sans lien avec les outils IA de Sylvain (machine Linux)"
+    },
+    {
+      "id": "https://arstechnica.com/ai/2026/10/ai-glasses-face-their-first-major-government-crackdown/",
+      "raison": "Projet de loi norvégien sur les lunettes à IA : politique générale, sans effet sur les outils ni leurs conditions d'usage"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/4/qwen38-addition-in-words/",
+      "raison": "Expérience personnelle de l'auteur du blog sur un modèle local, sans nouveauté d'outil"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/1/pwasm/",
+      "raison": "Publication d'un projet personnel de l'auteur du blog, sans nouveauté d'outil"
+    }
+  ],
+  "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09"
+}
