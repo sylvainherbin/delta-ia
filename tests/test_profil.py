@@ -38,12 +38,25 @@ def test_profil_de_sylvain():
 
 @pytest.mark.parametrize("texte", [
     "priorites: abc\n", "priorites: [1, 2]\n", "progression: 3\n", "releves_machine: oui\n", "releves_machine: 1\n",
-    "base: []\n", "base: {exclure_systemes: windows}\n", "base: {exclure_systemes: [linux]}\n", "base: {x: 1}\n",
+    "base: []\n", "base: {exclure_systemes: windows}\n", "base: {exclure_systemes: [freebsd]}\n", "base: {x: 1}\n",
     "inconnue: 1\n", "- a\n", "a: [\n",
 ])
 def test_erreurs_de_type(tmp_path, texte):
     with pytest.raises(profil.ProfilInvalide):
         profil.charger(ecrire(tmp_path, texte))
+
+
+@pytest.mark.parametrize("systemes, attendu", [("[linux]", ["linux"]), ("[windows, linux]", ["windows", "linux"]),
+                                               ("[Linux, MACOS]", ["linux", "macos"]), ("[windows, macos, linux]", ["windows", "macos", "linux"])])
+def test_linux_accepte_dans_exclure_systemes(tmp_path, systemes, attendu):
+    p = profil.charger(ecrire(tmp_path, f"base:\n  exclure_systemes: {systemes}\n"))
+    assert p["base"]["exclure_systemes"] == attendu
+
+
+def test_linux_ne_change_pas_la_valeur_par_defaut(tmp_path):
+    assert profil.charger(tmp_path)["base"]["exclure_systemes"] == ["windows", "macos"]
+    assert profil.DEFAUTS["base"]["exclure_systemes"] == ["windows", "macos"]
+    assert profil.SYSTEMES_CONNUS == ("windows", "macos", "linux")
 
 
 def test_versions_pertinent_pour_profil(tmp_path, monkeypatch):

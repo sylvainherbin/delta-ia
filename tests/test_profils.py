@@ -71,15 +71,18 @@ def _valeur(profil, cle):
 
 def test_profil_camille():
     from deltalib import profil
-    p = profil.charger(CAMILLE / "profil.yaml")
+    p = profil.charger(CAMILLE)  # une racine, pas un fichier
     assert len(_valeur(p, "priorites")) == 3 and "atelier-resa" in _valeur(p, "priorites")[0]
     assert _valeur(p, "progression") is None
     assert _valeur(p, "releves_machine") is False
+    base = _valeur(p, "base")
+    # Camille est sous macOS : la base garde macOS et exclut Windows et Linux
+    assert (base["exclure_systemes"] if isinstance(base, dict) else base.exclure_systemes) == ["windows", "linux"]
 
 
 def test_profil_neutre_valeurs_par_defaut():
     from deltalib import profil
-    p = profil.charger(NEUTRE / "profil.yaml")  # fichier absent : valeurs par défaut sûres
+    p = profil.charger(NEUTRE)  # pas de profil.yaml dans la racine : valeurs par défaut sûres
     assert _valeur(p, "priorites") == []
     assert _valeur(p, "progression") is None
     assert _valeur(p, "releves_machine") is False

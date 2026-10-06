@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-SYSTEMES_CONNUS = ("windows", "macos")
+SYSTEMES_CONNUS = ("windows", "macos", "linux")  # acceptés par le chargeur ; la valeur par défaut reste [windows, macos]
 
 DEFAUTS = {
     "priorites": [],
