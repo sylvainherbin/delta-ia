@@ -269,24 +269,20 @@ PERIMEES_MAX = 10  # D64-bis (amendée le 29/09/2026) : réévaluations priorita
 PERIMEES_SUSPENDU = False
 
 
-def charger_rejugements(racine: Path) -> dict[str, list[dict]]:
-    """D78 : demandes par id, tous périmètres confondus ; un id inconnu est seulement signalé.
-    Toutes les demandes sont conservées pour éteindre leurs plafonds indépendamment."""
+def lire_demandes(racine: Path) -> list[dict]:
+    """D78 : demandes validées du YAML, dans l'ordre, avec `ids` sans doublon ; [] si absent ou vide."""
     chemin = racine / "kb-rejugements.yaml"
     if not chemin.exists():
-        return {}
+        return []
     try:
         demandes = yaml.safe_load(chemin.read_text(encoding="utf-8"))
     except yaml.YAMLError as err:
         raise ValueError(f"kb-rejugements.yaml : YAML invalide : {err}") from err
     if demandes is None:
-        return {}
+        return []
     if not isinstance(demandes, list):
         raise ValueError("kb-rejugements.yaml : liste de demandes {date, motif, ids} attendue")
-    if not demandes:
-        return {}
-    connus = {k for per in PRODUITS_PAR_PERIMETRE for k in charger(racine, per)}
-    res, inconnus = {}, set()
+    res = []
     for n, demande in enumerate(demandes, 1):
         ou = f"kb-rejugements.yaml : demande {n}"
         if not isinstance(demande, dict):
@@ -305,14 +301,66 @@ def charger_rejugements(racine: Path) -> dict[str, list[dict]]:
         plafond = demande.get("plafond", PERIMEES_MAX)
         if type(plafond) is not int or not 10 <= plafond <= 50:
             raise ValueError(f"{ou} : plafond entier de 10 à 50 attendu")
-        for k in dict.fromkeys(ids):
+        res.append({"date": jour, "motif": motif.strip(), "plafond": plafond, "ids": list(dict.fromkeys(ids))})
+    return res
+
+
+def _indexer_demandes(demandes: list[dict], connus: set[str]) -> tuple[dict[str, list[dict]], set[str]]:
+    res, inconnus = {}, set()
+    for demande in demandes:
+        for k in demande["ids"]:
             if k not in connus:
                 inconnus.add(k)
             else:
-                res.setdefault(k, []).append({"date": jour, "motif": motif.strip(), "plafond": plafond})
+                res.setdefault(k, []).append({"date": demande["date"], "motif": demande["motif"], "plafond": demande["plafond"]})
+    return res, inconnus
+
+
+def _ids_connus(racine: Path) -> set[str]:
+    return {k for per in PRODUITS_PAR_PERIMETRE for k in charger(racine, per)}
+
+
+def charger_rejugements(racine: Path) -> dict[str, list[dict]]:
+    """D78 : demandes par id, tous périmètres confondus ; un id inconnu est seulement signalé.
+    Toutes les demandes sont conservées pour éteindre leurs plafonds indépendamment."""
+    demandes = lire_demandes(racine)
+    if not demandes:
+        return {}
+    res, inconnus = _indexer_demandes(demandes, _ids_connus(racine))
     if inconnus:
         print(f"! kb-rejugements.yaml : id inconnus dans la base : {', '.join(sorted(inconnus))}", file=sys.stderr)
     return res
+
+
+def _perimetre_du_prefixe(ident: str) -> str | None:
+    return next((per for per, prods in PRODUITS_PAR_PERIMETRE.items() if any(ident.startswith(f"{p}-") for p in prods)), None)
+
+
+def suivi_rejugements(racine: Path, perimetres: list[str], courantes: dict[str, str],
+                      deprecies_: set[str] = frozenset()) -> dict:
+    """Vue de suivi D78, lecture seule : par périmètre, le plafond effectif, les fiches dues (toutes catégories)
+    et une estimation du nombre de passages ; par demande, ids listés, dus, recommentés et inconnus.
+    Un id inconnu de toutes les bases est rattaché au périmètre de son préfixe produit, sinon à tous."""
+    demandes = lire_demandes(racine)
+    bases = {per: charger(racine, per) for per in PRODUITS_PAR_PERIMETRE}
+    tous = {k for b in bases.values() for k in b}
+    rejugements, _ = _indexer_demandes(demandes, tous)
+    sortie = {}
+    for per in perimetres:
+        entrees = bases[per]
+        plafond = plafond_perimees(entrees, rejugements)
+        dus_total = len(perimees_detail(entrees, courantes, deprecies_, maximum=None, rejugements=rejugements))
+        lignes = []
+        for d in demandes:
+            listes = [k for k in d["ids"] if k in entrees]
+            dus = [k for k in listes if motif_rejugement(entrees[k], {k: [d]}) is not None]
+            recommentes = [k for k in listes if k not in dus and entrees[k].get("commentee") and not entrees[k].get("retiree")]
+            inconnus = [k for k in d["ids"] if k not in tous and _perimetre_du_prefixe(k) in (None, per)]
+            lignes.append({"date": d["date"], "motif": d["motif"], "plafond": d["plafond"], "active": bool(dus),
+                           "ids_listes": listes, "ids_dus": dus, "ids_recommentes": recommentes, "ids_inconnus": inconnus})
+        sortie[per] = {"plafond_effectif": plafond, "dus_total_perimees": dus_total,
+                       "passages_restants_estimes": -(-dus_total // plafond), "estimation": True, "demandes": lignes}
+    return sortie
 
 
 def motif_rejugement(e: dict, rejugements: dict | None) -> str | None:

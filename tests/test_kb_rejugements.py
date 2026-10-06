@@ -266,3 +266,62 @@ def test_cli_orchestrateur_journal_et_extinction_sans_effacer_le_yaml(tmp_path, 
     assert json.loads(capsys.readouterr().out) == []
     assert orchestrateur.lots_dus(tmp_path, "openai") == 0
     assert demande.read_bytes() == contenu_yaml
+
+
+# ------------------------------------------------------------------------------------ suivi : catalogue.py rejugements
+
+def _suivi(tmp_path, capsys, *args):
+    code = cli.main(["rejugements", "--racine", str(tmp_path), *args])
+    sortie = capsys.readouterr()
+    return code, sortie.out, sortie.err
+
+
+def test_suivi_sans_fichier_ni_demande(tmp_path, capsys):
+    assert _suivi(tmp_path, capsys)[:2] == (0, "aucune demande\n")
+    (tmp_path / "kb-rejugements.yaml").write_text("[]\n", encoding="utf-8")
+    assert _suivi(tmp_path, capsys)[:2] == (0, "aucune demande\n")
+    code, out, _ = _suivi(tmp_path, capsys, "--json")
+    assert code == 0 and json.loads(out)["openai"]["demandes"] == []
+
+
+def test_suivi_yaml_invalide_renvoie_1(tmp_path, capsys):
+    (tmp_path / "kb-rejugements.yaml").write_text("[", encoding="utf-8")
+    code, _, err = _suivi(tmp_path, capsys)
+    assert code == 1 and "kb-rejugements.yaml : YAML invalide" in err
+
+
+def test_suivi_demande_active_eteinte_inconnus_plafond_et_estimation(tmp_path, capsys):
+    anciennes = {f"codex-commandes-{i:02}": entree(f"codex-commandes-{i:02}") for i in range(25)}
+    anciennes["codex-commandes-recommentee"] = entree("codex-commandes-recommentee", commente=JOUR)
+    cat.ecrire(tmp_path, "openai", anciennes)
+    cat.ecrire(tmp_path, "claude", {"claude-code-commandes-x": entree("claude-code-commandes-x")})
+    ids = [*list(anciennes)[:25], "codex-commandes-recommentee", "codex-fantome", "claude-code-fantome", "sans-prefixe"]
+    ecrire_demandes(tmp_path, ids, plafond=20)
+    (tmp_path / "kb-rejugements.yaml").write_text(
+        (tmp_path / "kb-rejugements.yaml").read_text(encoding="utf-8")
+        + yaml.safe_dump([{"date": "2026-10-01", "motif": "éteinte", "ids": ["codex-commandes-recommentee"]}]),
+        encoding="utf-8")
+    code, out, err = _suivi(tmp_path, capsys, "--perimetre", "openai", "--json")
+    assert code == 0 and "id inconnus" not in err
+    o = json.loads(out)
+    assert list(o) == ["openai"]
+    v = o["openai"]
+    assert v["plafond_effectif"] == 20 and v["dus_total_perimees"] == 25 and v["estimation"] is True
+    assert v["passages_restants_estimes"] == 2  # ceil(25 / 20)
+    active, eteinte = v["demandes"]
+    assert active["active"] and len(active["ids_dus"]) == 25 and active["ids_recommentes"] == ["codex-commandes-recommentee"]
+    assert sorted(active["ids_inconnus"]) == ["codex-fantome", "sans-prefixe"]
+    assert not eteinte["active"] and eteinte["ids_dus"] == [] and eteinte["ids_recommentes"] == ["codex-commandes-recommentee"]
+    # texte : une ligne par demande et par périmètre, estimation étiquetée
+    code, out, _ = _suivi(tmp_path, capsys, "--perimetre", "claude")
+    assert code == 0 and "claude-code-fantome" in out and "(estimation)" in out and "plafond effectif 10" in out
+    assert out.count("| éteinte |") == 2, "les demandes sans fiche due dans le périmètre y sont éteintes"
+
+
+def test_suivi_retour_a_10_apres_extinction(tmp_path, capsys):
+    e = entree(commente=JOUR)
+    cat.ecrire(tmp_path, "openai", {e["id"]: e})
+    ecrire_demandes(tmp_path, [e["id"]], plafond=30)
+    v = json.loads(_suivi(tmp_path, capsys, "--perimetre", "openai", "--json")[1])["openai"]
+    assert v["plafond_effectif"] == 10 and v["passages_restants_estimes"] == 0
+    assert v["demandes"][0]["active"] is False
