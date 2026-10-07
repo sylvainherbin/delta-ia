@@ -1,0 +1,297 @@
+{
+  "date": "2026-10-07",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-07T02:30:00+00:00",
+  "synthese": "Compte et quotas : aucune page d'aide sur les limites, crédits ou remises à zéro n'a changé ; Claude semaine 3 % (remise à zéro le 11/10 à 16 h UTC), session 5 h 10 % (remise à zéro à 06 h UTC), Claude semaine Fable 0 %, ChatGPT semaine 23 % (remise à zéro le 12/10 à 08 h UTC), aucun seuil de 80 % atteint. Depuis le 06/10, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent dans le cloud d'Anthropic, l'option « Only on your computer » est supprimée, et la page d'aide décrit le transfert d'une tâche vers Claude Code (`/port-task-data`) : à savoir avant ton premier essai de Cowork. Claude Code 2.1.292, déjà installée, ajoute un paramètre `effort` à l'outil Agent (utile pour alléger les sous-agents Explore) et fait attendre `claude -p` les commandes en arrière-plan ; la 2.1.291 corrige deux régressions introduites en 2.1.288 et 2.1.290. La source claude-blog est en échec (gabarit de la page changé).",
+  "sources_en_echec": [
+    {
+      "id": "claude-blog",
+      "url": "https://claude.com/blog",
+      "erreur": "FormatInattendu: liste `.blog_cms_list` introuvable : gabarit du blog changé ?",
+      "partiel": false
+    }
+  ],
+  "elements": [
+    {
+      "id": "web-4c03ebea37bc",
+      "ids_bruts": [
+        "web-4c03ebea37bc"
+      ],
+      "produit": "claude",
+      "titre": "Cowork dans le cloud sur Pro et Max depuis le 06/10 : plus de mode local, transfert vers Claude Code par `/port-task-data`",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "changement_rupture",
+      "resume": "Depuis le 06/10/2026, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent sur les serveurs d'Anthropic : l'option « Only on your computer » (Paramètres > Général) est supprimée et on ne peut pas revenir en arrière ; les tâches déjà lancées sur l'ordinateur y restent, et les nouvelles tâches planifiées tournent dans le cloud. Claude n'atteint les dossiers connectés qu'à travers Claude Desktop ouvert, et récupère une copie du seul fichier nécessaire ; la page de sécurité précise que l'isolation limite où le code tourne, pas ce que Claude lit ni ce qu'il fait avec les accès accordés. Pour une tâche qui doit rester sur la machine, la page renvoie vers Claude Code dans l'app de bureau et décrit le transfert : « Download task data », ouvrir le dossier dans Claude Code, puis `/port-task-data`.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile",
+          "libelle": "Use Claude Cowork on web, desktop, and mobile",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+          "libelle": "Use Claude Cowork safely",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Cowork est dans ta liste de fonctions à explorer, avec Gmail, Drive et Calendar connectés sans servir dans Claude Code : au premier essai, la tâche s'exécutera dans le cloud, sans mode local possible. Si tu y connectes un dossier de ton activité de sous-traitance, une copie des fichiers ouverts est traitée sur les serveurs d'Anthropic ; le travail qui doit rester sur la machine passe par Claude Code. Si Dispatch crée désormais ses tâches Cowork dans le cloud, elles n'apparaîtraient pas dans `ListAgents`, comme le constat du 25/09 sur les sessions Cowork cloud ; à vérifier au prochain essai. Le transfert `/port-task-data` va de Cowork vers Claude Code uniquement : ce n'est pas le canal retour que tu cherches.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Avant un premier essai de Cowork, ne connecter que des dossiers sans donnée de laboratoire ni de patient, et tester le transfert vers Claude Code.",
+        "etapes": [
+          "Dans Claude Desktop, ouvre Cowork et connecte un dossier de test sans donnée de tiers.",
+          "Lance une petite tâche, puis ouvre-la et choisis « Download task data ».",
+          "Décompresse l'archive, ouvre le dossier dans une session Claude Code et tape `/port-task-data` ; vérifie que le contexte de la tâche est repris."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-fonctionnalites-page-15520349-use-claude-cowork-on-web-desktop-and-mobile",
+        "claude-fonctionnalites-page-13364135-use-claude-cowork-safely"
+      ],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
+          "pourquoi": "Cowork à explorer ; échanges Cowork ↔ Claude Code à signaler en priorité."
+        },
+        "env.multi-sessions": {
+          "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+          "pourquoi": "Dispatch, ListAgents et sessions Cowork cloud absentes de la liste (constat du 25/09)."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Gmail, Drive et Calendar connectés mais jamais appelés dans Claude Code."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.292",
+      "ids_bruts": [
+        "claude-code-2.1.292"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.292 : paramètre `effort` de l'outil Agent, `claude -p` attend les commandes en arrière-plan, MCP stdio en protocole 2026-07-28",
+      "version": "2.1.292",
+      "date_publication": "2026-10-06",
+      "type": "amelioration",
+      "resume": "L'outil Agent accepte un paramètre `effort` : Claude lance le sous-agent au niveau d'effort demandé. `claude plugin install` accepte `--marketplace <source>` (ajoute la place de marché si besoin, sous les mêmes contrôles de politique que `claude plugin marketplace add`). `claude -p` et les sessions Agent SDK n'arrêtent plus une commande en arrière-plan 5 secondes après le résultat final et ne perdent plus un réveil planifié : les deux sont attendus. Les serveurs MCP locaux (stdio) négocient par défaut le protocole 2026-07-28 sur toutes les installations ; `MCP_PROTOCOL_NEGOTIATION=legacy` revient à l'ancien comportement. Nouvelle variable `CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS` pour allonger le délai de reprise après une erreur 529. Correctifs : les copies des envois `/ultrareview` sous `~/.claude/seed-admin` ne sont plus lisibles depuis une commande en bac à sable, le mode plan est restauré à la reprise (`claude --resume`, `/resume`), les tâches planifiées créées après `/resume`, `/branch` ou `/clear` se déclenchent, un `/loop` de session d'arrière-plan survit au redémarrage du processus, plus des correctifs de sessions cloud, de Remote Control, de plugins et de mods.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21292",
+          "libelle": "Changelog Claude Code 2.1.292",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.292 est installée (a_jour dans `docs/data/versions.json`). Sur ta priorité des limites hebdomadaires, le paramètre `effort` de l'outil Agent permet de demander dans un brief « lance l'agent Explore avec effort low » : tes consignes du 04/10 confient déjà la lecture de gros fichiers à `Explore`. Côté chaîne de nuit D70, les étapes Claude sont des `claude -p` : une commande passée en arrière-plan est maintenant attendue, ce qui peut allonger une étape si cette commande traîne (ce passage-ci a vu `etat.py` basculer en arrière-plan après 120 s). Les serveurs MCP stdio ne te concernent pas : `docs/data/etat.json` ne liste que des connecteurs claude.ai et le serveur HTTP delta-ia pour Claude Code.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Ajouter l'effort dans les briefs qui délèguent la lecture à `Explore`.",
+        "etapes": [
+          "Dans le brief d'une mission, écris « lance l'agent Explore avec effort low » pour une recherche simple.",
+          "Compare la consommation de la session (`/usage`) avec une mission équivalente sans cette consigne."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Consigne du 04/10 : lecture de gros fichiers par un sous-agent Explore."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne D70 sont lancées par `claude -p`."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Connecteurs de compte et serveur HTTP delta-ia : aucun serveur stdio décrit."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.291",
+      "ids_bruts": [
+        "claude-code-2.1.291"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.291 : correctifs de deux régressions (réponses de permission en session cloud, derniers messages perdus à la fermeture)",
+      "version": "2.1.291",
+      "date_publication": "2026-10-06",
+      "type": "correction",
+      "resume": "Corrige une régression de la 2.1.290 où des sessions cloud pouvaient perdre des réponses à des invites de permission, et une régression de la 2.1.288 où les derniers messages d'une session pouvaient être perdus à la fermeture.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21291",
+          "libelle": "Changelog Claude Code 2.1.291",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Le correctif est déjà installé (2.1.292). Si une de tes sessions locales fermée sous 2.1.288 à 2.1.290 a semblé perdre ses derniers échanges, c'était ce défaut ; le contenu perdu ne revient pas. La première régression touche les sessions cloud : si tes missions Claude cloud ont tourné sur la 2.1.290, une réponse de permission a pu y être ignorée.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+          "pourquoi": "Sessions Claude Code durables fermées et reprises : concernées par la perte des derniers messages."
+        }
+      }
+    },
+    {
+      "id": "web-6bf316d3b82d",
+      "ids_bruts": [
+        "web-6bf316d3b82d"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_GZIP_REQUEST_BODIES",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base : mise à 0, elle désactive la compression gzip des corps de requêtes (API Claude, télémétrie, publication d'artefacts) envoyés à api.anthropic.com ; la compression est active par défaut sur connexion directe et ignorée derrière un proxy, avec un certificat client ou `NODE_EXTRA_CA_CERTS`. La documentation la réserve à un proxy d'inspection TLS que Claude Code ne détecte pas.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Sans objet tant que tu restes en connexion directe : CONTEXTE.md ne décrit aucun proxy.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-gzip-request-bodies"
+      ],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Réseau décrit : Wi-Fi direct à la box, aucun proxy mentionné."
+        }
+      }
+    },
+    {
+      "id": "anthropic-status-ch27pb90bn85",
+      "ids_bruts": [
+        "anthropic-status-ch27pb90bn85"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Opus 5.5",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "correction",
+      "resume": "Incident d'impact « major » sur claude.ai, l'API Claude, Claude Code et Claude Cowork : erreurs élevées sur les requêtes vers Claude Opus 5.5, du 06/10 à 12 h 24 UTC (cause identifiée à 12 h 37) à 12 h 43 UTC, heure de résolution.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/ch27pb90bn85",
+          "libelle": "Anthropic status — Elevated errors for Claude Opus 5.5",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-wf2v8ms031sx",
+      "ids_bruts": [
+        "anthropic-status-wf2v8ms031sx"
+      ],
+      "produit": "claude",
+      "titre": "Incident en cours : erreurs sur les données d'usage de platform.claude.com",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "correction",
+      "resume": "Incident d'impact « major », statut « investigating » à la lecture, ouvert le 07/10 à 01 h 20 UTC : erreurs de chargement des données d'usage sur la page Usage de platform.claude.com et sur le point d'accès de rapport d'usage de l'Admin API ; les requêtes de l'API Messages ne sont pas touchées.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/wf2v8ms031sx",
+          "libelle": "Anthropic status — Elevated errors loading usage data on platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://www.anthropic.com/news/cyber-verification-program",
+      "ids_bruts": [
+        "https://www.anthropic.com/news/cyber-verification-program"
+      ],
+      "produit": "claude",
+      "titre": "Cyber Verification Program élargi : trois niveaux d'accès aux capacités cyber avancées",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "nouveaute",
+      "resume": "Le programme réunit Project Glasswing et le Cyber Verification Program en trois niveaux (Defense Access, Red Team Access, Specialized Access) qui donnent à des équipes de sécurité vérifiées des classifieurs allégés sur Claude Opus 5.5, Claude Sonnet 5.5 et Claude Mythos 5.1. Les modèles disponibles à tous gardent des garde-fous cyber conservateurs ; la rétention des données est exigée pour les organisations inscrites, et le programme est disponible sur Claude Platform, Vertex AI et Foundry.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/news/cyber-verification-program",
+          "libelle": "Anthropic — Expanding the Cyber Verification Program",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-05",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-05"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 05/10 : `capabilities.thinking.types.disabled` dans l'API Models",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "nouveaute",
+      "resume": "`GET /v1/models` et `GET /v1/models/{model_id}` indiquent désormais, par modèle, s'il accepte `thinking: {type: \"disabled\"}`, qui désactive la réflexion.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "claude-aide-index-17318731",
+      "raison": "Article d'aide réservé aux organisations Enterprise (configuration HIPAA, Primary Owner), sans lien avec ton forfait individuel ni avec les conditions d'usage"
+    },
+    {
+      "id": "claude-platform-notes-2026-08-19",
+      "raison": "Révision de forme de la note du 19/08 : deux liens modifiés, aucun changement de contenu"
+    }
+  ],
+  "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23"
+}
