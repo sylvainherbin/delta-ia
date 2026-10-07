@@ -56,11 +56,10 @@ CORRESPONDANCES["https://support.claude.com/llms.txt"] = ("aide_llms_claude.txt"
 CORRESPONDANCES["https://learn.chatgpt.com/llms.txt"] = ("oa_llms_index.txt", "text/plain; charset=utf-8")
 CORRESPONDANCES["https://learn.chatgpt.com/docs/developer-commands.md?surface=cli"] = ("oa_devcmd_usage.md", "text/markdown; charset=utf-8")
 
-# Étape 2b : blog claude.com (liste + deux articles réels), page d'état OpenAI (JSON Statuspage et repli RSS)
-CORRESPONDANCES["https://claude.com/blog"] = ("claude_blog.html", "text/html; charset=utf-8")
-CORRESPONDANCES["https://claude.com/blog/claude-marketplace"] = ("claude_blog_article_marketplace.html", "text/html; charset=utf-8")
-CORRESPONDANCES["https://claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels"] = (
-    "claude_blog_article_tag.html", "text/html; charset=utf-8")
+# Étape 2b : blog claude.com, déplacé le 2026-10-07 vers /resources/articles (liste et un article réels), pages d'état OpenAI
+CORRESPONDANCES["https://claude.com/resources/articles"] = ("claude_resources_articles.html", "text/html; charset=utf-8")
+CORRESPONDANCES["https://claude.com/resources/articles/claude-now-works-in-google-docs-sheets-and-slides"] = (
+    "claude_resources_article_google.html", "text/html; charset=utf-8")
 CORRESPONDANCES["https://status.openai.com/api/v2/incidents.json"] = ("status_openai_incidents.json", "application/json; charset=utf-8")
 CORRESPONDANCES["https://status.claude.com/api/v2/incidents.json"] = ("status_claude_incidents.json", "application/json; charset=utf-8")
 CORRESPONDANCES["https://status.openai.com/history.rss"] = ("status_openai_history.rss", "application/rss+xml")
@@ -89,7 +88,7 @@ class FauxClient:
             # A1 : les articles de la newsroom sont lus ; tous servis par l'extrait réel de l'article Opus 5.5
             return Reponse(url, 200, "text/html; charset=utf-8",
                            (FIXTURES / "anthropic_article_opus55.html").read_text(encoding="utf-8"))
-        if url not in CORRESPONDANCES and url.startswith("https://claude.com/blog/"):
+        if url not in CORRESPONDANCES and url.startswith("https://claude.com/resources/articles/"):
             # étape 2b : les autres articles du blog sont servis par l'extrait réel du billet « Claude Marketplace »
             return Reponse(url, 200, "text/html; charset=utf-8",
                            (FIXTURES / "claude_blog_article_marketplace.html").read_text(encoding="utf-8"))

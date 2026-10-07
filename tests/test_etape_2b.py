@@ -14,58 +14,76 @@ from deltalib.analyseurs import ANALYSEURS, html_notes, rss, statuspage
 from deltalib.modeles import FormatInattendu, empreinte_contenu
 from deltalib.sources import Source, sources_du_perimetre
 
-BLOG = (FIXTURES / "claude_blog.html").read_text(encoding="utf-8")
+BLOG = (FIXTURES / "claude_resources_articles.html").read_text(encoding="utf-8")
 INCIDENTS = json.loads((FIXTURES / "status_openai_incidents.json").read_text(encoding="utf-8"))
 INCIDENTS_CLAUDE = json.loads((FIXTURES / "status_claude_incidents.json").read_text(encoding="utf-8"))
 ID_PANNE_29_09 = "4xvtc2gnq73l"
 
 
-# --- claude.com/blog ----------------------------------------------------------------------------------------
+# --- claude.com/resources/articles (ex-blog, déplacé le 2026-10-07) ----------------------------------------
 
 def test_blog_liste_reelle(sources, client):
     s = sources["claude-blog"]
     r = ANALYSEURS[s.type](s, client)
-    assert len(r.elements) == 15 and len({e.id for e in r.elements}) == 15
-    assert r.plus_ancienne == "2026-09-15"
+    assert len(r.elements) == 8 and len({e.id for e in r.elements}) == 8  # 11 cartes : 3 externes ignorées, carrousel dédoublonné
+    assert r.plus_ancienne == "2026-09-29"
     premier = r.elements[0]
-    assert premier.titre == "Claude for Government is now generally available"
-    assert premier.date_publication == "2026-09-30" and premier.produit == "claude" and premier.officielle is True
-    assert premier.url == premier.id == "https://claude.com/blog/claude-for-government-is-now-generally-available"
-    assert premier.contenu == "Catégorie : Product announcements"
+    assert premier.titre == "Claude now works with Google Docs, Sheets, and Slides"  # carte du carrousel, en tête
+    assert premier.date_publication == "2026-10-06" and premier.produit == "claude" and premier.officielle is True
+    # l'identifiant garde l'ancienne forme /blog/<slug> (articles déjà vus), l'URL lue est l'adresse finale
+    slug = "claude-now-works-in-google-docs-sheets-and-slides"
+    assert premier.id == f"https://claude.com/blog/{slug}" and premier.url == f"https://claude.com/resources/articles/{slug}"
+    google = next(e for e in r.elements if "Google Docs" in e.titre)
+    assert google.date_publication == "2026-10-06" and google.contenu.endswith("Produits : Claude Enterprise")
     dates = {e.id: e.date_publication for e in r.elements}
-    assert dates["https://claude.com/blog/claude-marketplace"] == "2026-09-23"
-    assert dates["https://claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels"] == "2026-09-24"
-    assert all(e.date_publication and e.titre and e.url.startswith("https://claude.com/blog/") for e in r.elements)
+    assert dates["https://claude.com/blog/claude-code-mods"] == "2026-10-01"
+    assert dates["https://claude.com/blog/claude-for-government-is-now-generally-available"] == "2026-09-30"
+    assert all(e.date_publication and e.titre and e.url.startswith("https://claude.com/resources/articles/")
+               and e.id.startswith("https://claude.com/blog/") for e in r.elements)
+    assert not any("anthropic.com" in e.url or "claude.dev" in e.url for e in r.elements)
+
+
+def test_blog_sans_prefixe_id_l_url_sert_d_identifiant(sources):
+    s = Source(**{**sources["claude-blog"].__dict__, "options": {"format": "html_resources_liste"}})
+    elements, _ = html_notes.parser_resources_liste(BLOG, s)
+    assert all(e.id == e.url for e in elements)
 
 
 @pytest.mark.parametrize("html", [
     "<html><body><h1>Just a moment...</h1></body></html>",  # défi anti-bot
-    '<html><body><div class="blog_cms_list"></div></body></html>',  # liste vide
+    '<html><body><a class="x__ResourceCard" href="https://www.anthropic.com/news/x"><h3>T</h3></a></body></html>',  # aucune carte du site
+    '<html><body><div class="blog_cms_list"></div></body></html>',  # ancien gabarit Webflow
 ])
 def test_blog_gabarit_change_est_un_echec_explicite(sources, html):
     with pytest.raises(FormatInattendu):
-        html_notes.parser_blog_liste(html, sources["claude-blog"])
+        html_notes.parser_resources_liste(html, sources["claude-blog"])
 
 
 def test_blog_carte_sans_date_ou_date_illisible(sources):
-    sans_date = BLOG.replace('fs-list-field="date"', 'fs-list-field="autre"', 1)
-    with pytest.raises(FormatInattendu, match="titre, lien ou date"):
-        html_notes.parser_blog_liste(sans_date, sources["claude-blog"])
-    illisible = BLOG.replace("September 30, 2026", "Soon", 1)
+    sans_titre = BLOG.replace("<h3", "<div", 1).replace("</h3>", "</div>", 1)
+    with pytest.raises(FormatInattendu, match="sans titre ou sans date"):
+        html_notes.parser_resources_liste(sans_titre, sources["claude-blog"])
+    illisible = BLOG.replace("Oct 6, 2026", "Soon", 1)
     with pytest.raises(FormatInattendu, match="date illisible"):
-        html_notes.parser_blog_liste(illisible, sources["claude-blog"])
+        html_notes.parser_resources_liste(illisible, sources["claude-blog"])
 
 
-def test_blog_passage_lit_marketplace_et_tag(tmp_path, monkeypatch):
+def test_blog_article_reel_texte_principal():
+    texte = html_notes.texte_article((FIXTURES / "claude_resources_article_google.html").read_text(encoding="utf-8"))
+    assert texte.startswith("Claude now works with Google Docs, Sheets, and Slides") and len(texte) > 1000
+
+
+def test_blog_passage_lit_le_texte_des_nouveaux_articles(tmp_path, monkeypatch):
     (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir()
     monkeypatch.setattr(fetch, "Client", lambda: FauxClient())
-    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-23"]) == 0
+    assert fetch.main(["--racine", str(tmp_path), "--perimetre", "claude", "--depuis", "2026-09-30"]) == 0
     brut = json.loads((tmp_path / "raw" / "claude-nouveautes.json").read_text())
-    blog = {n["url"]: n for n in brut["nouveautes"] if n["source_id"] == "claude-blog"}
-    mkt = blog["https://claude.com/blog/claude-marketplace"]
-    tag = blog["https://claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels"]
-    assert mkt["date_publication"] == "2026-09-23" and "Claude Marketplace" in mkt["contenu"] and len(mkt["contenu"]) > 1000
-    assert tag["date_publication"] == "2026-09-24" and "personal connectors" in tag["contenu"].lower()
+    blog = {n["id"]: n for n in brut["nouveautes"] if n["source_id"] == "claude-blog"}
+    google = blog["https://claude.com/blog/claude-now-works-in-google-docs-sheets-and-slides"]
+    assert google["url"] == "https://claude.com/resources/articles/claude-now-works-in-google-docs-sheets-and-slides"
+    assert google["date_publication"] == "2026-10-06" and "Google Workspace" in google["contenu"] and len(google["contenu"]) > 1000
+    mods = blog["https://claude.com/blog/claude-code-mods"]  # servi par l'article de repli : le texte est lu, pas le résumé
+    assert mods["date_publication"] == "2026-10-01" and len(mods["contenu"]) > 1000
     assert not [e for e in brut["sources_en_echec"] if e["id"] == "claude-blog" and not e["partiel"]]
 
 
@@ -160,9 +178,11 @@ def test_sources_2b_declarees(sources):
     for sid, statut, perimetre in (("claude-blog", "a_valider", "claude"), ("openai-status", "a_valider", "openai"),
                                    ("anthropic-status", "a_valider", "claude")):
         s = sources[sid]
-        assert (s.statut, s.perimetre, s.officielle) == (statut, perimetre, True) and "Testé le 2026-10-01" in s.note
+        assert (s.statut, s.perimetre, s.officielle) == (statut, perimetre, True)
+        assert ("Testé le 2026-10-07 : adresse changée" if sid == "claude-blog" else "Testé le 2026-10-01") in s.note
     actives = {s.id for s in sources_du_perimetre(list(sources.values()), "claude")}
     assert {"claude-blog", "anthropic-status"} <= actives
+    assert sources["claude-blog"].url == "https://claude.com/resources/articles"
     assert sources["anthropic-status"].url == "https://status.claude.com/api/v2/incidents.json"
     assert "egress" in sources["anthropic-status"].note and "2026-10-01" in sources["anthropic-status"].note
 
