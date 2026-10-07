@@ -14,7 +14,7 @@ Claude lance cette skill juste avant un commit. Commence par le tri ci-dessous :
 
 ## 2. Code : contrôle obligatoire
 
-Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/assets/`, `prompts/`, `.claude/`, `.agents/`, `deploy/`, `sources.yaml`, `requirements.txt`, `SPEC.md`, `REGLES.md`, `CLAUDE.md` ou `AGENTS.md`, lance dans l'ordre :
+Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/assets/`, `prompts/`, `.claude/`, `.agents/`, `.github/`, `deploy/`, `pytest.ini`, `sources.yaml`, `requirements.txt`, `SPEC.md`, `REGLES.md`, `CLAUDE.md` ou `AGENTS.md`, lance dans l'ordre :
 
 ```
 .venv/bin/pytest -q
@@ -33,7 +33,7 @@ Les quatre commandes passent par `scripts/verifier.py` (D87), qui les lance dans
 
 La clé du cache est le contenu réel du répertoire de travail (arbre git de `write-tree` : fichiers suivis modifiés et fichiers non suivis non ignorés compris) plus l'environnement (Python, paquets installés, `requirements.txt`) ; un rebase sans changement de contenu garde donc le résultat. Le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt. Un échec n'est jamais enregistré.
 
-Quand la CI GitHub Actions est verte sur le commit à contrôler (`gh run list --branch <branche> --json conclusion,headSha`, conclusion `success` **et** `headSha` égal au commit), le verify local se limite aux tests ciblés (fichiers touchés).
+Sur une branche, le verify local avant commit se limite aux tests ciblés (fichiers touchés) : le dev peut pousser sa **branche** avant la suite complète locale, et la CI GitHub Actions fait la suite complète (D87). Ce qui compte est le run `success` dont le `headSha` est le commit (`gh run list --branch <branche> --json conclusion,headSha`). Pour une exécution locale complète (sur main, ou sans CI), la commande ci-dessus reste celle-là.
 
 Dans un worktree sans `.venv`, utilise celui du dépôt principal (`../delta-ia/.venv/bin/...`) ; ne crée pas de venv.
 
@@ -41,7 +41,7 @@ Un test en échec ou un code de sortie non nul **interdit le commit** : corriger
 
 ## 3. Fusion dans main
 
-La fusion lit le statut de la CI au lieu de relancer la suite : `gh run list --branch <branche> --json conclusion,headSha`, puis fusion seulement si une ligne a `conclusion` égal à `success` et `headSha` égal au commit fusionné (pas seulement le dernier run). Sans run vert sur ce commit exact, ou si l'arbre fusionné diffère du commit testé (rebase avec changement de contenu), `scripts/verifier.py` reste la preuve : il réutilise un résultat pour un arbre identique et relance sinon.
+La fusion dans main exige toujours un run CI `success` dont le `headSha` est le commit fusionné. Elle lit le statut de la CI au lieu de relancer la suite : `gh run list --branch <branche> --json conclusion,headSha`, puis fusion seulement si une ligne a `conclusion` égal à `success` et `headSha` égal au commit fusionné (pas seulement le dernier run). Sans run vert sur ce commit exact, ou si l'arbre fusionné diffère du commit testé (rebase avec changement de contenu), `scripts/verifier.py` reste la preuve : il réutilise un résultat pour un arbre identique et relance sinon.
 
 ## 4. Fenêtre de la chaîne
 
