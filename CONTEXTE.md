@@ -75,6 +75,14 @@ Dispatch de Cowork comme session Remote Control ; les sessions Cowork cloud n'y 
 vers lui, il lit leur transcript (`read_transcript`) **[rapporté par Dispatch le 25/09, non
 vérifié]**.
 
+**Depuis le 06/10/2026, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent dans le cloud d'Anthropic, sans
+mode local** : l'option « Only on your computer » est supprimée, sans retour possible ; les tâches déjà lancées sur
+l'ordinateur y restent, et les nouvelles tâches planifiées tournent dans le cloud. Pour une tâche qui doit rester sur la
+machine : « Download task data », ouvrir le dossier dans Claude Code, puis `/port-task-data` (sens Cowork vers Claude Code
+seulement : ce n'est pas un canal retour) **[observé : élément `claude` du 07/10, source officielle, voir
+`docs/data/claude/2026-10-07.json`]**. Les tâches Cowork créées par Dispatch n'apparaîtraient donc plus dans `ListAgents`,
+comme les sessions Cowork cloud du 25/09 **[déduit, à vérifier au prochain essai]**.
+
 ---
 
 ## 2. Projets
@@ -195,7 +203,7 @@ C'est le projet le plus exigeant [déduit : cycles de vérification, coût des a
   français des changements d'API Shopify pour de petites agences, construit sur les idées du moteur de veille de Delta (expérience E1).
   Delta dirige ; décisions commerciales, comptes et paiements : Sylvain [observé : README].
 - **Conduite** [observé : `operer qui`] : FULL_AUTO ; le chef est **une session Codex** (gpt-6.1-sol, effort medium, sous tmux
-  `codex-veille-shopify`), la **viabilité d'abord** étant l'objectif avant tout engagement [déclaré, relevé de Delta].
+  `codex-veille-shopify`), la **viabilité d'abord** : ni dépôt GitHub ni cloud tant qu'elle n'est pas établie [déclaré : décision de Sylvain du 06/10, `~/projets/DECISIONS.md`].
 
 ### 2.9 marketing
 <!-- ctx-id: projet.marketing -->
@@ -203,7 +211,7 @@ C'est le projet le plus exigeant [déduit : cycles de vérification, coût des a
 - **Nature** [observé] : développement marketing de Delta, session « Chef | marketing » (Opus, effort high) dans
   `~/projets/marketing` ; phase 1 seulement (réfléchir et écrire dans `plans/` et `rapports/`), aucune publication, aucun
   compte, aucun réseau social. La phase 2 n'est pas avant le réexamen de la constitution de trading-sim, le **12/10/2026**
-  [observé : `plans/plan-strategique-v1.md`] ; le projet est donc **au repos jusqu'au 12/10** [déclaré, relevé de Delta].
+  [observé : `plans/plan-strategique-v1.md`] ; le projet est donc **au repos jusqu'au 12/10** [déclaré : décision de Sylvain du 05/10, `~/projets/DECISIONS.md`].
 
 ### 2.10 experimentations et le paquet delta-veille-paquet
 <!-- ctx-id: projet.experimentations -->
@@ -450,7 +458,7 @@ et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `
   Après relecture : fusion en avance rapide dans `main`, retrait du worktree, suppression de la branche. Les worktrees se
   créent avec `git worktree add` (geste de maintenance du chef) ou par OPÉRER ; ni l'option `--worktree` de Claude Code ni des
   hooks `WorktreeCreate` / `WorktreeRemove` ne sont utilisés. Les worktrees terminés se retirent par `operer menage --appliquer`
-  (liste classée en lecture seule sans l'option) ; le ménage est dit automatique par Delta [déclaré, non vérifié].
+  (liste classée en lecture seule sans l'option) ; le ménage est automatique (`menage.auto` vaut `true` dans `discipline/config/instance-policy.json`, dernier retrait réel le 06/10) [observé].
 - **Conseiller (advisor)** : Sonnet avec Opus en conseiller selon la mission (`regler-advisor`, `mission-dev --advisor`) ;
   il ne survit pas à un `/clear`, d'où le réglage avant chaque mission.
 
@@ -564,7 +572,10 @@ Compléments [déclaré] :
 - Claude : il utilise les **artefacts**, les **connecteurs** et les **skills**. Les autres
   fonctions (Cowork, Projets en profondeur, routines planifiées…) sont à explorer ; il veut
   exploiter tout ce qui sert au développement, c'est donc un terrain naturel pour les
-  recommandations.
+  recommandations. **Cowork s'exécute désormais dans le cloud sur Pro et Max, sans mode local** (depuis le 06/10/2026) :
+  Claude n'atteint les dossiers connectés qu'à travers Claude Desktop ouvert et y récupère une copie du seul fichier nécessaire,
+  traitée sur les serveurs d'Anthropic (à retenir pour son activité de sous-traitance) ; le travail qui doit rester sur la
+  machine passe par Claude Code, avec `/port-task-data` [observé : `docs/data/claude/2026-10-07.json`, source officielle].
 
 **Consigne pour la veille** [déduit des réponses] : partir des nouveautés (changelogs de Claude Code
 et de Codex, annonces Claude et ChatGPT), les rattacher à un usage concret sur trading-sim
