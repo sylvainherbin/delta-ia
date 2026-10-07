@@ -914,13 +914,13 @@ def test_skills_reprennent_un_refus_de_lecture_au_lieu_d_arreter(fichier):
 def test_skills_claude_lisent_la_base_avec_read():
     for f in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md"):
         t = (RACINE / f).read_text(encoding="utf-8")
-        assert "`Read` avec `offset` et `limit`" in t and "jamais de boucle shell" in t, f
+        assert "`Read` avec `offset` et `limit`" in t, f
+        assert "jamais de boucle shell" not in t and "une commande simple par appel" not in t, f  # D88
         if f == ".claude/skills/delta/SKILL.md":
             assert "Toute retouche du fichier du jour, de `index.json` ou d'un autre JSON" in t
             assert "Edit (ou Write pour un fichier entier)" in t
             assert "jamais avec `.venv/bin/python -` / heredoc ni avec `python -c`" in t
             assert "Seule exception" in t and "calcul `id_web`" in t
-            assert "une commande simple par appel, sans boucle" in t
 
 
 def test_supervision_sait_lire_la_ligne_refus():
@@ -928,11 +928,11 @@ def test_supervision_sait_lire_la_ligne_refus():
     assert "<étape>-refus" in t and "AVERTISSEMENT" in t and "125 permission refusée, fatale" in t
 
 
-def test_supervision_impose_une_commande_simple_et_lit_les_fichiers_avec_read():
+def test_supervision_lit_les_fichiers_avec_read_sans_contrainte_de_syntaxe():
     t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
-    assert "une commande simple par appel" in t and "ls raw/" not in t
-    assert "`ls`, `grep`, `cat` et `sed` ne sont pas autorisés" in t
-    assert "Un refus ne se retente pas" in t and "sans boucle" in t
+    assert "une commande simple par appel" not in t and "ls raw/" not in t  # D88
+    assert "ne sont pas autorisés" not in t and "sans boucle" not in t
+    assert "Un refus ne se retente pas" in t
     for point in ("5. Fraîcheur", "7. Échéances"):
         ligne = next(l for l in t.splitlines() if l.startswith(point))
         assert "Read" in ligne and "chemin exact" in ligne
