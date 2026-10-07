@@ -919,8 +919,17 @@ def test_skills_claude_lisent_la_base_avec_read():
         if f == ".claude/skills/delta/SKILL.md":
             assert "Toute retouche du fichier du jour, de `index.json` ou d'un autre JSON" in t
             assert "Edit (ou Write pour un fichier entier)" in t
-            assert "jamais avec `.venv/bin/python -` / heredoc ni avec `python -c`" in t
-            assert "Seule exception" in t and "calcul `id_web`" in t
+            assert "heredoc" not in t and "jamais avec `python -c`" not in t and "Seule exception" not in t  # D88 : reliquats
+
+
+@pytest.mark.parametrize("fichier", [".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md",
+                                     ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md",
+                                     "prompts/supervision.md"])
+def test_skills_sans_clause_python_c_et_titre_commandes_utiles(fichier):  # D88 : la liste est un mode d'emploi, pas une limite
+    t = (RACINE / fichier).read_text(encoding="utf-8")
+    assert "Commandes autorisées seulement" not in t and "Jamais `.venv/bin/python -c`" not in t and "heredoc" not in t
+    if fichier != "prompts/supervision.md":
+        assert "**Commandes utiles**" in t
 
 
 def test_supervision_sait_lire_la_ligne_refus():
@@ -937,3 +946,60 @@ def test_supervision_lit_les_fichiers_avec_read_sans_contrainte_de_syntaxe():
         ligne = next(l for l in t.splitlines() if l.startswith(point))
         assert "Read" in ligne and "chemin exact" in ligne
     assert "`limit` court" in t
+
+
+# --- version Codex lue au lancement (D88) --------------------------------------------------------------------
+def faux_codex(tmp_path, sortie="codex-cli 9.9.9"):
+    binaire = tmp_path / "faux-codex"
+    binaire.write_text(f"#!/bin/sh\necho '{sortie}'\n")
+    binaire.chmod(0o755)
+    return str(binaire)
+
+
+def test_version_codex_lue_par_le_binaire(tmp_path):
+    assert orc.version_codex(faux_codex(tmp_path)) == "codex-cli 9.9.9"
+
+
+@pytest.mark.parametrize("binaire", ["/introuvable/codex", "false"])
+def test_version_codex_illisible_donne_none(binaire):
+    assert orc.version_codex(binaire) is None
+
+
+def test_version_codex_sortie_vide_donne_none(tmp_path):
+    vide = tmp_path / "vide"
+    vide.write_text("#!/bin/sh\n")
+    vide.chmod(0o755)
+    assert orc.version_codex(str(vide)) is None
+
+
+def journal_etape(depot):
+    return (depot / "rapports" / "auto" / "2026-10-02-codex-delta.log").read_text(encoding="utf-8")
+
+
+def etapes_codex(depot):
+    return [etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde=None),
+            etape(depot, "supervision", "supervision", supervision=True)]
+
+
+def test_version_codex_inscrite_dans_le_journal_d_etape(depot, cfg, tmp_path, monkeypatch):
+    monkeypatch.setattr(orc, "version_codex", lambda b, *a, **k: "codex-cli 9.9.9")
+    chaine(depot, cfg, etapes_codex(depot)).executer()
+    assert "version codex : codex-cli 9.9.9" in journal_etape(depot)
+
+
+def test_version_codex_illisible_null_et_l_etape_se_lance_quand_meme(depot, cfg, monkeypatch):
+    monkeypatch.setattr(orc, "version_codex", lambda b, *a, **k: None)
+    assert chaine(depot, cfg, etapes_codex(depot)).executer() == 0
+    assert "version codex : null" in journal_etape(depot)
+    assert (depot / "docs/data/openai/b.json").exists()
+
+
+def test_la_version_est_lue_sur_le_binaire_de_l_etape_codex_seulement(depot, cfg, monkeypatch):
+    lus = []
+    monkeypatch.setattr(orc, "version_codex", lambda b, *a, **k: lus.append(b))
+    etapes = [etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde=None),
+              etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
+              etape(depot, "supervision", "supervision", supervision=True)]
+    chaine(depot, cfg, etapes).executer()
+    assert lus == [sys.executable]
+    assert "version codex" not in (depot / "rapports" / "auto" / "2026-10-02-delta-kb.log").read_text(encoding="utf-8")

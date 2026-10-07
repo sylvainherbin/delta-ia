@@ -287,6 +287,16 @@ def lancer(etape: Etape, racine: Path, env: dict, delai_arret_s: float = 10.0) -
                     (datetime.now() - debut).total_seconds())
 
 
+def version_codex(binaire: str, delai_s: float = 10.0) -> str | None:
+    """Version lue au lancement de l'étape (`<binaire> --version`) ; `None` si la lecture échoue : l'étape se lance quand même."""
+    try:
+        r = subprocess.run([binaire, "--version"], capture_output=True, text=True, timeout=delai_s, stdin=subprocess.DEVNULL)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    sortie = r.stdout.strip()
+    return sortie.splitlines()[0] if r.returncode == 0 and sortie else None
+
+
 def refus_permission(res: Resultat) -> list[str]:
     """Commandes ou fichiers dont la permission a été refusée (`permission_denials` du JSON de Claude), vide si rien ou illisible."""
     try:
@@ -336,12 +346,14 @@ def reprise_quota_codex(res: Resultat) -> str | None:
 
 
 def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Resultat, code: int, detail: str,
-                  jouees: list[str]) -> Path:
+                  jouees: list[str], version: str | None = None) -> Path:
     dossier = racine / cfg["chaine"]["sortie_dossier"]
     dossier.mkdir(parents=True, exist_ok=True)
     f = dossier / f"{jour.isoformat()}-{etape.nom}.log"
     with f.open("a", encoding="utf-8") as h:  # ajout : une relance le même jour ne perd rien
         h.write(f"===== {datetime.now().isoformat(timespec='seconds')} étape {etape.nom} : code {code} ({detail}), {res.duree_s:.0f} s\n")
+        if etape.agent == "codex":
+            h.write(f"version codex : {version if version else 'null'}\n")
         for j in jouees:
             h.write(f"arrêt propre : {j}\n")
         h.write("----- stdout\n" + res.stdout.rstrip() + "\n----- stderr\n" + res.stderr.rstrip() + "\n")
@@ -437,6 +449,7 @@ class Chaine:
             return self._fin(etape, CODE_SANS_LOT, True, False, "aucun lot dû")
         avant = tete_courte(racine)
         git_avant = empreinte_git(racine)
+        version = version_codex(etape.commande[0]) if etape.agent == "codex" else None
         debut = datetime.now().timestamp()
         res = lancer(etape, racine, env, self.cfg["chaine"]["arret_delai_s"])
         code, detail = evaluer(etape, res)
@@ -494,7 +507,7 @@ class Chaine:
             detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
         if code != 0 and code != CODE_QUOTA_EPUISE and not stop and not etape.supervision:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)
-        ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees)
+        ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees, version)
         apres = tete_courte(racine)
         issue = self._fin(etape, code, code in (0, CODE_QUOTA_EPUISE), stop, detail, apres if apres != avant else "aucun")
         if avertissement and code == 0:  # avertissement journalisé : la supervision le relève, la chaîne continue
