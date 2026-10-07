@@ -1,0 +1,55 @@
+name: tests
+
+# D87 : suite complète sur chaque push vers main et sur les branches claude/* et operer/*.
+# Lecture seule : aucun secret, aucune écriture dans le dépôt, aucune publication.
+on:
+  push:
+    branches: [main, "claude/**", "operer/**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TZ: Europe/Amsterdam  # même fuseau que la machine : les tests de la fenêtre 03:30-08:00 en dépendent
+  GIT_AUTHOR_NAME: ci
+  GIT_AUTHOR_EMAIL: ci@exemple.test
+  GIT_COMMITTER_NAME: ci
+  GIT_COMMITTER_EMAIL: ci@exemple.test
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: pytest (hors tests marqués local)
+        run: python -m pytest -q -m "not local" --durations=10
+      - name: valider.py
+        run: |
+          for p in claude openai actu; do
+            python scripts/valider.py --perimetre "$p"
+          done
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo "## Tests exclus de la CI (marqués local)"
+            echo
+            echo "Ils exigent l'état réel de la machine (dépôt réel, OPÉRER, ~/.local) et tournent en local avec \`verify\`."
+            echo
+            echo '```'
+            python -m pytest --collect-only -q -m local | grep "::" || echo "(aucun)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

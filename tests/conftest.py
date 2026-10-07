@@ -117,6 +117,32 @@ def sockets_locaux():
         pytest.skip("sockets locaux interdits par le bac à sable")
 
 
+@pytest.fixture(scope="session", autouse=True)
+def analyses_memoisees():
+    """D87 : deux analyses pures, relancées par des centaines de tests sur les mêmes entrées, se calculent une fois par
+    processus : `yaml.safe_load` (sources.yaml, 2 s l'appel) et `texte_article` (HTML). Clé = contenu exact, résultat copié
+    à chaque appel ; une entrée qui échoue n'est jamais mémorisée, elle relève la même erreur à chaque appel."""
+    import copy
+    import functools
+    import yaml
+    from deltalib.analyseurs import html_notes
+
+    charger = yaml.safe_load
+    memo: dict[str, object] = {}
+
+    def safe_load_memoise(flux):
+        texte = flux if isinstance(flux, str) else flux.read()
+        if texte not in memo:
+            memo[texte] = charger(texte)
+        return copy.deepcopy(memo[texte])
+
+    mp = pytest.MonkeyPatch()
+    mp.setattr(yaml, "safe_load", safe_load_memoise)
+    mp.setattr(html_notes, "texte_article", functools.lru_cache(maxsize=None)(html_notes.texte_article))
+    yield
+    mp.undo()
+
+
 @pytest.fixture
 def sources():
     return {s.id: s for s in charger_sources(RACINE / "sources.yaml")}

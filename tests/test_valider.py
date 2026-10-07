@@ -24,9 +24,16 @@ def racine(tmp_path, monkeypatch, date_figee):
     return tmp_path
 
 
+_BRUTS: dict[str, str] = {}  # D87 : le brut d'un périmètre (échantillons figés, état vide) se calcule une fois par processus
+
+
 def brut_de(racine, perimetre):
-    fetch.main(["--racine", str(racine), "--perimetre", perimetre])
-    return json.loads((racine / "raw" / f"{perimetre}-nouveautes.json").read_text())
+    chemin = racine / "raw" / f"{perimetre}-nouveautes.json"
+    if perimetre not in _BRUTS:
+        fetch.main(["--racine", str(racine), "--perimetre", perimetre])
+        _BRUTS[perimetre] = chemin.read_text()
+    chemin.write_text(_BRUTS[perimetre])
+    return json.loads(_BRUTS[perimetre])
 
 
 def lire_etat(racine, p):

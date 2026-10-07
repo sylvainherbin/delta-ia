@@ -74,10 +74,10 @@ elif mode == "pas-json":
 elif mode == "verrou-git":
     ecrire(".git/index.lock", ""); claude_ok()
 elif mode == "dort":
-    subprocess.Popen([sys.executable, "-c", "import time; time.sleep(4); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
+    subprocess.Popen([sys.executable, "-c", "import os, time; open(sys.argv[1] + '.pid', 'w').write(str(os.getpid())); time.sleep(4); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
     time.sleep(60)
 elif mode == "enfant-en-fond":
-    subprocess.Popen([sys.executable, "-c", "import time; time.sleep(3); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
+    subprocess.Popen([sys.executable, "-c", "import os, time; open(sys.argv[1] + '.pid', 'w').write(str(os.getpid())); time.sleep(3); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
     claude_ok()
 elif mode == "ajoute-hook":
     ecrire(".git/hooks/pre-commit", "#!/bin/sh\necho piégé\n"); claude_ok()
@@ -251,6 +251,22 @@ def test_supervision_lancee_meme_apres_une_garde_qui_arrete(depot, cfg):
 
 # --- délai dépassé, processus enfants ---------------------------------------------------------------------------
 
+def attendre_mort(survivant, duree_de_vie):
+    """Rend la main dès que l'enfant du faux agent est mort ; sans pid écrit (jamais démarré ou pas encore), attend au plus
+    `duree_de_vie` + 2 s comme avant : un enfant encore vivant à ce moment a eu le temps d'écrire son fichier."""
+    pidfile = survivant.with_name(survivant.name + ".pid")
+    limite = time.time() + duree_de_vie + 2
+    while time.time() < limite:
+        if pidfile.exists() and pidfile.read_text().strip():
+            try:
+                etat = Path(f"/proc/{int(pidfile.read_text())}/stat").read_text().rsplit(")", 1)[1].split()[0]
+            except (FileNotFoundError, ProcessLookupError):
+                return
+            if etat in ("Z", "X"):
+                return
+        time.sleep(0.05)
+
+
 def test_delai_depasse_tue_tout_le_groupe_de_processus(depot, cfg, tmp_path):
     survivant = tmp_path / "survivant.txt"
     e = etape(depot, "delta", "dort", str(survivant), delai=1)
@@ -258,14 +274,14 @@ def test_delai_depasse_tue_tout_le_groupe_de_processus(depot, cfg, tmp_path):
     assert chaine(depot, cfg, [e]).executer() == 1
     assert time.time() - t0 < 15
     assert codes(depot)["delta"] == orc.CODE_DELAI
-    time.sleep(5)  # l'enfant aurait écrit son fichier au bout de 4 s s'il avait survécu
+    attendre_mort(survivant, 4)  # l'enfant aurait écrit son fichier au bout de 4 s s'il avait survécu
     assert not survivant.exists()
 
 
 def test_enfant_en_arriere_plan_apres_une_etape_reussie_est_tue(depot, cfg, tmp_path):
     survivant = tmp_path / "survivant2.txt"
     assert chaine(depot, cfg, [etape(depot, "delta", "enfant-en-fond", str(survivant))]).executer() == 0
-    time.sleep(4.5)
+    attendre_mort(survivant, 3)
     assert not survivant.exists()
 
 
@@ -726,7 +742,7 @@ def test_delta_n_exclut_plus_le_kb_en_automatique():
 # --- passage-auto.sh : verrou de la chaîne ---------------------------------------------------------------------------
 
 # Le faux binaire lit sa durée de sommeil dans un fichier : l'environnement des étapes est fixé par l'orchestrateur, jamais hérité.
-FAUX_BIN = '#!/bin/sh\nsleep "$(cat "$(dirname "$0")/sommeil" 2>/dev/null || echo 0)"\necho \'{"type":"result","subtype":"success","is_error":false,"permission_denials":[]}\'\n'
+FAUX_BIN = '#!/bin/sh\nd="$(dirname "$0")"\nsleep "$(cat "$d/sommeil" 2>/dev/null || echo 0)"\nn=0\nwhile [ -e "$d/attente" ] && [ "$n" -lt 1200 ]; do sleep 0.05; n=$((n+1)); done\necho \'{"type":"result","subtype":"success","is_error":false,"permission_denials":[]}\'\n'
 
 
 @pytest.fixture
@@ -739,6 +755,7 @@ def depot_sh(depot, tmp_path):
     faux.write_text(FAUX_BIN)
     faux.chmod(0o755)
     depot.sommeil = tmp_path / "sommeil"
+    depot.attente = tmp_path / "attente"  # tant que ce fichier existe, le faux agent attend (au plus 60 s)
     (depot / "prompts").mkdir(exist_ok=True)
     (depot / "prompts" / "supervision.md").write_text("supervision")
     toml = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
@@ -755,7 +772,7 @@ def depot_sh(depot, tmp_path):
 def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
     r = depot_sh
     env = dict(os.environ)
-    r.sommeil.write_text("10")
+    r.attente.write_text("")
     cmd = [str(r / "scripts" / "passage-auto.sh"), "--config", str(r.toml), "--etapes", "delta"]
     premiere = subprocess.Popen(cmd, cwd=r, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     verrou = r / ".git" / "delta-passage.lock"
@@ -774,6 +791,7 @@ def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
     de_la_chaine = subprocess.run([sys.executable, str(r / "scripts" / "garde.py"), "--racine", str(r), "--date", JOUR.isoformat()],
                                   capture_output=True, text=True, env={**os.environ, "DELTA_CHAINE_PID": str(pid)})
     assert "cet appel en fait partie" in de_la_chaine.stdout
+    r.attente.unlink()  # le faux agent de la première chaîne peut finir
     out, err = premiere.communicate(timeout=60)
     assert premiere.returncode == 0, err
     # le verrou est relâché à la fin : la chaîne suivante part
