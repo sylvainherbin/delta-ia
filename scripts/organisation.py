@@ -2,7 +2,8 @@
 """Delta — organisation courante OPÉRER -> raw/organisation.json (D77).
 
 Lecture locale, sans modèle : rôles réduits et missions comptées par projet.
-Un échec de lecture remplace le relevé précédent et laisse le passage continuer.
+Un échec de lecture laisse le passage continuer : le relevé précédent de moins de 7 jours est conservé avec
+`perime: true`, sinon il est remplacé par `statut: echec` (D86). Les vues se lisent l'une après l'autre.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ import argparse
 import json
 import subprocess
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -19,7 +21,8 @@ from deltalib.dates import maintenant_iso  # noqa: E402
 from deltalib.etat import ecrire_json  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
-DELAI = 20
+DELAI = 120  # `operer --json qui` prend environ 40 s (mesure du 07/10/2026)
+AGE_MAX = timedelta(days=7)
 
 
 class LectureImpossible(ValueError):
@@ -120,15 +123,33 @@ def relever(depot=None) -> dict:
     return {"releve_le": maintenant_iso(), **vue}
 
 
+def releve_conserve(chemin: Path, raison: str) -> dict | None:
+    """Relevé précédent lisible, de statut `ok` et daté de moins de 7 jours, marqué périmé ; sinon None."""
+    try:
+        ancien = json.loads(chemin.read_text(encoding="utf-8"))
+        date = datetime.fromisoformat(ancien["releve_le"])
+        if ancien.get("statut") != "ok" or date.tzinfo is None:
+            return None
+        if timedelta(0) <= datetime.now(date.tzinfo) - date < AGE_MAX:
+            return {**ancien, "perime": True, "raison": raison}
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        pass
+    return None
+
+
 def ecrire_releve(racine: Path) -> None:
     """Collecte commune à etat.py et à la commande autonome organisation.py."""
+    chemin = racine / "raw" / "organisation.json"
     organisation = relever()
-    ecrire_json(racine / "raw" / "organisation.json", organisation)
     if organisation["statut"] == "echec":
-        print(f"! AVERTISSEMENT : organisation OPÉRER non lue ({organisation['raison']})")
+        conserve = releve_conserve(chemin, organisation["raison"])
+        suite = f" ; relevé du {conserve['releve_le']} conservé (perime: true)" if conserve else ""
+        print(f"! AVERTISSEMENT : organisation OPÉRER non lue ({organisation['raison']}){suite}")
+        organisation = conserve or organisation
     else:
         print(f"Organisation OPÉRER : {len(organisation['roles'])} rôle(s), "
               f"{len(organisation['projets'])} projet(s) -> raw/organisation.json")
+    ecrire_json(chemin, organisation)
 
 
 def main(argv: list[str] | None = None) -> int:
