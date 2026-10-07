@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-06",
+ "maj_le": "2026-10-07",
  "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
  "contexte_sections": {
   "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
@@ -1478,7 +1478,7 @@
    "categorie": "commandes",
    "nom": "codex debug prompt-input",
    "gabarit": "complet",
-   "description": "La commande expérimentale `codex debug prompt-input` affiche en JSON la liste des contenus rendus visibles au modèle. Elle sert à examiner la découverte des instructions et la construction du contexte.",
+   "description": "La commande expérimentale `codex debug prompt-input` affiche en JSON la liste exacte des contenus visibles par le modèle. Elle sert à examiner la découverte des instructions, le contexte et la construction du prompt.",
    "description_source": "Render the model-visible prompt input list as JSON, optionally with a prompt and images. (maturité : Experimental)",
    "usage": "codex debug prompt-input",
    "usage_nature": "syntaxe",
@@ -1487,7 +1487,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Depuis le dossier trading-sim dans une session CLI d'essai, lance `codex debug prompt-input` avec le texte d'une mission gelée et compare le JSON aux instructions attendues avant d'engager l'audit croisé."
+    "pourquoi": "Dans une session CLI d'essai depuis trading-sim, lance `codex debug prompt-input` et compare les instructions affichées à celles attendues pour l'audit. Le résultat attendu est d'identifier le contexte implicite avant de fournir la mission gelée."
    },
    "sources": [
     {
@@ -1500,7 +1500,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1521,21 +1521,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits formels s'appuient sur une spécification gelée, un protocole et des rapports."
-    },
     "config.codex.interface": {
      "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
-     "pourquoi": "Les missions d'audit sont des documents horodatés et hachés ; factuel et déduit sont séparés."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -1646,7 +1650,7 @@
    "categorie": "commandes",
    "nom": "codex exec",
    "gabarit": "complet",
-   "description": "La commande `codex exec` exécute une tâche sans interface interactive, avec une sortie terminal ou des événements JSONL via `--json`. La sous-commande `resume` permet de poursuivre une tâche non interactive.",
+   "description": "`codex exec`, alias `codex e`, lance une tâche sans interface interactive. Il peut produire des événements JSONL avec `--json` et reprendre une tâche non interactive avec sa sous-commande `resume`.",
    "description_source": "Run Codex non-interactively. Alias: codex e . Stream results to stdout or JSONL and optionally resume previous sessions. (maturité : Stable)",
    "usage": "codex exec",
    "usage_nature": "syntaxe",
@@ -1655,7 +1659,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "`codex exec` est déjà utilisé dans delta-ia par D70 et par `mission-codex` pour les missions des chefs ; conserve les permissions explicites de chaque lancement et vérifie le binaire concerné. Dans ce workflow, le lanceur `mission-codex` commite les seuls chemins déclarés après l'exécution, sans push."
+    "pourquoi": "Conserve `codex exec` pour la chaîne D70 de delta-ia et les missions des chefs : le binaire de l'app et celui du PATH ont des usages distincts. Respecte les permissions explicites du lancement et la convention de `mission-codex`, dont le lanceur commite les chemins déclarés sans push."
    },
    "sources": [
     {
@@ -1668,7 +1672,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1689,17 +1693,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "methode.missions": {
-     "sha1": "e0ca84ff2130f1a4a39eec6bbd2dac65c3ae78f2",
-     "pourquoi": "mission-codex lance codex exec dans un worktree ; son lanceur commite les chemins déclarés sans push."
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "D70 lance codex exec avec une configuration et un profil de permissions explicites."
     }
    }
   },
@@ -1709,7 +1721,7 @@
    "categorie": "commandes",
    "nom": "codex execpolicy",
    "gabarit": "complet",
-   "description": "La commande expérimentale `codex execpolicy` évalue les fichiers de règles sans exécuter la commande ciblée. `check` émet en JSON la décision la plus restrictive et les règles correspondantes.",
+   "description": "La commande expérimentale `codex execpolicy` évalue des fichiers de règles avant leur enregistrement. Sa sous-commande `check` affiche en JSON la décision la plus restrictive et les règles correspondantes ; `--pretty` formate la sortie.",
    "description_source": "Evaluate execpolicy rule files and see whether a command would be allowed, prompted, or blocked. (maturité : Experimental)",
    "usage": "codex execpolicy",
    "usage_nature": "syntaxe",
@@ -1718,7 +1730,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour la règle d'audit de `~/.codex/rules/default.rules`, essaie `codex execpolicy check --pretty --rules ~/.codex/rules/default.rules -- git status` et compare la décision au préfixe court envisagé. L'évaluation seule ne modifie pas les autorisations persistantes."
+    "pourquoi": "Pour la règle d'audit globale, essaie `codex execpolicy check --pretty --rules ~/.codex/rules/default.rules -- git status` et compare les règles correspondantes aux préfixes courts envisagés. Ce contrôle pourrait éclairer la simplification de `default.rules` sans exécuter la commande évaluée."
    },
    "sources": [
     {
@@ -1731,7 +1743,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1760,17 +1772,21 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.regles-globales": {
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
-     "pourquoi": "Une seule règle autorise un script d'audit complet de 32 Ko."
+     "pourquoi": "default.rules contient une seule règle autorisant un script d'audit complet de 32 Ko."
     },
     "optimisation.pistes": {
-     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
-     "pourquoi": "La simplification de default.rules en préfixes courts est une piste explicite."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "La simplification des règles Codex en préfixes courts est une piste explicitement identifiée."
     }
    }
   },
@@ -2545,7 +2561,7 @@
    "categorie": "commandes",
    "nom": "codex resume",
    "gabarit": "complet",
-   "description": "La commande `codex resume` reprend une session interactive par identifiant ou la plus récente avec `--last`. La recherche de `--last` se limite au dossier courant sauf avec `--all` ; un dossier différent de celui enregistré peut demander un choix.",
+   "description": "`codex resume` reprend une session interactive par identifiant ou la plus récente avec `--last`. Cette dernière recherche reste dans le dossier courant sauf avec `--all` ; si le dossier diffère de celui sauvegardé, un choix peut être demandé.",
    "description_source": "Continue a previous interactive session by ID or resume the most recent chat. (maturité : Stable)",
    "usage": "codex resume",
    "usage_nature": "syntaxe",
@@ -2554,7 +2570,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Pour reprendre tes audits croisés dans les sessions tmux, utilise `codex resume <id>` afin de retrouver le fil voulu ; cette reprise fait déjà partie du fonctionnement déclaré. Vérifie le dossier de travail si la reprise demande de choisir entre le dossier courant et celui de la session."
+    "pourquoi": "Conserve `codex resume <id>` pour reprendre les audits dans tes sessions tmux pilotées depuis l'iPhone ; cette commande fait déjà partie du fonctionnement décrit. Contrôle le dossier de reprise pour retrouver les fichiers de la mission voulue."
    },
    "sources": [
     {
@@ -2567,7 +2583,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2592,17 +2608,21 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "optimisation.pistes": {
-     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
-     "pourquoi": "L'objectif CLI, tmux et remote control est atteint ; codex resume <id> fait partie du fonctionnement."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Le trio CLI, tmux et remote control est atteint avec codex resume <id>."
     }
    }
   },
@@ -2810,7 +2830,7 @@
    "categorie": "commandes",
    "nom": "/compact",
    "gabarit": "complet",
-   "description": "Résume le chat visible d'une session CLI afin de libérer de la place dans la fenêtre de contexte. Le résumé remplace une partie du détail du transcript pour permettre la suite de la conversation.",
+   "description": "`/compact` remplace des tours antérieurs du chat par un résumé afin de libérer de la place dans la fenêtre de contexte. La conservation des détails repose alors sur ce résumé.",
    "description_source": "Summarize the visible chat to free tokens. — Use after long runs so Codex retains key points without blowing the context window.",
    "usage": "/compact",
    "usage_nature": "syntaxe",
@@ -2819,7 +2839,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À une étape scellée d'un long audit trading-sim sous tmux, essaie `/compact` puis vérifie que le résumé conserve les décisions et les chemins des preuves ; la compression remplace des tours antérieurs par un résumé sans garantie d'économie de quota."
+    "pourquoi": "À une étape scellée d'un long audit trading-sim sous tmux, essaie `/compact` puis vérifie que les décisions et chemins des preuves figurent dans le résumé. L'espace libéré dans le contexte ne garantit pas une réduction des quotas du compte."
    },
    "sources": [
     {
@@ -2832,7 +2852,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2853,21 +2873,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits formels s'appuient sur une spécification gelée, un protocole et des rapports."
-    },
-    "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
-     "pourquoi": "Les limites hebdomadaires et les longs prompts d'audit sont des frictions récurrentes."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
      "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -3285,7 +3309,7 @@
    "categorie": "commandes",
    "nom": "/fork",
    "gabarit": "complet",
-   "description": "Copie la conversation active dans un nouveau fil avec un nouvel identifiant. Le transcript d'origine reste disponible pour explorer une autre approche depuis le même point de départ.",
+   "description": "`/fork` copie le chat courant dans un nouveau fil doté d'un nouvel identifiant. Le transcript d'origine reste disponible pour explorer une autre approche depuis le même point.",
    "description_source": "Fork the current chat into a new chat. — Branch the active session to explore a new approach without losing the current transcript.",
    "usage": "/fork",
    "usage_nature": "syntaxe",
@@ -3294,7 +3318,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans un audit de la révision trading-sim en cours, essayer `/fork` avant de confronter deux lectures de la même clause ; vérifier que les deux fils gardent le contexte initial sans mélanger leurs conclusions."
+    "pourquoi": "Dans un audit trading-sim sous tmux, essaie `/fork` avant de confronter deux lectures d'une clause gelée ; vérifie que les deux fils gardent les mêmes preuves initiales. Consigne séparément leurs conclusions pour les comparer."
    },
    "sources": [
     {
@@ -3307,7 +3331,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3320,17 +3344,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les révisions de l'architecture donnent lieu à des audits formalisés."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex sert surtout aux audits dans l'app de bureau."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -3391,7 +3419,7 @@
    "categorie": "commandes",
    "nom": "/hooks",
    "gabarit": "complet",
-   "description": "La commande `/hooks` affiche les hooks de cycle de vie configurés dans Codex et leur état de confiance. Elle permet de faire confiance à un hook nouveau ou modifié, ou de désactiver un hook non géré avant son exécution.",
+   "description": "`/hooks` affiche les hooks de cycle de vie et permet de faire confiance à un handler, de le désactiver ou de le réactiver. Les hooks gérés apparaissent comme tels et ne peuvent pas être désactivés depuis ce navigateur utilisateur.",
    "description_source": "View and manage lifecycle hooks. — Inspect configured hooks, trust new or changed hooks, or disable non-managed hooks before they run.",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
@@ -3399,8 +3427,8 @@
    "disponibilite": null,
    "statut_usage": "non_utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Après avoir ajouté sur une copie de trading-sim le hook `PreToolUse` d’essai, ouvrir `/hooks`, vérifier sa source et son empreinte, l’autoriser puis le désactiver après le test."
+    "verdict": "ignorer",
+    "pourquoi": "Le relevé actuel constate l'absence de hooks Codex, tandis que les gestes répétés passent par les scripts de Delta ; aucun handler existant ne demande une gestion avec `/hooks`."
    },
    "sources": [
     {
@@ -3413,7 +3441,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3430,21 +3458,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le projet fournit le scénario de contrôle répété à tester sur une copie."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Les contrôles répétés de trading-sim sont explicitement candidats à des hooks."
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé du 07/10 constate un seul hook Claude PermissionDenied et aucun hook Codex."
     }
    }
   },
@@ -4085,7 +4109,7 @@
    "categorie": "commandes",
    "nom": "/memories",
    "gabarit": "complet",
-   "description": "Configure l'utilisation des mémoires existantes et la génération de nouvelles mémoires dans Codex. Les réglages choisis s'appliquent aux sessions futures.",
+   "description": "`/memories` configure l'injection de mémoires existantes et la génération de nouvelles mémoires. Les réglages choisis s'appliquent aux sessions futures.",
    "description_source": "Configure memory use and generation. — Turn memory injection or memory generation on or off without leaving the TUI.",
    "usage": "/memories",
    "usage_nature": "syntaxe",
@@ -4094,7 +4118,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit contradictoire de trading-sim, essayer `/memories` puis comparer le verdict d'une session avec et sans injection de mémoire ; vérifier si le contexte implicite influe sur les constats et restaurer ensuite le réglage voulu, qui persiste."
+    "pourquoi": "Sur une copie de mission d'audit trading-sim, essaie `/memories` pour comparer les constats avec et sans injection de mémoire. Ce réglage persiste pour les sessions futures : relève l'état initial et restaure-le après cet essai."
    },
    "sources": [
     {
@@ -4107,7 +4131,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4120,17 +4144,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits contradictoires et les vérifications formelles sont centraux au projet."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les conclusions d'audit doivent séparer les constats des déductions."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -4195,16 +4227,16 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "La commande `/model` ouvre le choix du modèle actif et, lorsqu’il est proposé, de l’effort de raisonnement. La documentation présente notamment GPT-6.1 Sol comme modèle agentique disponible selon l’offre et le déploiement.",
+   "description": "`/model` ouvre le sélecteur du modèle actif et, lorsqu'il est disponible, de l'effort de raisonnement. Le sélecteur ne propose que les modèles accessibles au compte et à l'espace ; `/status` permet de vérifier le choix.",
    "description_source": "Choose the active model (and reasoning effort, when available). — Use gpt-6-luna or gpt-6.1-sol if shown.",
    "usage": "/model",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans un audit trading-sim non critique, choisir GPT-6.1 Sol avec `/model`, vérifier le modèle actif, puis contrôler que le défaut des nouvelles sessions n’a pas changé."
+    "pourquoi": "Dans une session CLI d'essai d'audit trading-sim, choisis un modèle disponible avec `/model` puis contrôle `/status` et le défaut des nouvelles sessions. Le contexte relève un changement de défaut après un choix dans l'app, dont le mécanisme reste à confirmer ; les missions `mission-codex` fixent déjà modèle et effort explicitement."
    },
    "sources": [
     {
@@ -4217,7 +4249,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4242,17 +4274,29 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Le sélecteur de modèle est utilisé et semble avoir déjà changé le défaut des nouvelles conversations."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Codex réalise des audits contradictoires sur ce projet."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
+    },
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Le choix d'un modèle dans l'app semble changer le défaut global, mais sa portée exacte reste à confirmer."
     }
    }
   },
@@ -4317,7 +4361,7 @@
    "categorie": "commandes",
    "nom": "/permissions",
    "gabarit": "complet",
-   "description": "Change les autorisations de Codex pendant la session, notamment entre les préréglages Auto et Read Only. Les actions suivantes respectent le mode choisi jusqu'à un nouveau changement.",
+   "description": "`/permissions` change le préréglage d'autorisations de la session, par exemple `Auto` ou `Read Only`. Les actions suivantes respectent ce choix jusqu'à un nouveau changement.",
    "description_source": "Set what Codex can do without asking first. — Relax or tighten approval requirements mid-session, such as switching between Auto and Read Only.",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
@@ -4326,7 +4370,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans un audit du dépôt privé trading-sim, essayer `/permissions` puis Read Only avant l'examen des fichiers ; vérifier que Codex peut lire sans écrire et revenir ensuite au mode voulu."
+    "pourquoi": "Dans une session CLI d'essai sur une copie de trading-sim, choisis `Read Only` avec `/permissions` et vérifie que la lecture est possible mais qu'une écriture est bloquée. Ce contrôle vise un audit borné ; relève puis restaure le mode initial en fin d'essai."
    },
    "sources": [
     {
@@ -4339,7 +4383,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4356,17 +4400,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt privé suit des audits formels et une architecture gelée."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex intervient surtout comme auditeur dans l'app de bureau."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -4460,7 +4512,7 @@
    "categorie": "commandes",
    "nom": "/plan",
    "gabarit": "complet",
-   "description": "Place le fil actif en mode plan et peut lui transmettre une demande dès l'activation. Codex propose alors une démarche avant l'exécution de la tâche.",
+   "description": "`/plan` place le chat actif en mode plan et accepte une demande inline facultative. La commande est temporairement indisponible lorsque Codex travaille déjà.",
    "description_source": "Switch to plan mode and optionally send a prompt. — Ask Codex to propose an execution plan before implementation work starts.",
    "usage": "/plan",
    "usage_nature": "syntaxe",
@@ -4469,7 +4521,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour une modification de la spécification trading-sim, essayer `/plan` avec la clause visée ; vérifier que Codex expose d'abord les étapes et les critères avant toute mise en œuvre soumise à l'accord de Sylvain."
+    "pourquoi": "Pour préparer un jalon d'audit trading-sim, essaie `/plan` avec les clauses gelées à examiner et vérifie que les contrôles et critères de fin sont explicites. Cela pourrait préparer la revue par jalon sans imposer une validation à chaque action."
    },
    "sources": [
     {
@@ -4482,7 +4534,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4499,17 +4551,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "La spécification gelée et les révisions rejetées demandent une démarche explicite."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Sylvain demande diagnostic puis proposition et accord avant exécution."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -4891,16 +4951,16 @@
    "categorie": "commandes",
    "nom": "/resume",
    "gabarit": "complet",
-   "description": "La commande `/resume` ouvre la liste des conversations enregistrées et reprend celle qui est choisie. Elle recharge le transcript antérieur en conservant l’historique d’origine.",
+   "description": "`/resume` ouvre le sélecteur des sessions sauvegardées. Le chat choisi recharge son transcript en conservant l'historique d'origine.",
    "description_source": "Resume a saved chat from your session list. — Continue work from a previous CLI session without starting over.",
    "usage": "/resume",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après une session d’audit Codex CLI sous tmux, saisir `/resume` et vérifier que le fil et son transcript réapparaissent après fermeture."
+    "pourquoi": "Dans la CLI sous tmux, essaie `/resume` pour retrouver un audit trading-sim sauvegardé et vérifie que le fil sélectionné contient les preuves attendues. Compare ce sélecteur à `codex resume <id>`, déjà décrit dans ton fonctionnement."
    },
    "sources": [
     {
@@ -4913,7 +4973,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4950,21 +5010,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "La reprise d’une session Codex sous tmux participe à l’objectif de pilotage distant."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le projet fait l’objet d’audits Codex formels."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     }
    }
   },
@@ -5113,7 +5173,7 @@
    "categorie": "commandes",
    "nom": "/side",
    "gabarit": "complet",
-   "description": "Ouvre une conversation annexe temporaire depuis le fil courant. Son transcript reste séparé de celui du fil principal pendant une question ciblée.",
+   "description": "`/side` ouvre une conversation annexe temporaire depuis le chat courant, avec un transcript séparé. Elle ne s'utilise ni depuis une autre conversation annexe ni pendant le mode review.",
    "description_source": "Start an ephemeral side chat. — Ask a focused follow-up without disrupting the main chat’s transcript.",
    "usage": "/side , /btw",
    "usage_nature": "syntaxe",
@@ -5122,7 +5182,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pendant un audit trading-sim, essayer `/side` pour vérifier une question limitée sur l'empreinte d'une mission ; vérifier que la réponse arrive sans ajouter cet échange au transcript principal."
+    "pourquoi": "Pendant un audit trading-sim hors mode review, essaie `/side` pour demander une explication limitée du format de verdict de la mission. Vérifie que l'échange reste dans le fil annexe et que le transcript principal conserve son déroulement."
    },
    "sources": [
     {
@@ -5135,7 +5195,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5148,17 +5208,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Les missions d'audit portent des empreintes SHA-256 séparées."
+     "pourquoi": "Les missions et les verdicts d'audit suivent des formats de fichiers précis."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les prompts d'audit longs ont un coût en jetons identifié."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -5227,16 +5295,16 @@
    "categorie": "commandes",
    "nom": "/status",
    "gabarit": "complet",
-   "description": "La commande `/status` affiche le modèle actif, la politique d’approbation, les racines inscriptibles et l’usage des jetons de la session CLI. Lors d’une connexion distante, elle indique aussi l’adresse distante et la version du serveur.",
+   "description": "`/status` affiche le modèle actif, la politique d'approbation, les racines inscriptibles et l'usage des jetons de la session CLI. En connexion distante, il affiche aussi l'adresse distante et la version du serveur.",
    "description_source": "Display session configuration and token usage. — Confirm the active model, approval policy, writable roots, and remaining context capacity.",
    "usage": "/status",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans un essai Codex CLI sous tmux pour trading-sim, lancer `/status` avant l’audit et vérifier le modèle, les permissions et le dossier autorisé."
+    "verdict": "utiliser",
+    "pourquoi": "Dans tes sessions Codex sous tmux pilotées depuis l'iPhone, contrôle `/status` pour vérifier le modèle, les permissions effectives et la version du serveur avant de poursuivre un audit. Ce contrôle répond directement au besoin de maîtriser les sessions à distance."
    },
    "sources": [
     {
@@ -5249,7 +5317,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5270,21 +5338,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt fait l’objet d’audits Codex formels."
+    "usage.hors-machine": {
+     "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
+     "pourquoi": "La CLI sous tmux et remote control depuis l'iPhone sont utilisés ; les fonctionnalités restent à mieux connaître."
     }
    }
   },
@@ -5294,16 +5362,16 @@
    "categorie": "commandes",
    "nom": "/statusline",
    "gabarit": "complet",
-   "description": "La commande `/statusline` configure et ordonne les champs du pied de la TUI, notamment le modèle, le contexte, les limites, Git et les jetons. Le choix est enregistré dans `tui.status_line` de `config.toml` et persiste pour les sessions suivantes.",
+   "description": "`/statusline` permet de choisir et d'ordonner les informations du pied de la TUI, notamment modèle, contexte, limites et branche Git. Le choix est enregistré dans `tui.status_line` de `config.toml`.",
    "description_source": "Configure TUI status-line fields interactively. — Pick and reorder footer items (model/context/limits/git/tokens/session) and persist in config.toml.",
    "usage": "/statusline",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans un essai Codex CLI sous tmux sur trading-sim, afficher modèle, limites et contexte puis restaurer l’ordre initial ; utiliser `/status` si une inspection sans réglage persistant suffit."
+    "pourquoi": "Dans une session tmux d'audit trading-sim, essaie `/statusline` avec modèle, contexte, limites et branche Git pour contrôler leur visibilité depuis l'iPhone. Le choix persiste dans `config.toml` : relève puis restaure la disposition initiale après l'essai."
    },
    "sources": [
     {
@@ -5316,7 +5384,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5333,21 +5401,25 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Les limites d’usage et le coût en jetons des longs audits sont des frictions récurrentes."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -5500,7 +5572,7 @@
    "categorie": "commandes",
    "nom": "/usage",
    "gabarit": "complet",
-   "description": "La commande `/usage` ouvre le menu d'activité de jetons du compte et permet d'utiliser une remise à zéro gagnée disponible. Les vues daily, weekly et cumulative affichent l'activité correspondante ; une authentification de compte Codex est nécessaire.",
+   "description": "`/usage` ouvre le menu d'activité de jetons du compte et permet d'utiliser une remise à zéro gagnée disponible. Les vues `daily`, `weekly` et `cumulative` affichent l'activité correspondante ; une authentification de compte Codex est requise.",
    "description_source": "View account token usage or use a rate-limit reset. — Inspect daily, weekly, or cumulative ChatGPT token activity from inside the TUI.",
    "usage": "/usage",
    "usage_nature": "syntaxe",
@@ -5509,7 +5581,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Avant une longue mission d'audit croisé sous tmux, ouvre `/usage` pour vérifier l'activité du compte et les remises à zéro gagnées disponibles avant de réduire tes usages ; consulte `/status` pour les limites restantes."
+    "pourquoi": "Avant une longue mission d'audit trading-sim sous tmux, ouvre `/usage` pour vérifier l'activité et les remises à zéro disponibles avant de réduire les usages. Vérifie les limites courantes et leurs échéances dans le tableau d'utilisation du compte."
    },
    "sources": [
     {
@@ -5522,7 +5594,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5543,17 +5615,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
-     "pourquoi": "Les limites hebdomadaires et les longs prompts d'audit sont des frictions récurrentes."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "usage.hors-machine": {
+     "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
+     "pourquoi": "Sylvain demande de signaler les limites d'usage, offres et remises à zéro disponibles."
     }
    }
   },
@@ -5605,7 +5685,7 @@
    "categorie": "commandes",
    "nom": "/worktree",
    "gabarit": "complet",
-   "description": "Lance la conversation dans un nouveau worktree Git. Ce checkout distinct isole les fichiers de la tâche du répertoire de travail principal.",
+   "description": "`/worktree` lance le chat dans un nouveau worktree Git selon le tableau des commandes de l'extension IDE. Ce répertoire de travail distinct isole les fichiers du chat ; cette ligne ne confirme pas une commande équivalente dans la TUI CLI.",
    "description_source": "Run the chat in a new Git worktree.",
    "usage": "/worktree",
    "usage_nature": "syntaxe",
@@ -5613,8 +5693,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur une copie de trading-sim, lancer `/worktree` pour un audit de la branche courante et vérifier que la modification locale de spécification reste dans le checkout principal ; le résultat attendu est un audit isolé sans toucher à cette modification."
+    "verdict": "ignorer",
+    "pourquoi": "Les missions de Delta utilisent déjà une branche et un worktree préparés par Git ou OPÉRER, et l'usage Codex décrit est la CLI sous tmux ; aucun scénario d'adoption de cette commande IDE n'est identifié."
    },
    "sources": [
     {
@@ -5627,7 +5707,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5644,17 +5724,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Une modification locale de la spécification reste non commitée après rejet de son audit."
-    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex sert surtout à auditer le travail de Claude dans l'app de bureau."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "Les worktrees sont préparés par Git ou OPÉRER avant les missions, puis retirés après relecture."
     }
    }
   }

@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-06",
+ "maj_le": "2026-10-07",
  "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
  "contexte_sections": {
   "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
@@ -1147,7 +1147,7 @@
    "categorie": "parametres",
    "nom": "approval_policy",
    "gabarit": "court",
-   "description": "La politique d’approbation règle les pauses avant certaines actions, y compris par catégories granulaires.",
+   "description": "`approval_policy` définit les demandes d'approbation avec `on-request`, `never` ou des catégories granulaires ; `untrusted` n'est plus pris en charge et `on-failure` est déprécié.",
    "description_source": "Type : on-request | never | { granular = { sandbox_approval = bool, rules = bool, mcp_elicitations = bool, request_permissions = bool, skill_approval = bool } }. Controls when Codex pauses for approval before executing commands. You can also use approval_policy = { granular = { ... } } to allow or auto-reject specific prompt categories while keeping other prompts interactive. untrusted is unsupported, and on-failure is deprecated; use on-request for interactive runs or never for non-interactive runs.",
    "usage": "approval_policy",
    "usage_nature": "syntaxe",
@@ -1155,8 +1155,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Dans une session CLI d’audit trading-sim, essayer `approval_policy = \"on-request\"` sur une écriture de test ; elle doit demander ton accord."
+    "verdict": "ignorer",
+    "pourquoi": "Les passages delta-ia ont déjà leur profil de permissions explicite et les missions `mission-codex` sont autonomes ; le contexte ne demande aucun nouveau réglage persistant d'approbation."
    },
    "sources": [
     {
@@ -1169,7 +1169,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1182,13 +1182,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "D70 possède un profil de permissions explicite."
+    },
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+    },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Validation humaine pas à pas avant toute écriture."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -3478,7 +3490,7 @@
    "categorie": "parametres",
    "nom": "codex --ask-for-approval, -a",
    "gabarit": "court",
-   "description": "L’option d’approbation en ligne de commande choisit les pauses avant les actions de Codex.",
+   "description": "`--ask-for-approval`, alias `-a`, choisit quand Codex demande une approbation, avec les valeurs `on-request` ou `never`.",
    "description_source": "Control when Codex pauses for human approval before running a command. (valeurs : on-request | never)",
    "usage": "codex --ask-for-approval, -a",
    "usage_nature": "syntaxe",
@@ -3487,7 +3499,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans une session CLI d’audit trading-sim, essayer `codex -a on-request` sur une écriture de test ; Codex doit demander ton accord."
+    "pourquoi": "Pour un audit d'essai sur une copie de trading-sim, lance `codex --sandbox read-only -a never` et vérifie qu'une écriture échoue sans question tout en laissant lire les fichiers."
    },
    "sources": [
     {
@@ -3500,7 +3512,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3513,13 +3525,25 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
+    },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Validation humaine pas à pas avant une action modifiante."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -3571,16 +3595,16 @@
    "categorie": "parametres",
    "nom": "codex --cd, -C",
    "gabarit": "court",
-   "description": "L’option `--cd` ou `-C` choisit le répertoire de travail de Codex avant le traitement de la demande.",
+   "description": "`--cd`, alias `-C`, fixe le répertoire de travail de Codex avant le traitement de la demande.",
    "description_source": "Set the working directory for the agent before it starts processing your request. (valeurs : path)",
    "usage": "codex --cd, -C",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Lancer le binaire Codex de l’app avec `-C /home/herbin/projets/trading-sim`, puis vérifier dans `/status` que ce dossier est l’espace de travail."
+    "verdict": "utiliser",
+    "pourquoi": "Conserve `-C <worktree>` dans les missions `mission-codex` des chefs pour viser le worktree préparé plutôt que l'arbre principal ; ce réglage de lancement est déjà décrit dans le contexte."
    },
    "sources": [
     {
@@ -3593,7 +3617,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3626,21 +3650,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée ; la syntaxe doit être vérifiée avec le binaire livré par l’app."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt est un projet approuvé et fait l’objet d’audits Codex."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Les sessions Codex CLI sous tmux restent un objectif."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -3973,7 +3997,7 @@
    "categorie": "parametres",
    "nom": "codex --config, -c",
    "gabarit": "court",
-   "description": "L’option de configuration surcharge ponctuellement un paramètre de Codex.",
+   "description": "`--config`, alias `-c`, surcharge un réglage de configuration pour le lancement, en interprétant la valeur comme TOML si possible, sinon comme une chaîne littérale.",
    "description_source": "Override configuration values. Values parse as TOML if possible; otherwise the literal string is used. (valeurs : key=value)",
    "usage": "codex --config, -c",
    "usage_nature": "syntaxe",
@@ -3982,7 +4006,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit CLI de trading-sim sous tmux, lancer `codex -c sandbox_mode=read-only` et vérifier que Codex ne peut pas modifier le dépôt, sans changer `config.toml`."
+    "pourquoi": "Pour un audit d'essai de trading-sim sous tmux, lance `codex -c 'sandbox_mode=\"read-only\"' -a never` et vérifie qu'une écriture est bloquée sans modifier `config.toml`."
    },
    "sources": [
     {
@@ -3995,7 +4019,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4012,17 +4036,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits du dépôt exigent un contrôle strict des modifications."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas encore utilisée ; cet essai reste à réaliser."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },
@@ -4869,7 +4901,7 @@
    "categorie": "parametres",
    "nom": "codex exec -c, --config",
    "gabarit": "court",
-   "description": "La configuration intégrée surcharge un réglage pour une seule exécution non interactive.",
+   "description": "`codex exec -c`, alias `--config`, surcharge un réglage pour l'exécution non interactive et peut être répété.",
    "description_source": "Inline configuration override for the non-interactive run (repeatable). (valeurs : key=value)",
    "usage": "codex exec -c, --config",
    "usage_nature": "syntaxe",
@@ -4878,7 +4910,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit non interactif de trading-sim, essayer `codex exec -c sandbox_mode=read-only` et vérifier qu'aucune écriture du dépôt n'est possible."
+    "pourquoi": "Sur une copie de trading-sim, essaie `codex -a never exec -c 'sandbox_mode=\"read-only\"' \"Décris la structure du dépôt\"` puis vérifie que l'exécution reste en lecture seule sans changer `config.toml`."
    },
    "sources": [
     {
@@ -4891,7 +4923,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4908,17 +4940,29 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le projet comporte des audits adversariaux et des fichiers gelés."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'usage actuel de la CLI autonome n'est pas établi."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
     }
    }
   },
@@ -6638,16 +6682,16 @@
    "categorie": "parametres",
    "nom": "codex login status subcommand",
    "gabarit": "court",
-   "description": "La sous-commande `codex login status` indique le mode d’authentification actif et rend un code de succès lorsque la connexion est établie.",
+   "description": "`codex login status` affiche le mode d'authentification actif et rend le code 0 lorsque des identifiants de connexion sont présents.",
    "description_source": "Print the active authentication mode and exit with 0 when logged in. (valeurs : codex login status)",
    "usage": "codex login status subcommand",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Avant un premier audit CLI de trading-sim sous tmux, exécuter `codex login status` avec le binaire de l’app et confirmer le mode de connexion sans afficher de secret."
+    "pourquoi": "Si une session CLI sous tmux refuse un audit trading-sim pour défaut de connexion, essaie `codex login status` avec le binaire du PATH pour distinguer l'authentification d'un problème de remote control."
    },
    "sources": [
     {
@@ -6660,7 +6704,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6693,17 +6737,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n’est pas utilisée ; la syntaxe doit être vérifiée avec le binaire livré par l’app."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Les sessions Codex CLI sous tmux restent un objectif."
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     }
    }
   },

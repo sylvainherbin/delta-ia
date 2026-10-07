@@ -1468,16 +1468,16 @@
    "categorie": "fonctionnalites",
    "nom": "Agent approvals & security",
    "gabarit": "complet",
-   "description": "Le sandbox limite techniquement les fichiers et le réseau accessibles à Codex, tandis que la politique d'approbation règle les demandes avant certaines actions. Un mode lecture seule est documenté pour les sessions interactives qui doivent examiner sans modifier.",
+   "description": "Le sandbox fixe les limites techniques des fichiers et du réseau, tandis que la politique d'approbation règle les demandes avant certaines actions. La documentation distingue ces mécanismes et donne une configuration interactive en lecture seule.",
    "description_source": "Codex helps protect your code and data and reduces the risk of misuse.",
    "usage": "sandbox_mode = \"read-only\"\napproval_policy = \"on-request\"",
    "usage_nature": "syntaxe",
-   "exemple": "codex --sandbox read-only --ask-for-approval on-request",
+   "exemple": "sandbox_mode = \"read-only\"\napproval_policy = \"on-request\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit CLI de trading-sim, essayer `codex --sandbox read-only --ask-for-approval on-request` et vérifier qu'aucune écriture n'est permise ; cela correspondrait à la validation humaine pas à pas avant toute modification."
+    "pourquoi": "Sur une copie de trading-sim, essaie `codex --sandbox read-only --ask-for-approval never` pour vérifier qu'un audit lit les fichiers mais ne peut pas écrire. Cela bornerait cette exécution d'essai sans confondre les validations de jalon avec des approbations de chaque commande."
    },
    "sources": [
     {
@@ -1490,7 +1490,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1503,17 +1503,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Codex mène des audits formels du dépôt."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Sylvain demande diagnostic puis accord explicite avant exécution."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -1728,16 +1736,16 @@
    "categorie": "fonctionnalites",
    "nom": "Subagents",
    "gabarit": "complet",
-   "description": "Les sous-agents peuvent traiter en parallèle des parties indépendantes d'une tâche, puis rendre leurs résultats au fil principal. Dans les clients Codex locaux, des agents spécialisés peuvent avoir leurs propres instructions et modèles, avec une consommation de jetons supplémentaire.",
+   "description": "ChatGPT Work et Codex peuvent déléguer des tâches indépendantes à des sous-agents puis rassembler leurs résultats. Dans les clients locaux, la délégation suit une demande explicite ou des instructions applicables ; chaque sous-agent effectue son propre travail et consomme des jetons supplémentaires.",
    "description_source": "ChatGPT Work and Codex can run subagent workflows by spawning specialized agents in parallel and then collecting their results in one response. This can be particularly helpful for complex tasks that are highly parallel, such as codebase exploration or implementing a multi-step feature plan.",
    "usage": "Review this branch with parallel subagents. Spawn one subagent for security risks, one for test gaps, and one for maintainability. Wait for all three, then summarize the findings by category with file references.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": "ChatGPT desktop, Codex CLI et extension IDE pour les clients locaux",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur un audit limité de trading-sim, demander deux sous-agents distincts pour les risques de sûreté et les lacunes de tests, puis comparer leurs constats au fil unique ; mesurer si les résultats justifient les jetons supplémentaires."
+    "pourquoi": "Sur un audit limité de trading-sim, demande explicitement deux sous-agents, l'un sur les risques de sûreté et l'autre sur les lacunes des tests, puis compare leurs constats au fil unique. Mesure aussi les jetons supplémentaires avant de retenir ce mode pour les audits réguliers."
    },
    "sources": [
     {
@@ -1750,7 +1758,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1763,17 +1771,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits contradictoires sont coûteux en jetons."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Codex audite le travail de Claude et les limites d'usage sont une friction."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -2827,16 +2843,16 @@
    "categorie": "fonctionnalites",
    "nom": "Long-running work",
    "gabarit": "complet",
-   "description": "Un travail long se formule avec un résultat, des contraintes et des critères de fin vérifiables dans un même fil. Dans l'app et la CLI, `/goal` affiche la progression et permet de piloter ce but au fil des étapes.",
+   "description": "Un travail long se définit par un résultat, des contraintes et des critères de fin vérifiables, dans le même chat. Dans la CLI interactive, `/goal` permet d'attacher un objectif au fil puis de suivre et piloter sa progression.",
    "description_source": "For work that may take many steps, give ChatGPT a clear outcome, constraints, and definition of done. Keep related work in the same chat so ChatGPT can use the same context to choose the next step and decide when the work is complete.",
    "usage": "Migrate this codebase from JavaScript to TypeScript. Preserve existing behavior,\ncompile in strict mode without explicit `any` types, and make the full test suite pass.",
    "usage_nature": "syntaxe",
-   "exemple": "In the ChatGPT desktop app, enter `/goal` to start Goal mode.",
-   "disponibilite": "ChatGPT desktop, Codex CLI, extension IDE et ChatGPT Work web",
+   "exemple": null,
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit de révision de trading-sim, démarrer `/goal` avec les critères de contrôle du protocole puis vérifier que le fil s'arrête quand tous les points sont traités ; cela pourrait réduire les relances manuelles."
+    "pourquoi": "Pour une mission d'audit trading-sim limitée à un jalon, essaie `/goal` avec les contrôles exigés et le chemin des preuves ; vérifie que la complétude annoncée correspond aux critères. L'objectif pourrait assurer la continuité du travail sans donner le go du jalon réservé à Sylvain."
    },
    "sources": [
     {
@@ -2849,7 +2865,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2862,17 +2878,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits portent sur des révisions gelées et des critères formels."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Sylvain demande un diagnostic vérifiable et une validation pas à pas."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
    }
   },
@@ -3055,16 +3079,16 @@
    "categorie": "fonctionnalites",
    "nom": "Non-interactive mode",
    "gabarit": "complet",
-   "description": "La commande `codex exec` lance une tâche sans ouvrir la TUI et réserve la sortie standard au message final. Elle peut produire des événements JSONL, utiliser un schéma JSON pour la réponse finale et exécuter la tâche sans conserver de session avec `--ephemeral`.",
+   "description": "`codex exec` lance une tâche sans ouvrir la TUI et réserve normalement `stdout` au message final, les progrès allant sur `stderr`. Il peut produire des événements JSONL, demander une réponse conforme à un JSON Schema ou éviter de conserver les fichiers de session avec `--ephemeral`.",
    "description_source": "Non-interactive mode lets you run Codex from scripts (for example, continuous integration (CI) jobs) without opening the interactive TUI. You invoke it with codex exec.",
    "usage": "codex exec \"summarize the repository structure and list the top 5 risky areas\"",
    "usage_nature": "syntaxe",
    "exemple": "codex exec --ephemeral \"triage this repository and suggest next steps\"",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur une copie de trading-sim, essayer `codex exec --output-schema` avec le schéma des blocs de verdict d’audit, puis vérifier que la sortie reste lisible par machine et comparer son coût à l’audit dans l’app."
+    "verdict": "utiliser",
+    "pourquoi": "Conserve le mode non interactif pour la chaîne D70 de delta-ia et les missions de développement des chefs, où il est déjà employé avec des paramètres explicites. L'option `--output-schema` reste un essai à distinguer de cet usage observé : les scripts décrits ne l'emploient pas."
    },
    "sources": [
     {
@@ -3077,7 +3101,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3094,25 +3118,25 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Les verdicts d’audit utilisent des blocs CLÉ = VALEUR lisibles par machine."
+    "methode.missions": {
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
     },
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Codex audite le travail de Claude et les longs audits coûtent des jetons."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Codex CLI sous tmux reste un objectif déclaré."
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "D70 exécute les passages Codex avec codex exec et un profil de permissions explicite."
     }
    }
   },
@@ -3181,7 +3205,7 @@
    "categorie": "fonctionnalites",
    "nom": "Pricing",
    "gabarit": "complet",
-   "description": "ChatGPT Work et Codex partagent les crédits et limites d'usage décrits sur cette page. Les offres Pro comportent plusieurs niveaux ; les modes Fast et Ultrafast consomment davantage que Standard pour un même modèle.",
+   "description": "ChatGPT Work et Codex partagent les crédits et limites d'usage décrits sur cette page. Les niveaux Pro ont des conditions distinctes ; les estimations d'usage ne remplacent pas les limites et heures de remise à zéro du tableau du compte.",
    "description_source": "ChatGPT Work and Codex share usage. ChatGPT Work usage inside ChatGPT uses the same pricing, credits, and usage limits as Codex.",
    "usage": "/status",
    "usage_nature": "syntaxe",
@@ -3190,7 +3214,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Avant de répartir une mission trading-sim entre Work et Codex ou d'activer une vitesse supérieure, vérifie ton niveau Pro, les limites restantes et leurs remises à zéro dans le tableau d'utilisation ; leur budget est commun. Contrôle les multiplicateurs de consommation du mode choisi avant son activation."
+    "pourquoi": "Avant de répartir une mission trading-sim entre Work et Codex, vérifie les limites et remises à zéro de ton abonnement Pro (100), car le budget est commun. Contrôle les conditions du niveau et du mode de vitesse envisagés avant leur activation."
    },
    "sources": [
     {
@@ -3203,7 +3227,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3232,21 +3256,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
+    "profil": {
+     "sha1": "0085259f8f744f9a91d172363e7fde3929c411df",
+     "pourquoi": "Sylvain déclare ChatGPT Pro (100) et trading-sim comme priorité."
+    },
     "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
-     "pourquoi": "Les limites hebdomadaires et les longs prompts d'audit sont des frictions récurrentes."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Work arbitre trading-sim ; les missions et verdicts sont consignés dans des fichiers."
-    },
-    "usage.hors-machine": {
-     "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
-     "pourquoi": "Sylvain déclare un abonnement ChatGPT Pro, sans préciser le niveau."
+     "pourquoi": "Work conçoit et arbitre trading-sim tandis que Codex réalise l'audit adversarial."
     }
    }
   },
@@ -3390,16 +3418,16 @@
    "categorie": "fonctionnalites",
    "nom": "Sandbox",
    "gabarit": "complet",
-   "description": "Le sandbox borne les fichiers et le réseau accessibles aux commandes lancées par Codex dans les clients locaux. La politique d'approbation détermine quand une action hors de ces limites doit être soumise à validation.",
+   "description": "Le sandbox borne les accès aux fichiers et au réseau des commandes de Codex dans les clients locaux. Sur Linux, la documentation décrit `bubblewrap` et les contraintes de création des espaces de noms utilisateur, distinctes de la politique d'approbation.",
    "description_source": "The sandbox is the boundary that lets the agent act autonomously without giving it unrestricted access to your machine. When a local chat runs commands in the ChatGPT desktop app, Codex CLI, or IDE extension, those commands run inside a constrained environment instead of running with full access by default.",
    "usage": "sudo apt install bubblewrap",
    "usage_nature": "syntaxe",
-   "exemple": "sudo apt update\nsudo apt install apparmor-profiles apparmor-utils\nsudo install -m 0644 \\\n  /usr/share/apparmor/extra-profiles/bwrap-userns-restrict \\\n  /etc/apparmor.d/bwrap-userns-restrict\nsudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict",
-   "disponibilite": "Clients locaux Codex ; Linux et WSL2 avec bubblewrap.",
+   "exemple": "sudo systemctl reload apparmor.service",
+   "disponibilite": "Linux et WSL2 pour les prérequis bubblewrap décrits",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans l'app Codex, lancer un audit en lecture seule du dépôt trading-sim, puis vérifier qu'une tentative d'écriture demande une approbation ; le résultat attendu est une inspection possible sans modification silencieuse."
+    "pourquoi": "Pour un audit d'essai sur une copie de trading-sim, lance `codex --sandbox read-only --ask-for-approval never` puis vérifie qu'une écriture est bloquée tandis que la lecture reste possible. Ce test mesurerait la limite technique ; le contexte ne constate aucun besoin actuel d'installer ou de reconfigurer `bubblewrap`."
    },
    "sources": [
     {
@@ -3412,7 +3440,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3425,17 +3453,25 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app de bureau est l'interface Codex utilisée."
-    },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt trading-sim est privé et ses audits sont formels."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
+    },
+    "config.codex.interface": {
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    }
   },

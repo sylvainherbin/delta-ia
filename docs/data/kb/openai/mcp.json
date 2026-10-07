@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "mcp",
- "maj_le": "2026-09-30",
+ "maj_le": "2026-10-07",
  "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
  "contexte_sections": {
   "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
@@ -269,7 +269,7 @@
    "categorie": "mcp",
    "nom": "codex mcp list",
    "gabarit": "complet",
-   "description": "`codex mcp list` affiche les serveurs MCP enregistrés dans la configuration locale de Codex. L'option `--json` rend cette liste exploitable par un script.",
+   "description": "`codex mcp list` liste les serveurs MCP enregistrés dans la configuration locale de Codex. L'option `--json` produit une sortie exploitable par un script ; cette liste ne décrit pas à elle seule les connecteurs du compte.",
    "description_source": "List configured MCP servers. Add --json for machine-readable output.",
    "usage": "codex mcp list",
    "usage_nature": "syntaxe",
@@ -278,7 +278,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Exécuter `codex mcp list --json` avec le binaire de l'app dans le dossier delta-ia, puis comparer la liste à l'accès Delta-IA déclaré ; le résultat attendu est d'identifier les serveurs locaux effectivement configurés."
+    "pourquoi": "Depuis delta-ia, essaie `codex mcp list --json` avec le binaire du PATH pour identifier les serveurs locaux configurés. Compare séparément cette liste aux outils Delta-IA disponibles dans la session : l'accès par le compte déclaré ne se déduit pas de la liste locale."
    },
    "sources": [
     {
@@ -291,7 +291,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex mcp",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -304,17 +304,21 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La syntaxe doit être vérifiée sur le binaire fourni avec l'app."
+     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     },
     "config.codex.mcp": {
      "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
-     "pourquoi": "L'accès de Codex à Delta-IA est déclaré mais un écart de perception a été relevé."
+     "pourquoi": "Delta-IA est déclaré comme connecteur du compte OpenAI ; son accès effectif doit être distingué des MCP locaux."
     }
    }
   },
