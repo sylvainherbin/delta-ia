@@ -28,3 +28,9 @@ def test_skill_verify_lance_pytest_et_valider():
     assert ".venv/bin/pytest -q" in texte
     for perimetre in ("claude", "openai", "actu"):
         assert f"scripts/valider.py --perimetre {perimetre}" in texte
+
+
+def test_skill_verify_enchaine_le_push_au_rebase():
+    texte = SKILL.read_text(encoding="utf-8")
+    assert "git pull --rebase && git push origin main" in texte
+    assert "git rebase --abort" in texte

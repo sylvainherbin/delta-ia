@@ -43,6 +43,8 @@ Un test en échec ou un code de sortie non nul **interdit le commit** : corriger
 
 La fusion dans main exige toujours un run CI `success` dont le `headSha` est le commit fusionné. Elle lit le statut de la CI au lieu de relancer la suite : `gh run list --branch <branche> --json conclusion,headSha`, puis fusion seulement si une ligne a `conclusion` égal à `success` et `headSha` égal au commit fusionné (pas seulement le dernier run). Sans run vert sur ce commit exact, ou si l'arbre fusionné diffère du commit testé (rebase avec changement de contenu), `scripts/verifier.py` reste la preuve : il réutilise un résultat pour un arbre identique et relance sinon.
 
+Le push vers main s'enchaîne au rebase, `git pull --rebase && git push origin main`, pour qu'il ne parte jamais après un rebase en échec (incident du 07/10). Si le rebase échoue : `git rebase --abort`, résolution, puis on recommence.
+
 ## 4. Fenêtre de la chaîne
 
 De 03:30 à 08:00 (heure locale), aucun commit de développement, quel que soit le résultat des tests (CLAUDE.md, chaîne D70).
