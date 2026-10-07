@@ -8,7 +8,7 @@ Usage :
 
 Sans `--valider`, l'état `state/<p>.json` n'est jamais modifié : les nouveautés vont dans
 `raw/<p>-nouveautes.json`. `--valider` lit le fichier quotidien docs/data/<p>/<date>.json et n'inscrit
-dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*) plus les ignorés du brut ; les
+dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*, kb-*) plus les ignorés du brut ; les
 nouveautés absentes restent en attente (code de sortie 4).
 `--kb` : code 3 = échec partiel (des pages ou des documentations en échec, les autres traitées normalement) ;
 code 5 = échec total (aucune page lue, ou toutes les documentations d'un périmètre en échec) ; D68.
@@ -27,7 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, valider  # noqa: E402
+from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, ids_base, valider  # noqa: E402
 from deltalib.http import Client  # noqa: E402
 from deltalib.modeles import PERIMETRES  # noqa: E402
 from deltalib.passage import executer  # noqa: E402
@@ -107,7 +107,8 @@ def commande_valider(perimetre: str, racine: Path, dry_run: bool, jour: date | N
         print(f"le fichier {chemin_quotidien} n'est pas celui du périmètre {perimetre!r} au {jour}", file=sys.stderr)
         return 2
     etat = charger_etat(chemin_etat)
-    etat, bilan = valider(etat, brut, quotidien, racine=None if dry_run else racine)
+    etat, bilan = valider(etat, brut, quotidien, racine=None if dry_run else racine,
+                           ids_kb=ids_base(racine, perimetre))
     prefixe = "[dry-run] " if dry_run else ""
     print(f"{prefixe}état {chemin_etat} : {bilan['inscrits']} inscrit(s), {bilan['revises']} révisé(s), "
           f"{len(etat['vus'])} au total ; {len(bilan['en_attente'])} nouveauté(s) en attente")

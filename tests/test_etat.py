@@ -107,7 +107,7 @@ def test_main_lit_organisation_apres_etat_sans_alterer_son_json(tmp_path, monkey
     def lancer(args, **options):
         assert chemin_etat.read_bytes() == attendu, "le relevé D65 doit être écrit avant la lecture OPÉRER"
         assert args == ["operer", "--json", "qui" if not appels else "etat"]
-        assert options == {"capture_output": True, "text": True, "encoding": "utf-8", "timeout": 20, "shell": False}
+        assert options == {"capture_output": True, "text": True, "encoding": "utf-8", "timeout": 120, "shell": False}
         appels.append(args[-1])
         if args[-1] == "qui":
             vue = {"vue": "qui", "roles": []}

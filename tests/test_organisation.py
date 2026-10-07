@@ -67,7 +67,7 @@ def simuler(monkeypatch, vues, panne=None, vue_en_echec="qui"):
 
     def lancer(args, **options):
         assert args[:2] == ["operer", "--json"]
-        assert options == {"capture_output": True, "text": True, "encoding": "utf-8", "timeout": 20, "shell": False}
+        assert options == {"capture_output": True, "text": True, "encoding": "utf-8", "timeout": 120, "shell": False}
         vue = args[2]
         appels.append(vue)
         if panne is not None and vue == vue_en_echec:
@@ -146,7 +146,7 @@ def test_champs_et_contenus_exclus(monkeypatch, vues):
 @pytest.mark.parametrize("panne, raison", [
     (FileNotFoundError("/chemin/prive"), "absent"),
     (subprocess.CompletedProcess([], 7, "sortie-privee", "erreur-privee"), "code de sortie 7"),
-    (subprocess.TimeoutExpired("operer", 20, output="sortie-privee"), "délai de 20 s dépassé"),
+    (subprocess.TimeoutExpired("operer", 120, output="sortie-privee"), "délai de 120 s dépassé"),
     (subprocess.CompletedProcess([], 0, "JSON cassé : sortie-privee", ""), "JSON illisible"),
     (UnicodeDecodeError("utf-8", b"\xff", 0, 1, "sortie-privee"), "JSON illisible"),
     (PermissionError("/chemin/prive"), "exécution impossible"),
@@ -225,8 +225,12 @@ def test_cli_avec_faux_operer_dans_path(tmp_path, monkeypatch, vues):
     executable.unlink()
     resultat = subprocess.run(commande, capture_output=True, text=True, timeout=10)
     assert resultat.returncode == 0, resultat.stderr
-    assert json.loads(chemin.read_text())["statut"] == "echec"
+    conserve = json.loads(chemin.read_text())
+    assert conserve["statut"] == "ok" and conserve["perime"] is True, "relevé récent conservé (D86)"
     assert "! AVERTISSEMENT" in resultat.stdout
+    chemin.unlink()
+    resultat = subprocess.run(commande, capture_output=True, text=True, timeout=10)
+    assert json.loads(chemin.read_text())["statut"] == "echec"
 
 
 @pytest.mark.parametrize("contenu, motif", [
@@ -275,3 +279,52 @@ def test_cli_validation_refuse_une_trace_dans_un_autre_perimetre(tmp_path, capsy
 def test_depot_reel_donnees_actuelles_passent(perimetre, options):
     """Dépôt réel : les données et le CONTEXTE.md de ce dépôt (Sylvain) passent la validation."""
     assert valider.main(["--racine", str(RACINE), "--perimetre", perimetre, *options]) == 0
+
+
+def _releve_ok(jours):
+    from datetime import timedelta
+    date = (datetime.now().astimezone() - timedelta(days=jours)).isoformat(timespec="seconds")
+    return {"releve_le": date, "statut": "ok", "roles": [], "projets": {}, "totaux": {}}
+
+
+def _delai_depasse(monkeypatch, vues):
+    simuler(monkeypatch, vues, subprocess.TimeoutExpired("operer", 120))
+
+
+def test_delai_depasse_conserve_un_releve_recent_perime(tmp_path, monkeypatch, capsys, vues):
+    chemin = tmp_path / "raw" / "organisation.json"
+    chemin.parent.mkdir()
+    ancien = _releve_ok(2)
+    chemin.write_text(json.dumps(ancien), encoding="utf-8")
+    _delai_depasse(monkeypatch, vues)
+    assert organisation.main(["--racine", str(tmp_path)]) == 0
+    releve = json.loads(chemin.read_text(encoding="utf-8"))
+    assert releve["perime"] is True and releve["statut"] == "ok" and releve["releve_le"] == ancien["releve_le"]
+    assert "délai de 120 s dépassé" in releve["raison"]
+    assert "conservé" in capsys.readouterr().out
+
+
+def test_delai_depasse_releve_trop_vieux_donne_echec(tmp_path, monkeypatch, vues):
+    chemin = tmp_path / "raw" / "organisation.json"
+    chemin.parent.mkdir()
+    chemin.write_text(json.dumps(_releve_ok(8)), encoding="utf-8")
+    _delai_depasse(monkeypatch, vues)
+    assert organisation.main(["--racine", str(tmp_path)]) == 0
+    releve = json.loads(chemin.read_text(encoding="utf-8"))
+    assert releve["statut"] == "echec" and "perime" not in releve
+
+
+def test_delai_depasse_sans_fichier_donne_echec(tmp_path, monkeypatch, vues):
+    _delai_depasse(monkeypatch, vues)
+    assert organisation.main(["--racine", str(tmp_path)]) == 0
+    assert json.loads((tmp_path / "raw" / "organisation.json").read_text())["statut"] == "echec"
+
+
+def test_releve_perime_puis_lecture_reussie_le_remplace(tmp_path, monkeypatch, vues):
+    chemin = tmp_path / "raw" / "organisation.json"
+    chemin.parent.mkdir()
+    chemin.write_text(json.dumps({**_releve_ok(1), "perime": True, "raison": "x"}), encoding="utf-8")
+    simuler(monkeypatch, vues)
+    assert organisation.main(["--racine", str(tmp_path)]) == 0
+    releve = json.loads(chemin.read_text(encoding="utf-8"))
+    assert releve["statut"] == "ok" and "perime" not in releve

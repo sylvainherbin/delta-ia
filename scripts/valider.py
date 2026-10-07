@@ -193,6 +193,18 @@ def verifier_ids_web(e: dict, ou: str, r: Rapport) -> None:
                          f"(attendu : {', '.join(sorted(attendus))}) ; calcule-le avec le titre publié (D20)")
 
 
+def verifier_ids_kb(e: dict, ou: str, r: Rapport, connus: set[str] | None) -> None:
+    """D86 : un identifiant `kb-<id>` désigne une entrée de la base de référence, citée dans `kb_refs` de l'élément."""
+    for ident in e.get("ids_bruts") or []:
+        if not (isinstance(ident, str) and ident.startswith("kb-")):
+            continue
+        entree = ident[3:]
+        if connus is not None and entree not in connus:
+            r.erreur(ou, f"identifiant `{ident}` : entrée inconnue dans la base de référence ({entree})")
+        if entree not in (e.get("kb_refs") or []):
+            r.erreur(ou, f"identifiant `{ident}` : l'entrée {entree} doit figurer dans `kb_refs` de l'élément")
+
+
 def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rapport,
                        ctx_disparu_permis: bool = False) -> dict | None:
     ou = chemin.name
@@ -653,6 +665,10 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
                 for ref in (e.get("kb_refs") or []) if isinstance(e, dict) else []:
                     if ref not in connus:
                         r.erreur(f"{d}.json", f"`kb_refs` inconnu dans la base de référence : {ref}")
+    for d, q in quotidiens.items():
+        for i, e in enumerate(q.get("elements", [])):
+            if isinstance(e, dict):
+                verifier_ids_kb(e, f"{d}.json elements[{i}]", r, connus)
     jour_iso = (jour or date.today()).isoformat()
     if brut is not None:
         q = quotidiens.get(jour_iso)

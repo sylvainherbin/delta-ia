@@ -97,11 +97,24 @@ def ids_couverts(quotidien: dict) -> tuple[set[str], set[str]]:
     return bruts, ecartes
 
 
-def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = None) -> tuple[dict, dict]:
+def ids_base(racine: Path, perimetre: str) -> set[str]:
+    """Identifiants des entrées de la base de référence du périmètre (docs/data/kb/<claude|openai>/), D86."""
+    dossier = racine / "docs" / "data" / "kb" / ("openai" if perimetre == "openai" else "claude")
+    ids: set[str] = set()
+    for f in sorted(dossier.glob("*.json")):
+        try:
+            ids |= {e["id"] for e in json.loads(f.read_text(encoding="utf-8")).get("entrees", [])}
+        except (ValueError, KeyError, AttributeError, TypeError):
+            pass
+    return ids
+
+
+def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = None,
+            ids_kb: set[str] | None = None) -> tuple[dict, dict]:
     """Fait avancer l'état d'après le fichier quotidien de l'agent (D5, D13).
 
     Inscrits : les nouveautés brutes reprises dans `ids_bruts` ou `ecartes`, les `ignores` du fichier brut,
-    les identifiants `web-*`. Les nouveautés brutes absentes restent en attente et sont listées.
+    les identifiants `web-*` et, avec `ids_kb`, les `kb-<id d'entrée de la base>` dont l'entrée existe (D86). Les nouveautés brutes absentes restent en attente et sont listées.
     Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids], borne_avancee}.
     D76 : avec `racine`, conserve les textes suivis validés dans raw/revisions/ ; sans elle, aucune écriture (dry-run).
     """
@@ -134,6 +147,9 @@ def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = No
             continue  # déjà connu : reprise d'un élément existant (fusion, révision déjà inscrite)
         if ident.startswith("web-"):
             vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": "web"}
+            bilan["inscrits"] += 1
+        elif ident.startswith("kb-") and ids_kb is not None and ident[3:] in ids_kb:
+            vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": "kb"}
             bilan["inscrits"] += 1
         else:
             bilan["inconnus"].append(ident)  # ni dans le brut, ni dans l'état, ni issu du web : suspect

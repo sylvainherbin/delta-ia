@@ -464,3 +464,36 @@ def test_skills_sans_stop_sur_regle_ambigue_ni_avant_de_lancer():
         assert "Avant de lancer" not in t, chemin
         assert "règle ambiguë du dépôt ou un fichier inattendu" in t and "ne l'arrête pas" in t, chemin
         assert "à soumettre à Sylvain" not in t, chemin
+
+
+# --- D86 : identifiants kb-<id d'entrée de la base> ----------------------------------------------------------------
+
+def test_kb_id_accepte_dans_etat_si_entree_connue(tmp_path):
+    from deltalib.etat import valider as valider_etat, ids_base
+    kb = tmp_path / "docs" / "data" / "kb" / "claude"
+    kb.mkdir(parents=True)
+    (kb / "parametres.json").write_text(json.dumps({"entrees": [{"id": "param-x"}]}), encoding="utf-8")
+    assert ids_base(tmp_path, "claude") == {"param-x"}
+    assert ids_base(tmp_path, "actu") == {"param-x"}
+    brut = {"perimetre": "claude", "nouveautes": []}
+    quotidien = {"elements": [{"id": "kb-param-x", "ids_bruts": ["kb-param-x"]},
+                              {"id": "kb-absente", "ids_bruts": ["kb-absente"]},
+                              {"id": "web-" + "a" * 12, "ids_bruts": ["web-" + "a" * 12]}]}
+    etat, bilan = valider_etat({}, brut, quotidien, ids_kb=ids_base(tmp_path, "claude"))
+    assert "kb-param-x" in etat["vus"] and etat["vus"]["kb-param-x"]["source_id"] == "kb"
+    assert "kb-absente" not in etat["vus"] and bilan["inconnus"] == ["kb-absente"]
+    assert etat["vus"]["web-" + "a" * 12]["source_id"] == "web"
+    _, sans_base = valider_etat({}, brut, {"elements": [{"id": "kb-param-x", "ids_bruts": ["kb-param-x"]}]})
+    assert sans_base["inconnus"] == ["kb-param-x"]
+
+
+def test_kb_id_verifie_par_valider_py():
+    import valider as v
+
+    def erreurs(e, connus):
+        r = v.Rapport(); v.verifier_ids_kb(e, "x", r, connus); return r.erreurs
+    e = {"id": "kb-param-x", "ids_bruts": ["kb-param-x"], "kb_refs": ["param-x"]}
+    assert erreurs(e, {"param-x"}) == []
+    assert any("inconnue" in m for m in erreurs(e, {"autre"}))
+    assert any("kb_refs" in m for m in erreurs({**e, "kb_refs": []}, {"param-x"}))
+    assert erreurs({"id": "oa-1", "ids_bruts": ["oa-1"], "kb_refs": []}, {"param-x"}) == []
