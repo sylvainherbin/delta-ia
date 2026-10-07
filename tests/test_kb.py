@@ -35,6 +35,14 @@ def extraire(doc, **fichiers):
 
 # --- sources.yaml : section documentation ------------------------------------------------------------------
 
+def test_oa_fonctionnalites_remote_pointe_sur_l_adresse_finale(docs):
+    """Contrôle du 2026-10-07 : `remote.md` répond par une 308 vers `mobile.md` ; la clé `remote` est gardée."""
+    fichiers = docs["oa-fonctionnalites"].fichiers()
+    assert fichiers["page:remote"] == "https://learn.chatgpt.com/docs/mobile.md"
+    assert fichiers["page:remote-connections"] == "https://learn.chatgpt.com/docs/remote-connections.md"
+    assert "308" in docs["oa-fonctionnalites"].note and "2026-10-07" in docs["oa-fonctionnalites"].note
+
+
 def test_documentation_declaree(docs):
     assert len(docs) >= 15
     assert all("Testé le 2026-09-23" in d.note for d in docs.values()), "chaque page déclare la date de son test"

@@ -352,23 +352,26 @@ sources:
     perimetre: claude
     produit: claude
     type: html
-    url: https://claude.com/blog
+    url: https://claude.com/resources/articles
     statut: a_valider
     officielle: true
     note: >-
-      Testé le 2026-10-01 : 200, text/html, 805 Ko, identique octet pour octet sur deux lectures successives. Aucun flux
-      (blog/rss.xml, blog/rss, blog/feed, rss.xml : 404 ; aucun <link rel="alternate"> de flux), aucune balise <time> :
-      page Webflow dont la liste `.blog_cms_list` porte, par article, titre, date en toutes lettres, catégorie et lien dans
-      des attributs Finsweet `fs-list-field` (15 articles par page, 17 pages ; seule la première est lue, du 15 au
-      30/09/2026 ; la pagination utilise un hachage Webflow `?d7430fcd_page=2`, non contractuel). Retrouve les billets
-      « Claude Marketplace » (23/09) et « Claude Tag now supports personal connectors in channels » (24/09) : aucun élément
-      publié dans docs/data/claude/ ni docs/data/actu/ (23/09 au 01/10) ne les cite, et aucune URL claude.com/blog n'y figure
-      (recherche du 2026-10-01 ; la newsroom et les notes de version de l'époque n'ont pas été relues). Option `lire_articles: true` (A1) : le texte de chaque nouvel article se lit avec `texte_article`
-      (testé sur ces deux billets : 5 172 et 4 644 caractères). Un changement de gabarit remonte en `sources_en_echec`.
-      Doublon probable avec la newsroom pour les annonces de modèles : la déduplication reste à l'agent.
+      Testé le 2026-10-07 : adresse changée, `https://claude.com/blog` répond par une 308 vers `/resources/articles`,
+      réponse finale 200, text/html, 659 Ko ; `/blog/<slug>` redirige de même, 308 vers `/resources/articles/<slug>` (4 articles testés),
+      cible en 200. Le gabarit Webflow `.blog_cms_list` (testé le 2026-10-01) a disparu : la page est du Next.js rendu côté serveur,
+      sans balise <time> ni flux (`/rss.xml`, `/resources/articles/rss.xml` : 404 ; aucun <link rel="alternate">), mais la
+      liste est dans le HTML, sans JavaScript : par article, une carte `a[class*=ResourceCard]` avec lien relatif, date en
+      toutes lettres (`Oct 6, 2026`), titre, résumé et produits (11 cartes sur la première page dont 3 vers anthropic.com et
+      claude.dev, ignorées : 8 articles du 29/09 au 06/10/2026 ; la pagination `?page=2` répond avec d'autres articles).
+      Le texte de chaque nouvel article se lit toujours avec `texte_article` (testé le 2026-10-07 sur « Claude now works
+      with Google Docs, Sheets, and Slides » : 3 987 caractères). L'identifiant d'un article reste `<prefixe_id><slug>`
+      (`https://claude.com/blog/<slug>`, option `prefixe_id`) pour que les articles déjà vus ne reviennent pas comme nouveaux.
+      Un changement de gabarit remonte en `sources_en_echec`. Doublon probable avec la newsroom pour les annonces de
+      modèles : la déduplication reste à l'agent.
     options:
-      format: html_blog_liste
+      format: html_resources_liste
       lire_articles: true
+      prefixe_id: https://claude.com/blog/
 
   - id: anthropic-status
     perimetre: claude
@@ -1142,6 +1145,9 @@ documentation:
       ChatGPT (web, app Linux, voix, projets, mémoire, navigateur…), produit fixé par page. Exclues :
       entreprise, administration, sécurité d'organisation, Windows, macOS, Bedrock (D42). Retirée le 2026-09-29 :
       features, page d'index faite d'un seul composant, sans code, liste ni paragraphe à extraire.
+      Contrôlé le 2026-10-07 sur les 61 pages (sans suivre les redirections) : 60 répondent 200, une seule redirige : `remote.md`
+      répond par une 308 vers `https://learn.chatgpt.com/docs/mobile.md` (200, text/markdown, « Codex on mobile »). La clé
+      `remote` est gardée pour l'historique de la base de référence, `chemin: mobile` porte l'adresse finale.
     options:
       pages:
         codex/cli: {categorie: fonctionnalites, produit: codex}
@@ -1149,7 +1155,7 @@ documentation:
         cloud: {categorie: fonctionnalites, produit: codex}
         cloud/internet-access: {categorie: fonctionnalites, produit: codex}
         code-review: {categorie: fonctionnalites, produit: codex}
-        remote: {categorie: fonctionnalites, produit: codex}
+        remote: {categorie: fonctionnalites, produit: codex, chemin: mobile}
         remote-connections: {categorie: fonctionnalites, produit: codex}
         non-interactive-mode: {categorie: fonctionnalites, produit: codex}
         sandboxing: {categorie: fonctionnalites, produit: codex}

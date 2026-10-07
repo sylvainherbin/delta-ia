@@ -5,7 +5,7 @@ Formats (option `format`) :
   titrée par ses intertitres en gras `**Titre**` s'il y en a.
 - `html_date`     : même logique sur une page HTML (<h3> datés, <p><b>Titre</b></p>).
 - `html_time_liens` : chaque <time> dans un <a> : le lien est l'URL et l'identifiant, le titre est l'intertitre.
-- `html_blog_liste` : liste Webflow/Finsweet du blog claude.com (étape 2b) : un élément par article de la première page.
+- `html_resources_liste` : liste d'articles de claude.com/resources/articles (ex-blog, 07/10/2026) : un élément par carte de la première page.
 - `annonces_datees` : pages de dépréciations des modèles (étape 2c) : une annonce par titre `### AAAA-MM-JJ: titre` sous les
   sections parentes déclarées, plus, si déclarées, des sections suivies en entier (tableau d'état des modèles, préavis).
   Option `echeances: true` (étape 2d) : les retraits des tableaux de chaque annonce sont aussi extraits (`deltalib.echeances`).
@@ -132,42 +132,51 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
     return elements
 
 
-def parser_blog_liste(html: str, source) -> tuple[list[Element], str | None]:
-    """Étape 2b (01/10/2026) : liste des articles de claude.com/blog (Webflow + attributs Finsweet `fs-list-field`).
-    Chaque `.blog_cms_list .blog_cms_item` porte un titre (`heading`), une date en toutes lettres (`date`), une
-    catégorie (`category`) et un lien `fs-list-element="item-link"` : l'URL absolue est l'identifiant (D1), le texte
-    de l'article s'y lit avec l'option `lire_articles`. Seule la première page (15 articles) est lue : la plus
-    ancienne date vue est rendue pour la détection de trou (D4). Liste absente, carte sans titre, sans lien ou sans
+def parser_resources_liste(html: str, source) -> tuple[list[Element], str | None]:
+    """Blog de claude.com, 07/10/2026 : `claude.com/blog` redirige (308) vers `claude.com/resources/articles`, page Next.js
+    rendue côté serveur sans balise <time> ni flux. Chaque article est une carte `a[class*=ResourceCard]` : lien
+    relatif `/resources/articles/<slug>`, date en toutes lettres (`Oct 6, 2026`) dans l'élément `*meta*`, titre dans le
+    premier <h2>/<h3>/<h4>, résumé dans `*excerpt*`, produits dans `*productTag*`. Le carrousel de tête répète des cartes
+    de la grille : doublons ignorés. Les cartes vers un autre domaine (anthropic.com, claude.dev) sont ignorées, la
+    newsroom les couvre. Option `prefixe_id` : l'identifiant (D1) reste `<prefixe_id><slug>`, celui des articles déjà
+    vus à l'adresse `/blog/<slug>`, l'URL lue étant l'adresse finale. Seule la première page est lue : la plus
+    ancienne date vue est rendue pour la détection de trou (D4). Aucune carte, carte sans titre, sans lien ou sans
     date reconnaissable : FormatInattendu, jamais une liste vide silencieuse."""
     soup = BeautifulSoup(html, "html.parser")
-    liste = soup.select_one(".blog_cms_list")
-    if liste is None:
-        raise FormatInattendu("liste `.blog_cms_list` introuvable : gabarit du blog changé ?")
-    cartes = liste.select(".blog_cms_item")
+    cartes = soup.select('a[class*="ResourceCard"][href]')
     if not cartes:
-        raise FormatInattendu("liste du blog sans aucune carte `.blog_cms_item` : gabarit changé ?")
+        raise FormatInattendu("aucune carte `ResourceCard` : gabarit de claude.com/resources/articles changé ?")
+    hote = urlparse(source.url).netloc
+    prefixe = source.options.get("prefixe_id")
     elements: list[Element] = []
     vus: set[str] = set()
     dates: list[str] = []
     for c in cartes:
-        titre_el = c.select_one('[fs-list-field="heading"]')
-        lien = c.select_one('a[fs-list-element="item-link"][href]') or c.select_one('a[href^="/blog/"]')
-        date_el = c.select_one('[fs-list-field="date"]')
-        if titre_el is None or not titre_el.get_text(strip=True) or lien is None or date_el is None:
-            raise FormatInattendu("carte du blog sans titre, lien ou date : gabarit changé ?")
-        url = urljoin(source.url, lien["href"])
+        url = urljoin(source.url, c["href"])
+        adresse = urlparse(url)
+        if adresse.netloc != hote or not adresse.path.startswith("/resources/articles/"):
+            continue
+        titre_el = c.find(["h2", "h3", "h4"])
+        date_el = c.select_one('[class*="meta"]')
+        if titre_el is None or not titre_el.get_text(strip=True) or date_el is None:
+            raise FormatInattendu(f"carte {url} sans titre ou sans date : gabarit changé ?")
         date_iso = analyser_date(date_el.get_text(" ", strip=True))
         if date_iso is None:
             raise FormatInattendu(f"date illisible dans la carte {url} : {date_el.get_text(' ', strip=True)!r}")
-        if url in vus:
+        ident = prefixe + adresse.path.rsplit("/", 1)[-1] if prefixe else url
+        if ident in vus:
             continue
-        vus.add(url)
+        vus.add(ident)
         dates.append(date_iso)
-        categories = [x.get_text(" ", strip=True) for x in c.select('[fs-list-field="category"]')]
-        elements.append(Element(id=url, produit=source.produit, titre=titre_el.get_text(" ", strip=True), version=None,
-                                date_publication=date_iso, url=url,
-                                contenu=("Catégorie : " + ", ".join(categories)) if categories else "",
+        resume = c.select_one('[class*="excerpt"]')
+        produits = [x.get_text(" ", strip=True) for x in c.select('[class*="productTag"]')]
+        contenu = "\n".join(x for x in (resume.get_text(" ", strip=True) if resume else "",
+                                        ("Produits : " + ", ".join(produits)) if produits else "") if x)
+        elements.append(Element(id=ident, produit=source.produit, titre=titre_el.get_text(" ", strip=True), version=None,
+                                date_publication=date_iso, url=url, contenu=contenu,
                                 source_id=source.id, officielle=source.officielle))
+    if not elements:
+        raise FormatInattendu("cartes présentes mais aucune vers /resources/articles/ : gabarit changé ?")
     return elements, min(dates)
 
 
@@ -351,7 +360,7 @@ PARSEURS = {
     "sections_suivies": parser_sections_suivies,
     "index_articles": parser_index_articles,
     "annonces_datees": parser_annonces_datees,
-    "html_blog_liste": lambda html, source: parser_blog_liste(html, source)[0],
+    "html_resources_liste": lambda html, source: parser_resources_liste(html, source)[0],
 }
 
 
@@ -373,7 +382,7 @@ def analyser(source, client, borne: str | None = None) -> ResultatSource:
         except Exception as e:  # noqa: BLE001
             resultat.partiel = f"échéances : extraction des retraits en échec ({type(e).__name__}: {e})"
         return resultat
-    if fmt == "html_blog_liste":
-        elements, plus_ancienne = parser_blog_liste(reponse.texte, source)
+    if fmt == "html_resources_liste":
+        elements, plus_ancienne = parser_resources_liste(reponse.texte, source)
         return ResultatSource(elements, plus_ancienne=plus_ancienne)
     return ResultatSource(PARSEURS[fmt](reponse.texte, source))
