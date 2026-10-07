@@ -19,7 +19,11 @@ direct.
 Profil : céramiste dentaire indépendant (sous-traitant pour des laboratoires), qui développe seul
 des projets logiciels personnels avec des agents IA **[observé : sites, skills]**. Il travaille en
 français et tutoie les agents **[observé : CLAUDE.md, AGENTS.md]**. Abonnement Claude **Max (5x)**
-**[observé : page Utilisation]**. Abonnement ChatGPT **Pro** **[déclaré]**.
+**[observé : page Utilisation]**, pris par iOS, arrivé à échéance le 06/10/2026 ; réabonnement par le web à venir
+**[déclaré, 07/10, relevé de Delta]**. Abonnement ChatGPT **Pro (100)** **[déclaré]** ; Sylvain garde les deux et veut que
+Delta développe l'usage de Claude ET de ChatGPT/Codex **[déclaré, 05/10]**. **Crédits Claude Code cloud** : à utiliser
+avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10, exécutant `claude-cloud`) **[déclaré, 06/10 ; observé :
+`operer qui`]**.
 
 **Priorité actuelle : trading-sim** [déclaré]. **Irritant principal** [déclaré] : ne pas connaître
 assez bien les commandes et les fonctionnalités de Claude Code, de l'app Claude et de Codex pour
@@ -160,8 +164,58 @@ C'est le projet le plus exigeant [déduit : cycles de vérification, coût des a
 - [déclaré] Pas d'évolution du produit pour l'instant. Un Projet claude.ai privé lui est
   consacré (« Application Identité Numérique Implant… ») [observé : capture].
 
-Hors périmètre, pour mémoire [observé : GitHub] : `console-mur` (dépôt privé, console de pilotage
-à distance depuis l'iPhone) et d'anciens dépôts de cosmologie (2025, inactifs).
+### 2.6 discipline — le Delta Core (OPÉRER, JUGER)
+<!-- ctx-id: projet.discipline -->
+
+- **Nature** [observé] : dépôt `~/projets/discipline` (GitHub privé, `main` poussé le 07/10) qui porte le Delta Core :
+  **OPÉRER** (moteur sans modèle : missions, incidents, échéances, remise directe, allocation entre Claude local, Claude
+  cloud et Codex) et **JUGER** (juge une intuition de Sylvain par des preuves, verdict calculé par règles), plus la
+  conception de DISCIPLINE, OVER, FORGE et APPRENDRE. Détail durable au §5 (OPÉRER, JUGER).
+- **Conduite** [observé : `operer qui`] : mode FULL_AUTO, chef « chef | discipline », dev Dev-discipline ; c'est aussi
+  le chef de `delta-desktop`. Une branche et un worktree par mission (`~/projets/discipline-<nom>` pour les anciens,
+  `~/projets/.worktrees/discipline/<mission>` pour les nouveaux).
+
+### 2.7 delta-desktop et la console
+<!-- ctx-id: projet.delta-desktop -->
+
+- **delta-desktop** [observé] : le bureau Delta de Sylvain (fond d'écran animé, applet, extension, lanceurs, thèmes), construit
+  par la session Design (Claude Design) dans `~/projets/delta-desktop`. FULL_AUTO depuis le 06/10 : ce qui s'installe sur le
+  bureau s'installe directement après un test sur banc, et le compte rendu à Delta dit ce qui a changé (l'adoption reste
+  possible, jamais exigée) [observé : CLAUDE.md du dépôt ; déclaré : décision de Sylvain du 06/10]. Chef : « chef | discipline ».
+  Sylvain refuse qu'on désactive l'accélération graphique du fond d'écran (voir la mémoire `delta-desktop-gpu-ne-pas-toucher`).
+- **Console de pilotage** [observé] : `carnet-console` (anciennement `console-mur`), dépôt privé, console web jointe depuis
+  l'iPhone (onglets Atelier, Console, Télécommande ; joignable aussi par Tailscale). Projet OPÉRER FULL_AUTO, chef Delta, dev
+  Design. Elle porte le bouton de renouvellement de la délégation `delta-acces` et les mises à jour de paquets avec instantané
+  Timeshift préalable.
+
+### 2.8 veille-shopify — veille des changements d'API Shopify
+<!-- ctx-id: projet.veille-shopify -->
+
+- **Nature** [observé] : projet commercial de Sylvain (`~/projets/veille-shopify`, dépôt local, rien de public) : un bref
+  français des changements d'API Shopify pour de petites agences, construit sur les idées du moteur de veille de Delta (expérience E1).
+  Delta dirige ; décisions commerciales, comptes et paiements : Sylvain [observé : README].
+- **Conduite** [observé : `operer qui`] : FULL_AUTO ; le chef est **une session Codex** (gpt-6.1-sol, effort medium, sous tmux
+  `codex-veille-shopify`), la **viabilité d'abord** étant l'objectif avant tout engagement [déclaré, relevé de Delta].
+
+### 2.9 marketing
+<!-- ctx-id: projet.marketing -->
+
+- **Nature** [observé] : développement marketing de Delta, session « Chef | marketing » (Opus, effort high) dans
+  `~/projets/marketing` ; phase 1 seulement (réfléchir et écrire dans `plans/` et `rapports/`), aucune publication, aucun
+  compte, aucun réseau social. La phase 2 n'est pas avant le réexamen de la constitution de trading-sim, le **12/10/2026**
+  [observé : `plans/plan-strategique-v1.md`] ; le projet est donc **au repos jusqu'au 12/10** [déclaré, relevé de Delta].
+
+### 2.10 experimentations et le paquet delta-veille-paquet
+<!-- ctx-id: projet.experimentations -->
+
+- **Nature** [observé] : dossier `~/projets/experimentations` (FULL_AUTO, chef « chef | delta-ia »). **E1** (transfert d'un
+  workflow entre deux instances Delta) est adoptée et close le 06/10 ; son paquet est le dépôt GitHub **privé**
+  `delta-veille-paquet` (créé à la demande de Sylvain le 06/10, `main` f593d24, étiquette v1.2, 27 fichiers, aucun secret).
+  **E2** (transfert du paquet sur une autre machine, dans une session cloud) est lancée le 06/10. L'essai d'un **second
+  profil** Delta-IA (développeur indépendant francophone) est **échoué** : les priorités et les projets de Sylvain sont en dur
+  dans les skills et `valider.py` [observé : DECISIONS.md du 06/10].
+
+Hors périmètre, pour mémoire [observé : GitHub] : d'anciens dépôts de cosmologie (2025, inactifs).
 
 ---
 
@@ -178,7 +232,7 @@ pilotage, pas ici.
 
 | Élément | Contenu | Nature |
 |---|---|---|
-| settings.json | thème sombre, notifications push des agents, avertissement Workflow désactivé, modèle Sonnet par défaut ; une liste `allow` globale subsiste (`sudo -A` limité à apt / timeshift / findmnt, lectures git et système, commandes du workflow Delta) mais n'est plus déterminante depuis le régime `bypassPermissions` du 06/10 (voir « Mode des permissions ») ; **aucun hook** | [observé, 04/10] |
+| settings.json | thème sombre, notifications push des agents, avertissement Workflow désactivé, modèle Sonnet par défaut ; une liste `allow` globale subsiste (`sudo -A` limité à apt / timeshift / findmnt, lectures git et système, commandes du workflow Delta) mais n'est plus déterminante depuis le régime `bypassPermissions` du 06/10 (voir « Mode des permissions ») ; un seul hook (`PermissionDenied`, voir ci-dessous) | [observé, 07/10] |
 | Mises à jour | `autoUpdates: false` dans `~/.claude.json`, mais mise à jour native réussie le 22/09 et suivies depuis (`claude update`) | [observé] ; mécanisme exact [inconnu] |
 | Mémoire automatique | environ 70 mémoires dans le dossier `~/projets` et 7 dans `~` au 04/10 : préférences de méthode, rôles des sessions, règles machine, décisions de Delta ; très utilisée | [observé] |
 
@@ -189,7 +243,7 @@ pilotage, pas ici.
 |---|---|---|
 | Skills perso | `maintenance-mint`, `deploy-site`, `latex-manuscrit`, `verif-numerique` ; usage observé : maintenance-mint ×2, deploy-site ×1, **latex-manuscrit et verif-numerique jamais invoqués** | [observé] |
 | Skills claude.ai synchronisés | ask-the-council, orchestrator, red-team, scientific-adversary, context-engine, courriel-labo, docs/pdf/xlsx/pptx… ; ask-the-council ×1, les autres non invoqués dans Claude Code | [observé] |
-| Commandes, agents, hooks perso | **Hooks : aucun aujourd'hui** (vérifié le 04/10 : ni `~/.claude/settings.json`, ni les réglages `~/.claude/chef-settings.json` des chefs, ni ceux des projets delta-ia, trading-sim, discipline et delta-desktop, ni le plugin installé ; pas de hook git, pas de hook Codex). Un hook de test `check-bash.sh` a existé du 26 au 27/09 et a été retiré ; l'ancienne mention d'un hook qui filtre `pkill` est périmée. Donc les événements de hook (`PermissionDenied`, `WorktreeCreate`, `WorktreeRemove`…) ne sont pas utilisés et seraient à essayer comme nouveauté. **Commandes slash perso : aucune** ; à la place, des **scripts shell dans `~/.local/bin`**, appelés sans règle particulière depuis le régime `bypassPermissions` : `mission-dev`, `mission-codex`, `operer`, `juger`, `regler-advisor` (voir §5). **Agent perso** : `executant` (`~/projets/.claude/agents/`, lecture seule), rarement appelé, non adopté dans le workflow de Delta (politique R-001) | [observé] |
+| Commandes, agents, hooks perso | **Hooks : un seul aujourd'hui** (relevé du 07/10) : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` (il consigne les refus de permission dans OPÉRER, sans modèle). Aucun autre hook : ni dans `~/.claude/chef-settings.json`, ni dans les réglages des projets, ni dans le plugin installé ; pas de hook git ni de hook Codex. Un hook de test `check-bash.sh` a existé du 26 au 27/09 et a été retiré ; l'ancienne mention d'un hook qui filtre `pkill` est périmée. Les événements `WorktreeCreate` et `WorktreeRemove` ne sont pas utilisés. **Commandes slash perso : aucune** ; à la place, des **scripts shell dans `~/.local/bin`**, appelés sans règle particulière depuis le régime `bypassPermissions` : `mission-dev`, `mission-codex`, `operer`, `juger`, `regler-advisor` (voir §5). Ce dossier est dans le `PATH` de toutes les sessions par `~/.config/environment.d/10-local-bin.conf`. **Agent perso** : `executant` (`~/projets/.claude/agents/`, lecture seule), rarement appelé, non adopté dans le workflow de Delta (politique R-001) | [observé] |
 | Sous-agents | voir la section « Sous-agents » ci-dessous | [observé] |
 | Modèle des sous-agents | politique actuelle du pilote Routage (25/09) : modèle choisi explicitement dans la définition de chaque sous-agent plutôt qu'un défaut global `CLAUDE_CODE_SUBAGENT_MODEL` ; réévaluable si des essais montrent l'intérêt d'un défaut global | [déclaré] |
 | Plugins | marketplace `claude-plugins-official` déclarée ; aucun plugin propre observé ; plugin `frontend-design@claude-plugins-official` installé le 30/09/2026 en portée utilisateur, pour essai, **non adopté** (révision : relevé du pilote, non reportée ici, D65) | [observé] ; essai [déclaré par le pilote] |
@@ -308,9 +362,11 @@ cette consultation en pratique.
 - **Orchestration à trois IA sur trading-sim** [observé] : ChatGPT (« Work ») conçoit et arbitre, Claude Code
   exécute, Codex audite. Les missions sont des fichiers .md horodatés, hachés en SHA-256. Pour le reste de
   l'écosystème, l'organisation est celle des chefs et des devs décrite plus bas.
-- **Validation humaine pas à pas** [observé : CLAUDE.md, mémoires] : diagnostic d'abord,
-  proposition, accord explicite, puis exécution, une étape à la fois. Il exige de séparer le
-  factuel du déduit et veut une critique franche, sans complaisance.
+- **Autonomie de Delta, plus de validation pas à pas** [déclaré, depuis le 02/10 ; décision du 06/10] : tous les projets sont en
+  **FULL_AUTO** (Delta décide, exécute et rend compte) sauf **trading-sim**, en **VALIDATIONS_CHOISIES** (constitution du
+  29/09 : un tour de revue par jalon, Sylvain seul donne le go) ; **delta-desktop** n'attend plus son adoption pour installer
+  [observé : `operer qui`, CLAUDE.md de delta-desktop]. Sylvain exige toujours de séparer le factuel du déduit et veut une
+  critique franche, sans complaisance ; les gestes de compte, de paiement et d'identifiants restent les siens.
 - **Pilotage à distance** [observé] : l'iPhone est l'interface principale (Remote Control,
   notifications push) ; il préfère recevoir un résultat livré plutôt qu'une consigne à recopier.
 - **Commits** [observé] : carnet, très fréquents et petits (moyenne ≈7/jour, messages en
@@ -322,8 +378,8 @@ cette consultation en pratique.
   par vagues de plusieurs jours.
 - **Frictions récurrentes** [observé] : limites d'usage (hebdomadaire et Fable) ; Wi-Fi fragile
   jusqu'au 01/10 (pannes qui coupaient les sessions à distance ; résolu depuis la connexion directe à la box) ; machine lente pour les calculs ; coût en jetons
-  des prompts d'audit très longs ; refus du classifieur du mode auto sur certaines écritures système (friction levée le 06/10 par le régime `bypassPermissions`)
-  système ; extension Chrome souvent déconnectée ; empreinte d'un document inscrite dans le
+  des prompts d'audit très longs ; refus du classifieur du mode auto sur certaines écritures système (friction levée le 06/10 par le régime `bypassPermissions`) ;
+  extension Chrome souvent déconnectée ; empreinte d'un document inscrite dans le
   document lui-même, donc périmée (erreur corrigée par l'usage d'un fichier `.sha256` séparé).
 
 
@@ -334,18 +390,19 @@ Depuis le 02/10, l'écosystème n'est plus conduit session par session par Sylva
 
 - **Delta** (la session « pilote », Workflows) est le décideur et l'interface de Sylvain : il fixe la direction avec
   lui, dirige les chefs, propose les améliorations du workflow et lit l'état dans OPÉRER plutôt que dans son contexte.
-- **Un chef par projet** (delta-ia, discipline, trading-sim) : il **relit, décide et ne commite pas** (convention
+- **Un chef par projet** (delta-ia, discipline, marketing, veille-shopify — dont le chef est une session **Codex** —,
+  trading-sim ; le chef de delta-desktop est celui de discipline, celui de la console est Delta) : il **relit, décide et ne commite pas** (convention
   d'organisation, rôle de relecteur : ce n'est plus un réglage qui l'en empêche depuis le 06/10, et il peut faire de petits
   gestes git de maintenance, worktree ou branche) ; il lance son dev, relit le résultat, donne l'OK de fusion et clôt la
   mission, Dev-delta fusionne et pousse après son OK.
 - **Des devs** (Dev-delta pour delta-ia, Dev-discipline pour discipline) **commitent et poussent** après l'OK du chef,
   jamais `--force`, après tests et validation. Un dev est vidé avant chaque mission.
-- **Design** : session dédiée au bureau Delta (`delta-desktop`), qui construit l'interface (Claude Design) ; tout ce qui
-  s'installe sur le bureau de Sylvain attend son adoption.
+- **Design** : session dédiée au bureau Delta (`delta-desktop`) et à la console, qui construit l'interface (Claude Design) ;
+  ce qui s'installe sur le bureau de Sylvain s'installe **directement après le test sur banc** depuis le 06/10 (FULL_AUTO).
 - **herbin-mint** : gestionnaire de la machine, exécute les briefs que Sylvain a validés (installations, services,
   réglages) et écrit CONTEXTE.md.
 - Le mode d'autonomie par projet (full auto, adoption de la proposition, validations choisies) se règle en une phrase de
-  Sylvain ; par défaut delta-ia et discipline sont en full auto, trading-sim en validations à chaque jalon.
+  Sylvain ; tous les projets sont en full auto sauf trading-sim, en validations à chaque jalon (`operer qui`, ligne « Projets »).
 
 Les rôles précis et ce que chaque session fait en ce moment : `operer qui` et `operer etat`, pas ici.
 
@@ -361,7 +418,17 @@ peut débloquer une session figée par Escape (signature stricte, tracée).
 fait par preuves** : à `POUSSEE`/`CLOSE`, le moteur enregistre les hashs, la branche et les empreintes des fichiers
 installés, et refuse une clôture sans elles ; `operer verifier <id>` les rejoue en lecture seule. Les chefs font avancer
 et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `etat`, `qui`, `cherche`, `mission`,
-`veille` (lit `passages.log`), `ack`.
+`veille` (lit `passages.log`), `ack`, `refus` (appelée par le hook `PermissionDenied`), `friction` (frictions de la semaine),
+`menage` (worktrees), `lecon`, `cloud`.
+- **Leçons à trois niveaux d'autorité** [observé : `operer lecon ajouter --autorite`] : **DÉCISION** (une décision de Sylvain,
+  source obligatoire), **CONFIG** (un fait de configuration, contrôlé par des sondes [déclaré, relevé de Delta]) et **OBSERVATION** (constat, niveau par
+  défaut). Une leçon est injectée dans les briefs, peut expirer à la clôture d'un incident ou d'une mission (`--incident`),
+  et se retire sans effacer sa version précédente.
+- **Allocation et rythme** [observé : `operer qui`] : OPÉRER répartit les missions entre Claude local, **Claude cloud**
+  (exécutant `claude-cloud`, limité aux natures `code` et `mecanique`, crédits à épuiser avant le 05/11) et Codex ; il suit
+  un rythme de consommation (cible de 14 % par jour pour Claude et ChatGPT, une cible en dollars par jour pour le cloud).
+- **Remise** : le moteur colle le message dans le volet tmux de la session puis renvoie Entrée par un appel distinct, au plus
+  un message par session et par tic [observé : FORMAT.md].
 
 ### Missions, worktrees et Codex
 <!-- ctx-id: methode.missions -->
@@ -369,16 +436,21 @@ et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `
 - **`mission-dev <delta|discipline|design> [--advisor]`** : prépare un dev avant une mission, **vide son contexte**
   (`/clear`), remet son nom de session et règle le conseiller (`--advisor` = Opus) ; refuse si le dev travaille encore ;
   inscrit la mission dans OPÉRER. Le chef envoie ensuite le brief.
-- **`mission-codex <worktree> <consigne> [nom]`** : lance `codex exec` en arrière-plan dans un worktree, avec le modèle de
-  `config.toml` à effort élevé et le bac à sable `workspace-write`. Comme le bac à sable protège `.git`, Codex ne
-  commite pas : il écrit son message dans `.codex-commit-msg` et les chemins dans `.codex-commit-files`, puis le
-  lanceur commite **ces seuls chemins** (jamais `git add -A`), sans push, et déclare `A_RELIRE` dans OPÉRER
-  (`OPERER_PROJET` ou `OPERER_MISSION` fournis dans l'environnement). Journaux : `~/.local/state/mission-codex/`.
-- **Worktrees git** [observé : `git worktree list`] : **une branche et un worktree par mission** (`~/projets/<projet>-<nom>`),
-  l'arbre principal restant sur `main` ; plusieurs missions en parallèle, sur Claude ou sur Codex selon les quotas.
+- **`mission-codex <worktree> <consigne> [nom]`** : lance `codex exec` en arrière-plan avec **`-s danger-full-access`**
+  (plus de bac à sable `workspace-write`). Le **modèle et l'effort sont toujours passés explicitement**, jamais hérités de
+  `~/.codex/config.toml`, selon la **nature** de la mission (barème `codex_modeles.py` de `discipline`) : mécanique →
+  `gpt-6-luna` / medium, code ou correctif → `gpt-6.1-sol` / high ; `gpt-6-astra` exige un motif [observé]. La consigne
+  **n'enferme plus Codex dans le worktree** : son code va dans le worktree, mais il écrit ailleurs si la consigne le demande.
+  Par convention Codex ne commite pas dans le worktree : il écrit son message dans `.codex-commit-msg` et les chemins dans
+  `.codex-commit-files`, puis le lanceur commite **ces seuls chemins** (jamais `git add -A`), sans push, déclare `A_RELIRE`
+  dans OPÉRER et y consigne modèle, effort et jetons. Journaux : `~/.local/state/mission-codex/`.
+- **Worktrees git** [observé : `git worktree list`] : **une branche et un worktree par mission**, désormais sous
+  `~/projets/.worktrees/<projet>/<mission>` (les anciens `~/projets/<projet>-<nom>` subsistent), l'arbre principal restant
+  sur `main` ; plusieurs missions en parallèle, sur Claude ou sur Codex selon les quotas.
   Après relecture : fusion en avance rapide dans `main`, retrait du worktree, suppression de la branche. Les worktrees se
-  créent avec `git worktree add` (geste de maintenance du chef) ; ni l'option `--worktree` de Claude Code ni des hooks
-  `WorktreeCreate` / `WorktreeRemove` ne sont utilisés.
+  créent avec `git worktree add` (geste de maintenance du chef) ou par OPÉRER ; ni l'option `--worktree` de Claude Code ni des
+  hooks `WorktreeCreate` / `WorktreeRemove` ne sont utilisés. Les worktrees terminés se retirent par `operer menage --appliquer`
+  (liste classée en lecture seule sans l'option) ; le ménage est dit automatique par Delta [déclaré, non vérifié].
 - **Conseiller (advisor)** : Sonnet avec Opus en conseiller selon la mission (`regler-advisor`, `mission-dev --advisor`) ;
   il ne survit pas à un `/clear`, d'où le réglage avant chaque mission.
 
@@ -400,7 +472,8 @@ et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `
 Le timer utilisateur `delta-passage.timer` lance chaque jour à **04:00** `scripts/passage-auto.sh`, qui tient un verrou
 (`.git/delta-passage.lock`) et exécute l'orchestrateur `scripts/orchestrateur.py` : quatre étapes dans l'ordre (`/delta` et
 `/delta-kb` par Claude Code, `$delta` et `$delta-kb` par Codex) puis une supervision, avec `--permission-mode bypassPermissions` pour les
-étapes Claude (D83, 06/10 ; un refus de permission restant signalé par le code 125). Une **garde** (`scripts/garde.py`) arrête la chaîne si le
+étapes Claude (**D83**, 06/10 : la ligne 19 de CLAUDE.md est retirée ; **D84**, 06/10 : poursuite de l'élagage des règles ; un
+refus de permission reste signalé par le code 125). Une **garde** (`scripts/garde.py`) arrête la chaîne si le
 quota hebdomadaire Claude dépasse **98 %** (seuil relevé de 85 % le 03/10 par Sylvain) ou la session 5 h 80 %. La fenêtre de
 **03:30 à 08:00** est réservée : aucun commit de développement pendant ce temps. Configuration : `scripts/orchestrateur.py`
 lit `scripts/orchestrateur.toml` ; sorties dans `rapports/auto/` et `rapports/passages.log`.
@@ -418,9 +491,9 @@ lit `scripts/orchestrateur.toml` ; sorties dans `rapports/auto/` et `rapports/pa
    alors que la machine a 14 Gio et que trading-sim n'a pas de `.venv`. Le fichier est gelé
    jusqu'au micro-lot « AGENT INSTRUCTIONS NORMALIZATION » ; le correctif recommandé (retirer
    ces lignes, sans les remplacer) a été soumis à ChatGPT Work le 23/09.
-3. **Aucun hook** [observé, 04/10] : les contrôles répétés à la main (vérification SHA-256 des missions,
+3. **Un seul hook** (`PermissionDenied` → `operer refus`) [observé, 07/10] : les contrôles répétés à la main (vérification SHA-256 des missions,
    `PYTHONDONTWRITEBYTECODE=1`) pourraient devenir des hooks, de même que le retrait d'un worktree après fusion
-   (`WorktreeRemove`) ou la gestion d'un refus de permission (`PermissionDenied`, utile seulement pour la session de trading, qui n'est pas en bypass).
+   (`WorktreeRemove`).
 4. **Skills dormants** [observé] : `latex-manuscrit` et `verif-numerique` ne sont jamais
    déclenchés ; à revoir, à supprimer, ou à rendre déclenchables sur trading-sim (où les
    vérifications numériques abondent).
