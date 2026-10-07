@@ -63,8 +63,22 @@ def test_cle_change_avec_un_fichier_suivi_modifie(depot):
     assert sale != propre
     git(depot, "add", "a.txt")  # indexé : même contenu, même clé
     assert verifier.cle_arbre(depot) == sale
-    git(depot, "commit", "-q", "-m", "deux")  # commité : l'arbre porte le contenu
-    assert verifier.cle_arbre(depot).split(":")[0] != propre.split(":")[0]
+    git(depot, "commit", "-q", "-m", "deux")  # commité : même contenu, même clé
+    assert verifier.cle_arbre(depot) == sale
+    (depot / "a.txt").unlink()  # une suppression change aussi la clé
+    assert verifier.cle_arbre(depot) not in (propre, sale)
+
+
+def test_cle_propre_est_l_arbre_de_head(depot):
+    arbre = subprocess.run(["git", "-C", str(depot), "rev-parse", "HEAD^{tree}"], capture_output=True, text=True).stdout.strip()
+    assert verifier.cle_arbre(depot) == arbre
+
+
+def test_cle_ne_touche_pas_a_l_index_reel(depot):
+    (depot / "nouveau.py").write_text("x = 1\n")
+    verifier.cle_arbre(depot)
+    statut = subprocess.run(["git", "-C", str(depot), "status", "--porcelain"], capture_output=True, text=True).stdout
+    assert statut.strip() == "?? nouveau.py"
 
 
 def test_cle_change_avec_un_fichier_non_suivi_mais_pas_un_ignore(depot):

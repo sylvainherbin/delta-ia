@@ -31,7 +31,7 @@ Les quatre commandes passent par `scripts/verifier.py` (D87), qui les lance dans
 .venv/bin/python scripts/verifier.py tests/test_x.py   # tests ciblés (pytest seul, jamais enregistré)
 ```
 
-La clé du cache est `HEAD^{tree}` plus le contenu non commité (fichiers suivis modifiés, fichiers non suivis non ignorés) plus l'environnement (Python, paquets installés, `requirements.txt`) ; un rebase sans changement de contenu garde donc le résultat. Le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt. Un échec n'est jamais enregistré.
+La clé du cache est le contenu réel du répertoire de travail (arbre git de `write-tree` : fichiers suivis modifiés et fichiers non suivis non ignorés compris) plus l'environnement (Python, paquets installés, `requirements.txt`) ; un rebase sans changement de contenu garde donc le résultat. Le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt. Un échec n'est jamais enregistré.
 
 Quand la CI GitHub Actions est verte sur le commit à contrôler (`gh run list --branch <branche> --json conclusion,headSha`, conclusion `success` **et** `headSha` égal au commit), le verify local se limite aux tests ciblés (fichiers touchés).
 

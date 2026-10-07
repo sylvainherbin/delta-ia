@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Contrôle avant commit (D87) : pytest puis valider.py sur les trois périmètres, jamais deux fois sur le même arbre.
 
-Un succès est enregistré sous une clé qui décrit l'arbre réellement testé : `HEAD^{tree}`, les modifications non
-commitées des fichiers suivis, les fichiers non suivis non ignorés, et l'environnement Python. Un rebase sans changement
-de contenu donne le même arbre, donc le même résultat. Un échec n'est jamais enregistré.
+Un succès est enregistré sous une clé qui décrit le contenu réellement testé (arbre git du répertoire de travail,
+fichiers non suivis non ignorés compris) et l'environnement Python. Un commit ou un rebase sans changement de contenu
+donne la même clé, donc le même résultat. Un échec n'est jamais enregistré.
 Les suites passent par le verrou machine (deux places, nice 10) ; la réutilisation d'un résultat n'attend aucun verrou.
 """
 from __future__ import annotations
@@ -15,8 +15,10 @@ import importlib.metadata
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -32,17 +34,20 @@ def git(*args: str, racine: Path = RACINE) -> bytes:
 
 
 def cle_arbre(racine: Path = RACINE) -> str:
-    """`<HEAD^{tree}>:<empreinte du contenu non commité>` ; l'empreinte d'un arbre propre est constante."""
-    arbre = git("rev-parse", "HEAD^{tree}", racine=racine).decode().strip()
-    h = hashlib.sha256()
-    h.update(git("diff", "HEAD", "--binary", racine=racine))  # fichiers suivis, indexés ou non
-    h.update(b"\0untracked\0")
-    autres = git("ls-files", "--others", "--exclude-standard", "-z", racine=racine).decode().split("\0")
-    for p in sorted(p for p in autres if p and not p.startswith(IGNORES)):
-        chemin = racine / p
-        if chemin.is_file():
-            h.update(p.encode() + b"\0" + chemin.read_bytes() + b"\0")
-    return f"{arbre}:{h.hexdigest()}"
+    """Empreinte git (`write-tree`) du contenu réel du répertoire de travail : fichiers suivis, modifiés ou non, et fichiers
+    non suivis non ignorés, calculée dans un index temporaire (l'index réel n'est jamais touché). Un commit, un rebase ou un
+    amend qui ne change pas le contenu donnent la même clé ; sur un arbre propre, c'est `HEAD^{tree}`."""
+    index = Path(git("rev-parse", "--git-path", "index", racine=racine).decode().strip())
+    index = index if index.is_absolute() else racine / index
+    with tempfile.TemporaryDirectory(prefix="verifier-index-") as tmp:
+        copie = Path(tmp) / "index"
+        if index.is_file():
+            shutil.copyfile(index, copie)
+        env = {**os.environ, "GIT_INDEX_FILE": str(copie)}
+        exclus = [f":(exclude){p}*" for p in IGNORES]
+        for args in (["add", "-A", "--", ".", *exclus], ["write-tree"]):
+            res = subprocess.run(["git", "-C", str(racine), *args], check=True, capture_output=True, env=env)
+        return res.stdout.decode().strip()
 
 
 def signature(racine: Path = RACINE) -> dict:
