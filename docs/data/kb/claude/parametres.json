@@ -240,7 +240,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -257,16 +257,20 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "settings.json : notifications push des agents activées."
     },
     "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Pilotage depuis l'iPhone, notifications push."
     }
    }
@@ -2987,7 +2991,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3004,12 +3008,16 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Mémoire automatique : environ 70 + 7 mémoires au 04/10, très utilisée."
     }
    }
@@ -22740,7 +22748,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes réglages l'emploient déjà : listes allow et deny par rôle (`chef-settings.json` pour les chefs), `sudo -A` borné dans `settings.json`, et sur trading-sim refus de WebFetch, WebSearch, du navigateur et des connecteurs."
+    "pourquoi": "Présent dans tes réglages, mais en `bypassPermissions` (toutes tes sessions sauf trading depuis le 06/10) seules ses règles `deny` comptent encore, comme les refus de WebFetch, WebSearch, du navigateur et des connecteurs sur trading-sim."
    },
    "sources": [
     {
@@ -22753,7 +22761,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22766,21 +22774,21 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
-     "sha1": "464b07898e821d25c5b0f6a77647f52c0087f3b8",
-     "pourquoi": "Listes allow par rôle ; chef-settings.json avec règles deny."
-    },
-    "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
-     "pourquoi": "settings.json : `sudo -A` limité à apt / timeshift / findmnt."
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur et connecteurs."
+     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et les connecteurs."
     }
    }
   },
@@ -22845,8 +22853,8 @@
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "Ta liste globale y range `sudo -A` borné, les lectures git et système et les commandes du workflow Delta (`mission-dev`, `mission-codex`, `operer ack`) ; la chaîne de nuit a une liste par étape."
+    "verdict": "ignorer",
+    "pourquoi": "Ta liste `allow` globale subsiste mais n'a plus d'effet en `bypassPermissions`, le mode de toutes tes sessions sauf trading et des étapes Claude de la chaîne de nuit depuis le 06/10 : rien à y ajouter."
    },
    "sources": [
     {
@@ -22859,7 +22867,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22872,17 +22880,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
-     "pourquoi": "Liste allow globale : `sudo -A` borné, lectures sans effet, commandes du workflow Delta."
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Liste `allow` globale subsistante, non déterminante depuis le régime bypassPermissions du 06/10."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     },
     "methode.chaine-nuit": {
-     "sha1": "2a5ed8102e55a6427b57ca2c9b27cf0677d07fd2",
-     "pourquoi": "Une liste `allow` par étape de la chaîne D70 ; une commande refusée donne le code 125."
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 en `--permission-mode bypassPermissions` (D83)."
     }
    }
   },
@@ -23971,7 +23987,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23988,12 +24004,16 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
      "pourquoi": "`claude --resume <id> --remote-control <nom>` dans chaque service `claude-session@<nom>`."
     }
    }
@@ -28200,7 +28220,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28213,12 +28233,16 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "settings.json : thème sombre."
     }
    }

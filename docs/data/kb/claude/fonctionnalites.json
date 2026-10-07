@@ -1006,7 +1006,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes sessions se parlent déjà par `SendMessage` et `ListAgents`, et OPÉRER remet lui-même missions et relances ; nommer la cible par `@<nom>` lève l'ambiguïté. `/list-agents` montre Dispatch en Remote Control mais pas les sessions Cowork cloud : c'est l'échange Cowork ↔ Claude Code à surveiller."
+    "pourquoi": "Tes sessions se parlent par `SendMessage` et `ListAgents`, et toutes sauf trading sont en `bypassPermissions` depuis le 06/10 : sans réglage `crossSessionInbound`, un message entre deux sessions en bypass est remis, mais un message échangé avec la session trading serait retenu pour ton approbation, dans les deux sens. `crossSessionInbound: \"accept\"` dans les réglages de la session réceptrice lève cette attente."
    },
    "sources": [
     {
@@ -1019,7 +1019,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1072,17 +1072,21 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
-     "pourquoi": "Sessions reliées par SendMessage/ListAgents, OPÉRER remet les missions ; Dispatch visible, Cowork cloud non."
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+     "pourquoi": "Sessions reliées par `SendMessage` / `ListAgents` ; OPÉRER remet missions et relances."
     },
-    "usage.hors-machine": {
-     "sha1": "fbd853357c6c4baef15c6a2469c4d7a459aa1394",
-     "pourquoi": "Priorité déclarée : tout ce qui fait échanger directement Cowork, dont Dispatch, et les sessions Claude Code."
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
    }
   },
@@ -1810,7 +1814,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La mémoire automatique est très utilisée (environ 70 mémoires dans `~/projets` et 7 dans `~` au 04/10) et le CLAUDE.md de carnet importe `@AGENTS.md`. Le `~/.claude/CLAUDE.md` global ne porte que la consigne delta-ia : y centraliser français, tutoiement et validation pas à pas reste à proposer (piste 1)."
+    "pourquoi": "La mémoire automatique est très utilisée (environ 70 mémoires dans `~/projets` et 7 dans `~` au 04/10) et le CLAUDE.md de carnet importe `@AGENTS.md`. Le `~/.claude/CLAUDE.md` global ne porte que la consigne delta-ia : y centraliser français, tutoiement et séparation factuel/déduit reste à proposer (piste 1)."
    },
    "sources": [
     {
@@ -1823,7 +1827,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1880,12 +1884,16 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Mémoire automatique : environ 70 mémoires dans ~/projets et 7 dans ~ au 04/10, très utilisée."
     },
     "projet.carnet": {
@@ -1893,7 +1901,7 @@
      "pourquoi": "CLAUDE.md de carnet limité à @AGENTS.md."
     },
     "optimisation.pistes": {
-     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 1 : règles transversales à centraliser dans ~/.claude/CLAUDE.md, sur accord de Sylvain."
     }
    }
@@ -1926,7 +1934,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1959,9 +1967,13 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -1972,7 +1984,7 @@
      "pourquoi": "App iPhone surtout pour piloter les sessions ; priorité : échanges Cowork (Dispatch compris) ↔ Claude Code."
     },
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
      "pourquoi": "Dispatch visible comme session Remote Control ; sessions créées par Dispatch rapportées, non vérifiées."
     }
    }
@@ -2005,7 +2017,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2058,20 +2070,24 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "aeae95e1f2d5dd3292fbf991c1df592e4beb7ad5",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
     },
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
      "pourquoi": "Modèle et effort propres à chaque rôle, fixés dans le lancement du service."
     },
     "config.claude-code.skills": {
-     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent."
     }
    }
@@ -2124,16 +2140,16 @@
    "categorie": "fonctionnalites",
    "nom": "Choose a permission mode",
    "gabarit": "complet",
-   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (lectures seules), `acceptEdits`, `plan`, `auto` (tout, avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`. On passe de l'un à l'autre par `Maj+Tab`.",
+   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default`, `acceptEdits`, `plan`, `auto` (avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande ni contrôle. On passe de l'un à l'autre par `Maj+Tab` ; `bypassPermissions` ne s'active qu'au lancement (`--permission-mode bypassPermissions` ou `permissions.defaultMode`).",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude --permission-mode bypassPermissions",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes sessions tournent en mode auto, dont le classifieur refuse les actions jugées sensibles (`[Security Weaken]`, `[Auto-Mode Bypass]`), et la chaîne de nuit lance chaque étape en `--permission-mode dontAsk` avec sa liste `allow`. Le mode `plan` correspond au « diagnostic d'abord, accord ensuite » que tu exiges."
+    "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` depuis le 06/10 (D83) : les règles `allow` n'y ont plus d'effet, les règles `deny` bloquent toujours. Une session cloud (exécutant `claude-cloud`) ignore en silence un `defaultMode: \"bypassPermissions\"` venu des fichiers de réglages et démarre dans le mode du menu déroulant."
    },
    "sources": [
     {
@@ -2146,7 +2162,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2167,21 +2183,25 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
-     "sha1": "464b07898e821d25c5b0f6a77647f52c0087f3b8",
-     "pourquoi": "Sessions soumises au classifieur du mode auto ; refus `[Security Weaken]` et `[Auto-Mode Bypass]`."
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Depuis le 06/10, toutes les sessions locales en bypassPermissions sauf trading ; un refus est un problème d'exécution."
     },
     "methode.chaine-nuit": {
-     "sha1": "2a5ed8102e55a6427b57ca2c9b27cf0677d07fd2",
-     "pourquoi": "Étapes de la chaîne D70 lancées avec `--permission-mode dontAsk` et une liste `allow` par étape."
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 lancées avec `--permission-mode bypassPermissions` (D83)."
     },
-    "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
-     "pourquoi": "Validation pas à pas : diagnostic, proposition, accord explicite, puis exécution."
+    "methode.operer": {
+     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "pourquoi": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`."
     }
    }
   },
@@ -2200,7 +2220,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes listes `allow` et `deny` par rôle reposent sur ce mécanisme : `~/.claude/chef-settings.json` interdit aux chefs de commiter, `~/.claude/settings.json` borne `sudo -A` et autorise `mission-dev`, `mission-codex` et `operer`. Sur trading-sim, les connecteurs de compte passent faute de `deny`. « Don't ask again » écrit une règle permanente dans `.claude/settings.local.json`."
+    "pourquoi": "En `bypassPermissions`, le régime de tes sessions depuis le 06/10, ta liste `allow` globale ne joue plus et seules les règles `deny` comptent ; sur trading-sim, hors bypass, le `.claude/settings.json` refuse WebFetch, WebSearch, le navigateur et les connecteurs nommés. Les connecteurs de compte y passent encore faute de `deny` explicite, question transmise à Work."
    },
    "sources": [
     {
@@ -2213,7 +2233,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2238,21 +2258,29 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
-     "sha1": "464b07898e821d25c5b0f6a77647f52c0087f3b8",
-     "pourquoi": "Listes allow par rôle ; chef-settings.json : règles deny, chefs sans commit ni push."
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     },
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
-     "pourquoi": "settings.json : `sudo -A` borné, lectures git et système, commandes du workflow Delta."
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Liste `allow` globale subsistante mais non déterminante depuis le régime bypassPermissions."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai."
     },
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Écart : les connecteurs de compte arrivent sur trading-sim faute de `deny`."
+     "pourquoi": "Écart : les connecteurs de compte arrivent sur trading-sim faute de `deny` ; question transmise à Work."
     }
    }
   },
@@ -2284,7 +2312,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2309,16 +2337,20 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "3d3809ad742d8d308c2893eb235d6c7513459dc9",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage et coût en jetons des prompts d'audit parmi les frictions récurrentes."
     },
     "methode.missions": {
-     "sha1": "e0ca84ff2130f1a4a39eec6bbd2dac65c3ae78f2",
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
      "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission."
     }
    }
@@ -2351,7 +2383,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2376,12 +2408,16 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
      "pourquoi": "Services lancés avec `--remote-control <nom>`, pilotés depuis l'iPhone."
     },
     "env.machine": {
@@ -2615,7 +2651,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2640,16 +2676,20 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "11674d6c64a7abcd076586d2d825deeb2ddc30b0",
+     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
      "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
     },
     "methode.missions": {
-     "sha1": "e0ca84ff2130f1a4a39eec6bbd2dac65c3ae78f2",
+     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
      "pourquoi": "Une branche et un worktree git par mission, l'arbre principal restant sur `main`."
     }
    }
@@ -3087,7 +3127,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3128,20 +3168,24 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
      "pourquoi": "Consigne du 04/10 : workflows multi-agents (outil `Workflow`) seulement sur accord de Sylvain."
     },
     "config.claude-code.skills": {
-     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Workflow : 13 appels dans le relevé du 25/09."
     },
     "config.claude-code.interface": {
-     "sha1": "18f3dbf99b30889e782fa2797766e0663539371b",
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Avertissement Workflow désactivé dans settings.json."
     }
    }
@@ -4630,7 +4674,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4659,17 +4703,21 @@
     {
      "date": "2026-10-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "1fcf876d961eb556f1a5b90ada7b55809f360fa0",
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Claude Design utilisé intensivement ; jetons Delta ; Console en React ; /design-sync jugé pertinent."
     },
-    "methode.juger-design": {
-     "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
-     "pourquoi": "La session Design construit les interfaces du bureau Delta et de la console, livrées sur une branche."
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "delta-desktop construit par la session Design ; console `carnet-console`, dev Design."
     }
    }
   },
@@ -4881,16 +4929,16 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Fable models on your plan",
    "gabarit": "complet",
-   "description": "Sur Max, Fable 5 et Fable 5.1 sont inclus mais plafonnés à 50 % des limites hebdomadaires, qu'ils consomment plus vite que les autres modèles ; au-delà, on continue en crédits d'usage ou on change de modèle. La promotion Fable 5 s'est terminée le 19 juillet 2026.",
+   "description": "Sur les plans Max, Fable 5 et Fable 5.1 sont inclus jusqu'à 50 % des limites hebdomadaires, qu'ils consomment plus vite que les autres modèles ; au-delà, on continue en crédits d'usage ou on change de modèle. Sur Pro, ils fonctionnent d'emblée en crédits d'usage payants ; la promotion Fable 5 s'est terminée le 19 juillet 2026.",
    "description_source": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "offres payantes (Pro, Max, Team, Enterprise)",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La limite Fable reste une friction sur ton plan Max (5x) : avant de lancer Fable sur une mission, vérifie son quota dans Paramètres > Utilisation, car le plafond atteint fait basculer vers des crédits payants ; Sonnet par défaut avec Opus en conseiller l'épargne déjà."
+    "pourquoi": "Ton Max (5x) est arrivé à échéance le 06/10 et un réabonnement par le web est annoncé : vérifie dans Paramètres > Utilisation que le plan repris est bien un Max avant de lancer Fable, car sur Pro Fable passe d'emblée en crédits payants. Sur Max, le plafond Fable de 50 % atteint fait aussi basculer vers ces crédits."
    },
    "sources": [
     {
@@ -4903,7 +4951,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4948,21 +4996,21 @@
     {
      "date": "2026-10-03",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
-    },
     "profil": {
-     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-     "pourquoi": "Abonnement Claude Max (5x)."
+     "sha1": "0085259f8f744f9a91d172363e7fde3929c411df",
+     "pourquoi": "Max (5x) pris par iOS, arrivé à échéance le 06/10/2026 ; réabonnement par le web à venir."
     },
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
     }
    }
   },
