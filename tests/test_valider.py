@@ -118,7 +118,8 @@ def test_projets_du_contexte_depot_reel():
 def test_projets_du_contexte_reel():
     from pathlib import Path
     assert v.projets_du_contexte(Path(fetch.RACINE) / "CONTEXTE.md") == {
-        "carnet", "trading-sim", "chatgpt-trading-sim", "ceramist", "restoration-id"}
+        "carnet", "trading-sim", "chatgpt-trading-sim", "ceramist", "restoration-id",
+        "discipline", "delta-desktop", "veille-shopify", "marketing", "experimentations"}
 
 
 def test_projets_formats_varies_et_niveau_2(tmp_path):
