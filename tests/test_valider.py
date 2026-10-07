@@ -497,3 +497,85 @@ def test_kb_id_verifie_par_valider_py():
     assert any("inconnue" in m for m in erreurs(e, {"autre"}))
     assert any("kb_refs" in m for m in erreurs({**e, "kb_refs": []}, {"param-x"}))
     assert erreurs({"id": "oa-1", "ids_bruts": ["oa-1"], "kb_refs": []}, {"param-x"}) == []
+
+# --- D85 : avertissements R1 (commande exacte) et R5 (date absolue D71), jamais bloquants ---------------------------
+
+def _action(texte, etapes=("Fais-le.",)):
+    return {"description": texte, "etapes": list(etapes), "effort": "5min"}
+
+
+def _element_d85(**champs):
+    """Élément neutre (ni D71 ni ajout) : chaque test ne change que ce qu'il éprouve."""
+    n = {"id": "fx-1", "produit": "claude-code", "titre": "Commande /foo", "version": None, "date_publication": None,
+         "url": "https://example.org/x", "officielle": True}
+    e = element_depuis_brut(n, impact="faible")
+    e.update(champs)
+    return e
+
+
+def _avert(**champs):
+    r = v.Rapport()
+    v.avertir_element(_element_d85(**champs), 0, r, "x.json")
+    return r.avertissements
+
+
+def test_r1_ajout_sans_commande_avertit():
+    for action in (None, _action("Essayer la nouveauté si tu veux.", ["Vérifier."])):
+        avert = _avert(type="nouveaute", action=action)
+        assert len(avert) == 1 and "R1" in avert[0] and "elements[0] (fx-1)" in avert[0]
+    assert len(_avert(type="amelioration", produit="codex", impact="fort", action=None)) == 1
+
+
+def test_r1_commande_entre_accents_graves_dans_description_ou_etapes():
+    assert _avert(type="nouveaute", action=_action("Lance `/plugin enable x@builtin`.", ["Regarde."])) == []
+    assert _avert(type="nouveaute", action=_action("Essaie.", ["Tape `claude purge --help`."])) == []
+
+
+@pytest.mark.parametrize("champs", [
+    {"type": "correction"}, {"type": "depreciation"}, {"type": "changement_rupture"},
+    {"impact": "nul", "pour_toi": None}, {"produit": "actu"},
+], ids=["correction", "depreciation", "rupture", "impact-nul", "produit-actu"])
+def test_r1_hors_champ_pas_d_avertissement(champs):
+    assert _avert(**{"type": "nouveaute", "action": None, **champs}) == []
+
+
+def test_r5_d71_sans_date_avertit_avec_date_non():
+    d71 = {"titre": "Hausse des tarifs et des limites d'usage", "type": "correction", "impact": "fort"}
+    for action in (None, _action("Avant la fin du mois, vérifie.", ["Ouvre Paramètres > Utilisation."])):
+        avert = _avert(**d71, action=action)
+        assert len(avert) == 1 and "R5" in avert[0]
+    for date_ in ("2026-10-12", "12/10"):
+        assert _avert(**d71, action=_action(f"Avant le {date_}, ouvre Paramètres > Utilisation.")) == []
+
+
+def test_r5_titre_ou_resume_seuls_decident_pas_pour_toi():
+    assert _avert(type="correction", pour_toi="Regarde Paramètres > Utilisation et tes crédits.", action=None) == []
+    assert len(_avert(type="correction", resume="Les limites de débit (rate limit) changent.", action=None)) == 1
+
+
+def test_avertissements_de_bout_en_bout_sans_changer_le_code(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    q["elements"][0].update(type="nouveaute", action=None)
+    _reecrire(chemin, q)
+    assert validation(racine, "claude", brut=False) == 0
+    sortie = capsys.readouterr()
+    assert "valide" in sortie.out
+    assert any(l.startswith("! AVERTISSEMENT 2026-") and "R1" in l for l in sortie.out.splitlines())
+
+
+def test_avertissements_accompagnent_une_erreur_sans_la_masquer(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    q["elements"][0].update(type="nouveaute", action=None, projets_concernes=["projet-fantome"])
+    _reecrire(chemin, q)
+    assert validation(racine, "claude", brut=False) == 1
+    sortie = capsys.readouterr()
+    assert "hors de CONTEXTE.md" in sortie.err and "! AVERTISSEMENT" in sortie.out
+
+
+def test_regles_pour_toi_r1_a_r5_dans_les_trois_textes():
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        texte = (racine / f).read_text(encoding="utf-8")
+        for r in ("R1", "R2", "R3", "R4", "R5"):
+            assert f"**{r} (D85)" in texte, f"{f} : règle {r} absente (D85)"

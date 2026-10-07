@@ -9,6 +9,8 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
+Lignes `! AVERTISSEMENT` (D85) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5) ; sans effet
+sur le code de sortie.
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deltalib.etat import DOSSIERS  # noqa: E402
 from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
+from deltalib.sujet_d71 import mots_trouves_base  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -46,15 +49,26 @@ RE_SECRETS = [
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|-----BEGIN"), "clé privée (-----BEGIN)"),
     (re.compile(r"https?://[^\s\"'<>]*[?&/;#](?:[A-Za-z_-]*(?:token|key|secret)[A-Za-z_-]*)=[^\s\"'<>&]+", re.I), "URL contenant token, key ou secret"),
 ]
+# D85 : avertissements seulement (jamais d'arrêt d'un passage de nuit). R1 : un ajout à un outil porte une commande exacte
+# entre accents graves dans `action` ; R5 : un élément D71 porte une date absolue dans `action`. Aucun champ ne marque D71
+# dans un élément : il se repère aux mots-clés de `deltalib.sujet_d71` dans `titre` et `resume` (pas `pour_toi`, qui cite
+# « Paramètres > Utilisation » à tout propos).
+TYPES_AJOUT = {"nouveaute", "amelioration"}
+RE_SEGMENT_CODE = re.compile(r"`[^`\n]+`")
+RE_DATE_ACTION = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{2}/\d{2}\b")
 RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks")]
 
 
 class Rapport:
     def __init__(self) -> None:
         self.erreurs: list[str] = []
+        self.avertissements: list[str] = []
 
     def erreur(self, ou: str, message: str) -> None:
         self.erreurs.append(f"{ou}: {message}")
+
+    def avertissement(self, ou: str, message: str) -> None:
+        self.avertissements.append(f"{ou}: {message}")
 
     @property
     def ok(self) -> bool:
@@ -180,6 +194,26 @@ def verifier_element(e: dict, i: int, perimetre: str, projets: set[str], r: Rapp
         r.erreur(ou, "`revision` doit être un booléen")
 
 
+def _texte_action(action) -> str:
+    if not isinstance(action, dict):
+        return ""
+    etapes = action.get("etapes") if isinstance(action.get("etapes"), list) else []
+    return "\n".join(str(x) for x in [action.get("description"), *etapes] if isinstance(x, str))
+
+
+def avertir_element(e: dict, i: int, r: Rapport, ou: str) -> None:
+    """D85 (R1, R5) : avertissements sur un élément, sans effet sur le code de sortie."""
+    if not isinstance(e, dict) or e.get("impact") not in IMPACTS - {"nul"}:
+        return
+    ou = f"{ou} elements[{i}] ({e.get('id')})"
+    texte = _texte_action(e.get("action"))
+    if e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu" \
+            and not RE_SEGMENT_CODE.search(texte):
+        r.avertissement(ou, "R1 : ajout à un outil sans commande exacte entre accents graves dans `action`")
+    if mots_trouves_base(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
+        r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
+
+
 def verifier_ids_web(e: dict, ou: str, r: Rapport) -> None:
     """D20 : chaque identifiant `web-` de `ids_bruts` doit valoir id_web(url, date_publication, titre) pour l'URL de
     l'une des sources de l'élément, avec sa `date_publication` et son `titre` publiés. Sans URL, rien n'est vérifié."""
@@ -258,6 +292,7 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
     bruts: list[str] = []
     for i, e in enumerate(elements):
         verifier_element(e, i, perimetre, projets, r, ou, ctx_disparu_permis)
+        avertir_element(e, i, r, ou)
         if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
             r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
         if isinstance(e, dict) and isinstance(q.get("date"), str) and q["date"] > DATE_ID_WEB:
@@ -705,11 +740,13 @@ def main(argv: list[str] | None = None) -> int:
     rapport = valider(args.perimetre, args.racine, args.date, args.brut, contexte)
     if rapport.ok:
         print(f"valider.py : {args.perimetre} valide")
-        return 0
-    print(f"valider.py : {len(rapport.erreurs)} erreur(s) pour {args.perimetre}", file=sys.stderr)
-    for e in rapport.erreurs:
-        print(f"  - {e}", file=sys.stderr)
-    return 1
+    else:
+        print(f"valider.py : {len(rapport.erreurs)} erreur(s) pour {args.perimetre}", file=sys.stderr)
+        for e in rapport.erreurs:
+            print(f"  - {e}", file=sys.stderr)
+    for a in rapport.avertissements:  # D85 : ne change pas le code de sortie
+        print(f"! AVERTISSEMENT {a}")
+    return 0 if rapport.ok else 1
 
 
 if __name__ == "__main__":
