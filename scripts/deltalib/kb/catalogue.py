@@ -464,7 +464,7 @@ def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, depreci
     return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum, rejugements=rejugements)]
 
 
-EXEMPLES_MAX = 25  # D91 : exemples à produire par lancement, en plus de `perimees` et des lots ordinaires
+EXEMPLES_MAX = 50  # D91 : exemples à produire par lancement, en plus de `perimees` et des lots ordinaires
 EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp")  # ordre de traitement du lot `exemples`
 ORIGINES_EXEMPLE = ("source", "compose")
 CHAMPS_EXEMPLE = {"exemple", "exemple_origine"}

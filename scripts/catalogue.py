@@ -10,7 +10,7 @@ Usage :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
                                                                d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
-  catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 25 entrées commentées de syntaxe sans exemple
+  catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 50 entrées commentées de syntaxe sans exemple
                                                                (commandes, fonctionnalites, skills, mcp ; dans chacune `utiliser`,
                                                                `tester`, puis `ignorer`) ; appliquer reçoit {id: {exemple, exemple_origine}}
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés

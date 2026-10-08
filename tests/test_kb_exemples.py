@@ -61,10 +61,10 @@ def test_lot_exemples_exclusions():
 
 
 def test_lot_exemples_plafond():
-    ent = base(*(entree(nom=f"c{i:02}") for i in range(30)))
-    assert cat.EXEMPLES_MAX == 25
-    assert cat.exemples_detail(ent) == sorted(ent)[:25]
-    assert len(cat.exemples_detail(ent, maximum=None)) == 30
+    ent = base(*(entree(nom=f"c{i:02}") for i in range(60)))
+    assert cat.EXEMPLES_MAX == 50
+    assert cat.exemples_detail(ent) == sorted(ent)[:50]
+    assert len(cat.exemples_detail(ent, maximum=None)) == 60
     assert cat.exemples_detail(ent, maximum=3) == sorted(ent)[:3]
 
 
@@ -182,14 +182,14 @@ def test_valider_refuse_exemple_origine_sur_une_entree_etapes(tmp_path, capsys):
 # ----------------------------------------------------------------------------------------------- CLI et orchestrateur
 
 def test_cli_lots_a_commenter_appliquer_et_lots_dus(tmp_path, capsys):
-    ent = [entree(nom=f"c{i:02}") for i in range(27)] + [entree("mcp", "serveur", "tester")]
+    ent = [entree(nom=f"c{i:02}") for i in range(60)] + [entree("mcp", "serveur", "tester")]
     args = kb(tmp_path, *ent)[:-1]  # sans --kb
     assert cli.main(["lots", *args]) == 0
     assert "exemples" in capsys.readouterr().out
     assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
     lot = json.loads(capsys.readouterr().out)
-    assert [x["nom"] for x in lot] == [f"c{i:02}" for i in range(25)] and all("exemple_origine" in x for x in lot)
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 28, "toutes les entrées dues comptent, pas seulement le plafond"
+    assert [x["nom"] for x in lot] == [f"c{i:02}" for i in range(50)] and all("exemple_origine" in x for x in lot)
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 61, "toutes les entrées dues comptent, pas seulement le plafond"
     f = tmp_path / "exemples.json"
     f.write_text(json.dumps({x["id"]: {"exemple": f"claude --resume {x['nom']}", "exemple_origine": "compose"} for x in lot}),
                  encoding="utf-8")
@@ -197,9 +197,9 @@ def test_cli_lots_a_commenter_appliquer_et_lots_dus(tmp_path, capsys):
     capsys.readouterr()
     assert valider.main([*args, "--kb"]) == 0
     capsys.readouterr()
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 3
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 11
     assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
-    assert [x["nom"] for x in json.loads(capsys.readouterr().out)] == ["c25", "c26", "serveur"]
+    assert [x["nom"] for x in json.loads(capsys.readouterr().out)] == [f"c{i:02}" for i in range(50, 60)] + ["serveur"]
 
 
 def test_cli_appliquer_refuse_sans_rien_ecrire(tmp_path, capsys):
