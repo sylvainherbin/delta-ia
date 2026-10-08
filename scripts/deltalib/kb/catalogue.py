@@ -67,6 +67,7 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
         tmp.replace(d / f"{cat}.json")
     ecrire_recent(racine)  # D99 : vue légère des ajouts récents, des deux périmètres réunis
     ecrire_a_tester(racine)  # D103 : essais de la base (verdicts tester et utiliser) pour l'onglet « À tester »
+    ecrire_noms(racine)  # D105 : index nom → id pour les liens de la veille vers les fiches
 
 
 MENTION_ADOPTION = "adoption déclarée, PROGRESSION.md"
@@ -252,6 +253,61 @@ def ecrire_a_tester(racine: Path, jour: str | None = None) -> dict:
     """Écrit docs/data/kb/a-tester.json depuis la base des deux périmètres telle qu'elle est sur disque."""
     doc = construire_a_tester(_toutes_les_entrees(racine), jour)
     _ecrire_fichier_leger(chemin_a_tester(racine), doc)
+    return doc
+
+
+NOMS_CATEGORIES_USAGE = ("commandes", "parametres", "skills")  # D105 : catégories dont le premier mot de `usage` est aussi un nom
+NOMS_MAX_MOTS, NOMS_MAX_CAR = 5, 80  # au-delà, ce n'est plus un nom qu'on met entre accents graves
+NOMS_MIN_CAR = 2  # exclut les raccourcis d'une lettre (« a », « 0 »), trop banals pour devenir des liens
+
+
+def chemin_noms(racine: Path) -> Path:
+    return racine / "docs" / "data" / "kb" / "noms.json"
+
+
+def normaliser_nom(s: str | None) -> str:
+    """D105 : forme de comparaison d'un nom, identique à `normaliserNom` de docs/assets/app.js : NFKC, espaces réduits à
+    un seul, minuscules."""
+    return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", s or "")).strip().lower()
+
+
+def noms_de(e: dict) -> set[str]:
+    """Les clés d'une entrée : son nom, et pour les commandes, skills et paramètres le premier mot de `usage` quand c'est
+    une commande (« /add-dir ») ou une option (« --add-dir »)."""
+    candidats = [e.get("nom")]
+    if e.get("categorie") in NOMS_CATEGORIES_USAGE:
+        mots = (e.get("usage") or "").split()
+        if mots and mots[0][:1] in ("/", "-"):
+            candidats.append(mots[0])
+    cles = set()
+    for c in candidats:
+        n = normaliser_nom(c)
+        if NOMS_MIN_CAR <= len(n) <= NOMS_MAX_CAR and len(n.split(" ")) <= NOMS_MAX_MOTS:
+            cles.add(n)
+    return cles
+
+
+def construire_noms(entrees: list[dict]) -> dict[str, list[str]]:
+    """D105 : {nom normalisé → [id]} des entrées non retirées. Plusieurs ids = nom ambigu (l'onglet renvoie alors à la
+    recherche). Sans date ni horodatage : le fichier ne change que si un nom change."""
+    index: dict[str, set[str]] = {}
+    for e in entrees:
+        if e.get("retiree") or not e.get("id"):
+            continue
+        for cle in noms_de(e):
+            index.setdefault(cle, set()).add(e["id"])
+    return {cle: sorted(index[cle]) for cle in sorted(index)}
+
+
+def ecrire_noms(racine: Path) -> dict[str, list[str]]:
+    """Écrit docs/data/kb/noms.json depuis la base des deux périmètres telle qu'elle est sur disque."""
+    doc = construire_noms(_toutes_les_entrees(racine))
+    chemin = chemin_noms(racine)
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    tmp = chemin.with_name(chemin.name + ".tmp")
+    lignes = ",\n".join(f"{json.dumps(k, ensure_ascii=False)}:{json.dumps(v, ensure_ascii=False, separators=(',', ':'))}" for k, v in doc.items())
+    tmp.write_text(f"{{\n{lignes}\n}}\n" if lignes else "{}\n", encoding="utf-8")
+    tmp.replace(chemin)
     return doc
 
 

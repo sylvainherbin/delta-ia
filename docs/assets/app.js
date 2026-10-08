@@ -14,7 +14,7 @@
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
-  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50 };
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, noms: undefined, kbFicheId: null };
   const main = document.getElementById("contenu");
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
@@ -38,6 +38,42 @@
     return el("a", { href: url, rel: "noopener noreferrer", target: "_blank", text: texte || url });
   }
   function texte(v, defaut) { return typeof v === "string" && v.trim() ? v : (defaut || ""); }
+
+  /* ---------- D105 : noms entre accents graves → fiche de la base ---------- */
+  const RE_SEGMENT_CODE = /`([^`\n]+)`/g;
+  // même normalisation que `normaliser_nom` de scripts/deltalib/kb/catalogue.py : NFKC, espaces réduits, minuscules
+  function normaliserNom(s) { return String(s || "").normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase(); }
+  // ids de la base pour un segment : son nom normalisé, à défaut son premier mot quand c'est une commande ou une option (`/add-dir ../x`)
+  function idsDuNom(segment) {
+    const noms = etat.noms;
+    if (!noms) return [];
+    const trouve = (cle) => (Object.prototype.hasOwnProperty.call(noms, cle) && Array.isArray(noms[cle]) ? noms[cle].filter((i) => typeof i === "string" && i) : []);
+    const n = normaliserNom(segment);
+    const ids = trouve(n);
+    if (ids.length || !n.includes(" ")) return ids;
+    const premier = n.split(" ")[0];
+    return /^[/-]/.test(premier) ? trouve(premier) : [];
+  }
+  // texte → nœuds : chaque segment entre accents graves qui désigne une seule fiche devient un lien vers elle, un nom partagé par
+  // plusieurs fiches un lien vers la recherche, un segment inconnu reste en texte simple (accents graves compris)
+  function enrichi(s) {
+    const t = typeof s === "string" ? s : String(s === null || s === undefined ? "" : s);
+    if (!etat.noms) return [t];
+    const out = [];
+    let fin = 0;
+    for (const m of t.matchAll(RE_SEGMENT_CODE)) {
+      const ids = idsDuNom(m[1]);
+      if (!ids.length) continue;
+      if (m.index > fin) out.push(t.slice(fin, m.index));
+      out.push(el("a", {
+        class: "ref-lien", href: ids.length === 1 ? `#reference?id=${encodeURIComponent(ids[0])}` : `#reference?q=${encodeURIComponent(m[1].trim())}`,
+        title: ids.length === 1 ? "Fiche de la base de référence" : `${ids.length} fiches portent ce nom : recherche dans la référence`,
+      }, el("code", { text: m[1] })));
+      fin = m.index + m[0].length;
+    }
+    if (fin < t.length) out.push(t.slice(fin));
+    return out;
+  }
   function dateFr(iso) {
     if (typeof iso !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return "date inconnue";
     const [a, m, j] = iso.slice(0, 10).split("-");
@@ -306,14 +342,14 @@
     const titre = texte(e.titre, "(sans titre)") + (e.version ? ` ${e.version}` : "");
     c.append(el(options.niveau === 4 ? "h4" : "h3", { text: titre }));
     c.append(el("div", { class: "meta", text: `${dateFr(e.date_publication)} · passage du ${dateFr(e._jour)}` }));
-    if (texte(e.resume)) c.append(el("p", { class: "resume", text: e.resume }));
-    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", { text: e.pour_toi })));
+    if (texte(e.resume)) c.append(el("p", { class: "resume" }, ...enrichi(e.resume)));
+    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", null, ...enrichi(e.pour_toi))));
     if (e.action && typeof e.action === "object") {
       const a = el("div", { class: "action" }, el("strong", { text: "Action" }),
         e.action.effort ? el("span", { class: "effort", text: `effort : ${e.action.effort}` }) : null,
-        texte(e.action.description) ? el("p", { text: e.action.description }) : null);
+        texte(e.action.description) ? el("p", null, ...enrichi(e.action.description)) : null);
       if (Array.isArray(e.action.etapes) && e.action.etapes.length) {
-        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", { text: String(s) }))));
+        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", null, ...enrichi(s)))));
       }
       const id = String(e.id || "");
       const caseFait = el("input", { type: "checkbox" });
@@ -485,6 +521,15 @@
     } catch (err) { etat.kbATester = null; }
     return etat.kbATester;
   }
+  // D105 : index nom → ids (docs/data/kb/noms.json) pour les liens vers les fiches ; absent ou illisible : null, les segments restent en texte simple
+  async function chargerNomsKb() {
+    if (etat.noms !== undefined) return etat.noms;
+    try {
+      const d = await lireJson("data/kb/noms.json");
+      etat.noms = d && typeof d === "object" && !Array.isArray(d) ? d : null;
+    } catch (err) { etat.noms = null; }
+    return etat.noms;
+  }
   async function chargerKb() {
     if (etat.kb) return;
     const t0 = performance.now();
@@ -602,6 +647,13 @@
     const kb = etat.kb;
     if (!kb || !kb.entrees.length) {
       frag.append(el("p", { class: "vide", text: "La base de référence n'est pas encore publiée." }));
+      return frag;
+    }
+    if (etat.kbFicheId) {
+      const fiche = kb.entrees.find((e) => e.id === etat.kbFicheId);
+      frag.append(el("p", { class: "retour-ref" }, el("a", { href: "#reference", text: "← Toute la référence" })),
+        fiche ? el("ul", { class: "liste" }, carteKb(fiche)) : el("p", { class: "vide", text: "Aucune fiche pour cet identifiant : la base a pu changer." }));
+      window.scrollTo(0, 0);
       return frag;
     }
     const total = kb.entrees.length, faites = kb.entrees.filter((e) => e.commentee).length;
@@ -769,7 +821,7 @@
     c.append(el("h4", { text: texte(l.titre, "(sans titre)") + (l.version ? ` ${l.version}` : "") }));
     c.append(el("div", { class: "meta" }, `${dateFr(l.date_publication)} · `,
       ISO_JOUR.test(l.jour || "") ? el("a", { href: `#archives/${l.jour}`, text: `passage du ${dateFr(l.jour)}` }) : "passage inconnu"));
-    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), l.action) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
+    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), ...enrichi(l.action)) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
     return c;
   }
   function ligneKbSemaine(l, quand) {
@@ -847,10 +899,15 @@
     // #reference?recent=7 (ou 30) : vue des entrées ajoutées récemment, la plus récente d'abord
     const recent = etat.page === "reference" ? new URLSearchParams(requete || "").get("recent") : null;
     if (KB_JOURS_RECENTS.includes(recent)) { kbFiltre.depuis = recent; kbFiltre.tri = "recent"; kbFiltre.limite = KB_PAGE; }
+    // D105 : #reference?id=<id> affiche la fiche seule ; #reference?q=<nom> ouvre la référence avec cette recherche, filtres remis à zéro
+    const params = etat.page === "reference" ? new URLSearchParams(requete || "") : null;
+    etat.kbFicheId = params && params.get("id") ? params.get("id") : null;
+    const q = params ? (params.get("q") || "").trim() : "";
+    if (q && !etat.kbFicheId) Object.assign(kbFiltre, { q, produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE });
   }
   async function rendre() {
     lireRoute();
-    await chargerNecessaire();
+    await Promise.all([chargerNecessaire(), etat.page === "reference" ? null : chargerNomsKb()]);
     if (etat.page === "reference") await chargerKb();
     if (etat.page === "a-tester") await chargerATesterKb();
     if (etat.page === "semaine") await chargerSemaine();

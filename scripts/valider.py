@@ -661,6 +661,7 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     verifier_journal(dossier / "reevaluations.jsonl", f"kb/{perimetre}/reevaluations.jsonl", ids, r)
     verifier_recent(racine, perimetre, ids, r)
     verifier_a_tester(racine, perimetre, ids, r)
+    verifier_noms(racine, perimetre, ids, r)
     return ids
 
 
@@ -796,6 +797,42 @@ def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -
             precedente = cle
         if e["produit"] in mes_produits and e["id"] not in ids:
             r.erreur(o, f"`id` absent de la base {perimetre}")
+
+
+def verifier_noms(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:
+    """D105 : docs/data/kb/noms.json ({nom normalisé → [id]}, deux périmètres réunis). Absent : accepté (les segments de la
+    veille restent en texte simple) ; présent : clés normalisées et triées, listes d'ids triées sans doublon, et chaque id
+    d'un produit de ce périmètre existe dans sa base."""
+    from deltalib.kb.catalogue import chemin_noms, normaliser_nom
+    from deltalib.kb.modeles import PRODUITS_PAR_PERIMETRE
+    chemin, ou = chemin_noms(racine), "kb/noms.json"
+    if not chemin.exists():
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    try:
+        doc = json.loads(texte)
+    except json.JSONDecodeError as e:
+        r.erreur(ou, f"JSON invalide : {e}")
+        return
+    if not isinstance(doc, dict):
+        r.erreur(ou, "objet {nom normalisé: [id]} attendu")
+        return
+    if list(doc) != sorted(doc):
+        r.erreur(ou, "clés à trier par ordre alphabétique")
+    prefixes = tuple(f"{p}-" for p in PRODUITS_PAR_PERIMETRE[perimetre])
+    for cle, liste in doc.items():
+        o = f"{ou} {cle!r}"
+        if not cle or normaliser_nom(cle) != cle:
+            r.erreur(o, "clé vide ou non normalisée (NFKC, espaces réduits, minuscules)")
+        if not isinstance(liste, list) or not liste or not all(isinstance(i, str) and i for i in liste):
+            r.erreur(o, "liste non vide d'ids attendue")
+            continue
+        if liste != sorted(set(liste)):
+            r.erreur(o, "ids à trier, sans doublon")
+        for i in liste:
+            if i.startswith(prefixes) and i not in ids:
+                r.erreur(o, f"`id` {i!r} absent de la base {perimetre}")
 
 
 # age, legacy et nouveau-projet ne sont plus produits (D64-bis amendée le 29/09/2026 ; rattrapage legacy openai effectué

@@ -193,7 +193,7 @@ def test_chaque_etape_de_la_chaine_connait_a_tester_json():
     for n in ("delta", "codex-delta", "delta-kb", "codex-delta-kb"):
         assert f in e[n].checkout and f in e[n].clean, n
     settings = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]["allow"]
-    assert f"Bash(git add docs/data/kb/claude docs/data/kb/recent.json {f})" in settings
+    assert f"Bash(git add docs/data/kb/claude docs/data/kb/recent.json {f} docs/data/kb/noms.json)" in settings
     for fichier in (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta/SKILL.md",
                     ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md",
                     "CLAUDE.md", "AGENTS.md", "SPEC.md"):

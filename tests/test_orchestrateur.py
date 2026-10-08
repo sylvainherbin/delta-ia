@@ -697,11 +697,11 @@ def test_arret_propre_declare_comme_en_d68():
     cfg = orc.charger_config()
     e = {x.nom: x for x in orc.construire_etapes(cfg, RACINE)}
     assert e["delta"].checkout == ["docs/data/versions.json", "docs/data/etat.json", "docs/data/claude", "docs/data/actu",
-                                   "docs/data/kb/claude", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/semaine", "state/claude.json", "state/actu.json"]
-    assert e["delta"].clean == ["docs/data/claude", "docs/data/actu", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/semaine"]
-    assert e["codex-delta"].checkout == ["docs/data/openai", "docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "state/openai.json"]
-    assert e["delta-kb"].checkout == e["delta-kb"].clean == ["docs/data/kb/claude", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json"]
-    assert e["codex-delta-kb"].checkout == e["codex-delta-kb"].clean == ["docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json"]
+                                   "docs/data/kb/claude", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "docs/data/semaine", "state/claude.json", "state/actu.json"]
+    assert e["delta"].clean == ["docs/data/claude", "docs/data/actu", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "docs/data/semaine"]
+    assert e["codex-delta"].checkout == ["docs/data/openai", "docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "state/openai.json"]
+    assert e["delta-kb"].checkout == e["delta-kb"].clean == ["docs/data/kb/claude", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json"]
+    assert e["codex-delta-kb"].checkout == e["codex-delta-kb"].clean == ["docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json"]
     assert e["supervision"].checkout == [] and e["supervision"].clean == []
     for n in ("delta", "codex-delta", "delta-kb", "codex-delta-kb"):  # jamais raw/, rapports/, PROGRESSION, CONTEXTE, SPEC, REGLES, scripts
         assert all(c.startswith(("docs/data/", "state/")) for c in e[n].checkout + e[n].clean)
@@ -721,7 +721,7 @@ def test_nouvelles_regles_du_projet_sans_joker_dangereux():
     s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
     for r in ("Bash(.venv/bin/python scripts/catalogue.py lots *)", "Bash(.venv/bin/python scripts/catalogue.py a-commenter *)",
               "Bash(.venv/bin/python scripts/catalogue.py adoptions *)", "Bash(.venv/bin/python scripts/catalogue.py reevaluations *)",
-              "Bash(git add docs/data/kb/claude docs/data/kb/recent.json docs/data/kb/a-tester.json)", 'Bash(git commit -m "delta-kb(claude): *")'):
+              "Bash(git add docs/data/kb/claude docs/data/kb/recent.json docs/data/kb/a-tester.json docs/data/kb/noms.json)", 'Bash(git commit -m "delta-kb(claude): *")'):
         assert r in s["allow"], r
     assert not any("bypassPermissions" in r or "dangerously" in r for r in s["allow"] + s["deny"])
 
