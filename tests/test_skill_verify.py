@@ -44,7 +44,10 @@ def test_skill_verify_applique_ci_preuve():
     assert "ne lance jamais la suite complète" in texte
 
 
-def test_skill_verify_enchaine_le_push_au_rebase():
+def test_skill_verify_fusionne_sans_pull_rebase_avant_le_push():
     texte = SKILL.read_text(encoding="utf-8")
-    assert "git pull --rebase && git push origin main" in texte
+    assert "git fetch origin && git merge --ff-only operer/<nom> && git push origin main" in texte
+    # un `pull --rebase` entre la fusion et le push changerait le hash testé par la CI : seulement cité pour l'interdire
+    assert "Pas de `git pull --rebase` entre la fusion et le push" in texte
+    assert "git pull --rebase && git push" not in texte
     assert "git rebase --abort" in texte
