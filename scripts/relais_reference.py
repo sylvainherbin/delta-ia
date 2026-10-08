@@ -12,7 +12,9 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
     3. l'entrée devient une idée (texte_idee) remise à la porte des idées du bureau, idee.py (palier 3 de
        delta-system-experience : juger détaché, le Core choisit le mode PERTINENCE) ; la suite est celle de toute idée :
        jugement, puis mission de conception OPÉRER sur branche si l'idée est retenue ;
-    4. une ligne JSON par envoi dans ~/.local/state/delta-ia/envois-reference.jsonl.
+    4. une ligne JSON par envoi dans ~/.local/state/delta-ia/envois-reference.jsonl ;
+    5. plafond de 10 envois par heure glissante (D104) : au-delà, 429 avec le motif et l'attente ; les envois de l'heure
+       écoulée sont relus dans le journal au démarrage, un redémarrage n'efface donc pas le compte.
   GET /etat   le relais répond (sert à l'installation et au contrôle).
 
 Réponses : JSON {"ok": bool, "etape": ..., "detail": ...}, même forme que idee.py.
@@ -25,7 +27,10 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
+from collections import deque
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -38,6 +43,8 @@ JOURNAL = STATE / "delta-ia" / "envois-reference.jsonl"
 SITE = "https://sylvainherbin.github.io"
 APERCU = re.compile(r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$")
 CORPS_MAX = 2048
+PLAFOND = 10         # envois par heure glissante (D104)
+FENETRE = 3600
 IDEE_MAX = 4000      # plafond de idee.py
 PRODUITS = {"claude": "Claude", "claude-code": "Claude Code", "chatgpt": "ChatGPT", "codex": "Codex"}
 CATEGORIES = {"fonctionnalites": "fonctionnalité", "commandes": "commande", "skills": "skill", "plugins": "plugin",
@@ -104,6 +111,44 @@ def remettre(idee_py, texte):
     return {"ok": False, "etape": "idee", "detail": f"idee.py sans réponse lisible (code {p.returncode})"}
 
 
+class Limiteur:
+    """Plafond d'envois sur une fenêtre glissante : horodatages en mémoire, amorcés par le journal au démarrage."""
+
+    def __init__(self, journal=None, maxi=PLAFOND, fenetre=FENETRE, horloge=time.time):
+        self.maxi, self.fenetre, self.horloge = maxi, fenetre, horloge
+        self.verrou = threading.Lock()
+        self.envois = deque()
+        if journal:
+            self.envois.extend(self._relire(journal))
+
+    def _relire(self, journal):
+        debut = self.horloge() - self.fenetre
+        vus = []
+        try:
+            lignes = Path(journal).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return vus
+        for ligne in lignes:
+            try:
+                t = datetime.strptime(json.loads(ligne)["date"], "%Y-%m-%dT%H:%M:%S%z").timestamp()
+            except (ValueError, KeyError, TypeError):
+                continue
+            if t > debut:
+                vus.append(t)
+        return sorted(vus)
+
+    def reserver(self):
+        """(True, 0) et compte l'envoi, ou (False, secondes à attendre) quand le plafond est atteint."""
+        with self.verrou:
+            maintenant = self.horloge()
+            while self.envois and self.envois[0] <= maintenant - self.fenetre:
+                self.envois.popleft()
+            if len(self.envois) >= self.maxi:
+                return False, max(1, int(self.envois[0] + self.fenetre - maintenant) + 1)
+            self.envois.append(maintenant)
+            return True, 0
+
+
 def journaliser(journal, ligne):
     try:
         Path(journal).parent.mkdir(parents=True, exist_ok=True)
@@ -118,10 +163,13 @@ class Relais(BaseHTTPRequestHandler):
     kb = KB
     idee = IDEE
     journal = JOURNAL
+    limiteur = Limiteur()
 
-    def _repondre(self, code, corps=None):
+    def _repondre(self, code, corps=None, entetes=None):
         origine = self.headers.get("Origin")
         self.send_response(code)
+        for k, v in (entetes or {}).items():
+            self.send_header(k, v)
         if origine and origine_admise(origine):
             self.send_header("Access-Control-Allow-Origin", origine)
             self.send_header("Vary", "Origin")
@@ -167,6 +215,12 @@ class Relais(BaseHTTPRequestHandler):
         e = trouver(self.kb, ident)
         if e is None:
             return self._repondre(404, {"ok": False, "etape": "reference", "detail": f"référence inconnue de la base locale : {ident}"})
+        place, attente = self.limiteur.reserver()
+        if not place:
+            minutes = -(-attente // 60)
+            return self._repondre(429, {"ok": False, "etape": "plafond", "detail":
+                                        f"{self.limiteur.maxi} envois par heure déjà faits ; réessaie dans {minutes} min"},
+                                  {"Retry-After": str(attente)})
         r = remettre(self.idee, texte_idee(e))
         journaliser(self.journal, {"date": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "id": ident, "nom": e.get("nom"),
                                    "ok": r.get("ok"), "etape": r.get("etape")})
@@ -184,6 +238,7 @@ def main(argv=None):
     a.add_argument("--journal", default=str(JOURNAL))
     o = a.parse_args(argv)
     Relais.kb, Relais.idee, Relais.journal = Path(o.kb), Path(o.idee), Path(o.journal)
+    Relais.limiteur = Limiteur(Relais.journal)
     serveur = ThreadingHTTPServer(("127.0.0.1", o.port), Relais)
     print(f"relais Référence → Delta sur http://127.0.0.1:{o.port}", flush=True)
     try:
