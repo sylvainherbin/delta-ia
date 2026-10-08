@@ -1,12 +1,12 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-07",
- "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+ "maj_le": "2026-10-08",
+ "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
  "contexte_sections": {
   "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-  "env.multi-sessions": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+  "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -15,8 +15,8 @@
   "projet.restoration-id": "317296d01e37fb26b8aa98cea20c29c42f5d8191",
   "projet.discipline": "94f7999d4a666931335a8f8526affbd6ca45ac97",
   "projet.delta-desktop": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
-  "projet.veille-shopify": "6be39db3a2821b5e8051d7ad12a891a76bc6bef3",
-  "projet.marketing": "7e63d06b5f576467bc15af6e0c4946f2d61c4ad9",
+  "projet.veille-shopify": "9bc2c51ae00122bb9294d31d269942541c101c18",
+  "projet.marketing": "5779c4edc81a428d740ccf335590b89343f32eb7",
   "projet.experimentations": "1f23c1635a3c8d802d0fe02ea1b2f175369cefb4",
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "585bf9bde6f77d1a08b743563de158ea53fe1360",
@@ -34,15 +34,15 @@
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
   "methode.organisation": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
   "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-  "methode.missions": "5febe185754388d19e7dea4e6296fc8b58798361",
+  "methode.missions": "b42e47d47b6e253054f499278ff7cde2514e89cf",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "fbd853357c6c4baef15c6a2469c4d7a459aa1394"
+  "usage.hors-machine": "8c494e0d26549a02cd0c78fa734ccac91a8f0913"
  },
  "contexte_deprecies": [],
- "total": 646,
- "commentees": 599,
+ "total": 648,
+ "commentees": 593,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -5731,7 +5731,7 @@
    "nom": "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
    "gabarit": "court",
    "description": "Variable qui désactive le raisonnement adaptatif d'Opus 4.6 et Sonnet 4.6 ; sans effet sur Fable, Sonnet 5 et suivants, Opus 4.7 et suivants.",
-   "description_source": "Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5 and later, or Opus 4.7 and later, which always use adaptive reasoning",
+   "description_source": "Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5 and later, Haiku 5.5, or Opus 4.7 and later, which always use adaptive reasoning",
    "usage": "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5748,11 +5748,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5769,6 +5769,10 @@
     {
      "date": "2026-09-29",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
@@ -7401,7 +7405,7 @@
    "nom": "CLAUDE_CODE_DISABLE_THINKING",
    "gabarit": "court",
    "description": "Variable qui retire le paramètre de raisonnement des requêtes, pour les passerelles qui le refusent ; elle ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5 ni des modèles Fable.",
-   "description_source": "Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5, Sonnet 5.5, or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there",
+   "description_source": "Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5, Sonnet 5.5, Haiku 5.5, or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there",
    "usage": "CLAUDE_CODE_DISABLE_THINKING",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7418,11 +7422,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7439,6 +7443,10 @@
     {
      "date": "2026-09-29",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
@@ -8385,6 +8393,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-force-terminal-images",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_FORCE_TERMINAL_IMAGES",
+   "gabarit": "court",
+   "description": "Mise à 1, force l'affichage des éléments Image des mods comme images quand le terminal gère le protocole graphique kitty avec placeholders Unicode sans être détecté automatiquement.",
+   "description_source": "Set to 1 to draw mod Image elements as pictures when your terminal draws kitty graphics protocol images with Unicode placeholders but is not auto-detected. See which terminals Claude Code detects and why it doesn't help inside tmux or screen",
+   "usage": "CLAUDE_CODE_FORCE_TERMINAL_IMAGES",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun mod à éléments Image, et la documentation précise que le réglage n'aide pas dans tmux, où tournent les sessions de Sylvain."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Claude Code durables tournent dans tmux, où la détection graphique ne s'applique pas."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-08",
+   "historique": [
+    {
+     "date": "2026-10-08",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-fork-subagent",
@@ -9578,7 +9633,7 @@
    "nom": "CLAUDE_CODE_NATIVE_CURSOR",
    "gabarit": "court",
    "description": "Variable qui affiche le curseur propre du terminal au lieu d'un bloc dessiné.",
-   "description_source": "Set to 1 to show the terminal's own cursor at the input caret instead of a drawn block. The cursor respects the terminal's blink, shape, and focus settings",
+   "description_source": "Set to 1 to show the terminal's own cursor at the input caret instead of a drawn block. The cursor respects the terminal's blink, shape, and focus settings. Setting 0 reads the same as leaving the variable unset, so it doesn't bring the drawn block back in a session where the terminal's own cursor is already on",
    "usage": "CLAUDE_CODE_NATIVE_CURSOR",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9595,11 +9650,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9608,6 +9663,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -10079,6 +10138,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-plugin-dir-watch",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_PLUGIN_DIR_WATCH",
+   "gabarit": "court",
+   "description": "Contrôle le rechargement d'un mod chargé avec `--plugin-dir` quand ses fichiers changent : actif par défaut en interactif, 1 l'active aussi en non interactif, 0 le coupe partout. Exige Claude Code 2.1.287 ou plus.",
+   "description_source": "Controls whether Claude Code reloads a mod when the mod's files change. Reloading applies to a mod you load from a directory with --plugin-dir, and it's on by default in interactive sessions. Set to 1 to turn it on in non-interactive sessions as well, or 0 to turn it off in every session. Requires Claude Code v2.1.287 or later. See mod settings and environment variables",
+   "usage": "CLAUDE_CODE_PLUGIN_DIR_WATCH",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun plugin propre ni mod en développement (seul `frontend-design` est installé, non adopté) : rien à recharger."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Plugins : aucun plugin propre observé, un seul plugin installé pour essai et non adopté."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-08",
+   "historique": [
+    {
+     "date": "2026-10-08",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-plugin-dirs",
@@ -11930,7 +12036,7 @@
    "nom": "CLAUDE_CODE_SYNC_SKILLS",
    "gabarit": "court",
    "description": "Variable qui fait télécharger, en mode `-p`, les skills activés sur le compte claude.ai et attendre leur liste.",
-   "description_source": "Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. The downloads themselves finish in the background, and Claude waits for a skill's download when it invokes that skill. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account download these skills into ~/.claude/skills/synced/ and resync about every 10 minutes without this variable, so set it only when a -p run needs your current skills on its first query. Before v2.1.273, terminal sessions downloaded them only in a -p run with this variable set. The synced folder name is reserved for this download. Before v2.1.227, the skills downloaded into ~/.claude/skills/ directly. Claude Code applies extra rules to the downloaded skills, such as not running their ! commands on your machine",
+   "description_source": "Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable, so set it only when a -p run needs your current skills on its first query",
    "usage": "CLAUDE_CODE_SYNC_SKILLS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11947,11 +12053,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11960,6 +12066,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -12788,7 +12898,7 @@
    "nom": "CLAUDE_CONFIG_DIR",
    "gabarit": "court",
    "description": "Variable qui déplace le dossier de configuration (`~/.claude` par défaut), réglages, historique et plugins compris.",
-   "description_source": "Override the configuration directory (default: ~/.claude). All settings, session history, and plugins are stored under this path. For credentials, see where Claude Code stores credentials. Useful for running multiple accounts side by side: for example, alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'. Set it in your shell, user settings, or managed settings. Ignored in project and local settings",
+   "description_source": "Override the configuration directory (default: ~/.claude). All settings, session history, and plugins are stored under this path. For credentials, see where Claude Code stores credentials. Useful for running multiple accounts side by side: for example, alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'. Set it in your shell, user settings, or managed settings. In a settings file, write the absolute path. Ignored in project and local settings",
    "usage": "CLAUDE_CONFIG_DIR",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12805,11 +12915,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12818,6 +12928,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -18078,7 +18192,7 @@
    "nom": "--forward-subagent-text",
    "gabarit": "court",
    "description": "Option CLI qui émet dans le flux `stream-json` le texte et la réflexion des sous-agents, pour reconstituer leur transcript.",
-   "description_source": "Emit subagent text and thinking blocks in the output stream as assistant and user messages with parent_tool_use_id set, so you can reconstruct each subagent's transcript. Without this flag, Claude Code omits the text and thinking blocks of a subagent that runs in the foreground. Requires --print and --output-format stream-json. Claude Code also forwards messages from nested subagents, setting parent_tool_use_id to the ID of the Agent or Skill tool call that started each one; this requires Claude Code v2.1.219 or later, and messages of subagents that a forked skill spawns, and of nested forked skills, require v2.1.275 or later. The CLAUDE_CODE_FORWARD_SUBAGENT_TEXT environment variable enables the same behavior. Requires Claude Code v2.1.211 or later — claude -p --output-format stream-json --verbose --forward-subagent-text \"query\"",
+   "description_source": "Emit subagent text and thinking blocks in the output stream as assistant and user messages with parent_tool_use_id set, so you can reconstruct each subagent's transcript. Without this flag, Claude Code omits the text and thinking blocks of a subagent that runs in the foreground. Requires --print and --output-format stream-json. For nested subagents, forked skills, and the version each needs, see Follow subagent messages. The CLAUDE_CODE_FORWARD_SUBAGENT_TEXT environment variable enables the same behavior. Requires Claude Code v2.1.211 or later — claude -p --output-format stream-json --verbose --forward-subagent-text \"query\"",
    "usage": "--forward-subagent-text",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18095,11 +18209,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18108,6 +18222,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -19985,7 +20103,7 @@
    "nom": "Hook WorktreeRemove",
    "gabarit": "court",
    "description": "Événement de hook déclenché à la suppression d'un worktree, pendant de `WorktreeCreate`.",
-   "description_source": "Runs when a worktree is being removed. This is the cleanup counterpart to WorktreeCreate. The event fires when:",
+   "description_source": "Runs when Claude Code cleans up a worktree that your WorktreeCreate hook created. The event fires when:",
    "usage": "{\n  \"hooks\": {\n    \"WorktreeRemove\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'jq -r .worktree_path | xargs rm -rf'\"\n          }\n        ]\n      }\n    ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20002,11 +20120,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20019,6 +20137,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -21076,7 +21198,7 @@
    "nom": "MAX_THINKING_TOKENS",
    "gabarit": "court",
    "description": "Variable qui fixe un budget de jetons de réflexion ; ignorée par les modèles à raisonnement adaptatif, et `0` ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5 ni des modèles Fable.",
-   "description_source": "Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024. See CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Opus 5.5, Sonnet 5.5, and the Fable models, which can't have thinking turned off. On third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. For a positive value, Claude Code ignores the number itself on adaptive reasoning models, except when CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING turns adaptive reasoning off",
+   "description_source": "Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024. See CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Opus 5.5, Sonnet 5.5, Haiku 5.5, and the Fable models, which can't have thinking turned off. On third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. For a positive value, Claude Code ignores the number itself on adaptive reasoning models, except when CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING turns adaptive reasoning off",
    "usage": "MAX_THINKING_TOKENS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21097,7 +21219,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-05",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21117,6 +21239,10 @@
     },
     {
      "date": "2026-10-05",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-08",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -23159,7 +23285,7 @@
    "nom": "plansDirectory",
    "gabarit": "court",
    "description": "Réglage du dossier où sont rangés les fichiers de plan écrits en mode plan, relatif à la racine du projet.",
-   "description_source": "Choose where Claude Code stores the plan files it writes in plan mode. Claude Code resolves the path relative to the project root and keeps the default when the path resolves outside it.",
+   "description_source": "Choose where Claude Code stores the plan files it writes in plan mode. Claude Code resolves the path relative to the project root.",
    "usage": "{\n  \"plansDirectory\": \"./plans\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23176,11 +23302,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23193,6 +23319,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

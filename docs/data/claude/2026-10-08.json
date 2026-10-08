@@ -1,0 +1,516 @@
+{
+  "date": "2026-10-08",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-08T02:04:00+00:00",
+  "synthese": "Compte et quotas : Max et Team incluent désormais des crédits API mensuels (100 $ pour Max 5x, 200 $ pour Max 20x), à réclamer en liant une organisation Claude Console dans Paramètres > Facturation, déploiement sur quelques jours depuis le 07/10 ; deux pages d'aide se contredisent sur l'usage de ces crédits avec `claude -p` et Claude Code, et la page Agent SDK confirme que `claude -p` continue de compter sur les limites de l'abonnement. Quotas lus : Claude session 5 h 0 % (remise à zéro le 08/10 à 02 h 49 UTC), Claude semaine 26 % (remise à zéro le 11/10 à 15 h 59 UTC), Claude semaine Fable 0 %, ChatGPT semaine 4 % (relevé le 07/10 à 20 h 09 UTC, remise à zéro le 14/10 à 05 h 29 UTC) ; aucun seuil de 80 % atteint. Claude Haiku 5.5 sort le 07/10 (1M de contexte, 0,10 $/0,50 $ par Mtok) et devient le Haiku par défaut de Claude Code 2.1.293, qui corrige aussi un défaut d'après-compactage et une fuite mémoire des connexions MCP HTTP, et annule le correctif des sessions cloud endormies après un redémarrage de conteneur. Le prix de lecture du cache de Sonnet 5.5 passe de 0,20 $ à 0,10 $ par Mtok.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-apps-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-apps-notes-2026-10-07",
+        "claude-aide-forfait-max-article",
+        "claude-aide-credits-article",
+        "claude-aide-claude-code-pro-max-article",
+        "claude-aide-agent-sdk-forfait-article"
+      ],
+      "produit": "claude",
+      "titre": "Crédits API mensuels inclus dans Max et Team : 100 $ (Max 5x), 200 $ (Max 20x), à réclamer via une organisation Console",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Les forfaits Max et Team incluent des crédits mensuels pour l'API Claude (Max 5x : 100 $, Max 20x : 200 $, Team : jusqu'à 500 $ mis en commun), valables sur tous les modèles, déployés sur quelques jours depuis le 07/10 ; on les réclame en liant une organisation Claude Console dans Settings > Billing (Max) ou Organization settings > Billing (Team). Pages d'aide révisées : forfait Max (ajoutée : puce « Monthly API credits »), crédits d'usage (ajoutée : ils sont distincts des crédits API mensuels, qui ne s'appliquent pas à l'usage supplémentaire dans Claude, Claude Code et Cowork), Claude Code avec Pro ou Max (ajoutée : les crédits API mensuels ne servent ni dans Claude Code ni dans les apps Claude), Agent SDK (ajoutée : mise à jour du 07/10 disant que ces crédits couvrent l'Agent SDK, `claude -p`, l'API et Claude Managed Agents, et que l'Agent SDK, `claude -p` et les applications tierces peuvent toujours utiliser les limites de l'abonnement ; retirée : tout l'ancien texte du 15/06 sur un crédit mensuel Agent SDK de 20 $ (Pro), 100 $ (Max 5x) et 200 $ (Max 20x), page qui ne le conserve plus). Les deux pages ne disent pas la même chose sur `claude -p` : l'une l'inclut dans les usages couverts, l'autre exclut Claude Code.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude — 07/10",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan#what-is-the-max-plan",
+          "libelle": "What is the Max plan?",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+          "libelle": "Use Claude Code with your Pro or Max plan",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan#use-the-claude-agent-sdk-with-your-claude-plan",
+          "libelle": "Use the Claude Agent SDK with your Claude plan",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ton abonnement Claude est de type Max (CONTEXTE.md, section profil) : tu fais partie des forfaits qui reçoivent ces crédits, et l'ancien projet de retirer `claude -p` des limites de l'abonnement (page du 15/06) a disparu de la page d'aide. La chaîne de nuit D70 (étapes Claude lancées par `claude -p`) et JUGER (rôles LLM appelés par `claude -p`, Opus par défaut) continuent donc de compter sur tes limites hebdomadaires, selon la page Agent SDK. Les crédits ne remplacent pas ton crédit de session cloud (à utiliser avant le 05/11/2026) ni les crédits d'usage supplémentaire ; ils servent à appeler l'API avec une clé, par exemple pour veille-shopify ou pour un script maison. Réclamer ces crédits est un geste de compte, donc le tien.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Réclamer le crédit API mensuel de ton forfait Max et lire le montant crédité, d'ici le 2026-10-15 (aucune date limite n'est publiée ; le déploiement dure quelques jours à partir du 07/10).",
+        "etapes": [
+          "Sur claude.ai, ouvre Paramètres > Facturation (Settings > Billing) et lie une organisation Claude Console (platform.claude.com) ; relève le montant crédité : 100 $ pour Max 5x, 200 $ pour Max 20x.",
+          "Si l'option n'apparaît pas encore, reviens le 2026-10-15 : le déploiement est annoncé « sur quelques jours ».",
+          "Ne change rien à `scripts/passage-auto.sh` : la page Agent SDK dit que `claude -p` continue de consommer les limites de l'abonnement.",
+          "Pour la remise à zéro hebdomadaire du 2026-10-11 à 15 h 59 UTC, ouvre Paramètres > Utilisation et vérifie tes remises à zéro disponibles avant d'économiser."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "0085259f8f744f9a91d172363e7fde3929c411df",
+          "pourquoi": "Abonnement Claude Max, crédit de session cloud à utiliser avant le 05/11/2026."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne D70 sont lancées par `claude -p`."
+        },
+        "methode.juger-design": {
+          "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+          "pourquoi": "Les rôles LLM de JUGER sont appelés par `claude -p` (Opus par défaut)."
+        }
+      }
+    },
+    {
+      "id": "https://www.anthropic.com/claude-haiku-5-5",
+      "ids_bruts": [
+        "https://www.anthropic.com/claude-haiku-5-5"
+      ],
+      "produit": "claude",
+      "titre": "Claude Haiku 5.5 : petit modèle à effort réglable, 1M de contexte, 0,10 $ / 0,50 $ par Mtok",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Claude Haiku 5.5 (`claude-haiku-5-5`) est lancé comme modèle petit, rapide et peu cher pour les tâches répétitives (résumés, compaction, requêtes de base, classification) ; c'est le premier Haiku à effort réglable. Son prix est de 0,10 $ en entrée et 0,50 $ en sortie par million de jetons (jusqu'à 100 000 jetons de prompt), soit 90 % de moins que Haiku 4.5 sur ces requêtes et environ 75 % de moins en moyenne selon Anthropic ; son nouveau tokenizer produit un peu plus de jetons pour un même texte. Anthropic le place en sous-agent d'Opus 5.5 et de Sonnet 5.5, et précise que ces deux modèles restent meilleurs pour le code agentique complexe ; ses garde-fous cyber sont plus restrictifs que ceux de Haiku 4.5 sur certaines techniques.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/claude-haiku-5-5",
+          "libelle": "Introducing Claude Haiku 5.5",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "CONTEXTE.md décrit des sous-agents `Explore` pour lire les gros fichiers et le conseiller Opus dans les missions de développement : Haiku 5.5 vise justement ce rôle de sous-agent. Ton modèle par défaut reste Sonnet (`docs/data/etat.json`), et la page ne dit pas comment Haiku 5.5 se décompte dans les limites de l'abonnement.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer Haiku 5.5 sur une lecture simple dans le dépôt delta-ia, sans rien enregistrer comme défaut.",
+        "etapes": [
+          "Dans `~/projets/delta-ia`, lance `claude -p \"Liste les titres de niveau 2 de CONTEXTE.md\" --model claude-haiku-5-5` (option `--model` : modèle de la session seulement, sans enregistrement).",
+          "Résultat attendu : la liste des titres `##` de CONTEXTE.md, sans erreur de modèle ; relève la version de Claude Code installée avec `claude --version` (2.1.293 ou plus récente) si le nom du modèle est refusé."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-model",
+        "claude-code-parametres-anthropic-default-haiku-model"
+      ],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents Explore pour la lecture de gros fichiers ; Haiku 5.5 est annoncé pour ce rôle."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 11 : Sonnet par défaut voulu, Opus en conseiller, étaler la charge hebdomadaire."
+        }
+      }
+    },
+    {
+      "id": "anthropic-deprecations-statut-modeles",
+      "ids_bruts": [
+        "anthropic-deprecations-statut-modeles"
+      ],
+      "produit": "claude",
+      "titre": "Dépréciations : `claude-haiku-5-5` ajouté au tableau d'état des modèles de l'API Claude",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "Révision du tableau d'état : ajoutée, la ligne `claude-haiku-5-5 | Active | N/A | Not sooner than October 7, 2027`. Aucune autre ligne ne change ; Haiku 4.5 reste actif, retrait « pas avant le 15 octobre 2026 », et Sonnet 4.5 reste déprécié depuis le 30 septembre 2026, retrait le 30 novembre 2026.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations#model-status",
+          "libelle": "Model deprecations — Model status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-code-2.1.293",
+      "ids_bruts": [
+        "claude-code-2.1.293"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.293 : Haiku 5.5 par défaut pour `haiku`, correctifs de compactage, de fuite MCP HTTP et de Remote Control, correctif cloud annulé",
+      "version": "2.1.293",
+      "date_publication": "2026-10-07",
+      "type": "amelioration",
+      "resume": "Ajouts : Claude Haiku 5.5 devient le modèle Haiku par défaut sur l'API Anthropic ; `agentType` dans la charge utile de `subagentStatusLine` ; `isDeferred` dans `$.tool.register` pour les mods ; la synchronisation des skills claude.ai vérifie les changements environ toutes les 40 minutes au lieu de 10 quand aucune session n'est en cours. Correctifs : Claude ne considère plus comme faites ses dernières actions d'avant un compactage (il les annulait ou les refaisait), fuite mémoire d'une connexion MCP HTTP qui gardait toutes les requêtes envoyées, `/model` dont les flèches ←/→ pouvaient enregistrer Low comme effort par défaut d'un modèle, dépôt `/ultrareview` refusé à tort sous Linux, et des défauts de Remote Control (réponses affichées par blocs dans les sessions très longues, historique renvoyé après chaque récupération des identifiants, `PushNotification` annonçant « Remote Control inactive » dans les sessions lancées par `claude remote-control`). Retours en arrière : le changement du message de refus du mode auto introduit en 2.1.281, et le correctif de la 2.1.290 pour les sessions cloud restées endormies après un redémarrage de conteneur qui perdait un réveil `/loop` ou une tâche planifiée en attente (la session reste endormie).",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21293",
+          "libelle": "Changelog Claude Code 2.1.293",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.293 est celle qui est installée (a_jour dans `docs/data/versions.json`) : le correctif de compactage touche tes sessions longues, où `/compact` est une commande que tu tapes. La fuite mémoire des connexions MCP HTTP concerne le serveur HTTP delta-ia déclaré pour `~/projets` et `~/projets/delta-ia`, donc les sessions durables qui y tournent (une session déjà ouverte garde l'ancien binaire jusqu'à sa reprise). Le retour en arrière est défavorable à ton exécutant `claude-cloud` : une session cloud dont le conteneur redémarre perd de nouveau son réveil en attente. Le correctif de `PushNotification` vise `claude remote-control`, alors que tes sessions démarrent par `claude --resume <id> --remote-control <nom>` : à vérifier sur tes notifications push. Haiku 5.5 devient l'alias `haiku`, utilisé aussi pour des fonctions d'arrière-plan d'après la fiche de `ANTHROPIC_DEFAULT_HAIKU_MODEL`.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Vérifier le correctif de compactage dans une session longue et éviter de dépendre d'un réveil en attente dans un brief cloud.",
+        "etapes": [
+          "Dans la session du chef delta-ia, après une mission longue, tape `/compact`, puis demande « quelle est la dernière action terminée ? » ; résultat attendu : elle est citée comme terminée et n'est pas refaite.",
+          "Dans un brief destiné à `claude-cloud`, n'utilise pas `/loop` ni de tâche planifiée qui doive survivre à un redémarrage de conteneur : la session resterait endormie."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-anthropic-default-haiku-model"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables lancées par `claude --resume <id> --remote-control <nom>` et pilotées par notifications push."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Serveur MCP HTTP delta-ia déclaré pour ~/projets et ~/projets/delta-ia."
+        },
+        "methode.operer": {
+          "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+          "pourquoi": "Allocation des missions vers l'exécutant Claude cloud (natures code et mécanique)."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Skills claude.ai synchronisés avec Claude Code."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-07"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 07/10 : lecture du cache de Sonnet 5.5 à 0,10 $ par Mtok, classes SDK pour browser use et computer use, restrictions web de Managed Agents",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Le prix de lecture du cache de Claude Sonnet 5.5 passe de 0,20 $ à 0,10 $ par million de jetons (0,05 fois le prix d'entrée de base au lieu de 0,1 fois) ; les écritures de cache et les autres prix ne changent pas. Les SDK Python et TypeScript ajoutent, en bêta, des classes pour le browser use tool et le computer use tool. Dans Claude Managed Agents, un environnement en réseau `limited` applique aussi `allowed_hosts` à `web_search` et `web_fetch`, et `web_fetch` ne récupère plus que des URL déjà apparues dans la session (erreur `url_not_in_prior_context` sinon).",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Ton modèle par défaut dans Claude Code est Sonnet (`docs/data/etat.json`). Le nouveau tarif de lecture du cache est un prix d'API, et la page ne dit pas si le décompte des limites de l'abonnement suit ce tarif. Les restrictions de Managed Agents ne concernent aucun outil décrit dans CONTEXTE.md.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 11 : Sonnet par défaut voulu, charge hebdomadaire à étaler."
+        }
+      }
+    },
+    {
+      "id": "https://claude.com/blog/claude-now-works-in-google-docs-sheets-and-slides",
+      "ids_bruts": [
+        "https://claude.com/blog/claude-now-works-in-google-docs-sheets-and-slides"
+      ],
+      "produit": "claude",
+      "titre": "Claude pour Google Workspace en bêta publique sur tous les forfaits payants, avec des connecteurs Docs, Sheets et Slides",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "nouveaute",
+      "resume": "Un module complémentaire ouvre Claude dans un panneau latéral de Google Docs, Sheets et Slides : il lit le fichier ouvert et la sélection, et modifie le fichier, soit après approbation de chaque changement (mode par défaut « Ask before edits »), soit directement (« Accept all edits »). De nouveaux connecteurs Google Docs, Sheets et Slides (bêta) permettent aussi de créer et de modifier des fichiers Google depuis la conversation, avec les droits de partage existants de l'utilisateur ; sur Team et Enterprise, un propriétaire doit d'abord activer les connecteurs.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/claude-now-works-in-google-docs-sheets-and-slides",
+          "libelle": "Claude now works with Google Docs, Sheets, and Slides",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "CONTEXTE.md compte Drive, Gmail et Calendar parmi les connecteurs claude.ai connectés mais jamais appelés dans Claude Code, et ne dit pas que tu utilises Google Docs, Sheets ou Slides. Le module et les connecteurs sont donc un essai possible si tu as un fichier Google, sans aucun lien avec les projets actuels.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer le module sur un fichier de test sans donnée de tiers.",
+        "etapes": [
+          "Installe Claude for Google Workspace depuis le Google Workspace Marketplace, ouvre un document de test, puis `Extensions > Claude > Open Claude`.",
+          "Demande « resserre le premier paragraphe » en gardant le mode « Ask before edits » ; résultat attendu : une carte d'approbation avec le changement proposé."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 9 : Gmail, Drive et Calendar connectés mais jamais appelés dans Claude Code."
+        }
+      }
+    },
+    {
+      "id": "anthropic-status-978mjkgw6mh7",
+      "ids_bruts": [
+        "anthropic-status-978mjkgw6mh7"
+      ],
+      "produit": "claude",
+      "titre": "Incident : erreurs élevées sur les données d'usage de platform.claude.com",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "correction",
+      "resume": "Incident d'impact « major », statut « monitoring » à la lecture, ouvert le 07/10 à 13 h 25 UTC : erreurs de chargement des données d'usage sur les pages Usage et Rate limits de platform.claude.com et dans le rapport d'usage de l'Admin API. Le rapport Admin API est rétabli ; les 30 dernières minutes d'usage peuvent apparaître avec retard, et les requêtes de l'API ne sont pas touchées.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/978mjkgw6mh7",
+          "libelle": "Anthropic status — Elevated errors on platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-06",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-06"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 06/10 : `capabilities.server_tools` dans l'API Models",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "nouveaute",
+      "resume": "`GET /v1/models` et `GET /v1/models/{model_id}` indiquent désormais, par modèle, s'il accepte les outils web search et code execution, dans `capabilities.server_tools` (par exemple `capabilities.server_tools.code_execution`).",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-09-30",
+      "ids_bruts": [
+        "claude-platform-notes-2026-09-30",
+        "claude-platform-notes-2026-10-01"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — révisions des notes du 30/09 et du 01/10 : méthodes Admin API hors bêta, Dreams sur trois modèles",
+      "version": null,
+      "date_publication": "2026-09-30",
+      "type": "nouveaute",
+      "resume": "Note du 30/09, ajoutée : les méthodes Admin API (organisation, membres, invitations, espaces de travail, clés API, limites de débit, comptes de service et autres) sortent de la bêta dans les SDK Python 1.10.0, TypeScript 0.130.0, C# 12.52.0, Go 1.77.0, Java 2.67.0, PHP 0.53.0, Ruby 1.75.0 et la CLI `ant` 1.37.0, sous `client.organization` et `ant organization`. Note du 01/10, ajoutée : Dreams (aperçu de recherche) accepte Claude Opus 5.5, Claude Fable 5.1 et Claude Sonnet 5.5.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-commandes-claude-daemon-logs",
+      "ids_bruts": [
+        "kb-claude-code-commandes-claude-daemon-logs"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : commande `claude daemon logs`",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Commande ajoutée à la base (commandes) : elle suit le fichier journal du superviseur des sessions d'arrière-plan, `~/.claude/daemon.log`, et affiche les nouvelles lignes jusqu'à Ctrl+C.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/cli-reference",
+          "libelle": "Référence CLI Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tes sessions durables sont lancées par systemd et tmux, pas par le superviseur d'arrière-plan de Claude Code : rien à lire dans ce journal d'après CONTEXTE.md.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-claude-daemon-logs"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables lancées par systemd et tmux, sans superviseur d'arrière-plan décrit."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-commandes-claude-daemon-run",
+      "ids_bruts": [
+        "kb-claude-code-commandes-claude-daemon-run"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : commande `claude daemon run`",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Commande ajoutée à la base (commandes) : elle lance le superviseur des sessions d'arrière-plan au premier plan du terminal et affiche son journal.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/cli-reference",
+          "libelle": "Référence CLI Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Même constat que pour `claude daemon logs` : tes sessions durables passent par systemd et tmux, aucun usage du superviseur d'arrière-plan n'est décrit.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-claude-daemon-run"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables lancées par systemd et tmux, sans superviseur d'arrière-plan décrit."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-force-terminal-images",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-force-terminal-images"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_FORCE_TERMINAL_IMAGES",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base (paramètres) : mise à 1, elle dessine les éléments Image des mods comme des images quand le terminal gère le protocole graphique kitty avec placeholders Unicode sans être détecté automatiquement ; la documentation précise qu'elle n'aide pas dans tmux ou screen.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tes sessions durables tournent dans tmux, où la documentation dit que ce réglage n'aide pas.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-force-terminal-images"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions Claude Code durables lancées dans tmux."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-plugin-dir-watch",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-plugin-dir-watch"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_PLUGIN_DIR_WATCH",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base (paramètres) : elle contrôle le rechargement d'un mod chargé avec `--plugin-dir` quand ses fichiers changent ; actif par défaut en interactif, 1 l'active aussi en non interactif, 0 le coupe partout (Claude Code 2.1.287 ou plus).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "CONTEXTE.md ne décrit aucun mod ni plugin propre en développement : le seul plugin installé, `frontend-design`, est à l'essai et non adopté.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-plugin-dir-watch"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Plugins : aucun plugin propre, un seul installé pour essai et non adopté."
+        }
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "claude-aide-index-17118092",
+      "raison": "Article d'aide réservé aux organisations Claude Enterprise (attribuer un programme à des rôles personnalisés), sans lien avec ton forfait individuel ni avec les conditions d'usage"
+    },
+    {
+      "id": "claude-platform-notes-2026-10-08",
+      "raison": "Compliance API en bêta pour les organisations Claude Enterprise, sans lien avec ton forfait individuel"
+    },
+    {
+      "id": "https://claude.com/blog/were-expanding-the-claude-startups-program-to-help-founders-build",
+      "raison": "Programme réservé aux start-up (fondées depuis moins de cinq ans ou financées depuis moins de deux ans), offre sectorielle sans lien avec ton usage"
+    },
+    {
+      "id": "https://claude.com/blog/how-comcast-booz-allen-use-claude-mythos-to-secure-their-codebases",
+      "raison": "Témoignage client sur Claude Mythos et la sécurité d'infrastructures critiques, sans lien avec ton usage"
+    },
+    {
+      "id": "claude-platform-notes-2026-08-19",
+      "raison": "Révision de forme de la note du 19/08 : un lien modifié, aucun changement de contenu"
+    },
+    {
+      "id": "claude-platform-notes-2026-07-22",
+      "raison": "Révision de forme de la note du 22/07 : liens modifiés, aucun changement de contenu"
+    },
+    {
+      "id": "claude-platform-notes-2026-06-30",
+      "raison": "Révision de forme de la note du 30/06 : un lien modifié, aucun changement de contenu"
+    }
+  ],
+  "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7"
+}
