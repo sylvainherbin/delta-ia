@@ -191,12 +191,40 @@
     if (min < 2880) return `il y a ${Math.round(min / 60)} h`;
     return `il y a ${Math.round(min / 1440)} j`;
   }
+  const SEUIL_CREDIT_JOURS = 14;
+  function creditsComptes(c, maintenant) {
+    if (!Array.isArray(c.credits) || !c.credits.length) return null;
+    const liste = el("ul", { class: "credits" });
+    for (const cr of c.credits) {
+      if (!cr || typeof cr !== "object") continue;
+      const connu = typeof cr.solde_usd === "number" && Number.isFinite(cr.solde_usd);
+      const finit = new Date(cr.expire_le).getTime();
+      const datee = typeof cr.expire_le === "string" && !Number.isNaN(finit);
+      const jours = datee ? (finit - maintenant) / 86400000 : null;
+      const expire = datee && jours <= 0;
+      const alerte = connu && datee && jours > 0 && jours <= SEUIL_CREDIT_JOURS;
+      const releve = jjmmHhmm(cr.releve_le);
+      const solde = connu ? `${cr.solde_usd.toFixed(2).replace(".", ",")} $` : "solde inconnu";
+      const echeance = !datee ? "échéance inconnue"
+        : expire ? `crédit expiré le ${jjmmHhmm(cr.expire_le)}`
+        : `à utiliser avant le ${jjmmHhmm(cr.expire_le)} (${Math.ceil(jours)} j)`;
+      const detail = [echeance, connu && releve ? `solde relevé le ${releve}` : null, !connu || !datee ? texte(cr.raison) : null]
+        .filter(Boolean).join(" · ");
+      liste.append(el("li", { class: "credit" + (alerte ? " alerte" : "") + (expire ? " perimee" : "") },
+        el("span", { class: "quota-nom", text: texte(cr.nom, "Crédit") }),
+        el("span", { class: "quota-pct", text: solde }),
+        el("span", { class: "quota-rz", text: detail })));
+    }
+    return liste.children.length ? liste : null;
+  }
   function blocComptes(maintenant) {
     const c = etat.comptes;
     if (!c || typeof c !== "object") return null;
     const sec = el("section", { class: "comptes", "aria-label": "Compte et quotas" }, el("h3", { text: "COMPTE ET QUOTAS" }));
     if (c.statut !== "ok" || !c.quotas || typeof c.quotas !== "object") {
       sec.append(el("p", { class: "pied-comptes", text: `Quotas inconnus${texte(c.raison) ? ` : ${c.raison}` : ""}.` }));
+      const seuls = creditsComptes(c, maintenant);
+      if (seuls) sec.append(seuls);
       return sec;
     }
     let alerte = false;
@@ -220,6 +248,8 @@
         el("span", { class: "quota-rz", text: connu ? detail : texte(q.raison, "valeur absente") })));
     }
     sec.append(liste);
+    const credits = creditsComptes(c, maintenant);
+    if (credits) sec.append(credits);
     if (alerte) sec.append(el("p", { class: "alerte-d71", role: "status", text: `Quota hebdomadaire au-delà de ${SEUIL_ALERTE_PCT} % : ${PHRASE_D71}.` }));
     const releve = jjmmHhmm(c.releve_le);
     sec.append(el("p", { class: "pied-comptes", text: releve ? `Relevé du ${releve} (${ageFr(c.releve_le, maintenant)}).` : "Date du relevé inconnue." }));

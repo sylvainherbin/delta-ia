@@ -811,6 +811,36 @@ def _horodatage_ou_null(v) -> bool:
     return True
 
 
+CREDITS_CHAMPS = {"nom", "solde_usd", "releve_le", "expire_le", "jours_restants"}
+
+
+def verifier_credits(credits, ou: str, r: Rapport) -> None:
+    """D102 (D71) : `comptes.credits`, crédits datés. Une valeur null porte une `raison` ; jamais de date ou de solde deviné."""
+    o = f"{ou}.credits"
+    if not isinstance(credits, list):
+        r.erreur(o, "doit être une liste")
+        return
+    for i, v in enumerate(credits):
+        oc = f"{o}[{i}]"
+        if not isinstance(v, dict) or not CREDITS_CHAMPS <= set(v) or set(v) - CREDITS_CHAMPS - {"raison"}:
+            r.erreur(oc, "champs attendus : nom, solde_usd, releve_le, expire_le, jours_restants (+ raison)")
+            continue
+        if not isinstance(v["nom"], str) or not v["nom"].strip():
+            r.erreur(oc, "`nom` doit être un texte non vide")
+        solde, jours = v["solde_usd"], v["jours_restants"]
+        if solde is not None and (isinstance(solde, bool) or not isinstance(solde, (int, float)) or solde != solde or solde < 0):
+            r.erreur(oc, "`solde_usd` doit être un nombre positif ou null")
+        if jours is not None and (isinstance(jours, bool) or not isinstance(jours, int) or jours < 0):
+            r.erreur(oc, "`jours_restants` doit être un entier positif ou null")
+        for champ in ("releve_le", "expire_le"):
+            if not _horodatage_ou_null(v[champ]):
+                r.erreur(oc, f"`{champ}` doit être un horodatage ISO 8601 ou null")
+        if v["expire_le"] is None and jours is not None:
+            r.erreur(oc, "`jours_restants` sans `expire_le` : valeur devinée")
+        if (solde is None or v["expire_le"] is None) and not str(v.get("raison") or "").strip():
+            r.erreur(oc, "valeur null sans `raison`")
+
+
 def verifier_comptes(c, ou: str, r: Rapport) -> None:
     """D93 (D71) : bloc `comptes` d'etat.json. Pourcentages entiers de 0 à 100 (ou null avec raison), dates ISO ou null."""
     o = f"{ou} comptes"
@@ -820,14 +850,18 @@ def verifier_comptes(c, ou: str, r: Rapport) -> None:
     if c.get("statut") == "inconnu":
         if not str(c.get("raison") or "").strip():
             r.erreur(o, "`statut: inconnu` sans `raison`")
-        if set(c) - {"statut", "raison"}:
-            r.erreur(o, "`statut: inconnu` n'admet que `statut` et `raison` (aucune valeur devinée)")
+        if set(c) - {"statut", "raison", "credits"}:
+            r.erreur(o, "`statut: inconnu` n'admet que `statut`, `raison` et `credits` (aucune valeur devinée)")
+        if "credits" in c:
+            verifier_credits(c["credits"], o, r)
         return
     if c.get("statut") != "ok":
         r.erreur(o, "`statut` doit valoir ok ou inconnu")
         return
-    if set(c) - {"statut", "source", "releve_le", "quotas"}:
-        r.erreur(o, "champs admis : statut, source, releve_le, quotas (rien de machine ni de wifi)")
+    if set(c) - {"statut", "source", "releve_le", "quotas", "credits"}:
+        r.erreur(o, "champs admis : statut, source, releve_le, quotas, credits (rien de machine ni de wifi)")
+    if "credits" in c:
+        verifier_credits(c["credits"], o, r)
     if not _horodatage_ou_null(c.get("releve_le")):
         r.erreur(o, "`releve_le` doit être un horodatage ISO 8601 ou null")
     q = c.get("quotas")

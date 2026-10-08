@@ -11,6 +11,8 @@ Chaque relevé : {valeur, source, raison} ; `raison` est renseignée quand la va
 Bloc `comptes` (D93, D71) : quotas recopiés de rapports/usage.json (claude.session_5h, claude.semaine, claude.semaine_fable,
 chatgpt.semaine : pct, remise_a_zero, releve_le), seulement si `releves_machine` vaut true dans profil.yaml ; fichier absent ou
 illisible : `comptes: {statut: "inconnu", raison}`. Rien de `machine` ni de `wifi`.
+`comptes.credits` (D102, D71) : crédit de sessions cloud Claude lu en lecture seule dans le bloc `cloud` de `operer --json etat`
+(solde, date du relevé, expiration), jours restants calculés ici ; valeur inconnue = null avec `raison`, jamais devinée.
 Aucun secret (REGLES §5) : ni `env`, ni arguments de commande, ni paramètres d'URL.
 En fin d'exécution, organisation.py écrit aussi raw/organisation.json (D77), hors --dry-run.
 """
@@ -184,6 +186,44 @@ def comptes(racine: Path) -> dict:
     return {"statut": "ok", "source": "rapports/usage.json", "releve_le": releve_global, "quotas": quotas}
 
 
+NOM_CREDIT_CLOUD = "Crédit sessions cloud Claude"
+
+
+def _solde_usd(v) -> float | None:
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or v in (float("inf"), float("-inf")) or v < 0:
+        return None
+    return round(float(v), 2)
+
+
+def credits_cloud(lire_vue=organisation.lire_vue, maintenant: datetime | None = None) -> list[dict]:
+    """D102 : crédit cloud Claude daté, lu dans `operer --json etat` (bloc `cloud`), sans écrire dans OPÉRER ni publier d'identifiant."""
+    credit = {"nom": NOM_CREDIT_CLOUD, "solde_usd": None, "releve_le": None, "expire_le": None, "jours_restants": None}
+    try:
+        cloud = lire_vue("etat").get("cloud")
+    except organisation.LectureImpossible as err:
+        return [{**credit, "raison": f"OPÉRER illisible : {err}"}]
+    if not isinstance(cloud, dict):
+        return [{**credit, "raison": "OPÉRER : bloc cloud absent"}]
+    solde = _solde_usd(cloud.get("solde"))
+    expire = _horodatage(cloud.get("expire"))
+    credit.update(solde_usd=solde, expire_le=expire, releve_le=_horodatage(cloud.get("releve_le")) if solde is not None else None)
+    if expire is not None:
+        try:
+            limite = datetime.fromisoformat(expire.replace("Z", "+00:00"))
+            if limite.utcoffset() is None:
+                credit["expire_le"] = None
+            else:
+                reste = (limite - (maintenant or datetime.now(timezone.utc))).total_seconds() / 86400
+                credit["jours_restants"] = max(int(reste // 1), 0)
+        except ValueError:
+            credit["expire_le"] = None
+    if solde is None:
+        credit["raison"] = "aucun solde cloud relevé dans OPÉRER"
+    elif credit["expire_le"] is None:
+        credit["raison"] = "expiration du crédit inconnue dans OPÉRER"
+    return [credit]
+
+
 def instructions_globales(maison: Path) -> list[dict]:
     res = []
     for nom, chemin in (("CLAUDE.md global", maison / ".claude" / "CLAUDE.md"), ("AGENTS.md global", maison / ".codex" / "AGENTS.md")):
@@ -214,6 +254,7 @@ def main(argv=None) -> int:
     etat = {"pertinent_pour_profil": profil.charger(a.racine)["releves_machine"], **relever()}  # D79 : false sans profil.yaml
     if etat["pertinent_pour_profil"]:
         etat["comptes"] = comptes(a.racine)  # D93 : même condition que les relevés de la machine
+        etat["comptes"]["credits"] = credits_cloud()  # D102
     texte = json.dumps(etat, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
         print(texte)

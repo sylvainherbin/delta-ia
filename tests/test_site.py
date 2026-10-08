@@ -120,3 +120,17 @@ def test_encart_compte_et_quotas():
     css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
     for sel in (".comptes", ".quota.alerte", ".barre span", ".alerte-d71"):
         assert sel in css
+
+
+def test_encart_credit_cloud_avec_echeance():
+    """D102 (D71) : crédit cloud daté sous les quotas, « à utiliser avant le … », alerte à J-14."""
+    app = (DOCS / "assets" / "app.js").read_text(encoding="utf-8")
+    corps = app[app.index("const SEUIL_CREDIT_JOURS"):app.index("function blocComptes")]
+    assert "const SEUIL_CREDIT_JOURS = 14;" in corps and "jours <= SEUIL_CREDIT_JOURS" in corps
+    assert "à utiliser avant le ${jjmmHhmm(cr.expire_le)}" in corps and "crédit expiré le" in corps
+    assert "solde inconnu" in corps and "échéance inconnue" in corps and "innerHTML" not in corps
+    bloc = app[app.index("function blocComptes"):app.index("/* ---------- Tes outils")]
+    assert bloc.count("creditsComptes(c, maintenant)") == 2  # quotas connus et quotas inconnus
+    assert bloc.index("sec.append(liste)") < bloc.index("creditsComptes(c, maintenant)", bloc.index("sec.append(liste)"))
+    css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+    assert ".credit.alerte" in css and ".credits" in css

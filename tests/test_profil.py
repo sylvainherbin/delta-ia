@@ -77,6 +77,7 @@ def test_etat_pertinent_pour_profil(tmp_path, monkeypatch):
                                                                         "profils": {"elements": []}}},
         "mcp_claude_code": {}, "instructions_globales": []})
     monkeypatch.setattr(etat_mod.organisation, "ecrire_releve", lambda racine: None)
+    monkeypatch.setattr(etat_mod, "credits_cloud", lambda: [])  # D102 : pas de lecture du vrai OPÉRER
     for contenu, attendu in ((None, False), ("releves_machine: true\n", True)):
         racine = tmp_path / str(attendu)
         racine.mkdir()

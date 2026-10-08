@@ -227,3 +227,103 @@ def test_valider_comptes(tmp_path):
     assert any("aucune valeur devinée" in x for x in _valider(tmp_path, {**base, "comptes": {"statut": "inconnu", "raison": "x", "quotas": {}}}))
     # comptes absent : accepté (profil sans relevés de la machine)
     assert _valider(tmp_path, base) == []
+
+
+# ---------- D102 : crédit cloud Claude daté (comptes.credits) ----------
+from datetime import datetime, timezone
+
+MAINTENANT = datetime(2026, 10, 8, 15, 30, tzinfo=timezone.utc)
+CLOUD = {"solde": 187.0, "releve_le": "2026-10-08T12:34:30.560755+02:00", "rythme": 15.8, "cible": 6.75,
+         "jours_restants": 27.7, "expire": "2026-11-05T08:59:00+01:00", "rythme_inconnu": None}
+
+
+def _vue(cloud):
+    return lambda nom: {"vue": nom, "cloud": cloud, "elements": [{"mission": "m-0123456789ab"}]}
+
+
+def test_credits_solde_present_recopie_et_calcule_les_jours():
+    (c,) = etat.credits_cloud(_vue(CLOUD), MAINTENANT)
+    assert c == {"nom": "Crédit sessions cloud Claude", "solde_usd": 187.0, "releve_le": CLOUD["releve_le"],
+                 "expire_le": CLOUD["expire"], "jours_restants": 27}
+    assert "m-0123456789ab" not in json.dumps(c)
+
+
+def test_credits_a_14_jours_et_expire():
+    proche = datetime(2026, 10, 22, 9, 0, tzinfo=timezone.utc)  # 14 j moins une heure avant l'expiration
+    assert etat.credits_cloud(_vue(CLOUD), proche)[0]["jours_restants"] == 13
+    apres = datetime(2026, 11, 6, tzinfo=timezone.utc)
+    assert etat.credits_cloud(_vue(CLOUD), apres)[0]["jours_restants"] == 0
+
+
+@pytest.mark.parametrize("cloud, champ, raison", [
+    ({**CLOUD, "solde": None}, "solde_usd", "aucun solde"),
+    ({**CLOUD, "solde": -3}, "solde_usd", "aucun solde"),
+    ({**CLOUD, "solde": True}, "solde_usd", "aucun solde"),
+    ({**CLOUD, "expire": "bientôt"}, "expire_le", "expiration"),
+    ({**CLOUD, "expire": "2026-11-05T08:59:00"}, "expire_le", "expiration"),
+])
+def test_credits_valeur_invalide_est_null_avec_raison(cloud, champ, raison):
+    (c,) = etat.credits_cloud(_vue(cloud), MAINTENANT)
+    assert c[champ] is None and raison in c["raison"]
+    if champ == "expire_le":
+        assert c["jours_restants"] is None
+
+
+def test_credits_operer_absent_illisible_ou_sans_bloc():
+    def absent(nom):
+        raise organisation.LectureImpossible("exécutable operer absent")
+    (c,) = etat.credits_cloud(absent, MAINTENANT)
+    assert c["solde_usd"] is None and c["expire_le"] is None and "operer absent" in c["raison"]
+    (c,) = etat.credits_cloud(lambda nom: {"vue": nom}, MAINTENANT)
+    assert c["solde_usd"] is None and "bloc cloud absent" in c["raison"]
+    (c,) = etat.credits_cloud(lambda nom: {"vue": nom, "cloud": "n'importe quoi"}, MAINTENANT)
+    assert c["solde_usd"] is None
+
+
+def test_credits_lecture_reelle_est_lecture_seule(monkeypatch):
+    appels = []
+
+    def lancer(args, **options):
+        appels.append(args)
+        return subprocess.CompletedProcess(args, 0, json.dumps(_vue(CLOUD)("etat")), "")
+    monkeypatch.setattr(organisation.subprocess, "run", lancer)
+    assert etat.credits_cloud(maintenant=MAINTENANT)[0]["solde_usd"] == 187.0
+    assert appels == [["operer", "--json", "etat"]]
+
+
+def test_main_ajoute_les_credits_aux_comptes(tmp_path, monkeypatch, etat_factice):
+    (tmp_path / "profil.yaml").write_text("releves_machine: true\n", encoding="utf-8")
+    _usage(tmp_path, USAGE)
+    monkeypatch.setattr(etat.organisation, "ecrire_releve", lambda racine: None)
+    vraie = etat.credits_cloud
+    monkeypatch.setattr(etat, "credits_cloud", lambda: vraie(_vue(CLOUD), MAINTENANT))
+    assert etat.main(["--racine", str(tmp_path)]) == 0
+    e = json.loads((tmp_path / "docs" / "data" / "etat.json").read_text(encoding="utf-8"))
+    assert e["comptes"]["credits"][0]["solde_usd"] == 187.0
+    assert _valider(tmp_path, e) == []
+
+
+def test_valider_credits(tmp_path):
+    base = {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {}, "instructions_globales": []}
+    ok = etat.comptes(_usage(tmp_path, USAGE))
+    ok["credits"] = etat.credits_cloud(_vue(CLOUD), MAINTENANT)
+
+    def avec(modif, comptes=ok):
+        c = json.loads(json.dumps(comptes))
+        modif(c["credits"][0])
+        return _valider(tmp_path, {**base, "comptes": c})
+    assert avec(lambda x: None) == []
+    assert any("solde_usd" in x for x in avec(lambda x: x.update(solde_usd=-1)))
+    assert any("solde_usd" in x for x in avec(lambda x: x.update(solde_usd=True)))
+    assert any("jours_restants" in x for x in avec(lambda x: x.update(jours_restants=2.5)))
+    assert any("ISO 8601" in x for x in avec(lambda x: x.update(expire_le="avant le 5 nov")))
+    assert any("ISO 8601" in x for x in avec(lambda x: x.update(releve_le="hier")))
+    assert any("sans `raison`" in x for x in avec(lambda x: x.update(solde_usd=None, releve_le=None)))
+    assert any("devinée" in x for x in avec(lambda x: x.update(expire_le=None, raison="inconnue")))
+    assert any("champs attendus" in x for x in avec(lambda x: x.pop("nom")))
+    assert any("champs attendus" in x for x in avec(lambda x: x.update(mission="m-0123456789ab")))
+    assert any("liste" in x for x in _valider(tmp_path, {**base, "comptes": {**ok, "credits": {}}}))
+    # quotas inconnus : les crédits restent publiables, rien d'autre
+    inconnu = {"statut": "inconnu", "raison": "usage.json absent", "credits": ok["credits"]}
+    assert _valider(tmp_path, {**base, "comptes": inconnu}) == []
+    assert any("n'admet que" in x for x in _valider(tmp_path, {**base, "comptes": {**inconnu, "quotas": {}}}))
