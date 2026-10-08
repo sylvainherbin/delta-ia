@@ -558,7 +558,71 @@
       c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
         el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
     }
+    c.append(blocEnvoi(e));
     return c;
+  }
+  /* ---------- « Envoyer à Delta » (m-944fab565b10) : relais local sur 127.0.0.1 (scripts/relais_reference.py), qui ne lit
+     que l'id et relaie l'entrée de sa base locale vers la porte des idées ; injoignable (téléphone, relais arrêté) : le texte
+     de l'idée est copié pour le lanceur Delta. Le site ne dépend pas du relais (D61). ---------- */
+  const RELAIS = "http://127.0.0.1:47613";
+  const CLE_ENVOIS = "delta.envoisKb";
+  function lireEnvois() {
+    try { const v = JSON.parse(localStorage.getItem(CLE_ENVOIS) || "{}"); return v && typeof v === "object" ? v : {}; }
+    catch (err) { return {}; }
+  }
+  function noterEnvoi(id) {
+    try { const v = lireEnvois(); v[id] = jourLocalIso(new Date()); localStorage.setItem(CLE_ENVOIS, JSON.stringify(v)); }
+    catch (err) { /* sans stockage : l'envoi est fait, seule la mention « envoyée le » se perd */ }
+  }
+  // même phrase d'ouverture que texte_idee() du relais
+  function texteIdeeKb(e) {
+    const cat = KB_NOMS[e.categorie] ? KB_NOMS[e.categorie][0] : String(e.categorie || "référence");
+    return `idée : intégrer la référence Delta-IA « ${texte(e.nom, "(sans nom)")} » (${PRODUITS[e.produit] || String(e.produit || "produit inconnu")}, ${cat}, id ${e.id}) ` +
+      "dans un workflow ou chez un agent de Delta. Juge sa pertinence pour mes projets et, si elle l'est, dis dans quel workflow ou chez quel agent elle entre et ce que ça change.";
+  }
+  async function envoyerADelta(e, bouton, statut) {
+    bouton.disabled = true;
+    bouton.textContent = "Envoi…";
+    statut.textContent = "";
+    let r = null;
+    try {
+      const rep = await fetch(`${RELAIS}/reference`, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: e.id }), signal: AbortSignal.timeout(25000) });
+      r = await rep.json();
+    } catch (err) { r = null; }
+    if (r && r.ok === true) {
+      noterEnvoi(e.id);
+      bouton.textContent = "Envoyée";
+      statut.textContent = "Delta juge sa pertinence ; la suite arrive comme pour une idée.";
+      return;
+    }
+    bouton.disabled = false;
+    bouton.textContent = "Envoyer à Delta";
+    if (r) { statut.textContent = `Delta n'a pas pris la référence : ${texte(r.detail, String(r.etape || "refus"))}`; return; }
+    // relais injoignable (téléphone, relais arrêté, accès au réseau local refusé) : le texte de l'idée pour le lanceur
+    statut.textContent = "Relais de bureau injoignable : l'envoi direct ne marche que depuis l'ordinateur où tourne Delta.";
+    if (await copierIdeeKb(e)) { statut.textContent = "Relais de bureau injoignable : idée copiée, colle-la dans le lanceur Delta."; return; }
+    const copier = el("button", { type: "button", class: "envoi-delta", text: "Copier l'idée" });
+    copier.addEventListener("click", async () => {
+      statut.textContent = (await copierIdeeKb(e)) ? "Idée copiée : colle-la dans le lanceur Delta." : "Copie refusée par le navigateur.";
+      copier.remove();
+    });
+    statut.after(copier);
+  }
+  // le presse-papier peut rester en attente sans geste récent de l'utilisateur : 1,5 s au plus
+  async function copierIdeeKb(e) {
+    try {
+      await Promise.race([navigator.clipboard.writeText(texteIdeeKb(e)), new Promise((_, non) => setTimeout(() => non(new Error("délai")), 1500))]);
+      return true;
+    } catch (err) { return false; }
+  }
+  function blocEnvoi(e) {
+    const jour = lireEnvois()[e.id];
+    const statut = el("span", { class: "envoi-statut", role: "status", text: typeof jour === "string" ? `envoyée à Delta le ${dateFr(jour)}` : "" });
+    const b = el("button", { type: "button", class: "envoi-delta", text: "Envoyer à Delta",
+      title: "Delta juge la pertinence de cette référence et, si elle l'est, l'oriente vers un workflow ou un agent" });
+    b.addEventListener("click", () => envoyerADelta(e, b, statut));
+    return el("div", { class: "envoi" }, b, statut);
   }
   // D64-bis : péremption par ctx-id de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
   function badgeContexte(e) {
