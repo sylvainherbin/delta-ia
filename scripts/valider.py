@@ -732,7 +732,7 @@ def verifier_recent(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> 
 
 
 def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:
-    """D102 : docs/data/kb/a-tester.json (essais de la base, verdicts tester puis utiliser, deux périmètres réunis). Absent :
+    """D103 : docs/data/kb/a-tester.json (essais de la base, verdicts tester puis utiliser, deux périmètres réunis). Absent :
     accepté (l'onglet « À tester » s'en passe) ; présent : schéma, tri, plafond, et chaque entrée de ce périmètre existe."""
     from deltalib.kb.catalogue import A_TESTER_MAX, A_TESTER_VERDICTS, chemin_a_tester
     from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE

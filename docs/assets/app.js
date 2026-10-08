@@ -476,7 +476,7 @@
     } catch (err) { etat.kbRecent = null; }
     return etat.kbRecent;
   }
-  // D102 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message
+  // D103 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message
   async function chargerATesterKb() {
     if (etat.kbATester !== undefined) return etat.kbATester;
     try {

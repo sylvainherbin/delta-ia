@@ -1,4 +1,4 @@
-"""D102 : docs/data/kb/a-tester.json, fichier léger des essais de la base lu par l'onglet « À tester »."""
+"""D103 : docs/data/kb/a-tester.json, fichier léger des essais de la base lu par l'onglet « À tester »."""
 
 import hashlib
 import json

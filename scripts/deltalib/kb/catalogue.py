@@ -66,7 +66,7 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         tmp.replace(d / f"{cat}.json")
     ecrire_recent(racine)  # D99 : vue légère des ajouts récents, des deux périmètres réunis
-    ecrire_a_tester(racine)  # D102 : essais de la base (verdicts tester et utiliser) pour l'onglet « À tester »
+    ecrire_a_tester(racine)  # D103 : essais de la base (verdicts tester et utiliser) pour l'onglet « À tester »
 
 
 MENTION_ADOPTION = "adoption déclarée, PROGRESSION.md"
@@ -219,7 +219,7 @@ def ecrire_recent(racine: Path, jour: str | None = None) -> dict:
     return doc
 
 
-A_TESTER_MAX = 300  # D102 : plafond d'entrées (≈ 140 Ko) ; au-delà, les `utiliser` puis les plus anciennes sont coupées
+A_TESTER_MAX = 300  # D103 : plafond d'entrées (≈ 140 Ko) ; au-delà, les `utiliser` puis les plus anciennes sont coupées
 A_TESTER_VERDICTS = ("tester", "utiliser")  # ordre d'affichage : `tester` d'abord
 
 
@@ -228,7 +228,7 @@ def chemin_a_tester(racine: Path) -> Path:
 
 
 def construire_a_tester(entrees: list[dict], jour: str | None = None) -> dict:
-    """D102 : essais de la base pour l'onglet « À tester ». Entrées commentées non retirées au verdict `tester`, puis au
+    """D103 : essais de la base pour l'onglet « À tester ». Entrées commentées non retirées au verdict `tester`, puis au
     verdict `utiliser` quand l'usage n'est pas déjà `utilise` (pas encore essayées) ; verdict `tester` d'abord, puis date
     d'ajout décroissante (inconnue en dernier), nom puis id ; au plus A_TESTER_MAX. `total` = entrées retenues avant coupe."""
     jour = jour or date.today().isoformat()
