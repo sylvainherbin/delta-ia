@@ -235,7 +235,7 @@ def test_d68_skill_et_reglages():
         assert "-c" not in r.split(), r
     # chaque commande nommée par la section automatique a sa règle
     for cmd in ("git pull --rebase", "git push", "date +%F", "sha1sum CONTEXTE.md",
-                "git add docs/data/claude state/claude.json docs/data/kb/claude docs/data/kb/recent.json docs/data/versions.json docs/data/etat.json",
+                "git add docs/data/claude state/claude.json docs/data/kb/claude docs/data/kb/recent.json docs/data/kb/a-tester.json docs/data/versions.json docs/data/etat.json",
                 "git add docs/data/actu state/actu.json docs/data/semaine"):
         assert f"Bash({cmd})" in allow and f"`{cmd}`" in sec.replace("\n", " ") or f"Bash({cmd})" in allow, cmd
     assert {"Bash(git push --force *)", "Bash(git add -A *)"} <= set(s["permissions"]["deny"])
@@ -282,7 +282,7 @@ def test_d68_correctif_mcp_et_arret_propre():
     assert "Grep et Glob n'existent pas dans les sessions Claude Desktop" in skill
     sec = skill[skill.index("## Mode automatique (D68)"):skill.index("## 0. Préparation")]
     arret_suivis = ("git checkout -- docs/data/versions.json docs/data/etat.json docs/data/claude docs/data/actu "
-                    "docs/data/kb/claude docs/data/kb/recent.json state/claude.json state/actu.json")
+                    "docs/data/kb/claude docs/data/kb/recent.json docs/data/kb/a-tester.json state/claude.json state/actu.json")
     arret_nouveaux = "git clean -f -- docs/data/claude docs/data/actu docs/data/semaine"
     arret_semaine = "git checkout -- docs/data/semaine"  # D98 : séparé, git refuse tout un checkout si un chemin n'est pas encore suivi
     assert f"`{arret_semaine}`" in sec

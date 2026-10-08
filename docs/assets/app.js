@@ -14,7 +14,7 @@
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
-  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null };
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50 };
   const main = document.getElementById("contenu");
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
@@ -476,6 +476,15 @@
     } catch (err) { etat.kbRecent = null; }
     return etat.kbRecent;
   }
+  // D102 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message
+  async function chargerATesterKb() {
+    if (etat.kbATester !== undefined) return etat.kbATester;
+    try {
+      const d = await lireJson("data/kb/a-tester.json");
+      etat.kbATester = d && Array.isArray(d.entrees) ? d : null;
+    } catch (err) { etat.kbATester = null; }
+    return etat.kbATester;
+  }
   async function chargerKb() {
     if (etat.kb) return;
     const t0 = performance.now();
@@ -613,6 +622,61 @@
     frag.append(el("div", { id: "kb-resultats" }));
     return frag;
   }
+  const ESSAIS_PAGE = 50;
+  // carte d'un essai de la base : usage et exemple en code, pourquoi, date d'ajout, case « fait » (même stockage local que les actions)
+  function carteEssai(e, surFait) {
+    const faits = lireFaits();
+    const id = String(e.id || "");
+    const c = el("li", { class: "carte kb essai" + (faits[id] ? " fait" : "") });
+    const verdict = VERDICTS[e.verdict] ? e.verdict : null;
+    c.append(el("div", { class: "badges" },
+      badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
+      badge("type", KB_CATEGORIES[e.categorie] || String(e.categorie || "?")),
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict]) : null));
+    c.append(el("h4", { text: texte(e.nom, "(sans nom)") }));
+    if (ISO_JOUR.test(e.date_ajout || "")) c.append(el("div", { class: "meta", text: `ajoutée le ${dateFr(e.date_ajout)}` }));
+    if (texte(e.usage)) {
+      c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? "Accès" : "Syntaxe" }));
+      c.append(el("pre", { class: "usage" + (e.usage_nature === "etapes" ? " etapes" : "") }, el("code", { text: String(e.usage) })));
+    }
+    if (texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
+    if (texte(e.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.pourquoi })));
+    const caseFait = el("input", { type: "checkbox" });
+    caseFait.checked = Boolean(faits[id]);
+    caseFait.addEventListener("change", () => {
+      ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked);
+      if (surFait) surFait();
+    });
+    c.append(el("div", { class: "action" }, el("label", null, caseFait, "Fait")));
+    return c;
+  }
+  // section « Essais de la base » : tester d'abord, puis date d'ajout décroissante (ordre du fichier) ; les faits dans une section repliée
+  function sectionEssais(doc) {
+    const sec = el("section", { class: "essais-base" });
+    const faits = lireFaits();
+    const entrees = doc.entrees.filter((e) => e && typeof e === "object" && e.id);
+    const ouverts = entrees.filter((e) => !faits[String(e.id)]);
+    const faitsListe = entrees.filter((e) => faits[String(e.id)]);
+    const surFait = () => rendre();
+    sec.append(el("h3", { class: "compte-actions", text: `Essais de la base (${ouverts.length})` }),
+      el("p", { class: "sous-titre", text: "Entrées de la base de référence au verdict « à tester », puis « à utiliser » pas encore utilisées. La case « fait » reste dans ce navigateur." }));
+    if (doc.tronque === true) sec.append(el("p", { class: "doux", text: `Liste coupée : ${entrees.length} essais affichables sur ${doc.total}.` }));
+    const ul = el("ul", { class: "liste" }, ...ouverts.slice(0, etat.essaisLimite).map((e) => carteEssai(e, surFait)));
+    sec.append(ouverts.length ? ul : el("p", { class: "vide", text: "Aucun essai ouvert." }));
+    if (ouverts.length > etat.essaisLimite) {
+      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(ESSAIS_PAGE, ouverts.length - etat.essaisLimite)} de plus` });
+      b.addEventListener("click", () => { etat.essaisLimite += ESSAIS_PAGE; rendre(); });
+      sec.append(b);
+    }
+    if (faitsListe.length) {
+      const d = el("details", { class: "actions-faites" }, el("summary", { text: `Essais faits (${faitsListe.length})` }),
+        el("ul", { class: "liste" }, ...faitsListe.map((e) => carteEssai(e, surFait))));
+      d.open = etat.essaisFaitsOuverts === true;
+      d.addEventListener("toggle", () => { etat.essaisFaitsOuverts = d.open; });
+      sec.append(d);
+    }
+    return sec;
+  }
   function pageATester() {
     const frag = document.createDocumentFragment();
     frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Les actions proposées. La case « fait » n'est enregistrée que dans ce navigateur." }), noteFenetre());
@@ -632,6 +696,7 @@
       d.addEventListener("toggle", () => { etat.faitesOuvertes = d.open; });
       frag.append(d);
     }
+    if (etat.kbATester && etat.kbATester.entrees.length) frag.append(sectionEssais(etat.kbATester));
     return frag;
   }
   function pageArchives() {
@@ -787,6 +852,7 @@
     lireRoute();
     await chargerNecessaire();
     if (etat.page === "reference") await chargerKb();
+    if (etat.page === "a-tester") await chargerATesterKb();
     if (etat.page === "semaine") await chargerSemaine();
     if (etat.page === "aujourdhui") await Promise.all([chargerVersions(), chargerComptes()]);
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
