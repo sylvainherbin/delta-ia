@@ -59,7 +59,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, `/add-dir` vers le dossier chatgpt-trading-sim donnerait accès aux missions `NEXT-CLAUDE-MISSION-*` sans relancer la session ailleurs ; vérifier ensuite que la lecture d'une mission marche dans le même tour."
+    "pourquoi": "Dans la session herbin-trading (dossier `~/projets/trading-sim`), `/add-dir` vers le dossier chatgpt-trading-sim donnerait accès aux missions `NEXT-CLAUDE-MISSION-*` sans relancer la session ailleurs ; vérifier ensuite que la lecture d'une mission marche dans le même tour."
    },
    "sources": [
     {
@@ -72,7 +72,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -93,17 +93,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "missions `NEXT-CLAUDE-MISSION-*` dans un dossier local hors git"
+     "pourquoi": "Missions `NEXT-CLAUDE-MISSION-*` dans un dossier local hors git ; Claude Code exécute."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions trading-sim"
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "herbin-trading a son propre dossier de travail `~/projets/trading-sim`."
     }
    }
   },
@@ -135,7 +139,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -184,13 +188,17 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "methode.missions": {
-     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
-     "pourquoi": "`mission-dev --advisor` et `regler-advisor` règlent le conseiller Opus ; il ne survit pas à un `/clear`."
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+     "pourquoi": "`mission-dev --advisor` et `regler-advisor` règlent le conseiller Opus ; il ne survit pas à un `/clear`, d'où le réglage avant chaque mission."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
@@ -272,7 +280,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu utilises les artefacts dans Claude : dans la session herbin-delta, `/artifacts` puis Entrée sur une maquette de Claude Design l'attacherait à la session sans recopier son contenu à la main."
+    "pourquoi": "Tu utilises les artefacts dans Claude : dans la session Design sous tmux, `/artifacts` puis Entrée sur une maquette de Claude Design l'attacherait à la session sans recopier son contenu à la main ; vérifier que la session lit bien l'artefact attaché."
    },
    "sources": [
     {
@@ -285,7 +293,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -314,20 +322,24 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
      "pourquoi": "Claude : artefacts utilisés."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-delta (Dev-delta) développe la web app delta-ia."
+    "methode.juger-design": {
+     "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+     "pourquoi": "Design (Claude Design dans Claude Desktop, et session Design sous tmux) construit les interfaces du bureau Delta et de la console."
     },
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Claude Design utilisé intensivement pour les interfaces Delta."
     }
    }
@@ -343,11 +355,11 @@
    "usage": "/auto-mode-setup",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Team",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Lancer `/auto-mode-setup` dans herbin-mint et relire le brouillon : décrire l'environnement réel de la machine pourrait réduire les blocages d'écritures système du mode auto. Le brouillon validé va dans les réglages utilisateur, donc pour toutes les sessions."
+    "verdict": "ignorer",
+    "pourquoi": "Depuis le 06/10, tes sessions locales tournent en `bypassPermissions`, ce qui a levé la friction du classifieur du mode auto ; seule trading en est exclue et CONTEXTE ne dit pas qu'elle utilise le mode auto. Le brouillon validé irait dans les réglages utilisateur, donc pour toutes les sessions."
    },
    "sources": [
     {
@@ -360,7 +372,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -381,17 +393,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "classificateur du mode auto qui bloque certaines écritures système"
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint gère système et réseau"
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Refus du classifieur du mode auto : friction levée le 06/10 par le régime bypassPermissions."
     }
    }
   },
@@ -410,7 +426,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, `/autocompact 300k` puis comparer `/usage` sur une semaine : une fenêtre plus basse réduirait le contexte envoyé à chaque tour, au prix de compactions plus fréquentes. La valeur est enregistrée dans les réglages utilisateur, donc pour toutes les sessions ; `auto` revient au réglage du modèle."
+    "pourquoi": "Sur la session herbin-trading, `/autocompact 300k` puis comparer le quota hebdomadaire sur une semaine : une fenêtre plus basse réduirait le contexte envoyé à chaque tour, au prix de compactions plus fréquentes. Effet de bord : la valeur est enregistrée dans les réglages utilisateur, donc pour toutes les sessions ; `auto` revient au réglage du modèle."
    },
    "sources": [
     {
@@ -423,7 +439,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -444,17 +460,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "sessions longues reprises par `claude --resume`"
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables reprises par `claude --resume <id>`, donc longues."
     },
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage hebdomadaire parmi les frictions"
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : la consommation approche les plafonds hebdomadaires ; étaler la charge."
     }
    }
   },
@@ -557,7 +577,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, essayer une variante d'une mission (autre paramétrage de campagne) sans polluer la conversation principale, puis revenir à l'original si l'audit la rejette."
+    "pourquoi": "Sur une mission trading-sim, `/branch variante` avant d'essayer un autre paramétrage de campagne, puis `/resume` pour revenir à l'original si l'audit Codex la rejette ; les worktrees séparent déjà le code, `/branch` séparerait la conversation."
    },
    "sources": [
     {
@@ -570,7 +590,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -591,17 +611,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "révisions de spécification gelées puis rejetées par l'audit"
+     "pourquoi": "Révisions de spécification gelées puis rejetées par l'audit ; cycles longs de vérification."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions"
+    "methode.missions": {
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+     "pourquoi": "Une branche et un worktree git par mission."
     }
    }
   },
@@ -837,7 +861,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "L'extension Chrome est souvent déconnectée : `/chrome` est le premier endroit où vérifier son état avant de relancer une tâche navigateur."
+    "pourquoi": "L'extension Chrome est souvent déconnectée : la prochaine fois, taper `/chrome` dans la session concernée pour lire son état et la reconnecter avant de relancer la tâche navigateur, hors trading-sim qui interdit le navigateur."
    },
    "sources": [
     {
@@ -850,7 +874,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -867,13 +891,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "extension Chrome souvent déconnectée"
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Extension Chrome souvent déconnectée parmi les frictions récurrentes."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "`.claude/settings.json` interdit le navigateur sur ce projet."
     }
    }
   },
@@ -905,7 +937,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -934,13 +966,17 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
-     "pourquoi": "Services `claude-session@<nom>` : `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services `claude-session@<nom>` : `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée, modèle et effort par rôle."
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
@@ -1239,8 +1275,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Le classificateur du mode auto bloque certaines écritures système ; lire les règles concernées, en lecture seule, permet de comprendre pourquoi avant de retoucher `autoMode`."
+    "verdict": "ignorer",
+    "pourquoi": "Le classifieur du mode auto ne s'applique plus à tes sessions locales, passées en `bypassPermissions` le 06/10 (trading exceptée, sans mode décrit dans CONTEXTE) : lire ses règles n'aurait plus d'usage."
    },
    "sources": [
     {
@@ -1253,7 +1289,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1266,10 +1302,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Refus du classifieur du mode auto : friction levée le 06/10 par le régime bypassPermissions."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-auto-mode-reset",
@@ -1580,7 +1629,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-mint, après une mise à jour ou une coupure Wi-Fi, vérifier d'un coup l'installation native et l'éligibilité Remote Control des sessions ; le mécanisme de mise à jour reste inconnu dans CONTEXTE."
+    "pourquoi": "Après le prochain `claude update`, lancer `claude doctor` depuis herbin-mint : il dirait d'un coup si l'installation native est saine, si un fichier de réglages est invalide et si Remote Control reste éligible pour tes services, sans ouvrir de session."
    },
    "sources": [
     {
@@ -1593,7 +1642,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1606,10 +1655,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Installation mise à jour par `claude update` ; mécanisme exact des mises à jour inconnu."
+    },
+    "methode.organisation": {
+     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+     "pourquoi": "herbin-mint gère la machine (installations, services, réglages)."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services `claude-session@<nom>` lancés avec `--remote-control <nom>`."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-import-source",
@@ -2190,7 +2256,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2219,13 +2285,17 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
-     "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque service relance sa session par `claude --resume <id>` sous tmux."
     }
    }
   },
@@ -2493,10 +2563,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "`autoUpdates` est à `false` et le mécanisme de la mise à jour du 22/09 reste inconnu ; l'ajouter au skill maintenance-mint de herbin-mint rendrait la mise à jour explicite."
+    "verdict": "utiliser",
+    "pourquoi": "`autoUpdates` vaut `false`, et tes mises à jour natives passent par `claude update` depuis le 22/09 ; tes services déjà lancés garderaient l'ancienne version jusqu'à leur redémarrage."
    },
    "sources": [
     {
@@ -2509,7 +2579,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2522,10 +2592,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "`autoUpdates: false` ; mise à jour native réussie le 22/09 et suivies depuis par `claude update`."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-clear",
@@ -2555,7 +2634,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2592,12 +2671,16 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "methode.missions": {
-     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
      "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant une mission ; le conseiller ne survit pas à un `/clear`."
     },
     "methode.organisation": {
@@ -2621,7 +2704,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une couleur par session (herbin-trading, herbin-mint, delta-ia…) aide à les distinguer d'un coup d'œil depuis l'iPhone, grâce à la synchronisation Remote Control."
+    "pourquoi": "Donner une couleur par rôle (`/color purple` sur un chef, `/color cyan` sur Dev-delta) puis vérifier depuis l'iPhone que claude.ai/code les distingue d'un coup d'œil, grâce à la synchronisation Remote Control."
    },
    "sources": [
     {
@@ -2634,7 +2717,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2647,10 +2730,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_sections": {
+    "methode.organisation": {
+     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+     "pourquoi": "Un chef par projet, des devs (Dev-delta, Dev-discipline), une session Design."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control."
+    }
+   }
   },
   {
    "id": "claude-code-commandes-compact",
@@ -3139,7 +3235,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes services fixent un effort par rôle (par exemple `--effort medium` pour le chef) ; `/effort status` le vérifie depuis l'iPhone et `/effort <niveau>` le relève pour une seule mission lourde, ce qui étale les limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
+    "pourquoi": "Tes services fixent un effort par rôle au lancement (par exemple `--effort medium` pour le chef) ; `/effort status` le vérifie depuis l'iPhone et `/effort <niveau>` l'ajuste pour une seule mission, ce qui étale les limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
    },
    "sources": [
     {
@@ -3152,7 +3248,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3221,12 +3317,16 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Selon le rôle, chaque session a un modèle et un effort propres, par exemple `--model opus --effort medium` pour le chef."
     },
     "optimisation.pistes": {
@@ -3422,7 +3522,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Taper `/focus on` depuis l'iPhone sur la session herbin-trading pendant une mission, puis vérifier que seul le résumé et la réponse finale s'affichent ; la variante Remote Control ne vaut que pour la session, alors que `/focus` au terminal enregistre le choix pour toutes les sessions."
+    "pourquoi": "Taper `/focus on` depuis l'iPhone sur la session herbin-trading pendant une mission, puis vérifier que seuls le résumé et la réponse finale s'affichent ; la variante Remote Control ne vaut que pour la session, alors que `/focus` au terminal enregistre le choix pour toutes les sessions."
    },
    "sources": [
     {
@@ -3435,7 +3535,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3452,17 +3552,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "L'iPhone est l'interface principale de pilotage."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "L'iPhone est l'interface principale de pilotage (Remote Control, notifications push)."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions longues de trading-sim."
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "herbin-trading travaille dans `~/projets/trading-sim`."
     }
    }
   },
@@ -4278,7 +4382,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4339,16 +4443,20 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; Opus seulement en conseiller des missions de construction."
     },
     "env.multi-sessions": {
-     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    }
@@ -5040,7 +5148,7 @@
    "usage": "/remote-control",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Abonnement claude.ai",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
@@ -5057,7 +5165,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5102,16 +5210,20 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "`/remote-control` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
     "env.multi-sessions": {
-     "sha1": "fb505cf1ac2228d2bd45be758522c5dde5696559",
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande ; pilotage depuis l'iPhone par Remote Control."
     }
    }
