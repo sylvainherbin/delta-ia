@@ -10,6 +10,9 @@ Usage :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
                                                                d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
+  catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 10 entrées commentées de syntaxe sans exemple
+                                                               (commandes, fonctionnalites, skills, mcp ; dans chacune `utiliser`,
+                                                               `tester`, puis `ignorer`) ; appliquer reçoit {id: {exemple, exemple_origine}}
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py rejugements [--perimetre P] [--json]            D78 : suivi du rattrapage, lecture seule, sans réseau ;
                                                                par demande et par périmètre : ids listés, dus, recommentés,
@@ -19,7 +22,9 @@ Usage :
                                                                « Adoptions » de PROGRESSION.md, consigné dans historique
   catalogue.py appliquer --perimetre P --fichier commentaires.json
       commentaires = {id: {description, statut_usage, recommandation: {verdict, pourquoi},
-                           contexte_sections: {ctx-id: "pourquoi, une ligne, 160 car. max"}, exemple?, disponibilite?}}
+                           contexte_sections: {ctx-id: "pourquoi, une ligne, 160 car. max"}, exemple?, exemple_origine?, disponibilite?}}
+      exemple non nul : exemple_origine = source (recopié de la documentation) ou compose (D91) ; {id: {exemple, exemple_origine}}
+      seuls, sur une entrée déjà commentée, ajoutent l'exemple (lot exemples)
       (ctx-id : `scripts/contexte.py` ; {} si le jugement ne dépend d'aucune section ; D64-bis)
       `usage` n'est jamais modifiable par un commentaire.
 """
@@ -126,6 +131,10 @@ def main(argv=None) -> int:
                 source = ", rattrapage D78" if plafond > cat.PERIMEES_MAX else ""
                 print(f"{'perimees':<22} {'(D64bis/D78)':<8} {min(len(tout), plafond):>4} entrées ce lancement sur {len(tout)} dues "
                       f"(a section {n['a']}, adoption {n['adoption']}, rejugement {n['rejugement']}) ; plafond {plafond}{source}")
+        sans = cat.exemples_detail(entrees, maximum=None)
+        if sans:
+            print(f"{'exemples':<22} {'(D91)':<8} {min(len(sans), cat.EXEMPLES_MAX):>4} entrées ce lancement sur {len(sans)} sans exemple ; "
+                  f"plafond {cat.EXEMPLES_MAX}")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
@@ -140,12 +149,16 @@ def main(argv=None) -> int:
             lot = {"ids": [x["id"] for x in det]}
             motifs = {x["id"]: x["motif"] for x in det}
             a.tout = True
+        elif a.lot == "exemples":
+            lot = {"ids": cat.exemples_detail(entrees)}
+            a.tout = True
         else:
             lot = next((l for l in cat.lots(entrees, a.perimetre) if l["lot"] == a.lot), None)
         if lot is None:
             p.error(f"lot inconnu : {a.lot!r} (voir `catalogue.py lots`)")
         champs = ["id", "produit", "categorie", "nom", "gabarit", "usage", "usage_nature", "description_source", "sources", "groupe",
-                  "description", "statut_usage", "recommandation", "exemple", "contexte_empreinte", "contexte_sections"]
+                  "description", "statut_usage", "recommandation", "exemple", "exemple_origine", "contexte_empreinte",
+                  "contexte_sections"]
         sortie = [{**{k: entrees[i].get(k) for k in champs}, **({"motif": motifs[i]} if i in motifs else {})}
                   for i in lot["ids"] if a.tout or not entrees[i].get("commentee")]
         json.dump(sortie, sys.stdout, ensure_ascii=False, indent=1)

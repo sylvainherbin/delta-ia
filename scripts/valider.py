@@ -407,6 +407,7 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
              "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "contexte_sections", "retiree",
              "origine", "groupe", "maj_le", "historique"}
+CHAMPS_KB_FACULTATIFS = {"exemple_origine"}  # D91 : présent seulement quand un exemple a été écrit sous la règle de provenance
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
 MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
 LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
@@ -420,12 +421,14 @@ def est_francais(texte: str) -> bool:
 
 
 def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
+    from deltalib.kb.catalogue import ORIGINES_EXEMPLE
     from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE, STATUTS_USAGE, VERDICTS, gabarit_de
     if perimetre not in PRODUITS_PAR_PERIMETRE:
         r.erreur("kb", f"pas de base de référence pour le périmètre {perimetre!r}")
         return set()
     dossier = racine / "docs" / "data" / "kb" / perimetre
     ids: set[str] = set()
+    sans_exemple = 0
     for cat in CATEGORIES:
         chemin = dossier / f"{cat}.json"
         ou = f"kb/{perimetre}/{cat}.json"
@@ -454,8 +457,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
             if manquants:
                 r.erreur(o, f"champs manquants : {sorted(manquants)}")
                 continue
-            if set(e) - CHAMPS_KB:
-                r.erreur(o, f"champs inconnus : {sorted(set(e) - CHAMPS_KB)}")
+            if set(e) - CHAMPS_KB - CHAMPS_KB_FACULTATIFS:
+                r.erreur(o, f"champs inconnus : {sorted(set(e) - CHAMPS_KB - CHAMPS_KB_FACULTATIFS)}")
             if e["id"] in ids:
                 r.erreur(o, "identifiant en double dans la base")
             ids.add(e["id"])
@@ -473,6 +476,18 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                 r.erreur(o, "`usage` vide")
             if e["usage_nature"] not in ("syntaxe", "etapes"):
                 r.erreur(o, f"`usage_nature` doit valoir syntaxe ou etapes : {e['usage_nature']!r}")
+            exemple, origine = e["exemple"], e.get("exemple_origine")
+            if exemple is not None and not (isinstance(exemple, str) and exemple.strip()):
+                r.erreur(o, "`exemple` : texte non vide ou null")
+            elif origine is not None and origine not in ORIGINES_EXEMPLE:
+                r.erreur(o, f"`exemple_origine` doit valoir source ou compose : {origine!r}")
+            elif origine is not None and exemple is None:
+                r.erreur(o, "`exemple_origine` sans `exemple`")
+            elif origine is not None and e["usage_nature"] != "syntaxe":
+                r.erreur(o, "`exemple_origine` sur une entrée dont `usage_nature` est `etapes` (exemple: null)")
+            if (cat in ("commandes", "fonctionnalites") and e["retiree"] is not True and e["usage_nature"] == "syntaxe"
+                    and not (isinstance(exemple, str) and exemple.strip())):
+                sans_exemple += 1
             src = e["sources"]
             if not isinstance(src, list) or not src or not all(
                     isinstance(s, dict) and str(s.get("url", "")).startswith(("http://", "https://")) and s.get("libelle")
@@ -509,6 +524,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                     r.erreur(o, "entrée commentée sans `recommandation` {verdict, pourquoi}")
                 elif len(rec["pourquoi"]) > lim["pourquoi"]:
                     r.erreur(o, f"`pourquoi` trop long pour le gabarit {e['gabarit']}")
+    if sans_exemple:  # D91 : avertissement seulement, jamais un arrêt
+        r.avertissement(f"kb/{perimetre}", f"{sans_exemple} entrées commandes/fonctionnalités sans exemple")
     verifier_journal(dossier / "reevaluations.jsonl", f"kb/{perimetre}/reevaluations.jsonl", ids, r)
     return ids
 
@@ -731,6 +748,8 @@ def main(argv: list[str] | None = None) -> int:
         ids = verifier_kb(args.racine, args.perimetre, rapport)
         if rapport.ok:
             print(f"valider.py : base de référence {args.perimetre} valide ({len(ids)} entrées)")
+            for a in rapport.avertissements:  # D91 : ne change pas le code de sortie
+                print(f"! AVERTISSEMENT {a}")
             return 0
         print(f"valider.py : {len(rapport.erreurs)} erreur(s) dans la base {args.perimetre}", file=sys.stderr)
         for e in rapport.erreurs[:200]:

@@ -464,6 +464,55 @@ def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, depreci
     return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum, rejugements=rejugements)]
 
 
+EXEMPLES_MAX = 10  # D91 : exemples à produire par lancement, en plus de `perimees` et des lots ordinaires
+EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp")  # ordre de traitement du lot `exemples`
+ORIGINES_EXEMPLE = ("source", "compose")
+CHAMPS_EXEMPLE = {"exemple", "exemple_origine"}
+
+
+def sans_exemple(e: dict) -> bool:
+    """D91 : entrée commentée, de syntaxe, de l'une des catégories du lot `exemples`, sans exemple ; une entrée dont
+    `usage_nature` est `etapes` n'a jamais d'exemple et n'est donc jamais due."""
+    return (bool(e.get("commentee")) and not e.get("retiree") and e.get("categorie") in EXEMPLES_CATEGORIES
+            and e.get("usage_nature") == "syntaxe" and not str(e.get("exemple") or "").strip())
+
+
+def exemples_detail(entrees: dict[str, dict], maximum: int | None | Literal["auto"] = "auto") -> list[str]:
+    """D91 : lot `exemples`. Catégories dans l'ordre de EXEMPLES_CATEGORIES, puis dans chacune les verdicts `utiliser`,
+    `tester`, `ignorer` (une entrée sans verdict en dernier), puis l'identifiant. Plafond EXEMPLES_MAX par défaut,
+    `maximum=None` pour compter toutes les entrées dues."""
+    if maximum == "auto":
+        maximum = EXEMPLES_MAX
+    rang = {"utiliser": 0, "tester": 1, "ignorer": 2}
+    dues = [k for k, e in entrees.items() if sans_exemple(e)]
+    dues.sort(key=lambda k: (EXEMPLES_CATEGORIES.index(entrees[k]["categorie"]),
+                             rang.get((entrees[k].get("recommandation") or {}).get("verdict"), 3), k))
+    return dues if maximum is None else dues[:maximum]
+
+
+def options_hors_source(exemple: str, e: dict) -> list[str]:
+    """D91 : options longues (`--option`) d'un exemple composé qui ne figurent ni dans `usage` ni dans `description_source`."""
+    source = f"{e.get('usage') or ''}\n{e.get('description_source') or ''}"
+    return sorted({o for o in re.findall(r"(?<![\w-])--[A-Za-z][\w-]*", exemple) if o not in source})
+
+
+def verifier_exemple(e: dict, exemple, origine) -> str | None:
+    """D91 : message d'erreur si (exemple, exemple_origine) viole la règle de provenance pour l'entrée `e`, sinon None."""
+    if exemple is None or (isinstance(exemple, str) and not exemple.strip()):
+        return "`exemple_origine` sans `exemple`" if origine is not None else None
+    if not isinstance(exemple, str):
+        return "`exemple` doit être un texte ou null"
+    if e.get("usage_nature") != "syntaxe":
+        return "pas d'exemple pour une entrée dont `usage_nature` est `etapes` (exemple: null)"
+    if origine not in ORIGINES_EXEMPLE:
+        return f"`exemple_origine` attendu avec un exemple : {' ou '.join(ORIGINES_EXEMPLE)}"
+    if origine == "compose":
+        hors = options_hors_source(exemple, e)
+        if hors:
+            return f"exemple composé : option(s) absente(s) de `usage` et de la source : {', '.join(hors)}"
+    return None
+
+
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
     """Lots D46, D50, D51 : par valeur décroissante ; paramètres en quarts ; catégorie complète coupée en deux
     au-delà du seuil de son gabarit ; skills, plugins et MCP regroupés pour openai."""
@@ -499,7 +548,9 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
 def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
                            contexte: str | None = None, resoudre=None, journal: list | None = None,
                            motif_de=None) -> list[str]:
-    """Applique {id: {description, statut_usage, recommandation, exemple?, disponibilite?}} ; jamais `usage`.
+    """Applique {id: {description, statut_usage, recommandation, exemple?, exemple_origine?, disponibilite?}} ; jamais `usage`.
+    D91 : `exemple` non nul exige `exemple_origine` (`source` ou `compose`) ; {exemple, exemple_origine} seuls, sur une entrée
+    déjà commentée, ajoutent l'exemple sans refaire le commentaire (historique « exemple ajouté »).
     `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
     `resoudre` (D64-bis) : fonction {ctx-id: pourquoi} -> {ctx-id: {sha1, pourquoi}} ; quand elle est fournie, chaque
     commentaire doit citer `contexte_sections` ({} si le jugement ne dépend d'aucune section).
@@ -512,9 +563,21 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         if e is None:
             erreurs.append(f"{k}: identifiant inconnu")
             continue
-        interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "disponibilite", "contexte_sections"}
+        interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "exemple_origine", "disponibilite",
+                              "contexte_sections"}
         if interdits:
             erreurs.append(f"{k}: champs non modifiables par le commentaire : {sorted(interdits)}")
+            continue
+        if c and set(c) <= CHAMPS_EXEMPLE:  # D91 : ajout d'exemple seul, sans refaire le jugement
+            if not e.get("commentee") or e.get("retiree"):
+                erreurs.append(f"{k}: ajout d'exemple réservé aux entrées commentées")
+            elif not str(c.get("exemple") or "").strip():
+                erreurs.append(f"{k}: `exemple` absent")
+            elif (message := verifier_exemple(e, c.get("exemple"), c.get("exemple_origine"))):
+                erreurs.append(f"{k}: {message}")
+            else:
+                e.update({"exemple": c["exemple"], "exemple_origine": c["exemple_origine"], "maj_le": jour})
+                e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "exemple ajouté"}]
             continue
         if not isinstance(c.get("description"), str) or not c["description"].strip():
             erreurs.append(f"{k}: description absente")
@@ -526,6 +589,11 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         if not isinstance(r, dict) or r.get("verdict") not in VERDICTS or not str(r.get("pourquoi", "")).strip():
             erreurs.append(f"{k}: recommandation {{verdict, pourquoi}} invalide")
             continue
+        if "exemple" in c or "exemple_origine" in c:
+            message = verifier_exemple(e, c.get("exemple"), c.get("exemple_origine"))
+            if message:
+                erreurs.append(f"{k}: {message}")
+                continue
         sections_citees = None
         if resoudre is not None or "contexte_sections" in c:
             cs = c.get("contexte_sections")
@@ -542,6 +610,9 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         verdict_avant = (e.get("recommandation") or {}).get("verdict") if deja else None
         motif = motif_de(e) if (deja and motif_de) else None
         e.update({kk: c[kk] for kk in c if kk != "contexte_sections"})
+        if "exemple" in c and not str(c["exemple"] or "").strip():
+            e["exemple"] = None
+            e.pop("exemple_origine", None)
         if motif and journal is not None:
             journal.append({"date": jour, "id": k, "verdict_avant": verdict_avant, "verdict_apres": r["verdict"],
                             "motif": motif})
