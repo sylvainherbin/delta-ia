@@ -25,9 +25,23 @@ def test_skill_verify_exempte_passages_et_donnees():
 
 def test_skill_verify_lance_pytest_et_valider():
     texte = SKILL.read_text(encoding="utf-8")
-    assert ".venv/bin/pytest -q" in texte
+    # la suite complète (pytest -q puis valider.py ×3) reste le repli, via verifier.py
+    assert "pytest -q" in texte and "valider.py" in texte
     for perimetre in ("claude", "openai", "actu"):
-        assert f"scripts/valider.py --perimetre {perimetre}" in texte
+        assert perimetre in texte
+    assert ".venv/bin/python scripts/verifier.py" in texte
+
+
+def test_skill_verify_applique_ci_preuve():
+    """D94 : ciblé local, push de branche, CI verte sur le hash exact, contrôle machine, fusion --ff-only, repli."""
+    texte = SKILL.read_text(encoding="utf-8")
+    ordre = ["verifier.py --cible", "git push origin operer/", "verifier.py --ci operer/", "verifier.py --local", "git merge --ff-only"]
+    positions = [texte.index(motif) for motif in ordre]
+    assert positions == sorted(positions)
+    assert "headSha" in texte and "hash exact" in texte
+    assert "jamais `--force`" in texte
+    assert "Repli" in texte and "suite complète locale" in texte
+    assert "ne lance jamais la suite complète" in texte
 
 
 def test_skill_verify_enchaine_le_push_au_rebase():

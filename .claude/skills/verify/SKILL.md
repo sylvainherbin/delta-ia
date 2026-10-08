@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Contrôle avant tout commit de code du dépôt delta-ia (pytest puis valider.py sur les trois périmètres) ; ne fait rien pendant un passage ni pour un commit de données (docs/data, state, rapports).
+description: Contrôle avant tout commit de code du dépôt delta-ia (tests ciblés du diff, CI verte sur le hash exact pour fusionner ; suite complète en repli) ; ne fait rien pendant un passage ni pour un commit de données (docs/data, state, rapports).
 ---
 
 # verify — contrôle avant commit de code
@@ -12,38 +12,40 @@ Claude lance cette skill juste avant un commit. Commence par le tri ci-dessous :
 - Un passage est en cours : `/delta`, `/delta-kb`, `$delta`, `$delta-kb`, ou la chaîne automatique (`scripts/passage-auto.sh`). Un passage commite des données avec une liste `allow` stricte ; pytest y serait refusé et allongerait la chaîne.
 - Les chemins indexés (`git diff --cached --name-only`) sont tous dans `docs/data/`, `state/`, `rapports/` ou `PROGRESSION.md`, ou se réduisent à `CONTEXTE.md`.
 
-## 2. Code : contrôle obligatoire
+## 2. Code : vérification ciblée locale
 
-Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/assets/`, `prompts/`, `.claude/`, `.agents/`, `.github/`, `deploy/`, `pytest.ini`, `sources.yaml`, `requirements.txt`, `SPEC.md`, `REGLES.md`, `CLAUDE.md` ou `AGENTS.md`, lance dans l'ordre :
-
-```
-.venv/bin/pytest -q
-.venv/bin/python scripts/valider.py --perimetre claude
-.venv/bin/python scripts/valider.py --perimetre openai
-.venv/bin/python scripts/valider.py --perimetre actu
-```
-
-Les quatre commandes passent par `scripts/verifier.py` (D87), qui les lance dans cet ordre sous le verrou machine (deux places, `nice 10`) et **ne relance rien sur un arbre déjà vérifié avec succès** :
+Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/assets/`, `prompts/`, `.claude/`, `.agents/`, `.github/`, `deploy/`, `pytest.ini`, `sources.yaml`, `requirements.txt`, `SPEC.md`, `REGLES.md`, `CLAUDE.md` ou `AGENTS.md`, lance **le seul contrôle ciblé du diff** (CI-PREUVE, D94) :
 
 ```
-.venv/bin/python scripts/verifier.py            # suite complète, ou « résultat réutilisé » en moins d'une seconde
-.venv/bin/python scripts/verifier.py --sans-cache   # forcer une nouvelle exécution
-.venv/bin/python scripts/verifier.py tests/test_x.py   # tests ciblés (pytest seul, jamais enregistré)
+.venv/bin/python scripts/verifier.py --cible            # diff contre origin/main
+.venv/bin/python scripts/verifier.py --cible --liste    # montre la sélection sans rien lancer
 ```
 
-La clé du cache est le contenu réel du répertoire de travail (arbre git de `write-tree` : fichiers suivis modifiés et fichiers non suivis non ignorés compris) plus l'environnement (Python, paquets installés, `requirements.txt`) ; un rebase sans changement de contenu garde donc le résultat. Le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt. Un échec n'est jamais enregistré.
+`scripts/carte.py` calcule la carte fichiers → tests à chaque appel (imports de `scripts/` et `tests/`, aucun fichier à tenir à jour) : un test modifié se lance lui-même ; un module de `scripts/` lance ses tests directs et ceux de ses dépendants directs ; un module central (`scripts/deltalib/`) lance ses seuls tests directs et `scripts/valider.py` sur les trois périmètres ; un fichier hors graphe (prompt, page du site, skill, SPEC) lance les tests qui le citent ; un fichier inconnu lance les tests de même nom (ou l'outillage `test_verifier`, `test_carte`, `test_skill_verify`) et `valider.py` ; `tests/conftest.py`, `pytest.ini` et `requirements.txt` lancent l'outillage seul, la CI fait foi. **Le mode ciblé ne lance jamais la suite complète.** Il passe par le verrou machine (deux places, `nice 10`) et n'est jamais enregistré.
 
-Sur une branche, le verify local avant commit se limite aux tests ciblés (fichiers touchés) : le dev peut pousser sa **branche** avant la suite complète locale, et la CI GitHub Actions fait la suite complète (D87). Ce qui compte est le run `success` dont le `headSha` est le commit (`gh run list --branch <branche> --json conclusion,headSha`). Pour une exécution locale complète (sur main, ou sans CI), la commande ci-dessus reste celle-là.
+```
+.venv/bin/python scripts/verifier.py tests/test_x.py   # tests choisis à la main (pytest seul)
+.venv/bin/python scripts/verifier.py                    # suite complète = le repli du §3 (D87), ou « résultat réutilisé » en moins d'une seconde
+.venv/bin/python scripts/verifier.py --sans-cache       # forcer une nouvelle exécution
+```
 
-Dans un worktree sans `.venv`, utilise celui du dépôt principal (`../delta-ia/.venv/bin/...`) ; ne crée pas de venv.
+La suite complète (`.venv/bin/pytest -q`, puis `scripts/valider.py --perimetre claude`, `openai` et `actu`) passe par `scripts/verifier.py` : verrou machine, et **aucun relancement sur un arbre déjà vérifié avec succès**. La clé du cache est le contenu réel du répertoire de travail (arbre git de `write-tree`, fichiers non suivis non ignorés compris) plus l'environnement (Python, paquets, `requirements.txt`) ; le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt ; un échec n'est jamais enregistré.
+
+Dans un worktree sans `.venv`, utilise celui du dépôt principal (`/home/herbin/projets/delta-ia/.venv/bin/python`) ; ne crée pas de venv.
 
 Un test en échec ou un code de sortie non nul **interdit le commit** : corriger d'abord, ou s'arrêter et le signaler. Un seul échec connu est toléré : `test_raw_historique_est_ignore_par_git`, hors dépôt git, s'il est le seul et qu'on est hors du dépôt principal (worktree).
 
-## 3. Fusion dans main
+## 3. Fusion dans main : la CI GitHub est la preuve
 
-La fusion dans main exige toujours un run CI `success` dont le `headSha` est le commit fusionné. Elle lit le statut de la CI au lieu de relancer la suite : `gh run list --branch <branche> --json conclusion,headSha`, puis fusion seulement si une ligne a `conclusion` égal à `success` et `headSha` égal au commit fusionné (pas seulement le dernier run). Sans run vert sur ce commit exact, ou si l'arbre fusionné diffère du commit testé (rebase avec changement de contenu), `scripts/verifier.py` reste la preuve : il réutilise un résultat pour un arbre identique et relance sinon.
+Ordre (CI-PREUVE, D94) : ciblé local → push de la **branche** → CI verte sur le hash exact → contrôle machine éventuel → fusion en fast-forward.
 
-Le push vers main s'enchaîne au rebase, `git pull --rebase && git push origin main`, pour qu'il ne parte jamais après un rebase en échec (incident du 07/10). Si le rebase échoue : `git rebase --abort`, résolution, puis on recommence.
+1. `verifier.py --cible` (§2), puis commit et `git push origin operer/<nom>` : la CI (`.github/workflows/tests.yml`) fait la suite complète et `valider.py` sur le commit poussé.
+2. `.venv/bin/python scripts/verifier.py --ci operer/<nom>` : code 0 seulement si un run **terminé `success`** a pour `headSha` le hash exact de la branche (pas le dernier run). Équivalent manuel : `gh run list --branch <branche> --json conclusion,headSha`.
+3. `.venv/bin/python scripts/verifier.py --local` : ce que la CI ne peut pas faire, c'est-à-dire les tests marqués `local` (état réel de la machine, D87). Aucun test marqué : succès.
+4. Si `origin/main` a avancé, rebase de la branche dessus **avant** la fusion, puis push sous un nouveau nom (`operer/<nom>-r2`, jamais `--force`) et nouvelle CI verte sur ce nouveau hash (l'étape 2 sur ce nom). Un rebase sans changement de contenu garde la preuve `verifier.py` du cache.
+5. `git fetch origin && git merge --ff-only operer/<nom>` sur `main` (le hash fusionné est celui qui a la CI verte), puis `git push origin main`, enchaîné : `git pull --rebase && git push origin main` pour qu'il ne parte jamais après un rebase en échec (incident du 07/10). Si le rebase échoue : `git rebase --abort`, résolution, puis on recommence.
+
+**Repli** : sans CI verte exploitable (`--ci` code 1 : aucun run, run en cours ou en échec, `gh` illisible, hash rebasé sans CI), la suite complète locale redevient exigée avant la fusion : `.venv/bin/python scripts/verifier.py`.
 
 ## 4. Fenêtre de la chaîne
 

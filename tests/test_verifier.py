@@ -207,3 +207,99 @@ def test_verrou_machine_herite_ne_reprend_pas_le_verrou(verrous, monkeypatch):
     monkeypatch.setenv("VERIFY_VERROU_TENU", "1")
     assert verifier.verrou_machine(verrous) is None
     assert not verrous.exists()
+
+
+# --- D94 : vérification ciblée, preuve CI du hash exact, tests marqués `local` ---------------------------------------
+
+def test_fichiers_touches_depuis_l_ancetre_commun(depot):
+    git(depot, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(depot, "checkout", "-q", "-b", "operer/x")
+    (depot / "b.txt").write_text("b\n")
+    git(depot, "add", "b.txt")
+    git(depot, "commit", "-q", "-m", "deux")
+    (depot / "a.txt").write_text("modifié\n")  # non commité
+    (depot / "c.py").write_text("x = 1\n")  # non suivi
+    (depot / ".tmp-verify").mkdir()
+    (depot / ".tmp-verify" / "s.json").write_text("{}")  # sortie locale : ignorée
+    assert verifier.fichiers_touches(depot, "origin/main") == ["a.txt", "b.txt", "c.py"]
+    # main avance de son côté : ce qu'il a reçu n'est pas un changement de la branche
+    git(depot, "checkout", "-q", "main")
+    (depot / "d.txt").write_text("d\n")
+    git(depot, "add", "d.txt")
+    git(depot, "commit", "-q", "-m", "trois")
+    git(depot, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(depot, "checkout", "-q", "operer/x")
+    assert "d.txt" not in verifier.fichiers_touches(depot, "origin/main")
+
+
+def test_commandes_cible_jamais_la_suite_complete():
+    cmds = verifier.commandes_cible({"tests": ["tests/test_a.py", "tests/test_b.py"], "valider": False}, "py")
+    assert cmds == [["py", "-m", "pytest", "-q", "tests/test_a.py", "tests/test_b.py"]]
+    avec = verifier.commandes_cible({"tests": ["tests/test_a.py"], "valider": True}, "py")
+    assert [c[-1] for c in avec[1:]] == ["claude", "openai", "actu"]
+    # aucun test désigné : pas de « pytest -q » nu, qui lancerait toute la suite
+    assert verifier.commandes_cible({"tests": [], "valider": False}, "py") == []
+    sans_tests = verifier.commandes_cible({"tests": [], "valider": True}, "py")
+    assert all("pytest" not in c for c in sans_tests)
+
+
+SHA = "a" * 40
+
+
+@pytest.mark.parametrize("runs, ok, extrait", [
+    ([{"headSha": SHA, "conclusion": "success", "status": "completed"}], True, "CI verte"),
+    ([{"headSha": "b" * 40, "conclusion": "success", "status": "completed"}], False, "aucun run CI"),  # autre commit
+    ([], False, "aucun run CI"),
+    ([{"headSha": SHA, "conclusion": "", "status": "in_progress"}], False, "en cours"),
+    ([{"headSha": SHA, "conclusion": "failure", "status": "completed"}], False, "non verte"),
+    ([{"headSha": SHA, "conclusion": "failure", "status": "completed"},
+      {"headSha": SHA, "conclusion": "success", "status": "completed"}], True, "CI verte"),  # relance verte
+    ([{"headSha": SHA, "conclusion": "success", "status": "completed"}, {"headSha": "c" * 40, "conclusion": "failure", "status": "completed"}], True, "CI verte"),
+])
+def test_preuve_ci_exige_le_hash_exact(runs, ok, extrait):
+    assert verifier.preuve_ci("operer/x", SHA, runs)[1].count(extrait) == 1
+    assert verifier.preuve_ci("operer/x", SHA, runs)[0] is ok
+
+
+def test_preuve_ci_non_verte_nomme_le_repli():
+    message = verifier.preuve_ci("operer/x", SHA, [])[1]
+    assert "repli : suite complète locale" in message
+
+
+def test_main_ci_code_de_sortie(depot, monkeypatch, capsys):
+    sha = subprocess.run(["git", "-C", str(depot), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    monkeypatch.setattr(verifier, "RACINE", depot)
+    monkeypatch.setattr(verifier, "lire_runs_ci", lambda branche, racine=depot: [{"headSha": sha, "conclusion": "success", "status": "completed"}])
+    assert verifier.main(["--ci", "main"]) == 0
+    monkeypatch.setattr(verifier, "lire_runs_ci", lambda branche, racine=depot: [])
+    assert verifier.main(["--ci", "main"]) == 1
+    assert "NON EXPLOITABLE" in capsys.readouterr().out
+
+    def illisible(branche, racine=depot):
+        raise OSError("gh absent")
+    monkeypatch.setattr(verifier, "lire_runs_ci", illisible)
+    assert verifier.main(["--ci", "main"]) == 1  # repli, jamais un succès par défaut
+
+
+def test_lancer_tolere_le_code_5_seulement_si_demande(depot):
+    cmd = [[sys.executable, "-c", "raise SystemExit(5)"]]
+    assert not verifier.lancer(cmd, depot)["ok"]
+    assert verifier.lancer(cmd, depot, codes_ok=(0, 5))["ok"]
+    assert not verifier.lancer([[sys.executable, "-c", "raise SystemExit(1)"]], depot, codes_ok=(0, 5))["ok"]
+
+
+def test_commandes_local_vise_le_marqueur_local():
+    assert verifier.commandes_local("py") == [["py", "-m", "pytest", "-q", "-m", "local"]]
+
+
+def test_main_cible_liste_n_execute_rien(depot, monkeypatch, capsys):
+    git(depot, "update-ref", "refs/remotes/origin/main", "HEAD")
+    (depot / "scripts").mkdir()
+    (depot / "tests").mkdir()
+    (depot / "scripts" / "outil.py").write_text("x = 1\n")
+    (depot / "tests" / "test_outil.py").write_text("import outil\n")
+    monkeypatch.setattr(verifier, "RACINE", depot)
+    monkeypatch.setattr(verifier, "lancer", lambda *a, **k: pytest.fail("--liste ne lance rien"))
+    assert verifier.main(["--cible", "--liste"]) == 0
+    sortie = capsys.readouterr().out
+    assert "1 test(s)" in sortie and "scripts/outil.py" in sortie

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Contrôle avant commit (D87) : pytest puis valider.py sur les trois périmètres, jamais deux fois sur le même arbre.
+Preuve de fusion (D94, CI-PREUVE) : `--cible` lance les seuls tests touchés par le diff contre origin/main (carte.py),
+`--ci` lit le run GitHub Actions vert du hash exact de la branche, `--local` lance ce que la CI ne fait pas (tests marqués
+`local`) ; la suite complète locale n'est que le repli sans CI verte exploitable.
 
 Un succès est enregistré sous une clé qui décrit le contenu réellement testé (arbre git du répertoire de travail,
 fichiers non suivis non ignorés compris) et l'environnement Python. Un commit ou un rebase sans changement de contenu
@@ -21,6 +24,8 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+
+import carte
 
 RACINE = Path(__file__).resolve().parent.parent
 PERIMETRES = ("claude", "openai", "actu")
@@ -62,6 +67,48 @@ def signature(racine: Path = RACINE) -> dict:
 def commandes(python: str = sys.executable, cibles: list[str] | None = None) -> list[list[str]]:
     return [[python, "-m", "pytest", "-q", *(cibles or [])],
             *([python, "scripts/valider.py", "--perimetre", p] for p in PERIMETRES)]
+
+
+def fichiers_touches(racine: Path = RACINE, base: str = "origin/main") -> list[str]:
+    """Fichiers qui diffèrent de `base` depuis l'ancêtre commun (commits de la branche, modifications non commitées et
+    fichiers non suivis non ignorés). L'ancêtre commun évite de compter comme changements ceux que `base` a reçus depuis."""
+    ancetre = git("merge-base", base, "HEAD", racine=racine).decode().strip()
+    suivis = git("diff", "--name-only", ancetre, racine=racine).decode().splitlines()
+    autres = git("ls-files", "--others", "--exclude-standard", racine=racine).decode().splitlines()
+    return sorted({p for p in suivis + autres if not p.startswith(IGNORES)})
+
+
+def commandes_cible(selection: dict, python: str = sys.executable) -> list[list[str]]:
+    """pytest sur les seuls tests désignés (jamais la suite complète), puis valider.py si la sélection l'exige."""
+    cmds = [[python, "-m", "pytest", "-q", *selection["tests"]]] if selection["tests"] else []
+    if selection["valider"]:
+        cmds += [[python, "scripts/valider.py", "--perimetre", p] for p in PERIMETRES]
+    return cmds
+
+
+def commandes_local(python: str = sys.executable) -> list[list[str]]:
+    return [[python, "-m", "pytest", "-q", "-m", "local"]]
+
+
+def preuve_ci(branche: str, sha: str, runs: list[dict]) -> tuple[bool, str]:
+    """Une CI verte exploitable est un run terminé `success` dont le `headSha` est exactement `sha` (pas le dernier run
+    de la branche). Sinon le message dit pourquoi, et le repli est la suite complète locale."""
+    pour_sha = [r for r in runs if r.get("headSha") == sha]
+    if any(r.get("conclusion") == "success" for r in pour_sha):
+        return True, f"CI verte sur {sha[:12]} ({branche})"
+    if not pour_sha:
+        return False, f"aucun run CI pour {sha[:12]} ({branche}) : branche non poussée ou run pas encore créé ; repli : suite complète locale"
+    if any(r.get("status") != "completed" for r in pour_sha):
+        return False, f"run CI de {sha[:12]} en cours ; attendre sa fin, ou repli : suite complète locale"
+    conclusions = ", ".join(sorted({str(r.get("conclusion")) for r in pour_sha}))
+    return False, f"CI non verte sur {sha[:12]} ({conclusions}) ; corriger, ou repli : suite complète locale"
+
+
+def lire_runs_ci(branche: str, racine: Path = RACINE) -> list[dict]:
+    sortie = subprocess.run(["gh", "run", "list", "--branch", branche, "--limit", "30", "--json", "conclusion,headSha,status,url"],
+                            cwd=racine, check=True, capture_output=True, text=True, timeout=60).stdout
+    runs = json.loads(sortie)
+    return runs if isinstance(runs, list) else []
 
 
 def registre_par_defaut() -> Path:
@@ -135,15 +182,15 @@ def verrou_machine(dossier: Path | None = None):
     return tenu
 
 
-def lancer(cmds: list[list[str]], racine: Path = RACINE) -> dict:
-    """Exécute les commandes dans l'ordre, s'arrête à la première en échec."""
+def lancer(cmds: list[list[str]], racine: Path = RACINE, codes_ok: tuple[int, ...] = (0,)) -> dict:
+    """Exécute les commandes dans l'ordre, s'arrête à la première en échec (code hors `codes_ok`)."""
     rapport = {"ok": True, "commandes": []}
     for cmd in cmds:
         t0 = time.perf_counter()
         code = subprocess.run(cmd, cwd=racine).returncode
         rapport["commandes"].append({"cmd": " ".join(cmd[1:] if cmd[0] == sys.executable else cmd),
                                      "code": code, "secondes": round(time.perf_counter() - t0, 2)})
-        if code != 0:
+        if code not in codes_ok:
             rapport["ok"] = False
             break
     return rapport
@@ -174,8 +221,45 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("cibles", nargs="*", help="fichiers de tests ciblés (pytest seul, sans valider.py ni cache)")
     p.add_argument("--sans-cache", action="store_true", help="relancer même si l'arbre est déjà vérifié")
     p.add_argument("--registre", type=Path, help="registre des résultats (défaut : ~/.local/state/delta/verify-resultats.json)")
+    p.add_argument("--cible", action="store_true", help="tests touchés par le diff contre --base (carte.py), jamais la suite complète")
+    p.add_argument("--base", default="origin/main", help="référence du diff de --cible (défaut origin/main)")
+    p.add_argument("--liste", action="store_true", help="avec --cible : afficher la sélection sans rien lancer")
+    p.add_argument("--ci", nargs="?", const="", metavar="BRANCHE", help="lire la CI GitHub : code 0 si un run vert a le hash exact de la branche (défaut : branche courante), 1 sinon (repli : suite complète)")
+    p.add_argument("--local", action="store_true", help="seulement les tests marqués `local` (ce que la CI ne fait pas) ; aucun test marqué n'est un succès")
     p.add_argument("--json", action="store_true", help="écrire le rapport en JSON sur la sortie standard")
     args = p.parse_args(argv)
+    if args.ci is not None:
+        branche = args.ci or git("branch", "--show-current", racine=RACINE).decode().strip()
+        try:
+            ok, message = preuve_ci(branche, git("rev-parse", branche, racine=RACINE).decode().strip(), lire_runs_ci(branche, RACINE))
+        except (OSError, subprocess.SubprocessError, ValueError) as exc:
+            ok, message = False, f"CI illisible ({exc}) ; repli : suite complète locale"
+        print(f"VERIFY CI {'OK' if ok else 'NON EXPLOITABLE'} : {message}", flush=True)
+        return 0 if ok else 1
+    if args.local:
+        tenu = verrou_machine()
+        rapport = lancer(commandes_local(), codes_ok=(0, 5))  # 5 : aucun test marqué `local`
+        print(f"VERIFY local {'OK' if rapport['ok'] else 'ÉCHEC'} en {rapport['commandes'][-1]['secondes']} s", flush=True)
+        del tenu
+        return 0 if rapport["ok"] else 1
+    if args.cible:
+        touches = fichiers_touches(RACINE, args.base)
+        selection = carte.selectionner(carte.generer(RACINE), touches)
+        cmds = commandes_cible(selection)
+        print(f"VERIFY ciblé : {len(touches)} fichier(s) touché(s) contre {args.base}, {len(selection['tests'])} test(s)"
+              f"{', valider.py' if selection['valider'] else ''}", flush=True)
+        for raison in selection["raisons"]:
+            print(f"  - {raison}", flush=True)
+        if args.liste or not cmds:
+            if not cmds:
+                print("VERIFY ciblé OK : rien à lancer", flush=True)
+            return 0
+        tenu = verrou_machine()
+        rapport = {**lancer(cmds), "reutilise": False, "cible": True}
+        print(f"VERIFY ciblé {'OK' if rapport['ok'] else 'ÉCHEC'} en {sum(c['secondes'] for c in rapport['commandes']):.1f} s "
+              f"(la CI sur le hash exact fait foi pour la fusion)", flush=True)
+        del tenu
+        return 0 if rapport["ok"] else 1
     if args.cibles:  # test ciblé : jamais enregistré, il ne vaut pas verify complet
         rapport = lancer(commandes(cibles=args.cibles)[:1])
         rapport.update(reutilise=False, cible=True)
