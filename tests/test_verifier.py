@@ -222,6 +222,7 @@ def test_verrou_commun_rend_le_code_tel_quel(lanceur, monkeypatch, capsys, code)
 def test_verrou_commun_sans_lanceur_ne_contourne_pas(monkeypatch, tmp_path, capsys):
     monkeypatch.delenv("VERIFY_VERROU_TENU", raising=False)
     monkeypatch.setenv("PATH", str(tmp_path))
+    monkeypatch.setattr(verifier, "LANCEUR_DEFAUT", tmp_path / "absent" / "verrou-tests")
     with pytest.raises(SystemExit) as sortie:
         verifier.verrou_commun([])
     assert sortie.value.code == 127
