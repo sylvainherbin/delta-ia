@@ -12,6 +12,7 @@ et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ;
 Lignes `! AVERTISSEMENT` (D85, D97) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
 dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2), `pour_toi` conditionnel sans commande qui le tranche dans `action`
 et `pour_toi` recopié du même id dans un fichier des 7 jours précédents (R4) ; sans effet sur le code de sortie.
+Ancrage (D101) : `pour_toi` d'un élément d'impact faible ou plus qui ne nomme aucun projet, outil ni habitude de CONTEXTE.md (fichiers postérieurs au 24/09) ; sans effet sur le code de sortie.
 """
 
 from __future__ import annotations
@@ -26,7 +27,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.etat import DOSSIERS  # noqa: E402
-from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
+from deltalib.contexte import (SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi,  # noqa: E402
+                               termes_ancrage, termes_nommes)
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
 from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
 from deltalib import semaine as bilan_semaine  # noqa: E402
@@ -62,6 +64,9 @@ RE_DATE_ACTION = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{2}/\d{2}\b")
 MARQUEURS_CONDITIONNEL = ("si tu", "si vous", "au cas où", "éventuellement")
 RE_CONDITIONNEL = re.compile(r"(?<!\w)(?:" + "|".join(re.escape(m).replace(r"\ ", r"\s+") for m in MARQUEURS_CONDITIONNEL) + r")(?!\w)", re.I)
 RECOPIE_JOURS = 7
+# D101 (ancrage) : un `pour_toi` d'un élément d'impact faible ou plus nomme un projet, un outil ou une habitude de CONTEXTE.md
+# (termes de `deltalib.contexte.termes_ancrage`, sections citées par l'élément) ; `contexte_sections` vide ou absent : avertissement d'office.
+MESSAGE_ANCRAGE = "ancrage : `pour_toi` sans projet, outil ni habitude nommés de CONTEXTE.md"
 RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks")]
 
 
@@ -94,6 +99,16 @@ def projets_du_contexte(chemin: Path) -> set[str]:
         return set()
     return {cle[len("projet."):] for cle, s in sections.items()
             if s["niveau"] == 3 and cle.startswith("projet.") and len(cle) > len("projet.")}
+
+
+def termes_ancrage_du_contexte(chemin: Path) -> dict | None:
+    """D101 : termes d'ancrage de CONTEXTE.md ; None s'il est absent ou à structure invalide (déjà signalé ailleurs)."""
+    if not chemin.exists():
+        return None
+    try:
+        return termes_ancrage(chemin.read_text(encoding="utf-8"))
+    except ContexteInvalide:
+        return None
 
 
 def _date_valide(v) -> bool:
@@ -207,8 +222,10 @@ def _texte_action(action) -> str:
     return "\n".join(str(x) for x in [action.get("description"), *etapes] if isinstance(x, str))
 
 
-def avertir_element(e: dict, i: int, r: Rapport, ou: str) -> None:
-    """D85 (R1, R5) : avertissements sur un élément, sans effet sur le code de sortie."""
+def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None = None) -> None:
+    """D85 (R1, R5), D101 (ancrage) : avertissements sur un élément, sans effet sur le code de sortie.
+
+    `ancrage` : `deltalib.contexte.termes_ancrage` du CONTEXTE.md ; None, aucun contrôle d'ancrage."""
     if not isinstance(e, dict) or e.get("impact") not in IMPACTS - {"nul"}:
         return
     ou = f"{ou} elements[{i}] ({e.get('id')})"
@@ -220,6 +237,16 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str) -> None:
         r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
     if conditionnel_sans_commande(e):
         r.avertissement(ou, "R4 : `pour_toi` conditionnel sans commande entre accents graves dans `action` qui le tranche")
+    if ancrage is not None and isinstance(e.get("pour_toi"), str) and e["pour_toi"].strip():
+        citees = citees_du_pour_toi(e)
+        if not citees or not termes_nommes(e["pour_toi"], ancrage, citees):
+            r.avertissement(ou, MESSAGE_ANCRAGE)
+
+
+def citees_du_pour_toi(e: dict) -> list[str]:
+    """ctx-id cités par l'élément (`contexte_sections`), vide si le champ est absent, null ou mal formé."""
+    cs = e.get("contexte_sections")
+    return [k for k in cs if isinstance(k, str)] if isinstance(cs, dict) else []
 
 
 def conditionnel_sans_commande(e: dict) -> bool:
@@ -297,7 +324,7 @@ def verifier_ids_kb(e: dict, ou: str, r: Rapport, connus: set[str] | None) -> No
 
 
 def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rapport,
-                       ctx_disparu_permis: bool = False) -> dict | None:
+                       ctx_disparu_permis: bool = False, ancrage: dict | None = None) -> dict | None:
     ou = chemin.name
     texte = chemin.read_text(encoding="utf-8")
     verifier_secrets(texte, ou, r)
@@ -349,7 +376,7 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
     bruts: list[str] = []
     for i, e in enumerate(elements):
         verifier_element(e, i, perimetre, projets, r, ou, ctx_disparu_permis)
-        avertir_element(e, i, r, ou)
+        avertir_element(e, i, r, ou, ancrage if isinstance(q.get("date"), str) and q["date"] > DATE_D64 else None)
         if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
             r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
         if isinstance(e, dict) and isinstance(q.get("date"), str) and q["date"] > DATE_ID_WEB:
@@ -1029,6 +1056,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
     charger_ctx_ids(racine, r)
     dossier = racine / "docs" / "data" / DOSSIERS[perimetre]
     projets = projets_du_contexte(contexte)
+    ancrage = termes_ancrage_du_contexte(contexte)
     if not contexte.exists():
         r.erreur("CONTEXTE.md", f"fichier introuvable : {contexte}")
     quotidiens: dict[str, dict] = {}
@@ -1036,7 +1064,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
     for f in sorted(dossier.glob("????-??-??.json")):
         # Un ancien fichier du jour peut citer une section retirée depuis de CONTEXTE.md : il n'est pas réévalué
         # (D58 et D64-bis amendées le 29/09/2026). Seul le fichier du jour garde le refus strict.
-        q = verifier_quotidien(f, perimetre, projets, r, ctx_disparu_permis=f.stem != jour_strict)
+        q = verifier_quotidien(f, perimetre, projets, r, ctx_disparu_permis=f.stem != jour_strict, ancrage=ancrage)
         if q is not None:
             quotidiens[f.stem] = q
     if not quotidiens:

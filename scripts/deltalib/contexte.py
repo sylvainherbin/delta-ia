@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from pathlib import Path
 
 _RE_TITRE = re.compile(r"^(#{1,3})\s+(.+?)\s*$")
@@ -202,3 +203,131 @@ def a_reevaluer(racine, dossier: str, jour, fenetre: int = REEVALUER_JOURS, plaf
     trouves.sort(key=lambda x: x["date"], reverse=True)
     trouves.sort(key=lambda x: _ORDRE_IMPACT.get(x["impact"], 4))  # tris stables : impact, puis date décroissante, puis id
     return {"reevaluer": trouves[:plafond], "reevaluer_total": len(trouves)}
+
+
+# Ancrage des `pour_toi` (REGLES §4) : un `pour_toi` nomme un projet, un outil ou une habitude de CONTEXTE.md. Les termes sont
+# tirés du fichier lui-même, sans valeur codée en dur : noms de projets (`projet.<nom>`), titres de section, parties du ctx-id,
+# segments en `code`, segments en **gras**, première cellule des lignes de tableau et noms propres de la prose des sections citées.
+ANCRAGE_LONGUEUR_MIN = 3
+ANCRAGE_MOTS_MAX = 4  # un segment plus long est une phrase, pas un nom
+_RE_CODE = re.compile(r"`([^`\n]+)`")
+_RE_GRAS = re.compile(r"\*\*([^*\n]+)\*\*")
+_RE_CELLULE = re.compile(r"^\s*\|\s*([^|\n]+?)\s*\|")
+_RE_MOT = re.compile(r"[A-Za-zÀ-ÿ][\wÀ-ÿ.+-]*[\wÀ-ÿ+]")
+_RE_NUMERO = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+")
+_RE_FIN_TITRE = re.compile(r"\s+[—–:(].*$|\s+-\s.*$")
+# Mots de gabarit qui ne désignent aucun projet ni outil : une section ou un tableau les emploie comme étiquettes.
+_GABARIT = frozenset({"element", "valeur", "nature", "etat", "stack", "objectif", "revue", "regle", "exemple", "note", "usage",
+                      "profil", "config", "env", "methode", "optimisation", "projet", "projets", "outil", "outils", "nom",
+                      "observe", "declare", "deduit", "inconnu", "oui", "non", "tout", "rien",
+                      "claude", "codex", "chatgpt", "anthropic", "openai"})  # les sujets de la veille ne désignent pas l'utilisateur
+
+
+def normaliser_ancrage(texte: str) -> str:
+    """Sans casse ni accents, tout signe non alphanumérique réduit à une espace : `claude-code` et « Claude Code » se valent."""
+    decompose = unicodedata.normalize("NFKD", str(texte).casefold())
+    sans_accents = "".join(c for c in decompose if not unicodedata.combining(c))
+    return " ".join(re.sub(r"[\W_]+", " ", sans_accents).split())
+
+
+def _terme_utilisable(t: str) -> bool:
+    n = normaliser_ancrage(t)
+    return len(n) >= ANCRAGE_LONGUEUR_MIN and len(n.split()) <= ANCRAGE_MOTS_MAX and not n.isdigit() and n not in _GABARIT
+
+
+def _termes_code(segment: str) -> set[str]:
+    """`tmux -L <nom>` -> tmux ; `docs/data/etat.json` -> le chemin et son nom de fichier (pas ses dossiers, trop génériques)."""
+    premier = re.sub(r"<[^>]*>", " ", segment).split()
+    if not premier:
+        return set()
+    mot = premier[0].strip("[](){}.,;:'\"")
+    return {mot, segment.strip(), mot.rsplit("/", 1)[-1]}
+
+
+def _noms_propres(ligne: str) -> set[str]:
+    """Noms d'outils et de produits dans la prose : suite de mots capitalisés (Linux Mint), un mot seul n'y comptant pas
+    en début de phrase ; mot à majuscule interne (macOS, iPhone). Un sigle en capitales (CLI, API) est écarté."""
+    prose = re.sub(r"`[^`\n]*`|\*\*|\[[^\]\n]*\]|<!--.*?-->", " ", ligne)
+    res: set[str] = set()
+    suite: list[str] = []
+    seul_en_debut = False  # la suite en cours ne compte qu'un mot, en début de phrase
+
+    def vider() -> None:
+        nonlocal suite, seul_en_debut
+        if suite and not (len(suite) == 1 and seul_en_debut):
+            res.add(" ".join(suite))
+        suite, seul_en_debut = [], False
+
+    debut = True
+    for m in re.finditer(r"[^\s]+", prose):
+        brut = m.group(0)
+        mot = _RE_MOT.search(brut)
+        mot = mot.group(0) if mot and len(mot.group(0)) >= ANCRAGE_LONGUEUR_MIN and not mot.group(0).isupper() else None
+        if mot and re.search(r"[a-zà-ÿ][A-Z]", mot):
+            res.add(mot)
+        if mot and mot[0].isupper():
+            if not suite:
+                seul_en_debut = debut
+            suite.append(mot)
+        else:
+            vider()
+        fin_de_phrase = brut[-1] in ".!?;|" or brut in {"-", "*"} or brut.startswith("|")
+        if fin_de_phrase or brut[-1] in ",):":
+            vider()
+        debut = fin_de_phrase
+    vider()
+    return res
+
+
+def _corps_par_section(texte: str) -> dict[str, tuple[str, list[str]]]:
+    """{ctx-id: (titre, lignes du corps)} ; mêmes bornes que `analyser` (corps jusqu'au titre suivant, ctx-id exclu)."""
+    lignes = texte.splitlines()
+    titres = [(i, m.group(2)) for i, l in enumerate(lignes) if (m := _RE_TITRE.match(l))]
+    res: dict[str, tuple[str, list[str]]] = {}
+    for k, (i, titre) in enumerate(titres):
+        fin = titres[k + 1][0] if k + 1 < len(titres) else len(lignes)
+        cle = next((m.group(1) for l in lignes[i + 1:fin] if l.strip() and (m := _RE_CTX.match(l))), None)
+        if cle is None:
+            continue
+        res[cle] = (titre, [l for l in lignes[i + 1:fin] if not _RE_CTX.match(l) and not _RE_DEPRECIE.match(l)])
+    return res
+
+
+def termes_ancrage(texte: str) -> dict:
+    """Termes d'ancrage d'un CONTEXTE.md : {"projets": {noms}, "sections": {ctx-id: {termes normalisés}}}.
+
+    `projets` : un nom par section `projet.<nom>`. `sections[ctx-id]` : titre de la section (sans numéro ni complément après
+    « — », « : » ou « ( »), parties du ctx-id après son premier élément, segments `code` (commande, chemin, nom de fichier),
+    segments **gras**, première cellule des lignes de tableau et noms propres de la prose (mot capitalisé hors début de phrase,
+    majuscule interne) du corps. Les étiquettes de gabarit et les segments de plus de
+    4 mots sont écartés. ContexteInvalide si la structure ctx-id est invalide."""
+    analyser(texte)  # structure invalide : propagée
+    projets: set[str] = set()
+    sections: dict[str, set[str]] = {}
+    for cle, (titre, corps) in _corps_par_section(texte).items():
+        brut: set[str] = set()
+        if cle.startswith("projet.") and len(cle) > len("projet."):
+            nom = cle[len("projet."):]
+            projets.add(normaliser_ancrage(nom))
+            brut.add(nom)
+        brut.add(_RE_FIN_TITRE.sub("", _RE_NUMERO.sub("", titre)))
+        brut.update(cle.split(".")[1:])
+        for l in corps:
+            for m in _RE_CODE.finditer(l):
+                brut.update(_termes_code(m.group(1)))
+            brut.update(m.group(1).strip(" :") for m in _RE_GRAS.finditer(l))
+            brut.update(_noms_propres(l))
+            if (m := _RE_CELLULE.match(l)) and not set(m.group(1)) <= set("-: "):
+                brut.add(re.sub(r"[`*]", "", m.group(1)))
+        sections[cle] = {normaliser_ancrage(t) for t in brut if _terme_utilisable(t)}
+    return {"projets": {p for p in projets if p}, "sections": sections}
+
+
+def termes_nommes(pour_toi: str, termes: dict, citees) -> list[str]:
+    """Termes d'ancrage (projets de CONTEXTE.md et termes des sections `citees`) présents dans `pour_toi`, triés. Comparaison
+    sans casse ni accents, sur des mots entiers. Une section citée mais absente de `termes` est ignorée."""
+    texte = f" {normaliser_ancrage(pour_toi)} "
+    candidats = set(termes["projets"])
+    for k in citees or ():
+        candidats |= termes["sections"].get(k, set())
+    return sorted(t for t in candidats if f" {t} " in texte)
