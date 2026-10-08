@@ -25,6 +25,7 @@ def entree(ident="codex-commandes-exemple", verdict="tester", commente="2026-10-
         url="https://example.org/commandes", libelle="Commandes", origine="test"), "2026-09-23")
     assert cat.appliquer_commentaires({ident: e}, {ident: commentaire(verdict)}, jour=commente,
                                      resoudre=lambda cs: cs) == []
+    e["exemple"], e["exemple_origine"] = "exemple", "compose"  # hors du lot `exemples` (D91) : ces tests ne mesurent que D78
     return e
 
 
