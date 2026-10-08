@@ -660,6 +660,7 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
         r.avertissement(f"kb/{perimetre}", f"{sans_exemple} entrées commandes/fonctionnalités sans exemple")
     verifier_journal(dossier / "reevaluations.jsonl", f"kb/{perimetre}/reevaluations.jsonl", ids, r)
     verifier_recent(racine, perimetre, ids, r)
+    verifier_a_tester(racine, perimetre, ids, r)
     return ids
 
 
@@ -726,6 +727,73 @@ def verifier_recent(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> 
             r.erreur(o, "entrées à trier par `date_ajout` décroissante")
         else:
             precedente = d
+        if e["produit"] in mes_produits and e["id"] not in ids:
+            r.erreur(o, f"`id` absent de la base {perimetre}")
+
+
+def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:
+    """D102 : docs/data/kb/a-tester.json (essais de la base, verdicts tester puis utiliser, deux périmètres réunis). Absent :
+    accepté (l'onglet « À tester » s'en passe) ; présent : schéma, tri, plafond, et chaque entrée de ce périmètre existe."""
+    from deltalib.kb.catalogue import A_TESTER_MAX, A_TESTER_VERDICTS, chemin_a_tester
+    from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE
+    chemin, ou = chemin_a_tester(racine), "kb/a-tester.json"
+    if not chemin.exists():
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    try:
+        doc = json.loads(texte)
+    except json.JSONDecodeError as e:
+        r.erreur(ou, f"JSON invalide : {e}")
+        return
+    if not isinstance(doc, dict) or not isinstance(doc.get("entrees"), list):
+        r.erreur(ou, "objet avec une liste `entrees` attendu")
+        return
+    if not (isinstance(doc.get("genere_le"), str) and RE_DATE.match(doc["genere_le"])):
+        r.erreur(ou, "`genere_le` doit être une date AAAA-MM-JJ")
+    liste = doc["entrees"]
+    if not isinstance(doc.get("total"), int) or isinstance(doc.get("total"), bool) or doc["total"] < len(liste):
+        r.erreur(ou, "`total` (entrées retenues avant coupe) doit être un entier au moins égal à la longueur de `entrees`")
+    if not isinstance(doc.get("tronque"), bool) or doc.get("tronque") != (isinstance(doc.get("total"), int) and doc["total"] > len(liste)):
+        r.erreur(ou, "`tronque` doit être un booléen vrai exactement quand `total` dépasse la longueur de `entrees`")
+    if len(liste) > A_TESTER_MAX:
+        r.erreur(ou, f"{len(liste)} entrées, plafond {A_TESTER_MAX}")
+    vus, precedente = set(), None  # precedente : (rang du verdict, date d'ajout) de l'entrée d'avant
+    mes_produits = PRODUITS_PAR_PERIMETRE[perimetre]
+    for i, e in enumerate(liste):
+        o = f"{ou} entrees[{i}]"
+        if not isinstance(e, dict):
+            r.erreur(o, "objet attendu")
+            continue
+        if set(e) != {"id", "produit", "categorie", "nom", "usage", "usage_nature", "exemple", "verdict", "pourquoi", "date_ajout"}:
+            r.erreur(o, f"champs inattendus ou manquants : {sorted(e)}")
+            continue
+        if not isinstance(e["id"], str) or e["id"] in vus:
+            r.erreur(o, "`id` absent, mal formé ou en double")
+        vus.add(e["id"])
+        if e["categorie"] not in CATEGORIES:
+            r.erreur(o, f"`categorie` inconnue : {e['categorie']!r}")
+        for champ in ("nom", "usage"):
+            if not isinstance(e[champ], str) or not e[champ].strip():
+                r.erreur(o, f"`{champ}` vide")
+        if e["usage_nature"] not in ("syntaxe", "etapes"):
+            r.erreur(o, "`usage_nature` doit valoir syntaxe ou etapes")
+        if e["exemple"] is not None and not isinstance(e["exemple"], str):
+            r.erreur(o, "`exemple` doit être une chaîne ou null")
+        if e["pourquoi"] is not None and not isinstance(e["pourquoi"], str):
+            r.erreur(o, "`pourquoi` doit être une chaîne ou null")
+        if e["verdict"] not in A_TESTER_VERDICTS:
+            r.erreur(o, f"`verdict` doit valoir tester ou utiliser : {e['verdict']!r}")
+            continue
+        d = e["date_ajout"]
+        if d is not None and not (isinstance(d, str) and RE_DATE.match(d)):
+            r.erreur(o, "`date_ajout` doit être une date AAAA-MM-JJ ou null")
+            continue
+        cle = (A_TESTER_VERDICTS.index(e["verdict"]), d)
+        if precedente is not None and (cle[0] < precedente[0] or (cle[0] == precedente[0] and (cle[1] or "") > (precedente[1] or ""))):
+            r.erreur(o, "entrées à trier par verdict (tester d'abord) puis `date_ajout` décroissante")
+        else:
+            precedente = cle
         if e["produit"] in mes_produits and e["id"] not in ids:
             r.erreur(o, f"`id` absent de la base {perimetre}")
 

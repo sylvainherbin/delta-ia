@@ -66,6 +66,7 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         tmp.replace(d / f"{cat}.json")
     ecrire_recent(racine)  # D99 : vue légère des ajouts récents, des deux périmètres réunis
+    ecrire_a_tester(racine)  # D102 : essais de la base (verdicts tester et utiliser) pour l'onglet « À tester »
 
 
 MENTION_ADOPTION = "adoption déclarée, PROGRESSION.md"
@@ -197,11 +198,7 @@ def construire_recent(entrees: list[dict], jour: str | None = None) -> dict:
             "plus_ancienne": gardees[-1]["date_ajout"] if gardees else None, "entrees": gardees}
 
 
-def ecrire_recent(racine: Path, jour: str | None = None) -> dict:
-    """Écrit docs/data/kb/recent.json depuis la base des deux périmètres telle qu'elle est sur disque."""
-    entrees = [e for per in PRODUITS_PAR_PERIMETRE for e in charger(racine, per).values()]
-    doc = construire_recent(entrees, jour)
-    chemin = chemin_recent(racine)
+def _ecrire_fichier_leger(chemin: Path, doc: dict) -> None:
     chemin.parent.mkdir(parents=True, exist_ok=True)
     tmp = chemin.with_name(chemin.name + ".tmp")
     # une entrée par ligne : un diff git d'une mise à jour ne montre que les entrées changées
@@ -209,6 +206,52 @@ def ecrire_recent(racine: Path, jour: str | None = None) -> dict:
     lignes = ",\n".join(json.dumps(e, ensure_ascii=False, separators=(",", ":")) for e in doc["entrees"])
     tmp.write_text(f'{entete},"entrees":[\n{lignes}\n]}}\n' if lignes else f'{entete},"entrees":[]}}\n', encoding="utf-8")
     tmp.replace(chemin)
+
+
+def _toutes_les_entrees(racine: Path) -> list[dict]:
+    return [e for per in PRODUITS_PAR_PERIMETRE for e in charger(racine, per).values()]
+
+
+def ecrire_recent(racine: Path, jour: str | None = None) -> dict:
+    """Écrit docs/data/kb/recent.json depuis la base des deux périmètres telle qu'elle est sur disque."""
+    doc = construire_recent(_toutes_les_entrees(racine), jour)
+    _ecrire_fichier_leger(chemin_recent(racine), doc)
+    return doc
+
+
+A_TESTER_MAX = 300  # D102 : plafond d'entrées (≈ 140 Ko) ; au-delà, les `utiliser` puis les plus anciennes sont coupées
+A_TESTER_VERDICTS = ("tester", "utiliser")  # ordre d'affichage : `tester` d'abord
+
+
+def chemin_a_tester(racine: Path) -> Path:
+    return racine / "docs" / "data" / "kb" / "a-tester.json"
+
+
+def construire_a_tester(entrees: list[dict], jour: str | None = None) -> dict:
+    """D102 : essais de la base pour l'onglet « À tester ». Entrées commentées non retirées au verdict `tester`, puis au
+    verdict `utiliser` quand l'usage n'est pas déjà `utilise` (pas encore essayées) ; verdict `tester` d'abord, puis date
+    d'ajout décroissante (inconnue en dernier), nom puis id ; au plus A_TESTER_MAX. `total` = entrées retenues avant coupe."""
+    jour = jour or date.today().isoformat()
+    retenues = []
+    for e in entrees:
+        reco = e.get("recommandation") if e.get("commentee") and not e.get("retiree") else None
+        verdict = reco.get("verdict") if isinstance(reco, dict) else None
+        if verdict not in A_TESTER_VERDICTS or (verdict == "utiliser" and e.get("statut_usage") == "utilise"):
+            continue
+        retenues.append({"id": e["id"], "produit": e.get("produit"), "categorie": e.get("categorie"), "nom": e.get("nom"),
+                         "usage": e.get("usage"), "usage_nature": e.get("usage_nature"), "exemple": e.get("exemple"),
+                         "verdict": verdict, "pourquoi": reco.get("pourquoi"), "date_ajout": date_ajout(e)})
+    retenues.sort(key=lambda x: (str(x["nom"]), x["id"]))
+    retenues.sort(key=lambda x: x["date_ajout"] or "", reverse=True)  # tri stable : nom puis id gardés à égalité de date
+    retenues.sort(key=lambda x: A_TESTER_VERDICTS.index(x["verdict"]))
+    gardees = retenues[:A_TESTER_MAX]
+    return {"genere_le": jour, "total": len(retenues), "tronque": len(retenues) > len(gardees), "entrees": gardees}
+
+
+def ecrire_a_tester(racine: Path, jour: str | None = None) -> dict:
+    """Écrit docs/data/kb/a-tester.json depuis la base des deux périmètres telle qu'elle est sur disque."""
+    doc = construire_a_tester(_toutes_les_entrees(racine), jour)
+    _ecrire_fichier_leger(chemin_a_tester(racine), doc)
     return doc
 
 
