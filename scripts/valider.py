@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deltalib.etat import DOSSIERS  # noqa: E402
 from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
-from deltalib.sujet_d71 import mots_trouves_base  # noqa: E402
+from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -210,7 +210,7 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str) -> None:
     if e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu" \
             and not RE_SEGMENT_CODE.search(texte):
         r.avertissement(ou, "R1 : ajout à un outil sans commande exacte entre accents graves dans `action`")
-    if mots_trouves_base(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
+    if mots_trouves_element(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
         r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
 
 

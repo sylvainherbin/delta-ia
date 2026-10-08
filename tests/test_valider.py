@@ -579,3 +579,21 @@ def test_regles_pour_toi_r1_a_r5_dans_les_trois_textes():
         texte = (racine / f).read_text(encoding="utf-8")
         for r in ("R1", "R2", "R3", "R4", "R5"):
             assert f"**{r} (D85)" in texte, f"{f} : règle {r} absente (D85)"
+
+
+def test_r5_disponibilite_sur_tous_les_forfaits_n_est_pas_d71():
+    """Élément Google Workspace du 08/10 (titre réduit) : « forfaits payants » dit où la fonction est disponible."""
+    gw = {"titre": "Claude pour Google Workspace en bêta publique sur tous les forfaits payants, avec des connecteurs",
+          "resume": "Disponible pour les forfaits payants ; un module complémentaire ouvre Claude dans Google Docs.",
+          "type": "correction", "action": None}
+    assert _avert(**gw) == []
+
+
+def test_r5_credits_api_mensuels_restent_detectes():
+    """Élément D71 du 08/10 (titre réduit) : « crédits » et « forfaits Max » restent un sujet de compte."""
+    d71 = {"titre": "Crédits API mensuels inclus dans Max et Team : 100 $ (Max 5x), 200 $ (Max 20x)",
+           "resume": "Les forfaits Max et Team incluent des crédits mensuels pour l'API Claude.",
+           "type": "correction", "action": None}
+    avert = _avert(**d71)
+    assert len(avert) == 1 and "R5" in avert[0]
+    assert _avert(**{**d71, "titre": "Hausse des tarifs sur tous les forfaits"}) != []

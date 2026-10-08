@@ -36,6 +36,10 @@ MOTS_CLES_INDEX = _COMMUNS + (
 # un texte qui contient aussi un vrai mot-clé reste retenu. « usage » seul n'est pas un mot-clé (il ramène la Usage Policy).
 EXCLUSIONS = ("credit score", "score de crédit", "plan mode", "mode plan")
 
+# R5 (valider.py) seulement : « forfait » dit la disponibilité d'une fonction (« sur tous les forfaits payants »), pas un sujet de
+# compte. Même mécanisme que EXCLUSIONS, mais hors de la détection de la base et de l'index (`mots_trouves_base` ne les connaît pas).
+EXCLUSIONS_DISPONIBILITE = ("tous les forfaits", "sur les forfaits", "pour les forfaits", "dans les forfaits")
+
 
 def _normaliser(texte: str) -> str:
     sans_accent = "".join(c for c in unicodedata.normalize("NFKD", texte) if not unicodedata.combining(c))
@@ -50,11 +54,12 @@ def _motif(expression: str) -> re.Pattern:
 _MOTIFS_BASE = [(m, _motif(m)) for m in MOTS_CLES_BASE]
 _MOTIFS_INDEX = [(m, _motif(m)) for m in MOTS_CLES_INDEX]
 _EXCLUS = [_motif(m) for m in EXCLUSIONS]
+_EXCLUS_DISPONIBILITE = [_motif(m) for m in EXCLUSIONS_DISPONIBILITE]
 
 
-def _trouves(motifs: list, textes: tuple) -> list[str]:
+def _trouves(motifs: list, textes: tuple, exclus: list | None = None) -> list[str]:
     t = _normaliser(" \n ".join(x for x in textes if x))
-    for exclusion in _EXCLUS:
+    for exclusion in _EXCLUS if exclus is None else exclus:
         t = exclusion.sub(" ", t)
     return [mot for mot, p in motifs if p.search(t)]
 
@@ -67,6 +72,11 @@ def mots_trouves_index(*textes: str | None) -> list[str]:
 def mots_trouves_base(*textes: str | None) -> list[str]:
     """Mots-clés de la base de référence présents dans les textes, une fois les expressions exclues retirées."""
     return _trouves(_MOTIFS_BASE, textes)
+
+
+def mots_trouves_element(*textes: str | None) -> list[str]:
+    """Mots-clés de la base présents dans un élément publié, hors disponibilité d'une fonction « sur tous les forfaits » (R5)."""
+    return _trouves(_MOTIFS_BASE, textes, _EXCLUS + _EXCLUS_DISPONIBILITE)
 
 
 def correspond_index(*textes: str | None) -> bool:
