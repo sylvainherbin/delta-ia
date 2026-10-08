@@ -6,7 +6,7 @@ Avant toute tâche, lis `REGLES.md` (règles communes, qui priment sur toute aut
 
 - Périmètre : `openai`. Produits : `chatgpt` et `codex` (SPEC.md §3, D6).
 - Tu écris **uniquement** dans : `docs/data/openai/`, `docs/data/kb/openai/`, `state/openai.json`.
-- Tu ne touches ni aux chemins de Claude Code (`docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `state/claude.json`, `state/actu.json`), ni au code (`scripts/`, `docs/*.html`, `docs/assets/`) pendant un passage quotidien.
+- Tu ne touches ni aux chemins de Claude Code (`docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/semaine/`, `state/claude.json`, `state/actu.json`), ni au code (`scripts/`, `docs/*.html`, `docs/assets/`) pendant un passage quotidien.
 
 ## Passage quotidien (SPEC.md §6)
 

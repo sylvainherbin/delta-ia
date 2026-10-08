@@ -14,7 +14,7 @@
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
-  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null };
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null };
   const main = document.getElementById("contenu");
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
@@ -626,12 +626,111 @@
     return frag;
   }
 
+  /* ---------- Semaine (D98) : bilan de la semaine ISO, champs recopiés par scripts/semaine.py ---------- */
+  const RE_SEMAINE = /^\d{4}-W\d{2}$/;
+  const SOURCES_SEMAINE = { claude: "Claude", actu: "Actu", openai: "OpenAI", "kb-claude": "Base Claude", "kb-openai": "Base OpenAI" };
+  async function chargerSemaine() {
+    const s = etat.semaines;
+    if (s.index === undefined) {
+      try {
+        const idx = await lireJson("data/semaine/index.json");
+        if (!idx || !Array.isArray(idx.semaines)) throw new Error("index sans `semaines`");
+        s.index = idx.semaines.filter((x) => x && RE_SEMAINE.test(x.semaine));
+      } catch (e) { s.index = null; s.erreur = String(e.message || e); }
+    }
+    if (!s.index || !s.index.length) return;
+    s.courante = s.index.some((x) => x.semaine === etat.semaineDemandee) ? etat.semaineDemandee : s.index[0].semaine;
+    if (!s.docs[s.courante]) {
+      try {
+        const d = await lireJson(`data/semaine/${s.courante}.json`);
+        if (!d || !Array.isArray(d.elements) || !Array.isArray(d.d71) || !Array.isArray(d.base_ajoutees) || !Array.isArray(d.base_verdicts)) throw new Error("bilan illisible");
+        s.docs[s.courante] = d;
+      } catch (e) { s.docs[s.courante] = { erreur: String(e.message || e) }; }
+    }
+  }
+  function ligneSemaine(l) {
+    const c = el("li", { class: `ligne-semaine impact-${IMPACTS.includes(l.impact) ? l.impact : "nul"}` });
+    c.append(el("div", { class: "badges" },
+      badge(`impact ${IMPACTS.includes(l.impact) ? l.impact : "nul"}`, `impact ${l.impact || "?"}`),
+      badge(`certitude ${l.certitude || ""}`, CERTITUDES[l.certitude] || String(l.certitude || "?")),
+      badge("produit", PRODUITS[l.produit] || String(l.produit || "?"))));
+    c.append(el("h4", { text: texte(l.titre, "(sans titre)") + (l.version ? ` ${l.version}` : "") }));
+    c.append(el("div", { class: "meta" }, `${dateFr(l.date_publication)} · `,
+      ISO_JOUR.test(l.jour || "") ? el("a", { href: `#archives/${l.jour}`, text: `passage du ${dateFr(l.jour)}` }) : "passage inconnu"));
+    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), l.action) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
+    return c;
+  }
+  function ligneKbSemaine(l, quand) {
+    const c = el("li", { class: "carte kb" });
+    const verdict = l.verdict_apres || l.verdict;
+    const badges = el("div", { class: "badges" }, badge("produit", PRODUITS[l.produit] || String(l.produit || "?")),
+      badge("type", KB_CATEGORIES[l.categorie] || String(l.categorie || "?")),
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"));
+    if (l.verdict_apres) badges.append(el("span", { class: "meta", text: l.verdict_avant ? `avant : ${VERDICTS[l.verdict_avant] || l.verdict_avant}` : "premier jugement" }));
+    c.append(badges, el("h4", { text: texte(l.nom, "(sans nom)") }), el("div", { class: "meta", text: quand }));
+    c.append(el("pre", { class: "usage" }, el("code", { text: String(l.usage || "") })));
+    if (texte(l.exemple) && l.exemple !== l.usage) {
+      c.append(el("div", { class: "etiquette", text: l.exemple_origine === "source" ? "Exemple (de la documentation)" : l.exemple_origine === "compose" ? "Exemple (composé pour ton usage)" : "Exemple" }));
+      c.append(el("pre", { class: "usage exemple" }, el("code", { text: l.exemple })));
+    }
+    if (texte(l.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: l.pourquoi })));
+    return c;
+  }
+  function blocSemaine(titre, lignes, fabrique, vide) {
+    const b = el("section", { class: "bloc-semaine", "aria-label": titre }, el("h3", { text: `${titre} (${lignes.length})` }));
+    b.append(lignes.length ? el("ul", { class: "liste" }, ...lignes.map(fabrique)) : el("p", { class: "vide", text: vide }));
+    return b;
+  }
+  function pageSemaine() {
+    const s = etat.semaines;
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Semaine" }));
+    if (s.index === null) {
+      frag.append(el("p", { class: "erreur", text: `Bilans de semaine indisponibles : ${s.erreur}` }));
+      return frag;
+    }
+    if (!s.index.length) {
+      frag.append(el("p", { class: "vide", text: "Aucun bilan de semaine publié pour l'instant." }));
+      return frag;
+    }
+    const choixSemaine = el("select", { "aria-label": "Semaine affichée" });
+    for (const x of s.index) {
+      choixSemaine.append(el("option", { value: x.semaine, selected: x.semaine === s.courante ? true : null, text: `${x.semaine} · du ${dateFr(x.du)} au ${dateFr(x.au)}` }));
+    }
+    choixSemaine.addEventListener("change", () => { location.hash = `#semaine/${choixSemaine.value}`; });
+    frag.append(el("div", { class: "filtres" }, choixSemaine));
+    const d = s.docs[s.courante];
+    if (!d || d.erreur) {
+      frag.append(el("p", { class: "erreur", text: `Bilan ${s.courante} indisponible : ${d ? d.erreur : "non chargé"}` }));
+      return frag;
+    }
+    frag.append(el("p", { class: "sous-titre", text: `Du ${dateFr(d.du)} au ${dateFr(d.au)} · produit le ${horodatageFr(d.genere_le)} à partir des fichiers quotidiens et de la base, sans rédaction. Les éléments du jour d'OpenAI y figurent au bilan suivant.` }));
+    if (d.statut !== "ok") frag.append(el("p", { class: "erreur", role: "status", text: `Bilan partiel (statut ${d.statut}) : ${texte(d.raison, "raison non indiquée")}` }));
+    else {
+      const jours = Object.entries(SOURCES_SEMAINE).filter(([k]) => d.sources && d.sources[k] && !k.startsWith("kb-")).map(([k, nom]) => `${nom} ${d.sources[k].jours.length} j`);
+      frag.append(el("p", { class: "sous-titre doux", text: `Passages lus : ${jours.join(", ")}.` }));
+    }
+    frag.append(blocSemaine("Compte et quotas", d.d71, ligneSemaine, "Rien sur le compte, les quotas, les tarifs ou les forfaits cette semaine."));
+    frag.append(blocSemaine("À retenir (impact fort ou moyen)", d.elements, ligneSemaine, "Aucun élément d'impact fort ou moyen cette semaine."));
+    const utiles = d.base_ajoutees.filter((l) => l.verdict !== "ignorer");
+    const ignorees = d.base_ajoutees.filter((l) => l.verdict === "ignorer");
+    const bAjout = blocSemaine("Nouveau dans la base", utiles, (l) => ligneKbSemaine(l, `ajoutée le ${dateFr(l.date_ajout)}`), ignorees.length ? "Aucune entrée à utiliser ou à tester parmi les ajouts." : "Aucune entrée ajoutée cette semaine.");
+    if (ignorees.length) {
+      bAjout.append(el("details", { class: "ecartes" }, el("summary", { text: `${ignorees.length} entrée(s) ajoutée(s) jugée(s) à ignorer` }),
+        el("ul", { class: "liste" }, ...ignorees.map((l) => ligneKbSemaine(l, `ajoutée le ${dateFr(l.date_ajout)}`)))));
+    }
+    frag.append(bAjout);
+    frag.append(blocSemaine("Passées à utiliser ou à tester", d.base_verdicts, (l) => ligneKbSemaine(l, `verdict du ${dateFr(l.date)}`), "Aucune entrée de la base n'a changé de verdict vers utiliser ou tester cette semaine."));
+    return frag;
+  }
+
   /* ---------- routage par ancre ---------- */
   function lireRoute() {
     const h = (location.hash || "#aujourdhui").slice(1);
     const [chemin, requete] = h.split("?");
     const [page, param] = chemin.split("/");
-    etat.page = ["aujourdhui", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
+    etat.page = ["aujourdhui", "semaine", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
+    etat.semaineDemandee = etat.page === "semaine" && RE_SEMAINE.test(param || "") ? param : null;
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
     // #reference?recent=7 (ou 30) : vue des entrées ajoutées récemment, la plus récente d'abord
     const recent = etat.page === "reference" ? new URLSearchParams(requete || "").get("recent") : null;
@@ -641,6 +740,7 @@
     lireRoute();
     await chargerNecessaire();
     if (etat.page === "reference") await chargerKb();
+    if (etat.page === "semaine") await chargerSemaine();
     if (etat.page === "aujourdhui") await Promise.all([chargerVersions(), chargerComptes()]);
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
@@ -652,6 +752,7 @@
     }
     for (const p of erreursIndex) main.append(el("p", { class: "erreur", text: `Index ${p} illisible : ${etat.index[p].erreur}` }));
     switch (etat.page) {
+      case "semaine": main.append(pageSemaine()); break;
       case "changelogs": main.append(pageChangelogs()); break;
       case "actu": main.append(pageActu()); break;
       case "reference": main.append(pageReference()); rendreResultatsKb(); break;

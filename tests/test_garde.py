@@ -236,7 +236,7 @@ def test_d68_skill_et_reglages():
     # chaque commande nommée par la section automatique a sa règle
     for cmd in ("git pull --rebase", "git push", "date +%F", "sha1sum CONTEXTE.md",
                 "git add docs/data/claude state/claude.json docs/data/kb/claude docs/data/versions.json docs/data/etat.json",
-                "git add docs/data/actu state/actu.json"):
+                "git add docs/data/actu state/actu.json docs/data/semaine"):
         assert f"Bash({cmd})" in allow and f"`{cmd}`" in sec.replace("\n", " ") or f"Bash({cmd})" in allow, cmd
     assert {"Bash(git push --force *)", "Bash(git add -A *)"} <= set(s["permissions"]["deny"])
     assert "| D68 |" in (RACINE / "SPEC.md").read_text(encoding="utf-8")
@@ -283,10 +283,12 @@ def test_d68_correctif_mcp_et_arret_propre():
     sec = skill[skill.index("## Mode automatique (D68)"):skill.index("## 0. Préparation")]
     arret_suivis = ("git checkout -- docs/data/versions.json docs/data/etat.json docs/data/claude docs/data/actu "
                     "docs/data/kb/claude state/claude.json state/actu.json")
-    arret_nouveaux = "git clean -f -- docs/data/claude docs/data/actu"
+    arret_nouveaux = "git clean -f -- docs/data/claude docs/data/actu docs/data/semaine"
+    arret_semaine = "git checkout -- docs/data/semaine"  # D98 : séparé, git refuse tout un checkout si un chemin n'est pas encore suivi
+    assert f"`{arret_semaine}`" in sec
     assert f"`{arret_suivis}`" in sec and f"`{arret_nouveaux}`" in sec and "outil refusé" in sec and "13 arbre de travail" in sec
     s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]
-    assert f"Bash({arret_suivis})" in s["allow"] and f"Bash({arret_nouveaux})" in s["allow"]
+    assert f"Bash({arret_suivis})" in s["allow"] and f"Bash({arret_nouveaux})" in s["allow"] and f"Bash({arret_semaine})" in s["allow"]
     assert not any(r.startswith(("Bash(git checkout *", "Bash(git clean *", "Bash(rm")) for r in s["allow"])
     # serveur local delta-ia, connecteur de compte dans Claude Desktop (identifiant relevé le 25/09) et dans la CLI
     assert {"mcp__delta-ia__*", "mcp__f15d4eb1-5763-45f3-b583-ed06d6d3532d__*", "mcp__claude_ai_Delta-IA__*"} <= set(s["deny"])

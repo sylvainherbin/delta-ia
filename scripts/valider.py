@@ -29,6 +29,7 @@ from deltalib.etat import DOSSIERS  # noqa: E402
 from deltalib.contexte import SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi  # noqa: E402
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
 from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
+from deltalib import semaine as bilan_semaine  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -797,6 +798,110 @@ def verifier_etat(racine: Path, r: Rapport) -> None:
     parcourir(e, "etat")
 
 
+CHAMPS_SEMAINE = {"semaine", "du", "au", "genere_le", "statut", "raison", "sources", "d71", "elements", "base_ajoutees", "base_verdicts"}
+CHAMPS_LIGNE_ELEMENT = {"perimetre", "id", "produit", "titre", "version", "impact", "certitude", "date_publication", "jour", "action"}
+CHAMPS_LIGNE_KB = {"perimetre", "id", "produit", "categorie", "nom", "usage", "exemple", "exemple_origine", "verdict"}
+CHAMPS_LIGNES_SEMAINE = {
+    "d71": CHAMPS_LIGNE_ELEMENT, "elements": CHAMPS_LIGNE_ELEMENT,
+    "base_ajoutees": CHAMPS_LIGNE_KB | {"date_ajout"},
+    "base_verdicts": CHAMPS_LIGNE_KB | {"date", "verdict_avant", "verdict_apres", "pourquoi"},
+}
+SOURCES_SEMAINE = {*bilan_semaine.PERIMETRES_JOURS, *(f"kb-{p}" for p in bilan_semaine.PERIMETRES_KB)}
+
+
+def _est_jour(v) -> bool:
+    return isinstance(v, str) and bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", v)) and _date_valide(v)
+
+
+def _verifier_lignes_semaine(d: dict, ou: str, r: Rapport) -> None:
+    for liste, champs in CHAMPS_LIGNES_SEMAINE.items():
+        lignes = d[liste]
+        if not isinstance(lignes, list):
+            r.erreur(ou, f"`{liste}` doit être une liste")
+            continue
+        for i, l in enumerate(lignes):
+            oi = f"{ou} {liste}[{i}]"
+            if not isinstance(l, dict) or set(l) != champs:
+                r.erreur(oi, f"champs attendus : {', '.join(sorted(champs))}")
+                continue
+            if not isinstance(l["id"], str) or not l["id"] or l["perimetre"] not in {"claude", "actu", "openai"}:
+                r.erreur(oi, "`id` (texte) ou `perimetre` invalide")
+            if liste in ("d71", "elements"):
+                if l["impact"] not in IMPACTS or not _est_jour(l["jour"]):
+                    r.erreur(oi, "`impact` ou `jour` invalide")
+                if liste == "elements" and l["impact"] not in bilan_semaine.IMPACTS_RETENUS:
+                    r.erreur(oi, "`elements` ne reprend que les impacts fort et moyen")
+            elif liste == "base_ajoutees":
+                if not _est_jour(l["date_ajout"]) or not d["du"] <= l["date_ajout"] <= d["au"]:
+                    r.erreur(oi, "`date_ajout` hors de la semaine")
+            else:
+                if not _est_jour(l["date"]) or not d["du"] <= l["date"] <= d["au"]:
+                    r.erreur(oi, "`date` hors de la semaine")
+                if l["verdict_apres"] not in bilan_semaine.VERDICTS_UTILES:
+                    r.erreur(oi, "`verdict_apres` doit valoir utiliser ou tester")
+
+
+def verifier_semaine(racine: Path, r: Rapport) -> None:
+    """D98 : docs/data/semaine/AAAA-Www.json et index.json, écrits par scripts/semaine.py (champs recopiés, aucun texte rédigé)."""
+    dossier = racine / "docs" / "data" / "semaine"
+    if not dossier.exists():
+        return
+    lus: dict[str, dict] = {}
+    for f in sorted(dossier.glob("????-W??.json")):
+        ou = f"semaine/{f.name}"
+        texte = f.read_text(encoding="utf-8")
+        verifier_secrets(texte, ou, r)
+        try:
+            d = json.loads(texte)
+        except ValueError as err:
+            r.erreur(ou, f"JSON invalide : {err}")
+            continue
+        if not isinstance(d, dict) or set(d) != CHAMPS_SEMAINE:
+            r.erreur(ou, f"champs attendus : {', '.join(sorted(CHAMPS_SEMAINE))}")
+            continue
+        try:
+            lundi, dimanche = bilan_semaine.bornes(d["semaine"])
+        except bilan_semaine.SemaineInvalide as err:
+            r.erreur(ou, str(err))
+            continue
+        if d["semaine"] != f.stem or d["du"] != lundi.isoformat() or d["au"] != dimanche.isoformat():
+            r.erreur(ou, "`semaine`, `du` et `au` doivent correspondre au nom du fichier (lundi et dimanche ISO)")
+        if not _horodatage_ou_null(d["genere_le"]) or d["genere_le"] is None:
+            r.erreur(ou, "`genere_le` doit être un horodatage ISO 8601")
+        if d["statut"] not in ("ok", "echec"):
+            r.erreur(ou, "`statut` doit valoir ok ou echec")
+        elif (d["statut"] == "ok") != (d["raison"] is None) or (d["raison"] is not None and not str(d["raison"]).strip()):
+            r.erreur(ou, "`raison` est null si et seulement si `statut` vaut ok")
+        src = d["sources"]
+        if not isinstance(src, dict) or set(src) != SOURCES_SEMAINE:
+            r.erreur(ou, f"`sources` doit nommer exactement : {', '.join(sorted(SOURCES_SEMAINE))}")
+        else:
+            for nom, s in src.items():
+                if not isinstance(s, dict) or set(s) != {"statut", "raison", "jours"} or s["statut"] not in ("ok", "echec") \
+                        or not isinstance(s["jours"], list) or (s["statut"] == "ok") != (s["raison"] is None):
+                    r.erreur(ou, f"`sources.{nom}` : {{statut ok|echec, raison (null si ok), jours}} attendu")
+            if (d["statut"] == "ok") != all(isinstance(s, dict) and s.get("statut") == "ok" for s in src.values()):
+                r.erreur(ou, "`statut` doit valoir echec si et seulement si une source est en echec")
+        _verifier_lignes_semaine(d, ou, r)
+        lus[f.stem] = d
+    chemin = dossier / "index.json"
+    if lus and not chemin.exists():
+        r.erreur("semaine/index.json", "index absent alors que des semaines existent")
+    if chemin.exists():
+        try:
+            index = json.loads(chemin.read_text(encoding="utf-8"))
+        except ValueError as err:
+            r.erreur("semaine/index.json", f"JSON invalide : {err}")
+            return
+        attendu = [{"semaine": k, "statut": v["statut"], "d71": len(v["d71"]), "elements": len(v["elements"]),
+                    "base_ajoutees": len(v["base_ajoutees"]), "base_verdicts": len(v["base_verdicts"])}
+                   for k, v in sorted(lus.items(), reverse=True)]
+        recu = [{c: x.get(c) for c in ("semaine", "statut", "d71", "elements", "base_ajoutees", "base_verdicts")}
+                for x in index.get("semaines", []) if isinstance(x, dict)] if isinstance(index, dict) else None
+        if recu != attendu:
+            r.erreur("semaine/index.json", "`semaines` doit correspondre exactement aux fichiers AAAA-Www.json (semaine, statut, compteurs)")
+
+
 # D64-bis : ctx-id connus (actifs et dépréciés) du CONTEXTE.md de la racine ; None si absent ou illisible
 CTX_IDS: set[str] | None = None
 
@@ -871,6 +976,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
     if perimetre == "claude":
         verifier_versions(racine, r)  # D55 : chemin de Claude Code
         verifier_etat(racine, r)  # D65
+        verifier_semaine(racine, r)  # D98
     connus = ids_kb(racine, perimetre)
     if connus is not None:
         for d, q in quotidiens.items():
