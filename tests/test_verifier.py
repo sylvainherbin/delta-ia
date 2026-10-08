@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import fcntl
 import json
 import subprocess
 import sys
@@ -185,28 +184,88 @@ def test_commandes_pytest_puis_les_trois_perimetres():
 
 
 @pytest.fixture
-def verrous(tmp_path, monkeypatch):
-    monkeypatch.setattr(verifier.os, "nice", lambda n: 0)
-    monkeypatch.setenv("VERIFY_VERROU_TENU", "")  # enregistre l'état pour la restauration : verrou_machine écrit os.environ
-    monkeypatch.delenv("VERIFY_VERROU_TENU")
-    return tmp_path / "verrous"
+def lanceur(tmp_path, monkeypatch):
+    """Faux `verrou-tests` : note ses arguments (un appel par ligne) puis sort avec le code demandé (défaut 0)."""
+    monkeypatch.delenv("VERIFY_VERROU_TENU", raising=False)
+    bin_ = tmp_path / "bin"
+    bin_.mkdir()
+    script = bin_ / "verrou-tests"
+    script.write_text(f'#!/bin/sh\necho "$*" >> {tmp_path / "prises"}\nexit "${{FAUX_CODE:-0}}"\n')
+    script.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_}:/usr/bin:/bin")
+    return tmp_path / "prises"
 
 
-def test_verrou_machine_prend_la_seconde_place_si_la_premiere_est_tenue(verrous):
-    verrous.mkdir()
-    premiere = (verrous / verifier.VERROUS[0]).open("a")
-    fcntl.flock(premiere, fcntl.LOCK_EX)
-    try:
-        tenu = verifier.verrou_machine(verrous)
-        assert tenu is not None and tenu.name.endswith(verifier.VERROUS[1])
-    finally:
-        premiere.close()
+def test_verrou_commun_relance_sous_verrou_tests(lanceur, tmp_path):
+    with pytest.raises(SystemExit) as sortie:
+        verifier.verrou_commun(["--cible", "--base", "main"], tmp_path)
+    assert sortie.value.code == 0
+    prise, = lanceur.read_text().splitlines()
+    assert prise == (f"--depot {tmp_path} --nom delta-ia -- {sys.executable} {verifier.__file__} --cible --base main")
 
 
-def test_verrou_machine_herite_ne_reprend_pas_le_verrou(verrous, monkeypatch):
+def test_verrou_commun_herite_ne_reprend_pas_le_verrou(lanceur, monkeypatch):
     monkeypatch.setenv("VERIFY_VERROU_TENU", "1")
-    assert verifier.verrou_machine(verrous) is None
-    assert not verrous.exists()
+    assert verifier.verrou_commun(["--local"]) is None
+    assert not lanceur.exists()
+
+
+@pytest.mark.parametrize("code", [1, 75])
+def test_verrou_commun_rend_le_code_tel_quel(lanceur, monkeypatch, capsys, code):
+    monkeypatch.setenv("FAUX_CODE", str(code))
+    with pytest.raises(SystemExit) as sortie:
+        verifier.verrou_commun([])
+    assert sortie.value.code == code
+    assert ("file du verrou commun pleine" in capsys.readouterr().out) is (code == 75)
+
+
+def test_verrou_commun_sans_lanceur_ne_contourne_pas(monkeypatch, tmp_path, capsys):
+    monkeypatch.delenv("VERIFY_VERROU_TENU", raising=False)
+    monkeypatch.setenv("PATH", str(tmp_path))
+    with pytest.raises(SystemExit) as sortie:
+        verifier.verrou_commun([])
+    assert sortie.value.code == 127
+    assert "aucun verrou local de rechange" in capsys.readouterr().out
+
+
+@pytest.fixture
+def prises(monkeypatch, depot):
+    """Remplace la relance par un compteur : combien de fois chaque exécution demande le verrou."""
+    monkeypatch.setattr(verifier, "RACINE", depot)
+    monkeypatch.setattr(verifier, "lancer", lambda *a, **k: {"ok": True, "commandes": [{"cmd": "x", "code": 0, "secondes": 0.1}]})
+    appels_ = []
+    monkeypatch.setattr(verifier, "verrou_commun", lambda argv, racine=None: appels_.append(list(argv)))
+    return appels_
+
+
+def preparer_cible(depot):
+    git(depot, "update-ref", "refs/remotes/origin/main", "HEAD")
+    (depot / "scripts").mkdir()
+    (depot / "tests").mkdir()
+    (depot / "scripts" / "outil.py").write_text("x = 1\n")
+    (depot / "tests" / "test_outil.py").write_text("import outil\n")
+
+
+@pytest.mark.parametrize("argv", [["--local"], ["--cible"], ["tests/test_x.py"], ["--sans-cache", "--registre", "{reg}"]])
+def test_une_seule_prise_par_execution(prises, depot, tmp_path, argv):
+    preparer_cible(depot)
+    argv = [a.replace("{reg}", str(tmp_path / "reg.json")) for a in argv]
+    verifier.main(argv)
+    assert prises == [argv]
+
+
+def test_resultat_reutilise_n_attend_aucun_verrou(prises, depot, tmp_path):
+    reg = ["--registre", str(tmp_path / "reg.json")]
+    verifier.main(reg)
+    assert len(prises) == 1
+    verifier.main(reg)  # même arbre, même environnement : réutilisé
+    assert len(prises) == 1
+
+
+def test_cible_liste_ou_sans_test_ne_prend_pas_le_verrou(prises, depot):
+    preparer_cible(depot)
+    verifier.main(["--cible", "--liste"])
+    assert prises == []
 
 
 # --- D94 : vérification ciblée, preuve CI du hash exact, tests marqués `local` ---------------------------------------

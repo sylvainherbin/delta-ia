@@ -51,3 +51,13 @@ def test_skill_verify_fusionne_sans_pull_rebase_avant_le_push():
     assert "Pas de `git pull --rebase` entre la fusion et le push" in texte
     assert "git pull --rebase && git push" not in texte
     assert "git rebase --abort" in texte
+
+
+def test_skill_verify_passe_par_le_verrou_commun():
+    """VERROU-COMMUN (D94) : verifier.py sous verrou-tests, npm test du serveur MCP aussi, code 75, CI hors verrou."""
+    texte = SKILL.read_text(encoding="utf-8")
+    assert "verrou-tests --depot <racine> --nom delta-ia -- …" in texte
+    assert "verrou-tests --depot mcp -- npm test" in texte
+    assert "Code 75" in texte and "VERIFY_VERROU_TENU" in texte
+    assert "La CI (D87, D94) n'est pas concernée" in texte
+    assert "deux fichiers" not in texte and "verify-machine" not in texte
