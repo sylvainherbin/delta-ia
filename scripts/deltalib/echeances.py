@@ -199,6 +199,19 @@ def element_echeance(source, r: Retrait, jour: date, suffixe: str) -> Element:
                    source_id=f"{source.id}-echeances", officielle=source.officielle)
 
 
+def signalements_retenus(signales: list[Signalement], jour: date, recent_jours: int = 180) -> list[str]:
+    """Textes des signalements à porter : une borne déjà échue est sans objet, une annonce ancienne sans tableau de dates
+    est de l'historique, pas une échéance en attente."""
+    messages: list[str] = []
+    for s in signales:
+        if s.genre == "date_non_ferme" and s.date_retrait and s.date_retrait <= jour.isoformat():
+            continue
+        if s.genre == "annonce_sans_retrait" and s.date_annonce and (jour - date.fromisoformat(s.date_annonce)).days > recent_jours:
+            continue
+        messages.append(s.texte)
+    return messages
+
+
 def produire_echeances(source, retraits: list[Retrait], signales: list[Signalement], jour: date,
                        recent_jours: int = 180) -> tuple[list[Element], str | None]:
     """Éléments d'échéance du jour et message de signalement partiel (None s'il n'y a rien à signaler).
@@ -209,16 +222,76 @@ def produire_echeances(source, retraits: list[Retrait], signales: list[Signaleme
         p = palier((date.fromisoformat(r.date_retrait) - jour).days)
         if p:
             elements.append(element_echeance(source, r, jour, p))
-    messages: list[str] = []
-    for s in signales:
-        if s.genre == "date_non_ferme" and s.date_retrait and s.date_retrait <= jour.isoformat():
-            continue  # borne déjà échue : sans objet
-        if s.genre == "annonce_sans_retrait" and s.date_annonce and (jour - date.fromisoformat(s.date_annonce)).days > recent_jours:
-            continue  # annonce ancienne sans tableau de dates : historique, pas une échéance en attente
-        messages.append(s.texte)
+    messages = signalements_retenus(signales, jour, recent_jours)
     if not retraits and not messages:
         messages.append("aucun retrait extrait de la page : gabarit changé ?")
     if not messages:
         return elements, None
     vus = "; ".join(messages[:MAX_SIGNALES]) + (f" ; … et {len(messages) - MAX_SIGNALES} autre(s)" if len(messages) > MAX_SIGNALES else "")
     return elements, f"échéances : {len(messages)} signalement(s) — {vus}"
+
+
+HORIZON_JOURS = 14
+FICHIER_RESUME = "echeances.json"
+
+
+def resume_echeances(perimetre: str, sources: list, retraits_sources: dict, echecs: list, jour: date, releve_le: str) -> dict | None:
+    """Résumé léger des échéances à 14 jours d'un périmètre, pour la supervision (D71) : `None` si aucune de ses sources ne
+    déclare `echeances`. Contrairement aux éléments bruts, il liste tous les retraits de l'horizon (0 à 14 jours), déjà
+    signalés ou non. `id` est l'identifiant de l'élément brut quand il en existe un (`-j14`, `-j1`), sinon (jour même) l'identifiant
+    sans suffixe. Une source déclarée dont la page n'a pas été lue (échec) rend le périmètre `echec`, avec la raison : une
+    liste vide n'y veut jamais dire « aucune échéance »."""
+    declarees = [s for s in sources if s.options.get("echeances")]
+    if not declarees:
+        return None
+    lignes: list[dict] = []
+    signalements: list[dict] = []
+    raisons: list[str] = []
+    for s in declarees:
+        if s.id not in retraits_sources:
+            erreurs = [e.erreur for e in echecs if e.id == s.id and not e.partiel]
+            raisons.append(f"{s.id} : " + (" ; ".join(erreurs) or "page des retraits non lue"))
+            continue
+        _, retraits, signales = retraits_sources[s.id]
+        for r in retraits:
+            n = (date.fromisoformat(r.date_retrait) - jour).days
+            if not 0 <= n <= HORIZON_JOURS:
+                continue
+            p = palier(n)
+            base = f"{PREFIXE}{s.id}-{r.cle}-{r.date_retrait}"
+            lignes.append({"id": f"{base}-{p}" if p else base, "modele_ou_fonction": r.modele, "date_retrait": r.date_retrait,
+                           "jours_restants": n, "palier": p, "remplacement": r.remplacement, "source_url": r.url})
+        signalements += [{"source_id": s.id, "texte": t} for t in signalements_retenus(signales, jour)]
+    lignes.sort(key=lambda l: (l["date_retrait"], l["id"]))
+    return {"perimetre": perimetre, "releve_le": releve_le, "jour": jour.isoformat(), "statut": "echec" if raisons else "ok",
+            "raison": " | ".join(raisons) or None, "echeances": lignes, "signalements": signalements}
+
+
+def ecrire_resume(chemin, resume: dict) -> dict:
+    """Fusionne le résumé d'un périmètre dans `raw/echeances.json` (un seul fichier pour claude et openai, chacun écrit par son
+    passage ; `jours_restants` se compte au `jour` de son périmètre, lu dans `sources`). Un fichier existant illisible est
+    repris à zéro. Retourne le contenu écrit."""
+    import json
+    from .etat import ecrire_json
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            actuel = json.load(f)
+        if not all(isinstance(actuel.get(k), t) for k, t in (("sources", dict), ("perimetre", dict), ("signalements", list))):
+            raise ValueError("structure inattendue")
+    except (OSError, ValueError):
+        actuel = {"sources": {}, "perimetre": {}, "signalements": []}
+    p = resume["perimetre"]
+    sources = {**actuel["sources"], p: {"statut": resume["statut"], "releve_le": resume["releve_le"], "jour": resume["jour"],
+                                        "raison": resume["raison"]}}
+    contenu = {
+        "releve_le": max(v["releve_le"] for v in sources.values()),
+        "horizon_jours": HORIZON_JOURS,
+        "statut": "echec" if any(v["statut"] != "ok" for v in sources.values()) else "ok",
+        "raison": " | ".join(f"{k} : {v['raison']}" for k, v in sorted(sources.items()) if v.get("raison")) or None,
+        "perimetre": dict(sorted({**actuel["perimetre"], p: resume["echeances"]}.items())),
+        "signalements": [x for x in actuel["signalements"] if x.get("perimetre") != p]
+                        + [{"perimetre": p, **x} for x in resume["signalements"]],
+        "sources": dict(sorted(sources.items())),
+    }
+    ecrire_json(chemin, contenu)
+    return contenu

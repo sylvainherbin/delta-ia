@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from deltalib.echeances import FICHIER_RESUME, ecrire_resume  # noqa: E402
 from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, ids_base, valider  # noqa: E402
 from deltalib.http import Client  # noqa: E402
 from deltalib.modeles import PERIMETRES  # noqa: E402
@@ -142,6 +143,8 @@ def commande_recuperer(args, racine: Path) -> int:
     else:
         ecrire_json(chemin_brut, brut)
         historiser(chemin_brut, racine)
+        if bilan.echeances is not None:  # D71 : résumé léger des échéances, lisible par la supervision
+            ecrire_resume(racine / "raw" / FICHIER_RESUME, bilan.echeances)
     print(f"périmètre {args.perimetre} : {len(bilan.sources_traitees)}/{len(sources)} source(s) traitée(s), "
           f"{bilan.elements_total} élément(s) lus, {len(bilan.nouveautes)} nouveauté(s), "
           f"{len(bilan.ignores)} ignoré(s)" + (f" (fenêtre depuis {bilan.fenetre_depuis})" if bilan.fenetre_depuis else "")

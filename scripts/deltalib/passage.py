@@ -49,6 +49,7 @@ class Bilan:
     sources_amorcees: list[str] = field(default_factory=list)
     ignores_raisons: dict[str, str] = field(default_factory=dict)
     contenus_suivis: dict[str, str] = field(default_factory=dict)
+    echeances: dict | None = None  # D71 : résumé à 14 jours (`echeances.resume_echeances`), écrit par fetch.py dans raw/echeances.json
 
     def en_dict(self) -> dict:
         return {
@@ -183,8 +184,10 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     ignores_sources = {i: (par_id[i].source_id if i in par_id else _source_de_l_historique(i, sources)) for i in ignores}
     empreintes = {e.id: e.empreinte for e in elements if e.empreinte}
     contenus_suivis = {e.id: normaliser_contenu(e.contenu).strip() for e in elements if e.empreinte}
+    from .echeances import resume_echeances
+    resume = resume_echeances(perimetre, sources, retraits_sources, echecs, jour, maintenant_iso())
     return Bilan(perimetre, fenetre, borne, nouveautes, ignores, echecs, traitees, len(elements), empreintes,
-                 ignores_sources, amorcees, ignores_raisons, contenus_suivis)
+                 ignores_sources, amorcees, ignores_raisons, contenus_suivis, resume)
 
 
 _RE_DATE_ECHEANCE = re.compile(r"(\d{4}-\d{2}-\d{2})-j\d+$")
