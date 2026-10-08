@@ -58,3 +58,39 @@ def test_a_tester_ouvertes_puis_faites_repliees():
     assert "Actions ouvertes (${ouvertes.length})" in corps and "Actions faites (${faites.length})" in corps
     assert 'el("details", { class: "actions-faites" }' in corps and corps.index("ouvertes.length") < corps.index("faites.length")
     assert "surFait" in app[app.index("function carte"):app.index("function listeCartes")]
+
+
+def test_date_ajout_extraction():
+    """N1 (08/10) : date d'ajout = ligne « ajoutée à l'inventaire », à défaut la plus ancienne date, à défaut None."""
+    import sys
+    sys.path.insert(0, str(DOCS.parent / "scripts"))
+    from deltalib.kb.catalogue import date_ajout
+    ajout = {"date": "2026-10-02", "changement": "ajoutée à l'inventaire"}
+    assert date_ajout({"historique": [{"date": "2026-10-05", "changement": "commentée"}, ajout]}) == "2026-10-02"
+    assert date_ajout({"historique": [ajout, {"date": "2026-10-01", "changement": "ajoutée à l'inventaire"}]}) == "2026-10-01"
+    # sans la ligne attendue : la plus ancienne date de l'historique
+    assert date_ajout({"historique": [{"date": "2026-10-05", "changement": "commentée"}, {"date": "2026-09-30", "changement": "x"}]}) == "2026-09-30"
+    # historique absent, vide, mal formé : None
+    for e in ({}, {"historique": None}, {"historique": []}, {"historique": "x"},
+              {"historique": [{"date": "hier", "changement": "ajoutée à l'inventaire"}, None, {"changement": "x"}]}):
+        assert date_ajout(e) is None
+    # toutes les entrées publiées ont une date d'ajout
+    for f in (DOCS / "data" / "kb").glob("*/*.json"):
+        for e in json.loads(f.read_text(encoding="utf-8"))["entrees"]:
+            assert date_ajout(e), (f.name, e["id"])
+
+
+def test_vue_recente_de_la_reference():
+    """N1 : tri « ajoutées récemment », filtre 7/30 jours, lien #reference?recent=7 et encart sur Aujourd'hui."""
+    app = (DOCS / "assets" / "app.js").read_text(encoding="utf-8")
+    assert 'const LIGNE_AJOUT = "ajoutée à l\'inventaire"' in app
+    f = app[app.index("function dateAjout"):app.index("function jourLocalIso")]
+    assert "lignes.map((l) => l.date).sort()[0] || null" in f
+    corps = app[app.index("function filtrerKb"):app.index("function carteKb")]
+    assert 'kbFiltre.tri !== "recent"' in corps and "ajouteeDepuis(e, kbFiltre.depuis, ref)" in corps and "String(a.nom).localeCompare(String(b.nom)" in corps
+    assert 'choix("Tri", "tri"' in app and "Ajoutées depuis 7 jours" in app and "Ajoutées depuis 30 jours" in app
+    assert 'new URLSearchParams(requete || "").get("recent")' in app and "#reference?recent=7" in app
+    assert 'id: "encart-kb"' in app and "Nouveau dans la base (7 jours) : " in app
+    # la carte montre syntaxe, exemple et pourquoi
+    carte = app[app.index("function carteKb"):app.index("function badgeContexte")]
+    assert "e.usage" in carte and "e.exemple" in carte and "recommandation.pourquoi" in carte and "ajoutée le" in carte

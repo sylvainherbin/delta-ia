@@ -288,6 +288,7 @@
     frag.append(el("h2", { text: "Aujourd'hui" }));
     const outils = blocOutils();
     if (outils) frag.append(outils);
+    frag.append(el("div", { id: "encart-kb" }));
     const quotidiens = [];
     let elements = [];
     for (const p of PERIMETRES) {
@@ -307,6 +308,16 @@
     const ec = blocEcartes(quotidiens);
     if (ec) frag.append(ec);
     return frag;
+  }
+  // la base de référence (3 Mo) se charge après le premier rendu, sans bloquer l'onglet Aujourd'hui
+  function completerEncartKb() {
+    chargerKb().then(() => {
+      const zone = document.getElementById("encart-kb");
+      if (!zone || etat.page !== "aujourdhui" || !etat.kb) return;
+      vider(zone);
+      const p = encartNouveauKb();
+      if (p) zone.append(p);
+    }).catch((err) => console.error("delta:encart-kb", err));
   }
   function pageChangelogs() {
     const frag = document.createDocumentFragment();
@@ -338,8 +349,27 @@
   const VERDICTS = { utiliser: "à utiliser", tester: "à tester", ignorer: "à ignorer" };
   const STATUTS = { utilise: "utilisé", non_utilise: "non utilisé", inconnu: "usage inconnu" };
   const KB_PAGE = 50;
-  const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", limite: KB_PAGE };
+  const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE };
+  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"] };
+  const KB_JOURS_RECENTS = ["7", "30"];
+  const LIGNE_AJOUT = "ajoutée à l'inventaire";
+  const ISO_JOUR = /^\d{4}-\d{2}-\d{2}$/;
   function sansAccents(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+  // date d'ajout d'une entrée : ligne « ajoutée à l'inventaire » de l'historique, à défaut la plus ancienne date de l'historique, à défaut null (jamais devinée)
+  function dateAjout(e) {
+    const lignes = e && Array.isArray(e.historique) ? e.historique.filter((l) => l && typeof l === "object" && typeof l.date === "string" && ISO_JOUR.test(l.date)) : [];
+    const ajout = lignes.filter((l) => typeof l.changement === "string" && l.changement.normalize("NFC").trim() === LIGNE_AJOUT).map((l) => l.date).sort();
+    return ajout[0] || lignes.map((l) => l.date).sort()[0] || null;
+  }
+  function jourLocalIso(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+  // vrai si la date d'ajout tombe dans les `jours` derniers jours (aujourd'hui compris), `ref` = jour de référence AAAA-MM-JJ
+  function ajouteeDepuis(e, jours, ref) {
+    const a = dateAjout(e);
+    if (!a || !ISO_JOUR.test(ref)) return false;
+    const [y, m, j] = ref.split("-").map(Number);
+    const seuil = new Date(Date.UTC(y, m - 1, j - Number(jours))).toISOString().slice(0, 10);
+    return a >= seuil && a <= ref;
+  }
   async function chargerKb() {
     if (etat.kb) return;
     const t0 = performance.now();
@@ -351,6 +381,7 @@
         for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
           e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
           e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
+          e._ajout = dateAjout(e);
           e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
           entrees.push(e);
         }
@@ -362,12 +393,27 @@
   }
   function filtrerKb() {
     const mots = sansAccents(kbFiltre.q).split(/\s+/).filter(Boolean);
-    return etat.kb.entrees.filter((e) =>
+    const ref = jourLocalIso(new Date());
+    const liste = etat.kb.entrees.filter((e) =>
+      (!kbFiltre.depuis || ajouteeDepuis(e, kbFiltre.depuis, ref)) &&
       (!kbFiltre.produit || e.produit === kbFiltre.produit) &&
       (!kbFiltre.categorie || e.categorie === kbFiltre.categorie) &&
       (!kbFiltre.statut || e.statut_usage === kbFiltre.statut) &&
       (!kbFiltre.verdict || (kbFiltre.verdict === "attente" ? !e.commentee : e.commentee && e.recommandation && e.recommandation.verdict === kbFiltre.verdict)) &&
       mots.every((m) => e._texte.includes(m)));
+    if (kbFiltre.tri !== "recent") return liste;
+    // date d'ajout décroissante, alphabétique à égalité, dates inconnues en dernier
+    return liste.slice().sort((a, b) => (b._ajout || "").localeCompare(a._ajout || "") || String(a.nom).localeCompare(String(b.nom), "fr"));
+  }
+  // encart de l'onglet Aujourd'hui : ce qui est nouveau dans la base depuis 7 jours, absent si rien
+  function encartNouveauKb() {
+    const ref = jourLocalIso(new Date());
+    const compte = {};
+    for (const e of etat.kb.entrees) if (ajouteeDepuis(e, 7, ref)) compte[e.categorie] = (compte[e.categorie] || 0) + 1;
+    const parties = Object.keys(KB_CATEGORIES).filter((c) => compte[c]).map((c) => `${compte[c]} ${KB_NOMS[c][compte[c] > 1 ? 1 : 0]}`);
+    if (!parties.length) return null;
+    return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: "Nouveau dans la base (7 jours) : " }), `${parties.join(", ")} `,
+      el("a", { href: "#reference?recent=7", text: "Voir les nouveautés" }));
   }
   function carteKb(e) {
     const c = el("li", { class: "carte kb" + (e.commentee ? "" : " attente") });
@@ -380,7 +426,7 @@
       e.retiree ? badge("revise", "retirée de la documentation") : null,
       badgeContexte(e)));
     c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
-    if (e.groupe) c.append(el("div", { class: "meta", text: `${e.groupe} · mis à jour le ${dateFr(e.maj_le)}` }));
+    if (e.groupe || e._ajout) c.append(el("div", { class: "meta", text: [e.groupe, e._ajout ? `ajoutée le ${dateFr(e._ajout)}` : null, `mis à jour le ${dateFr(e.maj_le)}`].filter(Boolean).join(" · ") }));
     if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));
     else if (texte(e.description_source)) c.append(el("p", { class: "resume source-en", lang: "en", text: e.description_source }));
     c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? "Accès" : "Syntaxe" }));  // D49
@@ -405,9 +451,9 @@
     });
     return changees.length ? badge("perime", `commentaire à revoir : CONTEXTE ${changees.join(", ")} modifié`) : null;
   }
-  function choix(libelle, cle, options) {
+  function choix(libelle, cle, options, vide) {
     const s = el("select", { "aria-label": libelle });
-    s.append(el("option", { value: "", text: libelle }));
+    s.append(el("option", { value: "", text: vide || libelle }));
     for (const [v, t] of Object.entries(options)) {
       const o = el("option", { value: v, text: t });
       if (kbFiltre[cle] === v) o.selected = true;
@@ -450,7 +496,9 @@
       choix("Produit", "produit", Object.fromEntries(["claude-code", "claude", "codex", "chatgpt"].map((p) => [p, PRODUITS[p]]))),
       choix("Catégorie", "categorie", KB_CATEGORIES),
       choix("Verdict", "verdict", { ...VERDICTS, attente: "en attente de commentaire" }),
-      choix("Statut d'usage", "statut", STATUTS)));
+      choix("Statut d'usage", "statut", STATUTS),
+      choix("Tri", "tri", { recent: "Ajoutées récemment" }, "Tri alphabétique"),
+      choix("Date d'ajout", "depuis", { 7: "Ajoutées depuis 7 jours", 30: "Ajoutées depuis 30 jours" }, "Ajoutées : toutes")));
     frag.append(el("div", { id: "kb-resultats" }));
     return frag;
   }
@@ -517,9 +565,13 @@
   /* ---------- routage par ancre ---------- */
   function lireRoute() {
     const h = (location.hash || "#aujourdhui").slice(1);
-    const [page, param] = h.split("/");
+    const [chemin, requete] = h.split("?");
+    const [page, param] = chemin.split("/");
     etat.page = ["aujourdhui", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
+    // #reference?recent=7 (ou 30) : vue des entrées ajoutées récemment, la plus récente d'abord
+    const recent = etat.page === "reference" ? new URLSearchParams(requete || "").get("recent") : null;
+    if (KB_JOURS_RECENTS.includes(recent)) { kbFiltre.depuis = recent; kbFiltre.tri = "recent"; kbFiltre.limite = KB_PAGE; }
   }
   async function rendre() {
     lireRoute();
@@ -541,7 +593,7 @@
       case "reference": main.append(pageReference()); rendreResultatsKb(); break;
       case "a-tester": main.append(pageATester()); break;
       case "archives": main.append(pageArchives()); break;
-      default: main.append(pageAujourdhui(alertes));
+      default: main.append(pageAujourdhui(alertes)); completerEncartKb();
     }
     document.title = `Delta — ${document.querySelector(".onglets a.actif")?.textContent || "veille IA"}`;
   }

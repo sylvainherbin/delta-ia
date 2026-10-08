@@ -12,6 +12,8 @@ Fusion (D40, D44) :
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 import sys
 from datetime import date
 from pathlib import Path
@@ -147,6 +149,20 @@ def _dedoublonner(entrees: list[EntreeExtraite]) -> list[EntreeExtraite]:
         vus[e.id] = e
         res.append(e)
     return res
+
+
+LIGNE_AJOUT = "ajoutée à l'inventaire"
+
+
+def date_ajout(entree: dict) -> str | None:
+    """Date d'ajout d'une entrée : ligne « ajoutée à l'inventaire » de l'historique, à défaut la plus ancienne
+    date de l'historique, à défaut None (jamais devinée). Miroir de `dateAjout` dans docs/assets/app.js."""
+    historique = entree.get("historique") if isinstance(entree, dict) else None
+    lignes = [l for l in historique if isinstance(l, dict) and isinstance(l.get("date"), str)
+              and re.fullmatch(r"\d{4}-\d{2}-\d{2}", l["date"])] if isinstance(historique, list) else []
+    ajout = sorted(l["date"] for l in lignes
+                   if isinstance(l.get("changement"), str) and unicodedata.normalize("NFC", l["changement"]).strip() == LIGNE_AJOUT)
+    return ajout[0] if ajout else (min(l["date"] for l in lignes) if lignes else None)
 
 
 def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:
