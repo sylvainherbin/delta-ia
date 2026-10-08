@@ -19,7 +19,7 @@ import argparse
 import json
 import re
 import sys
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -596,6 +596,60 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
             r.erreur(o, "`detectee_le` doit être un horodatage ISO 8601")
 
 
+COMPTES_QUOTAS = ("claude_session_5h", "claude_semaine", "claude_semaine_fable", "chatgpt_semaine")
+
+
+def _horodatage_ou_null(v) -> bool:
+    if v is None:
+        return True
+    if not isinstance(v, str) or "T" not in v:
+        return False
+    try:
+        datetime.fromisoformat(v.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return True
+
+
+def verifier_comptes(c, ou: str, r: Rapport) -> None:
+    """D93 (D71) : bloc `comptes` d'etat.json. Pourcentages entiers de 0 à 100 (ou null avec raison), dates ISO ou null."""
+    o = f"{ou} comptes"
+    if not isinstance(c, dict):
+        r.erreur(o, "doit être un objet")
+        return
+    if c.get("statut") == "inconnu":
+        if not str(c.get("raison") or "").strip():
+            r.erreur(o, "`statut: inconnu` sans `raison`")
+        if set(c) - {"statut", "raison"}:
+            r.erreur(o, "`statut: inconnu` n'admet que `statut` et `raison` (aucune valeur devinée)")
+        return
+    if c.get("statut") != "ok":
+        r.erreur(o, "`statut` doit valoir ok ou inconnu")
+        return
+    if set(c) - {"statut", "source", "releve_le", "quotas"}:
+        r.erreur(o, "champs admis : statut, source, releve_le, quotas (rien de machine ni de wifi)")
+    if not _horodatage_ou_null(c.get("releve_le")):
+        r.erreur(o, "`releve_le` doit être un horodatage ISO 8601 ou null")
+    q = c.get("quotas")
+    if not isinstance(q, dict) or set(q) != set(COMPTES_QUOTAS):
+        r.erreur(o, f"`quotas` doit porter exactement {', '.join(COMPTES_QUOTAS)}")
+        return
+    for nom, v in q.items():
+        oq = f"{o}.{nom}"
+        if not isinstance(v, dict) or not {"pct", "remise_a_zero", "releve_le"} <= set(v) or set(v) - {"pct", "remise_a_zero", "releve_le", "raison"}:
+            r.erreur(oq, "champs attendus : pct, remise_a_zero, releve_le (+ raison)")
+            continue
+        pct = v["pct"]
+        if pct is None:
+            if not str(v.get("raison") or "").strip():
+                r.erreur(oq, "`pct` null sans `raison`")
+        elif isinstance(pct, bool) or not isinstance(pct, int) or not 0 <= pct <= 100:
+            r.erreur(oq, "`pct` doit être un entier de 0 à 100")
+        for champ in ("remise_a_zero", "releve_le"):
+            if not _horodatage_ou_null(v[champ]):
+                r.erreur(oq, f"`{champ}` doit être un horodatage ISO 8601 ou null")
+
+
 def verifier_etat(racine: Path, r: Rapport) -> None:
     """D65 : docs/data/etat.json, écrit par scripts/etat.py. Chaque relevé {valeur, source, raison} ; raison si null."""
     chemin = racine / "docs" / "data" / "etat.json"
@@ -620,6 +674,9 @@ def verifier_etat(racine: Path, r: Rapport) -> None:
         r.erreur(ou, "`releve_le` doit être un horodatage ISO 8601")
     if "pertinent_pour_profil" in e and not isinstance(e["pertinent_pour_profil"], bool):
         r.erreur(ou, "`pertinent_pour_profil` doit être un booléen (D79)")
+
+    if "comptes" in e:
+        verifier_comptes(e["comptes"], ou, r)
 
     def parcourir(n, chemin_):
         if isinstance(n, dict):
