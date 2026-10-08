@@ -18,10 +18,12 @@ direct.
 
 Profil : céramiste dentaire indépendant (sous-traitant pour des laboratoires), qui développe seul
 des projets logiciels personnels avec des agents IA **[observé : sites, skills]**. Il travaille en
-français et tutoie les agents **[observé : CLAUDE.md, AGENTS.md]**. Abonnement Claude **Max (5x)**
-**[observé : page Utilisation]**, pris par iOS, arrivé à échéance le 06/10/2026 ; réabonnement par le web à venir
-**[déclaré, 07/10, relevé de Delta]**. Abonnement ChatGPT **Pro (100)** **[déclaré]** ; Sylvain garde les deux et veut que
-Delta développe l'usage de Claude ET de ChatGPT/Codex **[déclaré, 05/10]**. **Crédits Claude Code cloud** : à utiliser
+français et tutoie les agents **[observé : CLAUDE.md, AGENTS.md]**. Abonnement Claude **Max (20x)**
+pris sur le web le 07/10/2026 (216 €, renouvellement le 07/11), **à l'essai d'un mois** : « on fait un essai ce mois-ci et
+on verra pour la suite », avec un bilan d'usage à préparer avant le 07/11 (la date du 03/11 vient de Delta) **[déclaré :
+décision de Sylvain du 07/10, `~/projets/DECISIONS.md`]** ; il remplace le Max 5x pris par iOS, échu le 06/10. Abonnement
+ChatGPT **Pro (100)** **[déclaré]** ; Sylvain garde les deux et veut que Delta développe l'usage de Claude ET de
+ChatGPT/Codex **[déclaré, 05/10]**. **Crédits Claude Code cloud** : à utiliser
 avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10, exécutant `claude-cloud`) **[déclaré, 06/10 ; observé :
 `operer qui`]**.
 
@@ -319,7 +321,7 @@ delta-ia.
 | CLI autonome (`codex` du PATH) | installée par npm (nvm), mise à jour à la dernière publiée le 02/10/2026 et utilisée sous tmux depuis cette date ; version différente de celle livrée avec l'app de bureau (`/usr/lib/chatgpt/resources/codex`), versions : voir `docs/data/versions.json`. Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire qu'utilise la session concernée : celui du PATH pour la session tmux `codex`, celui de l'app de bureau pour la chaîne D70 et pour l'app ; les deux partagent le même `$CODEX_HOME` (`~/.codex`), donc les données (sessions, `queue`) restent cohérentes entre les deux. **Essai remote-control du 02/10/2026** : avec l'app de bureau ouverte, `codex remote-control start` démarre un daemon local qui s'enregistre chez OpenAI sous le nom de la machine, mais sa liaison est refusée en boucle par une erreur 409 « Remote app server already online » (le serveur déjà en ligne est celui de l'app de bureau). L'app de bureau fermée, le même démarrage passe en « connected » : depuis l'app ChatGPT sur iPhone, Sylvain écrit dans les conversations Codex de la machine, dont celle d'une session CLI sous tmux. Une session CLI sous tmux ne crée sa conversation qu'au premier message, et un seul appareil tient une conversation à la fois. **Le trio CLI + tmux + remote control est donc atteint** : le démarrage automatique de l'app de bureau est retiré et les sessions Codex tournent comme services utilisateur modèles `codex-session@<nom>` (tmux `-L codex-<nom>`), au démarrage automatique éprouvé sur redémarrage le 02/10 ; la chaîne D70 utilise le binaire de l'app de bureau, sans dépendre de l'app ouverte | [déclaré] pour l'usage ; [observé] pour le partage de `$CODEX_HOME` et l'essai du 02/10 |
 | Projets approuvés | trading-sim et un dossier de travail Codex daté | [observé] |
 | Activité | installé le 17/09 ; depuis le 02/10, l'essentiel passe par la CLI sous tmux (quelques conversations nommées par rôle, dont l'audit et la console) et par des **missions non interactives** ; l'app de bureau n'est plus lancée au démarrage | [observé] |
-| `codex exec` | **utilisé hors trading-sim** : par la chaîne de nuit D70 (étapes `codex-delta` et `codex-delta-kb`, config explicite `--ignore-user-config`, profil de permissions `delta_auto`) et par `mission-codex` (voir §5), qui lance `codex exec -C <worktree> -s workspace-write` pour les missions de développement des chefs, sur delta-ia et discipline. `--output-schema` n'est utilisé nulle part dans les scripts : seulement cité comme exemple d'essai dans le prompt de la veille | [observé, 04/10] |
+| `codex exec` | **utilisé hors trading-sim** : par la chaîne de nuit D70 (étapes `codex-delta` et `codex-delta-kb`, config explicite `--ignore-user-config`, profil de permissions `delta_auto`) et par `mission-codex` (voir §5), qui lance `codex exec -C <worktree> -s danger-full-access` pour les missions de développement des chefs, sur delta-ia et discipline. `--output-schema` n'est utilisé nulle part dans les scripts : seulement cité comme exemple d'essai dans le prompt de la veille | [observé, 04/10] |
 | Modèle cité dans les audits passés | GPT-5.6 Sol, raisonnement high | [observé : rapport d'audit] |
 
 **Rôle de Codex** [déclaré] : il sert surtout à **auditer ce que fait Claude**, sur trading-sim
@@ -398,13 +400,17 @@ Depuis le 02/10, l'écosystème n'est plus conduit session par session par Sylva
 
 - **Delta** (la session « pilote », Workflows) est le décideur et l'interface de Sylvain : il fixe la direction avec
   lui, dirige les chefs, propose les améliorations du workflow et lit l'état dans OPÉRER plutôt que dans son contexte.
-- **Un chef par projet** (delta-ia, discipline, marketing, veille-shopify — dont le chef est une session **Codex** —,
+- **Un chef par projet** (delta-ia, discipline, delta-core, marketing, veille-shopify — dont le chef est une session **Codex** —,
   trading-sim ; le chef de delta-desktop est celui de discipline, celui de la console est Delta) : il **relit, décide et ne commite pas** (convention
   d'organisation, rôle de relecteur : ce n'est plus un réglage qui l'en empêche depuis le 06/10, et il peut faire de petits
   gestes git de maintenance, worktree ou branche) ; il lance son dev, relit le résultat, donne l'OK de fusion et clôt la
   mission, Dev-delta fusionne et pousse après son OK.
-- **Des devs** (Dev-delta pour delta-ia, Dev-discipline pour discipline) **commitent et poussent** après l'OK du chef,
-  jamais `--force`, après tests et validation. Un dev est vidé avant chaque mission.
+- **Des devs** (Dev-delta pour delta-ia, Dev-discipline pour discipline, Dev-core pour delta-core) **commitent et poussent**
+  après l'OK du chef, jamais `--force`, après tests et validation. Un dev est vidé avant chaque mission. Depuis le 07/10
+  les chefs peuvent créer **une deuxième session dev** au besoin (Dev-delta-2, Dev-discipline-2, Dev-core-2) et utiliser les
+  sous-agents [déclaré : décision de Sylvain du 07/10, `~/projets/DECISIONS.md`] ; **delta-core**, avec son chef, porte les
+  briques restantes de Delta (chef créé par Delta le 07/10) [déclaré, même décision]. La liste exacte des sessions vivantes
+  est dans OPÉRER.
 - **Design** : session dédiée au bureau Delta (`delta-desktop`) et à la console, qui construit l'interface (Claude Design) ;
   ce qui s'installe sur le bureau de Sylvain s'installe **directement après le test sur banc** depuis le 06/10 (FULL_AUTO).
 - **herbin-mint** : gestionnaire de la machine, exécute les briefs que Sylvain a validés (installations, services,
