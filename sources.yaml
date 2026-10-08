@@ -1,7 +1,7 @@
 # Sources de Delta. Aucune URL n'est inscrite sans avoir été testée (date du test dans `note`).
 # Champs : id, perimetre (claude | openai | actu), produit (claude | claude-code | chatgpt | codex | actu),
 # type (github_changelog | github_releases | html | rss | json), url, statut, officielle (source de l'éditeur),
-# note, options (propres au type : inclure_prereleases, categories, format, suivre_revisions, produit_par_entree…).
+# note, options (propres au type : inclure_prereleases, categories, format, suivre_revisions, produit_par_entree, puces…).
 # Statuts (SPEC §5, D7) : `ok` = fiable ; `a_valider` = active, en observation, passe à `ok` après 7 passages
 # réels sans échec ni bruit anormal (mention dans `note`) ; `desactive` = conservée, non traitée ;
 # `bloque` = testée, en échec. fetch.py ne traite que `ok` et `a_valider`.
@@ -22,6 +22,7 @@ sources:
       source est signalée en échec partiel. Repli daté : https://code.claude.com/docs/en/changelog.md
       (blocs `<Update label="2.1.280" description="September 22, 2026">`).
     options:
+      puces: true
       releases_url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=100
       prefixe_tag: v
       url_publique: https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
@@ -39,6 +40,7 @@ sources:
       titre en gras et de paragraphes, depuis août 2025. Variante Markdown de la page du centre d'aide ;
       repli HTML : https://support.claude.com/en/articles/12138966-release-notes (484 Ko, titres <h3> datés).
     options:
+      puces: true
       format: markdown_date
       nom: Claude (apps)
       suivre_revisions: true
@@ -55,6 +57,7 @@ sources:
       SDK, Console). `docs.claude.com/en/release-notes/*` redirige ici. Repli HTML : même URL sans `.md`
       (907 Ko, Next.js, titres <h3> datés).
     options:
+      puces: true
       format: markdown_date
       nom: Claude Platform
       suivre_revisions: true
@@ -415,6 +418,7 @@ sources:
       suivante tant que la plus ancienne release vue est postérieure à la borne, 4 pages au plus, puis
       `partiel` (trou possible). `options.url_latest` (releases/latest) garantit la dernière version stable.
     options:
+      puces: true
       prefixe_tag: rust-v
       inclure_prereleases: false
       nom: Codex CLI
@@ -436,6 +440,7 @@ sources:
       entrée (D2) : « codex » dans le titre ou les sujets -> codex, sinon chatgpt (le 2026-09-23 : 36 codex,
       14 chatgpt sur 50). Trois entrées sont aussi dans codex-app : même identifiant, donc un seul élément.
     options:
+      puces: true
       produit_par_entree: true
 
   - id: openai-changelog-codex-app
@@ -448,6 +453,8 @@ sources:
     note: >-
       Testé le 2026-09-23 : 200, 53 entrées, versions de l'app de bureau (ex. 26.908). Même flux JSON
       non documenté que `openai-changelog-general` : peut changer sans préavis.
+    options:
+      puces: true
 
   - id: openai-tarifs
     perimetre: openai
@@ -607,6 +614,8 @@ sources:
       Testé le 2026-09-23 : 200, 20 entrées « ChatGPT for iOS » avec version (ex. 1.2026.251). Même flux
       JSON non documenté : peut changer sans préavis. `codex-cli.json` du même index n'est pas retenu
       (redondant avec `codex-cli-releases`).
+    options:
+      puces: true
 
   - id: openai-news
     perimetre: openai

@@ -85,6 +85,7 @@ class Element:
     empreinte: str | None = None  # renseignée si la source suit les révisions
     revision: bool = False  # True si l'élément était connu mais son contenu a changé
     changements: dict | None = None  # D76 : phrases ajoutées, retirées, modifiées ; None sans texte précédent
+    puces: list[dict] | None = None  # D95 : notes de version en puces [{genre, texte, noms}] ; None (champ absent du brut) sans puces
 
     def __post_init__(self) -> None:
         if self.produit not in PRODUITS:
@@ -102,7 +103,10 @@ class Element:
         d = asdict(self)
         ordre = ["id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id",
                  "officielle", "empreinte", "revision", "changements"]
-        return {k: d[k] for k in ordre}
+        res = {k: d[k] for k in ordre}
+        if d["puces"] is not None:  # D95 : pas de champ, jamais de liste vide trompeuse
+            res["puces"] = d["puces"]
+        return res
 
 
 @dataclass

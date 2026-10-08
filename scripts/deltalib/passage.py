@@ -14,6 +14,7 @@ from .dates import analyser_date, aujourd_hui, maintenant_iso
 from .etat import charger_etat, detecter, premier_passage, sources_connues
 from .http import Client
 from .modeles import Element, ErreurSource, FormatInattendu, empreinte_contenu
+from .puces import ajouter_puces
 from .revisions import comparer_phrases, textes_precedents
 from .sources import Source
 from .textes import normaliser_contenu
@@ -178,6 +179,7 @@ def executer(perimetre: str, sources: list[Source], chemin_etat: Path, client: C
     nouveautes, ignores = regrouper_etat_initial(perimetre, sources, premieres, nouveautes, ignores, reference_silencieuse)
     nouveautes = echeances_du_jour(retraits_sources, etat, jour, echecs) + nouveautes  # non datées : en tête, comme `detecter` (D3)
     lire_articles(nouveautes, sources, client, echecs)
+    ajouter_puces(nouveautes, sources)  # D95 : après la lecture des articles, `contenu` est définitif
     vus = etat.get("vus", {})
     ignores = sorted(set(ignores) | {i for i in ignores_hist if i not in vus})
     par_id = {e.id: e for e in elements}

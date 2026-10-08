@@ -9,8 +9,8 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
-Lignes `! AVERTISSEMENT` (D85) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5) ; sans effet
-sur le code de sortie.
+Lignes `! AVERTISSEMENT` (D85) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
+dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2) ; sans effet sur le code de sortie.
 """
 
 from __future__ import annotations
@@ -350,6 +350,48 @@ def verifier_couverture(q: dict, chemin_brut: Path, r: Rapport) -> None:
     for n in brut.get("nouveautes", []):
         if n["id"] not in couverts:
             r.erreur(ou, f"nouveauté brute ni reprise dans `ids_bruts` ni dans `ecartes` : {n['id']} ({n.get('titre', '')[:50]})")
+
+
+NOMS_TROP_COURTS = 3  # D95 : un segment de moins de 3 caractères ou une valeur nue (`true`) ne désigne rien
+NOMS_VALEURS = {"true", "false", "null", "none"}
+
+
+def noms_de_la_base(racine: Path, perimetre: str) -> set[str]:
+    """D95 : noms des entrées de la base de référence du périmètre (`/add-dir`, `--add-dir`, `advisorModel`…)."""
+    kb = "openai" if perimetre == "openai" else "claude"
+    noms: set[str] = set()
+    for f in (racine / "docs" / "data" / "kb" / kb).glob("*.json"):
+        try:
+            noms |= {e["nom"] for e in json.loads(f.read_text(encoding="utf-8")).get("entrees", []) if e.get("nom")}
+        except (OSError, ValueError, AttributeError, TypeError):
+            pass
+    return noms
+
+
+def nom_connu(nom: str, texte_contexte: str, noms_base: set[str]) -> bool:
+    if len(nom) < NOMS_TROP_COURTS or nom.lower() in NOMS_VALEURS:
+        return False
+    premier = nom.split()[0]
+    return nom in texte_contexte or nom in noms_base or (len(premier) >= NOMS_TROP_COURTS and premier in noms_base)
+
+
+def avertir_puces(q: dict, brut: dict, texte_contexte: str, noms_base: set[str], r: Rapport, ou: str) -> None:
+    """D95 (R2, avertissement seul) : un `ajout` des puces d'une nouveauté brute dont un nom figure dans CONTEXTE.md ou
+    dans la base, et que ni `resume` ni `pour_toi` de l'élément ne cite."""
+    puces = {n["id"]: n["puces"] for n in brut.get("nouveautes", []) if isinstance(n, dict) and isinstance(n.get("puces"), list)}
+    for i, e in enumerate(q.get("elements", [])):
+        if not isinstance(e, dict):
+            continue
+        dits = " ".join(str(e.get(c) or "") for c in ("resume", "pour_toi")).lower()
+        for ident in e.get("ids_bruts") or []:
+            for p in puces.get(ident, []):
+                if not isinstance(p, dict) or p.get("genre") != "ajout":
+                    continue
+                connus = [n for n in p.get("noms") or [] if isinstance(n, str) and nom_connu(n, texte_contexte, noms_base)]
+                if connus and not any(n.lower() in dits for n in p["noms"] if isinstance(n, str)):
+                    r.avertissement(f"{ou} elements[{i}] ({e.get('id')})",
+                                    f"R2 : ajout de {ident} jamais cité dans `resume` ni `pour_toi` : "
+                                    f"{', '.join(f'`{n}`' for n in connus)} (« {p.get('texte', '')[:70]} »)")
 
 
 def compter_impacts(q: dict) -> dict:
@@ -785,6 +827,13 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
             r.erreur(f"{jour_iso}.json", "fichier quotidien du jour absent, couverture du brut impossible")
         else:
             verifier_couverture(q, brut, r)
+            try:
+                contenu_brut = json.loads(brut.read_text(encoding="utf-8"))
+                texte_contexte = contexte.read_text(encoding="utf-8") if contexte.exists() else ""
+            except (OSError, ValueError):
+                pass  # déjà signalé par verifier_couverture ; sans brut lisible, rien à comparer
+            else:
+                avertir_puces(q, contenu_brut, texte_contexte, noms_de_la_base(racine, perimetre), r, f"{jour_iso}.json")
     verifier_index(dossier, perimetre, quotidiens, r)
     return r
 

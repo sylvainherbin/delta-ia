@@ -1,0 +1,7 @@
+- Added Claude Haiku 5.5 (`claude-haiku-5-5`), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K)
+- Added `agentType` to the `subagentStatusLine` payload, so scripts can tell custom subagent types apart
+- Added `isDeferred` to `$.tool.register` for mods: `false` lists the tool's schema in the prompt from the start instead of behind tool search
+- Fixed Claude sometimes treating its own last actions before a context compaction as done after it, and retracting or redoing finished work
+- Fixed a memory leak where an HTTP MCP connection kept every request it had sent until it closed
+- Fixed a message sent while Claude was working being lost when `←` moved the session to the background; if a queued message can't move, `←` now stays put and says so
+- Improved startup for Team and Enterprise organizations: policy and managed settings are fetched earlier, and a stalled request is retried after 3 seconds
