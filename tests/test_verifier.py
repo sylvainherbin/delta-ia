@@ -228,6 +228,19 @@ def test_verrou_commun_sans_lanceur_ne_contourne_pas(monkeypatch, tmp_path, caps
     assert "aucun verrou local de rechange" in capsys.readouterr().out
 
 
+def test_verrou_commun_essaie_local_bin_quand_le_path_ne_le_trouve_pas(lanceur, monkeypatch, tmp_path):
+    """PATH sans ~/.local/bin (systemd, cron) : le lanceur de ~/.local/bin sert avant le code 127."""
+    maison = tmp_path / "maison"
+    (maison / ".local" / "bin").mkdir(parents=True)
+    (tmp_path / "bin" / "verrou-tests").rename(maison / ".local" / "bin" / "verrou-tests")
+    monkeypatch.setattr(verifier, "LANCEUR_DEFAUT", maison / ".local" / "bin" / "verrou-tests")
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    with pytest.raises(SystemExit) as sortie:
+        verifier.verrou_commun(["--local"], tmp_path)
+    assert sortie.value.code == 0
+    assert lanceur.read_text().startswith(f"--depot {tmp_path} --nom delta-ia -- ")
+
+
 @pytest.fixture
 def prises(monkeypatch, depot):
     """Remplace la relance par un compteur : combien de fois chaque exécution demande le verrou."""

@@ -33,6 +33,7 @@ PERIMETRES = ("claude", "openai", "actu")
 # Sorties locales de travail : ce ne sont pas des entrées des tests.
 IGNORES = (".tmp-", ".codex-commit-")
 VERROU_TESTS = "verrou-tests"  # lanceur commun (~/.local/bin, dépôt discipline) : même file FIFO que les autres dépôts
+LANCEUR_DEFAUT = Path.home() / ".local" / "bin" / VERROU_TESTS  # essayé quand le PATH ne le trouve pas
 NOM_VERROU = "delta-ia"
 CODE_FILE_PLEINE = 75  # deux passages de ce dépôt attendent déjà : sortie rendue telle quelle
 
@@ -166,6 +167,8 @@ def verrou_commun(argv: list[str], racine: Path = RACINE) -> None:
     if os.environ.get("VERIFY_VERROU_TENU"):
         return
     lanceur = shutil.which(VERROU_TESTS)
+    if not lanceur and os.access(LANCEUR_DEFAUT, os.X_OK):  # PATH sans ~/.local/bin (systemd, cron)
+        lanceur = str(LANCEUR_DEFAUT)
     if not lanceur:
         print(f"VERIFY : {VERROU_TESTS} introuvable (~/.local/bin, dépôt discipline) ; aucun verrou local de rechange, "
               "installer le lanceur commun", flush=True)
