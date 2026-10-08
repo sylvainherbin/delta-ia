@@ -2,6 +2,8 @@
 // Il lit uniquement les JSON publics du site Delta (GitHub Pages). Il n'a ni jeton, ni accès à la machine de
 // Sylvain, ni outil d'écriture : il ne peut pas lancer de passage /delta ni modifier quoi que ce soit.
 
+import { compter } from "../lib/compteur.js";
+
 const BASE = (process.env.DELTA_BASE_URL || "https://sylvainherbin.github.io/delta-ia/data").replace(/\/$/, "");
 const PROTOCOLE = "2025-06-18";
 const PERIMETRES = ["claude", "openai", "actu"];
@@ -194,7 +196,8 @@ async function traiter(msg, mesure = {}) {
 // ---------------------------------------------------------------------------------------------- journal (D66)
 // Une ligne JSON par requête JSON-RPC, lue seulement dans les journaux Vercel : méthode, outil, client (clientInfo
 // d'initialize), durée, statut, démarrage à froid, nombre de résultats. Jamais d'argument, de requête de recherche,
-// de corps de réponse, d'en-tête, d'adresse IP, de User-Agent ni de session. Rien n'est écrit par le serveur.
+// de corps de réponse, d'en-tête, d'adresse IP, de User-Agent ni de session. Le serveur n'écrit que le compteur agrégé
+// et anonyme de lib/compteur.js, dérivé de ces lignes, quand le stockage Upstash est relié.
 const METHODES = new Set(["initialize", "tools/list", "tools/call", "ping"]);
 let froid = true;  // première requête traitée par cette instance
 
@@ -212,11 +215,14 @@ function ligneJournal(msg, reponse, mesure, duree) {
   return l;
 }
 
-async function traiterJournalise(msg) {
+// `lignes` (facultatif) recueille les lignes du journal pour le compteur agrégé (lib/compteur.js).
+async function traiterJournalise(msg, lignes) {
   const debut = performance.now();
   const mesure = {};
   const reponse = await traiter(msg, mesure);
-  console.log(JSON.stringify(ligneJournal(msg, reponse, mesure, performance.now() - debut)));
+  const ligne = ligneJournal(msg, reponse, mesure, performance.now() - debut);
+  console.log(JSON.stringify(ligne));
+  if (lignes) lignes.push(ligne);
   return reponse;
 }
 
@@ -244,11 +250,15 @@ export default async function handler(req, res) {
   try { corps = await lireCorps(req); } catch (e) {
     res.statusCode = 400; res.setHeader("Content-Type", "application/json");
     const r = erreur(null, -32700, "JSON invalide");
-    console.log(JSON.stringify(ligneJournal(null, r, {}, 0)));
+    const ligne = ligneJournal(null, r, {}, 0);
+    console.log(JSON.stringify(ligne));
+    compter([ligne]);
     return res.end(JSON.stringify(r));
   }
   const lot = Array.isArray(corps);
-  const reponses = (await Promise.all((lot ? corps : [corps]).map(traiterJournalise))).filter(Boolean);
+  const lignes = [];
+  const reponses = (await Promise.all((lot ? corps : [corps]).map((m) => traiterJournalise(m, lignes)))).filter(Boolean);
+  compter(lignes);  // lancé sans attendre : la réponse au client ne dépend pas du stockage
   if (!reponses.length) { res.statusCode = 202; return res.end(); }
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");

@@ -1,4 +1,6 @@
 {
-  "rewrites": [{ "source": "/mcp", "destination": "/api/mcp" }],
-  "headers": [{ "source": "/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }]
+  "rewrites": [{ "source": "/mcp", "destination": "/api/mcp" }, { "source": "/stats", "destination": "/api/stats" }],
+  "headers": [
+    { "source": "/((?!stats$).*)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }
+  ]
 }
