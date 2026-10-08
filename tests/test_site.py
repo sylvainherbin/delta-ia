@@ -94,3 +94,29 @@ def test_vue_recente_de_la_reference():
     # la carte montre syntaxe, exemple et pourquoi
     carte = app[app.index("function carteKb"):app.index("function badgeContexte")]
     assert "e.usage" in carte and "e.exemple" in carte and "recommandation.pourquoi" in carte and "ajoutée le" in carte
+
+
+def test_encart_compte_et_quotas():
+    """D93 (D71) : encart « Compte et quotas » en tête de l'onglet Aujourd'hui, lu dans etat.json > comptes."""
+    app = (DOCS / "assets" / "app.js").read_text(encoding="utf-8")
+    page = app[app.index("function pageAujourdhui"):app.index("function completerEncartKb")]
+    assert page.index("blocComptes(Date.now())") < page.index("blocOutils()") < page.index('id: "encart-kb"')
+    assert 'lireJson("data/etat.json")' in app and "etat.comptes = e && typeof e.comptes" in app
+    assert "Promise.all([chargerVersions(), chargerComptes()])" in app
+    corps = app[app.index("function blocComptes"):app.index("/* ---------- Tes outils")]
+    # bloc absent si `comptes` manque ; quatre quotas ; barre, pourcentage, remise à zéro, relevé et âge
+    assert "if (!c || typeof c !== \"object\") return null;" in corps
+    for cle in ("claude_session_5h", "claude_semaine", "claude_semaine_fable", "chatgpt_semaine"):
+        assert cle in app
+    assert 'role: "progressbar"' in corps and "remise à zéro le ${rz}" in corps and "Relevé du ${releve}" in corps and "ageFr(c.releve_le" in corps
+    # alerte D71 : seuls les quotas hebdomadaires, au-delà de 80 %, phrase exacte
+    assert "const SEUIL_ALERTE_PCT = 80;" in app and "hebdo && q.pct > SEUIL_ALERTE_PCT" in corps
+    assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in app
+    assert '["claude_session_5h", "Claude, session 5 h", false]' in app
+    # une valeur inconnue ou périmée n'est jamais présentée comme actuelle
+    assert '"inconnu"' in corps and "valeur périmée" in corps
+    # jamais d'injection de HTML, heure locale
+    assert "innerHTML" not in corps and "getHours()" in app[app.index("function jjmmHhmm"):app.index("function ageFr")]
+    css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+    for sel in (".comptes", ".quota.alerte", ".barre span", ".alerte-d71"):
+        assert sel in css

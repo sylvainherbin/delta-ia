@@ -8,7 +8,10 @@ Relevé sur la machine, au même endroit que versions.py dans /delta :
   ~/projets et ~/projets/delta-ia, et `mcp_servers` de config.toml ;
 - présence et date des instructions globales `~/.claude/CLAUDE.md` et `~/.codex/AGENTS.md`.
 Chaque relevé : {valeur, source, raison} ; `raison` est renseignée quand la valeur est null (illisible, absente).
-Aucun secret (REGLES §5) : ni `env`, ni arguments de commande, ni paramètres d'URL ; pas de quotas (rapports/usage.json).
+Bloc `comptes` (D93, D71) : quotas recopiés de rapports/usage.json (claude.session_5h, claude.semaine, claude.semaine_fable,
+chatgpt.semaine : pct, remise_a_zero, releve_le), seulement si `releves_machine` vaut true dans profil.yaml ; fichier absent ou
+illisible : `comptes: {statut: "inconnu", raison}`. Rien de `machine` ni de `wifi`.
+Aucun secret (REGLES §5) : ni `env`, ni arguments de commande, ni paramètres d'URL.
 En fin d'exécution, organisation.py écrit aussi raw/organisation.json (D77), hors --dry-run.
 """
 
@@ -140,6 +143,47 @@ def claude_mcp_list(dossier: Path, exe: str | None, delai: int = 120) -> dict:
     return {"elements": elements, "source": src, "raison": raison}
 
 
+QUOTAS_COMPTES = (("claude", "session_5h"), ("claude", "semaine"), ("claude", "semaine_fable"), ("chatgpt", "semaine"))
+
+
+def _pct_entier(v) -> int | None:
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or not 0 <= v <= 100:
+        return None
+    return int(round(v))
+
+
+def _horodatage(v) -> str | None:
+    if not isinstance(v, str) or "T" not in v:
+        return None
+    try:
+        datetime.fromisoformat(v.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return v
+
+
+def comptes(racine: Path) -> dict:
+    """D93 : quotas de rapports/usage.json, recopiés sans rien deviner (champ absent ou invalide = null et raison)."""
+    f = racine / "rapports" / "usage.json"
+    u, err = lire_json(f)
+    if u is None or not isinstance(u, dict):
+        return {"statut": "inconnu", "raison": err or "rapports/usage.json : objet JSON attendu"}
+    releve_global = _horodatage(u.get("releve_le"))
+    quotas = {}
+    for produit, nom in QUOTAS_COMPTES:
+        brut = (u.get(produit) or {}).get(nom) if isinstance(u.get(produit), dict) else None
+        brut = brut if isinstance(brut, dict) else {}
+        pct = _pct_entier(brut.get("pct"))
+        q = {"pct": pct, "remise_a_zero": _horodatage(brut.get("remise_a_zero")),
+             "releve_le": _horodatage(brut.get("releve_le")) or releve_global}
+        if pct is None:
+            q["raison"] = f"{produit}.{nom}.pct absent ou hors de 0 à 100 dans rapports/usage.json"
+        quotas[f"{produit}_{nom}"] = q
+    if all(q["pct"] is None for q in quotas.values()):
+        return {"statut": "inconnu", "raison": "aucun quota lisible dans rapports/usage.json"}
+    return {"statut": "ok", "source": "rapports/usage.json", "releve_le": releve_global, "quotas": quotas}
+
+
 def instructions_globales(maison: Path) -> list[dict]:
     res = []
     for nom, chemin in (("CLAUDE.md global", maison / ".claude" / "CLAUDE.md"), ("AGENTS.md global", maison / ".codex" / "AGENTS.md")):
@@ -168,6 +212,8 @@ def main(argv=None) -> int:
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     a = p.parse_args(argv)
     etat = {"pertinent_pour_profil": profil.charger(a.racine)["releves_machine"], **relever()}  # D79 : false sans profil.yaml
+    if etat["pertinent_pour_profil"]:
+        etat["comptes"] = comptes(a.racine)  # D93 : même condition que les relevés de la machine
     texte = json.dumps(etat, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
         print(texte)

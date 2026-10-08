@@ -112,3 +112,24 @@ def test_exclusions_parametrees(systemes):
     assert extracteurs._garder_linux("Cmd+K") and extracteurs._classer_table_codex("MacOptions") is not None
     systemes(["windows"])
     assert extracteurs._classer_table_codex("WindowsOptions") is None and extracteurs._classer_table_codex("MacOptions") is not None
+
+
+def test_etat_comptes_seulement_si_releves_machine(tmp_path, monkeypatch):
+    """D93 : le bloc `comptes` suit la condition des relevés de la machine (releves_machine)."""
+    monkeypatch.setattr(etat_mod, "relever", lambda: {"releve_le": "2026-10-06T00:00:00+00:00", "outils": {
+        "Claude Code": {"modele_par_defaut": {"valeur": None}}, "Codex": {"modele_par_defaut": {"valeur": None},
+                                                                        "profils": {"elements": []}}},
+        "mcp_claude_code": {}, "instructions_globales": []})
+    monkeypatch.setattr(etat_mod.organisation, "ecrire_releve", lambda racine: None)
+    for contenu, attendu in ((None, False), ("releves_machine: true\n", True)):
+        racine = tmp_path / str(attendu)
+        racine.mkdir()
+        if contenu:
+            ecrire(racine, contenu)
+        (racine / "rapports").mkdir()
+        (racine / "rapports" / "usage.json").write_text('{"releve_le": "2026-10-08T09:00:00Z", "claude": {"semaine": {"pct": 9}}}')
+        etat_mod.main(["--racine", str(racine)])
+        e = json.loads((racine / "docs" / "data" / "etat.json").read_text(encoding="utf-8"))
+        assert ("comptes" in e) is attendu
+        if attendu:
+            assert e["comptes"]["statut"] == "ok" and e["comptes"]["quotas"]["claude_semaine"]["pct"] == 9

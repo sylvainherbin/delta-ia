@@ -149,3 +149,81 @@ def test_dry_run_ne_lit_pas_organisation_et_n_ecrit_rien(tmp_path, monkeypatch, 
     assert json.loads(capsys.readouterr().out) == {"pertinent_pour_profil": False, **etat_factice}
     assert not (tmp_path / "raw").exists()
     assert not (tmp_path / "docs").exists()
+
+
+# ---------- D93 : bloc `comptes` (quotas D71 de rapports/usage.json) ----------
+USAGE = {"releve_le": "2026-10-08T09:32:55.668Z", "source": "console-mur 0.0.0",
+         "claude": {"session_5h": {"pct": 12, "remise_a_zero": "2026-10-08T10:00:01.012Z"},
+                    "semaine": {"pct": 85, "remise_a_zero": "2026-10-11T16:00:01.012Z"},
+                    "semaine_fable": {"pct": 0, "remise_a_zero": "2026-10-11T16:00:00.000Z"}},
+         "chatgpt": {"semaine": {"pct": 5, "remise_a_zero": "2026-10-14T05:29:59.000Z", "releve_le": "2026-10-08T09:32:40.508Z"}},
+         "machine": {"cpu_pct": 100, "disque_libre_go": 850.4}, "wifi": {"signal_pct": 44}}
+
+
+def _usage(tmp_path, contenu):
+    (tmp_path / "rapports").mkdir(exist_ok=True)
+    (tmp_path / "rapports" / "usage.json").write_text(contenu if isinstance(contenu, str) else json.dumps(contenu))
+    return tmp_path
+
+
+def test_comptes_recopie_les_quatre_quotas_sans_machine_ni_wifi(tmp_path):
+    c = etat.comptes(_usage(tmp_path, USAGE))
+    assert c["statut"] == "ok" and c["releve_le"] == USAGE["releve_le"]
+    assert list(c["quotas"]) == ["claude_session_5h", "claude_semaine", "claude_semaine_fable", "chatgpt_semaine"]
+    assert c["quotas"]["claude_semaine"] == {"pct": 85, "remise_a_zero": "2026-10-11T16:00:01.012Z", "releve_le": USAGE["releve_le"]}
+    assert c["quotas"]["chatgpt_semaine"]["releve_le"] == "2026-10-08T09:32:40.508Z"
+    texte = json.dumps(c)
+    assert "machine" not in texte and "wifi" not in texte and "cpu" not in texte and "disque" not in texte
+    assert _valider(tmp_path, {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {},
+                               "instructions_globales": [], "comptes": c}) == []
+
+
+def test_comptes_fichier_absent_ou_illisible_donne_inconnu(tmp_path):
+    for contenu in (None, "{pas du json", "[]", {"claude": {}}):
+        racine = tmp_path / str(abs(hash(str(contenu))))
+        racine.mkdir()
+        if contenu is not None:
+            _usage(racine, contenu)
+        c = etat.comptes(racine)
+        assert c["statut"] == "inconnu" and c["raison"] and set(c) == {"statut", "raison"}
+        assert _valider(tmp_path, {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {},
+                                   "instructions_globales": [], "comptes": c}) == []
+
+
+def test_comptes_valeur_invalide_est_null_avec_raison(tmp_path):
+    u = json.loads(json.dumps(USAGE))
+    u["claude"]["semaine"]["pct"] = 140
+    u["claude"]["semaine_fable"]["pct"] = "beaucoup"
+    u["claude"]["session_5h"]["remise_a_zero"] = "demain"
+    u["chatgpt"]["semaine"]["pct"] = 33.4
+    c = etat.comptes(_usage(tmp_path, u))
+    q = c["quotas"]
+    assert q["claude_semaine"]["pct"] is None and "0 à 100" in q["claude_semaine"]["raison"]
+    assert q["claude_semaine_fable"]["pct"] is None
+    assert q["claude_session_5h"]["pct"] == 12 and q["claude_session_5h"]["remise_a_zero"] is None
+    assert q["chatgpt_semaine"]["pct"] == 33
+
+
+def test_valider_comptes(tmp_path):
+    base = {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {}, "instructions_globales": []}
+    ok = etat.comptes(_usage(tmp_path, USAGE))
+
+    def avec(modif):
+        c = json.loads(json.dumps(ok))
+        modif(c)
+        return _valider(tmp_path, {**base, "comptes": c})
+    assert avec(lambda c: None) == []
+    assert any("entier de 0 à 100" in x for x in avec(lambda c: c["quotas"]["claude_semaine"].update(pct=101)))
+    assert any("entier de 0 à 100" in x for x in avec(lambda c: c["quotas"]["claude_semaine"].update(pct=12.5)))
+    assert any("entier de 0 à 100" in x for x in avec(lambda c: c["quotas"]["claude_semaine"].update(pct=True)))
+    assert any("sans `raison`" in x for x in avec(lambda c: c["quotas"]["claude_semaine"].update(pct=None)))
+    assert avec(lambda c: c["quotas"]["claude_semaine"].update(pct=None, raison="absent")) == []
+    assert any("ISO 8601" in x for x in avec(lambda c: c["quotas"]["claude_semaine"].update(remise_a_zero="demain")))
+    assert avec(lambda c: c["quotas"]["claude_semaine"].update(remise_a_zero=None)) == []
+    assert any("exactement" in x for x in avec(lambda c: c["quotas"].pop("chatgpt_semaine")))
+    assert any("machine ni de wifi" in x for x in avec(lambda c: c.update(machine={"cpu_pct": 1})))
+    assert any("statut" in x for x in avec(lambda c: c.update(statut="peut-être")))
+    assert any("sans `raison`" in x for x in _valider(tmp_path, {**base, "comptes": {"statut": "inconnu"}}))
+    assert any("aucune valeur devinée" in x for x in _valider(tmp_path, {**base, "comptes": {"statut": "inconnu", "raison": "x", "quotas": {}}}))
+    # comptes absent : accepté (profil sans relevés de la machine)
+    assert _valider(tmp_path, base) == []

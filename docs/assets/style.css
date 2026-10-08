@@ -102,11 +102,11 @@ code { font-family: var(--mono); font-size: .9em; background: color-mix(in srgb,
 .encart-nouveau { border: 1px solid color-mix(in srgb, var(--a1) 50%, transparent); background: color-mix(in srgb, var(--a1) 8%, var(--surface)); border-radius: var(--rayon); padding: .55rem .9rem; margin: .5rem 0 1rem; font-size: .92rem; }
 .encart-nouveau a { color: var(--a1); font-weight: 600; white-space: nowrap; }
 
-.carte, .synthese, .outils {
+.carte, .synthese, .outils, .comptes {
   position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--bord); border-radius: var(--rayon);
   box-shadow: var(--lueur); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
-.carte::before, .synthese::before, .outils::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: linear-gradient(90deg, var(--a1), var(--a2)); }
+.carte::before, .synthese::before, .outils::before, .comptes::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: linear-gradient(90deg, var(--a1), var(--a2)); }
 .synthese { padding: .85rem 1rem; margin: .6rem 0; }
 .synthese h3 { margin: 0 0 .35rem; display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; font-size: 1rem; }
 .synthese .meta { font-family: var(--mono); font-size: .72rem; color: var(--doux); font-weight: normal; }
@@ -128,6 +128,21 @@ code { font-family: var(--mono); font-size: .9em; background: color-mix(in srgb,
 .statut.embarque .point, .statut.non_utilise .point { background: var(--doux); }
 .outils .pied-outils { font-size: .75rem; color: var(--doux); margin: .45rem 0 0; }
 @media (max-width: 520px) { .outils .col-derniere { display: none; } .outils td.v { font-size: .72rem; overflow-wrap: normal; } }
+
+/* Compte et quotas (D93, D71) */
+.comptes { padding: .75rem 1rem .6rem; margin: .6rem 0 1rem; }
+.comptes h3 { margin: 0 0 .5rem; font-family: var(--mono); font-size: .78rem; letter-spacing: .14em; color: var(--doux); }
+.quotas { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.quota { display: grid; grid-template-columns: 1fr auto; column-gap: .75rem; row-gap: .25rem; align-items: baseline; font-size: .88rem; }
+.quota-pct { font-family: var(--mono); font-weight: 600; }
+.barre { grid-column: 1 / -1; height: .5rem; border-radius: 999px; background: var(--trame); border: 1px solid var(--bord); overflow: hidden; }
+.barre span { display: block; height: 100%; background: linear-gradient(90deg, var(--a1), var(--a2)); border-radius: 999px; }
+.quota.alerte .barre span { background: var(--fort); }
+.quota.alerte .quota-pct { color: var(--fort); }
+.quota.perimee .barre span { opacity: .35; }
+.quota-rz { grid-column: 1 / -1; font-size: .75rem; color: var(--doux); }
+.alerte-d71 { margin: .6rem 0 0; padding: .45rem .7rem; border: 1px solid color-mix(in srgb, var(--fort) 50%, transparent); background: color-mix(in srgb, var(--fort) 10%, var(--surface)); border-radius: calc(var(--rayon) / 2); font-size: .85rem; }
+.comptes .pied-comptes { font-size: .75rem; color: var(--doux); margin: .5rem 0 0; }
 
 /* ---------- filtres ---------- */
 .filtres { display: flex; flex-wrap: wrap; gap: .4rem; margin: .75rem 0; }

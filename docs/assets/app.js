@@ -164,6 +164,68 @@
     return alertes;
   }
 
+  /* ---------- Compte et quotas : etat.json > comptes (D93, D71) ---------- */
+  const QUOTAS_AFFICHES = [
+    ["claude_session_5h", "Claude, session 5 h", false], ["claude_semaine", "Claude, semaine", true],
+    ["claude_semaine_fable", "Claude, semaine Fable", true], ["chatgpt_semaine", "ChatGPT, semaine", true]];
+  const SEUIL_ALERTE_PCT = 80;
+  const PHRASE_D71 = "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser";
+  async function chargerComptes() {
+    if (etat.comptes !== undefined) return;
+    try {
+      const e = await lireJson("data/etat.json");
+      etat.comptes = e && typeof e.comptes === "object" && e.comptes ? e.comptes : null;
+    } catch (err) { etat.comptes = null; }
+  }
+  function jjmmHhmm(iso) {
+    const d = new Date(iso);
+    if (typeof iso !== "string" || Number.isNaN(d.getTime())) return null;
+    const z = (n) => String(n).padStart(2, "0");
+    return `${z(d.getDate())}/${z(d.getMonth() + 1)} à ${z(d.getHours())}:${z(d.getMinutes())}`;
+  }
+  function ageFr(iso, maintenant) {
+    const ms = maintenant - new Date(iso).getTime();
+    if (typeof iso !== "string" || Number.isNaN(ms)) return null;
+    const min = Math.max(0, Math.round(ms / 60000));
+    if (min < 60) return `il y a ${min} min`;
+    if (min < 2880) return `il y a ${Math.round(min / 60)} h`;
+    return `il y a ${Math.round(min / 1440)} j`;
+  }
+  function blocComptes(maintenant) {
+    const c = etat.comptes;
+    if (!c || typeof c !== "object") return null;
+    const sec = el("section", { class: "comptes", "aria-label": "Compte et quotas" }, el("h3", { text: "COMPTE ET QUOTAS" }));
+    if (c.statut !== "ok" || !c.quotas || typeof c.quotas !== "object") {
+      sec.append(el("p", { class: "pied-comptes", text: `Quotas inconnus${texte(c.raison) ? ` : ${c.raison}` : ""}.` }));
+      return sec;
+    }
+    let alerte = false;
+    const liste = el("ul", { class: "quotas" });
+    for (const [cle, libelle, hebdo] of QUOTAS_AFFICHES) {
+      const q = c.quotas[cle];
+      if (!q || typeof q !== "object") continue;
+      const connu = Number.isInteger(q.pct) && q.pct >= 0 && q.pct <= 100;
+      const rz = jjmmHhmm(q.remise_a_zero);
+      const perimee = rz !== null && new Date(q.remise_a_zero).getTime() < maintenant;
+      const fort = connu && hebdo && q.pct > SEUIL_ALERTE_PCT && !perimee;
+      if (fort) alerte = true;
+      const barre = el("div", { class: "barre", role: "progressbar", "aria-label": libelle, "aria-valuemin": "0", "aria-valuemax": "100",
+        "aria-valuenow": connu ? String(q.pct) : null }, el("span", { style: `width:${connu ? q.pct : 0}%` }));
+      const detail = perimee ? `remise à zéro passée (${rz}) : valeur périmée`
+        : rz ? `remise à zéro le ${rz}` : "remise à zéro inconnue";
+      liste.append(el("li", { class: "quota" + (fort ? " alerte" : "") + (perimee ? " perimee" : "") },
+        el("span", { class: "quota-nom", text: libelle }),
+        el("span", { class: "quota-pct", text: connu ? `${q.pct} %` : "inconnu" }),
+        barre,
+        el("span", { class: "quota-rz", text: connu ? detail : texte(q.raison, "valeur absente") })));
+    }
+    sec.append(liste);
+    if (alerte) sec.append(el("p", { class: "alerte-d71", role: "status", text: `Quota hebdomadaire au-delà de ${SEUIL_ALERTE_PCT} % : ${PHRASE_D71}.` }));
+    const releve = jjmmHhmm(c.releve_le);
+    sec.append(el("p", { class: "pied-comptes", text: releve ? `Relevé du ${releve} (${ageFr(c.releve_le, maintenant)}).` : "Date du relevé inconnue." }));
+    return sec;
+  }
+
   /* ---------- Tes outils : versions installées (D54 à D56) ---------- */
   const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu", embarque: "embarqué", non_utilise: "non utilisée" };
   async function chargerVersions() {
@@ -286,6 +348,8 @@
     const frag = document.createDocumentFragment();
     if (alertes.length) frag.append(el("div", { class: "bandeau-alerte", role: "status", text: alertes.join(" · ") + "." }));
     frag.append(el("h2", { text: "Aujourd'hui" }));
+    const comptes = blocComptes(Date.now());
+    if (comptes) frag.append(comptes);
     const outils = blocOutils();
     if (outils) frag.append(outils);
     frag.append(el("div", { id: "encart-kb" }));
@@ -577,7 +641,7 @@
     lireRoute();
     await chargerNecessaire();
     if (etat.page === "reference") await chargerKb();
-    if (etat.page === "aujourdhui") await chargerVersions();
+    if (etat.page === "aujourdhui") await Promise.all([chargerVersions(), chargerComptes()]);
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
