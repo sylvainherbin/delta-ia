@@ -603,7 +603,140 @@
       c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
         el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
     }
+    c.append(blocEnvoi(e));
     return c;
+  }
+  /* ---------- « Envoyer à Delta » (m-944fab565b10) : relais local sur 127.0.0.1 (scripts/relais_reference.py), qui ne lit
+     que l'id et relaie l'entrée de sa base locale vers la porte des idées ; injoignable (téléphone, relais arrêté) : le texte
+     de l'idée est copié pour le lanceur Delta. Le site ne dépend pas du relais (D61). ---------- */
+  const RELAIS = "http://127.0.0.1:47613";
+  const CLE_ENVOIS = "delta.envoisKb";
+  function lireEnvois() {
+    try { const v = JSON.parse(localStorage.getItem(CLE_ENVOIS) || "{}"); return v && typeof v === "object" ? v : {}; }
+    catch (err) { return {}; }
+  }
+  function noterEnvoi(id) {
+    try { const v = lireEnvois(); v[id] = jourLocalIso(new Date()); localStorage.setItem(CLE_ENVOIS, JSON.stringify(v)); }
+    catch (err) { /* sans stockage : l'envoi est fait, seule la mention « envoyée le » se perd */ }
+  }
+  // même phrase d'ouverture que texte_idee() du relais
+  function texteIdeeKb(e) {
+    const cat = KB_NOMS[e.categorie] ? KB_NOMS[e.categorie][0] : String(e.categorie || "référence");
+    return `idée : intégrer la référence Delta-IA « ${texte(e.nom, "(sans nom)")} » (${PRODUITS[e.produit] || String(e.produit || "produit inconnu")}, ${cat}, id ${e.id}) ` +
+      "dans un workflow ou chez un agent de Delta. Juge sa pertinence pour mes projets et, si elle l'est, dis dans quel workflow ou chez quel agent elle entre et ce que ça change.";
+  }
+  /* Adresse de la console de pilotage (D104) : jamais dans le dépôt ni sur le site (REGLES §5), seulement dans ce navigateur.
+     Elle s'y enregistre en ouvrant une fois https://sylvainherbin.github.io/delta-ia/#console=<adresse> ; le fragment est retiré
+     de l'URL aussitôt. Admis : https, ou http vers une adresse Tailscale (100.64.0.0/10) ou un nom *.ts.net. */
+  const CLE_CONSOLE = "delta.console";
+  const IDEE_CONSOLE_MAX = 500; // limite de /api/voix
+  function adresseConsole(brut) {
+    let u;
+    try { u = new URL(String(brut || "").trim()); } catch (err) { return null; }
+    if (u.username || u.password || !u.hostname) return null;
+    const h = u.hostname;
+    const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+    const tailscale = (m && +m[1] === 100 && +m[2] >= 64 && +m[2] <= 127 && [m[3], m[4]].every((o) => +o <= 255)) || /^[a-z0-9-]+(\.[a-z0-9-]+)*\.ts\.net$/i.test(h);
+    if (u.protocol !== "https:" && !(u.protocol === "http:" && tailscale)) return null;
+    return u.origin + u.pathname.replace(/\/+$/, "");
+  }
+  function lireConsole() {
+    try { return adresseConsole(localStorage.getItem(CLE_CONSOLE)); } catch (err) { return null; }
+  }
+  // #console=<adresse> : enregistre (ou, vide, oublie) l'adresse, puis retire le fragment ; renvoie un message ou null
+  function enregistrerConsoleDepuisUrl() {
+    const h = location.hash || "";
+    if (!h.startsWith("#console=")) return null;
+    let brut = h.slice(9);
+    try { brut = decodeURIComponent(brut); } catch (err) { /* adresse laissée telle quelle */ }
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (err) { location.hash = ""; }
+    if (!brut) {
+      try { localStorage.removeItem(CLE_CONSOLE); } catch (err) { /* rien à oublier */ }
+      return "Adresse de la console oubliée dans ce navigateur.";
+    }
+    const adresse = adresseConsole(brut);
+    if (!adresse) return "Adresse de console refusée : https, ou http vers une adresse Tailscale (100.64.0.0/10 ou *.ts.net).";
+    try { localStorage.setItem(CLE_CONSOLE, adresse); } catch (err) { return "Ce navigateur refuse d'enregistrer l'adresse de la console."; }
+    return "Adresse de la console enregistrée dans ce navigateur ; « Envoyer à Delta » l'ouvrira quand le relais de bureau n'est pas joignable.";
+  }
+  function annoncer(message) {
+    const p = el("p", { class: "avis-console", role: "status", text: message });
+    main.before(p);
+    setTimeout(() => p.remove(), 12000);
+  }
+  function coupe(s, n) { return s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…"; }
+  function urlConsole(adresse, e) { return `${adresse}/#idee=${encodeURIComponent(coupe(texteIdeeKb(e), IDEE_CONSOLE_MAX))}`; }
+  // iPhone, iPad (qui se présente comme un Mac depuis iPadOS 13) : 127.0.0.1 n'y est pas le bureau
+  function estIos() {
+    const ua = navigator.userAgent || "";
+    return /iPhone|iPad|iPod/.test(ua) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  }
+  // GET /etat : un navigateur qui bloque le réseau local (Brave sans autorisation, Chrome) ou un relais arrêté conclut en 3 s au plus
+  async function relaisJoignable() {
+    try {
+      const rep = await fetch(`${RELAIS}/etat`, { signal: AbortSignal.timeout(3000) });
+      return rep.ok;
+    } catch (err) { return false; }
+  }
+  async function envoyerADelta(e, bouton, statut) {
+    statut.textContent = "";
+    for (const vieux of document.querySelectorAll(".envoi-secours")) vieux.remove();
+    if (estIos()) return repli(e, statut, "Pas de relais de bureau sur cet appareil.");
+    bouton.disabled = true;
+    bouton.textContent = "Envoi…";
+    let r = null;
+    if (await relaisJoignable()) {
+      try {
+        const rep = await fetch(`${RELAIS}/reference`, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: e.id }), signal: AbortSignal.timeout(25000) });
+        r = await rep.json();
+      } catch (err) { r = null; }
+    }
+    if (r && r.ok === true) {
+      noterEnvoi(e.id);
+      bouton.textContent = "Envoyée";
+      statut.textContent = "Delta juge sa pertinence ; la suite arrive comme pour une idée.";
+      return;
+    }
+    bouton.disabled = false;
+    bouton.textContent = "Envoyer à Delta";
+    if (r) { statut.textContent = `Delta n'a pas pris la référence : ${texte(r.detail, String(r.etape || "refus"))}`; return; }
+    // relais injoignable (téléphone, relais arrêté, accès au réseau local refusé) : la console, sinon le texte de l'idée pour le lanceur
+    return repli(e, statut, "Relais de bureau injoignable (arrêté, ou accès au réseau local refusé par le navigateur).");
+  }
+  async function repli(e, statut, motif) {
+    const adresse = lireConsole();
+    if (adresse) {
+      statut.textContent = `${motif} Ouverture de la console.`;
+      const url = urlConsole(adresse, e);
+      const w = window.open(url, "_blank");
+      if (w) { try { w.opener = null; } catch (err) { /* sans effet */ } return; }
+      statut.after(el("a", { class: "envoi-delta envoi-secours", href: url, target: "_blank", rel: "noopener", text: "Ouvrir la console" }));
+      return;
+    }
+    statut.textContent = motif;
+    if (await copierIdeeKb(e)) { statut.textContent = `${motif} Idée copiée, colle-la dans le lanceur Delta.`; return; }
+    const copier = el("button", { type: "button", class: "envoi-delta envoi-secours", text: "Copier l'idée" });
+    copier.addEventListener("click", async () => {
+      statut.textContent = (await copierIdeeKb(e)) ? "Idée copiée : colle-la dans le lanceur Delta." : "Copie refusée par le navigateur.";
+      copier.remove();
+    });
+    statut.after(copier);
+  }
+  // le presse-papier peut rester en attente sans geste récent de l'utilisateur : 1,5 s au plus
+  async function copierIdeeKb(e) {
+    try {
+      await Promise.race([navigator.clipboard.writeText(texteIdeeKb(e)), new Promise((_, non) => setTimeout(() => non(new Error("délai")), 1500))]);
+      return true;
+    } catch (err) { return false; }
+  }
+  function blocEnvoi(e) {
+    const jour = lireEnvois()[e.id];
+    const statut = el("span", { class: "envoi-statut", role: "status", text: typeof jour === "string" ? `envoyée à Delta le ${dateFr(jour)}` : "" });
+    const b = el("button", { type: "button", class: "envoi-delta", text: "Envoyer à Delta",
+      title: "Delta juge la pertinence de cette référence et, si elle l'est, l'oriente vers un workflow ou un agent" });
+    b.addEventListener("click", () => envoyerADelta(e, b, statut));
+    return el("div", { class: "envoi" }, b, statut);
   }
   // D64-bis : péremption par ctx-id de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
   function badgeContexte(e) {
@@ -934,6 +1067,8 @@
   }
 
   async function demarrer() {
+    const avisConsole = enregistrerConsoleDepuisUrl();
+    if (avisConsole) annoncer(avisConsole);
     try {
       await chargerIndex();
       await rendre();

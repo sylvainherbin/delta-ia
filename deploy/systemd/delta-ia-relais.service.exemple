@@ -1,0 +1,19 @@
+# EXEMPLE (m-944fab565b10) — relais local du bouton « Envoyer à Delta » de l'onglet Référence. À copier dans
+# ~/.config/systemd/user/delta-ia-relais.service, puis `systemctl --user daemon-reload` et
+# `systemctl --user enable --now delta-ia-relais.service`. Écoute sur 127.0.0.1:47613 seulement.
+#
+# Le relais lit la base dans l'arbre principal (docs/data/kb, sur main) et remet l'idée à la porte des idées du bureau
+# (~/.local/share/delta-system-experience/palier-3/idee.py, qui lance juger détaché).
+[Unit]
+Description=Delta — relais local « Envoyer à Delta » (onglet Référence → juger)
+Documentation=file:%h/projets/delta-ia/scripts/relais_reference.py
+
+[Service]
+Type=simple
+WorkingDirectory=%h/projets/delta-ia
+ExecStart=/usr/bin/python3 %h/projets/delta-ia/scripts/relais_reference.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
