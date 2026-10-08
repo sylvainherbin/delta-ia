@@ -223,5 +223,5 @@ def test_adresse_de_console_jamais_dans_le_depot():
     # REGLES §5 : ni adresse Tailscale (la plage « 100.64.0.0/10 » citée en commentaire est admise) ni adresse de console dans ce qui est publié ou suivi
     motif = re.compile(r"\b100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}\b(?!/)|[a-z0-9-]+\.[a-z0-9-]+\.ts\.net\b", re.I)
     for chemin in ("docs/assets/app.js", "docs/assets/style.css", "docs/index.html", "scripts/relais_reference.py",
-                   "deploy/systemd/delta-ia-relais.service.exemple"):
+                   "deploy/relais/delta-ia-relais.service.exemple"):
         assert not motif.search((RACINE / chemin).read_text(encoding="utf-8")), chemin
