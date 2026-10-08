@@ -1,6 +1,7 @@
 """D13 (--valider piloté par le fichier quotidien) et D15 (scripts/valider.py) sur des fichiers synthétiques."""
 
 import copy
+import datetime
 import hashlib
 import json
 
@@ -597,3 +598,117 @@ def test_r5_credits_api_mensuels_restent_detectes():
     avert = _avert(**d71)
     assert len(avert) == 1 and "R5" in avert[0]
     assert _avert(**{**d71, "titre": "Hausse des tarifs sur tous les forfaits"}) != []
+
+
+# --- R4 (D96) : `pour_toi` conditionnel sans commande qui le tranche, `pour_toi` recopié d'un jour à l'autre ---------
+
+@pytest.mark.parametrize("pour_toi", [
+    "Si tu utilises ce réglage, il change ta session.", "SI TU veux l'essayer, ouvre un projet.",
+    "Si vous activez les crédits, la facture suit.", "À activer au cas où ta limite saute.",
+    "Tu peux éventuellement l'essayer.",
+])
+def test_r4_conditionnel_sans_commande_avertit(pour_toi):
+    for action in (None, _action("Essaie dans un projet.", ["Vérifie."])):
+        avert = _avert_r4(pour_toi=pour_toi, action=action)
+        assert len(avert) == 1 and "R4" in avert[0] and "conditionnel" in avert[0] and "elements[0] (fx-1)" in avert[0]
+
+
+def _avert_r4(**champs):
+    return [a for a in _avert(**champs) if "R4" in a]
+
+
+def test_r4_conditionnel_avec_commande_dans_action_pas_d_avertissement():
+    pour_toi = "Si tu utilises encore l'ancien réglage, il saute."
+    assert _avert_r4(pour_toi=pour_toi, action=_action("Lance `claude config list`.")) == []
+    assert _avert_r4(pour_toi=pour_toi, action=_action("Vérifie.", ["Tape `grep ancien ~/.claude/settings.json`."])) == []
+
+
+@pytest.mark.parametrize("pour_toi", [
+    None, "", "Ton projet trading-sim lance ce flux chaque nuit.", "Aussi tu gagnes du temps.",
+    "Tu changes de modèle ; sinon rien ne bouge.", "Un suivi des si tuiles n'est pas une condition.",
+], ids=["null", "vide", "constat", "aussi-tu", "sinon", "mot-voisin"])
+def test_r4_pas_de_conditionnel_pas_d_avertissement(pour_toi):
+    assert _avert_r4(pour_toi=pour_toi, action=None) == []
+
+
+def test_r4_conditionnel_ignore_un_element_nul():
+    assert _avert_r4(impact="nul", pour_toi="Si tu veux.", action=None) == []
+
+
+def test_r4_normalisation_casse_espaces_ponctuation():
+    assert v.normaliser_texte("  Ta LIMITE,  est à\n83 % !  ") == v.normaliser_texte("ta limite est à 83")
+    assert v.normaliser_texte("Ta limite est à 83 %") != v.normaliser_texte("Ta limite est à 92 %")
+
+
+def _jours(**par_jour):
+    """{'2026-10-05': [(id, pour_toi), ...]} -> quotidiens minimaux."""
+    return {j: {"elements": [{"id": i, "pour_toi": p, "impact": "moyen"} for i, p in els]} for j, els in par_jour.items()}
+
+
+def test_r4_recopie_identique_apres_normalisation():
+    q = _jours(**{"2026-10-05": [("a", "Ta limite est à 83 %.")], "2026-10-08": [("a", "ta limite est  à 83 %")]})
+    trouves = v.recopies_pour_toi(q, "2026-10-08")
+    assert [(i, e["id"], d) for i, e, d in trouves] == [(0, "a", "2026-10-05")]
+    r = v.Rapport()
+    v.avertir_recopies(q, r)
+    assert r.avertissements == ["2026-10-08.json elements[0] (a): R4 : `pour_toi` recopié du 05/10"]
+
+
+def test_r4_recopie_signale_le_plus_recent_des_fichiers_identiques():
+    q = _jours(**{"2026-10-02": [("a", "Texte.")], "2026-10-04": [("a", "Texte.")], "2026-10-06": [("a", "Texte.")]})
+    assert [d for _, _, d in v.recopies_pour_toi(q, "2026-10-06")] == ["2026-10-04"]
+
+
+@pytest.mark.parametrize("ancien, courant, motif", [
+    ("2026-09-30", "2026-10-08", "huit jours"), ("2026-10-08", "2026-10-08", "même fichier"),
+    ("2026-10-09", "2026-10-08", "fichier postérieur"),
+], ids=["hors-fenetre", "meme-jour", "posterieur"])
+def test_r4_recopie_hors_des_7_jours_precedents(ancien, courant, motif):
+    q = _jours(**{ancien: [("a", "Texte.")], courant: [("a", "Texte.")]}) if ancien != courant \
+        else _jours(**{courant: [("a", "Texte."), ("b", "Texte.")]})
+    assert v.recopies_pour_toi(q, courant) == []
+
+
+def test_r4_recopie_limite_inclusive_a_sept_jours():
+    q = _jours(**{"2026-10-01": [("a", "Texte.")], "2026-10-08": [("a", "Texte.")]})
+    assert len(v.recopies_pour_toi(q, "2026-10-08")) == 1
+
+
+def test_r4_recopie_texte_different_ou_id_different_ou_null_ne_signale_pas():
+    q = _jours(**{"2026-10-05": [("a", "Ta limite est à 83 %."), ("b", "Même texte."), ("c", None)],
+                  "2026-10-08": [("a", "Ta limite est à 92 %."), ("autre", "Même texte."), ("c", None)]})
+    assert v.recopies_pour_toi(q, "2026-10-08") == []
+    q["2026-10-08"]["elements"].append({"id": "d", "pour_toi": "", "impact": "moyen"})
+    q["2026-10-05"]["elements"].append({"id": "d", "pour_toi": "", "impact": "moyen"})
+    assert v.recopies_pour_toi(q, "2026-10-08") == []  # un texte vide n'est pas une recopie
+
+
+def test_r4_recopie_element_nul_n_avertit_pas():
+    q = _jours(**{"2026-10-05": [("a", "Texte.")], "2026-10-08": [("a", "Texte.")]})
+    q["2026-10-08"]["elements"][0]["impact"] = "nul"
+    r = v.Rapport()
+    v.avertir_recopies(q, r)
+    assert r.avertissements == []
+
+
+def test_r4_recopie_de_bout_en_bout_sans_changer_le_code(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    q["elements"][0].update(pour_toi="Ton projet trading-sim est concerné.", impact="moyen")
+    _reecrire(chemin, q)
+    jour_avant = (datetime.date.fromisoformat(JOUR) - datetime.timedelta(days=3)).isoformat()
+    ancien = chemin.with_name(f"{jour_avant}.json")
+    ancien.write_text(json.dumps({**q, "date": jour_avant}), encoding="utf-8")
+    validation(racine, "claude", brut=False)
+    sortie = capsys.readouterr().out
+    attendu = f"{jour_avant[8:10]}/{jour_avant[5:7]}"
+    assert any(l.startswith(f"! AVERTISSEMENT {JOUR}.json elements[0]") and f"R4 : `pour_toi` recopié du {attendu}" in l
+               for l in sortie.splitlines())
+    assert not any(f"{jour_avant}.json elements" in l and "recopié" in l for l in sortie.splitlines())
+
+
+def test_r4_conditionnel_de_bout_en_bout_sans_changer_le_code(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    q["elements"][0].update(pour_toi="Si tu lances trading-sim ce soir, ça change.", action=None)
+    _reecrire(chemin, q)
+    assert validation(racine, "claude", brut=False) == 0
+    assert any("R4 : `pour_toi` conditionnel" in l for l in capsys.readouterr().out.splitlines())
