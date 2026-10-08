@@ -353,3 +353,109 @@ def test_un_element_d_echeance_passe_valider_py_et_fetch_valider(tmp_path, monke
     assert fetch.main(["--racine", str(tmp_path), "--perimetre", "openai", "--valider", "--date", "2026-09-23"]) == 0
     vus = json.loads((tmp_path / "state" / "openai.json").read_text(encoding="utf-8"))["vus"]
     assert mes <= set(vus)
+
+
+# --- D71 : résumé léger raw/echeances.json, lisible par la supervision --------------------------------------------
+
+def resume_fichier(tmp_path):
+    return json.loads((tmp_path / "raw" / "echeances.json").read_text(encoding="utf-8"))
+
+
+def test_resume_ecrit_a_chaque_passage_meme_apres_validation(etat_claude, monkeypatch):
+    """Les éléments bruts ne sortent qu'une fois ; le résumé, lui, liste tous les retraits de l'horizon à chaque passage."""
+    t = etat_claude
+    avancer(t, monkeypatch, "claude", "2026-11-16")
+    r = resume_fichier(t)
+    (e,) = [x for x in r["perimetre"]["claude"] if x["id"] == ID_SONNET_J14]
+    assert e["modele_ou_fonction"] == "claude-sonnet-4-5-20250929" and e["date_retrait"] == "2026-11-30"
+    assert e["jours_restants"] == 14 and e["palier"] == "j14" and e["source_url"].startswith("https://")
+    assert r["statut"] == "ok" and r["raison"] is None and r["horizon_jours"] == 14 and r["releve_le"]
+    avancer(t, monkeypatch, "claude", "2026-11-17")  # déjà vue : aucun élément brut, mais le résumé la garde
+    (e,) = [x for x in resume_fichier(t)["perimetre"]["claude"] if x["id"] == ID_SONNET_J14]
+    assert e["jours_restants"] == 13
+    avancer(t, monkeypatch, "claude", "2026-11-29")
+    (e,) = [x for x in resume_fichier(t)["perimetre"]["claude"] if x["date_retrait"] == "2026-11-30"]
+    assert e["id"] == ID_SONNET_J1 and e["jours_restants"] == 1 and e["palier"] == "j1"
+
+
+def test_resume_horizon_14_jours_trie_par_date(etat_claude, monkeypatch):
+    t = etat_claude
+    avancer(t, monkeypatch, "claude", "2026-11-15", valide=False)
+    assert resume_fichier(t)["perimetre"]["claude"] == [], "J-15 : hors horizon, fichier écrit quand même (liste vide)"
+    avancer(t, monkeypatch, "claude", "2026-11-30", valide=False)
+    (e,) = resume_fichier(t)["perimetre"]["claude"]
+    assert e["jours_restants"] == 0 and e["palier"] is None and not e["id"].endswith(("-j1", "-j14")), "le jour même : listée, sans palier"
+    avancer(t, monkeypatch, "claude", "2026-12-01", valide=False)
+    assert resume_fichier(t)["perimetre"]["claude"] == [], "retrait passé : plus listé"
+    avancer(t, monkeypatch, "openai", "2026-11-20", valide=False) if False else None
+
+
+def test_resume_claude_et_openai_dans_un_seul_fichier(tmp_path, monkeypatch):
+    from deltalib.etat import ecrire_json
+    dossiers(tmp_path)
+    for p in ("claude", "openai"):
+        ecrire_json(tmp_path / "state" / f"{p}.json", {"version": 1, "maj_le": "2026-11-01T10:00:00+00:00", "vus": {"x": {"source_id": "autre"}}})
+    jour_fige(monkeypatch, "2026-11-20")
+    passage(tmp_path, monkeypatch, "claude")
+    passage(tmp_path, monkeypatch, "openai")
+    r = resume_fichier(tmp_path)
+    assert sorted(r["perimetre"]) == ["claude", "openai"] and sorted(r["sources"]) == ["claude", "openai"]
+    assert [x["date_retrait"] for x in r["perimetre"]["claude"]] == ["2026-11-30"]
+    assert {x["date_retrait"] for x in r["perimetre"]["openai"]} >= {"2026-11-30", "2026-12-01"}
+    for lignes in r["perimetre"].values():
+        assert [x["date_retrait"] for x in lignes] == sorted(x["date_retrait"] for x in lignes)
+    passage(tmp_path, monkeypatch, "claude")  # un nouveau passage claude ne touche pas openai
+    assert resume_fichier(tmp_path)["perimetre"]["openai"] == r["perimetre"]["openai"]
+    assert (tmp_path / "raw" / "echeances.json").stat().st_size < 10_000, "quelques Ko : lisible en entier"
+
+
+def test_resume_vide_ecrit_sans_signalement_ni_echec(etat_claude, monkeypatch):
+    jour_fige(monkeypatch, "2026-10-01")
+    passage(etat_claude, monkeypatch, "claude")
+    r = resume_fichier(etat_claude)
+    assert r["perimetre"]["claude"] == [] and r["statut"] == "ok" and r["raison"] is None
+    assert [s for s in r["signalements"] if s["perimetre"] == "claude" and "gabarit" in s["texte"]] == []
+
+
+def test_resume_en_echec_quand_la_page_n_est_pas_lue(etat_claude, monkeypatch):
+    from deltalib.modeles import ErreurReseau
+    jour_fige(monkeypatch, "2026-11-16")
+    passage(etat_claude, monkeypatch, "claude", {URL_ANTHROPIC: ErreurReseau("HTTP 403 pour " + URL_ANTHROPIC)})
+    r = resume_fichier(etat_claude)
+    assert r["statut"] == "echec" and "anthropic-deprecations" in r["raison"] and "403" in r["raison"]
+    assert r["perimetre"]["claude"] == [], "liste vide : ici elle ne veut pas dire « aucune échéance »"
+    assert r["sources"]["claude"]["statut"] == "echec"
+
+
+def test_resume_reprend_les_signalements_de_lecture(etat_claude, monkeypatch):
+    page = PAGE_ANTHROPIC.replace("| November 30, 2026 | `claude-sonnet-4-5-20250929` |", "| soon | `claude-sonnet-4-5-20250929` |")
+    jour_fige(monkeypatch, "2026-11-16")
+    passage(etat_claude, monkeypatch, "claude", {URL_ANTHROPIC: (page, "text/markdown")})
+    r = resume_fichier(etat_claude)
+    assert r["statut"] == "ok", "page lue : les trous de lecture sont des signalements, pas un échec"
+    assert any("illisible" in s["texte"] and s["perimetre"] == "claude" for s in r["signalements"])
+
+
+def test_resume_fichier_existant_illisible_est_repris_a_zero(etat_claude, monkeypatch):
+    (etat_claude / "raw" / "echeances.json").write_text("{pas du json", encoding="utf-8")
+    jour_fige(monkeypatch, "2026-11-16")
+    passage(etat_claude, monkeypatch, "claude")
+    assert [x["id"] for x in resume_fichier(etat_claude)["perimetre"]["claude"]] == [ID_SONNET_J14]
+
+
+def test_resume_pas_ecrit_en_dry_run_ni_pour_actu(etat_claude, monkeypatch):
+    jour_fige(monkeypatch, "2026-11-16")
+    from test_etape_2c import FauxClient, fetch
+    monkeypatch.setattr(fetch, "Client", lambda: FauxClient({}))
+    fetch.main(["--racine", str(etat_claude), "--perimetre", "claude", "--dry-run"])
+    assert not (etat_claude / "raw" / "echeances.json").exists()
+    from deltalib.etat import ecrire_json
+    ecrire_json(etat_claude / "state" / "actu.json", {"version": 1, "maj_le": "2026-11-01T10:00:00+00:00", "vus": {"x": {"source_id": "autre"}}})
+    passage(etat_claude, monkeypatch, "actu")
+    assert not (etat_claude / "raw" / "echeances.json").exists(), "actu n'a aucune source d'échéances"
+
+
+def test_resume_n_ajoute_rien_au_brut(etat_claude, monkeypatch):
+    jour_fige(monkeypatch, "2026-11-16")
+    _, brut = passage(etat_claude, monkeypatch, "claude")
+    assert "echeances" not in brut, "le brut garde sa forme : le résumé est un fichier à part"
