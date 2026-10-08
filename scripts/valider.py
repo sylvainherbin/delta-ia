@@ -9,8 +9,9 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
-Lignes `! AVERTISSEMENT` (D85) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
-dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2) ; sans effet sur le code de sortie.
+Lignes `! AVERTISSEMENT` (D85, D97) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
+dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2), `pour_toi` conditionnel sans commande qui le tranche dans `action`
+et `pour_toi` recopié du même id dans un fichier des 7 jours précédents (R4) ; sans effet sur le code de sortie.
 """
 
 from __future__ import annotations
@@ -56,6 +57,10 @@ RE_SECRETS = [
 TYPES_AJOUT = {"nouveaute", "amelioration"}
 RE_SEGMENT_CODE = re.compile(r"`[^`\n]+`")
 RE_DATE_ACTION = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{2}/\d{2}\b")
+# R4 : un `pour_toi` qui pose une condition doit voir sa commande dans `action` ; le même id ne répète pas le texte de la veille.
+MARQUEURS_CONDITIONNEL = ("si tu", "si vous", "au cas où", "éventuellement")
+RE_CONDITIONNEL = re.compile(r"(?<!\w)(?:" + "|".join(re.escape(m).replace(r"\ ", r"\s+") for m in MARQUEURS_CONDITIONNEL) + r")(?!\w)", re.I)
+RECOPIE_JOURS = 7
 RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks")]
 
 
@@ -212,6 +217,57 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str) -> None:
         r.avertissement(ou, "R1 : ajout à un outil sans commande exacte entre accents graves dans `action`")
     if mots_trouves_element(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
         r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
+    if conditionnel_sans_commande(e):
+        r.avertissement(ou, "R4 : `pour_toi` conditionnel sans commande entre accents graves dans `action` qui le tranche")
+
+
+def conditionnel_sans_commande(e: dict) -> bool:
+    """R4 : `pour_toi` contenant un marqueur de condition (MARQUEURS_CONDITIONNEL) alors que l'`action` n'a aucun segment de code."""
+    pour_toi = e.get("pour_toi")
+    return isinstance(pour_toi, str) and bool(RE_CONDITIONNEL.search(pour_toi)) \
+        and not RE_SEGMENT_CODE.search(_texte_action(e.get("action")))
+
+
+def normaliser_texte(texte: str) -> str:
+    """Casse, espaces et ponctuation écartés : deux `pour_toi` qui ne diffèrent que par là sont le même texte."""
+    return " ".join(re.sub(r"[\W_]+", " ", texte.casefold()).split())
+
+
+def recopies_pour_toi(quotidiens: dict[str, dict], jour: str) -> list[tuple[int, dict, str]]:
+    """R4 : éléments du fichier `jour` dont le `pour_toi` est identique (normalisé) à celui du même id dans un fichier
+    des RECOPIE_JOURS jours précédents ; (indice, élément, date du plus récent de ces fichiers)."""
+    try:
+        d = date.fromisoformat(jour)
+    except ValueError:
+        return []
+    vus: dict[str, dict[str, str]] = {}  # id -> {date: pour_toi normalisé} sur les 7 jours précédents
+    for autre in sorted(quotidiens):
+        try:
+            ecart = (d - date.fromisoformat(autre)).days
+        except ValueError:
+            continue
+        if not 1 <= ecart <= RECOPIE_JOURS:
+            continue
+        for e in quotidiens[autre].get("elements", []):
+            if isinstance(e, dict) and isinstance(e.get("id"), str) and isinstance(e.get("pour_toi"), str):
+                vus.setdefault(e["id"], {})[autre] = normaliser_texte(e["pour_toi"])
+    trouves = []
+    for i, e in enumerate(quotidiens[jour].get("elements", [])):
+        if not (isinstance(e, dict) and isinstance(e.get("pour_toi"), str)):
+            continue
+        norme = normaliser_texte(e["pour_toi"])
+        memes = [a for a, n in vus.get(e.get("id"), {}).items() if n == norme] if norme else []
+        if memes:
+            trouves.append((i, e, max(memes)))
+    return trouves
+
+
+def avertir_recopies(quotidiens: dict[str, dict], r: Rapport) -> None:
+    for jour in sorted(quotidiens):
+        for i, e, ancien in recopies_pour_toi(quotidiens, jour):
+            if e.get("impact") in IMPACTS - {"nul"}:
+                r.avertissement(f"{jour}.json elements[{i}] ({e.get('id')})",
+                                f"R4 : `pour_toi` recopié du {ancien[8:10]}/{ancien[5:7]}")
 
 
 def verifier_ids_web(e: dict, ou: str, r: Rapport) -> None:
@@ -826,6 +882,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
         for i, e in enumerate(q.get("elements", [])):
             if isinstance(e, dict):
                 verifier_ids_kb(e, f"{d}.json elements[{i}]", r, connus)
+    avertir_recopies(quotidiens, r)
     jour_iso = (jour or date.today()).isoformat()
     if brut is not None:
         q = quotidiens.get(jour_iso)

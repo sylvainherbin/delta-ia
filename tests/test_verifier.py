@@ -281,6 +281,30 @@ def test_main_ci_code_de_sortie(depot, monkeypatch, capsys):
     assert verifier.main(["--ci", "main"]) == 1  # repli, jamais un succès par défaut
 
 
+def test_ci_resout_une_branche_qui_n_existe_que_sur_origin(depot, tmp_path, monkeypatch, capsys):
+    """Branche poussée par une autre session : `refs/remotes/origin/<nom>` seul, pas de branche locale."""
+    def git_(*a):
+        return subprocess.run(["git", "-C", str(depot), *a], check=True, capture_output=True, text=True).stdout.strip()
+    sha = git_("rev-parse", "HEAD")
+    git_("update-ref", "refs/remotes/origin/operer/x-r2", sha)
+    assert verifier.hash_branche("operer/x-r2", depot) == sha
+    monkeypatch.setattr(verifier, "RACINE", depot)
+    monkeypatch.setattr(verifier, "lire_runs_ci", lambda branche, racine=depot: [{"headSha": sha, "conclusion": "success", "status": "completed"}])
+    assert verifier.main(["--ci", "operer/x-r2"]) == 0
+    assert "CI verte" in capsys.readouterr().out
+    git_("update-ref", "refs/heads/operer/x-r2", git_("rev-parse", "HEAD~0"))  # la locale prime quand elle existe
+    assert verifier.hash_branche("operer/x-r2", depot) == sha
+
+
+def test_ci_branche_introuvable_est_un_repli_pas_un_succes(depot, monkeypatch, capsys):
+    monkeypatch.setattr(verifier, "RACINE", depot)
+    monkeypatch.setattr(verifier, "lire_runs_ci", lambda branche, racine=depot: [])
+    with pytest.raises(ValueError, match="introuvable"):
+        verifier.hash_branche("operer/fantome", depot)
+    assert verifier.main(["--ci", "operer/fantome"]) == 1
+    assert "introuvable" in capsys.readouterr().out
+
+
 def test_lancer_tolere_le_code_5_seulement_si_demande(depot):
     cmd = [[sys.executable, "-c", "raise SystemExit(5)"]]
     assert not verifier.lancer(cmd, depot)["ok"]

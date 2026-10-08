@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Contrôle avant commit (D87) : pytest puis valider.py sur les trois périmètres, jamais deux fois sur le même arbre.
 Preuve de fusion (D94, CI-PREUVE) : `--cible` lance les seuls tests touchés par le diff contre origin/main (carte.py),
-`--ci` lit le run GitHub Actions vert du hash exact de la branche, `--local` lance ce que la CI ne fait pas (tests marqués
+`--ci` lit le run GitHub Actions vert du hash exact de la branche (locale, sinon `origin/<branche>`), `--local` lance ce que la CI ne fait pas (tests marqués
 `local`) ; la suite complète locale n'est que le repli sans CI verte exploitable.
 
 Un succès est enregistré sous une clé qui décrit le contenu réellement testé (arbre git du répertoire de travail,
@@ -102,6 +102,17 @@ def preuve_ci(branche: str, sha: str, runs: list[dict]) -> tuple[bool, str]:
         return False, f"run CI de {sha[:12]} en cours ; attendre sa fin, ou repli : suite complète locale"
     conclusions = ", ".join(sorted({str(r.get("conclusion")) for r in pour_sha}))
     return False, f"CI non verte sur {sha[:12]} ({conclusions}) ; corriger, ou repli : suite complète locale"
+
+
+def hash_branche(branche: str, racine: Path = RACINE) -> str:
+    """Hash de la branche locale, sinon de `origin/<branche>` (branche poussée depuis un autre worktree ou une autre session,
+    absente en local). `ValueError` si ni l'une ni l'autre n'existe."""
+    for ref in (branche, f"origin/{branche}"):
+        res = subprocess.run(["git", "-C", str(racine), "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"],
+                             capture_output=True, text=True)
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+    raise ValueError(f"branche {branche} introuvable (ni locale, ni origin/{branche})")
 
 
 def lire_runs_ci(branche: str, racine: Path = RACINE) -> list[dict]:
@@ -231,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.ci is not None:
         branche = args.ci or git("branch", "--show-current", racine=RACINE).decode().strip()
         try:
-            ok, message = preuve_ci(branche, git("rev-parse", branche, racine=RACINE).decode().strip(), lire_runs_ci(branche, RACINE))
+            ok, message = preuve_ci(branche, hash_branche(branche, RACINE), lire_runs_ci(branche, RACINE))
         except (OSError, subprocess.SubprocessError, ValueError) as exc:
             ok, message = False, f"CI illisible ({exc}) ; repli : suite complète locale"
         print(f"VERIFY CI {'OK' if ok else 'NON EXPLOITABLE'} : {message}", flush=True)
