@@ -998,3 +998,14 @@ def test_page_faite_d_un_seul_composant_sans_usage():
     lignes = lire("oa_page_index_composant.md").splitlines()
     assert premier_paragraphe(lignes, 1, len(lignes)) is None, "les attributs d'un composant ne sont pas un paragraphe"
     assert usage_et_nature(lignes, 1, len(lignes)) == (None, "syntaxe"), "ni « .md » ni attributs : la page est retirée de sources.yaml"
+
+
+def test_paragraphe_long_n_est_pas_coupe(docs):
+    """D92 : la section « Browser » de reference/settings.md (page réelle réduite, paragraphe de 507 caractères) était coupée à 500
+    (« Your organization … ») ; `description_source` et `usage` sont maintenant le paragraphe entier."""
+    ent = {x.nom: x for x in extraire(docs["chatgpt-app-reglages"], page=lire("oa_settings_browser.md"))}
+    navigateur = ent["Réglages : Browser"]
+    fin = "Your organization can restrict these controls."
+    assert navigateur.description_source.endswith(fin)
+    assert navigateur.usage.endswith(fin)
+    assert not navigateur.usage.endswith("…") and not navigateur.description_source.endswith("…")

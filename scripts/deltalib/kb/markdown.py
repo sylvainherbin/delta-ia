@@ -189,7 +189,9 @@ def premiere_liste(lignes: list[str], debut: int, fin: int, ordonnee: bool, max_
     return r[2] if r else None
 
 
-def premier_paragraphe(lignes: list[str], debut: int, fin: int, max_car: int = 500) -> str | None:
+def premier_paragraphe(lignes: list[str], debut: int, fin: int) -> str | None:
+    """Premier paragraphe, en entier : un paragraphe est une unité de sens, aucun plafond de longueur (D92 ;
+    l'ancien plafond de 500 caractères coupait la fiche « Browser » au milieu d'une phrase)."""
     hors = lignes_hors_code(lignes)
     courant: list[str] = []
     balise = False  # attributs d'un composant écrit sur plusieurs lignes (`<Composant` … `/>`)
@@ -207,8 +209,7 @@ def premier_paragraphe(lignes: list[str], debut: int, fin: int, max_car: int = 5
             break
     if not courant:
         return None
-    p = " ".join(courant)
-    return p if len(p) <= max_car else p[:max_car].rsplit(" ", 1)[0] + " …"
+    return " ".join(courant)
 
 
 def _note_index(ligne: str) -> bool:
