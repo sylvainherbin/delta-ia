@@ -115,7 +115,8 @@ def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = No
 
     Inscrits : les nouveautés brutes reprises dans `ids_bruts` ou `ecartes`, les `ignores` du fichier brut,
     les identifiants `web-*` et, avec `ids_kb`, les `kb-<id d'entrée de la base>` dont l'entrée existe (D86). Les nouveautés brutes absentes restent en attente et sont listées.
-    Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids], borne_avancee}.
+    Retourne (état, bilan) avec bilan = {inscrits, revises, en_attente: [ids], inconnus: [ids], reevalues, reevaluer_non_traites: [ids], borne_avancee}.
+    D96 : un id de `brut["reevaluer"]` repris par le fichier quotidien (élément ou `ecartes`) n'est jamais « inconnu » ; non repris, il est listé sans bloquer la borne.
     D76 : avec `racine`, conserve les textes suivis validés dans raw/revisions/ ; sans elle, aucune écriture (dry-run).
     """
     vus = etat.setdefault("vus", {})
@@ -123,7 +124,8 @@ def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = No
     horodatage = maintenant_iso()
     bruts, ecartes = ids_couverts(quotidien)
     couverts = bruts | ecartes
-    bilan = {"inscrits": 0, "revises": 0, "en_attente": [], "inconnus": []}
+    bilan = {"inscrits": 0, "revises": 0, "en_attente": [], "inconnus": [], "reevalues": 0, "reevaluer_non_traites": []}
+    reevaluer = {x["id"] for x in brut.get("reevaluer") or [] if isinstance(x, dict) and x.get("id")}  # D96
     par_id = {e["id"]: e for e in brut.get("nouveautes", [])}
     for ident, e in par_id.items():
         if ident not in couverts:
@@ -142,8 +144,10 @@ def valider(etat: dict, brut: dict, quotidien: dict, *, racine: Path | None = No
             entree["empreinte"] = empreinte
             entree["revise_le"] = horodatage
             bilan["revises"] += 1
+    bilan["reevalues"] = len(reevaluer & couverts)
+    bilan["reevaluer_non_traites"] = sorted(reevaluer - couverts)
     for ident in couverts - set(par_id):
-        if ident in vus:
+        if ident in vus or ident in reevaluer:  # D96 : reprise d'un élément déjà publié, pas une nouveauté
             continue  # déjà connu : reprise d'un élément existant (fusion, révision déjà inscrite)
         if ident.startswith("web-"):
             vus[ident] = {"date_publication": None, "vu_le": horodatage, "source_id": "web"}

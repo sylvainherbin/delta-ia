@@ -350,6 +350,12 @@ def verifier_couverture(q: dict, chemin_brut: Path, r: Rapport) -> None:
     for n in brut.get("nouveautes", []):
         if n["id"] not in couverts:
             r.erreur(ou, f"nouveauté brute ni reprise dans `ids_bruts` ni dans `ecartes` : {n['id']} ({n.get('titre', '')[:50]})")
+    # D96 : avertissements seulement (jamais d'arrêt d'un passage de nuit) ; une révision garde l'id et porte `revision: true`
+    revisions = {e.get("id") for e in q.get("elements", []) if isinstance(e, dict) and e.get("revision") is True}
+    ecartes = {x["id"] for x in q.get("ecartes", []) if isinstance(x, dict) and x.get("id")}
+    for x in brut.get("reevaluer") or []:
+        if isinstance(x, dict) and x.get("id") and x["id"] not in revisions | ecartes:
+            r.avertissement(ou, f"D96 : élément à réévaluer ni révisé (`revision: true`, même id) ni écarté « réévalué, inchangé » : {x['id']}")
 
 
 NOMS_TROP_COURTS = 3  # D95 : un segment de moins de 3 caractères ou une valeur nue (`true`) ne désigne rien

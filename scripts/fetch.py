@@ -12,6 +12,7 @@ dans l'état que ce qu'il comptabilise (ids_bruts, ecartes, web-*, kb-*) plus le
 nouveautés absentes restent en attente (code de sortie 4).
 `--kb` : code 3 = échec partiel (des pages ou des documentations en échec, les autres traitées normalement) ;
 code 5 = échec total (aucune page lue, ou toutes les documentations d'un périmètre en échec) ; D68.
+D96 : le brut porte aussi `reevaluer` (10 au plus : éléments des 7 derniers jours dont une section citée de CONTEXTE.md a changé).
 Chaque écriture de `raw/<p>-nouveautes.json` et de `raw/kb/<p>-modifications.json` laisse une copie datée dans
 `raw/historique/AAAA-MM-JJ/` (D72), jamais écrasée ni supprimée ; son échec est un avertissement, pas une erreur.
 """
@@ -27,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from deltalib.contexte import ContexteInvalide, a_reevaluer  # noqa: E402
 from deltalib.echeances import FICHIER_RESUME, ecrire_resume  # noqa: E402
 from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, ids_base, valider  # noqa: E402
 from deltalib.http import Client  # noqa: E402
@@ -112,10 +114,13 @@ def commande_valider(perimetre: str, racine: Path, dry_run: bool, jour: date | N
                            ids_kb=ids_base(racine, perimetre))
     prefixe = "[dry-run] " if dry_run else ""
     print(f"{prefixe}état {chemin_etat} : {bilan['inscrits']} inscrit(s), {bilan['revises']} révisé(s), "
-          f"{len(etat['vus'])} au total ; {len(bilan['en_attente'])} nouveauté(s) en attente")
+          f"{len(etat['vus'])} au total ; {len(bilan['en_attente'])} nouveauté(s) en attente"
+          + (f" ; {bilan['reevalues']} réévaluation(s) reprise(s) (D96)" if brut.get("reevaluer") else ""))
     titres = {e["id"]: e.get("titre", "") for e in brut.get("nouveautes", [])}
     for i in bilan["en_attente"]:
         print(f"  ? en attente  {i}  {titres.get(i, '')[:70]}")
+    for i in bilan["reevaluer_non_traites"]:  # D96 : avertissement, sans effet sur le code de sortie
+        print(f"  ! à réévaluer, non repris (ni révision `revision: true` ni `ecartes`)  {i}")
     for i in bilan["inconnus"]:
         print(f"  ! inconnu     {i}  (présent dans le fichier quotidien, absent du brut et de l'état)")
     if not bilan["borne_avancee"]:
@@ -137,6 +142,10 @@ def commande_recuperer(args, racine: Path) -> int:
     chemin_etat = racine / "state" / f"{args.perimetre}.json"
     bilan = executer(args.perimetre, sources, chemin_etat, Client(), depuis=args.depuis)
     brut = bilan.en_dict()
+    try:  # D96 : éléments des 7 derniers jours dont une section citée de CONTEXTE.md a changé
+        brut.update(a_reevaluer(racine, DOSSIERS[args.perimetre], date.today()))
+    except (ContexteInvalide, ValueError) as e:  # jamais de liste vide muette : l'erreur est dans le brut et à l'écran
+        brut.update({"reevaluer": [], "reevaluer_total": 0, "reevaluer_erreur": str(e)})
     chemin_brut = racine / "raw" / f"{args.perimetre}-nouveautes.json"
     if args.dry_run:
         print(f"[dry-run] rien n'est écrit ({chemin_brut})")
@@ -157,6 +166,12 @@ def commande_recuperer(args, racine: Path) -> int:
         print(f"  … et {len(bilan.nouveautes) - 20} autre(s)")
     for ec in bilan.echecs:
         print(f"  ! {'partiel ' if ec.partiel else 'ÉCHEC   '}{ec.id} : {ec.erreur}")
+    if brut.get("reevaluer_erreur"):
+        print(f"  ! RÉÉVALUATION impossible (D96) : {brut['reevaluer_erreur']}")
+    for x in brut["reevaluer"]:
+        print(f"  ↻ à réévaluer {x['date']}  {x['impact'] or '?':<6} {x['id']}  ({', '.join(x['sections_modifiees'])})")
+    if brut["reevaluer_total"] > len(brut["reevaluer"]):
+        print(f"  … {brut['reevaluer_total'] - len(brut['reevaluer'])} autre(s) à réévaluer au-delà du plafond")
     if not args.dry_run:
         print(f"nouveautés écrites dans {chemin_brut} ; l'état {chemin_etat} n'a pas été modifié")
     if len(bilan.sources_traitees) == 0:

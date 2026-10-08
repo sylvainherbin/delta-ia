@@ -135,3 +135,70 @@ def format_valide(cs) -> bool:
         isinstance(k, str) and re.fullmatch(r"[A-Za-z0-9._-]+", k) and isinstance(v, dict) and set(v) == {"sha1", "pourquoi"}
         and isinstance(v["sha1"], str) and re.fullmatch(r"[0-9a-f]{40}", v["sha1"]) and not erreurs_pourquoi(v["pourquoi"])
         for k, v in cs.items())
+
+
+# D96 : réévaluation des éléments récents dont une section citée de CONTEXTE.md a changé depuis leur publication.
+REEVALUER_JOURS = 7
+REEVALUER_MAX = 10
+RAISON_REEVALUE_INCHANGE = "réévalué, inchangé"
+_ORDRE_IMPACT = {"fort": 0, "moyen": 1, "faible": 2, "nul": 3}
+
+
+def empreinte_fichier(racine) -> str | None:
+    """sha1 de CONTEXTE.md entier (même calcul que `contexte_empreinte` des fichiers du jour), None s'il est absent."""
+    try:
+        return hashlib.sha1((Path(racine) / "CONTEXTE.md").read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def a_reevaluer(racine, dossier: str, jour, fenetre: int = REEVALUER_JOURS, plafond: int = REEVALUER_MAX) -> dict:
+    """D96 : éléments des `fenetre` derniers jours (fichiers docs/data/<dossier>/AAAA-MM-JJ.json de `jour - fenetre` à `jour`)
+    dont une section citée dans `contexte_sections` a changé d'empreinte, disparu ou été dépréciée depuis leur publication.
+
+    Pour un même id, seule la version la plus récente compte (une révision remplace l'élément). Un élément écarté par
+    « réévalué, inchangé » dans un fichier postérieur n'est pas repris tant que CONTEXTE.md garde l'empreinte de ce fichier.
+    Retourne {"reevaluer": [{id, date, impact, sections_modifiees}] (10 au plus, les plus forts d'abord, puis les plus récents),
+    "reevaluer_total": n avant plafond}. `contexte_sections` null (avant D64) ou vide : jamais réévalué.
+    ContexteInvalide ou CONTEXTE.md absent : propagé (ContexteInvalide) / ValueError, à signaler par l'appelant."""
+    import json
+    from datetime import timedelta
+
+    texte = _lire(racine)
+    if texte is None:
+        raise ValueError("CONTEXTE.md introuvable")
+    courantes_complet, deprecies_ = analyser(texte)
+    courantes = {k: v["sha1"] for k, v in courantes_complet.items()}
+    empreinte_courante = empreinte_fichier(racine)
+    debut = (jour - timedelta(days=fenetre)).isoformat()
+    fichiers = []
+    for f in sorted((Path(racine) / "docs" / "data" / dossier).glob("????-??-??.json")):
+        if debut <= f.stem <= jour.isoformat():
+            try:
+                q = json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue  # valider.py signale un fichier du jour illisible ; la réévaluation ne s'y arrête pas
+            if isinstance(q, dict):
+                fichiers.append((f.stem, q))
+    derniers: dict[str, tuple[str, dict]] = {}
+    traites: dict[str, str] = {}  # id -> jour du dernier « réévalué, inchangé » valable pour l'empreinte courante
+    for stem, q in fichiers:  # ordre chronologique : le plus récent remplace
+        for e in q.get("elements") or []:
+            if isinstance(e, dict) and isinstance(e.get("id"), str):
+                derniers[e["id"]] = (stem, e)
+        if q.get("contexte_empreinte") == empreinte_courante:
+            for x in q.get("ecartes") or []:
+                if isinstance(x, dict) and isinstance(x.get("id"), str) \
+                        and str(x.get("raison", "")).strip().lower().startswith(RAISON_REEVALUE_INCHANGE):
+                    traites[x["id"]] = stem
+    trouves = []
+    for ident, (stem, e) in derniers.items():
+        modifiees = sections_perimees(e.get("contexte_sections") if isinstance(e.get("contexte_sections"), dict) else None,
+                                      courantes, deprecies_)
+        if not modifiees or traites.get(ident, "") > stem:
+            continue
+        trouves.append({"id": ident, "date": stem, "impact": e.get("impact"), "sections_modifiees": sorted(modifiees)})
+    trouves.sort(key=lambda x: x["id"])
+    trouves.sort(key=lambda x: x["date"], reverse=True)
+    trouves.sort(key=lambda x: _ORDRE_IMPACT.get(x["impact"], 4))  # tris stables : impact, puis date décroissante, puis id
+    return {"reevaluer": trouves[:plafond], "reevaluer_total": len(trouves)}

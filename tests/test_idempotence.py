@@ -100,6 +100,6 @@ def test_nouveautes_triees_et_format(racine):
     cle = [d or "9999" for d in dates]  # non datés en tête, comme etat.detecter (D3, O2)
     assert cle == sorted(cle, reverse=True)
     assert {e["produit"] for e in brut["nouveautes"]} <= {"chatgpt", "codex"}
-    assert set(brut) == {"perimetre", "genere_le", "fenetre_depuis", "borne", "sources_traitees", "elements_total",
+    assert set(brut) - {"reevaluer_erreur"} == {"perimetre", "genere_le", "fenetre_depuis", "borne", "sources_traitees", "elements_total",
                          "nouveautes", "ignores", "ignores_sources", "ignores_raisons", "sources_amorcees",
-                         "empreintes", "contenus_suivis", "sources_en_echec"}
+                         "empreintes", "contenus_suivis", "sources_en_echec", "reevaluer", "reevaluer_total"}  # D96 ; reevaluer_erreur : racine de test sans CONTEXTE.md
