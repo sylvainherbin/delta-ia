@@ -21,7 +21,7 @@ Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/as
 .venv/bin/python scripts/verifier.py --cible --liste    # montre la sélection sans rien lancer
 ```
 
-`scripts/carte.py` calcule la carte fichiers → tests à chaque appel (imports de `scripts/` et `tests/`, aucun fichier à tenir à jour) : un test modifié se lance lui-même ; un module de `scripts/` lance ses tests directs et ceux de ses dépendants directs ; un module central (`scripts/deltalib/`) lance ses seuls tests directs et `scripts/valider.py` sur les trois périmètres ; un fichier hors graphe (prompt, page du site, skill, SPEC) lance les tests qui le citent ; un fichier inconnu lance les tests de même nom (ou l'outillage `test_verifier`, `test_carte`, `test_skill_verify`) et `valider.py` ; `tests/conftest.py`, `pytest.ini` et `requirements.txt` lancent l'outillage seul, la CI fait foi. **Le mode ciblé ne lance jamais la suite complète.** Il passe par le verrou machine (deux places, `nice 10`) et n'est jamais enregistré.
+`scripts/carte.py` calcule la carte fichiers → tests à chaque appel (imports de `scripts/` et `tests/`, aucun fichier à tenir à jour) : un test modifié se lance lui-même ; un module de `scripts/` lance ses tests directs et ceux de ses dépendants directs ; un module central (`scripts/deltalib/`) lance ses seuls tests directs et `scripts/valider.py` sur les trois périmètres ; un fichier hors graphe (prompt, page du site, skill, SPEC) lance les tests qui le citent ; un fichier inconnu lance les tests de même nom (ou l'outillage `test_verifier`, `test_carte`, `test_skill_verify`) et `valider.py` ; `tests/conftest.py`, `pytest.ini` et `requirements.txt` lancent l'outillage seul, la CI fait foi. **Le mode ciblé ne lance jamais la suite complète.** Il passe par le verrou machine commun (voir ci-dessous) et n'est jamais enregistré.
 
 ```
 .venv/bin/python scripts/verifier.py tests/test_x.py   # tests choisis à la main (pytest seul)
@@ -30,6 +30,14 @@ Dès qu'un chemin indexé est dans `scripts/`, `tests/`, `docs/*.html`, `docs/as
 ```
 
 La suite complète (`.venv/bin/pytest -q`, puis `scripts/valider.py --perimetre claude`, `openai` et `actu`) passe par `scripts/verifier.py` : verrou machine, et **aucun relancement sur un arbre déjà vérifié avec succès**. La clé du cache est le contenu réel du répertoire de travail (arbre git de `write-tree`, fichiers non suivis non ignorés compris) plus l'environnement (Python, paquets, `requirements.txt`) ; le registre est `~/.local/state/delta/verify-resultats.json`, hors du dépôt ; un échec n'est jamais enregistré.
+
+**Verrou commun (VERROU-COMMUN, D94).** Toute suite lancée par `verifier.py` (complète, `--cible`, `--local`, tests choisis) se relance sous `verrou-tests --depot <racine> --nom delta-ia -- …` : une seule prise par exécution, dans la file FIFO commune à tous les dépôts (tickets sous `$XDG_STATE_HOME`, deux places, `nice 10`). Sous `VERIFY_VERROU_TENU` hérité, aucune seconde prise. **Code 75** : deux passages du même dépôt attendent déjà, `verifier.py` sort en 75 ; relancer plus tard, sans contourner le verrou. Le résultat réutilisé (suite complète sur un arbre déjà vérifié) n'attend aucun verrou. Toute autre suite locale, hors `verifier.py`, passe par le même lanceur ; pour le serveur MCP :
+
+```
+verrou-tests --depot mcp -- npm test    # depuis la racine du dépôt ; ou : verrou-tests --depot /home/herbin/projets/delta-ia/mcp -- npm test
+```
+
+La CI (D87, D94) n'est pas concernée : elle tourne sur GitHub, sans verrou.
 
 Dans un worktree sans `.venv`, utilise celui du dépôt principal (`/home/herbin/projets/delta-ia/.venv/bin/python`) ; ne crée pas de venv.
 

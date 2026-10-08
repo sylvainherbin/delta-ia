@@ -7,7 +7,8 @@ Preuve de fusion (D94, CI-PREUVE) : `--cible` lance les seuls tests touchés par
 Un succès est enregistré sous une clé qui décrit le contenu réellement testé (arbre git du répertoire de travail,
 fichiers non suivis non ignorés compris) et l'environnement Python. Un commit ou un rebase sans changement de contenu
 donne la même clé, donc le même résultat. Un échec n'est jamais enregistré.
-Les suites passent par le verrou machine (deux places, nice 10) ; la réutilisation d'un résultat n'attend aucun verrou.
+Les suites passent par le verrou machine commun (VERROU-COMMUN, D94) : `verifier.py` se relance lui-même sous
+`verrou-tests` (file FIFO, deux places, nice 10) ; la réutilisation d'un résultat n'attend aucun verrou.
 """
 from __future__ import annotations
 
@@ -31,7 +32,9 @@ RACINE = Path(__file__).resolve().parent.parent
 PERIMETRES = ("claude", "openai", "actu")
 # Sorties locales de travail : ce ne sont pas des entrées des tests.
 IGNORES = (".tmp-", ".codex-commit-")
-VERROUS = ("verify-machine.lock", "verify-machine-2.lock")  # deux places : deux suites tiennent sur 4 cœurs
+VERROU_TESTS = "verrou-tests"  # lanceur commun (~/.local/bin, dépôt discipline) : même file FIFO que les autres dépôts
+NOM_VERROU = "delta-ia"
+CODE_FILE_PLEINE = 75  # deux passages de ce dépôt attendent déjà : sortie rendue telle quelle
 
 
 def git(*args: str, racine: Path = RACINE) -> bytes:
@@ -154,43 +157,24 @@ def sauver(path: Path, cle: str, contexte: dict, rapport: dict) -> None:
         provisoire.replace(path)
 
 
-def _prendre(fichiers):
-    """La première place libre, sans bloquer ; None si toutes sont prises."""
-    for fichier in fichiers:
-        try:
-            fcntl.flock(fichier, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return fichier
-        except BlockingIOError:
-            pass
-    return None
-
-
-def verrou_machine(dossier: Path | None = None):
-    """Deux passages de tests à la fois au plus sur la machine, en priorité basse (incident du 07/10 : six suites
-    simultanées, charge 50 sur 4 cœurs). Les autres attendent la première place libre, sans échouer. Un verifier lancé
-    par un test (variable héritée) ne reprend pas le verrou. Même verrou que discipline, delta-desktop et console-mur."""
-    try:
-        os.nice(10)
-    except OSError:
-        pass
+def verrou_commun(argv: list[str], racine: Path = RACINE) -> None:
+    """Une seule prise du verrou machine par exécution (VERROU-COMMUN) : l'exécution se relance sous
+    `verrou-tests --depot <racine> --nom delta-ia -- verifier.py <argv>` et sort avec son code, rendu tel quel (75 : deux
+    passages de ce dépôt attendent déjà, sans contournement). Le lanceur est le seul exemplaire de la file (tickets FIFO,
+    deux places, nice 10 posé par le lanceur, source : discipline/outils/tests/verrou.py). Sous `VERIFY_VERROU_TENU` hérité (la relance, ou
+    un test lancé sous un verrou), aucune seconde prise : retour immédiat."""
     if os.environ.get("VERIFY_VERROU_TENU"):
-        return None
-    dossier = dossier or Path(os.environ.get("XDG_STATE_HOME") or "~/.local/state").expanduser()
-    dossier.mkdir(parents=True, exist_ok=True)
-    fichiers = [(dossier / nom).open("a") for nom in VERROUS]
-    tenu = _prendre(fichiers)
-    if tenu is None:
-        print("VERIFY : deux passages de tests tournent sur la machine ; attente de son tour", flush=True)
-        debut = time.perf_counter()
-        while tenu is None:  # flock ne sait pas attendre « l'un ou l'autre »
-            time.sleep(0.5)
-            tenu = _prendre(fichiers)
-        print(f"VERIFY : tour obtenu après {time.perf_counter() - debut:.0f} s", flush=True)
-    for fichier in fichiers:
-        if fichier is not tenu:
-            fichier.close()
-    os.environ["VERIFY_VERROU_TENU"] = "1"
-    return tenu
+        return
+    lanceur = shutil.which(VERROU_TESTS)
+    if not lanceur:
+        print(f"VERIFY : {VERROU_TESTS} introuvable (~/.local/bin, dépôt discipline) ; aucun verrou local de rechange, "
+              "installer le lanceur commun", flush=True)
+        raise SystemExit(127)
+    cmd = [lanceur, "--depot", str(racine), "--nom", NOM_VERROU, "--", sys.executable, str(Path(__file__).resolve()), *argv]
+    code = subprocess.run(cmd).returncode
+    if code == CODE_FILE_PLEINE:
+        print(f"VERIFY : file du verrou commun pleine (code {CODE_FILE_PLEINE}) ; relancer plus tard", flush=True)
+    raise SystemExit(code)
 
 
 def lancer(cmds: list[list[str]], racine: Path = RACINE, codes_ok: tuple[int, ...] = (0,)) -> dict:
@@ -207,7 +191,7 @@ def lancer(cmds: list[list[str]], racine: Path = RACINE, codes_ok: tuple[int, ..
     return rapport
 
 
-def verifier(racine: Path, registre: Path, cmds: list[list[str]], sans_cache: bool = False, verrou=verrou_machine) -> dict:
+def verifier(racine: Path, registre: Path, cmds: list[list[str]], sans_cache: bool = False, verrou=lambda: None) -> dict:
     """Résultat réutilisé si l'arbre est déjà vérifié, sinon exécution ; le succès n'est enregistré que si rien n'a
     bougé pendant la suite."""
     cle, contexte = cle_arbre(racine), signature(racine)
@@ -216,18 +200,18 @@ def verifier(racine: Path, registre: Path, cmds: list[list[str]], sans_cache: bo
     if preuve:
         rapport = {**preuve["rapport"], "reutilise": True}
     else:
-        tenu = verrou()  # gardé ouvert jusqu'à la fin des suites
+        verrou()  # relance sous le verrou commun (ne revient que s'il est déjà tenu)
         rapport = {**lancer(cmds, racine), "reutilise": False}
         if rapport["ok"] and cle_arbre(racine) == cle:
             sauver(registre, cle, contexte, rapport)
         elif rapport["ok"]:
             print("VERIFY : le contenu a changé pendant les tests ; résultat non enregistré", flush=True)
-        del tenu
     rapport.update(cle=cle, total_secondes=round(time.perf_counter() - debut, 3))
     return rapport
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else list(argv)
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("cibles", nargs="*", help="fichiers de tests ciblés (pytest seul, sans valider.py ni cache)")
     p.add_argument("--sans-cache", action="store_true", help="relancer même si l'arbre est déjà vérifié")
@@ -248,15 +232,16 @@ def main(argv: list[str] | None = None) -> int:
         print(f"VERIFY CI {'OK' if ok else 'NON EXPLOITABLE'} : {message}", flush=True)
         return 0 if ok else 1
     if args.local:
-        tenu = verrou_machine()
+        verrou_commun(argv)
         rapport = lancer(commandes_local(), codes_ok=(0, 5))  # 5 : aucun test marqué `local`
         print(f"VERIFY local {'OK' if rapport['ok'] else 'ÉCHEC'} en {rapport['commandes'][-1]['secondes']} s", flush=True)
-        del tenu
         return 0 if rapport["ok"] else 1
     if args.cible:
         touches = fichiers_touches(RACINE, args.base)
         selection = carte.selectionner(carte.generer(RACINE), touches)
         cmds = commandes_cible(selection)
+        if cmds and not args.liste:
+            verrou_commun(argv)  # avant d'écrire la sélection : la relance la recalcule et l'écrit une seule fois
         print(f"VERIFY ciblé : {len(touches)} fichier(s) touché(s) contre {args.base}, {len(selection['tests'])} test(s)"
               f"{', valider.py' if selection['valider'] else ''}", flush=True)
         for raison in selection["raisons"]:
@@ -265,18 +250,17 @@ def main(argv: list[str] | None = None) -> int:
             if not cmds:
                 print("VERIFY ciblé OK : rien à lancer", flush=True)
             return 0
-        tenu = verrou_machine()
         rapport = {**lancer(cmds), "reutilise": False, "cible": True}
         print(f"VERIFY ciblé {'OK' if rapport['ok'] else 'ÉCHEC'} en {sum(c['secondes'] for c in rapport['commandes']):.1f} s "
               f"(la CI sur le hash exact fait foi pour la fusion)", flush=True)
-        del tenu
         return 0 if rapport["ok"] else 1
     if args.cibles:  # test ciblé : jamais enregistré, il ne vaut pas verify complet
+        verrou_commun(argv)
         rapport = lancer(commandes(cibles=args.cibles)[:1])
         rapport.update(reutilise=False, cible=True)
         print(f"VERIFY ciblé {'OK' if rapport['ok'] else 'ÉCHEC'} en {rapport['commandes'][-1]['secondes']} s", flush=True)
         return 0 if rapport["ok"] else 1
-    rapport = verifier(RACINE, args.registre or registre_par_defaut(), commandes(), args.sans_cache)
+    rapport = verifier(RACINE, args.registre or registre_par_defaut(), commandes(), args.sans_cache, lambda: verrou_commun(argv))
     if args.json:
         print(json.dumps(rapport, indent=2))
     print(f"VERIFY {'OK' if rapport['ok'] else 'ÉCHEC'}{' (résultat réutilisé)' if rapport['reutilise'] else ''}"
