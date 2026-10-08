@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 103,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -4180,16 +4180,16 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude Cowork",
    "gabarit": "complet",
-   "description": "Cowork apporte les capacités agentiques de Claude Code au travail hors code : Claude planifie, exécute et livre une tâche avec les fichiers, le navigateur et les apps. Il fusionne progressivement avec le chat sur Pro et Max ; il est disponible sur Desktop, le web, le mobile et le panneau latéral de Chrome selon le plan. Cowork se fond progressivement dans Claude sur Pro et Max : Claude décide seul entre réponse rapide et tâche.",
+   "description": "Cowork applique l'architecture agentique de Claude Code au travail hors code : Claude planifie, découpe la tâche, exécute code et commandes dans un environnement isolé sur les serveurs d'Anthropic et livre le résultat dans la session, que l'on rouvre depuis le web, Desktop ou le mobile. Les fichiers locaux, le navigateur et l'ordinateur ne sont atteints qu'à travers Claude Desktop ouvert et connecté. Sur Pro et Max, Cowork se fond progressivement dans Claude : le choix « Chat » / « Cowork » disparaît et Claude décide seul entre réponse rapide et tâche.",
    "description_source": "This article explains how to use Claude Cowork, which brings Claude Code's agentic capabilities to knowledge work beyond coding.",
    "usage": "1. Analyzes your request and creates a plan.\n2. Breaks complex work into subtasks when needed.\n3. Runs code and shell commands in an isolated environment on Anthropic's servers.\n4. Coordinates multiple workstreams in parallel if appropriate.\n5. Delivers finished outputs to your session, where you can preview and download them.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Forfaits payants (Pro, Max, Team, Enterprise) ; web et mobile sur Pro, Max et Team",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Lancer une tâche Cowork depuis la version web (sans VM KVM, lourde pour la machine) et vérifier si elle apparaît dans `/list-agents` d'une session herbin-* : c'est l'échange Cowork ↔ Claude Code que tu veux voir progresser."
+    "pourquoi": "Lancer une tâche Cowork depuis claude.ai, puis vérifier si elle apparaît dans `ListAgents` d'une session Claude Code : CONTEXTE prévoit qu'elle n'y serait plus depuis le passage au cloud du 06/10, à confirmer, et c'est l'échange Cowork ↔ Claude Code que tu veux voir signalé en priorité."
    },
    "sources": [
     {
@@ -4198,11 +4198,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4223,17 +4223,21 @@
     {
      "date": "2026-10-07",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
-    "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Cowork et routines planifiées à explorer ; artefacts, connecteurs et skills utilisés. Priorité déclarée : échanges directs entre sessions Cowork,"
-    },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Dispatch visible dans /list-agents ; sessions Cowork cloud non visibles."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Depuis le 06/10, nouvelles tâches Cowork dans le cloud ; absence de `ListAgents` déduite, à vérifier au prochain essai."
+    },
+    "usage.hors-machine": {
+     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "pourquoi": "Cowork à explorer ; priorité déclarée : échanges directs entre sessions Cowork et Claude Code."
     }
    }
   },
@@ -4348,16 +4352,16 @@
    "categorie": "fonctionnalites",
    "nom": "Schedule recurring tasks in Claude Cowork",
    "gabarit": "complet",
-   "description": "Une tâche planifiée Cowork se décrit une fois puis s'exécute à intervalle régulier ou à la demande, avec les mêmes outils connectés, skills et plugins qu'une tâche Cowork ordinaire : synthèses quotidiennes, rapports hebdomadaires, veille, rangement de fichiers. Cowork se fond progressivement dans Claude sur Pro et Max : Claude décide seul entre réponse rapide et tâche.",
+   "description": "Une tâche planifiée Cowork se décrit une fois puis s'exécute à une cadence choisie (toutes les heures, chaque jour, chaque semaine, en semaine) ou à la demande, chaque exécution étant une session Cowork avec les mêmes connecteurs, skills et plugins. Elle tourne à distance, ordinateur éteint ou Claude Desktop fermé ; sur Pro et Max, seules les tâches créées avant le 6 octobre qui tournent sur l'ordinateur y restent. Les tâches se gèrent depuis « Scheduled » dans la barre latérale : modifier, mettre en pause, reprendre, supprimer, lancer à la demande.",
    "description_source": "Scheduled tasks allow you to delegate work to Claude Cowork by creating tasks that run automatically on a recurring basis, or on demand. Instead of starting each task from scratch, you describe it once and Claude handles it on your schedule—delivering finished outputs like reports, briefings, and summaries every time.",
    "usage": "1. Describe the task and how often it should run, for example, \"Every Monday at 9 AM, summarize last week's messages in my team's Slack channels.\"\n2. Answer any questions Claude asks about the schedule or the task.\n3. Review the task name, schedule, and instructions Claude proposes, then click \"Schedule.\"",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Forfaits payants (Pro, Max, Team, Enterprise)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les exemples (synthèses Slack, courriels, rapports Drive) ne correspondent à aucun usage de CONTEXTE ; côté code, les routines de Claude Code sont commentées à part."
+    "pourquoi": "Ta chaîne de nuit D70 tourne déjà par un timer systemd sur la machine, et les nouvelles tâches planifiées s'exécutent dans le cloud depuis le 06/10, loin des dépôts locaux ; aucun autre travail récurrent de CONTEXTE n'y correspond."
    },
    "sources": [
     {
@@ -4366,11 +4370,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4391,13 +4395,21 @@
     {
      "date": "2026-10-07",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-08",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Le timer `delta-passage.timer` lance chaque jour à 04:00 `scripts/passage-auto.sh` sur la machine."
+    },
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Cowork et routines planifiées à explorer ; artefacts, connecteurs et skills utilisés."
+     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "pourquoi": "Cowork et routines planifiées à explorer ; Cowork dans le cloud sur Pro et Max depuis le 06/10."
     }
    }
   },
