@@ -593,7 +593,11 @@ avec les sessions Claude Code (ListAgents / SendMessage entre Cowork et Claude C
 Remote Control d'une session Cowork, réponse d'une session cloud, un canal retour vers Dispatch, ou
 son accès à des sessions Claude Code existantes) [déclaré]. Signaler aussi en priorité les offres,
 crédits, promotions et remises à zéro des limites d'usage (Claude, Claude Code, ChatGPT, Codex),
-avec leurs conditions et dates limites [déclaré].
+avec leurs conditions et dates limites [déclaré]. Signaler aussi en priorité l'arrivée d'une **commande officielle de
+Claude Code pour archiver une session cloud** (`claude … archive` ou un équivalent sous `--cloud`) [demande de Delta, mission
+OPÉRER m-26bd2db71088, 08/10]. Au 08/10/2026, la CLI installée n'en propose aucune (`claude --help` : `--cloud` crée une
+session mais n'archive pas) : l'archivage ne se fait que dans claude.ai/code et l'app, et OPÉRER le confie au navigateur de
+Delta ; dès qu'une commande officielle paraît, OPÉRER y passe [observé : `claude --help` du 08/10].
 
 ---
 
