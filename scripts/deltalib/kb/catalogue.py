@@ -15,7 +15,7 @@ import json
 import re
 import unicodedata
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Literal
 
@@ -65,6 +65,7 @@ def ecrire(racine: Path, perimetre: str, entrees: dict[str, dict]) -> None:
         tmp = d / f"{cat}.json.tmp"
         tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         tmp.replace(d / f"{cat}.json")
+    ecrire_recent(racine)  # D99 : vue légère des ajouts récents, des deux périmètres réunis
 
 
 MENTION_ADOPTION = "adoption déclarée, PROGRESSION.md"
@@ -163,6 +164,52 @@ def date_ajout(entree: dict) -> str | None:
     ajout = sorted(l["date"] for l in lignes
                    if isinstance(l.get("changement"), str) and unicodedata.normalize("NFC", l["changement"]).strip() == LIGNE_AJOUT)
     return ajout[0] if ajout else (min(l["date"] for l in lignes) if lignes else None)
+
+
+RECENT_JOURS = 30  # D99 : fenêtre du fichier léger des ajouts récents
+RECENT_MAX = 150  # D99 : plafond d'entrées (≈ 35 Ko) ; au-delà, les plus anciennes sont coupées et `tronque` vaut true
+
+
+def chemin_recent(racine: Path) -> Path:
+    return racine / "docs" / "data" / "kb" / "recent.json"
+
+
+def construire_recent(entrees: list[dict], jour: str | None = None) -> dict:
+    """D99 : entrées non retirées ajoutées depuis RECENT_JOURS jours (aujourd'hui compris), date d'ajout décroissante,
+    nom puis id à égalité, au plus RECENT_MAX. `total` = entrées de la fenêtre avant coupe ; `plus_ancienne` = date
+    d'ajout la plus ancienne des entrées gardées (null si aucune)."""
+    jour = jour or date.today().isoformat()
+    seuil = (date.fromisoformat(jour) - timedelta(days=RECENT_JOURS)).isoformat()
+    fenetre = []
+    for e in entrees:
+        d = date_ajout(e)
+        if e.get("retiree") or not d or not seuil <= d <= jour:
+            continue
+        reco = e.get("recommandation") if e.get("commentee") else None
+        verdict = reco.get("verdict") if isinstance(reco, dict) else None
+        fenetre.append({"id": e["id"], "produit": e.get("produit"), "categorie": e.get("categorie"), "nom": e.get("nom"),
+                        "usage": e.get("usage"), "usage_nature": e.get("usage_nature"), "exemple": e.get("exemple"),
+                        "verdict": verdict, "date_ajout": d})
+    fenetre.sort(key=lambda x: (str(x["nom"]), x["id"]))
+    fenetre.sort(key=lambda x: x["date_ajout"], reverse=True)  # tri stable : nom puis id gardés à égalité de date
+    gardees = fenetre[:RECENT_MAX]
+    return {"genere_le": jour, "fenetre_jours": RECENT_JOURS, "total": len(fenetre), "tronque": len(fenetre) > len(gardees),
+            "plus_ancienne": gardees[-1]["date_ajout"] if gardees else None, "entrees": gardees}
+
+
+def ecrire_recent(racine: Path, jour: str | None = None) -> dict:
+    """Écrit docs/data/kb/recent.json depuis la base des deux périmètres telle qu'elle est sur disque."""
+    entrees = [e for per in PRODUITS_PAR_PERIMETRE for e in charger(racine, per).values()]
+    doc = construire_recent(entrees, jour)
+    chemin = chemin_recent(racine)
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    tmp = chemin.with_name(chemin.name + ".tmp")
+    # une entrée par ligne : un diff git d'une mise à jour ne montre que les entrées changées
+    entete = json.dumps({k: v for k, v in doc.items() if k != "entrees"}, ensure_ascii=False, separators=(",", ":"))[:-1]
+    lignes = ",\n".join(json.dumps(e, ensure_ascii=False, separators=(",", ":")) for e in doc["entrees"])
+    tmp.write_text(f'{entete},"entrees":[\n{lignes}\n]}}\n' if lignes else f'{entete},"entrees":[]}}\n', encoding="utf-8")
+    tmp.replace(chemin)
+    return doc
 
 
 def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:

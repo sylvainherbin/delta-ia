@@ -50,8 +50,8 @@ prompt = "Lis .claude/skills/delta/SKILL.md et exécute le passage en mode autom
 commits_attendus = ["delta(claude):", "delta(actu):"]
 # Arrêt propre (D68) : seuls ces chemins sont remis en place, jamais autre chose.
 checkout = ["docs/data/versions.json", "docs/data/etat.json", "docs/data/claude", "docs/data/actu", "docs/data/kb/claude",
-            "state/claude.json", "state/actu.json"]
-clean = ["docs/data/claude", "docs/data/actu"]
+            "docs/data/kb/recent.json", "state/claude.json", "state/actu.json"]
+clean = ["docs/data/claude", "docs/data/actu", "docs/data/kb/recent.json"]
 
 [etapes.codex-delta]
 agent = "codex"
@@ -59,8 +59,8 @@ garde = "codex-delta"
 delai_min = 45
 prompt = "Lis .agents/skills/delta/SKILL.md et exécute le passage en mode automatique (D70), sans poser de question."
 commits_attendus = ["delta(openai):"]
-checkout = ["docs/data/openai", "docs/data/kb/openai", "state/openai.json"]
-clean = ["docs/data/openai"]
+checkout = ["docs/data/openai", "docs/data/kb/openai", "docs/data/kb/recent.json", "state/openai.json"]
+clean = ["docs/data/openai", "docs/data/kb/recent.json"]
 
 [etapes.delta-kb]
 agent = "claude"
@@ -71,8 +71,8 @@ effort = "high"
 delai_min = 45
 prompt = "Lis .claude/skills/delta-kb/SKILL.md et exécute le lancement en mode automatique (D70), sans poser de question."
 commits_attendus = ["delta-kb(claude):"]
-checkout = ["docs/data/kb/claude"]
-clean = ["docs/data/kb/claude"]
+checkout = ["docs/data/kb/claude", "docs/data/kb/recent.json"]
+clean = ["docs/data/kb/claude", "docs/data/kb/recent.json"]
 
 [etapes.codex-delta-kb]
 agent = "codex"
@@ -81,8 +81,8 @@ kb = "openai"
 delai_min = 45
 prompt = "Lis .agents/skills/delta-kb/SKILL.md et exécute le lancement en mode automatique (D70), sans poser de question."
 commits_attendus = ["delta-kb(openai):"]
-checkout = ["docs/data/kb/openai"]
-clean = ["docs/data/kb/openai"]
+checkout = ["docs/data/kb/openai", "docs/data/kb/recent.json"]
+clean = ["docs/data/kb/openai", "docs/data/kb/recent.json"]
 
 # Supervision : toujours lancée en dernier, même si une étape a échoué ; lecture seule stricte.
 [etapes.supervision]

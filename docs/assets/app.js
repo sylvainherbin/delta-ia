@@ -373,13 +373,13 @@
     if (ec) frag.append(ec);
     return frag;
   }
-  // la base de référence (3 Mo) se charge après le premier rendu, sans bloquer l'onglet Aujourd'hui
+  // D99 : l'encart lit docs/data/kb/recent.json (quelques dizaines de Ko), jamais la base complète (3 Mo), réservée à l'onglet Référence
   function completerEncartKb() {
-    chargerKb().then(() => {
+    chargerRecentKb().then((recent) => {
       const zone = document.getElementById("encart-kb");
-      if (!zone || etat.page !== "aujourdhui" || !etat.kb) return;
+      if (!zone || etat.page !== "aujourdhui" || !recent) return;
       vider(zone);
-      const p = encartNouveauKb();
+      const p = encartNouveauKb(recent);
       if (p) zone.append(p);
     }).catch((err) => console.error("delta:encart-kb", err));
   }
@@ -426,13 +426,25 @@
     return ajout[0] || lignes.map((l) => l.date).sort()[0] || null;
   }
   function jourLocalIso(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
-  // vrai si la date d'ajout tombe dans les `jours` derniers jours (aujourd'hui compris), `ref` = jour de référence AAAA-MM-JJ
+  // premier jour AAAA-MM-JJ de la fenêtre des `jours` derniers jours, `ref` = jour de référence AAAA-MM-JJ
+  function seuilJours(jours, ref) {
+    const [y, m, j] = ref.split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, j - Number(jours))).toISOString().slice(0, 10);
+  }
+  // vrai si la date d'ajout tombe dans les `jours` derniers jours (aujourd'hui compris)
   function ajouteeDepuis(e, jours, ref) {
     const a = dateAjout(e);
     if (!a || !ISO_JOUR.test(ref)) return false;
-    const [y, m, j] = ref.split("-").map(Number);
-    const seuil = new Date(Date.UTC(y, m - 1, j - Number(jours))).toISOString().slice(0, 10);
-    return a >= seuil && a <= ref;
+    return a >= seuilJours(jours, ref) && a <= ref;
+  }
+  // fichier léger des ajouts récents ; absent ou illisible : null, sans message (pas d'encart)
+  async function chargerRecentKb() {
+    if (etat.kbRecent !== undefined) return etat.kbRecent;
+    try {
+      const d = await lireJson("data/kb/recent.json");
+      etat.kbRecent = d && Array.isArray(d.entrees) ? d : null;
+    } catch (err) { etat.kbRecent = null; }
+    return etat.kbRecent;
   }
   async function chargerKb() {
     if (etat.kb) return;
@@ -469,14 +481,19 @@
     // date d'ajout décroissante, alphabétique à égalité, dates inconnues en dernier
     return liste.slice().sort((a, b) => (b._ajout || "").localeCompare(a._ajout || "") || String(a.nom).localeCompare(String(b.nom), "fr"));
   }
-  // encart de l'onglet Aujourd'hui : ce qui est nouveau dans la base depuis 7 jours, absent si rien
-  function encartNouveauKb() {
+  // encart de l'onglet Aujourd'hui : ce qui est nouveau dans la base depuis 7 jours (lu dans recent.json), absent si rien
+  function encartNouveauKb(recent) {
     const ref = jourLocalIso(new Date());
+    const seuil = seuilJours(7, ref);
     const compte = {};
-    for (const e of etat.kb.entrees) if (ajouteeDepuis(e, 7, ref)) compte[e.categorie] = (compte[e.categorie] || 0) + 1;
+    for (const e of recent.entrees) {
+      if (e && typeof e.date_ajout === "string" && ISO_JOUR.test(e.date_ajout) && e.date_ajout >= seuil && e.date_ajout <= ref) compte[e.categorie] = (compte[e.categorie] || 0) + 1;
+    }
     const parties = Object.keys(KB_CATEGORIES).filter((c) => compte[c]).map((c) => `${compte[c]} ${KB_NOMS[c][compte[c] > 1 ? 1 : 0]}`);
     if (!parties.length) return null;
-    return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: "Nouveau dans la base (7 jours) : " }), `${parties.join(", ")} `,
+    // fichier coupé avant le seuil des 7 jours : le compte est un minimum
+    const minimum = recent.tronque === true && typeof recent.plus_ancienne === "string" && recent.plus_ancienne >= seuil;
+    return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: "Nouveau dans la base (7 jours) : " }), `${minimum ? "au moins " : ""}${parties.join(", ")} `,
       el("a", { href: "#reference?recent=7", text: "Voir les nouveautés" }));
   }
   function carteKb(e) {
