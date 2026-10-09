@@ -43,8 +43,13 @@ def test_trois_lignes_au_plus_par_section():
 
 def test_geste_brave_du_bouton():
     corps = bloc_aide()
-    assert "brave://settings/content/localhostAccess" in corps and "https://sylvainherbin.github.io" in corps
-    assert "iPhone" in corps[corps.index('id: "envoi"'):corps.index('id: "a-tester"')]
+    assert "brave://settings/content/localhostAccess" not in APP
+    envoi = corps[corps.index('id: "envoi"'):corps.index('id: "a-tester"')]
+    assert "Facultatif — Brave : Paramètres → rechercher localhost (Brave le propose selon la version)" in envoi
+    assert "Bureau : relais local d'abord (sonde de 3 s), puis console" in envoi
+    assert "iPhone/iPad : console reliée, sinon copie" in envoi
+    assert "Relier Delta-IA » une fois par navigateur, sur chaque appareil" in envoi
+    assert "envoi à valider" in envoi and "ouverture de console" in envoi
 
 
 def test_connecteur_mcp_decrit_ses_six_outils():

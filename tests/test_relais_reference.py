@@ -2,8 +2,11 @@
 
 import json
 import re
+import shutil
+import subprocess
 import threading
 import urllib.error
+import urllib.parse
 import urllib.request
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -299,9 +302,10 @@ def test_carte_confirmation_repli_et_memoire_d_une_heure():
     assert envoi.index("déjà envoyée à ${hhmm(dejaT)}") < envoi.index("relaisJoignable()")   # aucun appel au relais
     assert 'r.etape === "deja_envoyee"' in envoi          # 409 du relais : le bouton se bloque aussi
     # (3) repli : le message exact, puis « copiée à HH:MM » pour l'heure
-    assert ("Pas envoyé : le relais n'est pas joignable (Brave : autorise sylvainherbin.github.io dans "
-            "brave://settings/content/localhostAccess).") in corps
-    assert "L'idée est copiée : colle-la une fois dans le lanceur." in corps and "return repli(e, statut, PAS_JOIGNABLE)" in envoi
+    assert ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier Delta-IA » "
+            "une fois sur cet appareil).") in corps
+    assert "brave://settings/content/localhostAccess" not in APP
+    assert "L'idée est copiée : colle-la une fois dans le lanceur." in corps and "return repli(e, statut, PAS_JOIGNABLE, bouton)" in envoi
     repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
     assert repli.count('noterHeure("copie", e.id, Date.now())') == 2
     bloc = corps[corps.index("function blocEnvoi"):]
@@ -312,3 +316,124 @@ def test_carte_confirmation_repli_et_memoire_d_une_heure():
 def test_aide_dit_la_regle_d_une_heure():
     envoi = APP[APP.index('id: "envoi"'):APP.index('id: "a-tester"')]
     assert "ne repart pas dans l'heure" in envoi and "Pas envoyé" in envoi and "jugement en cours" in envoi
+
+
+# ---- m-94f3b7e1274b : exécution du bouton, sans appeler le service installé ----
+
+def bouton_execute(**options):
+    """Le vrai code du bouton sous Node : réseau, onglets, horloge et presse-papier simulés."""
+    node = shutil.which("node")
+    assert node, "Node est nécessaire aux tests du bouton (présent sur ubuntu-24.04 en CI)"
+    code = APP[APP.index("const RELAIS"):APP.index("// D64-bis : péremption")]
+    script = r"""
+const vm = require('node:vm');
+const {code, options: o} = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+const appels = [], onglets = [], copies = [], delais = [], liens = [];
+const stockage = new Map();
+if (o.console !== false) stockage.set('delta.console', o.console || 'https://console.example');
+let maintenant = 1000000000000;
+class Horloge extends Date { static now() { return maintenant; } }
+function el(tag, props, ...children) {
+  return {tag, ...props, textContent: props.text || '', children, listeners: {},
+    addEventListener(type, cb) { this.listeners[type] = cb; }, remove() {}};
+}
+const context = vm.createContext({
+  Date: Horloge, URL, el, KB_NOMS: {}, PRODUITS: {},
+  texte: (s, defaut) => s || defaut, jourLocalIso: () => '2001-09-09', dateFr: s => s,
+  localStorage: {getItem: k => stockage.get(k), setItem: (k, v) => stockage.set(k, v)},
+  navigator: {userAgent: o.ios ? 'iPhone' : '', platform: o.ipad ? 'MacIntel' : '',
+    maxTouchPoints: o.ipad ? 5 : 0, clipboard: {writeText: async s => {
+      copies.push(s); if (o.copie === false) throw Error('refus');
+    }}},
+  document: {querySelectorAll: () => []},
+  window: {open: (url, cible) => {onglets.push({url, cible}); return o.popup === false ? null : {}; }},
+  setTimeout: () => {}, AbortSignal: {timeout: ms => {delais.push(ms); return null;}},
+  fetch: async (url, opts) => {
+    appels.push({url, ...opts});
+    if (url.endsWith('/etat')) {if (o.etat === 'erreur') throw Error('réseau'); return {ok: o.etat === true};}
+    return {json: async () => o.post || {ok: true}};
+  }
+});
+vm.runInContext(code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole, heureRecente};', context);
+(async () => {
+  const e = {id: 'fiche', nom: o.long ? 'é'.repeat(800) : 'Essai & idée', produit: 'essai'};
+  const bouton = el('button', {}), statut = el('span', {});
+  statut.after = lien => liens.push(lien);
+  await context.api.envoyerADelta(e, bouton, statut);
+  const avantLien = {disabled: !!bouton.disabled, envoi: context.api.heureRecente('envoi', e.id)};
+  if (o.lien) {
+    liens[0].listeners.click({preventDefault() {throw Error('premier lien bloqué');}});
+    let bloque = false;
+    liens[0].listeners.click({preventDefault() {bloque = true;}});
+    if (!bloque) throw Error('second lien non bloqué');
+  }
+  if (o.copier) await liens[0].listeners.click();
+  const premier = statut.textContent;
+  const rendu = context.api.blocEnvoi(e);
+  await context.api.envoyerADelta(e, bouton, statut);
+  const second = statut.textContent;
+  if (o.expire) {maintenant += 3600001; await context.api.envoyerADelta(e, bouton, statut);}
+  console.log(JSON.stringify({appels, onglets, copies, delais, avantLien, premier, second,
+    disabled: !!bouton.disabled, rendu: rendu.children[1].textContent,
+    liens: liens.map(l => ({tag: l.tag, href: l.href, target: l.target, rel: l.rel}))}));
+})().catch(e => {console.error(e); process.exitCode = 1;});
+"""
+    res = subprocess.run([node, "-e", script], input=json.dumps({"code": code, "options": options}),
+                         text=True, capture_output=True, timeout=10)
+    assert res.returncode == 0, res.stderr
+    return json.loads(res.stdout)
+
+
+def test_bureau_relais_prioritaire_meme_console_reliee():
+    r = bouton_execute(etat=True)
+    assert [a["url"].rsplit("/", 1)[-1] for a in r["appels"]] == ["etat", "reference"]
+    assert json.loads(r["appels"][1]["body"]) == {"id": "fiche"}
+    assert r["delais"] == [3000, 25000] and not r["onglets"] and not r["copies"]
+    assert r["premier"] == "Envoyé à Delta, jugement en cours" and r["second"].startswith("déjà envoyée à ")
+
+
+@pytest.mark.parametrize("options", [{}, {"etat": "erreur"}, {"ios": True}, {"ipad": True}])
+def test_console_reliee_et_memoire_sur_tous_les_appareils(options):
+    r = bouton_execute(**options, long=True)
+    assert len(r["appels"]) == (0 if options.get("ios") or options.get("ipad") else 1)
+    assert len(r["onglets"]) == 1 and r["onglets"][0]["cible"] == "_blank" and not r["copies"]
+    url = r["onglets"][0]["url"]
+    assert url.startswith("https://console.example/#idee=")
+    assert len(urllib.parse.unquote(url.split("#idee=", 1)[1])) == 500
+    assert "%C3%A9" in url
+    assert r["disabled"] and r["second"].startswith("déjà envoyée à ")
+    assert "valide l'envoi" in r["premier"] and "jugement en cours" not in r["rendu"]
+    assert r["rendu"].startswith("déjà envoyée à ")
+
+
+def test_console_onglet_bloque_memoire_au_geste_seulement():
+    r = bouton_execute(popup=False, lien=True)
+    assert r["avantLien"] == {"disabled": False, "envoi": None}
+    assert r["liens"] == [{"tag": "a", "href": r["onglets"][0]["url"], "target": "_blank", "rel": "noopener"}]
+    assert r["disabled"] and r["second"].startswith("déjà envoyée à ") and not r["copies"]
+
+
+def test_console_redevient_ouvrable_apres_une_heure():
+    r = bouton_execute(expire=True)
+    assert len(r["onglets"]) == 2 and len(r["appels"]) == 2
+
+
+@pytest.mark.parametrize("ios", [False, True])
+def test_sans_console_copie_et_message_exact(ios):
+    r = bouton_execute(console=False, ios=ios)
+    assert not r["onglets"] and r["copies"] and not r["disabled"]
+    assert r["premier"] == ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier "
+                            "Delta-IA » une fois sur cet appareil). L'idée est copiée : colle-la une fois dans le lanceur.")
+    assert r["rendu"].startswith("copiée à ")
+
+
+def test_copie_refusee_reste_possible_par_geste():
+    r = bouton_execute(console=False, copie=False)
+    assert r["liens"][0]["tag"] == "button" and not r["disabled"]
+    assert r["premier"].startswith("Pas envoyé") and "L'idée est copiée" not in r["premier"]
+
+
+def test_refus_explicite_du_relais_ne_passe_pas_par_console():
+    r = bouton_execute(etat=True, post={"ok": False, "etape": "plafond", "detail": "10 envois par heure"})
+    assert not r["onglets"] and not r["copies"] and not r["disabled"]
+    assert "Delta n'a pas pris la référence (10 envois par heure)" in r["premier"]
