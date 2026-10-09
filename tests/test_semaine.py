@@ -185,7 +185,7 @@ def test_site_onglet_semaine():
     aujourdhui = '<a href="#aujourdhui" data-page="aujourdhui">Aujourd\'hui</a>'
     assert aujourdhui + '\n        <a href="#semaine" data-page="semaine">Semaine</a>' in html
     app = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    for attendu in ('lireJson("data/semaine/index.json")', 'lireJson(`data/semaine/${s.courante}.json`)', 'case "semaine": main.append(pageSemaine())',
+    for attendu in ('lireJson("data/semaine/index.json")', 'lireJson(`data/semaine/${semaine}.json`)', 'case "semaine": main.append(pageSemaine())',
                     '"aujourdhui", "semaine", "changelogs"', "RE_SEMAINE.test(param || \"\")", "location.hash = `#semaine/${choixSemaine.value}`",
                     '"Compte et quotas", d.d71', "d.base_ajoutees", "d.base_verdicts", "`#archives/${l.jour}`"):
         assert attendu in app, attendu

@@ -145,7 +145,7 @@ def test_encart_lit_recent_json_et_non_la_base():
     corps = app[app.index("function encartNouveauKb"):app.index("function carteKb")]
     assert "etat.kb" not in corps and "recent.entrees" in corps and "au moins " in corps
     # la base complète reste chargée par l'onglet Référence seulement
-    assert 'if (etat.page === "reference") await chargerKb();' in app
+    assert 'case "reference": await chargerKb(); break;' in app
     assert app.count("chargerKb()") == 2  # définition... appel de la route ; aucun autre appelant
 
 

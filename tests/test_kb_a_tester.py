@@ -163,7 +163,7 @@ def test_onglet_lit_a_tester_json_et_non_la_base():
     assert "console" not in charge and "chargerKb" not in charge
     section = app[app.index("function carteEssai"):app.index("function pageArchives")]
     assert "etat.kb." not in section and "etat.kb)" not in section, "l'onglet ne charge ni n'utilise la base complète"
-    assert 'if (etat.page === "a-tester") await chargerATesterKb();' in app
+    assert 'case "a-tester": await chargerATesterKb(); break;' in app
     assert app.count("chargerKb()") == 2  # définition et appel de la route Référence seulement
 
 

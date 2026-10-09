@@ -102,7 +102,7 @@ def test_encart_compte_et_quotas():
     page = app[app.index("function pageAujourdhui"):app.index("function completerEncartKb")]
     assert page.index("blocComptes(Date.now())") < page.index("blocOutils()") < page.index('id: "encart-kb"')
     assert 'lireJson("data/etat.json")' in app and "etat.comptes = e && typeof e.comptes" in app
-    assert "Promise.all([chargerVersions(), chargerComptes()])" in app
+    assert "Promise.all([chargerDernierJour(), chargerVersions(), chargerComptes()])" in app
     corps = app[app.index("function blocComptes"):app.index("/* ---------- Tes outils")]
     # bloc absent si `comptes` manque ; quatre quotas ; barre, pourcentage, remise à zéro, relevé et âge
     assert "if (!c || typeof c !== \"object\") return null;" in corps
