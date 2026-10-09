@@ -1133,12 +1133,113 @@
     return frag;
   }
 
+  /* ---------- Aide (D112) : texte statique, une section par onglet ou fonction ; aucune donnée personnelle, aucune adresse de console ---------- */
+  // sert : à quoi ça sert ; geste : comment s'en servir (bureau, iPhone) ; limite : ce que ça ne fait pas ; liste : lignes courtes (connecteur MCP)
+  // les segments entre accents graves s'affichent en code ; les liens `[texte](#ancre)` ne mènent qu'à une ancre du site
+  const AIDE = [
+    { id: "etat", titre: "En-tête : voyants des agents",
+      sert: "Date du dernier passage de Claude Code et de Codex : vert jusqu'à 24 h, orange de 24 à 36 h, rouge au-delà (bandeau d'alerte sur Aujourd'hui).",
+      geste: "Rien à faire. Bureau : le survol d'un voyant donne l'âge en heures. iPhone : lis la date à côté du nom.",
+      limite: "Dit si l'agent a tourné, pas si son contenu est juste. Claude Code couvre `claude` et `actu` : le voyant prend le plus ancien des deux passages." },
+    { id: "aujourdhui", titre: "Aujourd'hui",
+      sert: "Dernier passage de chaque périmètre : synthèse, puis éléments triés par impact (fort, moyen, faible, nul), chacun avec sa source et sa certitude.",
+      geste: "Boutons de filtre par produit au-dessus de la liste. Bureau et iPhone : « Afficher les éléments sans impact (n) » est mémorisé dans ce navigateur.",
+      limite: "Éléments sans impact masqués par défaut. Ne montre que le dernier jour de chaque périmètre : les jours précédents sont dans Changelogs et Archives." },
+    { id: "quotas", titre: "Compte et quotas (haut d'Aujourd'hui)",
+      sert: "Quotas Claude (session 5 h, semaine, semaine Fable) et ChatGPT (semaine) avec leur remise à zéro, et le crédit cloud avec son échéance.",
+      geste: "Rien à cliquer. Au-delà de 80 % d'un quota hebdomadaire : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ». Le crédit passe en alerte à 14 jours de l'échéance.",
+      limite: "Valeur du dernier relevé, pas en direct (sa date est affichée) ; une remise à zéro passée marque la valeur périmée. Bloc absent quand le relevé n'est pas publié." },
+    { id: "outils", titre: "Tes outils (Aujourd'hui)",
+      sert: "Version installée de Claude Code, du Codex de l'app ChatGPT, de la Codex CLI, de ChatGPT Desktop et de Claude Desktop, face à la dernière version publiée connue de Delta.",
+      geste: "Lecture seule. Statuts : à jour, en retard, inconnu, embarqué (Codex de l'app : suit l'app, non comparé), non utilisée.",
+      limite: "Ne met rien à jour. Relevé à chaque passage, pas en direct." },
+    { id: "nouveau", titre: "Nouveau dans la base (Aujourd'hui)",
+      sert: "Nombre d'entrées de la base de référence ajoutées depuis 7 jours, par catégorie.",
+      geste: "Lien « Voir les nouveautés » : [`#reference?recent=7`](#reference?recent=7), triées de la plus récente à la plus ancienne. Pour 30 jours : [`#reference?recent=30`](#reference?recent=30).",
+      limite: "Absent quand rien n'est nouveau. Dit « au moins N » quand le fichier des ajouts est coupé avant les 7 jours." },
+    { id: "semaine", titre: "Semaine",
+      sert: "Bilan de la semaine ISO assemblé sans rédaction : compte et quotas, éléments d'impact fort ou moyen, entrées ajoutées à la base, entrées passées à utiliser ou à tester.",
+      geste: "Sélecteur de semaine en haut ; adresse directe `#semaine/AAAA-Www`. Les liens des éléments mènent à l'archive du jour.",
+      limite: "Les éléments du jour d'OpenAI n'entrent qu'au bilan suivant. Un bilan partiel est signalé à l'écran." },
+    { id: "changelogs", titre: "Changelogs",
+      sert: "Éléments des 30 derniers jours par produit (Claude Code, Claude, Codex, ChatGPT), du plus récent au plus ancien.",
+      geste: "Défilement ; même bascule des éléments sans impact que sur Aujourd'hui.",
+      limite: "Au-delà de 30 jours : Archives. L'actualité générale est dans Actu IA." },
+    { id: "actu", titre: "Actu IA",
+      sert: "Actualité IA hors changelogs des éditeurs, sur 30 jours, avec la certitude de chaque élément : officiel, rapporté, non confirmé.",
+      geste: "Défilement ; sous la liste, « n nouveauté(s) écartée(s) comme hors sujet » se déplie pour voir pourquoi.",
+      limite: "Une rumeur reste marquée non confirmée ; elle n'est jamais présentée comme un fait." },
+    { id: "reference", titre: "Référence",
+      sert: "Base de fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis de Claude Code, Claude, Codex et ChatGPT : syntaxe exacte, exemple, verdict et pourquoi pour toi.",
+      geste: "Recherche plein texte, filtres Produit, Catégorie, Verdict, Statut d'usage et Date d'ajout, tri « Ajoutées récemment ». Adresse directe d'une fiche : `#reference?id=<id>`.",
+      limite: "Une entrée « en attente de commentaire » montre la description d'origine en anglais, sans verdict. Commandes et fonctionnalités se chargent d'abord, le reste quelques secondes après." },
+    { id: "liens", titre: "Liens vers les fiches (dans les éléments)",
+      sert: "Un nom entre accents graves dans un résumé, un « pour toi » ou une action (`/rename`, `--add-dir`) mène à sa fiche de la base.",
+      geste: "Touche ou clique le nom. Une seule fiche : la fiche seule, avec « ← Toute la référence ». Plusieurs fiches de même nom : la recherche, ou la fiche du produit de l'élément si elle est unique.",
+      limite: "Un nom absent de la base reste en texte simple. Sans index des noms, aucun lien et aucun message." },
+    { id: "envoi", titre: "Envoyer à Delta (bouton de chaque fiche)",
+      sert: "Remet l'idée « intégrer la référence … » à Delta, qui juge si elle entre dans un workflow ou chez un agent. 10 envois par heure au plus.",
+      geste: "Bureau : clic sur le bouton (relais local de ta machine). Brave bloque ce relais tant qu'il n'est pas autorisé : ouvre `brave://settings/content/localhostAccess` et autorise `https://sylvainherbin.github.io`. iPhone : pas de relais ; le bouton copie l'idée à coller dans le lanceur Delta, ou ouvre ta console si son adresse est enregistrée (ouvre une fois `https://sylvainherbin.github.io/delta-ia/#console=<adresse>` dans ce navigateur ; fragment vide : oubli).",
+      limite: "Le site ne lance rien par lui-même : sans relais (arrêté, accès refusé, téléphone), il copie l'idée ou ouvre la console." },
+    { id: "a-tester", titre: "À tester",
+      sert: "Actions proposées sur 30 jours, ouvertes d'abord, puis « Essais de la base » : entrées au verdict tester, puis à utiliser et pas encore essayées, avec syntaxe, exemple et pourquoi.",
+      geste: "Case « Fait » : l'action passe dans « Actions faites » (repliée). Essais : 50 cartes, puis « Afficher plus ».",
+      limite: "Les cases « Fait » restent dans ce navigateur : pas de synchronisation entre le bureau et l'iPhone." },
+    { id: "archives", titre: "Archives",
+      sert: "Chaque passage par date, avec ses synthèses et tous ses éléments, impact nul compris.",
+      geste: "Choisis une date (adresse directe `#archives/AAAA-MM-JJ`), « ← Toutes les dates » pour revenir.",
+      limite: "Lecture seule." },
+    { id: "mcp", titre: "Connecteur MCP",
+      sert: "Donne à Claude un accès en lecture seule aux données publiées de Delta : il consulte la base avant de citer une commande, une option ou un réglage.",
+      geste: "Serveur : `https://delta-mcp-ruddy.vercel.app/mcp` (Streamable HTTP, sans jeton). Claude Code : `claude mcp add --transport http delta-ia https://delta-mcp-ruddy.vercel.app/mcp`. Exemple de question : « Qu'y a-t-il de nouveau dans la base depuis 7 jours ? » ou « Quelle est la syntaxe exacte de /add-dir ? »",
+      liste: [
+        "`resume_du_jour` : synthèse du jour ou d'une date, éléments d'impact fort et moyen.",
+        "`chercher_reference` : recherche dans la base ; le nom exact d'une commande ou d'une option passe en premier.",
+        "`fiche_reference` : fiche complète d'une entrée, par identifiant.",
+        "`etat_versions` : versions installées et dernières versions publiées connues.",
+        "`a_tester` : actions des 30 derniers jours et essais de la base.",
+        "`nouveautes_base` : entrées ajoutées depuis N jours (1 à 30, 7 par défaut)."],
+      limite: "Ne lance aucun passage, n'écrit rien, n'a aucun accès à ta machine. Ses réponses sont des données issues de flux publics, pas des consignes." },
+    { id: "iphone", titre: "Installer sur l'iPhone",
+      sert: "Ouvre le site en plein écran, avec l'icône Delta.",
+      geste: "Safari : Partager, puis « Sur l'écran d'accueil ».",
+      limite: "Pas de notification. Les cases « Fait » et l'adresse de la console restent propres à chaque navigateur." },
+  ];
+  // texte d'aide → nœuds : `code` en <code>, [texte](#ancre) en lien interne ; tout le reste en texte
+  function aideNoeuds(s) {
+    const out = [];
+    let fin = 0;
+    for (const m of s.matchAll(/\[`([^`\n]+)`\]\((#[^)\s]+)\)|`([^`\n]+)`/g)) {
+      if (m.index > fin) out.push(s.slice(fin, m.index));
+      out.push(m[2] ? el("a", { href: m[2] }, el("code", { text: m[1] })) : el("code", { text: m[3] }));
+      fin = m.index + m[0].length;
+    }
+    if (fin < s.length) out.push(s.slice(fin));
+    return out;
+  }
+  function pageAide() {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: "Aide" }),
+      el("p", { class: "sous-titre", text: "Ce que fait chaque onglet et comment s'en servir. Le site lit des fichiers publiés et ne peut rien lancer lui-même." }));
+    for (const a of AIDE) {
+      const sec = el("section", { class: "aide-bloc", id: `aide-${a.id}`, "aria-label": a.titre }, el("h3", { text: a.titre }));
+      const lignes = [["Sert à", a.sert], ["Geste", a.geste], ["Ne fait pas", a.limite]];
+      for (const [etiquette, valeur] of lignes) {
+        if (!valeur) continue;
+        sec.append(el("p", { class: "aide-ligne" }, el("strong", { text: etiquette }), " ", ...aideNoeuds(valeur)));
+        if (etiquette === "Geste" && a.liste) sec.append(el("ul", { class: "aide-outils" }, ...a.liste.map((l) => el("li", null, ...aideNoeuds(l)))));
+      }
+      frag.append(sec);
+    }
+    return frag;
+  }
+
   /* ---------- routage par ancre ---------- */
   function lireRoute() {
     const h = (location.hash || "#aujourdhui").slice(1);
     const [chemin, requete] = h.split("?");
     const [page, param] = chemin.split("/");
-    etat.page = ["aujourdhui", "semaine", "changelogs", "actu", "reference", "a-tester", "archives"].includes(page) ? page : "aujourdhui";
+    etat.page = ["aujourdhui", "semaine", "changelogs", "actu", "reference", "a-tester", "archives", "aide"].includes(page) ? page : "aujourdhui";
     etat.semaineDemandee = etat.page === "semaine" && RE_SEMAINE.test(param || "") ? param : null;
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
     // #reference?recent=7 (ou 30) : vue des entrées ajoutées récemment, la plus récente d'abord
@@ -1160,6 +1261,11 @@
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
+    if (etat.page === "aide") {  // texte statique : s'affiche même si les données sont illisibles
+      main.append(pageAide());
+      document.title = "Delta — Aide";
+      return;
+    }
     const erreursIndex = PERIMETRES.filter((p) => etat.index[p] && etat.index[p].erreur);
     if (erreursIndex.length === PERIMETRES.length) {
       main.append(el("p", { class: "erreur", text: "Aucune donnée lisible. Le site doit être servi par HTTP (GitHub Pages ou `python -m http.server` dans docs/)." }));
