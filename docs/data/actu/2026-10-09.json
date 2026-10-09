@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-09",
+  "perimetre": "actu",
+  "agent": "claude-code",
+  "genere_le": "2026-10-09T02:45:00+00:00",
+  "synthese": "Compte et quotas : le billet de Simon Willison sur les crédits API mensuels de Max et Team est repris à la lumière de ton passage en Max 20x (200 $ par cycle) ; l'article d'aide Anthropic lu ce jour confirme le non-report et l'arrêt des requêtes à solde épuisé, et fixe la première réclamation possible au 2026-10-14 (sept jours d'abonnement). Quotas lus : Claude semaine 62 % et semaine Fable 36 % (remise à zéro le 11/10 à 15 h 59 UTC), ChatGPT semaine 14 % (remise à zéro le 14/10 à 05 h 29 UTC), aucun seuil de 80 % atteint. Le reste du jour (un outil de comptage de jetons, une citation sur le métier de programmeur, la sécurité des robots de Nvidia) n'a pas d'effet sur ton usage.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/"
+      ],
+      "produit": "actu",
+      "titre": "Haiku 5.5 face à GPT-6 Luna, et crédits API de Max : non reportables, rechargement automatique désactivable (Simon Willison)",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "actu",
+      "resume": "Simon Willison note que Claude Haiku 5.5 a le même prix que GPT-6 Luna (0,10 $ en entrée, 0,50 $ en sortie par million de jetons) jusqu'à 100 000 jetons, puis passe à 0,50 $ / 2,50 $, alors que Luna ne monte qu'à 0,20 $ / 0,75 $ au-delà de 272 000 jetons ; son nouveau tokenizer consomme environ 1,25 fois plus de jetons que Haiku 4.5 sur un même long prompt. Il rapporte aussi, pour les crédits API mensuels de Max et Team (100 $ pour Max 5x, 200 $ pour Max 20x), qu'on les réclame dans Settings > Billing en choisissant l'organisation d'API bénéficiaire, qu'ils ne se reportent pas (« use them or lose them ») et qu'on peut désactiver le rechargement automatique de l'API, auquel cas les requêtes s'arrêtent quand le solde est épuisé. Révisé le 09/10 : l'article d'aide d'Anthropic « Monthly API credits for Max and Team plans », lu ce jour, confirme le non-report (expiration en fin de cycle) et l'arrêt des requêtes quand l'organisation n'a ni autre crédit ni rechargement automatique ; la comparaison avec Luna reste celle du billet.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
+          "libelle": "Simon Willison — Claude Haiku 5.5",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "fort",
+      "pour_toi": "Correction de la veille : CONTEXTE.md (profil) donne Max 20x, pris le 07/10, donc un crédit de 200 $ par cycle et non de 100 $, et une première réclamation possible à partir du 14/10 (sept jours d'abonnement). Le non-report s'applique : le crédit d'un cycle non consommé est perdu au renouvellement du 07/11. CONTEXTE.md décrit toujours `mission-codex` avec `gpt-6-luna` en effort medium pour les missions mécaniques : sur ces tâches, Haiku 5.5 coûte le même prix que Luna tant que le prompt reste sous 100 000 jetons, selon le billet.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Réclamer le crédit de 200 $ à partir du 2026-10-14 (aucune date limite publiée) et laisser le rechargement automatique désactivé dans la Console.",
+        "etapes": [
+          "Le 2026-10-14, dans un navigateur web sur claude.ai : Paramètres > Facturation (Settings > Billing), section API credits, « Link organization », et choisis l'organisation d'API qui doit recevoir le crédit.",
+          "Dans la Console Anthropic (platform.claude.com) > Settings > Billing, laisse le rechargement automatique désactivé pour que les requêtes s'arrêtent quand le solde est épuisé.",
+          "Pour la remise à zéro hebdomadaire du 2026-10-11 à 15 h 59 UTC, ouvre Paramètres > Utilisation et vérifie tes remises à zéro disponibles avant d'économiser."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Forfait Max 20x pris le 07/10, renouvellement le 07/11."
+        },
+        "methode.missions": {
+          "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+          "pourquoi": "`mission-codex` : missions mécaniques sur `gpt-6-luna` en effort medium."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Oct/5/felix-rieseberg/"
+      ],
+      "produit": "actu",
+      "titre": "Cowork : la nouvelle version exécute aussi la machine virtuelle dans le cloud",
+      "version": null,
+      "date_publication": "2026-10-05",
+      "type": "nouveaute",
+      "resume": "Felix Rieseberg (Anthropic), cité par Simon Willison : l'« ancienne » version de Cowork exécute l'inférence dans le cloud mais les appels d'outils dans une machine virtuelle fournie par Anthropic installée sur l'ordinateur, avec un coût en disque, batterie et performances, et un travail qui s'arrête quand on ferme le portable. La « nouvelle » version exécute l'inférence et la machine virtuelle dans le cloud, avec un bac à sable par session sans état partagé ; l'app de bureau ne sert que pour les accès aux fichiers de l'appareil. La citation renvoie à une page d'aide, non lue ici.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+          "libelle": "Simon Willison — Quoting Felix Rieseberg",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "faible",
+      "pour_toi": "Ce qui a changé : CONTEXTE.md (usage.hors-machine) consigne désormais que, depuis le 06/10, les nouvelles tâches Cowork de ton forfait Max s'exécutent dans le cloud sans mode local ; la « nouvelle version » décrite ici est donc la seule disponible pour toi, et non plus un choix. Elle supprime le coût local de la machine virtuelle sur ta machine de 14 Gio de RAM et garde le travail en cours portable fermé, mais la copie des fichiers traités passe par les serveurs d'Anthropic, point à garder en tête pour ton activité de sous-traitance.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Cowork en cloud sur Pro et Max depuis le 06/10, sans mode local."
+        },
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Machine modeste (14 Gio de RAM) : le coût local d'une machine virtuelle compte."
+        }
+      },
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/",
+      "raison": "réévalué, inchangé : la section modifiée (env.multi-sessions) ne change pas le constat de l'élément"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/1/matthew-green/",
+      "raison": "réévalué, inchangé : les sections modifiées (règles globales, env.multi-sessions) ne changent pas le constat de l'élément"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/8/ttok/",
+      "raison": "Petit outil tiers de comptage de jetons (bibliothèque tiktoken d'OpenAI), sans lien avec les outils IA que tu utilises"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Oct/8/carson-gross/",
+      "raison": "Citation d'opinion sur le métier de programmeur, sans lien avec l'usage des outils IA"
+    },
+    {
+      "id": "https://arstechnica.com/ai/2026/10/nvidias-big-bet-on-physical-ai-aims-for-safer-robotaxis-humanoid-robots/",
+      "raison": "Systèmes de sécurité de Nvidia pour robotaxis et robots humanoïdes, sans lien avec l'usage des outils IA"
+    }
+  ],
+  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40"
+}
