@@ -765,6 +765,28 @@
     try { const v = lireEnvois(); v[id] = jourLocalIso(new Date()); localStorage.setItem(CLE_ENVOIS, JSON.stringify(v)); }
     catch (err) { /* sans stockage : l'envoi est fait, seule la mention « envoyée le » se perd */ }
   }
+  /* Mémoire d'une heure, par fiche (D104) : l'heure du dernier envoi réussi et celle de la dernière copie de l'idée, en
+     millisecondes. Sans stockage (navigation privée), le relais garde seul la règle : il répond 409. */
+  const CLE_HEURES = "delta.envoisHeure";
+  const HEURE_MS = 3600000;
+  function lireHeures() {
+    try { const v = JSON.parse(localStorage.getItem(CLE_HEURES) || "{}"); return v && typeof v === "object" ? v : {}; }
+    catch (err) { return {}; }
+  }
+  // l'heure notée pour (type, id) si elle date de moins d'une heure, sinon null ; type : "envoi" ou "copie"
+  function heureRecente(type, id) {
+    const t = (lireHeures()[id] || {})[type];
+    return typeof t === "number" && Date.now() - t < HEURE_MS && t <= Date.now() + 60000 ? t : null;
+  }
+  function noterHeure(type, id, t) {
+    try {
+      const v = lireHeures(), maintenant = Date.now();
+      for (const k of Object.keys(v)) if (!v[k] || typeof v[k] !== "object" || Object.values(v[k]).every((x) => typeof x !== "number" || maintenant - x >= HEURE_MS)) delete v[k];
+      v[id] = Object.assign(v[id] || {}, { [type]: t });
+      localStorage.setItem(CLE_HEURES, JSON.stringify(v));
+    } catch (err) { /* sans stockage : la règle reste tenue par le relais */ }
+  }
+  function hhmm(t) { const d = new Date(t); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
   // même phrase d'ouverture que texte_idee() du relais
   function texteIdeeKb(e) {
     const cat = KB_NOMS[e.categorie] ? KB_NOMS[e.categorie][0] : String(e.categorie || "référence");
@@ -824,10 +846,20 @@
       return rep.ok;
     } catch (err) { return false; }
   }
+  const MENTION_COPIE = "L'idée est copiée : colle-la une fois dans le lanceur.";
+  const PAS_JOIGNABLE = "Pas envoyé : le relais n'est pas joignable (Brave : autorise sylvainherbin.github.io dans brave://settings/content/localhostAccess).";
+  // le bouton reste désactivé jusqu'à la fin de l'heure qui suit l'envoi
+  function bloquerBouton(bouton, t) {
+    bouton.disabled = true;
+    bouton.textContent = "Envoyée";
+    setTimeout(() => { bouton.disabled = false; bouton.textContent = "Envoyer à Delta"; }, Math.max(1000, t + HEURE_MS - Date.now()));
+  }
   async function envoyerADelta(e, bouton, statut) {
     statut.textContent = "";
     for (const vieux of document.querySelectorAll(".envoi-secours")) vieux.remove();
-    if (estIos()) return repli(e, statut, "Pas de relais de bureau sur cet appareil.");
+    const dejaT = heureRecente("envoi", e.id);
+    if (dejaT !== null) { bloquerBouton(bouton, dejaT); statut.textContent = `déjà envoyée à ${hhmm(dejaT)}`; return; }
+    if (estIos()) return repli(e, statut, "Pas envoyé : pas de relais de bureau sur cet appareil.");
     bouton.disabled = true;
     bouton.textContent = "Envoi…";
     let r = null;
@@ -839,16 +871,25 @@
       } catch (err) { r = null; }
     }
     if (r && r.ok === true) {
+      const t = Date.now();
       noterEnvoi(e.id);
-      bouton.textContent = "Envoyée";
-      statut.textContent = "Delta juge sa pertinence ; la suite arrive comme pour une idée.";
+      noterHeure("envoi", e.id, t);
+      bloquerBouton(bouton, t);
+      statut.textContent = "Envoyé à Delta, jugement en cours";
+      return;
+    }
+    if (r && r.etape === "deja_envoyee") {   // 409 du relais : envoi d'un autre navigateur ou d'un autre onglet
+      const t = typeof r.envoye_a === "number" ? r.envoye_a * 1000 : Date.now();
+      noterHeure("envoi", e.id, t);
+      bloquerBouton(bouton, t);
+      statut.textContent = texte(r.detail, `déjà envoyée à ${hhmm(t)}`);
       return;
     }
     bouton.disabled = false;
     bouton.textContent = "Envoyer à Delta";
-    if (r) { statut.textContent = `Delta n'a pas pris la référence : ${texte(r.detail, String(r.etape || "refus"))}`; return; }
+    if (r) { statut.textContent = `Pas envoyé : Delta n'a pas pris la référence (${texte(r.detail, String(r.etape || "refus"))})`; return; }
     // relais injoignable (téléphone, relais arrêté, accès au réseau local refusé) : la console, sinon le texte de l'idée pour le lanceur
-    return repli(e, statut, "Relais de bureau injoignable (arrêté, ou accès au réseau local refusé par le navigateur).");
+    return repli(e, statut, PAS_JOIGNABLE);
   }
   async function repli(e, statut, motif) {
     const adresse = lireConsole();
@@ -861,10 +902,11 @@
       return;
     }
     statut.textContent = motif;
-    if (await copierIdeeKb(e)) { statut.textContent = `${motif} Idée copiée, colle-la dans le lanceur Delta.`; return; }
+    if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = `${motif} ${MENTION_COPIE}`; return; }
     const copier = el("button", { type: "button", class: "envoi-delta envoi-secours", text: "Copier l'idée" });
     copier.addEventListener("click", async () => {
-      statut.textContent = (await copierIdeeKb(e)) ? "Idée copiée : colle-la dans le lanceur Delta." : "Copie refusée par le navigateur.";
+      if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = MENTION_COPIE; }
+      else statut.textContent = "Copie refusée par le navigateur.";
       copier.remove();
     });
     statut.after(copier);
@@ -877,10 +919,14 @@
     } catch (err) { return false; }
   }
   function blocEnvoi(e) {
-    const jour = lireEnvois()[e.id];
-    const statut = el("span", { class: "envoi-statut", role: "status", text: typeof jour === "string" ? `envoyée à Delta le ${dateFr(jour)}` : "" });
+    const jour = lireEnvois()[e.id], envoi = heureRecente("envoi", e.id), copie = heureRecente("copie", e.id);
+    let message = typeof jour === "string" ? `envoyée à Delta le ${dateFr(jour)}` : "";
+    if (envoi !== null) message = `Envoyé à Delta à ${hhmm(envoi)}, jugement en cours`;
+    else if (copie !== null) message = `copiée à ${hhmm(copie)} : colle-la une fois dans le lanceur`;
+    const statut = el("span", { class: "envoi-statut", role: "status", text: message });
     const b = el("button", { type: "button", class: "envoi-delta", text: "Envoyer à Delta",
       title: "Delta juge la pertinence de cette référence et, si elle l'est, l'oriente vers un workflow ou un agent" });
+    if (envoi !== null) bloquerBouton(b, envoi);
     b.addEventListener("click", () => envoyerADelta(e, b, statut));
     return el("div", { class: "envoi" }, b, statut);
   }
@@ -1357,9 +1403,9 @@
       geste: "Touche ou clique le nom. Une seule fiche : la fiche seule, avec « ← Toute la référence ». Plusieurs fiches de même nom : la recherche, ou la fiche du produit de l'élément si elle est unique.",
       limite: "Un nom absent de la base reste en texte simple. Sans index des noms, aucun lien et aucun message." },
     { id: "envoi", titre: "Envoyer à Delta (bouton de chaque fiche)",
-      sert: "Remet l'idée « intégrer la référence … » à Delta, qui juge si elle entre dans un workflow ou chez un agent. 10 envois par heure au plus.",
-      geste: "Bureau : clic sur le bouton (relais local de ta machine). Brave bloque ce relais tant qu'il n'est pas autorisé : ouvre `brave://settings/content/localhostAccess` et autorise `https://sylvainherbin.github.io`. iPhone : pas de relais ; le bouton copie l'idée à coller dans le lanceur Delta, ou ouvre ta console si son adresse est enregistrée (ouvre une fois `https://sylvainherbin.github.io/delta-ia/#console=<adresse>` dans ce navigateur ; fragment vide : oubli).",
-      limite: "Le site ne lance rien par lui-même : sans relais (arrêté, accès refusé, téléphone), il copie l'idée ou ouvre la console." },
+      sert: "Remet l'idée « intégrer la référence … » à Delta, qui juge si elle entre dans un workflow ou chez un agent. 10 envois par heure au plus, et une même fiche ne repart pas dans l'heure (« déjà envoyée à HH:MM »).",
+      geste: "Bureau : clic sur le bouton (relais local de ta machine) ; la carte dit « Envoyé à Delta, jugement en cours » et le bouton reste grisé une heure. Brave bloque ce relais tant qu'il n'est pas autorisé : ouvre `brave://settings/content/localhostAccess` et autorise `https://sylvainherbin.github.io`. iPhone : pas de relais ; le bouton copie l'idée à coller dans le lanceur Delta, ou ouvre ta console si son adresse est enregistrée (ouvre une fois `https://sylvainherbin.github.io/delta-ia/#console=<adresse>` dans ce navigateur ; fragment vide : oubli).",
+      limite: "Le site ne lance rien par lui-même : sans relais (arrêté, accès refusé, téléphone), la carte dit « Pas envoyé », copie l'idée (« copiée à HH:MM » pendant une heure) ou ouvre la console." },
     { id: "a-tester", titre: "À tester",
       sert: "Actions proposées sur 30 jours, ouvertes d'abord, puis « Essais de la base » : entrées au verdict tester, puis à utiliser et pas encore essayées, avec syntaxe, exemple et pourquoi.",
       geste: "Case « Fait » : l'action passe dans « Actions faites » (repliée). Essais : 50 cartes, puis « Afficher plus ».",

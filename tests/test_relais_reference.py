@@ -72,6 +72,7 @@ def relais(tmp_path):
         pass
     R.kb, R.idee, R.journal = tmp_path / "kb", idee, tmp_path / "envois.jsonl"
     R.limiteur = rr.Limiteur(R.journal)
+    R.deja = rr.DejaEnvoyees(R.journal)
     R.log_message = lambda *a: None
     srv = ThreadingHTTPServer(("127.0.0.1", 0), R)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -154,17 +155,20 @@ def test_meme_phrase_d_ouverture_site_et_relais():
 
 def test_plafond_de_dix_envois_par_heure(relais):
     u = relais["url"] + "/reference"
-    for _ in range(rr.PLAFOND):
-        assert appel(u, "POST", {"id": ENTREE["id"]})[0] == 200
+    entrees = [dict(ENTREE, id=f"{ENTREE['id']}-{i}") for i in range(rr.PLAFOND + 1)]
+    (relais["tmp"] / "kb" / "claude" / "commandes.json").write_text(json.dumps({"entrees": entrees}), encoding="utf-8")
+    for e in entrees[:rr.PLAFOND]:
+        assert appel(u, "POST", {"id": e["id"]})[0] == 200
     relais["recu"].unlink()
-    code, h, r = appel(u, "POST", {"id": ENTREE["id"]})
+    code, h, r = appel(u, "POST", {"id": entrees[-1]["id"]})
     assert code == 429 and r["ok"] is False and r["etape"] == "plafond"
     assert "10 envois par heure" in r["detail"] and "min" in r["detail"]
     assert 1 <= int(h["Retry-After"]) <= rr.FENETRE + 1 and h["Access-Control-Allow-Origin"] == "https://sylvainherbin.github.io"
     assert not relais["recu"].exists()                      # rien n'est remis à la porte des idées
     assert len((relais["tmp"] / "envois.jsonl").read_text(encoding="utf-8").splitlines()) == rr.PLAFOND
-    # les requêtes refusées en amont ne consomment pas le plafond
+    # les requêtes refusées en amont ne consomment pas le plafond ; la fiche refusée au plafond reste envoyable ensuite
     assert appel(u, "POST", {"id": "inconnue"})[0] == 404
+    assert entrees[-1]["id"] not in relais["R"].deja.vues
 
 
 def test_limiteur_fenetre_glissante():
@@ -225,3 +229,86 @@ def test_adresse_de_console_jamais_dans_le_depot():
     for chemin in ("docs/assets/app.js", "docs/assets/style.css", "docs/index.html", "scripts/relais_reference.py",
                    "deploy/relais/delta-ia-relais.service.exemple"):
         assert not motif.search((RACINE / chemin).read_text(encoding="utf-8")), chemin
+
+
+# ---- m-fcce5f697e73 (D104, suite B2) : pas de second envoi de la même fiche dans l'heure ----
+
+def test_second_envoi_de_la_meme_fiche_refuse_en_409(relais):
+    u = relais["url"] + "/reference"
+    avant = rr.time.time()
+    assert appel(u, "POST", {"id": ENTREE["id"]})[0] == 200
+    relais["recu"].unlink()
+    code, h, r = appel(u, "POST", {"id": ENTREE["id"]})
+    assert code == 409 and r["ok"] is False and r["etape"] == "deja_envoyee"
+    assert re.fullmatch(r"déjà envoyée à \d\d:\d\d", r["detail"]) and r["detail"].endswith(rr.heure(r["envoye_a"]))
+    assert avant - 1 <= r["envoye_a"] <= rr.time.time() + 1
+    assert h["Access-Control-Allow-Origin"] == "https://sylvainherbin.github.io"
+    assert not relais["recu"].exists()                       # JUGER n'est pas relancé
+    assert len((relais["tmp"] / "envois.jsonl").read_text(encoding="utf-8").splitlines()) == 1
+    assert len(relais["R"].limiteur.envois) == 1             # le refus ne consomme pas le plafond
+
+
+def test_un_echec_n_empeche_pas_le_nouvel_envoi(relais):
+    u = relais["url"] + "/reference"
+    bonne = relais["R"].idee
+    relais["R"].idee = relais["tmp"] / "absent.py"
+    assert appel(u, "POST", {"id": ENTREE["id"]})[0] == 502
+    relais["R"].idee = bonne
+    assert appel(u, "POST", {"id": ENTREE["id"]})[0] == 200  # rien n'est parti : la fiche reste envoyable
+    assert appel(u, "POST", {"id": ENTREE["id"]})[0] == 409
+
+
+def test_deja_envoyees_fenetre_et_reservation():
+    t = [1000.0]
+    d = rr.DejaEnvoyees(fenetre=100, horloge=lambda: t[0])
+    assert d.reserver("a") == (None, 1000.0)
+    t[0] = 1050.0
+    assert d.reserver("a") == (1000.0, None) and d.reserver("b") == (None, 1050.0)
+    d.liberer("b", 1050.0)
+    assert d.reserver("b")[0] is None                        # envoi échoué : libérée
+    t[0] = 1101.0                                            # une heure (ici 100 s) après le premier envoi de « a »
+    assert d.reserver("a") == (None, 1101.0)
+    d.liberer("a", 1000.0)                                   # libération d'une ancienne réservation : sans effet
+    assert d.reserver("a")[0] == 1101.0
+
+
+def test_deja_envoyees_relues_dans_le_journal_au_demarrage(tmp_path):
+    journal = tmp_path / "envois.jsonl"
+    maintenant = rr.time.time()
+    def ligne(ident, dt, ok=True):
+        return json.dumps({"date": rr.time.strftime("%Y-%m-%dT%H:%M:%S%z", rr.time.localtime(maintenant - dt)), "id": ident, "ok": ok})
+    journal.write_text("\n".join([ligne("vieille", 7200), ligne("recente", 600), ligne("recente", 60), ligne("echouee", 60, False),
+                                   "pas du json", json.dumps({"id": "sans date", "ok": True})]) + "\n", encoding="utf-8")
+    d = rr.DejaEnvoyees(journal)
+    assert set(d.vues) == {"recente"} and d.vues["recente"] > maintenant - 120   # la plus récente des deux lignes
+    assert rr.DejaEnvoyees(tmp_path / "absent.jsonl").vues == {}
+    # un redémarrage du relais n'efface pas la règle
+    ok, _ = d.reserver("recente")
+    assert ok is not None and d.reserver("echouee")[0] is None
+
+
+def test_carte_confirmation_repli_et_memoire_d_une_heure():
+    corps = APP[APP.index("const CLE_HEURES"):APP.index("function badgeContexte")]
+    # (2) confirmation, bouton désactivé une heure, mémoire par fiche sous try/catch, second clic sans appel
+    assert 'statut.textContent = "Envoyé à Delta, jugement en cours"' in corps
+    assert "HEURE_MS = 3600000" in corps and 'noterHeure("envoi", e.id, t)' in corps and 'localStorage.setItem(CLE_HEURES' in corps
+    memoire = corps[corps.index("function lireHeures"):corps.index("function hhmm")]
+    assert memoire.count("try {") == 2 and memoire.count("catch (err)") == 2
+    envoi = corps[corps.index("async function envoyerADelta"):corps.index("async function repli(")]
+    assert "déjà envoyée à ${hhmm(dejaT)}" in envoi and envoi.index('heureRecente("envoi", e.id)') < envoi.index("estIos()") < envoi.index("relaisJoignable()")
+    assert envoi.index("déjà envoyée à ${hhmm(dejaT)}") < envoi.index("relaisJoignable()")   # aucun appel au relais
+    assert 'r.etape === "deja_envoyee"' in envoi          # 409 du relais : le bouton se bloque aussi
+    # (3) repli : le message exact, puis « copiée à HH:MM » pour l'heure
+    assert ("Pas envoyé : le relais n'est pas joignable (Brave : autorise sylvainherbin.github.io dans "
+            "brave://settings/content/localhostAccess).") in corps
+    assert "L'idée est copiée : colle-la une fois dans le lanceur." in corps and "return repli(e, statut, PAS_JOIGNABLE)" in envoi
+    repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
+    assert repli.count('noterHeure("copie", e.id, Date.now())') == 2
+    bloc = corps[corps.index("function blocEnvoi"):]
+    assert "copiée à ${hhmm(copie)}" in bloc and 'heureRecente("copie", e.id)' in bloc and "Envoyé à Delta à ${hhmm(envoi)}, jugement en cours" in bloc
+    assert "bloquerBouton(b, envoi)" in bloc
+
+
+def test_aide_dit_la_regle_d_une_heure():
+    envoi = APP[APP.index('id: "envoi"'):APP.index('id: "a-tester"')]
+    assert "ne repart pas dans l'heure" in envoi and "Pas envoyé" in envoi and "jugement en cours" in envoi

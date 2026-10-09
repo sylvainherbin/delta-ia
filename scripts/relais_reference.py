@@ -13,8 +13,11 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
        delta-system-experience : juger détaché, le Core choisit le mode PERTINENCE) ; la suite est celle de toute idée :
        jugement, puis mission de conception OPÉRER sur branche si l'idée est retenue ;
     4. une ligne JSON par envoi dans ~/.local/state/delta-ia/envois-reference.jsonl ;
-    5. plafond de 10 envois par heure glissante (D104) : au-delà, 429 avec le motif et l'attente ; les envois de l'heure
-       écoulée sont relus dans le journal au démarrage, un redémarrage n'efface donc pas le compte.
+    5. une même fiche déjà envoyée avec succès depuis moins d'une heure : 409 « déjà envoyée à HH:MM », sans rien remettre
+       ni consommer le plafond ;
+    6. plafond de 10 envois par heure glissante (D104) : au-delà, 429 avec le motif et l'attente ; les envois de l'heure
+       écoulée sont relus dans le journal au démarrage (plafond comme fiches déjà envoyées), un redémarrage n'efface
+       donc pas le compte.
   GET /etat   le relais répond (sert à l'installation et au contrôle).
 
 Réponses : JSON {"ok": bool, "etape": ..., "detail": ...}, même forme que idee.py.
@@ -149,6 +152,55 @@ class Limiteur:
             return True, 0
 
 
+class DejaEnvoyees:
+    """Fiches envoyées avec succès dans l'heure (D104) : id → horodatage, amorcé par le journal au démarrage."""
+
+    def __init__(self, journal=None, fenetre=FENETRE, horloge=time.time):
+        self.fenetre, self.horloge = fenetre, horloge
+        self.verrou = threading.Lock()
+        self.vues = {}
+        if journal:
+            self.vues.update(self._relire(journal))
+
+    def _relire(self, journal):
+        debut = self.horloge() - self.fenetre
+        vus = {}
+        try:
+            lignes = Path(journal).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return vus
+        for ligne in lignes:
+            try:
+                d = json.loads(ligne)
+                t = datetime.strptime(d["date"], "%Y-%m-%dT%H:%M:%S%z").timestamp()
+                ident = d["id"]
+            except (ValueError, KeyError, TypeError):
+                continue
+            if d.get("ok") is True and isinstance(ident, str) and t > debut and t > vus.get(ident, 0):
+                vus[ident] = t
+        return vus
+
+    def reserver(self, ident):
+        """(None, heure) et réserve la fiche, ou (horodatage de l'envoi de l'heure, None) si elle est déjà partie."""
+        with self.verrou:
+            maintenant = self.horloge()
+            t = self.vues.get(ident)
+            if t is not None and t > maintenant - self.fenetre:
+                return t, None
+            self.vues[ident] = maintenant
+            return None, maintenant
+
+    def liberer(self, ident, reserve):
+        """L'envoi a échoué : la fiche redevient envoyable (sauf si un autre envoi l'a réservée depuis)."""
+        with self.verrou:
+            if self.vues.get(ident) == reserve:
+                del self.vues[ident]
+
+
+def heure(t):
+    return time.strftime("%H:%M", time.localtime(t))
+
+
 def journaliser(journal, ligne):
     try:
         Path(journal).parent.mkdir(parents=True, exist_ok=True)
@@ -164,6 +216,7 @@ class Relais(BaseHTTPRequestHandler):
     idee = IDEE
     journal = JOURNAL
     limiteur = Limiteur()
+    deja = DejaEnvoyees()
 
     def _repondre(self, code, corps=None, entetes=None):
         origine = self.headers.get("Origin")
@@ -215,13 +268,20 @@ class Relais(BaseHTTPRequestHandler):
         e = trouver(self.kb, ident)
         if e is None:
             return self._repondre(404, {"ok": False, "etape": "reference", "detail": f"référence inconnue de la base locale : {ident}"})
+        envoyee, reserve = self.deja.reserver(ident)
+        if envoyee is not None:
+            return self._repondre(409, {"ok": False, "etape": "deja_envoyee", "detail": f"déjà envoyée à {heure(envoyee)}",
+                                        "envoye_a": int(envoyee)})
         place, attente = self.limiteur.reserver()
         if not place:
+            self.deja.liberer(ident, reserve)
             minutes = -(-attente // 60)
             return self._repondre(429, {"ok": False, "etape": "plafond", "detail":
                                         f"{self.limiteur.maxi} envois par heure déjà faits ; réessaie dans {minutes} min"},
                                   {"Retry-After": str(attente)})
         r = remettre(self.idee, texte_idee(e))
+        if r.get("ok") is not True:
+            self.deja.liberer(ident, reserve)
         journaliser(self.journal, {"date": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "id": ident, "nom": e.get("nom"),
                                    "ok": r.get("ok"), "etape": r.get("etape")})
         self._repondre(200 if r.get("ok") else 502, r)
@@ -239,6 +299,7 @@ def main(argv=None):
     o = a.parse_args(argv)
     Relais.kb, Relais.idee, Relais.journal = Path(o.kb), Path(o.idee), Path(o.journal)
     Relais.limiteur = Limiteur(Relais.journal)
+    Relais.deja = DejaEnvoyees(Relais.journal)
     serveur = ThreadingHTTPServer(("127.0.0.1", o.port), Relais)
     print(f"relais Référence → Delta sur http://127.0.0.1:{o.port}", flush=True)
     try:
