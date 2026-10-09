@@ -54,15 +54,29 @@
     const premier = n.split(" ")[0];
     return /^[/-]/.test(premier) ? trouve(premier) : [];
   }
-  // texte → nœuds : chaque segment entre accents graves qui désigne une seule fiche devient un lien vers elle, un nom partagé par
-  // plusieurs fiches un lien vers la recherche, un segment inconnu reste en texte simple (accents graves compris)
-  function enrichi(s) {
+  // D110 : produit d'une fiche d'après son id (`<produit>-<catégorie>-…`, voir RE_ID_KB), null si l'id n'a pas cette forme
+  function produitDeId(id) {
+    const m = RE_ID_KB.exec(String(id || ""));
+    return m ? m[1] : null;
+  }
+  // D110 : parmi les ids d'un nom ambigu, ceux du produit de l'élément qui cite le segment (`produit` de l'élément = produit de la
+  // fiche : claude-code ↔ fiches Claude Code, codex ↔ fiches Codex, etc.) ; la liste complète quand l'élément n'a pas de produit
+  // connu ou que le produit ne départage pas (zéro fiche, ou encore plusieurs : recherche comme avant)
+  function idsDuProduit(ids, produit) {
+    if (ids.length < 2 || typeof produit !== "string" || !produit) return ids;
+    const memes = ids.filter((i) => produitDeId(i) === produit);
+    return memes.length === 1 ? memes : ids;
+  }
+  // texte → nœuds : chaque segment entre accents graves qui désigne une seule fiche devient un lien vers elle (un nom partagé par
+  // plusieurs fiches aussi quand une seule est du produit de l'élément, `produit`), un nom encore ambigu un lien vers la recherche,
+  // un segment inconnu reste en texte simple (accents graves compris)
+  function enrichi(s, produit) {
     const t = typeof s === "string" ? s : String(s === null || s === undefined ? "" : s);
     if (!etat.noms) return [t];
     const out = [];
     let fin = 0;
     for (const m of t.matchAll(RE_SEGMENT_CODE)) {
-      const ids = idsDuNom(m[1]);
+      const ids = idsDuProduit(idsDuNom(m[1]), produit);
       if (!ids.length) continue;
       if (m.index > fin) out.push(t.slice(fin, m.index));
       out.push(el("a", {
@@ -342,14 +356,14 @@
     const titre = texte(e.titre, "(sans titre)") + (e.version ? ` ${e.version}` : "");
     c.append(el(options.niveau === 4 ? "h4" : "h3", { text: titre }));
     c.append(el("div", { class: "meta", text: `${dateFr(e.date_publication)} · passage du ${dateFr(e._jour)}` }));
-    if (texte(e.resume)) c.append(el("p", { class: "resume" }, ...enrichi(e.resume)));
-    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", null, ...enrichi(e.pour_toi))));
+    if (texte(e.resume)) c.append(el("p", { class: "resume" }, ...enrichi(e.resume, e.produit)));
+    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", null, ...enrichi(e.pour_toi, e.produit))));
     if (e.action && typeof e.action === "object") {
       const a = el("div", { class: "action" }, el("strong", { text: "Action" }),
         e.action.effort ? el("span", { class: "effort", text: `effort : ${e.action.effort}` }) : null,
-        texte(e.action.description) ? el("p", null, ...enrichi(e.action.description)) : null);
+        texte(e.action.description) ? el("p", null, ...enrichi(e.action.description, e.produit)) : null);
       if (Array.isArray(e.action.etapes) && e.action.etapes.length) {
-        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", null, ...enrichi(s)))));
+        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", null, ...enrichi(s, e.produit)))));
       }
       const id = String(e.id || "");
       const caseFait = el("input", { type: "checkbox" });
@@ -1052,7 +1066,7 @@
     c.append(el("h4", { text: texte(l.titre, "(sans titre)") + (l.version ? ` ${l.version}` : "") }));
     c.append(el("div", { class: "meta" }, `${dateFr(l.date_publication)} · `,
       ISO_JOUR.test(l.jour || "") ? el("a", { href: `#archives/${l.jour}`, text: `passage du ${dateFr(l.jour)}` }) : "passage inconnu"));
-    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), ...enrichi(l.action)) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
+    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), ...enrichi(l.action, l.produit)) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
     return c;
   }
   function ligneKbSemaine(l, quand) {

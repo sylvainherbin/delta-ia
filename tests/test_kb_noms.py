@@ -202,10 +202,10 @@ def test_l_index_est_charge_a_part_et_sans_la_base():
 def test_segments_de_code_des_champs_de_chaque_onglet():
     app = app_js()
     carte = morceau(app, "function carte(e, options)", "function listeCartes")
-    assert "...enrichi(e.resume)" in carte and "...enrichi(e.pour_toi)" in carte
-    assert "...enrichi(e.action.description)" in carte and "...enrichi(s)" in carte, "description et étapes de l'action"
+    assert "...enrichi(e.resume, e.produit)" in carte and "...enrichi(e.pour_toi, e.produit)" in carte
+    assert "...enrichi(e.action.description, e.produit)" in carte and "...enrichi(s, e.produit)" in carte, "description et étapes de l'action"
     assert "text: e.resume" not in carte and "text: e.pour_toi" not in carte and "text: e.action.description" not in carte
-    assert "...enrichi(l.action)" in morceau(app, "function ligneSemaine", "function ligneKbSemaine"), "onglet Semaine"
+    assert "...enrichi(l.action, l.produit)" in morceau(app, "function ligneSemaine", "function ligneKbSemaine"), "onglet Semaine"
     # Aujourd'hui, Changelogs et À tester affichent leurs éléments par `carte`
     assert "listeCartes(" in morceau(app, "function pageChangelogs", "function pageActu")
     assert "listeCartes(ouvertes" in morceau(app, "function pageATester", "function pageArchives")
@@ -224,6 +224,33 @@ def test_regles_de_lien():
     assert "if (!ids.length) continue;" in enr, "inconnu : texte simple, accents graves conservés"
     assert "if (!etat.noms) return [t];" in enr
     assert 'el("code", { text: m[1] })' in enr and "innerHTML" not in enr
+
+
+def test_nom_ambigu_departage_par_le_produit_de_l_element():
+    """D110 : le produit de l'élément choisit la fiche d'un nom partagé entre produits ; sinon recherche comme avant."""
+    app = app_js()
+    prod = morceau(app, "function produitDeId", "// D110 : parmi")
+    assert "RE_ID_KB.exec(String(id || \"\"))" in prod and "m[1]" in prod, "le produit vient de l'id, noms.json ne change pas de format"
+    choix = morceau(app, "function idsDuProduit", "// texte → nœuds")
+    assert "ids.length < 2" in choix and 'typeof produit !== "string"' in choix, "un seul id ou pas de produit : liste inchangée"
+    assert "produitDeId(i) === produit" in choix and "memes.length === 1 ? memes : ids" in choix, "unique : la fiche ; sinon la recherche"
+    enr = morceau(app, "function enrichi", "\n  }\n")
+    assert "idsDuProduit(idsDuNom(m[1]), produit)" in enr and "function enrichi(s, produit)" in app
+    for appel in ("enrichi(e.resume, e.produit)", "enrichi(e.pour_toi, e.produit)", "enrichi(e.action.description, e.produit)",
+                  "enrichi(s, e.produit)", "enrichi(l.action, l.produit)"):
+        assert f"...{appel}" in app, appel
+    assert "...enrichi(e.resume)" not in app and "...enrichi(l.action)" not in app
+
+
+def test_produits_des_ids_de_noms_json_publie():
+    """D110 : chaque id de l'index publié porte un produit connu de l'onglet (préfixe), sans quoi le choix retomberait sur la recherche."""
+    publie = cat.chemin_noms(RACINE)
+    if not publie.exists():
+        pytest.skip("pas d'index publié")
+    produits = {"claude-code", "claude", "codex", "chatgpt"}
+    ids = {i for liste in json.loads(publie.read_text(encoding="utf-8")).values() for i in liste}
+    sans = [i for i in ids if not any(i.startswith(f"{p}-") for p in produits)]
+    assert not sans, sans[:5]
 
 
 def test_fiche_seule_et_recherche_par_l_url():
