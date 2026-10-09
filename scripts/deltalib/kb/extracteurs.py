@@ -381,6 +381,46 @@ def _classer_table_codex(nom: str) -> tuple[str, str] | None:
     return ("parametres", "")
 
 
+_RE_POSITIONNEL = re.compile(r"[A-Z][A-Z0-9_]*")
+_RE_FACULTATIF = re.compile(r"\boptional\b|\bif omitted\b|\bomit\b|read stdin", re.I)
+
+
+def _syntaxes_codex(soup) -> dict[str, str]:
+    """D115 : {commande: ligne de syntaxe} des sections `codex …` de la page CLI. Le bloc de code de la section dont une
+    ligne commence par la commande est recopié (`codex archive <SESSION>`) ; sans bloc, les arguments positionnels du
+    premier tableau « Key » (`TASK_ID`, `PROMPT`) suivent la commande, `<NOM>` s'il n'est pas dit facultatif et `[NOM]`
+    quand sa description ou son type le dit (« Optional », « If omitted », « Omit », « read stdin »). Un argument
+    `NOM...` (reste de la ligne) n'est pas repris. Une commande sans l'un ni l'autre n'a pas d'entrée."""
+    res: dict[str, str] = {}
+    for h in soup.find_all(["h2", "h3"]):
+        titre = h.get_text(" ", strip=True)
+        if not titre.startswith("codex "):
+            continue
+        blocs, table = [], None
+        for el in h.next_elements:
+            nom = getattr(el, "name", None)
+            if nom in ("h2", "h3"):
+                break
+            if nom == "pre":
+                blocs += el.get_text().splitlines()
+            elif nom == "table" and table is None and el.find("tr") and [
+                    c.get_text(" ", strip=True) for c in el.find("tr").find_all(["th", "td"])][:1] == ["Key"]:
+                table = el
+        positionnels = []
+        for tr in (table.find_all("tr")[1:] if table else []):
+            c = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+            if len(c) >= 3 and _RE_POSITIONNEL.fullmatch(c[0]):
+                positionnels.append((c[0], bool(_RE_FACULTATIF.search(f"{c[1]} {c[2]}"))))
+        for commande in titre.split(" and "):
+            commande = commande.strip()
+            lignes = [l.strip() for l in blocs if l.strip() == commande or l.strip().startswith(commande + " ")]
+            if lignes:
+                res[commande] = "\n".join(dict.fromkeys(lignes))
+            elif positionnels:
+                res[commande] = " ".join([commande] + [f"[{n}]" if facultatif else f"<{n}>" for n, facultatif in positionnels])
+    return res
+
+
 def codex_cli(doc, fichiers: dict) -> list[EntreeExtraite]:
     md = _texte(fichiers, "md")
     html = _texte(fichiers, "page")
@@ -394,6 +434,7 @@ def codex_cli(doc, fichiers: dict) -> list[EntreeExtraite]:
         raise FormatInattendu(f"{len(noms)} ConfigTable dans le Markdown mais {len(cfg)} tableaux « Key » dans le HTML")
     res: list[EntreeExtraite] = []
     vus: set[str] = set()
+    syntaxes = _syntaxes_codex(soup)
 
     def ajouter(categorie, nom, usage, desc, groupe, ancre):
         cle = f"{categorie}:{nom}"
@@ -422,7 +463,7 @@ def codex_cli(doc, fichiers: dict) -> list[EntreeExtraite]:
                 if "Linux" not in details and any(
                         (s == "macos" and "macOS" in details) or (s == "windows" and "Windows" in details) for s in systemes_exclus()):
                     continue
-                ajouter("commandes", cle, cle, f"{details} (maturité : {valeurs})", groupe, ancre)
+                ajouter("commandes", cle, syntaxes.get(cle, cle), f"{details} (maturité : {valeurs})", groupe, ancre)
             elif categorie == "commandes" or (categorie == "mcp" and nom_table.endswith("Commands")):
                 nom = f"{commande} {cle}".strip() if not cle.startswith("codex") else cle
                 ajouter(categorie, nom, nom, details, groupe, ancre)

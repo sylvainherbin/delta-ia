@@ -158,6 +158,28 @@ def test_cli_codex(docs):
     assert any(e.categorie == "raccourcis" and "Ctrl+R" in e.nom for e in es)
 
 
+def test_cli_codex_syntaxe_complete_d115():
+    """D115 : extraits réels de la page CLI du 09/10/2026. Bloc de code recopié, sinon arguments positionnels du tableau."""
+    from bs4 import BeautifulSoup
+    from deltalib.kb.extracteurs import _syntaxes_codex
+    syn = _syntaxes_codex(BeautifulSoup(lire("oa_cli_syntaxe.html"), "html.parser"))
+    assert syn["codex apply"] == "codex apply <TASK_ID>"
+    assert syn["codex review"] == "codex review [PROMPT]", "« read stdin » : facultatif"
+    assert syn["codex cloud"] == "codex cloud [QUERY]", "« If omitted » : facultatif"
+    assert syn["codex exec"] == "codex exec [PROMPT]"
+    assert syn["codex archive"] == "codex archive <SESSION>" and syn["codex unarchive"] == "codex unarchive <SESSION>"
+    assert syn["codex delete"] == "codex delete <SESSION>\ncodex delete <SESSION_UUID> --force", "bloc de code recopié"
+    assert syn["codex resume"] == "codex resume [SESSION_ID]", "« Omit and use --last » : facultatif"
+    assert syn["codex debug prompt-input"] == "codex debug prompt-input [PROMPT]", "« Optional »"
+    assert "codex mcp" not in syn, "COMMAND... (reste de la ligne) et sous-commandes : pas de syntaxe reconstruite"
+
+
+def test_cli_codex_usage_de_la_vue_d_ensemble_d115(docs):
+    """Une commande sans syntaxe sur la page garde son titre ; l'identifiant ne change pas."""
+    es = {e.nom: e for e in extraire(docs["oa-cli"], page=lire("oa_cli.html"), md=lire("oa_cli.md")) if e.categorie == "commandes"}
+    assert all(e.usage == e.nom for e in es.values() if e.nom.startswith("codex")), "la fixture réduite n'a aucune syntaxe de plus"
+
+
 def test_cli_codex_ecart_de_tableaux(docs):
     md = lire("oa_cli.md").replace("<ConfigTable client:load options={globalFlagOptions} />", "", 1)
     with pytest.raises(FormatInattendu):
