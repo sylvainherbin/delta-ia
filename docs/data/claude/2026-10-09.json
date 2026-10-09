@@ -1,0 +1,707 @@
+{
+  "date": "2026-10-09",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-09T02:30:00+00:00",
+  "synthese": "Compte et quotas : les pages d'aide sur les limites et les crédits d'usage ont changé (sur Max, la limite hebdomadaire de Fable est séparée de la limite générale, et avec les crédits d'usage activés chaque limite atteinte bascule en facturation au tarif API ; la mention d'un consentement explicite à chaque bascule a disparu de la page Claude Code). Le crédit API mensuel du Max 20x est de 200 $, réclamable seulement après sept jours d'abonnement, donc à partir du 14/10 pour ton abonnement du 07/10 ; la promotion artefacts (limite de session de 5 h) court jusqu'au 15/10 à 23 h 59 PT. Quotas lus : Claude session 5 h 0 % (remise à zéro le 09/10 à 05 h 59 UTC), Claude semaine 62 % et semaine Fable 36 % (remise à zéro le 11/10 à 15 h 59 UTC), ChatGPT semaine 14 % (remise à zéro le 14/10 à 05 h 29 UTC) ; aucun seuil de 80 % atteint. Fiches D71 de la base : `dialogExpiry`, `CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS` et `modelPricing`. Claude Code 2.1.295 est publiée (installée : 2.1.294) : correctif des notifications push en Remote Control et des réponses perdues de `claude -p`. Le site autonome claude.ai/design ferme le 14/12/2026.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-aide-credits-article",
+      "ids_bruts": [
+        "claude-aide-credits-article",
+        "claude-aide-limites-article",
+        "claude-aide-claude-code-pro-max-article"
+      ],
+      "produit": "claude",
+      "titre": "Limites et crédits d'usage : limite hebdomadaire Fable séparée sur Max, bascule en crédits à chaque limite atteinte, mention du consentement retirée",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Trois pages d'aide révisées. « Manage usage credits for paid Claude plans » : ajoutée, la limite hebdomadaire séparée de Fable sur les forfaits Max, et la règle selon laquelle une limite de session de 5 h, hebdomadaire ou Fable atteinte avec les crédits d'usage activés fait passer les requêtes en facturation au tarif API standard, sans coupure, jusqu'au plafond mensuel ou à l'épuisement du solde sans rechargement automatique ; retirée, la phrase sur le plafond de rachat de 2 000 $ par jour. « How do usage and length limits work? » : ajoutée, la définition des deux limites (session de 5 h, hebdomadaire) ; modifiée, « attendre la remise à zéro, passer à un forfait supérieur ou acheter des crédits d'usage » devient « attendre la remise à zéro ou passer à un forfait supérieur », la reprise sur crédits d'usage étant décrite à part. « Use Claude Code with your Pro or Max plan » : ajoutée, la limite hebdomadaire séparée de Fable sur Max ; retirée, la phrase « All transitions to API credit usage require explicit user consent ».",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work#how-do-usage-and-length-limits-work",
+          "libelle": "How do usage and length limits work?",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+          "libelle": "Use Claude Code with your Pro or Max plan",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "CONTEXTE.md (profil) te place en Max 20x depuis le 07/10, à l'essai jusqu'au 07/11 ; `rapports/usage.json` donne ce matin la semaine à 62 % et la semaine Fable à 36 %, remises à zéro le 11/10 à 15 h 59 UTC : sur Max, Fable a donc sa propre jauge, qui peut bloquer avant la jauge générale. Les pages ne décrivent plus de consentement explicite à chaque bascule en crédits d'usage : si les crédits d'usage sont activés sur ton compte, une limite atteinte pendant la nuit (étapes `claude -p` de la chaîne D70) ou pendant un travail piloté depuis l'iPhone continuerait en facturation API au lieu de s'arrêter. CONTEXTE.md ne dit pas s'ils le sont ; l'`action` le tranche.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-11 (remise à zéro hebdomadaire à 15 h 59 UTC, aucune échéance publiée pour ces pages) que les crédits d'usage sont désactivés ou plafonnés, et lire la jauge Fable séparée.",
+        "etapes": [
+          "Ouvre claude.ai > Paramètres > Utilisation (https://claude.ai/settings/usage) : vérifie tes remises à zéro disponibles avant d'économiser, puis regarde si la section Usage credits est activée.",
+          "Si elle est activée, règle un plafond mensuel avec « Adjust limit » plutôt que « Set to unlimited » et note si le rechargement automatique est actif ; sinon, rien à faire.",
+          "Dans une session Claude Code, tape `/usage` et relève les trois jauges (session, semaine, Fable) ; elles doivent correspondre à `rapports/usage.json` (62 % et 36 % ce matin)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-usage-credits"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Forfait Max 20x pris le 07/10, à l'essai jusqu'au 07/11."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne de nuit tournent sur la limite hebdomadaire, garde à 98 %."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-apps-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-apps-notes-2026-10-07",
+        "claude-aide-forfait-max-article",
+        "claude-aide-agent-sdk-forfait-article",
+        "claude-aide-index-17154008"
+      ],
+      "produit": "claude",
+      "titre": "Crédits API mensuels inclus dans Max et Team : 200 $ pour ton Max 20x, réclamables après sept jours d'abonnement via une organisation Console",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Un nouvel article d'aide, « Monthly API credits for Max and Team plans », détaille l'offre annoncée le 07/10 : 100 $ par mois pour Max 5x, 200 $ pour Max 20x, 20 $ (siège Standard) ou 100 $ (siège Premium) par siège Team, mis en commun jusqu'à 500 $. Éligibilité : sept jours sur un forfait Max ou Team actif ; l'abonnement mobile est accepté, mais la réclamation se fait sur claude.ai dans un navigateur web ; aucun moyen de paiement n'est exigé. Une seule organisation Console peut être liée, et seul le support peut la changer. Les crédits couvrent l'API Claude, le Playground, Claude Managed Agents et l'Agent SDK, pas Claude Code interactif (terminal, IDE, desktop, web), ni l'usage supplémentaire, ni Bedrock, Vertex ou Foundry ; ils sont dépensés avant les crédits achetés, expirent en fin de cycle de facturation sans report, et le passage de Max 5x à Max 20x donne des crédits au prorata aussitôt, puis 200 $ par cycle.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude — 07/10",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/17154008-monthly-api-credits-for-max-and-team-plans",
+          "libelle": "Monthly API credits for Max and Team plans",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan#what-is-the-max-plan",
+          "libelle": "What is the Max plan?",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans#manage-usage-credits-for-paid-claude-plans",
+          "libelle": "Manage usage credits for paid Claude plans",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+          "libelle": "Use Claude Code with your Pro or Max plan",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan#use-the-claude-agent-sdk-with-your-claude-plan",
+          "libelle": "Use the Claude Agent SDK with your Claude plan",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Correction de la veille : CONTEXTE.md (profil) donne désormais Max 20x, pris sur le web le 07/10 et à l'essai jusqu'au 07/11, donc 200 $ par cycle et non 100 $. La condition de sept jours d'abonnement place la première réclamation possible au 14/10. Ces crédits ne couvrent pas Claude Code interactif : tes sessions restent sur les limites de l'abonnement, et la page Agent SDK du 07/10 dit que `claude -p`, donc la chaîne D70 et les rôles de JUGER, continue d'y puiser. Ils servent aux appels API par clé ; réclamer est un geste de compte, donc le tien.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Réclamer le crédit de 200 $ à partir du 2026-10-14 (sept jours après ton abonnement du 07/10 ; aucune date limite publiée) en liant une organisation Claude Console.",
+        "etapes": [
+          "Le 2026-10-14, dans un navigateur web sur claude.ai : Paramètres > Facturation (Settings > Billing), section API credits, « Link organization ».",
+          "Choisis l'organisation Console (platform.claude.com) avec soin : une seule peut être liée et seul le support peut la changer ; connecte-toi à la Console avec la même adresse que claude.ai.",
+          "Relève le montant crédité et sa date d'expiration dans platform.claude.com > Settings > Billing ; il expire en fin de cycle, le renouvellement étant le 07/11.",
+          "Ne change rien à `scripts/passage-auto.sh` : `claude -p` continue de consommer les limites de l'abonnement, pas ce crédit."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Forfait Max 20x pris le 07/10 : montant du crédit et date d'éligibilité."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne D70 sont lancées par `claude -p`."
+        },
+        "methode.juger-design": {
+          "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+          "pourquoi": "Les rôles LLM de JUGER sont appelés par `claude -p` (Opus par défaut)."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-aide-index-17274727",
+      "ids_bruts": [
+        "claude-aide-index-17274727"
+      ],
+      "produit": "claude",
+      "titre": "Promotion artefacts : 50 % de la limite de session de 5 h en moins, du 01/10 au 15/10/2026",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Du 1er octobre 2026 à 11 h PT au 15 octobre 2026 à 23 h 59 PT, sur les plans Pro, Max et Team, créer ou modifier un artefact dans Claude fait compter les 10 messages suivants de la conversation à 50 % de leur coût sur la limite de session de 5 heures (15 premières étapes de chaque réponse au plus) ; dans Cowork, seules les tâches dans le cloud sont concernées (environ 45 minutes, ou 80 étapes après un artefact). La remise ne s'applique ni à la limite hebdomadaire, ni à Claude Code, ni à l'API, ni aux tâches Cowork locales ou planifiées, ni aux crédits d'usage, ni à l'app autonome Claude Design ; elle s'applique automatiquement, sans réglage.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/17274727-artifact-usage-promotion",
+          "libelle": "Artifact usage promotion",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Correction de la veille : CONTEXTE.md (profil) donne Max 20x depuis le 07/10, et non Max 5x. La remise s'applique à ton forfait comme aux autres Max, mais seulement dans l'app Claude, jamais dans Claude Code : le travail de Claude Design que tu fais depuis Claude Desktop en mode Claude Code en est exclu. Elle ne touche que la limite de 5 heures (0 % ce matin) ; ta semaine, à 62 % (74 % avant ton changement de forfait), est comptée au tarif normal. Depuis le 16/09, Design fonctionne aussi dans toute conversation Claude : un design demandé là, par le menu de sortie « Design », entre dans la promotion.",
+      "projets_concernes": [],
+      "action": {
+        "description": "D'ici le 2026-10-15 à 23 h 59 PT (échéance publiée), faire tes artefacts (maquettes, documents) dans une conversation de l'app Claude plutôt que dans Claude Code, et vérifier l'effet dans Paramètres > Utilisation.",
+        "etapes": [
+          "Pour une maquette de la Console ou un document, ouvre une nouvelle conversation dans l'app Claude (Desktop ou web) et choisis Document, Presentation ou Design dans le menu de sortie : la remise s'applique dès le premier message.",
+          "Si tu demandes un artefact en cours de conversation, le message qui le crée compte au tarif normal ; les 10 suivants sont à moitié prix sur la limite de 5 heures.",
+          "Ne compte pas sur cette remise pour ta semaine : elle ne réduit pas la limite hebdomadaire ni l'usage de tes sessions Claude Code.",
+          "Compare la jauge de session dans Paramètres > Utilisation (ou `/usage` dans Claude Code) avant et après une série de messages sur un artefact."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-fonctionnalites-page-13641943-visual-and-interactive-content",
+        "claude-fonctionnalites-page-12111783-create-and-edit-files-with-claude"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Forfait Max 20x depuis le 07/10 : la promotion s'applique à ce forfait."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design utilisé depuis Claude Desktop en mode Claude Code, exclu de la promotion."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Tu utilises les artefacts dans l'app Claude."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "kb-claude-code-parametres-dialogexpiry",
+      "ids_bruts": [
+        "kb-claude-code-parametres-dialogexpiry",
+        "kb-claude-code-parametres-claude-code-user-dialog-timeout-ms",
+        "kb-claude-code-parametres-modelpricing"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : `dialogExpiry` et `CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS` bornent aussi la demande de consentement aux crédits d'usage Fable ; `modelPricing`",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Trois fiches de la base dont la description d'origine a changé et que les mots-clés D71 repèrent. `dialogExpiry` (réglage) et `CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS` (variable, prioritaire sur le réglage) fixent le délai avant l'annulation d'un dialogue transmis à un client distant (Remote Control, SDK) ; la documentation ajoute que, depuis Claude Code 2.1.236, ce délai borne aussi la demande de consentement aux crédits d'usage Fable en cours de session, dans une session sans personne au terminal, l'action par défaut étant de ne rien faire sans réponse. `modelPricing` (2.1.242 ou plus) fait afficher dans `/usage`, la ligne de statut et `--max-budget-usd` la dépense aux tarifs négociés d'une organisation.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#dialogexpiry",
+          "libelle": "Référence des réglages Claude Code",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#modelpricing",
+          "libelle": "Référence des réglages Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tes sessions sont pilotées depuis l'iPhone par Remote Control (CONTEXTE.md, env.multi-sessions) : c'est le cas visé par ces délais. Une demande de consentement aux crédits d'usage Fable restée sans réponse à l'expiration du délai serait annulée, l'action par défaut étant de ne rien faire. `modelPricing` ne s'applique pas : CONTEXTE.md ne décrit aucun tarif négocié d'organisation. Classé fort par la règle D71 (crédits), l'effet concret sur toi dépend du délai en place, que l'`action` fait lire.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-16 (aucune échéance publiée) le délai de dialogue en place sur la machine.",
+        "etapes": [
+          "Lance `grep -n dialogExpiry ~/.claude/settings.json` : aucune ligne signifie que le délai par défaut s'applique.",
+          "Pour le fixer, ajoute dans `~/.claude/settings.json` la clé `\"dialogExpiry\": \"10m\"` (syntaxe de la fiche), puis envoie une demande de permission depuis l'iPhone à une session relancée et laisse-la expirer : le dialogue doit s'annuler au bout de 10 minutes.",
+          "Dans Paramètres > Utilisation, regarde si les crédits d'usage sont activés (voir l'élément du jour sur les limites et crédits)."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-dialogexpiry",
+        "claude-code-parametres-claude-code-user-dialog-timeout-ms",
+        "claude-code-parametres-modelpricing"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control, qui reçoit les dialogues."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.295",
+      "ids_bruts": [
+        "claude-code-2.1.295"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.295 : notifications push corrigées en Remote Control, `claude -p` ne perd plus de réponses, hooks `onFailure: \"block\"`",
+      "version": "2.1.295",
+      "date_publication": "2026-10-08",
+      "type": "nouveaute",
+      "resume": "Ajouts : `onFailure: \"block\"` pour les hooks command et HTTP (un hook qui ne démarre pas, expire ou sort avec un code inattendu bloque l'action au lieu de la laisser passer) ; `CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS` (plafonne l'attente des erreurs 429 et 529 du mode `CLAUDE_CODE_RETRY_WATCHDOG`) ; support du protocole OSC 7501 (statut de Claude Code dans les terminaux qui l'implémentent) ; citations dans le sélecteur de `/copy` ; un avertissement de `claude plugin install`, `enable`, `disable` et `marketplace add` quand le fichier de réglages visé ne se charge pas, et un conseil de `claude plugin validate` quand le README d'un plugin n'a pas de ligne d'installation ; une ligne sur stderr qui dit ce qu'attend un `claude -p` resté ouvert ; plusieurs options pour la passerelle Claude apps (`models`, `timeouts.upstream_ttfb_ms`, `forceLoginMethod: \"gateway\"`). Correctifs : `claude -p` en sortie texte n'omet plus les réponses antérieures quand un travail en arrière-plan lance un autre tour ; PushNotification n'annonce plus à tort « non envoyé » dans les sessions `claude remote-control` ; un sous-agent dans un worktree lié voyait la branche et les commits de la session parente ; les serveurs MCP distants des sessions headless et SDK ne restent plus déconnectés après une panne de plus de 15 s (reconnexion espacée jusqu'à 30 s) ; une requête sur un modèle `[1m]` n'échoue plus quand une passerelle refuse la bêta context-1m ; `/model` ne dit plus qu'un effort Max est enregistré par défaut (il vaut pour la session) ; `/advisor` ne coche plus un conseiller devenu indisponible ; les recherches web et évaluations de hooks `agent` sont plus rapides aux efforts `xhigh` et `max`. Changements : les connecteurs claude.ai négocient par défaut la version 2026-07-28 du protocole MCP (`MCP_PROTOCOL_NEGOTIATION=legacy` pour refuser) ; les descriptions d'outils MCP chargées par la recherche d'outils sont coupées à 16 384 caractères au lieu de 2 048 ; un sous-agent précharge au plus 32 skills. Sessions cloud : correctif d'une session désarchivée qui ne répondait pas au premier message et de routines qui ne recevaient pas leur prompt. Aucune commande d'archivage de session cloud n'est ajoutée dans cette version.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21295",
+          "libelle": "Changelog Claude Code 2.1.295",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Claude Code installé est la 2.1.294 (`docs/data/versions.json`), une version de retard sur la 2.1.295. Tes sessions durables sont lancées par `claude --resume <id> --remote-control <nom>` et pilotées depuis l'iPhone avec des notifications push (CONTEXTE.md, env.multi-sessions) : le correctif de PushNotification vise exactement ce cas. La chaîne D70 et les rôles de JUGER appellent `claude -p` : le correctif des réponses omises quand du travail en arrière-plan relance un tour les concerne. Tes missions tournent dans des worktrees et font appel à des sous-agents `Explore` : le correctif de la branche du parent vue par un sous-agent d'un worktree lié concerne ce flux. Ton serveur MCP delta-ia passe par la recherche d'outils : la coupure des descriptions passe de 2 048 à 16 384 caractères. `onFailure: \"block\"` est une option à écrire dans un hook : ton seul hook, `PermissionDenied` vers `operer refus`, ne change pas tant que tu ne l'ajoutes pas ; avec le module 5 (hooks) en cours dans PROGRESSION.md, c'est l'option qui rend un hook fiable : s'il échoue, l'action est stoppée au lieu de continuer sans lui.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Installer la 2.1.295 maintenant (aucune échéance publiée) et vérifier la notification push depuis l'iPhone.",
+        "etapes": [
+          "Lance `claude update` puis `claude --version` : la sortie doit afficher 2.1.295. Les sessions déjà ouvertes gardent l'ancienne version jusqu'à leur relance.",
+          "Dans une session relancée sous 2.1.295 (par exemple la session delta), envoie-lui un message depuis l'iPhone en Remote Control et demande-lui d'envoyer une notification push : elle ne doit plus répondre « non envoyé » alors que la notification arrive.",
+          "Dans `/mcp`, le connecteur de compte Delta-IA doit rester connecté ; s'il ne l'est plus après la mise à jour, lance la session avec `MCP_PROTOCOL_NEGOTIATION=legacy`."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-update",
+        "claude-code-commandes-advisor",
+        "claude-code-parametres-claude-code-retry-watchdog",
+        "claude-code-parametres-claude-code-retry-watchdog-max-wait-ms",
+        "claude-code-fonctionnalites-page-worktrees"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions `claude --resume --remote-control` pilotées depuis l'iPhone, avec notifications push."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne D70 sont lancées par `claude -p`."
+        },
+        "methode.missions": {
+          "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+          "pourquoi": "Une branche et un worktree par mission, avec sous-agents."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Serveur MCP delta-ia et connecteurs de compte claude.ai."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Un seul hook perso, `PermissionDenied` vers `operer refus`."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.294",
+      "ids_bruts": [
+        "claude-code-2.1.294"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.294 : les hooks `prompt` et `agent` écrits comme des instructions bloquent ce qu'ils doivent bloquer",
+      "version": "2.1.294",
+      "date_publication": "2026-10-08",
+      "type": "correction",
+      "resume": "Corrige les hooks `prompt` et `agent` rédigés comme des instructions (par exemple « Block commands that… »), qui laissaient passer ce qu'ils devaient bloquer, et améliore le jugement des hooks `prompt` sur Stop et SubagentStop écrits comme des instructions, pour que Claude s'arrête moins tôt.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21294",
+          "libelle": "Changelog Claude Code 2.1.294",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/dashboards-and-motion",
+      "ids_bruts": [
+        "https://claude.com/blog/dashboards-and-motion"
+      ],
+      "produit": "claude",
+      "titre": "Claude Design : le site autonome claude.ai/design ferme le 14/12/2026 ; Dashboards et Motion en bêta, Docs, Slides et Design hors bêta",
+      "version": null,
+      "date_publication": "2026-10-08",
+      "type": "depreciation",
+      "resume": "Le site autonome de Claude Design, claude.ai/design, reste accessible jusqu'au 14 décembre 2026 puis est intégré à Claude ; depuis le 16/09, Design fonctionne dans toute conversation Claude. Les chats et commentaires du site autonome ne seront plus disponibles après la fermeture, et les liens publics vers ses projets cessent de marcher ; les projets continuent de fonctionner sur le site autonome jusqu'à la fermeture. Un bouton « Migrate team design systems » de la page Artifacts migre les design systems de l'organisation. Même annonce : Claude Docs, Slides et Design sortent de bêta sur tous les forfaits dont Free ; Claude Dashboards (sources de données comme BigQuery, Databricks, Snowflake, Salesforce) est en bêta sur les forfaits payants et Claude Motion (animation exportable en MP4) en bêta sur Team et Enterprise.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/dashboards-and-motion",
+          "libelle": "Build live dashboards and animate explainers with Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "CONTEXTE.md décrit Claude Design comme un outil que tu utilises intensivement, depuis Claude Desktop en mode Claude Code, pour Delta System Experience et la Console de pilotage. Si certains de ces travaux (chats, commentaires, liens publics) vivent sur le site autonome claude.ai/design, ils disparaîtront à la fermeture du 14/12 ; l'`action` donne la façon de le savoir. Dashboards et Motion ne touchent aucun de tes projets d'après CONTEXTE.md.",
+      "projets_concernes": [
+        "delta-desktop"
+      ],
+      "action": {
+        "description": "Avant le 2026-12-14 (fermeture publiée), vérifier si des projets Design vivent sur claude.ai/design et en garder les chats et commentaires utiles.",
+        "etapes": [
+          "Ouvre https://claude.ai/design dans un navigateur : si la liste de projets est vide, rien à migrer.",
+          "S'il y a des projets, copie hors du site les chats et commentaires à garder (ils ne seront pas migrés) et, si tes design systems y sont, utilise « Migrate team design systems » sur la page Artifacts de Claude.",
+          "Pour les prochains designs, demande-les dans une conversation Claude via le menu de sortie « Design » (c'est aussi ce qui entre dans la promotion artefacts jusqu'au 15/10)."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-fonctionnalites-page-14604416-get-started-with-claude-design"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop en mode Claude Code."
+        },
+        "projet.delta-desktop": {
+          "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+          "pourquoi": "delta-desktop et la console sont construits par la session Design."
+        }
+      }
+    },
+    {
+      "id": "https://www.anthropic.com/news/2026-usage-policy-update",
+      "ids_bruts": [
+        "https://www.anthropic.com/news/2026-usage-policy-update"
+      ],
+      "produit": "claude",
+      "titre": "Politique d'usage 2026 : nouvelle version applicable le 12/11/2026",
+      "version": null,
+      "date_publication": "2026-10-08",
+      "type": "nouveaute",
+      "resume": "Anthropic publie la mise à jour annuelle de sa politique d'usage, applicable le 12 novembre 2026 ; la plupart des changements clarifient des règles existantes. Nouveautés : une section unique sur les campagnes trompeuses et l'activité artificielle, une section élections recentrée sur la tromperie des électeurs (l'interdiction générale du ciblage personnalisé des électeurs est retirée), des précisions sur les armes (logiciels de guidage, armement de drones) et la surveillance, une réécriture des exigences pour les usages à haut risque (santé, droits, finances, moyens de subsistance : humain qualifié qui relit, personne informée de l'usage d'une IA) avec une exigence nouvelle pour les équipements qui agissent physiquement, et une interdiction du comportement abusif répété envers les modèles. La page des régions prises en charge précise l'application de la règle sur les entités détenues majoritairement depuis une région non prise en charge.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/news/2026-usage-policy-update",
+          "libelle": "2026 Usage Policy update",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "trading-sim reste en simulation stricte, sans argent réel ni ordre (CONTEXTE.md §2.2) : d'après cette description, les exigences renforcées sur les usages touchant aux finances ne le visent pas. Le reste de la mise à jour (élections, armes, surveillance, matériel physique) ne touche aucun de tes projets.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Simulation uniquement, zéro argent réel, zéro ordre."
+        }
+      }
+    },
+    {
+      "id": "https://www.anthropic.com/news/anthropic-cyber-mission",
+      "ids_bruts": [
+        "https://www.anthropic.com/news/anthropic-cyber-mission"
+      ],
+      "produit": "claude",
+      "titre": "Anthropic Cyber Mission : programme pour les infrastructures critiques et OSS Scanner pour les projets open source",
+      "version": null,
+      "date_publication": "2026-10-08",
+      "type": "nouveaute",
+      "resume": "Anthropic lance la Cyber Mission, un effort de long terme pour les défenseurs, en deux volets. Le Critical Infrastructure Defense Program apporte des modèles, des ingénieurs sur site et de la recherche sur les menaces à des prestataires de sécurité des réseaux industriels (partenaires fondateurs : Accenture, Booz Allen, CrowdStrike, Deloitte, Dragos, Hitachi, Nozomi Networks, Palo Alto Networks, PwC, Rockwell Automation, entre autres). OSS Scanner est un service sur inscription qui envoie gratuitement des analyses périodiques de sécurité par les modèles les plus capables aux projets open source inscrits, avec preuve de concept et correctif suggéré, sans relecture humaine (taux de vrais positifs attendu au-dessus de 90 %). Project Glasswing est fusionné dans le Cyber Verification Program élargi.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/news/anthropic-cyber-mission",
+          "libelle": "Introducing the Anthropic Cyber Mission",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-code-2.1.290",
+      "ids_bruts": [
+        "claude-code-2.1.290"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.290 : contrôles de permissions Bash durcis, `claude attach` et `claude logs` par nom de session",
+      "version": "2.1.290",
+      "date_publication": "2026-10-05",
+      "type": "amelioration",
+      "resume": "Les contrôles Bash demandent désormais une approbation pour des commandes jusque-là acceptées : `rg` ou `git grep` dont les arguments contiennent des jokers que le shell développerait, certaines formes de `ps`, `pyright` (plus traité comme lecture seule) et des commandes dont les noms de variables sont lus autrement par zsh que par bash ; les règles Read deny s'appliquent aussi aux jokers dans certaines options et aux images collées. Les refus du mode auto ne suggèrent plus de règle qui contournerait le classifieur pour tout un outil, et le mode plan ne laisse plus le classifieur approuver des outils de connecteur qui écrivent. Ajouts : `claude attach <id|name>` et `claude logs <id|name>` acceptent un fragment du nom de la session en cours, `/code-review` à effort moyen rapporte aussi les nettoyages et les conventions de CLAUDE.md sur Opus 5.5 et Sonnet 5.5, le budget WebSearch d'une session interactive se recharge (100 appels par heure) au lieu de s'arrêter à 200. Correctifs : tâches planifiées (`/loop`) qui ne revenaient pas à la reprise après un compactage, Monitor sous sandbox qui sautait l'invite de permission, plusieurs défauts de la vue agents et des mods. Révisé le 09/10 : la chaîne de nuit tourne en bypassPermissions depuis le 06/10 (D83) et les passages du 08/10 n'ont aucun code 125 ; l'impact passe de moyen à nul.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21290",
+          "libelle": "Changelog Claude Code 2.1.290",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-claude-attach-id-name",
+        "claude-code-commandes-claude-logs-id-name",
+        "claude-code-parametres-claude-code-emit-session-state-events"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes Claude de la chaîne en bypassPermissions (D83), refus signalé par le code 125."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-code-2.1.288",
+      "ids_bruts": [
+        "claude-code-2.1.288"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.288 : reprises de session et Remote Control fiabilisés, `claude purge`",
+      "version": "2.1.288",
+      "date_publication": "2026-10-02",
+      "type": "nouveaute",
+      "resume": "Corrige la reprise de session : `--resume` ne perd plus les fichiers restaurés par un compactage, une dernière réponse non enregistrée, un transcript tronqué, ni la réflexion antérieure d'une conversation commencée en 2.1.286 ou avant. Remote Control : un nettoyage n'archive plus une session encore connectée ou rattachée par un autre processus, et la reprise après expiration d'un identifiant serveur garde les sessions connectées. Les sessions non interactives (`-p`) et les sous-agents continuent depuis la réponse partielle après un délai d'API, et la limite de durée des commandes en arrière-plan ne s'applique plus qu'aux sessions sans surveillance (`-p`, SDK, CI, cloud). Le classificateur du mode auto ignore une variable `ANTHROPIC_DEFAULT_SONNET_MODEL` qui désigne Sonnet 5.5 ou Opus 5.5 et utilise Sonnet 5. `claude project purge` devient `claude purge` (l'ancien nom marche encore). Ajouts : `/code-review --max-findings <n>|all`, Ctrl+F pour chercher une session par nom dans la vue agents, `CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS`. Correctifs de sécurité : un `rm` dangereux dans un `bash -c` ne passe plus sans demande en mode bypassPermissions, et un hook PreToolUse ou PermissionRequest qui échoue bloque désormais l'appel au lieu d'être ignoré. Base de référence, 4 entrées ajoutées : `claude purge [path]` (supprime l'état local d'un projet, `--dry-run` pour prévisualiser ; l'entrée `claude project purge` est retirée), le skill `/plugin-authoring` (référence pour écrire un mod, 2.1.287 ou plus), `CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS` (n'envoie plus la sortie structurée à une passerelle qui la rejette) et `CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES` (limite les réémissions d'une requête sans streaming expirée).",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21288",
+          "libelle": "Changelog Claude Code 2.1.288",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes sessions durables sont des services `claude-session@<nom>` qui relancent `claude --resume <id> --remote-control <nom>` (CONTEXTE.md, env.multi-sessions) : les correctifs de reprise et de nettoyage Remote Control s'appliquent à chacune de leurs relances. Ton seul hook, `PermissionDenied` vers `operer refus`, est du type que le changement « un hook en échec bloque l'appel » concerne pour PreToolUse et PermissionRequest ; il n'est pas de ces deux types. Si une de tes sessions fixe `ANTHROPIC_DEFAULT_SONNET_MODEL` sur Sonnet 5.5, le classificateur du mode auto utilise Sonnet 5, sans changer le modèle de la session.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Rien d'obligatoire ; vérifier si une variable `ANTHROPIC_DEFAULT_SONNET_MODEL` est définie dans l'environnement de tes sessions.",
+        "etapes": [
+          "Dans une session, demande à Claude de lancer `env` et de chercher `ANTHROPIC_DEFAULT_SONNET_MODEL` : si elle est vide, ce changement ne te concerne pas.",
+          "Pour nettoyer l'état local d'un projet : `claude purge ~/projets/<dossier> --dry-run` d'abord ; la suppression est irréversible."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-purge-path",
+        "claude-code-skills-code-review",
+        "claude-code-commandes-review",
+        "claude-code-fonctionnalites-page-claude-directory",
+        "claude-code-commandes-mcp",
+        "claude-code-parametres-claude-code-disable-structured-outputs",
+        "claude-code-commandes-plugin-authoring",
+        "claude-code-parametres-claude-code-nonstreaming-timeout-retries"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Services claude-session@ qui reprennent leur session avec Remote Control."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Un seul hook perso, `PermissionDenied` vers `operer refus`."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "claude-code-2.1.287",
+      "ids_bruts": [
+        "claude-code-2.1.287",
+        "https://claude.com/blog/claude-code-mods"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.287 : les mods, et un Remote Control qui se reconnecte plus vite",
+      "version": "2.1.287",
+      "date_publication": "2026-10-01",
+      "type": "nouveaute",
+      "resume": "Les mods sont de petites fonctions TypeScript livrées dans des plugins : elles s'accrochent à un événement de Claude Code (appel d'outil, demande d'autorisation, affichage) pour le réécrire, le bloquer, l'approuver ou ajouter de l'interface ; elles ne sont pas isolées et ont les mêmes droits que Claude Code. `/diff` devient un mod désactivable, et un mod intégré « You should know » (un agent annexe qui signale ce qui aurait pu échapper) s'active par `/plugin enable cc-plugin-you-should-know@builtin`. La version gère les demandes d'URL des serveurs MCP au protocole 2025-11-25 (un serveur qui ne se connecte plus demande `\"bareElicitationCapability\": true` dans sa configuration) ; Remote Control abandonne après 30 secondes une reconnexion sans réponse et réessaie, au lieu de rester sans recevoir de messages pendant des minutes ; `alwaysLoad: false` diffère désormais tous les outils d'un serveur MCP derrière la recherche d'outils. Base de référence, 4 paramètres ajoutés : `prependPlugins` et `appendPlugins` (ordre des mods de plugins gérés, avant ou après ceux de l'utilisateur), `CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK` (chaque processus lance lui-même `gcpAuthRefresh` ou `awsAuthRefresh`), `CLAUDE_CODE_DISABLE_WEB_FETCH` (désactive WebFetch, WebSearch reste disponible).",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21287",
+          "libelle": "Changelog Claude Code 2.1.287",
+          "officielle": true
+        },
+        {
+          "url": "https://claude.com/blog/claude-code-mods",
+          "libelle": "Customize Claude Code with mods",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Déjà installée d'après `versions.json`. Tes sessions durables relancées par `claude --resume <id> --remote-control <nom>` et pilotées depuis l'iPhone (CONTEXTE.md, env.multi-sessions) profitent de la correction Remote Control : une reconnexion sans réponse est abandonnée après 30 secondes puis réessayée. Pour le module 5 (skill ou hook) de PROGRESSION.md, un mod va plus loin qu'un hook : il peut réécrire ou bloquer un appel d'outil et dessiner de l'interface, mais s'exécute sans isolation. Le mod « You should know » lance un agent annexe : s'il tourne en continu, il pourrait consommer de la limite hebdomadaire (62 % ce matin). Ton serveur MCP delta-ia passe en HTTP : s'il ne se connecte plus, le correctif est dans la note de version.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Vérifier que delta-ia se connecte toujours, puis, si tu veux, essayer « You should know » sur une seule session.",
+        "etapes": [
+          "Dans la session delta, tape `/mcp` : delta-ia doit apparaître connecté.",
+          "S'il ne l'est plus, demande à la session d'ajouter `\"bareElicitationCapability\": true` à l'entrée delta-ia de sa configuration MCP (portée locale, `~/.claude.json`), puis relance la session.",
+          "Pour essayer le mod intégré : `/plugin enable cc-plugin-you-should-know@builtin` dans une seule session (il ne marche qu'avec la télémétrie active, sur une session de première partie) ; regarde `/usage` avant et après une heure de travail, et désactive-le dans `/plugin` si la consommation monte.",
+          "Pour voir ce qu'est un mod sans rien installer : dans `/plugin`, `/diff` apparaît désormais comme un mod que tu peux désactiver."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-plugin",
+        "claude-code-commandes-diff",
+        "claude-code-commandes-mcp",
+        "claude-code-fonctionnalites-page-remote-control",
+        "claude-code-fonctionnalites-page-hooks-guide",
+        "claude-code-parametres-prependplugins",
+        "claude-code-parametres-appendplugins",
+        "claude-code-parametres-claude-code-disable-auth-refresh-lock",
+        "claude-code-parametres-claude-code-disable-web-fetch"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables reprises avec Remote Control, pilotées depuis l'iPhone."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Serveur MCP delta-ia en HTTP, portée locale."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-overloaded-retry-base-delay-ms",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-overloaded-retry-base-delay-ms"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base (paramètres) : délai de départ en millisecondes (500 à 32000, 500 par défaut) du recul exponentiel entre les nouvelles tentatives après une erreur 529 « overloaded » de l'API ; sans effet avec `CLAUDE_CODE_RETRY_WATCHDOG` à 1 ni pour une requête envoyée en mode rapide (Claude Code 2.1.292 ou plus).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-overloaded-retry-base-delay-ms"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-retry-watchdog-max-wait-ms",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-retry-watchdog-max-wait-ms"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base (paramètres) : durée maximale, en millisecondes, que chaque requête passe à attendre les erreurs 429 et 529 quand `CLAUDE_CODE_RETRY_WATCHDOG` est posée (1800000 pour 30 minutes) ; sans elle, l'attente n'a pas de limite (Claude Code 2.1.295 ou plus).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-retry-watchdog-max-wait-ms"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-web-search-refills-per-hour",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-web-search-refills-per-hour"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Variable d'environnement ajoutée à la base (paramètres) : rythme de recharge de la limite WebSearch d'une session, en appels par heure ; 100 par défaut en terminal interactif, 0 (recharge coupée) en session non interactive (Claude Code 2.1.290 ou plus).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-web-search-refills-per-hour"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "anthropic-status-k0h22tsvnydg",
+      "raison": "réévalué, inchangé : l'incident ne touche que les crédits prépayés de l'API Claude, la section modifiée de CONTEXTE.md (profil, Max 20x) ne change pas ce constat"
+    },
+    {
+      "id": "claude-code-2.1.291",
+      "raison": "réévalué, inchangé : correctifs de régressions déjà installés, la section modifiée (env.multi-sessions) ne change rien à l'élément"
+    },
+    {
+      "id": "web-4c03ebea37bc",
+      "raison": "réévalué, inchangé : CONTEXTE.md reprend désormais lui-même cet élément (Cowork dans le cloud, /port-task-data) et l'élément n'est pas contredit"
+    },
+    {
+      "id": "claude-code-2.1.289",
+      "raison": "réévalué, inchangé : correctifs de règles deny/ask sans effet sur la section modifiée (interface)"
+    },
+    {
+      "id": "https://claude.com/blog/how-block-orchestrates-claude-fable-across-thousands-of-pull-requests",
+      "raison": "Témoignage client (entretien avec une entreprise) sans lien avec les conditions d'usage des outils de Sylvain"
+    },
+    {
+      "id": "https://www.anthropic.com/news/genesis-mission-commitment",
+      "raison": "Engagement financier d'Anthropic envers des agences scientifiques fédérales américaines, sans lien avec l'usage des outils de Sylvain"
+    }
+  ],
+  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40"
+}

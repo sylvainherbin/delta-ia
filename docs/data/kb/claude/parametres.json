@@ -1,10 +1,10 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-08",
- "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+ "maj_le": "2026-10-09",
+ "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
-  "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
+  "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
   "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -26,23 +26,23 @@
   "config.claude-code.mode-auto": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
   "config.claude-code.sous-agents": "5ee183a9303b683bb41985498260b10b233ebba0",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
-  "config.codex.interface": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+  "config.codex.interface": "7eb749e4dc132ac2d595114af8f72069c77953dd",
   "config.codex.profils": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
   "config.codex.skills": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-  "methode.organisation": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+  "methode.organisation": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
   "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
   "methode.missions": "b42e47d47b6e253054f499278ff7cde2514e89cf",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "8c494e0d26549a02cd0c78fa734ccac91a8f0913"
+  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 648,
- "commentees": 593,
+ "total": 651,
+ "commentees": 563,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -3029,7 +3029,7 @@
    "nom": "autoMode",
    "gabarit": "court",
    "description": "Réglage `autoMode` qui ajoute ses propres règles de blocage et d'autorisation au classificateur du mode auto, par exemple les dépôts et domaines de confiance.",
-   "description_source": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier ships with built-in allow and deny rules. Include the literal string \"$defaults\" in an array to keep those built-in rules at that …",
+   "description_source": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier ships with built-in allow and deny rules. Include the literal string \"$defaults\" in an array to keep those built-in rules at that position and add yours around them; leave it out to replace them with yours.",
    "usage": "{\n  \"autoMode\": {\n    \"soft_deny\": [\"$defaults\", \"Never run terraform apply\"]\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3046,11 +3046,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3059,6 +3059,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -3071,7 +3075,7 @@
    "nom": "autoMode.classifyAllShell",
    "gabarit": "court",
    "description": "Sous-clé qui envoie toutes les commandes Bash au classificateur du mode auto, pas seulement celles que couvre une règle trop large.",
-   "description_source": "Send every Bash and PowerShell command through the auto mode classifier while auto mode is active. By default, auto mode suspends only allow rules that could run arbitrary code: tool-wide and wildcard rules such as Bash(*), and interpreter or shell-wrapper prefixes such as Bash(python *). A command that any other allow rule matches, such as Bash(npm test), skips the classifier unless it carries per-command allowed domains. …",
+   "description_source": "Send every Bash and PowerShell command through the auto mode classifier while auto mode is active. By default, auto mode suspends only allow rules that could run arbitrary code: tool-wide and wildcard rules such as Bash(*), and interpreter or shell-wrapper prefixes such as Bash(python *). A command that any other allow rule matches, such as Bash(npm test), skips the classifier unless it carries per-command allowed domains. When it skips, a destructive argument the rule's prefix didn't anticipate can get through unseen. Setting this key suspends every shell allow rule for the session so the classifier sees every command. Requires Claude Code v2.1.193 or later.",
    "usage": "{\n  \"autoMode\": {\n    \"classifyAllShell\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3088,11 +3092,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3101,6 +3105,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -3480,7 +3488,7 @@
    "nom": "BASH_DEFAULT_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai par défaut des commandes Bash longues, 2 minutes.",
-   "description_source": "Default timeout for a foreground Bash or PowerShell tool command, in milliseconds (default: 120000, or 2 minutes). A default longer than 30 minutes also becomes the default time limit for background commands in unattended sessions. The background time limit requires Claude Code v2.1.285 or later",
+   "description_source": "Default timeout for a foreground Bash or PowerShell tool command, in milliseconds (default: 120000, or 2 minutes). A value above the default time limit for background commands replaces that default in unattended sessions. The background time limit requires Claude Code v2.1.285 or later",
    "usage": "BASH_DEFAULT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3501,7 +3509,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3517,6 +3525,10 @@
     },
     {
      "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -4101,7 +4113,7 @@
    "nom": "CLAUDE_AFK_COUNTDOWN_MS",
    "gabarit": "court",
    "description": "Variable qui fixe quand apparaît le compte à rebours avant la poursuite automatique d'une question sans réponse.",
-   "description_source": "How many milliseconds before auto-continue the on-screen countdown appears on an unanswered AskUserQuestion dialog. Default 20000 (20 seconds), capped at the auto-continue timeout. Has no effect unless auto-continue is on; see the askUserQuestionTimeout setting and CLAUDE_AFK_TIMEOUT_MS. Requires Claude Code v2.1.198 or later",
+   "description_source": "How many milliseconds before auto-continue the on-screen countdown appears on an unanswered AskUserQuestion dialog. Default 20000 (20 seconds), capped at the auto-continue timeout. Has no effect unless auto-continue is on; see the askUserQuestionTimeout setting and CLAUDE_AFK_TIMEOUT_MS. Ignored in project and local settings. Requires Claude Code v2.1.198 or later",
    "usage": "CLAUDE_AFK_COUNTDOWN_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4118,11 +4130,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4131,6 +4143,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -4143,7 +4159,7 @@
    "nom": "CLAUDE_AFK_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe l'inactivité avant qu'une question sans réponse continue seule, pour les démonstrations.",
-   "description_source": "How many milliseconds of idle time before an unanswered AskUserQuestion dialog auto-continues without you. Auto-continue is off by default; opt in with the askUserQuestionTimeout setting. This variable is an override for demos and automated tests: when set, it takes precedence over that setting and turns auto-continue on even when the setting is unset or never. Setting 0 doesn't turn the timeout off; it closes the dialog immediately. In v2.1.198 and v2.1.199, auto-continue was on by default with a 60000 (60 seconds) timeout. Requires Claude Code v2.1.198 or later",
+   "description_source": "How many milliseconds of idle time before an unanswered AskUserQuestion dialog auto-continues without you. Auto-continue is off by default; opt in with the askUserQuestionTimeout setting. This variable is an override for demos and automated tests: when set, it takes precedence over that setting and turns auto-continue on even when the setting is unset or never. Setting 0 doesn't turn the timeout off; it closes the dialog immediately. Ignored in project and local settings. Before v2.1.200, auto-continue was on by default with a 60000 (60 seconds) timeout. Requires Claude Code v2.1.198 or later",
    "usage": "CLAUDE_AFK_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4160,11 +4176,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4173,6 +4189,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -4269,7 +4289,7 @@
    "nom": "CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai après lequel un sous-agent muet est considéré comme bloqué, 10 minutes par défaut.",
-   "description_source": "Stall timeout in milliseconds for subagents. Default 600000 (10 minutes); if you raise CLAUDE_STREAM_IDLE_TIMEOUT_MS while the stream watchdog is on, the default rises with it, as Handle slow or stalled API responses describes. The timer resets on each streaming progress event; if no progress arrives within the window, Claude Code aborts the subagent and reports the stall to the parent",
+   "description_source": "Stall timeout in milliseconds for subagents. Also covers workflow agents on Claude Code v2.1.286 or later. Default 600000 (10 minutes); if you raise CLAUDE_STREAM_IDLE_TIMEOUT_MS while the stream watchdog is on, the default rises with it, as Handle slow or stalled API responses describes",
    "usage": "CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4286,11 +4306,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4299,6 +4319,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -5676,7 +5700,7 @@
    "nom": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "gabarit": "court",
    "description": "Variable qui désactive la fenêtre de contexte de 1M et limite à 200K les sessions sur les modèles à fenêtre native de 1M, comme Sonnet 5.5 et les modèles Fable.",
-   "description_source": "Set to 1 to disable 1M context window support. When set, 1M model variants are unavailable in the model picker, and Claude Code holds sessions on models with a native 1M window, such as Sonnet 5.5 and the Fable models, to a 200K window; see Extended context for how the hold is enforced. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID",
+   "description_source": "Set to 1 to turn off 1M context window support. Claude Code removes [1m] model variants from the model picker and holds models that run with the 1M window by default to a 200K window. See Turn off 1M context. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID",
    "usage": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5693,11 +5717,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5714,6 +5738,10 @@
     {
      "date": "2026-09-29",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
@@ -5995,7 +6023,7 @@
    "nom": "CLAUDE_CODE_DISABLE_ATTACHMENTS",
    "gabarit": "court",
    "description": "Variable qui envoie les mentions `@fichier` en texte brut au lieu d'en joindre le contenu.",
-   "description_source": "Set to 1 to disable attachment processing. File mentions with @ syntax are sent as plain text instead of being expanded into file content",
+   "description_source": "Set to 1 to disable attachment processing. File mentions with @ syntax are sent as plain text instead of being expanded into file content. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_DISABLE_ATTACHMENTS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6012,11 +6040,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6025,6 +6053,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9339,7 +9371,7 @@
    "nom": "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION",
    "gabarit": "court",
    "description": "Variable qui plafonne le nombre d'appels WebSearch d'une session, 200 par défaut.",
-   "description_source": "Cap on the total number of WebSearch calls one session can make (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later",
+   "description_source": "Cap on WebSearch calls (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later",
    "usage": "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9356,11 +9388,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9369,6 +9401,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9805,7 +9841,7 @@
    "nom": "CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES",
    "gabarit": "court",
    "description": "Limite le nombre de réémissions d'une requête sans streaming qui expire ; à 0, elle échoue dès le premier délai. Non défini par défaut : `CLAUDE_CODE_MAX_RETRIES` limite alors ces réémissions. Demande Claude Code 2.1.285 ou plus.",
-   "description_source": "Limit how many times Claude Code re-sends a non-streaming request that times out. With 0, the request fails on the first timeout. Unset by default, so CLAUDE_CODE_MAX_RETRIES limits these re-sends. See Tune retry behavior for the timeout. Requires Claude Code v2.1.285 or later",
+   "description_source": "Limit how many times Claude Code re-sends a non-streaming request that times out. With 0, the request fails on the first timeout. See Tune retry behavior for the timeout. Requires Claude Code v2.1.285 or later",
    "usage": "CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9822,7 +9858,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
    "contexte_sections": {
     "methode.travail": {
@@ -9833,7 +9869,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-10-03",
@@ -9842,6 +9878,10 @@
     {
      "date": "2026-10-03",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -10012,6 +10052,48 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-overloaded-retry-base-delay-ms",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui fixe le délai de départ, en millisecondes (500 à 32000, 500 par défaut), du recul exponentiel entre les nouvelles tentatives après une erreur 529 « overloaded » de l'API (v2.1.292 ou plus).",
+   "description_source": "Starting delay in milliseconds, in place of the default 500, of the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.292 or later",
+   "usage": "CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucune erreur 529 gênante ; le délai par défaut suffit tant qu'une étape de la chaîne de nuit D70 n'échoue pas sur ce code."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-09",
+   "historique": [
+    {
+     "date": "2026-10-09",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-package-manager-auto-update",
@@ -10491,7 +10573,7 @@
    "nom": "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS",
    "gabarit": "court",
    "description": "Variable qui plafonne l'attente des sous-agents et workflows d'arrière-plan après le dernier tour de `claude -p`.",
-   "description_source": "Ceiling in milliseconds on idle waiting for background work, such as subagents and workflows, after the final turn in non-interactive mode with the -p flag. Idle waiting starts over each time Claude takes a turn to handle a background result. Default: 600000, or 10 minutes. When idle waiting reaches the ceiling, Claude Code stops waiting for the remaining background tasks and exits. Set to 0 to wait indefinitely. This cap is separate from the five-second grace period that applies to plain background shells. Requires Claude Code v2.1.182 or later",
+   "description_source": "Ceiling in milliseconds on idle waiting for background work, such as subagents and workflows, after the final turn in non-interactive mode with the -p flag. Idle waiting starts over each time Claude takes a turn to handle a background result. Default: 600000, or 10 minutes. When idle waiting reaches the ceiling, Claude Code stops waiting for the remaining background tasks. A running background command that the main conversation started holds the run open past it. Set to 0 to wait indefinitely. Requires Claude Code v2.1.182 or later",
    "usage": "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10512,7 +10594,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-05",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10524,6 +10606,10 @@
     },
     {
      "date": "2026-10-05",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -11013,6 +11099,53 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-retry-watchdog-max-wait-ms",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui plafonne, en millisecondes, l'attente de chaque requête face aux erreurs 429 et 529 quand `CLAUDE_CODE_RETRY_WATCHDOG` est posée (par exemple 1800000 pour 30 minutes) ; sans elle l'attente est illimitée (v2.1.295 ou plus).",
+   "description_source": "Maximum time in milliseconds that each API request spends waiting out 429 and 529 errors when CLAUDE_CODE_RETRY_WATCHDOG is set. Once that time is spent, the next such error ends the request. Give a positive whole number in plain digits, such as 1800000 for 30 minutes. When unset, the wait has no limit. Requires Claude Code v2.1.295 or later",
+   "usage": "CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "`grep -n CLAUDE_CODE_RETRY_WATCHDOG scripts/*.sh scripts/*.toml` ne trouve rien dans la chaîne D70 le 09/10 : le mode de nouvelle tentative sans surveillance n'y est pas activé, donc ce plafond est sans objet."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Chaîne de nuit D70 : étapes Claude non interactives lancées par claude -p à 04:00."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-09",
+   "historique": [
+    {
+     "date": "2026-10-09",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-safe-mode",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -11410,7 +11543,7 @@
    "nom": "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT",
    "gabarit": "court",
    "description": "Variable qui utilise un prompt système plus court et des descriptions d'outils abrégées sur tous les modèles.",
-   "description_source": "Set to 1 to use a shorter system prompt and abbreviated tool descriptions on any model. Set to 0, false, no, or off to opt out even on models where the experiment or server configuration would otherwise enable it. The full tool set, hooks, MCP servers, and CLAUDE.md discovery remain enabled",
+   "description_source": "Choose between Claude Code's full system prompt and a shorter one with abbreviated tool descriptions. When unset, Haiku 4.5, Sonnet 5, Opus 4.7, and earlier models in those families use the full prompt by default, and newer models use the shorter one. Set to 1 to use the shorter prompt on any model. Set to 0, false, no, or off to use the full prompt on any model, even where an experiment or server configuration would otherwise select the shorter one. Either prompt keeps the full tool set, hooks, MCP servers, and CLAUDE.md discovery",
    "usage": "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11427,11 +11560,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11440,6 +11573,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -12641,7 +12778,7 @@
    "nom": "CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai avant qu'un dialogue transmis à un client distant (Remote Control, SDK) ou l'approbation d'un message d'une autre session soit annulé.",
-   "description_source": "Deadline in milliseconds before Claude Code cancels a dialog it forwards to a remote client such as a Remote Control or SDK host, or the approval dialog for a held cross-session message; permission prompts and AskUserQuestion questions use their own flows and aren't governed by it. On Claude Code v2.1.236 or later, it also bounds the mid-session Fable usage-credits consent prompt in a session that may be running unattended. Control inbound messages and non-interactive sessions cover the full held-message expiry rules, including the cases where the deadline doesn't apply. Overrides the dialogExpiry setting. 0 or a negative value disables the deadline",
+   "description_source": "Deadline in milliseconds before Claude Code cancels a dialog it forwards to a remote client such as a Remote Control or SDK host, or the approval dialog for a held cross-session message; permission prompts and AskUserQuestion questions use their own flows and aren't governed by it. On Claude Code v2.1.236 or later, it also bounds the mid-session Fable usage-credits consent prompt in a session that may be running unattended. Control inbound messages and non-interactive sessions cover the full held-message expiry rules, including the cases where the deadline doesn't apply. Overrides the dialogExpiry setting. 0 or a negative value disables the deadline. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12658,11 +12795,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12671,10 +12808,56 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-web-search-refills-per-hour",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui règle le rythme de recharge de la limite WebSearch d'une session, en appels par heure : 100 par défaut en terminal interactif, 0 (recharge coupée) en session non interactive (v2.1.290 ou plus).",
+   "description_source": "Rate at which a session's WebSearch limit refills, in calls per hour. The default is 100 in an interactive terminal session. In a non-interactive session the default is 0, which turns refill off. Takes plain digits only; any other spelling reads as unset. Requires Claude Code v2.1.290 or later",
+   "usage": "CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune recherche web n'est faite dans la chaîne de nuit (la skill /delta l'interdit) et CONTEXTE.md ne décrit pas de blocage de WebSearch en session interactive."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-09",
+   "historique": [
+    {
+     "date": "2026-10-09",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-webfetch-cache-ttl-ms",
@@ -13465,7 +13648,7 @@
    "nom": "claudeInChromeDefaultEnabled",
    "gabarit": "court",
    "description": "Réglage qui démarre chaque session interactive avec l'intégration Chrome active, sans passer `--chrome` ; `/chrome` puis « Enabled by default » le pose pour toi.",
-   "description_source": "Start every interactive CLI session with Chrome integration on, without passing --chrome each time. If you run claude remote-control, a session it starts for one of your project threads follows this key too, except in bypassPermissions mode. With Claude Code v2.1.287 or later, this key also applies to sessions in the VS Code extension: see [Enable Chrome by …",
+   "description_source": "Start every interactive CLI session with Chrome integration on, without passing --chrome each time. If you run claude remote-control, a session it starts for one of your project threads follows this key too, except in bypassPermissions mode. With Claude Code v2.1.287 or later, this key also applies to sessions in the VS Code extension: see Enable Chrome by default.",
    "usage": "{\n  \"claudeInChromeDefaultEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -13497,7 +13680,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-29",
@@ -13509,6 +13692,10 @@
     },
     {
      "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ]
@@ -14317,7 +14504,7 @@
    "nom": "desktopSessionCleanupPeriodDays",
    "gabarit": "court",
    "description": "Réglage qui fixe l'âge maximal des transcripts des sessions lancées depuis Claude Desktop ou Cowork ; sans lui, ils sont gardés.",
-   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. [Cleaned up …",
+   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. Cleaned up automatically lists the cases where cleanupPeriodDays applies instead and Claude Code ignores this key. Requires Claude Code v2.1.248 or later.",
    "usage": "{\n  \"desktopSessionCleanupPeriodDays\": 90\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14338,7 +14525,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14350,6 +14537,10 @@
     },
     {
      "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -14363,7 +14554,7 @@
    "nom": "dialogExpiry",
    "gabarit": "court",
    "description": "Réglage qui fixe le délai des dialogues transmis à un client distant comme Remote Control, et de l'approbation d'un message d'une autre session.",
-   "description_source": "Set the deadline for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message. On Claude Code v2.1.236 or later, the same deadline bounds the mid-session Fable usage-credits consent prompt in a session that may have nobody at the terminal. When no answer …",
+   "description_source": "Set the deadline for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message. On Claude Code v2.1.236 or later, the same deadline bounds the mid-session Fable usage-credits consent prompt in a session that may have nobody at the terminal. When no answer arrives before the deadline, Claude Code cancels the dialog and continues with its no-action default. Requires Claude Code v2.1.224 or later.",
    "usage": "{\n  \"dialogExpiry\": \"10m\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14380,11 +14571,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14393,6 +14584,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -15843,7 +16038,7 @@
    "nom": "disableCommandPluginSources",
    "gabarit": "court",
    "description": "Réglage qui bloque la source de plugin « command », qui installe un plugin en exécutant une commande déclarée par la marketplace.",
-   "description_source": "Block the command plugin source, which installs a plugin by running a marketplace-declared command on the user's machine. When you set it to true, Claude Code never runs the command, doesn't install or update command-sourced plugins, and stops loading the ones already installed. Set it to false to allow them explicitly. Whenever it blocks command sources, whether you set it to true or leave it unset under …",
+   "description_source": "Block the command plugin source, which installs a plugin by running a marketplace-declared command on the user's machine. When you set it to true, Claude Code never runs the command, doesn't install or update command-sourced plugins, and stops loading the ones already installed. Set it to false to allow them explicitly. Whenever it blocks command sources, whether you set it to true or leave it unset under allowManagedHooksOnly, it also blocks marketplace headersHelper commands, except for a marketplace that managed settings themselves declare. Requires Claude Code v2.1.229 or later, and the headersHelper block requires v2.1.238 or later.",
    "usage": "{\n  \"disableCommandPluginSources\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15860,11 +16055,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15881,6 +16076,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
@@ -15940,7 +16139,7 @@
    "nom": "disableDesktopLocalSessions",
    "gabarit": "court",
    "description": "Réglage de l'app de bureau qui interdit les sessions Code locales, pour imposer des machines distantes par SSH.",
-   "description_source": "Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH. In the Code tab, the Local environment stays in the environment dropdown but is grayed out and can't be selected, with a tooltip saying your organization turned it off; on Windows the WSL entry is grayed out the same way, though whether WSL sessions run on a managed device at all is [governed …",
+   "description_source": "Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH. In the Code tab, the Local environment stays in the environment dropdown but is grayed out and can't be selected, with a tooltip saying your organization turned it off; on Windows the WSL entry is grayed out the same way, though whether WSL sessions run on a managed device at all is governed separately. New sessions default to the first SSH connection if one is configured, and the app refuses to start or resume a session on the device, including an SSH connection back to the same machine. SSH sessions to other hosts and cloud sessions are unaffected. The desktop app reads this key; the terminal CLI ignores it. Requires Claude Desktop v1.37937.0 or later.",
    "usage": "{\n  \"disableDesktopLocalSessions\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15957,11 +16156,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15970,6 +16169,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -17572,7 +17775,7 @@
    "nom": "fastMode",
    "gabarit": "court",
    "description": "Réglage du mode rapide, plus rapide mais plus cher par jeton ; `/fast` l'écrit dans `~/.claude/settings.json`, donc pour toutes les sessions suivantes.",
-   "description_source": "Turn fast mode on for sessions where it's available, for interactive work like rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key by hand: running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key. Fast mode runs only on Opus 5.5, Opus 5, and Opus 4.8: turning it on from another model switches you to Opus, and switching to an unsupported …",
+   "description_source": "Turn fast mode on for sessions where it's available, for interactive work like rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key by hand: running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key. Fast mode runs only on Opus 5.5, Opus 5, and Opus 4.8: turning it on from another model switches you to Opus, and switching to an unsupported model turns it off. See Switch models while fast mode is on.",
    "usage": "{\n  \"fastMode\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -17589,11 +17792,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17602,6 +17805,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -18057,7 +18264,7 @@
    "nom": "forceLoginMethod",
    "gabarit": "court",
    "description": "Réglage qui restreint le type de compte de connexion : `claudeai`, `console` ou `gateway`.",
-   "description_source": "Restrict which kind of account people can log in with. Set \"claudeai\" to allow only claude.ai accounts, \"console\" to allow only Claude Console accounts, or \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization. If you set it to \"claudeai\" or \"console\" in any settings file, …",
+   "description_source": "Restrict which kind of account people can log in with. Set \"claudeai\" to allow only claude.ai accounts, \"console\" to allow only Claude Console accounts, or \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization. If you set it to \"claudeai\" or \"console\" in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to.",
    "usage": "{\n  \"forceLoginMethod\": \"claudeai\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18074,11 +18281,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18087,6 +18294,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -18099,7 +18310,7 @@
    "nom": "forceLoginOrgUUID",
    "gabarit": "court",
    "description": "Réglage qui impose ou présélectionne l'organisation Anthropic de connexion.",
-   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the [keyless Console …",
+   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to and creates an API key instead.",
    "usage": "{\n  \"forceLoginOrgUUID\": [\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\", \"yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18116,11 +18327,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18129,6 +18340,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -18572,7 +18787,7 @@
    "gabarit": "court",
    "description": "Événement de hook déclenché après la réponse à une demande de saisie MCP, pour l'observer, la modifier ou la bloquer.",
    "description_source": "Runs after a user responds to an MCP elicitation. Hooks can observe, modify, or block the response before it is sent back to the MCP server.",
-   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"ElicitationResult\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"action\": \"accept\",\n  \"content\": { \"username\": \"alice\" },\n  \"mode\": \"form\",\n  \"elicitation_id\": \"elicit-123\"\n}",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"ElicitationResult\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"action\": \"accept\",\n  \"content\": { \"username\": \"alice\" },\n  \"mode\": \"form\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -18592,7 +18807,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18609,9 +18824,17 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
@@ -18842,7 +19065,7 @@
    "nom": "Hook PermissionDenied",
    "gabarit": "court",
    "description": "Événement de hook déclenché en mode auto quand un appel d'outil est refusé, classificateur compris ; pas lors d'un refus manuel.",
-   "description_source": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule …",
+   "description_source": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule matches. Use it to log denials, adjust configuration, or tell the model it may retry the tool call.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"auto\",\n  \"hook_event_name\": \"PermissionDenied\",\n  \"tool_name\": \"Bash\",\n  \"tool_input\": {\n    \"command\": \"rm -rf /tmp/build\",\n    \"description\": \"Clean build directory\"\n  },\n  \"tool_use_id\": \"toolu_01ABC123...\",\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18859,11 +19082,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18876,6 +19099,10 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
@@ -18897,7 +19124,7 @@
    "nom": "Hook PermissionRequest",
    "gabarit": "court",
    "description": "Événement de hook déclenché avant une demande de permission ; il peut décider à la place de l'utilisateur, et sans décision une session non interactive refuse.",
-   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. In sessions that can't show a prompt, such as background subagents in non-interactive mode, Claude Code still runs these hooks, and if no hook returns a decision, it denies the tool call. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use …",
+   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. In sessions that can't show a prompt, such as background subagents in non-interactive mode, Claude Code still runs these hooks, and if no hook returns a decision, it denies the tool call. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"PermissionRequest\",\n  \"tool_name\": \"Bash\",\n  \"tool_input\": {\n    \"command\": \"rm -rf node_modules\",\n    \"description\": \"Remove node_modules directory\"\n  },\n  \"permission_suggestions\": [\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18918,7 +19145,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18930,6 +19157,10 @@
     },
     {
      "date": "2026-10-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -20052,7 +20283,7 @@
    "nom": "Hook WorktreeCreate",
    "gabarit": "court",
    "description": "Événement de hook déclenché à la création d'un worktree, qui peut remplacer `git worktree` par une autre méthode.",
-   "description_source": "Runs when a worktree is being created, whether from claude --worktree, from a subagent using isolation: \"worktree\", or for a background session that Claude Code isolates in its own worktree. By default Claude Code creates the isolated working copy with git worktree. Configuring a WorktreeCreate hook replaces that default git behavior, letting you use a different version control system like …",
+   "description_source": "Runs when a worktree is being created, whether from claude --worktree, from a subagent using isolation: \"worktree\", or for a background session that Claude Code isolates in its own worktree. By default Claude Code creates the isolated working copy with git worktree. Configuring a WorktreeCreate hook replaces that default git behavior, letting you use a different version control system like SVN, Perforce, or Mercurial.",
    "usage": "{\n  \"hooks\": {\n    \"WorktreeCreate\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'NAME=$(jq -r .name); DIR=\\\"$HOME/.claude/worktrees/$NAME\\\"; svn checkout https://svn.example.com/repo/trunk \\\"$DIR\\\" >&2 && echo \\\"$DIR\\\"'\"\n          }\n        ]\n      }\n    ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20069,11 +20300,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20086,6 +20317,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -20904,7 +21139,7 @@
    "nom": "language",
    "gabarit": "court",
    "description": "Réglage de la langue des réponses, transmis tel quel à Claude comme consigne permanente, sans vérification de la valeur.",
-   "description_source": "Have Claude respond in a language other than English by default. There is no fixed list for responses: Claude Code passes the value verbatim to Claude as an instruction to always respond in that language, so any language name Claude can read works. Claude Code doesn't check the value, so a misspelled name reaches Claude as written rather than producing an error. The same value sets the language for voice dictation, which does have a …",
+   "description_source": "Have Claude respond in a language other than English by default. There is no fixed list for responses: Claude Code passes the value verbatim to Claude as an instruction to always respond in that language, so any language name Claude can read works. Claude Code doesn't check the value, so a misspelled name reaches Claude as written rather than producing an error. The same value sets the language for voice dictation, which does have a fixed list of supported dictation languages, and for auto-generated session titles.",
    "usage": "{\n  \"language\": \"japanese\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20921,11 +21156,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20954,6 +21189,10 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
@@ -21059,7 +21298,7 @@
    "nom": "--max-budget-usd",
    "gabarit": "court",
    "description": "Option CLI qui fixe en dollars un plafond de dépense d'API, sous-agents compris, en mode `-p`.",
-   "description_source": "Maximum dollar amount to spend on API calls before stopping (print mode only). Claude Code checks the cap against its client-side cost estimate, which can differ from your bill. Spend from subagents counts toward the cap. When you return to a conversation with --continue or --resume, totals restored from earlier runs don't count toward it. Once spend reaches the cap, spawning another subagent fails with Budget limit reached, and Claude Code stops background subagents that are still running; the cap-enforcement behaviors require Claude Code v2.1.217 or later — claude -p --max-budget-usd 5.00 \"query\"",
+   "description_source": "Stop the run once estimated spend on API calls reaches this amount (print mode only). Claude Code checks the cap against its client-side cost estimate, which can differ from your bill. Spend from subagents counts toward the cap. Spend can pass the cap, so leave headroom. When you return to a conversation with --continue or --resume, totals restored from earlier runs don't count toward it. Once spend reaches the cap, spawning another subagent fails with Budget limit reached, and Claude Code stops background subagents that are still running; the cap-enforcement behaviors require Claude Code v2.1.217 or later — claude -p --max-budget-usd 5.00 \"query\"",
    "usage": "--max-budget-usd",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21080,7 +21319,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21092,6 +21331,10 @@
     },
     {
      "date": "2026-10-06",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -21298,7 +21541,7 @@
    "nom": "maxEffortLevel",
    "gabarit": "court",
    "description": "Réglage qui plafonne le niveau d'effort d'une session, quelle que soit sa source (`/effort`, `--effort`, skill…).",
-   "description_source": "Cap the effort level a session can use, leaving lower levels available. Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default. Claude Code applies the cap itself before each request, so it holds on every provider, including Amazon Bedrock, Google Cloud's Agent Platform, and …",
+   "description_source": "Cap the effort level a session can use, leaving lower levels available. Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default. Claude Code applies the cap itself before each request, so it holds on every provider, including Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. Requires Claude Code v2.1.267 or later.",
    "usage": "{\n  \"maxEffortLevel\": \"medium\",\n  \"modelSettings\": {\n    \"claude-sonnet-4-6\": {\n      \"maxEffortLevel\": \"max\"\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21315,11 +21558,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21328,6 +21571,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22313,7 +22560,7 @@
    "nom": "modelPricing",
    "gabarit": "court",
    "description": "Réglage qui affiche la dépense aux tarifs négociés d'une organisation au lieu du prix catalogue, dans `/usage` et la ligne de statut.",
-   "description_source": "Report spend at the rates your organization pays instead of list price. Set it when your organization has contracted rates, so the dollar figures developers see match your bill. Claude Code applies the rates in /usage, the status line, the Agent SDK's total_cost_usd, the --max-budget-usd limit, and the OpenTelemetry cost metric and events. You supply the rates: Claude Code doesn't read them from your contract or …",
+   "description_source": "Report spend at the rates your organization pays instead of list price. Set it when your organization has contracted rates, so the dollar figures developers see match your bill. Claude Code applies the rates in /usage, the status line, the Agent SDK's total_cost_usd, the --max-budget-usd limit, and the OpenTelemetry cost metric and events. You supply the rates: Claude Code doesn't read them from your contract or the Claude Console. Requires Claude Code v2.1.242 or later.",
    "usage": "{\n  \"modelPricing\": {\n    \"multiplier\": 0.85,\n    \"overrides\": {\n      \"claude-sonnet-4-6\": {\n        \"input\": 2.4,\n        \"output\": 12,\n        \"cacheRead\": 0.24,\n        \"cacheWrite\": 3\n      }\n    }\n  }\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22330,11 +22577,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22343,6 +22590,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -23082,7 +23333,7 @@
    "nom": "permissions.blockReadsOutsideWorkingDirectories",
    "gabarit": "court",
    "description": "Réglage qui interdit à Read, Grep, Glob et LSP de lire hors des dossiers de travail, dans tous les modes.",
-   "description_source": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or …",
+   "description_source": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or later.",
    "usage": "{\n  \"permissions\": {\n    \"blockReadsOutsideWorkingDirectories\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23103,7 +23354,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23115,6 +23366,10 @@
     },
     {
      "date": "2026-09-30",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -23429,7 +23684,7 @@
    "nom": "pluginConfigs",
    "gabarit": "court",
    "description": "Réglage qui conserve les réponses non sensibles au dialogue de configuration d'un plugin, écrit par Claude Code.",
-   "description_source": "Store the non-sensitive answers you give a plugin's userConfig configuration dialog, keyed by plugin ID. Claude Code writes this key to your user settings when you fill in the dialog, so you don't need to edit it by hand. Claude Code stores sensitive options in the macOS Keychain instead, falling back to ~/.claude/.credentials.json when the Keychain rejects the write; on platforms without a supported keychain, it stores them in …",
+   "description_source": "Store the non-sensitive answers you give a plugin's userConfig configuration dialog, keyed by plugin ID. Claude Code writes this key to your user settings when you fill in the dialog, so you don't need to edit it by hand. Claude Code stores sensitive options in the macOS Keychain instead, falling back to ~/.claude/.credentials.json when the Keychain rejects the write; on platforms without a supported keychain, it stores them in ~/.claude/.credentials.json.",
    "usage": "{\n  \"pluginConfigs\": {\n    \"deployer@acme-tools\": {\n      \"options\": {\n        \"api_endpoint\": \"https://api.example.com\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23446,11 +23701,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23459,6 +23714,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -23649,7 +23908,7 @@
    "nom": "prependPlugins",
    "gabarit": "court",
    "description": "Clé de réglages (surtout des réglages gérés) qui liste les plugins dont les mods passent avant tous ceux que l'utilisateur installe, dans l'ordre donné ; il faut y nommer `sec-default@builtin` pour garder la garde intégrée.",
-   "description_source": "List the managed plugins whose mods run before every mod a user installs, in the listed order. When you set this key in managed settings, name sec-default@builtin in the list to keep the built-in guard. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's. See Install your organization's mods and set the order for those conditions and for how the two …",
+   "description_source": "List the managed plugins whose mods run before every mod a user installs, in the listed order. When you set this key in managed settings, name sec-default@builtin in the list to keep the built-in guard. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's. See Install your organization's mods and set the order for those conditions and for how the two ordering keys work together.",
    "usage": "{\n  \"extraKnownMarketplaces\": {\n    \"acme-tools\": {\n      \"source\": { \"source\": \"directory\", \"path\": \"/opt/acme/claude-plugins\" }\n    }\n  },\n  \"enabledPlugins\": { \"acme-guard@acme-tools\": true },\n  \"prependPlugins\": [\"acme-guard@acme-tools\", \"sec-default@builtin\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23666,7 +23925,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
    "contexte_sections": {
     "config.claude-code.skills": {
@@ -23677,7 +23936,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-10-02",
@@ -23686,6 +23945,10 @@
     {
      "date": "2026-10-02",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -24905,7 +25168,7 @@
    "nom": "sandbox.credentials",
    "gabarit": "court",
    "description": "Réglage des fichiers et variables d'identifiants à protéger des commandes isolées, masqués ou cachés.",
-   "description_source": "Declare the credential files and environment variables to protect from sandboxed commands. Each entry names a file path or a variable name and a mode: deny hides the credential inside the sandbox, and mask shows sandboxed commands a placeholder while the sandbox proxy substitutes the real value on outbound requests. Claude Code protects only the entries you list; there is no built-in credential deny …",
+   "description_source": "Declare the credential files and environment variables to protect from sandboxed commands. Each entry names a file path or a variable name and a mode: deny hides the credential inside the sandbox, and mask shows sandboxed commands a placeholder while the sandbox proxy substitutes the real value on outbound requests. Claude Code protects only the entries you list; there is no built-in credential deny list.",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"files\": [{ \"path\": \"~/.aws/credentials\", \"mode\": \"deny\" }],\n      \"envVars\": [{ \"name\": \"GITHUB_TOKEN\", \"mode\": \"deny\" }]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24922,11 +25185,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24939,6 +25202,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25064,7 +25331,7 @@
    "nom": "sandbox.credentials.files",
    "gabarit": "court",
    "description": "Réglage qui protège des fichiers ou dossiers d'identifiants des commandes isolées : lecture bloquée (`deny`) ou copie témoin sous Linux (`mask`).",
-   "description_source": "Protect credential files or directories from sandboxed commands. With \"mode\": \"deny\", Claude Code blocks reads of the path inside the sandbox, the same read block as sandbox.filesystem.denyRead. With \"mode\": \"mask\", sandboxed commands on Linux and WSL2 read a sentinel copy of the file, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts; on macOS the file is unreadable inside the sandbox instead. \"mode\": …",
+   "description_source": "Protect credential files or directories from sandboxed commands. With \"mode\": \"deny\", Claude Code blocks reads of the path inside the sandbox, the same read block as sandbox.filesystem.denyRead. With \"mode\": \"mask\", sandboxed commands on Linux and WSL2 read a sentinel copy of the file, and the sandbox proxy substitutes the real value on outbound requests to that entry's injectHosts; on macOS the file is unreadable inside the sandbox instead. \"mode\": \"mask\" requires Claude Code v2.1.221 or later.",
    "usage": "{\n  \"sandbox\": {\n    \"credentials\": {\n      \"files\": [\n        { \"path\": \"~/.aws/credentials\", \"mode\": \"deny\" },\n        { \"path\": \"~/.config/gh/hosts.yml\", \"mode\": \"mask\", \"injectHosts\": [\"api.github.com\"] }\n      ]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25081,11 +25348,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25106,6 +25373,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
@@ -25464,7 +25735,7 @@
    "nom": "sandbox.filesystem.allowRead",
    "gabarit": "court",
    "description": "Réglage qui rouvre la lecture de chemins précis dans une zone bloquée par `denyRead`.",
-   "description_source": "Re-open reading for specific paths inside a region that denyRead blocks, to build workspace-only read access. An exact or wildcard denyRead entry stays blocked inside a broader allowRead, as the overlap table shows. When a wildcard denyRead entry such as ~//.env matches a directory, Claude Code blocks reads of its contents as well. Before v2.1.236 on macOS, Claude Code re-opened the paths a wildcard …",
+   "description_source": "Re-open reading for specific paths inside a region that denyRead blocks, to build workspace-only read access. An exact or wildcard denyRead entry stays blocked inside a broader allowRead, as the overlap table shows. When a wildcard denyRead entry such as ~//.env matches a directory, Claude Code blocks reads of its contents as well. Before v2.1.236 on macOS, Claude Code re-opened the paths a wildcard denyRead entry matched wherever a broader allowRead entry covered them, and left a matched directory's contents readable.",
    "usage": "{\n  \"sandbox\": {\n    \"filesystem\": {\n      \"denyRead\": [\"~/\"],\n      \"allowRead\": [\".\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25481,11 +25752,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25498,6 +25769,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26174,7 +26449,7 @@
    "nom": "sandbox.network.strictAllowlist",
    "gabarit": "court",
    "description": "Réglage qui refuse, sans demander, les hôtes hors de la liste autorisée du bac à sable.",
-   "description_source": "Deny sandboxed commands access to hosts outside the allowlist instead of prompting for approval. The allowlist is allowedDomains plus domains from WebFetch(domain:...) allow rules, or only the managed settings entries when allowManagedDomainsOnly is set. Locks that apply without an admin-required sandbox covers a repository's entries. …",
+   "description_source": "Deny sandboxed commands access to hosts outside the allowlist instead of prompting for approval. The allowlist is allowedDomains plus domains from WebFetch(domain:...) allow rules, or only the managed settings entries when allowManagedDomainsOnly is set. Locks that apply without an admin-required sandbox covers a repository's entries. Requires Claude Code v2.1.219 or later.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"strictAllowlist\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26195,7 +26470,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26211,6 +26486,10 @@
     },
     {
      "date": "2026-10-02",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -27573,7 +27852,7 @@
    "nom": "subagentPromptCacheTtl",
    "gabarit": "court",
    "description": "Réglage de la durée du cache des requêtes hors conversation principale : sous-agents, workflows, compaction, titres.",
-   "description_source": "Choose how long the prompt cache holds the requests Claude Code makes outside the main conversation. This key applies to subagents, workflows, and Claude Code's own background and helper requests, such as compaction and session titles. The one-hour lifetime keeps the cache warm across longer breaks, and the API [bills each cache write at a higher …",
+   "description_source": "Choose how long the prompt cache holds the requests Claude Code makes outside the main conversation. This key applies to subagents, workflows, and Claude Code's own background and helper requests, such as compaction and session titles. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later.",
    "usage": "{\n  \"subagentPromptCacheTtl\": \"1h\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27590,11 +27869,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27603,6 +27882,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -27620,7 +27903,7 @@
    "nom": "subagentStatusLine",
    "gabarit": "court",
    "description": "Réglage d'une commande qui réécrit les lignes d'affichage des sous-agents sous la saisie.",
-   "description_source": "When Claude runs subagents, Claude Code lists them in a task display below the prompt, one row per subagent showing name · description · token count. This key lets you run your own command to rewrite those rows, for example to show each subagent's context usage as a percentage. On each refresh, Claude Code sends the visible rows as one JSON object on stdin, with a tasks array carrying each subagent's id, name, status, model, tokenCount, and more, and …",
+   "description_source": "When Claude runs subagents, Claude Code lists them in a task display below the prompt, one row per subagent showing name · description · token count. This key lets you run your own command to rewrite those rows, for example to show each subagent's context usage as a percentage. On each refresh, Claude Code sends the visible rows as one JSON object on stdin, with a tasks array carrying each subagent's id, name, status, model, tokenCount, and more, and replaces the row for each id you write back as a {\"id\", \"content\"} line. Rows you don't write back keep the default rendering.",
    "usage": "{\n  \"subagentStatusLine\": {\n    \"type\": \"command\",\n    \"command\": \"jq -c '.tasks[] | {id, content: \\\"\\\\(.name): \\\\(.tokenCount) tokens\\\"}'\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27637,11 +27920,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27650,6 +27933,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -27709,7 +27996,7 @@
    "nom": "syncClaudeAiPlugins",
    "gabarit": "court",
    "description": "Réglage qui, à `false`, arrête le téléchargement des plugins activés sur le compte claude.ai dans `~/.claude/plugins/synced/` et leur chargement ; seul `false` a un effet.",
-   "description_source": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where …",
+   "description_source": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off. Requires Claude Code v2.1.273 or later.",
    "usage": "{\n  \"syncClaudeAiPlugins\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27726,11 +28013,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27747,6 +28034,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
@@ -27764,7 +28055,7 @@
    "nom": "syncClaudeAiSkills",
    "gabarit": "court",
    "description": "Réglage qui, à `false`, coupe le téléchargement des skills activés sur ton compte claude.ai dans `~/.claude/skills/synced/`.",
-   "description_source": "Turn off the download of the skills enabled for your claude.ai account. Claude Code downloads them into ~/.claude/skills/synced/ in terminal sessions where you sign in with your claude.ai account, interactive or non-interactive, and in Cowork and cloud sessions. Set false to stop that download and stop loading the skills it already synced. Claude Code honors only false: true is the same as unset and …",
+   "description_source": "Turn off the download of the skills enabled for your claude.ai account. Claude Code downloads them into ~/.claude/skills/synced/ in terminal sessions where you sign in with your claude.ai account, interactive or non-interactive, and in Cowork and cloud sessions. Set false to stop that download and stop loading the skills it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off.",
    "usage": "{\n  \"syncClaudeAiSkills\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27781,11 +28072,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27794,6 +28085,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -28244,7 +28539,7 @@
    "nom": "terminalProgressBarEnabled",
    "gabarit": "court",
    "description": "Réglage qui signale au terminal l'état « en cours » pour l'afficher dans l'onglet ou la barre des tâches.",
-   "description_source": "Some terminals can show a progress indicator on the tab or in the taskbar for the program running in them. While Claude is working, Claude Code reports an in-progress state to the terminal, so you can see from another tab or window whether the session is still busy. The indicator stays visible after the turn ends while background subagents or dynamic workflows are still running, and clears once the session is …",
+   "description_source": "Some terminals can show a progress indicator on the tab or in the taskbar for the program running in them. While Claude is working, Claude Code reports an in-progress state to the terminal, so you can see from another tab or window whether the session is still busy. The indicator stays visible after the turn ends while background subagents or dynamic workflows are still running, and clears once the session is idle.",
    "usage": "{\n  \"terminalProgressBarEnabled\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -28261,11 +28556,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28274,6 +28569,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -28613,7 +28912,7 @@
    "nom": "ultracode",
    "gabarit": "court",
    "description": "Réglage qui démarre les sessions avec ultracode actif : Claude planifie un workflow pour chaque tâche substantielle, au niveau d'effort de la session, sans le changer.",
-   "description_source": "Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you and your model supports xhigh effort. The key doesn't change the session's effort level: ultracode runs at whichever level the session uses. Claude Code reads this key but never writes it: /effort ultracode turns …",
+   "description_source": "Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you and your model supports xhigh effort. The key doesn't change the session's effort level: ultracode runs at whichever level the session uses. Claude Code reads this key but never writes it: /effort ultracode turns ultracode on for the current session only.",
    "usage": "{\n  \"ultracode\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -28630,11 +28929,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28651,6 +28950,10 @@
     {
      "date": "2026-09-29",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",

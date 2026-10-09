@@ -1,10 +1,10 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-05",
- "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+ "maj_le": "2026-10-09",
+ "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
-  "profil": "0085259f8f744f9a91d172363e7fde3929c411df",
+  "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
   "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -26,23 +26,23 @@
   "config.claude-code.mode-auto": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
   "config.claude-code.sous-agents": "5ee183a9303b683bb41985498260b10b233ebba0",
   "config.codex": "83b3207011e033d2efec810d198fde6e7959d137",
-  "config.codex.interface": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
+  "config.codex.interface": "7eb749e4dc132ac2d595114af8f72069c77953dd",
   "config.codex.profils": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
   "config.codex.skills": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-  "methode.organisation": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+  "methode.organisation": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
   "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
   "methode.missions": "b42e47d47b6e253054f499278ff7cde2514e89cf",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "8c494e0d26549a02cd0c78fa734ccac91a8f0913"
+  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
  "total": 41,
- "commentees": 34,
+ "commentees": 31,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -488,7 +488,7 @@
    "nom": "Exempt a server from deferral",
    "gabarit": "complet",
    "description": "`alwaysLoad: true` dans la configuration d'un serveur charge tous ses outils dans le contexte dès le début de la session, sans passer par la recherche d'outils. À réserver à quelques outils dont Claude a besoin à chaque tour.",
-   "description_source": "If a server's tools should always be visible to Claude without a search step, set alwaysLoad to true in that server's configuration. Every tool from that server then loads into context at session start regardless of the ENABLE_TOOL_SEARCH setting. Use this for a small number of tools that Claude needs on every turn, since each upfront tool consumes context that would otherwise be available for your conversation.",
+   "description_source": "If a server's tools should always be visible to Claude without a search step, set alwaysLoad to true in that server's configuration. The server's tools then load into context regardless of the ENABLE_TOOL_SEARCH setting. Use this for a small number of tools that Claude needs on every turn, since each upfront tool consumes context that would otherwise be available for your conversation.",
    "usage": "{\n  \"mcpServers\": {\n    \"core-tools\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"alwaysLoad\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -505,11 +505,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -518,6 +518,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -531,7 +535,7 @@
    "gabarit": "complet",
    "description": "Conseils aux auteurs de serveurs MCP : avec la recherche d'outils, le champ d'instructions du serveur aide Claude à savoir quand chercher ses outils, et `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` modifie le plafond de 2 048 caractères des descriptions et instructions.",
    "description_source": "If you're building an MCP server, the server instructions field becomes more useful with tool search enabled. Server instructions help Claude understand when to search for your tools, similar to how skills work.",
-   "usage": "CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH",
+   "usage": "{\n  \"name\": \"search_tickets\",\n  \"description\": \"Searches the ticket tracker by keyword\",\n  \"_meta\": {\n    \"anthropic/alwaysLoad\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -551,7 +555,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -560,10 +564,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur MCP delta-ia local, ajouté le 24/09 en portée locale."
+    }
+   }
   },
   {
    "id": "claude-code-mcp-how-connectors-reach-claude-code",
@@ -1040,7 +1057,7 @@
    "nom": "Plugin-provided MCP servers",
    "gabarit": "complet",
    "description": "Un plugin peut embarquer des serveurs MCP, actifs dès que le plugin l'est et configurés comme les autres ; `${CLAUDE_PLUGIN_ROOT}` désigne le dossier du plugin.",
-   "description_source": "Plugins can bundle MCP servers that provide tools and integrations when you enable the plugin. Plugin MCP servers work identically to user-configured servers.",
+   "description_source": "Plugins can bundle MCP servers that provide tools and integrations when you enable the plugin.",
    "usage": "{\n  \"mcpServers\": {\n    \"database-tools\": {\n      \"command\": \"${CLAUDE_PLUGIN_ROOT}/servers/db-server\",\n      \"args\": [\"--config\", \"${CLAUDE_PLUGIN_ROOT}/config.json\"],\n      \"env\": {\n        \"DB_URL\": \"${DB_URL}\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1057,11 +1074,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1070,6 +1087,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -1439,7 +1460,7 @@
    "nom": "Use pre-configured OAuth credentials",
    "gabarit": "complet",
    "description": "Pour un serveur sans enregistrement dynamique de client OAuth, on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe.",
-   "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide …",
+   "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide the credentials when adding the server.",
    "usage": "        claude mcp add --transport http \\\n          --client-id your-client-id --client-secret --callback-port 8080 \\\n          my-server https://mcp.example.com/mcp",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1456,11 +1477,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1469,6 +1490,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
