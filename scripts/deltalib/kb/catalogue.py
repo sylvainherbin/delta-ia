@@ -25,6 +25,7 @@ from ..dates import maintenant_iso
 from ..contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections, format_valide, sections_perimees
 from ..modeles import FormatInattendu, empreinte_contexte
 from .documentation import DocSource, lire_cache
+from . import extracteurs, systemes
 from .extracteurs import EXTRACTEURS
 from .modeles import (CATEGORIES, PRODUITS_PAR_PERIMETRE, STATUTS_USAGE, VERDICTS, EntreeExtraite, gabarit_de)
 
@@ -106,9 +107,11 @@ def appliquer_adoptions(entrees: dict[str, dict], ids: list[str], jour: str | No
     return changees
 
 
-def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None, avertissements: list | None = None
-             ) -> tuple[list[EntreeExtraite], set[str], list[dict]]:
+def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None, avertissements: list | None = None,
+             ecartees: list | None = None) -> tuple[list[EntreeExtraite], set[str], list[dict]]:
     """Rend (entrées, docs extraites avec succès, échecs). Une doc sans copie locale est ignorée.
+    D108 : les entrées propres à un système exclu (`profil.yaml`) sont écartées après l'extraction, versées dans `ecartees`
+    sous forme (système, entrée) ; absentes de l'extraction, elles sont retirées (`retiree`) par `fusionner`.
     Doc à pages : une page en échec est signalée à part et ne bloque pas les autres ; la doc n'est alors pas
     « extraite avec succès », donc rien n'est retiré. Les replis HTML vont dans `avertissements`."""
     entrees: list[EntreeExtraite] = []
@@ -124,13 +127,20 @@ def extraire(racine: Path, docs: list[DocSource], surcharge: dict | None = None,
         except FormatInattendu as e:
             echecs.append({"doc": d.id, "erreur": f"FormatInattendu: {e}"})
             continue
-        entrees.extend(extraites)
-        for chemin, err in getattr(extraites, "echecs_pages", []):
+        echecs_pages, replis_html = getattr(extraites, "echecs_pages", []), getattr(extraites, "replis_html", [])
+        gardees, ecart = systemes.ecarter(extraites, extracteurs.systemes_exclus())
+        if not gardees:
+            echecs.append({"doc": d.id, "erreur": f"FormatInattendu: les {len(ecart)} entrées extraites sont toutes propres à un système exclu"})
+            continue
+        if ecartees is not None:
+            ecartees.extend(ecart)
+        entrees.extend(gardees)
+        for chemin, err in echecs_pages:
             echecs.append({"doc": d.id, "page": chemin, "erreur": f"FormatInattendu: {err}"})
         if avertissements is not None:
             avertissements.extend({"doc": d.id, "page": c, "avertissement": "page servie en HTML, lue en repli"}
-                                  for c in getattr(extraites, "replis_html", []))
-        if getattr(extraites, "echecs_pages", None):
+                                  for c in replis_html)
+        if echecs_pages:
             continue  # une page en échec : ses entrées restent inchangées, aucune entrée n'est retirée
         if d.extracteur != "pages" or len(fichiers) == len(d.fichiers()):
             ok.add(d.id)  # une doc à pages partiellement récupérée ne retire rien
@@ -400,11 +410,21 @@ def ajouts_a_citer(modif: dict, deja_cites: list[str], base_existante: bool) -> 
     return sorted(i for i in modif.get("ajoutees", []) if i not in deja_cites)
 
 
+def resume_ecartees(ecartees: list, gardees: int, premieres: int = 10) -> dict:
+    """D108 : compte avant/après et par système des entrées écartées d'un périmètre, avec les premières pour juger les faux positifs."""
+    par_systeme: dict[str, int] = {}
+    for s, _ in ecartees:
+        par_systeme[s] = par_systeme.get(s, 0) + 1
+    return {"avant": gardees + len(ecartees), "apres": gardees, "par_systeme": par_systeme,
+            "premieres": [{"systeme": s, "id": e.id} for s, e in ecartees[:premieres]]}
+
+
 def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
                   surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
     avertissements: list[dict] = []
-    extraites, ok, echecs = extraire(racine, docs, surcharge, avertissements)
+    ecartees: list = []
+    extraites, ok, echecs = extraire(racine, docs, surcharge, avertissements, ecartees)
     existantes = charger(racine, perimetre)
     entrees, modif = fusionner(existantes, extraites, ok)
     if ecrire_fichiers:
@@ -412,7 +432,7 @@ def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fi
     d71 = sujet_d71(entrees, modif)
     ajouts = ajouts_a_citer(modif, d71, bool(existantes))
     return {"perimetre": perimetre, "genere_le": maintenant_iso(), "docs_extraites": sorted(ok), "echecs": echecs,
-            "avertissements": avertissements,
+            "avertissements": avertissements, "systemes_ecartes": resume_ecartees(ecartees, len(extraites)),
             "sujet_d71": d71, "ajouts_a_citer": ajouts,
             "ajouts_par_categorie": ajouts_par_categorie(ajouts, entrees),
             "total": len(entrees), "a_commenter": sorted(k for k, e in entrees.items() if not e.get("commentee") and not e.get("retiree")),

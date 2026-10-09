@@ -233,6 +233,11 @@ def commande_kb(args, racine: Path) -> int:
               f"{len(res['usage_modifie'])} usage(s) modifié(s), {len(res['description_source_modifiee'])} description(s) "
               f"d'origine modifiée(s), {len(res['retirees'])} retirée(s), "
               f"{len(res['a_commenter'])} à commenter" + ("" if args.dry_run else f" -> {chemin}"))
+        ec = res["systemes_ecartes"]
+        if ec["par_systeme"]:  # D108 : entrées propres à un système exclu, écartées de l'extraction
+            print(f"  ~ SYSTÈMES {perimetre} : {ec['avant']} -> {ec['apres']} entrée(s) ; écartées "
+                  + ", ".join(f"{s} {n}" for s, n in sorted(ec["par_systeme"].items()))
+                  + " ; premières : " + ", ".join(f"{x['id']} ({x['systeme']})" for x in ec["premieres"]))
         if res["sujet_d71"]:  # D71, étape 2a : à citer en une ligne dans la veille du jour
             print(f"  ~ SUJET D71 {perimetre} : {', '.join(res['sujet_d71'])}")
         for ligne in lignes_ajouts_base(perimetre, res):
