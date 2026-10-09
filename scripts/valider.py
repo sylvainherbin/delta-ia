@@ -31,6 +31,7 @@ from deltalib.contexte import (SHA1_VIDE, ContexteInvalide, analyser as analyser
                                termes_ancrage, termes_nommes)
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
 from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
+from deltalib import recherche as index_recherche  # noqa: E402
 from deltalib import semaine as bilan_semaine  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -1086,6 +1087,68 @@ def _verifier_lignes_semaine(d: dict, ou: str, r: Rapport) -> None:
                     r.erreur(oi, "`verdict_apres` doit valoir utiliser ou tester")
 
 
+def verifier_recherche(racine: Path, r: Rapport) -> None:
+    """D114 : docs/data/recherche.json, écrit par scripts/recherche.py (champs recopiés, texte coupé, tri date décroissante)."""
+    chemin = racine / index_recherche.FICHIER
+    if not chemin.exists():
+        return  # absent : accepté, le site n'affiche alors pas la recherche
+    ou = "recherche.json"
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    try:
+        d = json.loads(texte)
+    except ValueError as err:
+        r.erreur(ou, f"JSON invalide : {err}")
+        return
+    if not isinstance(d, dict) or set(d) != index_recherche.CHAMPS:
+        r.erreur(ou, f"champs attendus : {', '.join(sorted(index_recherche.CHAMPS))}")
+        return
+    if not _horodatage_ou_null(d["genere_le"]) or d["genere_le"] is None:
+        r.erreur(ou, "`genere_le` doit être un horodatage ISO 8601")
+    if d["statut"] not in ("ok", "echec"):
+        r.erreur(ou, "`statut` doit valoir ok ou echec")
+    elif (d["statut"] == "ok") != (d["raison"] is None) or (d["raison"] is not None and not str(d["raison"]).strip()):
+        r.erreur(ou, "`raison` est null si et seulement si `statut` vaut ok")
+    src = d["sources"]
+    jours_connus: dict[str, set] = {}
+    if not isinstance(src, dict) or set(src) != set(index_recherche.PERIMETRES):
+        r.erreur(ou, f"`sources` doit nommer exactement : {', '.join(sorted(index_recherche.PERIMETRES))}")
+    else:
+        for nom, s in src.items():
+            if not isinstance(s, dict) or set(s) != {"statut", "raison", "jours"} or s["statut"] not in ("ok", "echec") \
+                    or not isinstance(s["jours"], list) or (s["statut"] == "ok") != (s["raison"] is None) \
+                    or not all(_est_jour(j) for j in s["jours"]):
+                r.erreur(ou, f"`sources.{nom}` : {{statut ok|echec, raison (null si ok), jours}} attendu")
+            else:
+                jours_connus[nom] = set(s["jours"])
+        if (d["statut"] == "ok") != all(isinstance(s, dict) and s.get("statut") == "ok" for s in src.values()):
+            r.erreur(ou, "`statut` doit valoir echec si et seulement si une source est en echec")
+    lignes = d["elements"]
+    if not isinstance(lignes, list) or d["total"] != len(lignes):
+        r.erreur(ou, "`elements` doit être une liste dont la longueur égale `total`")
+        return
+    precedente = None
+    for i, l in enumerate(lignes):
+        oi = f"{ou} elements[{i}]"
+        if not isinstance(l, dict) or set(l) != index_recherche.CHAMPS_ELEMENT:
+            r.erreur(oi, f"champs attendus : {', '.join(sorted(index_recherche.CHAMPS_ELEMENT))}")
+            continue
+        if not isinstance(l["id"], str) or not l["id"] or l["perimetre"] not in index_recherche.PERIMETRES or not _est_jour(l["date"]) \
+                or not isinstance(l["titre"], str) or not isinstance(l["texte"], str):
+            r.erreur(oi, "`id`, `perimetre`, `date`, `titre` ou `texte` invalide")
+            continue
+        if l["impact"] is not None and l["impact"] not in IMPACTS:
+            r.erreur(oi, "`impact` doit valoir fort, moyen, faible, nul ou null")
+        if len(l["texte"]) > index_recherche.MAX_TEXTE:
+            r.erreur(oi, f"`texte` dépasse {index_recherche.MAX_TEXTE} caractères")
+        if l["date"] not in jours_connus.get(l["perimetre"], {l["date"]}):
+            r.erreur(oi, "`date` absente de `sources.<périmètre>.jours`")
+        cle = (l["date"], l["perimetre"], l["id"])
+        if precedente is not None and cle > precedente:
+            r.erreur(oi, "tri attendu : date décroissante, puis périmètre et id décroissants")
+        precedente = cle
+
+
 def verifier_semaine(racine: Path, r: Rapport) -> None:
     """D98 : docs/data/semaine/AAAA-Www.json et index.json, écrits par scripts/semaine.py (champs recopiés, aucun texte rédigé)."""
     dossier = racine / "docs" / "data" / "semaine"
@@ -1223,6 +1286,7 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
         verifier_versions(racine, r)  # D55 : chemin de Claude Code
         verifier_etat(racine, r)  # D65
         verifier_semaine(racine, r)  # D98
+        verifier_recherche(racine, r)  # D114
     connus = ids_kb(racine, perimetre)
     if connus is not None:
         for d, q in quotidiens.items():
