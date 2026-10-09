@@ -138,7 +138,7 @@
    "categorie": "fonctionnalites",
    "nom": "Manage multiple agents with agent view",
    "gabarit": "complet",
-   "description": "`claude agents` ouvre un écran unique qui liste les sessions en arrière-plan : en cours, en attente d'une réponse, terminées. On y lance une tâche par prompt (chacun démarre une nouvelle session), on jette un œil à une ligne avec `Espace` pour répondre, et on s'y attache pour la conversation complète. Aperçu de recherche ; chaque session consomme le quota séparément.",
+   "description": "`claude agents` ouvre un écran unique qui liste les sessions en arrière-plan : en cours, en attente d'une réponse, terminées. On y lance une tâche par prompt (chacune démarre une nouvelle session), on jette un œil à une ligne avec `Espace` pour répondre, et on s'y attache pour la conversation complète. Aperçu de recherche ; chaque session consomme le quota séparément.",
    "description_source": "Dispatch and manage many Claude Code sessions from one screen. Agent view shows what every session is doing and which ones need your input.",
    "usage": "    claude agents",
    "usage_nature": "syntaxe",
@@ -146,8 +146,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Avec six sessions tmux pilotées depuis l'iPhone, une vue d'ensemble de ce qui attend une réponse aiderait sur la machine ; reste à vérifier si des sessions lancées par systemd hors d'agent view y apparaissent, ce que la page ne dit pas dans son introduction."
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions sont interactives sous tmux (services `claude-session@<nom>`), et la page précise que les sessions ouvertes dans d'autres terminaux n'apparaissent pas tant qu'on ne les passe pas en arrière-plan ; OPÉRER (`operer etat`) tient déjà la vue d'ensemble."
    },
    "sources": [
     {
@@ -160,7 +160,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -173,10 +173,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables `claude-session@<nom>` sous tmux, interactives, pilotées par Remote Control."
+    },
+    "methode.operer": {
+     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "pourquoi": "OPÉRER tient missions, incidents et état des sessions (`operer etat`, `operer qui`)."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-agents",
@@ -188,12 +202,12 @@
    "description_source": "Compare the ways Claude Code can take on multiple tasks at once: subagents, agent view, agent teams, dynamic workflows, and projects.",
    "usage": "claude agents",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude agents",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Workflow (13 appels) et Agent (2) figurent déjà dans l'usage observé, à côté de la messagerie entre sessions ; cette page sert à choisir le mécanisme le moins coûteux pour une campagne trading-sim."
+    "verdict": "ignorer",
+    "pourquoi": "Ton organisation est déjà arrêtée : sous-agents `Explore` pour lire les gros fichiers, un worktree par mission via OPÉRER, messagerie entre sessions, Workflow seulement sur ton accord ; la page ne servirait qu'à réexaminer ce choix."
    },
    "sources": [
     {
@@ -206,7 +220,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -219,10 +233,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés (31 appels au 04/10) ; `Explore` pour les gros fichiers ; Workflow seulement sur accord de Sylvain."
+    },
+    "methode.missions": {
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+     "pourquoi": "Une branche et un worktree par mission, créés par `git worktree add` ou par OPÉRER."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-fonctionnalites-page-artifacts",
@@ -280,12 +308,12 @@
    "description_source": "Tell the auto mode classifier which repos, buckets, and domains your organization trusts. Set environment context, override the default block and allow rules, and inspect your effective config with the auto-mode CLI subcommands.",
    "usage": "{\n  \"permissions\": {\n    \"ask\": [\n      \"Bash(git push *)\",\n      \"Bash(gh pr create *)\"\n    ]\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude auto-mode config",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "CONTEXTE relève que le classificateur du mode auto bloque certaines écritures système ; revoir les refus et la configuration effective avec `claude auto-mode` dirait si ces blocages se règlent par une règle ou relèvent du `sudo -A` déjà limité."
+    "verdict": "ignorer",
+    "pourquoi": "Depuis le 06/10 tes sessions locales tournent en `bypassPermissions`, ce qui a levé les refus du classificateur du mode auto : sa configuration ne joue plus, sauf si une session revenait au mode auto."
    },
    "sources": [
     {
@@ -298,7 +326,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -311,10 +339,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en `bypassPermissions` depuis le 06/10, sauf trading."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Refus du classifieur du mode auto : friction levée le 06/10 par `bypassPermissions`."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-best-practices",
@@ -508,10 +550,10 @@
    "usage_nature": "syntaxe",
    "exemple": "claude --cloud \"Execute the migration plan in docs/migration-plan.md\"",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Lancer depuis l'iPhone `claude --cloud` sur une correction de carnet, puis la rapatrier avec `--teleport` : la tâche ne dépendrait ni du Wi-Fi fragile ni de la machine lente. Elle n'a pas accès aux fichiers locaux ; trading-sim, privé et sous politique de capacités, en reste exclu."
+    "verdict": "utiliser",
+    "pourquoi": "OPÉRER confie déjà des missions `code` et `mecanique` à l'exécutant `claude-cloud`, et tes crédits Claude Code cloud (216 $ relevés le 07/10) sont à utiliser avant le 05/11 : vérifie le solde dans `operer qui` chaque semaine d'ici là. L'archivage d'une session cloud ne se fait encore que dans claude.ai/code et l'app, pas par la CLI."
    },
    "sources": [
     {
@@ -524,7 +566,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -545,19 +587,28 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Frictions : Wi-Fi fragile et machine lente ; iPhone comme interface de pilotage."
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Crédits Claude Code cloud à utiliser avant le 05/11/2026, solde de 216 $ relevé par OPÉRER le 07/10."
     },
-    "projet.carnet": {
-     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "PWA publiée sur GitHub Pages, candidate naturelle à une session cloud."
+    "methode.operer": {
+     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "pourquoi": "Exécutant `claude-cloud`, limité aux natures `code` et `mecanique`, crédits à épuiser avant le 05/11."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Pas de commande CLI d'archivage d'une session cloud au 08/10 ; archivage dans claude.ai/code et l'app."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-directory",
@@ -569,12 +620,12 @@
    "description_source": "Where Claude Code reads CLAUDE.md, settings.json, hooks, skills, commands, subagents, workflows, rules, and auto memory. Explore the .claude directory in your project and ~/.claude in your home directory.",
    "usage": "claude purge ~/work/my-repo --dry-run",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude purge ~/projets/.worktrees/delta-ia/<mission> --dry-run",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Carte utile pour les pistes de CONTEXTE.md : le `~/.claude/CLAUDE.md` global n'existe que depuis le 24/09, avec la seule consigne delta-ia, et il n'y a encore aucun hook, commande ni agent perso. `claude purge` est irréversible : le lancer d'abord avec `--dry-run`."
+    "pourquoi": "Après un `operer menage --appliquer`, `claude purge <worktree retiré> --dry-run` montrerait les données locales que Claude Code garderait encore pour ce worktree, sans rien effacer ; sans `--dry-run`, la suppression est irréversible."
    },
    "sources": [
     {
@@ -587,7 +638,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -608,15 +659,20 @@
     {
      "date": "2026-10-03",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Pistes 1, 3 et 5 : CLAUDE.md global minimal, aucun hook, aucune commande perso."
+    "methode.missions": {
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+     "pourquoi": "Worktrees par mission sous `~/projets/.worktrees/<projet>/<mission>`, retirés par `operer menage --appliquer`."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-projects",
@@ -629,11 +685,11 @@
    "usage": "This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.\n\n- Branch from main and open one draft pull request per thread.\n- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.\n- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.\n- Don't merge, force-push, or change CI configuration without asking me in the thread.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": "Pro et Max (bêta publique, déploiement progressif) ; claude.ai/code, onglet Code de l'app de bureau, app iOS",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le déploiement commence par les comptes sans Projets claude.ai, or tu en as trois : vérifie si « Projects » apparaît dans la barre latérale de claude.ai/code, sinon la liste d'attente. Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone, en surveillant Paramètres > Utilisation, car un projet use plus vite les limites hebdomadaires."
+    "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie d'abord que « Projects » apparaît dans la barre latérale de claude.ai/code, puis suis Paramètres > Utilisation, car un projet use plus vite les limites que tu dois jauger pour le bilan de l'essai Max (20x) avant le 07/11."
    },
    "sources": [
     {
@@ -646,7 +702,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -667,21 +723,25 @@
     {
      "date": "2026-10-04",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "094c45aa9d9507647de1778984e71d4302567ccf",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "3 Projets claude.ai existants ; Projets en profondeur à explorer ; app iPhone pour piloter."
     },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "Dépôt public sur GitHub, candidat à des fils cloud."
     },
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : limites hebdomadaires approchées, à surveiller avant tout usage parallèle."
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11."
     }
    }
   },
@@ -1322,12 +1382,12 @@
    "description_source": "Understand when to use CLAUDE.md, Skills, subagents, hooks, MCP, and plugins.",
    "usage": "/deploy",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/deploy",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "CONTEXTE note aucun hook, aucune commande ni agent perso alors que des gestes reviennent (relais de mission, revue machine, contrôle SHA-256) ; ce tableau aide à choisir le bon mécanisme pour chacun."
+    "verdict": "ignorer",
+    "pourquoi": "Tes choix sont arrêtés (scripts de `~/.local/bin` plutôt que commandes slash, un hook `PermissionDenied`, sous-agents `Explore`) ; la mise en œuvre passe par les fiches hooks, skills et sous-agents, pas par cette carte générale."
    },
    "sources": [
     {
@@ -1340,7 +1400,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1353,10 +1413,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Aucune commande slash perso, scripts de `~/.local/bin` ; un seul hook `PermissionDenied` ; agent `executant` non adopté."
+    },
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés, `Explore` pour les gros fichiers."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-fullscreen",
@@ -1586,12 +1660,12 @@
    "description_source": "Run shell commands automatically when Claude Code edits files, finishes tasks, or needs input. Format code, send notifications, validate commands, and enforce project rules.",
    "usage": "    {\n      \"hooks\": {\n        \"Notification\": [\n          {\n            \"matcher\": \"\",\n            \"hooks\": [\n              {\n                \"type\": \"command\",\n                \"command\": \"osascript -e 'display notification \\\"Claude Code needs your attention\\\" with title \\\"Claude Code\\\"'\"\n              }\n            ]\n          }\n…",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"hooks\": {\n    \"Notification\": [\n      {\n        \"matcher\": \"\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"notify-send 'Claude Code' 'Claude Code needs your attention'\"\n          }\n        ]\n      }\n    ]\n  }\n}",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "CONTEXTE relève aucun hook alors que des contrôles se répètent à la main : vérification SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f` ; un hook `PreToolUse` sur Bash pourrait bloquer ce dernier sur herbin-trading."
+    "pourquoi": "Tu as un hook, `PermissionDenied` → `operer refus` ; la piste 3 vise le contrôle SHA-256 des missions, fait à la main : un hook `PreToolUse` qui compare un fichier de mission à son `.sha256` avant lecture arrêterait une mission altérée avant exécution."
    },
    "sources": [
     {
@@ -1604,7 +1678,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1617,10 +1691,28 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook au 07/10 : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : vérification SHA-256 des missions et `PYTHONDONTWRITEBYTECODE=1` refaits à la main, candidats à des hooks."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Missions hachées, empreinte SHA-256 dans un fichier `.sha256` séparé."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-how-claude-code-works",
@@ -1920,8 +2012,8 @@
    "description_source": "Start, monitor, and steer Claude Code tasks from your phone with the Claude app for iOS and Android.",
    "usage": "/mobile",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": "iOS et Android",
+   "exemple": "/mobile",
+   "disponibilite": "iOS, Android",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
@@ -1938,7 +2030,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1979,23 +2071,28 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
      "pourquoi": "iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS)."
     },
     "usage.hors-machine": {
-     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "App iPhone surtout pour piloter les sessions ; priorité : échanges Cowork (Dispatch compris) ↔ Claude Code."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Dispatch visible comme session Remote Control ; nouvelles tâches Cowork dans le cloud depuis le 06/10."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-fonctionnalites-page-model-config",
@@ -2503,11 +2600,11 @@
    "usage": "    /sandbox",
    "usage_nature": "syntaxe",
    "exemple": "claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'",
-   "disponibilite": "Linux, WSL2",
+   "disponibilite": "Linux (bubblewrap et socat requis)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur trading-sim, la règle « aucun accès web » ne couvre que WebFetch, WebSearch et les connecteurs : une session lancée avec `claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` couperait aussi le réseau des commandes Bash (un `curl` doit échouer), sans rien écrire ; choisir un mode dans `/sandbox` l'enregistre dans `.claude/settings.local.json`, et le réglage durable de ce dépôt passe par Work."
+    "pourquoi": "Sur trading-sim, la règle « aucun accès web » ne couvre que WebFetch, WebSearch, le navigateur et les connecteurs : une session lancée avec `claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` couperait aussi le réseau des commandes Bash (un `curl` doit échouer), sans rien écrire. Choisir un mode dans `/sandbox` l'enregistre dans `.claude/settings.local.json`, et le réglage durable de ce dépôt passe par Work."
    },
    "sources": [
     {
@@ -2520,7 +2617,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2537,9 +2634,13 @@
     {
      "date": "2026-10-04",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -2547,13 +2648,14 @@
     },
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Règle « aucun accès web en Lot 001 » ; réglages de trading-sim gouvernés par Work."
+     "pourquoi": "Règle « aucun accès web en Lot 001 » ; dépôt trading-sim gouverné par Work."
     },
     "env.machine": {
-     "sha1": "5fa0b41bfd6b5c4fa2d3368879dd62550fd30402",
-     "pourquoi": "Linux Mint 22.1 : bubblewrap et socat requis."
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Linux Mint 22.1 : `bubblewrap` et `socat` requis."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-scheduled-tasks",
@@ -2831,10 +2933,10 @@
    "usage_nature": "syntaxe",
    "exemple": "---\nname: code-reviewer\ndescription: Reviews code for quality and best practices\ntools: Read, Glob, Grep\nmodel: sonnet\n---\n\nYou are a code reviewer. When invoked, analyze the code and provide\nspecific, actionable feedback on quality, security, and best practices.",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Ton agent `executant` a été testé une fois sans être adopté ; un second essai viserait la revue machine d'une campagne (piste 5) : un sous-agent en lecture seule (`tools: Read, Glob, Grep`), avec son `model:` dans la définition, lancé depuis herbin-mint."
+    "verdict": "utiliser",
+    "pourquoi": "Tes sessions appellent déjà des sous-agents (31 appels relevés le 04/10, surtout `general-purpose` et `Explore`), et les briefs confient la lecture des gros fichiers à `Explore` ; une définition propre fixe `model:` et `tools:`, conformément à la politique du pilote Routage (modèle dans chaque définition plutôt qu'un défaut global)."
    },
    "sources": [
     {
@@ -2847,7 +2949,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2892,23 +2994,24 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "31 appels `Agent` en cinq jours au 04/10 ; consigne : `Explore` pour lire les gros fichiers, vérifications en parallèle."
+    },
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Agent perso executant testé le 25/09, non adopté ; modèle fixé dans chaque définition de sous-agent."
-    },
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 5 : revue machine d'une campagne, geste répété sans commande ni agent perso."
-    },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint fait la revue machine des calculs lourds avant lancement."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Modèle choisi dans la définition de chaque sous-agent ; agent perso `executant` non adopté."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-terminal-config",
@@ -3235,10 +3338,10 @@
    "usage_nature": "syntaxe",
    "exemple": "---\nname: refactorer\ndescription: Applies mechanical refactors across many files\nisolation: worktree\n---\n\nApply the requested refactor across every affected file, then run the tests\nand report the results.",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "herbin-delta et delta-ia travaillent dans le même dossier `~/projets/delta-ia` ; un worktree pour la session de développement éviterait qu'un changement en cours croise un passage quotidien. Ajouter `.claude/worktrees/` au `.gitignore`."
+    "verdict": "ignorer",
+    "pourquoi": "Tes worktrees sont créés par `git worktree add` ou par OPÉRER sous `~/projets/.worktrees/<projet>/<mission>`, et l'option `--worktree` n'est pas utilisée ; elle ouvrirait un second emplacement, `.claude/worktrees/`, que le ménage d'OPÉRER ne suivrait pas forcément."
    },
    "sources": [
     {
@@ -3251,7 +3354,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3264,10 +3367,20 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
+     "pourquoi": "Worktrees par `git worktree add` ou OPÉRER ; ni `--worktree` ni hooks `WorktreeCreate`/`WorktreeRemove` utilisés."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-fonctionnalites-page-10065433-install-claude-desktop",
@@ -3811,7 +3924,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La mémoire claude.ai est activée et jugée utile ; pour une conversation ou une tâche Cowork sans rapport avec tes Projets claude.ai, coupe-la avant le premier message via « + » > « Memory », réglage qui ne se change plus ensuite."
+    "pourquoi": "La mémoire claude.ai est activée et jugée utile ; pour une conversation sans rapport avec tes Projets claude.ai, coupe-la avant le premier message via « + » > « Memory »."
    },
    "sources": [
     {
@@ -3824,7 +3937,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3869,12 +3982,16 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Mémoire claude.ai activée et jugée utile ; trois Projets claude.ai ; Cowork à explorer."
     }
    }
@@ -5019,11 +5136,11 @@
    "usage": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "offres payantes (Pro, Max, Team, Enterprise)",
+   "disponibilite": "Max (inclus jusqu'à 50 % des limites hebdomadaires) ; Pro en crédits d'usage",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton Max (5x) est arrivé à échéance le 06/10 et un réabonnement par le web est annoncé : vérifie dans Paramètres > Utilisation que le plan repris est bien un Max avant de lancer Fable, car sur Pro Fable passe d'emblée en crédits payants. Sur Max, le plafond Fable de 50 % atteint fait aussi basculer vers ces crédits."
+    "pourquoi": "Ton Max (20x), à l'essai jusqu'au 07/11, inclut Fable jusqu'à 50 % des limites hebdomadaires, puis le fait basculer en crédits d'usage payants : vérifie la part Fable dans Paramètres > Utilisation avant chaque mission longue en Fable, et note-la pour le bilan d'usage d'avant le 07/11."
    },
    "sources": [
     {
@@ -5036,7 +5153,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5085,13 +5202,17 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "profil": {
-     "sha1": "0085259f8f744f9a91d172363e7fde3929c411df",
-     "pourquoi": "Max (5x) pris par iOS, arrivé à échéance le 06/10/2026 ; réabonnement par le web à venir."
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) pris le 07/10, à l'essai d'un mois, bilan d'usage à préparer avant le 07/11."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -5635,7 +5756,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5688,12 +5809,16 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Claude : artefacts utilisés ; app iPhone surtout pour piloter les sessions Claude Code ; Claude Desktop : toutes ses fonctions utiles voulues."
     },
     "config.claude-code.skills": {
@@ -5730,7 +5855,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5763,12 +5888,16 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "3 Projets claude.ai, dont « Web app ia » ; Projets en profondeur à explorer."
     }
    }

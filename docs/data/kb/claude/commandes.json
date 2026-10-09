@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-08",
+ "maj_le": "2026-10-09",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -275,12 +275,12 @@
    "description_source": "List the artifacts you own or that are shared with you, then attach one to the session, open it in your browser, or copy its link. Available where artifacts are. Requires Claude Code v2.1.208 or later; attaching with Enter requires v2.1.216",
    "usage": "/artifacts",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/artifacts",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu utilises les artefacts dans Claude : dans la session Design sous tmux, `/artifacts` puis Entrée sur une maquette de Claude Design l'attacherait à la session sans recopier son contenu à la main ; vérifier que la session lit bien l'artefact attaché."
+    "pourquoi": "Dans la session Design sous tmux, `/artifacts` puis Entrée sur une maquette produite par Claude Design l'attacherait à la session sans recopier son contenu à la main ; vérifier que la session lit bien l'artefact attaché."
    },
    "sources": [
     {
@@ -293,7 +293,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -326,12 +326,16 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "8c494e0d26549a02cd0c78fa734ccac91a8f0913",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Claude : artefacts utilisés."
     },
     "methode.juger-design": {
@@ -342,7 +346,8 @@
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Claude Design utilisé intensivement pour les interfaces Delta."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-auto-mode-setup",
@@ -639,12 +644,12 @@
    "description_source": "Ask a side question about the current session without adding to the conversation. If you run /btw without a question, Claude Code shows your most recent side question so you can browse earlier answers; if you haven't asked one yet, Claude Code prints a usage line. Before v2.1.212, /btw required a question",
    "usage": "/btw [question]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/btw la branche de cette mission est-elle déjà fusionnée dans main ?",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; sur une session de chef ou de dev en pleine mission, une vérification posée en `/btw` ne s'ajoute pas au contexte de la mission."
+    "pourquoi": "Tu la tapes déjà ; dans une session de chef ou de dev en pleine mission, une vérification posée en `/btw` ne s'ajoute pas au contexte de la mission."
    },
    "sources": [
     {
@@ -657,7 +662,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -706,19 +711,24 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "`/btw` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
     "methode.organisation": {
-     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
-     "pourquoi": "Chefs et devs mènent des missions successives dans des sessions durables."
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+     "pourquoi": "Chefs et devs mènent des missions successives ; un dev est vidé avant chaque mission."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-bug",
@@ -1624,12 +1634,12 @@
    "description_source": "Print read-only installation and settings diagnostics from the terminal without starting a session, including install health, settings-file validation errors, and Remote Control eligibility. For the in-session setup checkup that can also apply fixes, run /doctor — claude doctor",
    "usage": "claude doctor",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude doctor",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après le prochain `claude update`, lancer `claude doctor` depuis herbin-mint : il dirait d'un coup si l'installation native est saine, si un fichier de réglages est invalide et si Remote Control reste éligible pour tes services, sans ouvrir de session."
+    "pourquoi": "Après le prochain `claude update`, lancer `claude doctor` depuis herbin-mint : il dirait d'un coup si l'installation native est saine, si un fichier de réglages est invalide et si Remote Control reste éligible pour tes services `claude-session@<nom>`, sans ouvrir de session."
    },
    "sources": [
     {
@@ -1642,7 +1652,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1659,23 +1669,28 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Installation mise à jour par `claude update` ; mécanisme exact des mises à jour inconnu."
     },
     "methode.organisation": {
-     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
      "pourquoi": "herbin-mint gère la machine (installations, services, réglages)."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Services `claude-session@<nom>` lancés avec `--remote-control <nom>`."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-import-source",
@@ -2616,12 +2631,12 @@
    "description_source": "Start a new conversation with empty context. Pass a name to label the previous conversation in the /resume picker. To free up context while continuing the same conversation, use /compact instead. Resume the previous conversation with /resume, or, in the same Claude Code process, restore it from the rewind menu's previous-session entry. Aliases: /reset, /new",
    "usage": "/clear [name]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/clear mission-precedente",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "`mission-dev` vide déjà le dev par `/clear` avant chaque mission ; le conseiller est perdu au passage, d'où `--advisor`. Passer un nom (`/clear <mission>`) garderait la mission précédente retrouvable dans `/resume`."
+    "pourquoi": "`mission-dev` vide déjà le dev par `/clear` avant chaque mission, et le conseiller est perdu au passage, d'où `--advisor`. Passer l'id de la mission précédente (`/clear <id>`) la garderait retrouvable dans `/resume`."
    },
    "sources": [
     {
@@ -2634,7 +2649,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2675,19 +2690,28 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "exemple ajouté"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "b42e47d47b6e253054f499278ff7cde2514e89cf",
      "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant une mission ; le conseiller ne survit pas à un `/clear`."
     },
     "methode.organisation": {
-     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
      "pourquoi": "Un dev est vidé avant chaque mission."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-color",
@@ -2699,7 +2723,7 @@
    "description_source": "Set the prompt bar color for the current session. Available colors: red, blue, green, yellow, purple, orange, pink, cyan. Use default to reset, or run with no argument to pick a random color. When Remote Control is connected, the color syncs to claude.ai/code. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later",
    "usage": "/color [color|default]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/color purple",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -2717,7 +2741,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2734,19 +2758,24 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.organisation": {
-     "sha1": "2f91bf8cd2e65c4c215460fa50ae213102d16495",
-     "pourquoi": "Un chef par projet, des devs (Dev-delta, Dev-discipline), une session Design."
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+     "pourquoi": "Un chef par projet, des devs (Dev-delta, Dev-discipline, Dev-core), une session Design."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-compact",
@@ -3752,12 +3781,12 @@
    "description_source": "View hook configurations",
    "usage": "/hooks",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/hooks",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une fois écrit un hook `PreToolUse` qui vérifie le `.sha256` d'une mission herbin-trading (piste 3), taper `/hooks` pour confirmer qu'il est chargé avant le premier lancement."
+    "pourquoi": "Taper `/hooks` dans une session de dev doit montrer ton seul hook, `PermissionDenied` → `operer refus` de `~/.claude/settings.json` ; refaire la vérification après l'ajout d'un hook de la piste 3 (contrôle SHA-256 des missions)."
    },
    "sources": [
     {
@@ -3770,7 +3799,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3795,19 +3824,24 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Hooks : aucun ; hook de test installé le 26/09, retiré le 27/09."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook au 07/10 : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`."
     },
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 3 : aucun hook ; vérification SHA-256 des missions faite à la main."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : contrôles répétés à la main (SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`) qui pourraient devenir des hooks."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-ide",
@@ -4079,12 +4113,12 @@
    "description_source": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Requires Claude Code v2.1.224 or later; earlier versions report Unknown command: /list-agents. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
    "usage": "/list-agents",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/list-agents",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tes six sessions se parlent par `SendMessage` et `ListAgents` ; la commande affiche les noms exacts avant un relais entre herbin-trading, herbin-mint et delta-ia, mais elle double un outil que Claude appelle déjà."
+    "verdict": "utiliser",
+    "pourquoi": "Tes sessions se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code, les nouvelles tâches Cowork tournant dans le cloud depuis le 06/10."
    },
    "sources": [
     {
@@ -4097,7 +4131,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4110,10 +4144,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions reliées par `SendMessage`/`ListAgents` ; `/list-agents` montre Dispatch (observé 25/09) ; Cowork dans le cloud depuis le 06/10."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Priorité de veille : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-login",
@@ -4209,12 +4257,12 @@
    "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. Also available in non-interactive mode (-p), where running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
    "usage": "/mcp [reconnect (<server>|all)|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/mcp reconnect delta-ia",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) ; `disable` les retirerait des sessions qui n'en ont pas besoin. C'est aussi par là que le connecteur de compte Delta-IA pourrait être coupé dans herbin-trading, si Work le décide."
+    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) : `/mcp disable <server>` dans une session de dev les retirerait sans dialogue, et `/mcp reconnect delta-ia` relancerait le connecteur local s'il décroche. Sur trading-sim, couper le connecteur Delta-IA reste une décision de Work."
    },
    "sources": [
     {
@@ -4227,7 +4275,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4252,19 +4300,24 @@
     {
      "date": "2026-10-03",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 9 : connecteurs connectés mais jamais appelés dans Claude Code."
     },
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Écart trading-sim : le connecteur de compte Delta-IA y est reçu malgré la règle sans accès web."
+     "pourquoi": "Connecteur MCP local `delta-ia` ; écart trading-sim sur les connecteurs de compte, question transmise à Work."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-memory",
@@ -4555,12 +4608,12 @@
    "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. When you run it while Claude is responding, Claude Code opens the dialog immediately and applies your changes starting with Claude's next tool call in the same turn. Before v2.1.234, Claude Code queued the command until the turn finished. Alias: /allowed-tools",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/permissions",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "L'onglet des refus récents du mode auto montrerait quelles écritures système le classificateur bloque, au lieu de les découvrir en cours de tâche ; les règles ajoutées ici sont durables dans la portée choisie."
+    "verdict": "ignorer",
+    "pourquoi": "Depuis le 06/10 tes sessions locales tournent en `bypassPermissions` (sauf trading) et la liste `allow` n'est plus déterminante : les règles et refus du mode auto que montre ce dialogue ne changent plus rien hors de trading-sim, dont les réglages relèvent de Work."
    },
    "sources": [
     {
@@ -4573,7 +4626,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4586,10 +4639,28 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en `bypassPermissions` depuis le 06/10, sauf trading."
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "La liste `allow` globale subsiste mais n'est plus déterminante depuis le 06/10."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Dépôt trading-sim gouverné par Work ; herbin-mint n'y touche pas."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-plan",
@@ -4908,12 +4979,12 @@
    "description_source": "Show ways to keep working when a claude.ai usage limit blocks a request: wait and continue automatically when the limit resets, add usage credits, or upgrade your plan. Claude Code can also open this menu on its own when you hit a limit at your own terminal. See Turn automatic continue off. Requires a claude.ai subscription. The wait-and-continue rows require Claude Code v2.1.234 or later",
    "usage": "/rate-limit-options",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/rate-limit-options",
    "disponibilite": "abonnement claude.ai",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À la prochaine limite atteinte sur herbin-trading, taper `/rate-limit-options` et choisir l'attente avec reprise automatique, puis vérifier que la mission repart seule à la réinitialisation sans relance depuis l'iPhone."
+    "pourquoi": "À la prochaine limite atteinte dans une session de dev sous tmux, taper `/rate-limit-options` et choisir l'attente avec reprise automatique, puis vérifier que la mission repart seule à la remise à zéro sans relance depuis l'iPhone. Le menu propose aussi des crédits payants : à écarter tant que l'essai Max (20x) n'a pas fait son bilan, avant le 07/11."
    },
    "sources": [
     {
@@ -4926,7 +4997,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4947,19 +5018,28 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes ; pilotage depuis l'iPhone."
     },
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11."
+    },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-trading exécute les missions longues de trading-sim."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables sous tmux, pilotées depuis l'iPhone."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-recap",
@@ -6408,12 +6488,12 @@
    "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. /cost and /stats are aliases",
    "usage": "/usage",
    "usage_nature": "syntaxe",
-   "exemple": null,
-   "disponibilite": null,
+   "exemple": "/usage",
+   "disponibilite": "Pro, Max, Team, Enterprise (détail des limites)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton Max (5x) pris par iOS est arrivé à échéance le 06/10 et un réabonnement par le web est annoncé : dès qu'il est fait, vérifie avec `/usage` le plan affiché et ses limites avant la prochaine mission longue. La chaîne de nuit s'arrête au-delà de 98 % de la semaine ou de 80 % de la session 5 h."
+    "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11 avec un bilan d'usage à préparer avant : relève `/usage` chaque semaine d'ici le 03/11, son détail de ce qui compte dans les limites étaye ce bilan. La chaîne de nuit s'arrête au-delà de 98 % de la semaine ou de 80 % de la session 5 h."
    },
    "sources": [
     {
@@ -6426,7 +6506,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6451,13 +6531,17 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "profil": {
-     "sha1": "0085259f8f744f9a91d172363e7fde3929c411df",
-     "pourquoi": "Max (5x) pris par iOS, arrivé à échéance le 06/10/2026 ; réabonnement par le web à venir."
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) pris le 07/10, à l'essai d'un mois, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta)."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -6467,7 +6551,8 @@
      "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
      "pourquoi": "Garde de la chaîne D70 : arrêt au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-usage-credits",

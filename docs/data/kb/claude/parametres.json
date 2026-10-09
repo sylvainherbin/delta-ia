@@ -5190,8 +5190,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Si le classificateur du mode auto bloque encore une écriture système sur herbin-mint, relancer la session avec `CLAUDE_CODE_AUTO_MODE_SERVER=0` permettrait de voir si l'autre classificateur tranche autrement."
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions locales tournent en `bypassPermissions` depuis le 06/10, sans classificateur du mode auto à régler."
    },
    "sources": [
     {
@@ -5204,7 +5204,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5221,13 +5221,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Friction récurrente : le classificateur du mode auto bloque certaines écritures système."
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en `bypassPermissions` depuis le 06/10, sauf trading."
     }
    }
   },
@@ -7676,8 +7680,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Posée dans l'environnement d'un seul service `claude-session@`, elle fixerait l'effort de cette session, bas pour herbin-mint, haut pour herbin-trading, pour répartir tes limites ; elle bloquerait alors `/effort` dans cette session."
+    "verdict": "ignorer",
+    "pourquoi": "Tes services `claude-session@<nom>` fixent déjà l'effort par rôle avec `--effort`, que cette variable écraserait, comme `/effort` dans la session."
    },
    "sources": [
     {
@@ -7690,7 +7694,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7699,10 +7703,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque service lance `claude` avec un modèle et un effort propres au rôle (par exemple `--model opus --effort medium`)."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-emit-session-state-events",
