@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 101,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -4536,16 +4536,16 @@
    "categorie": "fonctionnalites",
    "nom": "Assign tasks from anywhere in Claude Cowork",
    "gabarit": "complet",
-   "description": "Dispatch permet d'envoyer une tâche depuis le téléphone pour qu'elle s'exécute sur l'ordinateur, qui doit rester allumé avec Claude Desktop ouvert. Bêta limitée sur Pro et Max, Dispatch n'est plus ouvert aux nouveaux utilisateurs.",
+   "description": "Dispatch donne une seule conversation continue avec Claude, joignable du téléphone ou de l'ordinateur, qui exécute les tâches sur l'ordinateur (machine allumée, Claude Desktop ouvert) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil avec une notification. Bêta limitée sur Pro et Max, fermée aux nouveaux utilisateurs ; une note de la page annonce que Cowork et chat fusionnent progressivement en un seul Claude sur Pro et Max, ce qui peut changer certaines étapes.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post.",
    "usage": "1. Download or update Claude Desktop.\n2. Download or update Claude for iOS or Android.\n3. Open Cowork on either your phone or your desktop.\n4. Click “Dispatch” on the left side panel.\n5. You’ll land on a page describing the functionality. Click “Get started”:",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta limitée, fermée aux nouveaux utilisateurs) ; Claude Desktop (macOS, Windows x64, Linux) et app mobile",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu as déjà une conversation Dispatch : lui demander de créer une session Code (`start_code_task`) sur delta-ia, puis vérifier qu'elle apparaît dans `/list-agents` et ce qu'il en lit par `read_transcript`, ce qui confirmerait ce que Dispatch a rapporté le 25/09."
+    "pourquoi": "Ta conversation Dispatch existe déjà, et la page dit qu'il exécute sur l'ordinateur, à la différence des nouvelles tâches Cowork passées au cloud le 06/10 : lui confier une tâche de développement sur delta-ia, puis vérifier que la session Claude Code créée apparaît dans `/list-agents`, trancherait le point « à vérifier » de CONTEXTE.md."
    },
    "sources": [
     {
@@ -4554,7 +4554,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -4579,16 +4579,20 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Dispatch visible en Remote Control ; start_code_task et read_transcript rapportés, non vérifiés."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Dispatch visible comme session Remote Control (25/09) ; tâches Cowork de Dispatch absentes de `ListAgents` : déduit, à vérifier."
     },
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Priorité déclarée : échanges directs entre sessions Cowork, dont Dispatch, et sessions Claude Code."
     }
    }
@@ -4695,16 +4699,16 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude use your computer in Cowork",
    "gabarit": "complet",
-   "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur, et en dernier recours par l'écran (clics, saisie). Bêta sur Pro et Max.",
+   "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur (intégré ou Claude in Chrome), et en dernier recours par l'écran (clics, saisie), après une autorisation par application. Bêta sur Pro et Max, sous macOS et Windows ; Cowork et chat fusionnent progressivement en un seul Claude.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post.",
    "usage": "1. **Connectors.** If a connector is available—like Gmail, Google Drive, Microsoft 365, or Slack—Claude uses it. This is the fastest and most reliable path.\n2. **Browser.** When there isn't a connector for the tool you need, Claude may work on your task in the browser built into the Claude Desktop app, or in your own Chrome browser through Claude in Chrome if that's your preferred browser. Learn more in **[Use the built-in browser in Claude Cowork](https://support.claude.com/en/articles/16607400)**.\n3. **Screen interaction.** Claude uses computer use to interact directly with your screen: clicking, typing, and navigating your desktop apps.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta) ; Claude Desktop macOS et Windows",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé à macOS et Windows alors que la machine est sous Linux Mint."
+    "pourquoi": "La page réserve l'usage de l'ordinateur à Claude Desktop sous macOS et Windows, alors que ta machine est sous Linux Mint."
    },
    "sources": [
     {
@@ -4713,7 +4717,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -4738,13 +4742,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
-     "pourquoi": "Machine sous Linux Mint."
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Machine sous Linux Mint 22.1."
     }
    }
   },
@@ -4980,7 +4988,7 @@
    "categorie": "fonctionnalites",
    "nom": "Use live artifacts in Claude Cowork",
    "gabarit": "complet",
-   "description": "Les artefacts vivants sont ceux créés dans Cowork avant le 19 août 2026 : ils restent visibles et partageables dans l'organisation mais ne se modifient plus en place ; pour les changer, on les republie comme nouvel artefact depuis « Share », et le lien existant montre la nouvelle version. Ceux créés depuis le 19 août fonctionnent comme les autres artefacts.",
+   "description": "Les artefacts vivants sont ceux créés dans Cowork avant le 19 août 2026 : ils restent dans la vue « Artifacts », marqués « Cowork », et restent partageables, mais ne se modifient plus en place ; pour les changer, on les republie comme nouvel artefact depuis « Share », et le lien existant montre la nouvelle version. Ceux créés depuis le 19 août fonctionnent comme les autres artefacts.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post.",
    "usage": "1. Open the live artifact and click \"Share.\"\n2. Choose to republish it as a new artifact.\n3. If you already shared the live artifact, the dialog shows its existing link. People with that link see the new version.",
    "usage_nature": "etapes",
@@ -4989,7 +4997,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Cowork est seulement à explorer d'après CONTEXTE.md, qui ne décrit aucun artefact Cowork antérieur au 19 août."
+    "pourquoi": "Tu utilises les artefacts dans Claude, mais CONTEXTE.md donne Cowork comme fonction à explorer et ne cite aucun artefact créé dans Cowork avant le 19/08, seul cas concerné."
    },
    "sources": [
     {
@@ -4998,7 +5006,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -5031,13 +5039,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Cowork et routines planifiées à explorer ; artefacts, connecteurs et skills utilisés."
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Artefacts utilisés ; Cowork cité parmi les fonctions à explorer."
     }
    }
   },
@@ -5335,16 +5347,16 @@
    "categorie": "fonctionnalites",
    "nom": "Use the built-in browser in Claude Cowork",
    "gabarit": "complet",
-   "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; il peut importer les connexions depuis Firefox sous Linux. Claude Desktop doit rester ouvert et en ligne.",
+   "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; sous Linux, il peut importer les connexions enregistrées depuis Firefox. Claude Desktop doit rester ouvert et en ligne, même si la session Cowork tourne dans le cloud ; le choix entre navigateur intégré et Chrome se fait dans Settings > Cowork > Preferred browser.",
    "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that's a quick answer or a task. This is rolling out gradually to Pro and Max plans, with more plans to follow. If you're on a Pro or Max plan and your message box no longer shows \"Chat\" and \"Cowork\" options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post.",
    "usage": "1. Open the Claude Desktop app and go to **Settings > Cowork**.\n2. Under **Preferred browser**, choose “Built-in browser” or “Chrome (Claude in Chrome)”.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Team ; Claude Desktop macOS, Windows et Linux (bêta)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans Claude Desktop, Réglages > Cowork, activer le navigateur intégré et y ouvrir carnet déployé : s'il charge sans l'extension Chrome, il contourne ses déconnexions fréquentes."
+    "pourquoi": "Dans Claude Desktop, Settings > Cowork, choisir « Built-in browser » puis demander une tâche qui ouvre carnet sur GitHub Pages : si elle aboutit sans l'extension Chrome, souvent déconnectée chez toi, ce navigateur la remplacerait, à condition de laisser Claude Desktop ouvert."
    },
    "sources": [
     {
@@ -5353,7 +5365,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
@@ -5378,17 +5390,25 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Friction récurrente : extension Chrome souvent déconnectée."
     },
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Cowork et routines planifiées à explorer ; artefacts, connecteurs et skills utilisés."
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Claude Desktop : toutes ses fonctions utiles au développement voulues ; Cowork à explorer, désormais dans le cloud."
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "PWA hébergée sur GitHub Pages."
     }
    }
   },
