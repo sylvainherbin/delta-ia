@@ -58,3 +58,15 @@ def ecarter(entrees: list, exclus: list[str]) -> tuple[list, list[tuple[str, obj
         s = systeme_exclu_de(e.nom, e.description_source, exclus)
         (ecartees.append((s, e)) if s else gardees.append(e))
     return gardees, ecartees
+
+
+def systemes_cites(texte: str) -> set[str]:
+    """Systèmes (`windows`, `macos`, `linux`) nommés dans un texte, par leur expression de `SYSTEMES`."""
+    return {s for s, c in SYSTEMES.items() if re.search(c["texte"], str(texte or ""))}
+
+
+def disponibilite_exclue(disponibilite, exclus: list[str]) -> bool:
+    """D113 : vrai quand la `disponibilité` d'une fiche nomme au moins un système et que tous sont exclus par le profil
+    (« macOS ou Windows x64 », « macOS et Windows ») ; « Linux, iOS, web » ou un texte sans système ne l'est pas."""
+    cites = systemes_cites(disponibilite)
+    return bool(cites) and cites <= {s for s in exclus if s in SYSTEMES}

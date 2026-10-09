@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
+import tomllib
 import unicodedata
 import sys
 from datetime import date, timedelta
@@ -631,16 +633,41 @@ def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, depreci
 
 
 EXEMPLES_MAX = 50  # D91 : exemples à produire par lancement, en plus de `perimees` et des lots ordinaires
-EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp")  # ordre de traitement du lot `exemples`
+EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp", "parametres")  # ordre de traitement du lot `exemples`
+EXEMPLES_VERDICTS_PARAMETRES = ("utiliser", "tester")  # D113 : un paramètre n'a d'exemple que s'il vaut l'essai
 ORIGINES_EXEMPLE = ("source", "compose")
 CHAMPS_EXEMPLE = {"exemple", "exemple_origine"}
 
 
+# D113 : un paramètre a un exemple seulement quand son nom est une clé du fichier de réglage (`settings.json` de Claude Code en
+# JSON, `config.toml` de Codex en TOML) : ni option de ligne de commande (`--add-dir`), ni variable d'environnement
+# (`CLAUDE_CODE_…`), ni nom en plusieurs mots (`Hook SubagentStop`, `Réglages : Appearance`).
+_RE_CLE_REGLAGE = re.compile(r"[A-Za-z_][A-Za-z0-9_-]*(?:\.(?:[A-Za-z0-9_-]+|<[A-Za-z0-9_-]+>))*")
+FORMAT_REGLAGE = {"claude-code": "json", "claude": "json", "codex": "toml", "chatgpt": "toml"}
+FICHIER_REGLAGE = {"json": "settings.json", "toml": "config.toml"}
+
+
+def cle_de_reglage(e: dict) -> list[str] | None:
+    """D113 : chemin de la clé de réglage que désigne le nom de l'entrée (`attribution.sessionUrl` donne
+    [`attribution`, `sessionUrl`] ; un segment `<name>` est libre), ou None si le paramètre n'est pas une clé de fichier."""
+    nom = str(e.get("nom") or "").strip()
+    if e.get("categorie") != "parametres" or e.get("produit") not in FORMAT_REGLAGE or not _RE_CLE_REGLAGE.fullmatch(nom):
+        return None
+    if re.fullmatch(r"[A-Z][A-Z0-9_]+", nom):  # variable d'environnement
+        return None
+    return nom.split(".")
+
+
 def sans_exemple(e: dict) -> bool:
     """D91 : entrée commentée, de syntaxe, de l'une des catégories du lot `exemples`, sans exemple ; une entrée dont
-    `usage_nature` est `etapes` n'a jamais d'exemple et n'est donc jamais due."""
-    return (bool(e.get("commentee")) and not e.get("retiree") and e.get("categorie") in EXEMPLES_CATEGORIES
-            and e.get("usage_nature") == "syntaxe" and not str(e.get("exemple") or "").strip())
+    `usage_nature` est `etapes` n'a jamais d'exemple et n'est donc jamais due. D113 : un paramètre n'est dû que si c'est
+    une clé de fichier de réglage (`cle_de_reglage`) au verdict `utiliser` ou `tester`."""
+    if not (bool(e.get("commentee")) and not e.get("retiree") and e.get("categorie") in EXEMPLES_CATEGORIES
+            and e.get("usage_nature") == "syntaxe" and not str(e.get("exemple") or "").strip()):
+        return False
+    if e["categorie"] == "parametres":
+        return cle_de_reglage(e) is not None and (e.get("recommandation") or {}).get("verdict") in EXEMPLES_VERDICTS_PARAMETRES
+    return True
 
 
 def exemples_detail(entrees: dict[str, dict], maximum: int | None | Literal["auto"] = "auto") -> list[str]:
@@ -662,8 +689,122 @@ def options_hors_source(exemple: str, e: dict) -> list[str]:
     return sorted({o for o in re.findall(r"(?<![\w-])--[A-Za-z][\w-]*", exemple) if o not in source})
 
 
-def verifier_exemple(e: dict, exemple, origine) -> str | None:
-    """D91 : message d'erreur si (exemple, exemple_origine) viole la règle de provenance pour l'entrée `e`, sinon None."""
+RE_ARGUMENT_OBLIGATOIRE = re.compile(r"<[^<>\s]+>(?:\.\.\.)?")
+RE_MOT_LITTERAL = re.compile(r"[^-\[<{(|\s][^\s]*")
+RE_PROJET_CHEMIN = re.compile(r"(?:~|/home/[^/\s]+)/projets/([A-Za-z0-9][\w.-]*)")
+
+
+def arguments_obligatoires(usage) -> tuple[list[str], list[str]]:
+    """D113 : (mots littéraux, arguments obligatoires `<…>`) en tête de la première ligne de `usage` :
+    `codex apply <TASK_ID>` donne ([codex, apply], [<TASK_ID>]). Seuls les arguments qui suivent directement la commande
+    comptent ; `[…]`, les options et leurs valeurs (`-p <prompt>`) sont facultatifs ou conditionnels et ne sont pas contrôlés."""
+    lignes = str(usage or "").strip().splitlines()
+    mots, obligatoires = [], []
+    for t in (lignes[0].split() if lignes else []):
+        if not obligatoires and RE_MOT_LITTERAL.fullmatch(t):
+            mots.append(t)
+        elif RE_ARGUMENT_OBLIGATOIRE.fullmatch(t):
+            obligatoires.append(t.removesuffix("..."))
+        else:
+            break
+    return mots, obligatoires
+
+
+def _jetons_commande(exemple: str) -> list[str]:
+    try:
+        return shlex.split(exemple)
+    except ValueError:
+        return exemple.split()
+
+
+def argument_non_rempli(exemple: str, usage) -> str | None:
+    """D113 : message si `usage` exige un argument `<…>` que l'exemple ne remplit pas (`codex apply <TASK_ID>` et l'exemple
+    `codex apply`), ou s'il laisse le gabarit tel quel ; sinon None. Un exemple où le mot de commande n'apparaît pas n'est pas jugé."""
+    mots, obligatoires = arguments_obligatoires(usage)
+    if not obligatoires:
+        return None
+    laisses = [o for o in obligatoires if o in exemple]
+    if laisses:
+        return f"exemple : l'argument {', '.join(laisses)} de `usage` est laissé en gabarit, donne une valeur réelle ou `exemple: null`"
+    jetons = _jetons_commande(exemple)
+    for i in range(len(jetons) - len(mots) + 1):
+        if jetons[i:i + len(mots)] == mots:
+            suite = []
+            for t in jetons[i + len(mots):]:
+                if t in ("&&", "||", ";", "|"):
+                    break
+                suite.append(t)
+            if len([t for t in suite if not t.startswith("-")]) < len(obligatoires):
+                return (f"exemple : `usage` exige {' '.join(obligatoires)} et l'exemple ne le remplit pas "
+                        "(une valeur réelle, ou `exemple: null` faute d'une valeur honnête)")
+            return None
+    return None
+
+
+def projet_hors_recommandation(exemple: str, e: dict) -> str | None:
+    """D113 : message si un exemple composé cite un chemin `~/projets/<x>` alors que la recommandation (ou la description)
+    cite d'autres chemins `~/projets/<y>` et jamais `<x>` ; sinon None. Le projet nommé doit être celui de l'outil cité."""
+    cites = {p.rstrip(".-") for p in RE_PROJET_CHEMIN.findall(exemple) if not p.startswith(".")}
+    texte = f"{(e.get('recommandation') or {}).get('pourquoi') or ''}\n{e.get('description') or ''}"
+    nommes = {p.rstrip(".-") for p in RE_PROJET_CHEMIN.findall(texte) if not p.startswith(".")}
+    if cites and nommes and not cites & nommes:
+        return (f"exemple composé : le chemin {', '.join(sorted(cites))} n'est pas celui du projet nommé par la recommandation "
+                f"({', '.join(sorted(nommes))})")
+    return None
+
+
+def _feuilles(v):
+    if isinstance(v, dict):
+        for x in v.values():
+            yield from _feuilles(x)
+    elif isinstance(v, list):
+        for x in v:
+            yield from _feuilles(x)
+    else:
+        yield v
+
+
+def verifier_reglage(e: dict, exemple: str) -> str | None:
+    """D113 : forme de l'exemple d'un paramètre. Un extrait minimal du fichier de réglage, analysable (JSON pour Claude Code,
+    TOML pour Codex), dont le chemin de clés est celui du nom de l'entrée et ne porte rien d'autre ; une valeur est un booléen,
+    un nombre ou une chaîne citée par `usage` ou `description_source`, jamais inventée."""
+    cle = cle_de_reglage(e)
+    if cle is None:
+        return "pas d'exemple pour ce paramètre : ce n'est pas une clé de `settings.json` ni de `config.toml` (exemple: null)"
+    fmt = FORMAT_REGLAGE[e["produit"]]
+    try:
+        doc = json.loads(exemple) if fmt == "json" else tomllib.loads(exemple)
+    except (ValueError, tomllib.TOMLDecodeError) as err:
+        return f"exemple : {FICHIER_REGLAGE[fmt]} illisible en {fmt.upper()} : {err}"
+    noeud = doc
+    for i, seg in enumerate(cle):
+        if not isinstance(noeud, dict):
+            return f"exemple : la clé `{'.'.join(cle)}` est absente de l'extrait de {FICHIER_REGLAGE[fmt]}"
+        if i < len(cle) - 1 and len(noeud) != 1:
+            return f"exemple : extrait non minimal, `{seg}` doit être la seule clé de son niveau"
+        if re.fullmatch(r"<[^<>]+>", seg):
+            if len(noeud) != 1:
+                return f"exemple : un seul nom pour le segment `{seg}`"
+            noeud = next(iter(noeud.values()))
+        elif seg in noeud:
+            noeud = noeud[seg]
+        else:
+            return f"exemple : la clé `{'.'.join(cle)}` est absente de l'extrait de {FICHIER_REGLAGE[fmt]}"
+    source = f"{e.get('usage') or ''}\n{e.get('description_source') or ''}"
+    for v in _feuilles(noeud):
+        if isinstance(v, bool) or (isinstance(v, (int, float)) and not isinstance(v, bool)):
+            continue
+        if isinstance(v, str) and v and v in source:
+            continue
+        return f"exemple : valeur {v!r} ni booléenne, ni numérique, ni citée par `usage` ou `description_source` (valeur inventée)"
+    return None
+
+
+def verifier_exemple(e: dict, exemple, origine, exclure_systemes: list[str] | None = None) -> str | None:
+    """D91 : message d'erreur si (exemple, exemple_origine) viole la règle de provenance pour l'entrée `e`, sinon None.
+    D113 : refuse aussi un exemple quand la `disponibilite` de la fiche exclut tous les systèmes du profil
+    (`exclure_systemes`), quand `usage` exige un argument `<…>` que l'exemple ne remplit pas, quand un paramètre n'a pas la
+    forme d'un extrait du fichier de réglage, et quand un exemple composé cite le chemin d'un autre projet que celui nommé."""
     if exemple is None or (isinstance(exemple, str) and not exemple.strip()):
         return "`exemple_origine` sans `exemple`" if origine is not None else None
     if not isinstance(exemple, str):
@@ -672,11 +813,33 @@ def verifier_exemple(e: dict, exemple, origine) -> str | None:
         return "pas d'exemple pour une entrée dont `usage_nature` est `etapes` (exemple: null)"
     if origine not in ORIGINES_EXEMPLE:
         return f"`exemple_origine` attendu avec un exemple : {' ou '.join(ORIGINES_EXEMPLE)}"
+    if exclure_systemes and systemes.disponibilite_exclue(e.get("disponibilite"), exclure_systemes):
+        return (f"la disponibilité de la fiche ({e.get('disponibilite')}) exclut tous les systèmes du profil : "
+                "pas d'exemple (exemple: null)")
+    if e.get("categorie") == "parametres":
+        if (message := verifier_reglage(e, exemple)):
+            return message
+    elif (message := argument_non_rempli(exemple, e.get("usage"))):
+        return message
     if origine == "compose":
         hors = options_hors_source(exemple, e)
         if hors:
             return f"exemple composé : option(s) absente(s) de `usage` et de la source : {', '.join(hors)}"
+        if (message := projet_hors_recommandation(exemple, e)):
+            return message
     return None
+
+
+def vue_apres_commentaire(e: dict, c: dict) -> dict:
+    """D113 : l'entrée telle qu'elle sera après le commentaire `c` (description, recommandation, disponibilité), pour les
+    contrôles de l'exemple qui lisent ces champs."""
+    v = dict(e)
+    for k in ("description", "disponibilite"):
+        if k in c:
+            v[k] = c[k]
+    if isinstance(c.get("recommandation"), dict):
+        v["recommandation"] = c["recommandation"]
+    return v
 
 
 def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
@@ -713,8 +876,10 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
 
 def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
                            contexte: str | None = None, resoudre=None, journal: list | None = None,
-                           motif_de=None) -> list[str]:
+                           motif_de=None, exclure_systemes: list[str] | None = None) -> list[str]:
     """Applique {id: {description, statut_usage, recommandation, exemple?, exemple_origine?, disponibilite?}} ; jamais `usage`.
+    D113 : `exclure_systemes` (`profil.yaml`, `base.exclure_systemes`) permet de refuser l'exemple d'une fiche dont la
+    `disponibilite` exclut tous les systèmes du profil.
     D91 : `exemple` non nul exige `exemple_origine` (`source` ou `compose`) ; {exemple, exemple_origine} seuls, sur une entrée
     déjà commentée, ajoutent l'exemple sans refaire le commentaire (historique « exemple ajouté »).
     `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
@@ -739,7 +904,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
                 erreurs.append(f"{k}: ajout d'exemple réservé aux entrées commentées")
             elif not str(c.get("exemple") or "").strip():
                 erreurs.append(f"{k}: `exemple` absent")
-            elif (message := verifier_exemple(e, c.get("exemple"), c.get("exemple_origine"))):
+            elif (message := verifier_exemple(e, c.get("exemple"), c.get("exemple_origine"), exclure_systemes)):
                 erreurs.append(f"{k}: {message}")
             else:
                 e.update({"exemple": c["exemple"], "exemple_origine": c["exemple_origine"], "maj_le": jour})
@@ -756,7 +921,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
             erreurs.append(f"{k}: recommandation {{verdict, pourquoi}} invalide")
             continue
         if "exemple" in c or "exemple_origine" in c:
-            message = verifier_exemple(e, c.get("exemple"), c.get("exemple_origine"))
+            message = verifier_exemple(vue_apres_commentaire(e, c), c.get("exemple"), c.get("exemple_origine"), exclure_systemes)
             if message:
                 erreurs.append(f"{k}: {message}")
                 continue

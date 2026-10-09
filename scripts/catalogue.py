@@ -10,7 +10,7 @@ Usage :
                                                                a) section citée modifiée ou dépréciée ; adoption déclarée
                                                                d'un `ignorer` (D67) ; rejugement demandé (D78) ; `utiliser` et `tester` d'abord,
                                                                puis `ignorer` ; champ `motif`
-  catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 50 entrées commentées de syntaxe sans exemple
+  catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 50 entrées commentées de syntaxe sans exemple (D113 : et les clés de réglage `utiliser`/`tester`)
                                                                (commandes, fonctionnalites, skills, mcp ; dans chacune `utiliser`,
                                                                `tester`, puis `ignorer`) ; appliquer reçoit {id: {exemple, exemple_origine}}
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
@@ -45,6 +45,7 @@ from deltalib.kb.documentation import charger_documentation  # noqa: E402
 from deltalib.kb.modeles import CATEGORIES, gabarit_de  # noqa: E402
 from deltalib.contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections, resoudre as resoudre_sections  # noqa: E402
 from deltalib.modeles import empreinte_contexte  # noqa: E402
+from deltalib import profil  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 
@@ -201,9 +202,14 @@ def main(argv=None) -> int:
             c = cat.classer(e, courantes, dep, rejugements)
             return c[1] if c else None
         journal = []
+        try:
+            exclus = profil.charger(a.racine)["base"]["exclure_systemes"]
+        except profil.ProfilInvalide as err:
+            p.error(str(err))
         erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,
                                              resoudre=lambda cites: resoudre_sections(a.racine, cites),
-                                             journal=journal, motif_de=motif_de)
+                                             journal=journal, motif_de=motif_de,
+                                             exclure_systemes=exclus)
         for e in erreurs:
             print(f"  ! {e}", file=sys.stderr)
         if erreurs:
