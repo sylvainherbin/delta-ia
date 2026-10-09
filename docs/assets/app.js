@@ -14,7 +14,7 @@
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
-  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, noms: undefined, kbFicheId: null, rendu: 0, fenetre: null };
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, recherche: undefined, rq: { q: "", limite: 50 }, noms: undefined, kbFicheId: null, rendu: 0, fenetre: null };
   const main = document.getElementById("contenu");
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
@@ -1043,6 +1043,135 @@
     if (etat.kbATester && etat.kbATester.entrees.length) frag.append(sectionEssais(etat.kbATester));
     return frag;
   }
+  /* ---------- Recherche dans toute la veille (D113) : docs/data/recherche.json, écrit par scripts/recherche.py ---------- */
+  const RECHERCHE_PAGE = 50;
+  const RECHERCHE_MIN = 2;
+  const NOMS_PERIMETRES = { claude: "Claude", openai: "OpenAI", actu: "Actu" };
+  // pli de casse et d'accents qui garde la longueur du texte : la position d'un mot dans le texte plié est sa position dans l'original
+  function plier(s) {
+    let sortie = "";
+    for (const c of String(s || "")) {
+      const p = c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      sortie += p.length === c.length ? p : c;
+    }
+    return sortie;
+  }
+  // mots de la requête (tous doivent apparaître) ; un passage entre guillemets reste une expression
+  function termesDeRecherche(q) {
+    const termes = [];
+    const re = /"([^"]+)"|(\S+)/g;
+    const plie = plier(q);
+    let m;
+    while ((m = re.exec(plie))) {
+      const t = (m[1] || m[2] || "").replace(/^"+|"+$/g, "").trim();
+      if (t) termes.push(t);
+    }
+    return termes;
+  }
+  function ligneRechercheValide(l) {
+    return l && typeof l === "object" && typeof l.id === "string" && ISO_JOUR.test(l.date || "") && PERIMETRES.includes(l.perimetre)
+      && typeof l.titre === "string" && typeof l.texte === "string";
+  }
+  async function chargerRecherche() {
+    await unefois("recherche", async () => {
+      try {
+        const d = await lireJson("data/recherche.json");
+        if (!d || !Array.isArray(d.elements)) throw new Error("index sans `elements`");
+        const lignes = d.elements.filter(ligneRechercheValide).map((l) => ({ ...l, _titre: plier(l.titre), _texte: plier(l.texte) }));
+        etat.recherche = { doc: d, lignes };
+      } catch (e) { etat.recherche = { erreur: String(e.message || e) }; }
+    });
+  }
+  // l'index est déjà trié par date décroissante : l'ordre des résultats est celui du fichier
+  function chercherDansVeille(lignes, termes) {
+    return lignes.filter((l) => termes.every((t) => l._titre.includes(t) || l._texte.includes(t)));
+  }
+  // texte découpé en morceaux, les occurrences des termes dans des <mark> (positions lues sur le texte plié)
+  function surligner(brut, termes) {
+    const plie = plier(brut);
+    const zones = [];
+    for (const t of termes) for (let i = plie.indexOf(t); i >= 0; i = plie.indexOf(t, i + t.length)) zones.push([i, i + t.length]);
+    zones.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+    const fusion = [];
+    for (const z of zones) {
+      const dernier = fusion[fusion.length - 1];
+      if (dernier && z[0] <= dernier[1]) dernier[1] = Math.max(dernier[1], z[1]);
+      else fusion.push([z[0], z[1]]);
+    }
+    const morceaux = [];
+    let curseur = 0;
+    for (const [a, b] of fusion) {
+      if (a > curseur) morceaux.push(brut.slice(curseur, a));
+      morceaux.push(el("mark", { text: brut.slice(a, b) }));
+      curseur = b;
+    }
+    if (curseur < brut.length) morceaux.push(brut.slice(curseur));
+    return morceaux;
+  }
+  // une trentaine de mots autour de la première occurrence dans le texte, à défaut le début du texte (le mot est alors dans le titre)
+  const EXTRAIT_AVANT = 70;
+  const EXTRAIT_LONGUEUR = 220;
+  function extraitDe(l, termes) {
+    const positions = termes.map((t) => l._texte.indexOf(t)).filter((i) => i >= 0);
+    const pos = positions.length ? Math.min(...positions) : 0;
+    let debut = Math.max(0, pos - EXTRAIT_AVANT);
+    if (debut > 0) { const espace = l.texte.indexOf(" ", debut); if (espace >= 0 && espace < pos) debut = espace + 1; }
+    let fin = Math.min(l.texte.length, debut + EXTRAIT_LONGUEUR);
+    if (fin < l.texte.length) { const espace = l.texte.lastIndexOf(" ", fin); if (espace > pos) fin = espace; }
+    return [debut > 0 ? "… " : "", ...surligner(l.texte.slice(debut, fin), termes), fin < l.texte.length ? " …" : ""];
+  }
+  function carteRecherche(l, termes) {
+    const impact = IMPACTS.includes(l.impact) ? l.impact : "nul";
+    const c = el("li", { class: `carte resultat impact-${impact}` });
+    c.append(el("div", { class: "badges" }, badge(`impact ${impact}`, `impact ${l.impact || "?"}`), badge("produit", NOMS_PERIMETRES[l.perimetre] || l.perimetre)));
+    c.append(el("h4", null, ...surligner(l.titre || "(sans titre)", termes)));
+    c.append(el("div", { class: "meta" }, `${dateFr(l.date)} · `, el("a", { href: `#archives/${l.date}`, text: `passage du ${dateFr(l.date)}` })));
+    if (l.texte) c.append(el("p", { class: "extrait" }, ...extraitDe(l, termes)));
+    return c;
+  }
+  function rendreResultatsRecherche() {
+    const zone = document.getElementById("recherche-resultats");
+    if (!zone || !etat.recherche || !etat.recherche.lignes) return;
+    vider(zone);
+    const q = etat.rq.q;
+    const termes = termesDeRecherche(q);
+    if (q.trim().length < RECHERCHE_MIN || !termes.length) {
+      zone.append(el("p", { class: "sous-titre", text: `Tape au moins ${RECHERCHE_MIN} caractères. Plusieurs mots : tous doivent apparaître ; entre guillemets, une expression exacte. Sans casse ni accents.` }));
+      return;
+    }
+    const trouves = chercherDansVeille(etat.recherche.lignes, termes);
+    if (!trouves.length) { zone.append(el("p", { class: "vide", text: `Aucun résultat pour « ${q.trim()} ».` })); return; }
+    const affiches = trouves.slice(0, etat.rq.limite);
+    zone.append(el("p", { class: "sous-titre", role: "status", text: trouves.length > affiches.length ? `${trouves.length} résultats, les ${affiches.length} plus récents affichés` : `${trouves.length} résultat${trouves.length > 1 ? "s" : ""}` }));
+    zone.append(el("ul", { class: "liste" }, ...affiches.map((l) => carteRecherche(l, termes))));
+    if (trouves.length > affiches.length) {
+      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(RECHERCHE_PAGE, trouves.length - affiches.length)} de plus` });
+      b.addEventListener("click", () => { etat.rq.limite += RECHERCHE_PAGE; rendreResultatsRecherche(); });
+      zone.append(b);
+    }
+  }
+  function sectionRecherche() {
+    const r = etat.recherche;
+    if (!r) return null;
+    const sec = el("section", { class: "recherche" });
+    if (r.erreur) { sec.append(el("p", { class: "erreur", text: `Recherche indisponible : ${r.erreur}` })); return sec; }
+    const champ = el("input", { type: "search", placeholder: "Chercher dans toute la veille (/code-review, worktree…)", "aria-label": "Recherche dans toute la veille", value: etat.rq.q });
+    let minuterie = null;
+    champ.addEventListener("input", () => {
+      clearTimeout(minuterie);
+      minuterie = setTimeout(() => {
+        etat.rq = { q: champ.value, limite: RECHERCHE_PAGE };
+        try { history.replaceState(null, "", champ.value.trim() ? `#archives?q=${encodeURIComponent(champ.value.trim())}` : "#archives"); } catch (e) { /* adresse non mise à jour : sans effet sur la recherche */ }
+        rendreResultatsRecherche();
+      }, 150);
+    });
+    sec.append(el("div", { class: "filtres kb-filtres" }, champ));
+    const dates = r.lignes.map((l) => l.date).sort();
+    sec.append(el("p", { class: "sous-titre", text: dates.length ? `Index de ${r.lignes.length} éléments, du ${dateFr(dates[0])} au ${dateFr(dates[dates.length - 1])} (titre, résumé, pour toi, action).` : "Index vide." }));
+    if (r.doc.statut !== "ok") sec.append(el("p", { class: "erreur", text: `Index incomplet : ${texte(r.doc.raison, "raison inconnue")}` }));
+    sec.append(el("div", { id: "recherche-resultats" }));
+    return sec;
+  }
   function pageArchives() {
     const frag = document.createDocumentFragment();
     frag.append(el("h2", { text: "Archives" }));
@@ -1067,6 +1196,8 @@
       if (ec) frag.append(ec);
       return frag;
     }
+    const recherche = sectionRecherche();
+    if (recherche) frag.append(recherche);
     const ul = el("ul", { class: "jours" });
     for (const d of toutesDates) {
       const compteurs = [];
@@ -1234,9 +1365,9 @@
       geste: "Case « Fait » : l'action passe dans « Actions faites » (repliée). Essais : 50 cartes, puis « Afficher plus ».",
       limite: "Les cases « Fait » restent dans ce navigateur : pas de synchronisation entre le bureau et l'iPhone." },
     { id: "archives", titre: "Archives",
-      sert: "Chaque passage par date, avec ses synthèses et tous ses éléments, impact nul compris.",
-      geste: "Choisis une date (adresse directe `#archives/AAAA-MM-JJ`), « ← Toutes les dates » pour revenir.",
-      limite: "Lecture seule." },
+      sert: "Chaque passage par date, avec ses synthèses et tous ses éléments, impact nul compris. Un champ cherche un mot dans toute la veille : titre, résumé, pour toi et action des trois périmètres.",
+      geste: "Tape un mot ou un nom (`/code-review`, `worktree`) : sans casse ni accents, tous les mots doivent apparaître, 50 résultats puis « Afficher plus ». Choisis une date (adresse directe `#archives/AAAA-MM-JJ`), « ← Toutes les dates » pour revenir.",
+      limite: "Lecture seule. La recherche lit un index (`recherche.json`) où résumé, pour toi et action sont coupés : elle ne cherche pas dans la base (onglet Référence)." },
     { id: "mcp", titre: "Connecteur MCP",
       sert: "Donne à Claude un accès en lecture seule aux données publiées de Delta : il consulte la base avant de citer une commande, une option ou un réglage.",
       geste: "Serveur : `https://delta-mcp-ruddy.vercel.app/mcp` (Streamable HTTP, sans jeton). Claude Code : `claude mcp add --transport http delta-ia https://delta-mcp-ruddy.vercel.app/mcp`. Exemple de question : « Qu'y a-t-il de nouveau dans la base depuis 7 jours ? » ou « Quelle est la syntaxe exacte de /add-dir ? »",
@@ -1290,6 +1421,8 @@
     etat.page = ["aujourdhui", "semaine", "changelogs", "actu", "reference", "a-tester", "archives", "aide"].includes(page) ? page : "aujourdhui";
     etat.semaineDemandee = etat.page === "semaine" && RE_SEMAINE.test(param || "") ? param : null;
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
+    // D113 : #archives?q=<texte> ouvre les Archives avec cette recherche
+    etat.rq = { q: etat.page === "archives" ? (new URLSearchParams(requete || "").get("q") || "") : "", limite: RECHERCHE_PAGE };
     // #reference?recent=7 (ou 30) : vue des entrées ajoutées récemment, la plus récente d'abord
     const recent = etat.page === "reference" ? new URLSearchParams(requete || "").get("recent") : null;
     if (KB_JOURS_RECENTS.includes(recent)) { kbFiltre.depuis = recent; kbFiltre.tri = "recent"; kbFiltre.limite = KB_PAGE; }
@@ -1303,7 +1436,7 @@
   async function chargerDeLaPage() {
     switch (etat.page) {
       case "aujourdhui": await Promise.all([chargerDernierJour(), chargerVersions(), chargerComptes()]); break;
-      case "archives": await chargerJoursArchive(); break;
+      case "archives": await Promise.all([chargerJoursArchive(), etat.archiveDate ? null : chargerRecherche()]); break;
       case "reference": await chargerKb(); break;
       case "a-tester": await chargerATesterKb(); break;
       case "semaine": await chargerSemaine(); break;
@@ -1342,7 +1475,7 @@
       case "actu": main.append(pageActu()); break;
       case "reference": main.append(pageReference()); rendreResultatsKb(); break;
       case "a-tester": main.append(pageATester()); break;
-      case "archives": main.append(pageArchives()); break;
+      case "archives": main.append(pageArchives()); rendreResultatsRecherche(); break;
       default: main.append(pageAujourdhui(alertes)); completerEncartKb();
     }
     document.title = `Delta — ${document.querySelector(".onglets a.actif")?.textContent || "veille IA"}`;

@@ -51,13 +51,13 @@ FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
 RAPPEL_CLAUDE = "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)"
 CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE, CODE_CHAINE, CODE_NON_POUSSE = 10, 11, 12, 13, 14, 15
-CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "docs/data/openai/", "docs/data/kb/", "docs/data/semaine/", "state/")
+CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "docs/data/openai/", "docs/data/kb/", "docs/data/semaine/", "docs/data/recherche.json", "state/")
 VERROU_CHAINE = Path(".git") / "delta-passage.lock"
 # D70 : par étape de la chaîne, (quota Claude applicable, dossier de données du fichier du jour pour le code 12 ou None)
 ETAPES = {"delta": (True, "claude"), "codex-delta": (False, "openai"), "delta-kb": (True, None), "codex-delta-kb": (False, None)}
 # D83 : avec --etape, le code 13 ne regarde que les chemins qu'écrit l'étape (SPEC §3) ; sans --etape, tous les chemins de passage
 _CLAUDE = ("docs/data/claude/", "docs/data/actu/", "docs/data/kb/claude/", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "docs/data/versions.json", "docs/data/etat.json",
-           "docs/data/semaine/", "state/claude.json", "state/actu.json")
+           "docs/data/semaine/", "docs/data/recherche.json", "state/claude.json", "state/actu.json")
 _OPENAI = ("docs/data/openai/", "docs/data/kb/openai/", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "state/openai.json")  # D99 : recent.json est dérivé des deux bases
 CHEMINS_ETAPE = {"delta": _CLAUDE, "delta-kb": ("docs/data/kb/claude/", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json"), "codex-delta": _OPENAI,
                  "codex-delta-kb": ("docs/data/kb/openai/", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json")}

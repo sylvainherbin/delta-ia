@@ -197,16 +197,17 @@ def test_site_onglet_semaine():
 
 def test_branchement_du_passage_claude():
     skill = (RACINE / ".claude" / "skills" / "delta" / "SKILL.md").read_text(encoding="utf-8")
-    assert "`.venv/bin/python scripts/semaine.py`" in skill and "git add docs/data/actu state/actu.json docs/data/semaine" in skill
+    assert "`.venv/bin/python scripts/semaine.py`" in skill and "git add docs/data/actu state/actu.json docs/data/semaine docs/data/recherche.json" in skill  # D113
     assert skill.index("**Bilan de la semaine (D98)") < skill.index("9. **Commit**") and "périmètre `actu` seulement, avant le commit" in skill
     allow = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))["permissions"]["allow"]
-    for r in ("Bash(.venv/bin/python scripts/semaine.py)", "Bash(git add docs/data/actu state/actu.json docs/data/semaine)",
-              "Bash(git checkout -- docs/data/semaine)", "Bash(git clean -f -- docs/data/claude docs/data/actu docs/data/semaine)"):
+    for r in ("Bash(.venv/bin/python scripts/semaine.py)", "Bash(git add docs/data/actu state/actu.json docs/data/semaine docs/data/recherche.json)",
+              "Bash(git checkout -- docs/data/semaine docs/data/recherche.json)",
+              "Bash(git clean -f -- docs/data/claude docs/data/actu docs/data/semaine docs/data/recherche.json)"):
         assert r in allow, r
     import garde
     assert "docs/data/semaine/" in garde.CHEMINS_ETAPE["delta"] and "docs/data/semaine/" in garde.CHEMINS_PASSAGE
     assert "docs/data/semaine/" not in garde.CHEMINS_ETAPE["codex-delta"]
     spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
-    assert "`docs/data/etat.json`, `docs/data/semaine/`, `state/claude.json`" in spec and "| D98 |" in spec
-    assert "`docs/data/semaine/`, `state/claude.json`" in (RACINE / "CLAUDE.md").read_text(encoding="utf-8")
+    assert "`docs/data/etat.json`, `docs/data/semaine/`, `docs/data/recherche.json`, `state/claude.json`" in spec and "| D98 |" in spec
+    assert "`docs/data/semaine/`, `docs/data/recherche.json`, `state/claude.json`" in (RACINE / "CLAUDE.md").read_text(encoding="utf-8")
     assert "`docs/data/semaine/`" in (RACINE / "AGENTS.md").read_text(encoding="utf-8")
