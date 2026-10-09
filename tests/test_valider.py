@@ -523,13 +523,16 @@ def _avert(**champs):
 def test_r1_ajout_sans_commande_avertit():
     for action in (None, _action("Essayer la nouveauté si tu veux.", ["Vérifier."])):
         avert = _avert(type="nouveaute", action=action)
-        assert len(avert) == 1 and "R1" in avert[0] and "elements[0] (fx-1)" in avert[0]
-    assert len(_avert(type="amelioration", produit="codex", impact="fort", action=None)) == 1
+        assert len(avert) == 2 and all("R1" in a and "elements[0] (fx-1)" in a for a in avert)
+        assert "sans commande exacte" in avert[0] and "résultat attendu" in avert[1]
+    assert len(_avert(type="amelioration", produit="codex", impact="fort", action=None)) == 2
 
 
 def test_r1_commande_entre_accents_graves_dans_description_ou_etapes():
-    assert _avert(type="nouveaute", action=_action("Lance `/plugin enable x@builtin`.", ["Regarde."])) == []
-    assert _avert(type="nouveaute", action=_action("Essaie.", ["Tape `claude purge --help`."])) == []
+    assert _avert(type="nouveaute", action=_action("Lance `/plugin enable x@builtin` ; résultat attendu : le plugin est actif.", ["Regarde."])) == []
+    assert _avert(type="nouveaute", action=_action("Essaie.", ["Tape `claude purge --help` ; attendu : la liste des options."])) == []
+    sans_attendu = _avert(type="nouveaute", action=_action("Lance `/plugin enable x@builtin`.", ["Regarde."]))
+    assert len(sans_attendu) == 1 and "résultat attendu" in sans_attendu[0]
 
 
 @pytest.mark.parametrize("champs", [
@@ -538,6 +541,64 @@ def test_r1_commande_entre_accents_graves_dans_description_ou_etapes():
 ], ids=["correction", "depreciation", "rupture", "impact-nul", "produit-actu"])
 def test_r1_hors_champ_pas_d_avertissement(champs):
     assert _avert(**{"type": "nouveaute", "action": None, **champs}) == []
+
+
+# --- D107 : R1 complété (projet ou flux nommé, « résultat attendu ») ------------------------------------------------
+
+ANCRAGE_R1 = {"projets": {"delta ia", "discipline"}, "sections": {"flux.passage": {"passage quotidien", "dev delta"}}}
+
+
+def _avert_ancre(**champs):
+    r = v.Rapport()
+    v.avertir_element(_element_d85(**{"pour_toi": None, **champs}), 0, r, "x.json", ANCRAGE_R1)
+    return r.avertissements
+
+
+def test_r1_action_en_trois_parties_sans_avertissement():
+    action = _action("Ajoute `subagentStatusLine` dans `~/.claude/settings.json`.",
+                     ["Essai : lance deux sous-agents dans le projet delta-ia ; résultat attendu : `agentType` apparaît."])
+    assert _avert_ancre(type="nouveaute", action=action, contexte_sections={}) == []
+
+
+def test_r1_sans_projet_ni_flux_nomme_avertit():
+    action = _action("Tape `/foo`.", ["Résultat attendu : ça marche."])
+    avert = _avert_ancre(type="nouveaute", action=action, contexte_sections={})
+    assert len(avert) == 1 and "sans projet ni flux de CONTEXTE.md nommé" in avert[0]
+
+
+def test_r1_flux_nomme_par_section_citee():
+    action = _action("Tape `/foo` pendant le passage quotidien.", ["Résultat attendu : ça marche."])
+    assert len(_avert_ancre(type="nouveaute", action=action, contexte_sections={})) == 1
+    assert _avert_ancre(type="nouveaute", action=action, contexte_sections={"flux.passage": "x"}) == []
+
+
+def test_r1_sans_resultat_attendu_avertit_meme_ancre():
+    action = _action("Tape `/foo` dans delta-ia.", ["Regarde."])
+    avert = _avert_ancre(type="nouveaute", action=action, contexte_sections={})
+    assert len(avert) == 1 and "résultat attendu" in avert[0]
+
+
+def test_r1_sans_ancrage_pas_de_controle_du_projet():
+    action = _action("Tape `/foo`.", ["Résultat attendu : ça marche."])
+    assert _avert(type="nouveaute", action=action) == []
+
+
+def test_r1_nouveaux_controles_hors_champ():
+    for champs in ({"type": "correction"}, {"type": "depreciation"}, {"produit": "actu"}, {"impact": "nul", "pour_toi": None}):
+        avert = _avert_ancre(**{"type": "nouveaute", "action": None, "pour_toi": None, **champs})
+        assert not [a for a in avert if "R1" in a], champs
+
+
+def test_r1_texte_des_trois_regles_identique_et_cite_la_base():
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    lignes = []
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        ligne = next(l for l in (racine / f).read_text(encoding="utf-8").splitlines() if "**R1 (D85" in l)
+        lignes.append(ligne.strip())
+        for attendu in ("docs/data/kb/noms.json", "`usage`", "`exemple`", "`kb_refs`", "résultat attendu", "subagentStatusLine"):
+            assert attendu in ligne, f"{f} : {attendu} absent de R1"
+    assert len(set(lignes)) == 1, "les trois textes de R1 doivent être identiques"
 
 
 def test_r5_d71_sans_date_avertit_avec_date_non():
@@ -579,7 +640,7 @@ def test_regles_pour_toi_r1_a_r5_dans_les_trois_textes():
     for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
         texte = (racine / f).read_text(encoding="utf-8")
         for r in ("R1", "R2", "R3", "R4", "R5"):
-            assert f"**{r} (D85)" in texte, f"{f} : règle {r} absente (D85)"
+            assert f"**{r} (D85" in texte, f"{f} : règle {r} absente (D85)"
 
 
 def test_r5_disponibilite_sur_tous_les_forfaits_n_est_pas_d71():

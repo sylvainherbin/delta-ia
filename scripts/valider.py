@@ -9,7 +9,7 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
-Lignes `! AVERTISSEMENT` (D85, D97) : ajout à un outil sans commande exacte (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
+Lignes `! AVERTISSEMENT` (D85, D97, D107) : ajout à un outil sans commande exacte, sans projet ni flux de CONTEXTE.md nommé ou sans « résultat attendu » dans `action` (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
 dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2), `pour_toi` conditionnel sans commande qui le tranche dans `action`
 et `pour_toi` recopié du même id dans un fichier des 7 jours précédents (R4) ; sans effet sur le code de sortie.
 Ancrage (D101) : `pour_toi` d'un élément d'impact faible ou plus qui ne nomme aucun projet, outil ni habitude de CONTEXTE.md (fichiers postérieurs au 24/09) ; sans effet sur le code de sortie.
@@ -59,6 +59,8 @@ RE_SECRETS = [
 # « Paramètres > Utilisation » à tout propos).
 TYPES_AJOUT = {"nouveaute", "amelioration"}
 RE_SEGMENT_CODE = re.compile(r"`[^`\n]+`")
+# D107 (R1) : l'`action` d'un ajout nomme aussi l'essai (projet ou flux de CONTEXTE.md, mêmes termes que l'ancrage) et son « résultat attendu ».
+RE_RESULTAT_ATTENDU = re.compile(r"r[ée]sultat\s+attendu|attendu\s*:", re.I)
 RE_DATE_ACTION = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{2}/\d{2}\b")
 # R4 : un `pour_toi` qui pose une condition doit voir sa commande dans `action` ; le même id ne répète pas le texte de la veille.
 MARQUEURS_CONDITIONNEL = ("si tu", "si vous", "au cas où", "éventuellement")
@@ -230,9 +232,13 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None =
         return
     ou = f"{ou} elements[{i}] ({e.get('id')})"
     texte = _texte_action(e.get("action"))
-    if e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu" \
-            and not RE_SEGMENT_CODE.search(texte):
+    if r1_champ(e) and not RE_SEGMENT_CODE.search(texte):
         r.avertissement(ou, "R1 : ajout à un outil sans commande exacte entre accents graves dans `action`")
+    if r1_champ(e):
+        if ancrage is not None and not termes_nommes(texte, ancrage, citees_du_pour_toi(e)):
+            r.avertissement(ou, "R1 : ajout à un outil sans projet ni flux de CONTEXTE.md nommé dans `action`")
+        if not RE_RESULTAT_ATTENDU.search(texte):
+            r.avertissement(ou, "R1 : ajout à un outil sans « résultat attendu » dans `action`")
     if mots_trouves_element(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
         r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
     if conditionnel_sans_commande(e):
@@ -241,6 +247,11 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None =
         citees = citees_du_pour_toi(e)
         if not citees or not termes_nommes(e["pour_toi"], ancrage, citees):
             r.avertissement(ou, MESSAGE_ANCRAGE)
+
+
+def r1_champ(e: dict) -> bool:
+    """R1 : élément d'impact faible ou plus, ajout (nouveauté, amélioration) à un produit d'outil (pas `actu`)."""
+    return e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu"
 
 
 def citees_du_pour_toi(e: dict) -> list[str]:
