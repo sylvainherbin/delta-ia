@@ -103,4 +103,4 @@ def test_les_routes_de_la_reference_sont_inchangees():
     route = morceau(APP, "function lireRoute", "async function rendre")
     assert 'get("recent")' in route and "kbFiltre.depuis = recent" in route
     assert 'params.get("id")' in route and 'params.get("q")' in route
-    assert 'if (etat.page === "reference") await chargerKb();' in APP
+    assert 'case "reference": await chargerKb(); break;' in APP

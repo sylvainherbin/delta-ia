@@ -192,10 +192,11 @@ def test_valider_laisse_les_ids_de_l_autre_perimetre_a_son_controle(tmp_path):
 
 def test_l_index_est_charge_a_part_et_sans_la_base():
     app = app_js()
-    charge = morceau(app, "async function chargerNomsKb", "async function chargerKb")
+    charge = morceau(app, "function chargerNomsKb", "async function chargerKb")
     assert 'lireJson("data/kb/noms.json")' in charge and "etat.noms = null" in charge, "repli silencieux si le fichier manque"
     assert "chargerKb" not in charge and "console" not in charge
-    assert 'etat.page === "reference" ? null : chargerNomsKb()' in app, "les pages de veille chargent l'index, pas la Référence"
+    fond = morceau(app, "function lancerFond", "// texte rendu avant")
+    assert 'if (etat.page === "reference") return;' in fond and "chargerNomsKb().then(completerLiens)" in fond, "les pages de veille chargent l'index après leur premier affichage, pas la Référence"
     assert app.count("chargerKb()") == 2  # définition et appel de la route Référence seulement
 
 

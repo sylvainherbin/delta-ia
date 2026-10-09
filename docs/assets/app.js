@@ -14,7 +14,7 @@
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
 
-  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, noms: undefined, kbFicheId: null };
+  const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, noms: undefined, kbFicheId: null, rendu: 0, fenetre: null };
   const main = document.getElementById("contenu");
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
@@ -72,6 +72,8 @@
   // un segment inconnu reste en texte simple (accents graves compris)
   function enrichi(s, produit) {
     const t = typeof s === "string" ? s : String(s === null || s === undefined ? "" : s);
+    // noms.json se lit après le premier affichage (m-e6c49a1336e3) : en attendant, le texte à segments est repris par `completerLiens`
+    if (etat.noms === undefined && t.includes("`")) return [el("span", { "data-enrichir": t, "data-produit": typeof produit === "string" ? produit : null }, t)];
     if (!etat.noms) return [t];
     const out = [];
     let fin = 0;
@@ -129,6 +131,11 @@
   }
 
   /* ---------- chargement des données ---------- */
+  /* m-e6c49a1336e3 : Aujourd'hui ne lit que les index, le dernier jour de chaque périmètre, etat.json et versions.json ; les 30 jours des
+     trois périmètres (`chargerFenetre`) se lisent ensuite en arrière-plan pour Changelogs, Actu et À tester, qui attendent avec un indicateur.
+     Chaque fichier n'est demandé qu'une fois : les lectures mémorisent leur promesse (`unefois`), même si l'on change d'onglet pendant le fond. */
+  const lectures = new Map();
+  function unefois(cle, lire) { if (!lectures.has(cle)) lectures.set(cle, lire()); return lectures.get(cle); }
   async function lireJson(chemin) {
     const r = await fetch(chemin, { cache: "no-cache" });
     if (!r.ok) throw new Error(`${chemin} : HTTP ${r.status}`);
@@ -143,14 +150,15 @@
       } catch (e) { etat.index[p] = { erreur: String(e.message || e), jours: [] }; }
     }));
   }
-  async function chargerJour(p, date) {
+  function chargerJour(p, date) {
     const cle = `${p}/${date}`;
-    if (etat.jours[cle]) return etat.jours[cle];
-    try {
-      const q = await lireJson(`data/${p}/${date}.json`);
-      etat.jours[cle] = q && Array.isArray(q.elements) ? q : { erreur: "fichier quotidien illisible", elements: [], ecartes: [] };
-    } catch (e) { etat.jours[cle] = { erreur: String(e.message || e), elements: [], ecartes: [] }; }
-    return etat.jours[cle];
+    return unefois(`jour:${cle}`, async () => {
+      try {
+        const q = await lireJson(`data/${p}/${date}.json`);
+        etat.jours[cle] = q && Array.isArray(q.elements) ? q : { erreur: "fichier quotidien illisible", elements: [], ecartes: [] };
+      } catch (e) { etat.jours[cle] = { erreur: String(e.message || e), elements: [], ecartes: [] }; }
+      return etat.jours[cle];
+    });
   }
   function datesDe(p) { return (etat.index[p]?.jours || []).map((j) => j.date).filter((d) => typeof d === "string").sort().reverse(); }
   function derniereDate(p) { return datesDe(p)[0] || null; }
@@ -161,16 +169,50 @@
   function noteFenetre() {
     return el("p", { class: "sous-titre" }, `Passages des ${FENETRE_JOURS} derniers jours. Au-delà, voir les `, el("a", { href: "#archives", text: "Archives" }), ".");
   }
-  async function chargerNecessaire() {
-    const taches = [];
-    for (const p of PERIMETRES) {
-      const dates = new Set(datesRecentes(p));
-      const derniere = derniereDate(p);
-      if (derniere) dates.add(derniere);
-      if (etat.archiveDate && datesDe(p).includes(etat.archiveDate)) dates.add(etat.archiveDate);
-      for (const d of dates) taches.push(chargerJour(p, d));
-    }
-    await Promise.all(taches);
+  // Aujourd'hui : le dernier jour publié de chaque périmètre
+  async function chargerDernierJour() {
+    await Promise.all(PERIMETRES.map((p) => { const d = derniereDate(p); return d ? chargerJour(p, d) : null; }));
+  }
+  // Archives : les fichiers de la date demandée
+  async function chargerJoursArchive() {
+    await Promise.all(PERIMETRES.map((p) => (datesDe(p).includes(etat.archiveDate) ? chargerJour(p, etat.archiveDate) : null)));
+  }
+  // les 30 derniers jours des trois périmètres, du plus récent au plus ancien, quelques fichiers à la fois ; une seule fois par page
+  const FOND_PARALLELE = 4;
+  const PAGES_FENETRE = { changelogs: "Changelogs", actu: "Actu IA", "a-tester": "À tester" };
+  function texteAvancementFenetre(f) { return `Chargement des passages des ${FENETRE_JOURS} derniers jours : ${f.faits}/${f.total} fichiers…`; }
+  function chargerFenetre() {
+    if (etat.fenetre) return etat.fenetre;
+    const taches = PERIMETRES.flatMap((p) => datesRecentes(p).map((d) => [p, d])).sort((a, b) => b[1].localeCompare(a[1]));
+    const f = { total: taches.length, faits: 0, fini: false, termine: null };
+    const travailleur = async () => {
+      while (taches.length) {
+        const [p, d] = taches.shift();
+        await chargerJour(p, d);
+        f.faits += 1;
+        const zone = document.getElementById("fenetre-avancement");
+        if (zone) zone.textContent = texteAvancementFenetre(f);
+      }
+    };
+    f.termine = Promise.all(Array.from({ length: Math.min(FOND_PARALLELE, taches.length) }, travailleur)).then(() => { f.fini = true; });
+    etat.fenetre = f;
+    return f;
+  }
+  function pageAttenteFenetre(f) {
+    const frag = document.createDocumentFragment();
+    frag.append(el("h2", { text: PAGES_FENETRE[etat.page] }),
+      el("p", { id: "fenetre-avancement", class: "sous-titre", role: "status", "aria-busy": "true", text: texteAvancementFenetre(f) }));
+    return frag;
+  }
+  // après le premier affichage : l'index des noms puis les 30 jours ; la Référence garde sa bande passante (D106)
+  function lancerFond() {
+    if (etat.page === "reference") return;
+    chargerNomsKb().then(completerLiens).catch((err) => console.error("delta:noms", err));
+    chargerFenetre();
+  }
+  // texte rendu avant l'arrivée de noms.json → liens de la base une fois l'index lu (ou texte simple s'il est illisible)
+  function completerLiens() {
+    for (const s of main.querySelectorAll("span[data-enrichir]")) s.replaceWith(...enrichi(s.getAttribute("data-enrichir"), s.getAttribute("data-produit") || undefined));
   }
   function elementsDe(p, dates) {
     const out = [];
@@ -221,11 +263,12 @@
   const SEUIL_ALERTE_PCT = 80;
   const PHRASE_D71 = "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser";
   async function chargerComptes() {
-    if (etat.comptes !== undefined) return;
-    try {
-      const e = await lireJson("data/etat.json");
-      etat.comptes = e && typeof e.comptes === "object" && e.comptes ? e.comptes : null;
-    } catch (err) { etat.comptes = null; }
+    return unefois("comptes", async () => {
+      try {
+        const e = await lireJson("data/etat.json");
+        etat.comptes = e && typeof e.comptes === "object" && e.comptes ? e.comptes : null;
+      } catch (err) { etat.comptes = null; }
+    });
   }
   function jjmmHhmm(iso) {
     const d = new Date(iso);
@@ -309,11 +352,12 @@
   /* ---------- Tes outils : versions installées (D54 à D56) ---------- */
   const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu", embarque: "embarqué", non_utilise: "non utilisée" };
   async function chargerVersions() {
-    if (etat.versions !== undefined) return;
-    try {
-      const v = await lireJson("data/versions.json");
-      etat.versions = Array.isArray(v) ? v : null;
-    } catch (e) { etat.versions = null; }
+    return unefois("versions", async () => {
+      try {
+        const v = await lireJson("data/versions.json");
+        etat.versions = Array.isArray(v) ? v : null;
+      } catch (e) { etat.versions = null; }
+    });
   }
   function blocOutils() {
     const lignes = etat.versions;
@@ -519,30 +563,33 @@
   }
   // fichier léger des ajouts récents ; absent ou illisible : null, sans message (pas d'encart)
   async function chargerRecentKb() {
-    if (etat.kbRecent !== undefined) return etat.kbRecent;
-    try {
-      const d = await lireJson("data/kb/recent.json");
-      etat.kbRecent = d && Array.isArray(d.entrees) ? d : null;
-    } catch (err) { etat.kbRecent = null; }
-    return etat.kbRecent;
+    return unefois("kb-recent", async () => {
+      try {
+        const d = await lireJson("data/kb/recent.json");
+        etat.kbRecent = d && Array.isArray(d.entrees) ? d : null;
+      } catch (err) { etat.kbRecent = null; }
+      return etat.kbRecent;
+    });
   }
   // D103 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message
   async function chargerATesterKb() {
-    if (etat.kbATester !== undefined) return etat.kbATester;
-    try {
-      const d = await lireJson("data/kb/a-tester.json");
-      etat.kbATester = d && Array.isArray(d.entrees) ? d : null;
-    } catch (err) { etat.kbATester = null; }
-    return etat.kbATester;
+    return unefois("kb-a-tester", async () => {
+      try {
+        const d = await lireJson("data/kb/a-tester.json");
+        etat.kbATester = d && Array.isArray(d.entrees) ? d : null;
+      } catch (err) { etat.kbATester = null; }
+      return etat.kbATester;
+    });
   }
   // D105 : index nom → ids (docs/data/kb/noms.json) pour les liens vers les fiches ; absent ou illisible : null, les segments restent en texte simple
   async function chargerNomsKb() {
-    if (etat.noms !== undefined) return etat.noms;
-    try {
-      const d = await lireJson("data/kb/noms.json");
-      etat.noms = d && typeof d === "object" && !Array.isArray(d) ? d : null;
-    } catch (err) { etat.noms = null; }
-    return etat.noms;
+    return unefois("kb-noms", async () => {
+      try {
+        const d = await lireJson("data/kb/noms.json");
+        etat.noms = d && typeof d === "object" && !Array.isArray(d) ? d : null;
+      } catch (err) { etat.noms = null; }
+      return etat.noms;
+    });
   }
   async function chargerKb() {
     const kb = etatKb();
@@ -1040,22 +1087,23 @@
   const SOURCES_SEMAINE = { claude: "Claude", actu: "Actu", openai: "OpenAI", "kb-claude": "Base Claude", "kb-openai": "Base OpenAI" };
   async function chargerSemaine() {
     const s = etat.semaines;
-    if (s.index === undefined) {
+    await unefois("semaine-index", async () => {
       try {
         const idx = await lireJson("data/semaine/index.json");
         if (!idx || !Array.isArray(idx.semaines)) throw new Error("index sans `semaines`");
         s.index = idx.semaines.filter((x) => x && RE_SEMAINE.test(x.semaine));
       } catch (e) { s.index = null; s.erreur = String(e.message || e); }
-    }
+    });
     if (!s.index || !s.index.length) return;
     s.courante = s.index.some((x) => x.semaine === etat.semaineDemandee) ? etat.semaineDemandee : s.index[0].semaine;
-    if (!s.docs[s.courante]) {
+    const semaine = s.courante;
+    await unefois(`semaine:${semaine}`, async () => {
       try {
-        const d = await lireJson(`data/semaine/${s.courante}.json`);
+        const d = await lireJson(`data/semaine/${semaine}.json`);
         if (!d || !Array.isArray(d.elements) || !Array.isArray(d.d71) || !Array.isArray(d.base_ajoutees) || !Array.isArray(d.base_verdicts)) throw new Error("bilan illisible");
-        s.docs[s.courante] = d;
-      } catch (e) { s.docs[s.courante] = { erreur: String(e.message || e) }; }
-    }
+        s.docs[semaine] = d;
+      } catch (e) { s.docs[semaine] = { erreur: String(e.message || e) }; }
+    });
   }
   function ligneSemaine(l) {
     const c = el("li", { class: `ligne-semaine impact-${IMPACTS.includes(l.impact) ? l.impact : "nul"}` });
@@ -1150,13 +1198,29 @@
     const q = params ? (params.get("q") || "").trim() : "";
     if (q && !etat.kbFicheId) Object.assign(kbFiltre, { q, produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE });
   }
+  // les données propres à la page ; les 30 jours, eux, sont attendus à part (`chargerFenetre`)
+  async function chargerDeLaPage() {
+    switch (etat.page) {
+      case "aujourdhui": await Promise.all([chargerDernierJour(), chargerVersions(), chargerComptes()]); break;
+      case "archives": await chargerJoursArchive(); break;
+      case "reference": await chargerKb(); break;
+      case "a-tester": await chargerATesterKb(); break;
+      case "semaine": await chargerSemaine(); break;
+      default: break;
+    }
+  }
   async function rendre() {
     lireRoute();
-    await Promise.all([chargerNecessaire(), etat.page === "reference" ? null : chargerNomsKb()]);
-    if (etat.page === "reference") await chargerKb();
-    if (etat.page === "a-tester") await chargerATesterKb();
-    if (etat.page === "semaine") await chargerSemaine();
-    if (etat.page === "aujourdhui") await Promise.all([chargerVersions(), chargerComptes()]);
+    const mien = ++etat.rendu;  // un rendu plus récent a la main : celui-ci s'arrête après ses attentes
+    const fenetre = PAGES_FENETRE[etat.page] ? chargerFenetre() : null;
+    if (fenetre && !fenetre.fini) {
+      document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
+      rendreEtatAgents();
+      vider(main);
+      main.append(pageAttenteFenetre(fenetre));
+    }
+    await Promise.all([chargerDeLaPage(), fenetre && fenetre.termine]);
+    if (mien !== etat.rendu) return;
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
     vider(main);
@@ -1176,12 +1240,16 @@
       default: main.append(pageAujourdhui(alertes)); completerEncartKb();
     }
     document.title = `Delta — ${document.querySelector(".onglets a.actif")?.textContent || "veille IA"}`;
+    lancerFond();
   }
 
   async function demarrer() {
     const avisConsole = enregistrerConsoleDepuisUrl();
     if (avisConsole) annoncer(avisConsole);
     try {
+      lireRoute();
+      // Aujourd'hui : etat.json et versions.json partent avec les index, sans attendre leur réponse
+      if (etat.page === "aujourdhui") { chargerComptes(); chargerVersions(); }
       await chargerIndex();
       await rendre();
     } catch (e) {
