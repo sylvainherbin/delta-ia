@@ -40,7 +40,10 @@ test("initialize, notification et liste des outils", async () => {
   assert.equal((await rpc({ jsonrpc: "2.0", method: "notifications/initialized" })).statut, 202);
   const liste = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
   const noms = liste.corps.result.tools.map((t) => t.name).sort();
-  assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "resume_du_jour"]);
+  assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "nouveautes_base", "resume_du_jour"]);
+  assert.equal(init.corps.result.serverInfo.version, "0.2.0");
+  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.0");
+  for (const t of liste.corps.result.tools) assert.match(t.description, /À appeler/, `${t.name} : dire quand l'appeler`);
   for (const t of liste.corps.result.tools) assert.equal(t.annotations.readOnlyHint, true);
 });
 
@@ -174,6 +177,171 @@ test("a_tester : id, produit, date de publication et première source par action
     assert.equal(typeof a.id, "string");
     assert.ok(a.source === null || (typeof a.source.url === "string" && typeof a.source.officielle === "boolean"));
   }
+});
+
+// ---------------------------------------------------------------------------------------------- M2 : nouveautés et essais de la base
+const lireDonnee = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), "utf8"));
+const CLES_LIGNE = ["id", "nom", "produit", "categorie", "syntaxe_ou_acces", "usage", "exemple", "verdict", "date_ajout"];
+
+// Sert la base de données avec des fichiers remplacés (`null` = 404, chaîne = corps brut) sur une instance neuve du serveur.
+async function avecDonnees(remplacements, fn) {
+  const src = http.createServer((req, res) => {
+    const nom = decodeURIComponent(req.url.split("?")[0]).replace(/^\//, "");
+    if (nom in remplacements) {
+      const v = remplacements[nom];
+      if (v === null) { res.statusCode = 404; return res.end(); }
+      res.setHeader("Content-Type", "application/json"); return res.end(typeof v === "string" ? v : JSON.stringify(v));
+    }
+    const f = path.join(DATA, nom);
+    if (!f.startsWith(DATA) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.statusCode = 404; return res.end(); }
+    res.setHeader("Content-Type", "application/json"); res.end(fs.readFileSync(f));
+  });
+  await new Promise((r) => src.listen(0, "127.0.0.1", r));
+  const avant = process.env.DELTA_BASE_URL;
+  process.env.DELTA_BASE_URL = `http://127.0.0.1:${src.address().port}`;
+  try {
+    const m = await import(`../api/mcp.js?donnees=${Math.random()}`);  // module neuf : cache de lecture vide, BASE relue
+    await fn((nom, args = {}) => m.traiter({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: nom, arguments: args } }));
+  } finally { process.env.DELTA_BASE_URL = avant; src.close(); }
+}
+
+test("nouveautes_base : champs, fenêtre, plafond de 30 et défaut de 7 jours", async () => {
+  const r = (await appel("nouveautes_base")).corps.result;
+  assert.equal(r.isError, false);
+  const s = r.structuredContent;
+  assert.ok(s.avertissement.includes("jamais à exécuter"));
+  assert.equal(s.jours, 7);
+  assert.ok(s.entrees.length <= 30 && s.affichees === s.entrees.length && s.total >= s.affichees);
+  const recent = lireDonnee("kb/recent.json");
+  const attendu = recent.entrees.filter((e) => e.date_ajout >= s.depuis);
+  assert.equal(s.total, attendu.length);
+  for (const e of s.entrees) { assert.deepEqual(Object.keys(e), CLES_LIGNE); assert.ok(e.date_ajout >= s.depuis); }
+  assert.deepEqual(s.entrees.map((e) => e.id), attendu.slice(0, 30).map((e) => e.id));
+  const large = (await appel("nouveautes_base", { jours: 30 })).corps.result.structuredContent;
+  assert.equal(large.jours, 30);
+  assert.ok(large.entrees.length <= 30 && large.total >= s.total);
+});
+
+test("nouveautes_base : jours hors de 1 à 30 ou non entier = erreur d'outil", async () => {
+  for (const jours of [0, 31, 7.5, "7", null]) {
+    const r = (await appel("nouveautes_base", { jours })).corps.result;
+    assert.equal(r.isError, true, String(jours));
+    assert.match(r.content[0].text, /^Paramètre invalide : `jours`/);
+  }
+});
+
+test("nouveautes_base : textes bornés, filtre par date, fichier tronqué signalé", async () => {
+  const aujourdhui = jourCourant(), ancien = new Date(Date.now() - 20 * 864e5).toISOString().slice(0, 10);
+  const longue = "x".repeat(5000);
+  const entrees = [...Array.from({ length: 40 }, (_, i) => ({ id: `claude-code-commandes-n${i}`, produit: "claude-code", categorie: "commandes", nom: `n${i}`,
+      usage: longue, usage_nature: "syntaxe", exemple: longue, verdict: null, date_ajout: aujourdhui })),
+    { id: "codex-commandes-vieux", produit: "codex", categorie: "commandes", nom: "vieux", usage: "/vieux", usage_nature: "etapes", exemple: null, verdict: "ignorer", date_ajout: ancien }];
+  await avecDonnees({ "kb/recent.json": { genere_le: aujourdhui, tronque: true, plus_ancienne: aujourdhui, total: 41, entrees } }, async (outil) => {
+    const s = (await outil("nouveautes_base", { jours: 7 })).result.structuredContent;
+    assert.equal(s.total, 40); assert.equal(s.affichees, 30); assert.equal(s.entrees.length, 30);
+    assert.ok(s.entrees[0].usage.length <= 403 && s.entrees[0].exemple.length <= 603);
+    assert.equal(s.entrees[0].verdict, "en attente de commentaire");
+    assert.match(s.avis, /tronqué/);
+    const ouvert = (await outil("nouveautes_base", { jours: 30 })).result.structuredContent;
+    assert.equal(ouvert.total, 41);
+    assert.equal(ouvert.entrees.length, 30);
+    assert.equal(ouvert.entrees[0].syntaxe_ou_acces, "syntaxe");
+  });
+});
+
+test("nouveautes_base : fichier absent, illisible ou de forme inattendue = isError clair, jamais une liste vide", async () => {
+  for (const [corps, motif] of [[null, /kb\/recent\.json : HTTP 404/], ["pas du json", /kb\/recent\.json : JSON illisible/], [{ entrees: "non" }, /kb\/recent\.json : format inattendu/]]) {
+    await avecDonnees({ "kb/recent.json": corps }, async (outil) => {
+      const r = (await outil("nouveautes_base")).result;
+      assert.equal(r.isError, true);
+      assert.match(r.content[0].text, /^Données Delta indisponibles : /);
+      assert.match(r.content[0].text, motif);
+      assert.equal(r.structuredContent, undefined);
+    });
+  }
+});
+
+test("a_tester : les actions d'abord, puis les essais de la base (tester d'abord, 30 au plus)", async () => {
+  const s = (await appel("a_tester")).corps.result.structuredContent;
+  assert.deepEqual(Object.keys(s), ["avertissement", "actions", "essais_base"]);
+  const fichier = lireDonnee("kb/a-tester.json");
+  const e = s.essais_base;
+  assert.equal(e.total, fichier.entrees.length);
+  assert.equal(e.affichees, Math.min(30, fichier.entrees.length));
+  assert.deepEqual(e.entrees.map((x) => x.id), fichier.entrees.slice(0, 30).map((x) => x.id));
+  for (const x of e.entrees) assert.deepEqual(Object.keys(x), [...CLES_LIGNE.slice(0, 8), "pourquoi", "date_ajout"]);
+  const verdicts = e.entrees.map((x) => x.verdict);
+  assert.equal(verdicts[0], "tester");
+  assert.ok(verdicts.indexOf("utiliser") === -1 || verdicts.lastIndexOf("tester") < verdicts.indexOf("utiliser"), "tester avant utiliser");
+});
+
+test("a_tester : fichier des essais absent ou illisible = isError clair, actions non rendues comme complètes", async () => {
+  for (const [corps, motif] of [[null, /kb\/a-tester\.json : HTTP 404/], ["{", /kb\/a-tester\.json : JSON illisible/]]) {
+    await avecDonnees({ "kb/a-tester.json": corps }, async (outil) => {
+      const r = (await outil("a_tester")).result;
+      assert.equal(r.isError, true);
+      assert.match(r.content[0].text, motif);
+    });
+  }
+});
+
+test("fiche_reference rend exemple_origine avec l'exemple, null sans exemple", async () => {
+  const entrees = [];
+  for (const c of ["commandes", "fonctionnalites", "parametres", "skills"]) for (const p of ["claude", "openai"]) for (const e of lireDonnee(`kb/${p}/${c}.json`).entrees) if (!e.retiree) entrees.push(e);
+  const avec = entrees.find((e) => e.exemple && e.exemple_origine), sans = entrees.find((e) => !e.exemple);
+  assert.ok(avec && sans, "la base réelle doit offrir les deux cas");
+  const f = (await appel("fiche_reference", { id: avec.id })).corps.result.structuredContent.fiche;
+  assert.equal(f.exemple, avec.exemple); assert.equal(f.exemple_origine, avec.exemple_origine);
+  const g = (await appel("fiche_reference", { id: sans.id })).corps.result.structuredContent.fiche;
+  assert.deepEqual([g.exemple, g.exemple_origine], [null, null]);
+});
+
+test("chercher_reference : le nom exact de kb/noms.json passe avant le plein texte", async () => {
+  const noms = lireDonnee("kb/noms.json");
+  const ids = noms["/model"];
+  assert.ok(ids.length >= 1);
+  const r = (await appel("chercher_reference", { requete: "  /MODEL " })).corps.result.structuredContent;
+  assert.deepEqual(r.resultats.slice(0, ids.length).map((x) => x.id).sort(), [...ids].sort());
+  assert.equal(r.avis, undefined);
+  // un nom exact devient premier même quand le plein texte le classerait plus bas (aucun mot du texte ne contient « zzexact »)
+  const fausse = { "zzexact": ["claude-code-commandes-model"] };
+  await avecDonnees({ "kb/noms.json": fausse }, async (outil) => {
+    const s = (await outil("chercher_reference", { requete: "zzexact" })).result.structuredContent;
+    assert.deepEqual(s.resultats.map((x) => x.id), ["claude-code-commandes-model"]);
+    const f = (await outil("chercher_reference", { requete: "zzexact", produit: "codex" })).result.structuredContent;
+    assert.equal(f.total, 0);
+    const proto = (await outil("chercher_reference", { requete: "constructor" })).result;
+    assert.equal(proto.isError, false);
+  });
+});
+
+test("chercher_reference : sans kb/noms.json, plein texte seul et avis (jamais muet)", async () => {
+  for (const corps of [null, "illisible", []]) {
+    await avecDonnees({ "kb/noms.json": corps }, async (outil) => {
+      const r = (await outil("chercher_reference", { requete: "/model", produit: "claude-code" })).result;
+      assert.equal(r.isError, false);
+      assert.equal(r.structuredContent.resultats[0].id, "claude-code-commandes-model");
+      assert.match(r.structuredContent.avis, /^index des noms indisponible \(.+\) : recherche plein texte seule$/);
+    });
+  }
+});
+
+test("compteur D100 et journal D66 couvrent nouveautes_base et a_tester sans changement", async (t) => {
+  await avecUpstash(t, async ({ hash }) => {
+    const lignes = await journal(t, async () => {
+      await appel("nouveautes_base", { jours: 3 });
+      await appel("nouveautes_base", { jours: 99 });
+      await appel("a_tester");
+      await attendre();
+    });
+    assert.equal(lignes.length, 3);
+    for (const l of lignes) assert.deepEqual(Object.keys(l), CLES_JOURNAL);
+    assert.deepEqual(lignes.map((l) => [l.outil, l.statut]), [["nouveautes_base", "ok"], ["nouveautes_base", "erreur_outil"], ["a_tester", "ok"]]);
+    assert.ok(!JSON.stringify(lignes).includes("\"jours\""), "aucun argument dans le journal");
+    const h = Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`));
+    assert.deepEqual(h, { "req:tools/call": 3, "outil:nouveautes_base": 2, "erreur:nouveautes_base": 1, "outil:a_tester": 1 });
+    assert.ok(!Object.keys(h).some((k) => k.includes("jours") || k.includes("99")));
+  });
 });
 
 // ---------------------------------------------------------------------------------------------- compteur agrégé (amende D66)

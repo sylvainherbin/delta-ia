@@ -18,14 +18,17 @@ const cache = new Map();
 async function lire(chemin) {
   const c = cache.get(chemin);
   if (c && Date.now() - c.t < DUREE_CACHE_MS) return c.v;
-  const r = await fetch(`${BASE}/${chemin}`, { headers: { "User-Agent": "Delta-MCP/0.1" } });
+  const r = await fetch(`${BASE}/${chemin}`, { headers: { "User-Agent": "Delta-MCP/0.2" } });
   if (!r.ok) throw new Error(`${chemin} : HTTP ${r.status}`);
-  const v = await r.json();
+  let v;
+  try { v = await r.json(); } catch { throw new Error(`${chemin} : JSON illisible`); }
   cache.set(chemin, { t: Date.now(), v });
   return v;
 }
 
 const sansAccents = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+// D105 : même normalisation que `normaliser_nom` (catalogue.py) et `normaliserNom` (app.js) : NFKC, espaces réduits, minuscules.
+const normaliserNom = (s) => String(s || "").normalize("NFKC").split(/\s+/).filter(Boolean).join(" ").toLowerCase();
 const court = (s, n = 600) => (typeof s === "string" && s.length > n ? s.slice(0, n) + " …" : s ?? null);
 
 // ---------------------------------------------------------------------------------------------- outils
@@ -77,7 +80,7 @@ function fiche(e, complete = false) {
     verdict: e.commentee && e.recommandation ? e.recommandation.verdict : "en attente de commentaire",
     pourquoi: e.commentee && e.recommandation ? e.recommandation.pourquoi : null,
     statut_usage: e.commentee ? e.statut_usage : null, source: (e.sources || [])[0]?.url || null };
-  if (complete) Object.assign(f, { exemple: e.exemple || null, disponibilite: e.disponibilite || null, maj_le: e.maj_le });
+  if (complete) Object.assign(f, { exemple: e.exemple || null, exemple_origine: e.exemple ? e.exemple_origine || null : null, disponibilite: e.disponibilite || null, maj_le: e.maj_le });
   return f;
 }
 
@@ -88,20 +91,32 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
   const n = Math.max(1, Math.min(20, Number(limite) || 8));
   const q = sansAccents(requete.trim());
   const mots = q.split(/\s+/).filter(Boolean);
+  // D105 : le nom exact (ou la commande, l'option) de l'index `kb/noms.json` passe avant la recherche plein texte ;
+  // sans index, la recherche plein texte seule, dite dans `avis`.
+  let exacts = new Set(), avis;
+  try {
+    const noms = await lire("kb/noms.json");
+    if (!noms || typeof noms !== "object" || Array.isArray(noms)) throw new Error("format inattendu");
+    const ids = Object.hasOwn(noms, normaliserNom(requete)) ? noms[normaliserNom(requete)] : [];
+    exacts = new Set(Array.isArray(ids) ? ids.filter((i) => typeof i === "string") : []);
+  } catch (e) { avis = `index des noms indisponible (${e.message}) : recherche plein texte seule`; }
   const scores = [];
   for (const e of await toutesEntrees()) {
     if (produit && e.produit !== produit) continue;
     if (categorie && e.categorie !== categorie) continue;
     const nom = sansAccents(e.nom);
     const texte = sansAccents([e.nom, e.usage, e.description, e.description_source, e.groupe].join(" "));
-    if (!mots.every((m) => texte.includes(m))) continue;
-    let s = 1;
+    const exact = exacts.has(e.id);
+    if (!exact && !mots.every((m) => texte.includes(m))) continue;
+    let s = exact ? 1000 : 1;
     if (nom === q) s += 100; else if (nom.startsWith(q)) s += 40; else if (nom.includes(q)) s += 20;
     if (e.commentee) s += 2;
     scores.push([s, e]);
   }
   scores.sort((a, b) => b[0] - a[0] || String(a[1].nom).localeCompare(String(b[1].nom)));
-  return { avertissement: AVERTISSEMENT, total: scores.length, resultats: scores.slice(0, n).map(([, e]) => fiche(e)) };
+  const r = { avertissement: AVERTISSEMENT, total: scores.length, resultats: scores.slice(0, n).map(([, e]) => fiche(e)) };
+  if (avis) r.avis = avis;
+  return r;
 }
 
 async function ficheReference({ id } = {}) {
@@ -116,6 +131,38 @@ async function etatVersions() {
   return { avertissement: AVERTISSEMENT, outils: (Array.isArray(v) ? v : []).map((l) => ({
     outil: l.outil, installee: l.version, derniere_publiee: l.derniere_publiee, statut: l.statut, releve_le: l.detectee_le,
     note: l.note || l.raison || null })) };
+}
+
+const MAX_BASE = 30;
+
+// Lit un fichier léger de la base (`kb/recent.json`, `kb/a-tester.json`) : absent, illisible ou de forme inattendue =
+// erreur d'outil claire, jamais une liste vide muette.
+async function fichierLeger(chemin) {
+  const d = await lire(chemin);
+  if (!d || typeof d !== "object" || !Array.isArray(d.entrees)) throw new Error(`${chemin} : format inattendu`);
+  return d;
+}
+
+const ligneBase = (e, avecPourquoi = false) => {
+  const l = { id: e.id, nom: e.nom, produit: e.produit, categorie: e.categorie,
+    syntaxe_ou_acces: e.usage_nature === "etapes" ? "acces" : "syntaxe", usage: court(e.usage, 400), exemple: court(e.exemple, 600),
+    verdict: e.verdict ?? "en attente de commentaire" };
+  if (avecPourquoi) l.pourquoi = court(e.pourquoi);
+  l.date_ajout = e.date_ajout ?? null;
+  return l;
+};
+
+async function nouveautesBase({ jours = 7 } = {}) {
+  if (!Number.isInteger(jours) || jours < 1 || jours > 30) throw new ErreurParametre("`jours` : entier de 1 à 30 (défaut 7)");
+  const d = await fichierLeger("kb/recent.json");
+  const depuis = new Date(Date.now() - jours * 864e5).toISOString().slice(0, 10);
+  const fenetre = d.entrees.filter((e) => typeof e.date_ajout === "string" && e.date_ajout >= depuis);
+  // recent.json garde au plus 150 entrées sur 30 jours : si la fenêtre demandée remonte avant la plus ancienne gardée, elle est coupée.
+  const incomplet = d.tronque === true && (typeof d.plus_ancienne !== "string" || depuis <= d.plus_ancienne);
+  const r = { avertissement: AVERTISSEMENT, depuis, jours, genere_le: d.genere_le ?? null, total: fenetre.length, affichees: Math.min(fenetre.length, MAX_BASE),
+    entrees: fenetre.slice(0, MAX_BASE).map((e) => ligneBase(e)) };
+  if (incomplet) r.avis = `le fichier des ajouts récents est tronqué (plus ancienne entrée gardée : ${d.plus_ancienne ?? "inconnue"}) : la fenêtre demandée peut être incomplète`;
+  return r;
 }
 
 async function aTester() {
@@ -136,24 +183,29 @@ async function aTester() {
     }
   }
   actions.sort((a, b) => ["fort", "moyen", "faible", "nul"].indexOf(a.impact) - ["fort", "moyen", "faible", "nul"].indexOf(b.impact) || b.date.localeCompare(a.date));
-  return { avertissement: AVERTISSEMENT + " La case « fait » du site n'est pas visible ici.", actions };
+  const base = await fichierLeger("kb/a-tester.json");  // déjà triée : verdict `tester` d'abord, puis `utiliser` pas encore essayées
+  const essais = { total: base.entrees.length, affichees: Math.min(base.entrees.length, MAX_BASE), entrees: base.entrees.slice(0, MAX_BASE).map((e) => ligneBase(e, true)) };
+  if (base.tronque === true) essais.avis = "le fichier des essais est tronqué (300 entrées au plus, les `utiliser` partent les premiers)";
+  return { avertissement: AVERTISSEMENT + " La case « fait » du site n'est pas visible ici.", actions, essais_base: essais };
 }
 
 const LECTURE = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 const OUTILS = {
-  resume_du_jour: { f: resumeDuJour, description: "Synthèse Delta du jour (ou d'une date) pour Claude, ChatGPT/Codex et l'actu IA, avec les éléments d'impact fort et moyen, ce qu'ils changent pour Sylvain et l'action proposée.",
+  resume_du_jour: { f: resumeDuJour, description: "Synthèse Delta du jour (ou d'une date) pour Claude Code, ChatGPT/Codex et l'actu IA : éléments d'impact fort et moyen, ce qu'ils changent pour Sylvain, action proposée. À appeler pour savoir ce qui a changé aujourd'hui ou à une date donnée ; pour les ajouts de la base de référence, utiliser nouveautes_base.",
     inputSchema: { type: "object", properties: { date: { type: "string", description: "AAAA-MM-JJ ; par défaut le dernier passage" },
       inclure_faibles: { type: "boolean", description: "inclure aussi les éléments d'impact faible" } }, additionalProperties: false } },
-  chercher_reference: { f: chercherReference, description: "Cherche dans la base de référence Delta (commandes, fonctionnalités, skills, plugins, MCP, paramètres, raccourcis de Claude Code, Claude, Codex, ChatGPT) : syntaxe exacte, explication en français et recommandation pour Sylvain. Ex. « /rename », « worktree », « config.toml model ».",
+  chercher_reference: { f: chercherReference, description: "Cherche dans la base de référence Delta (commandes, fonctionnalités, skills, plugins, MCP, paramètres, raccourcis de Claude Code, Claude, Codex, ChatGPT) : syntaxe exacte, explication en français, recommandation pour Sylvain. À appeler AVANT de donner une commande, une option ou un réglage de ces outils, ou de choisir entre eux. Le nom exact d'une commande ou d'une option (« /rename », « --add-dir ») passe en premier ; sinon recherche plein texte (« worktree », « config.toml model »). Détail d'une entrée : fiche_reference.",
     inputSchema: { type: "object", required: ["requete"], properties: { requete: { type: "string" },
       produit: { type: "string", enum: PRODUITS }, categorie: { type: "string", enum: CATEGORIES },
       limite: { type: "integer", minimum: 1, maximum: 20 } }, additionalProperties: false } },
-  fiche_reference: { f: ficheReference, description: "Fiche complète d'une entrée de la base de référence Delta, par identifiant (donné par chercher_reference).",
+  fiche_reference: { f: ficheReference, description: "Fiche complète d'une entrée de la base de référence Delta, par identifiant (donné par chercher_reference, nouveautes_base ou a_tester) : syntaxe, description, exemple et son origine, disponibilité, recommandation. À appeler quand le résumé de chercher_reference ne suffit pas.",
     inputSchema: { type: "object", required: ["id"], properties: { id: { type: "string" } }, additionalProperties: false } },
-  etat_versions: { f: etatVersions, description: "Versions installées sur la machine de Sylvain (Claude Code, Codex de l'app ChatGPT, Codex CLI autonome, ChatGPT Desktop, Claude Desktop), dernière version publiée connue de Delta ; statut à jour, en retard, inconnu ou embarqué (non comparé).",
+  etat_versions: { f: etatVersions, description: "Versions installées sur la machine de Sylvain (Claude Code, Codex de l'app ChatGPT, Codex CLI autonome, ChatGPT Desktop, Claude Desktop) et dernière version publiée connue de Delta ; statut à jour, en retard, inconnu ou embarqué (non comparé). À appeler avant de conseiller une fonctionnalité qui dépend d'une version, ou pour savoir si une mise à jour est en attente.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  a_tester: { f: aTester, description: "Actions proposées par Delta sur les 30 derniers jours (étapes et effort), les plus importantes d'abord.",
+  a_tester: { f: aTester, description: "Ce que Delta propose d'essayer : les actions des 30 derniers jours (étapes et effort, les plus importantes d'abord), puis les essais de la base de référence (`essais_base` : verdict `tester` d'abord, puis `utiliser` pas encore essayés, 30 au plus). À appeler quand Sylvain demande quoi tester, par où continuer ou ce qu'il a laissé de côté.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },
+  nouveautes_base: { f: nouveautesBase, description: "Entrées ajoutées à la base de référence Delta depuis N jours (1 à 30, défaut 7), les plus récentes d'abord, 30 au plus : nom, produit, catégorie, syntaxe, exemple, verdict, date d'ajout, identifiant. À appeler pour savoir ce qui est nouveau dans les commandes, options, skills et réglages de Claude Code et de Codex ; fiche_reference donne le détail.",
+    inputSchema: { type: "object", properties: { jours: { type: "integer", minimum: 1, maximum: 30, description: "fenêtre en jours, 7 par défaut" } }, additionalProperties: false } },
 };
 
 class ErreurParametre extends Error {}
@@ -168,7 +220,7 @@ async function traiter(msg, mesure = {}) {
     case "initialize":
       return ok(id, { protocolVersion: typeof params.protocolVersion === "string" ? params.protocolVersion : PROTOCOLE,
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "delta", title: "Delta — veille IA de Sylvain", version: "0.1.0" },
+        serverInfo: { name: "delta", title: "Delta — veille IA de Sylvain", version: "0.2.0" },
         instructions: "Serveur en lecture seule sur les données publiques de Delta (https://sylvainherbin.github.io/delta-ia/). Il ne peut rien lancer ni modifier." });
     case "ping":
       return ok(id, {});
