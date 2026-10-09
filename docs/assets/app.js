@@ -1211,7 +1211,7 @@
       limite: "Les éléments du jour d'OpenAI n'entrent qu'au bilan suivant. Un bilan partiel est signalé à l'écran." },
     { id: "changelogs", titre: "Changelogs",
       sert: "Éléments des 30 derniers jours par produit (Claude Code, Claude, Codex, ChatGPT), du plus récent au plus ancien.",
-      geste: "Défilement ; même bascule des éléments sans impact que sur Aujourd'hui.",
+      geste: "Défilement ; même bascule des éléments sans impact que sur Aujourd'hui. Changelogs, Actu IA et À tester affichent « n/N fichiers » pendant le chargement de fond des 30 jours.",
       limite: "Au-delà de 30 jours : Archives. L'actualité générale est dans Actu IA." },
     { id: "actu", titre: "Actu IA",
       sert: "Actualité IA hors changelogs des éditeurs, sur 30 jours, avec la certitude de chaque élément : officiel, rapporté, non confirmé.",
