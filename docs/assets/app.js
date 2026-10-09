@@ -531,25 +531,110 @@
     return etat.noms;
   }
   async function chargerKb() {
-    if (etat.kb) return;
-    const t0 = performance.now();
-    const entrees = [], erreurs = [];
-    await Promise.all(KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).map(async (c) => {
-      try {
-        const d = await lireJson(`data/kb/${p}/${c}.json`);
-        if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
-        for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
-          e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
-          e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
-          e._ajout = dateAjout(e);
-          e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
-          entrees.push(e);
+    const kb = etatKb();
+    if (etat.kbFicheId) {
+      // la fiche seule ne lit que son fichier ; id d'une autre forme ou fiche absente de ce fichier : toute la base, pour conclure juste
+      const f = fichierDeIdKb(etat.kbFicheId);
+      if (f) await chargerFichierKb(f[0], f[1]);
+      if (!kb.entrees.some((e) => e.id === etat.kbFicheId)) { chargerResteKb(); await Promise.all(KB_FICHIERS.map(([p, c]) => chargerFichierKb(p, c))); }
+      return;
+    }
+    await Promise.all(KB_PRIORITAIRES.flatMap((c) => KB_PERIMETRES.map((p) => chargerFichierKb(p, c))));
+    console.log(`delta:kb premiers fichiers ${kb.entrees.length} entrées en ${Math.round(performance.now() - kb.debut)} ms`);
+    if (kb.entrees.length) chargerResteKb();
+    else { chargerResteKb(); await kb.reste; }  // rien de lisible dans les premiers fichiers : conclure sur toute la base
+  }
+  /* Chargement par morceaux (m-b6207baf75ca) : la base tient en 14 fichiers (périmètre × catégorie, environ 3 Mo). Les commandes et
+     les fonctionnalités des deux périmètres suffisent à la première page ; le reste se charge en arrière-plan, deux fichiers à la fois,
+     et un filtre qui en demande un le fait passer devant. Les compteurs ne sont exacts qu'une fois tout chargé : jusqu'alors ils sont
+     annoncés provisoires. */
+  const KB_PRIORITAIRES = ["commandes", "fonctionnalites"];
+  const KB_ARRIERE_PLAN = ["skills", "plugins", "mcp", "raccourcis", "parametres"]; // les petits fichiers d'abord, le plus lourd à la fin
+  const KB_PARALLELE = 2;
+  const KB_PRODUIT_PERIMETRE = { claude: "claude", "claude-code": "claude", codex: "openai", chatgpt: "openai" };
+  const KB_FICHIERS = KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).map((c) => [p, c]));
+  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).join("|")})-`);
+  function etatKb() {
+    if (!etat.kb) etat.kb = { entrees: [], erreurs: [], charges: new Set(), promesses: new Map(), debut: performance.now(), reste: null, ms: null };
+    return etat.kb;
+  }
+  // même ordre que `localeCompare(…, "fr")`, avec un collateur construit une fois ; chaque fichier reçu est trié seul puis fusionné à la liste triée
+  const COLLATEUR_KB = new Intl.Collator("fr");
+  const comparerNomKb = (a, b) => COLLATEUR_KB.compare(String(a.nom), String(b.nom));
+  function fusionnerParNomKb(a, b) {
+    const sortie = [];
+    let i = 0, j = 0;
+    while (i < a.length && j < b.length) sortie.push(comparerNomKb(b[j], a[i]) < 0 ? b[j++] : a[i++]);
+    while (i < a.length) sortie.push(a[i++]);
+    while (j < b.length) sortie.push(b[j++]);
+    return sortie;
+  }
+  const cleKb = (p, c) => `${p}/${c}`;
+  // charge un fichier de la base une seule fois (promesse mémorisée) ; un échec va dans `erreurs`, jamais dans une liste vide muette
+  function chargerFichierKb(p, c) {
+    const kb = etatKb(), cle = cleKb(p, c);
+    if (!kb.promesses.has(cle)) {
+      kb.promesses.set(cle, (async () => {
+        const nouvelles = [];
+        try {
+          const d = await lireJson(`data/kb/${p}/${c}.json`);
+          if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
+          for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
+            e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
+            e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
+            e._ajout = dateAjout(e);
+            e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
+            nouvelles.push(e);
+          }
+        } catch (err) { kb.erreurs.push(`${cle} : ${err.message || err}`); }
+        if (nouvelles.length) kb.entrees = fusionnerParNomKb(kb.entrees, nouvelles.sort(comparerNomKb));
+        kb.charges.add(cle);
+        if (kb.charges.size === KB_FICHIERS.length) {
+          kb.ms = Math.round(performance.now() - kb.debut);
+          console.log(`delta:kb complet ${kb.entrees.length} entrées en ${kb.ms} ms`);
         }
-      } catch (err) { erreurs.push(`${p}/${c} : ${err.message || err}`); }
-    })));
-    entrees.sort((a, b) => String(a.nom).localeCompare(String(b.nom), "fr"));
-    etat.kb = { entrees, erreurs, ms: Math.round(performance.now() - t0) };
-    console.log(`delta:kb ${entrees.length} entrées en ${etat.kb.ms} ms`);
+      })());
+    }
+    return kb.promesses.get(cle);
+  }
+  const kbComplet = () => etatKb().charges.size === KB_FICHIERS.length;
+  // fichier d'une entrée d'après son id (`<produit>-<catégorie>-…`), null si l'id n'a pas cette forme
+  function fichierDeIdKb(id) {
+    const m = RE_ID_KB.exec(String(id || ""));
+    return m ? [KB_PRODUIT_PERIMETRE[m[1]], m[2]] : null;
+  }
+  // fichiers que le filtre courant peut lire : produit → son périmètre, catégorie → ce fichier ; sans l'un ni l'autre, toute la base
+  function fichiersRequisKb() {
+    const perimetre = kbFiltre.produit ? KB_PRODUIT_PERIMETRE[kbFiltre.produit] : null;
+    return KB_FICHIERS.filter(([p, c]) => (!perimetre || p === perimetre) && (!kbFiltre.categorie || c === kbFiltre.categorie));
+  }
+  // charge ce qui reste, hors fichiers déjà chargés ou en cours, KB_PARALLELE à la fois ; une seule fois
+  function chargerResteKb() {
+    const kb = etatKb();
+    if (kb.reste) return kb.reste;
+    const file = KB_ARRIERE_PLAN.flatMap((c) => KB_PERIMETRES.map((p) => [p, c]));
+    const ouvrier = async () => { while (file.length) { const [p, c] = file.shift(); await chargerFichierKb(p, c); majChargementKb(); } };
+    kb.reste = Promise.all(Array.from({ length: KB_PARALLELE }, ouvrier)).then(majChargementKb);
+    return kb.reste;
+  }
+  // ligne d'état du chargement et avancement des commentaires, recalculés à chaque fichier reçu ; l'erreur d'un fichier reste affichée
+  function majChargementKb() {
+    const kb = etat.kb, zone = document.getElementById("kb-chargement");
+    if (!kb || !zone) return;
+    vider(zone);
+    if (!kbComplet()) {
+      zone.append(el("span", { text: `Chargement de la base en arrière-plan : ${kb.charges.size}/${KB_FICHIERS.length} fichiers. Compteurs et résultats provisoires.` }));
+    }
+    zone.setAttribute("aria-busy", kbComplet() ? "false" : "true");
+    const faites = kb.entrees.filter((e) => e.commentee).length;
+    const av = document.getElementById("kb-avancement");
+    if (av) {
+      av.querySelector("span").textContent = `${faites}/${kb.entrees.length} entrées commentées${kbComplet() ? "" : " (provisoire)"}`;
+      const pr = av.querySelector("progress");
+      pr.max = Math.max(kb.entrees.length, 1); pr.value = faites;
+    }
+    const err = document.getElementById("kb-erreurs");
+    if (err) { err.textContent = kb.erreurs.length ? `Fichiers illisibles : ${kb.erreurs.join(" ; ")}` : ""; err.hidden = !kb.erreurs.length; }
   }
   function filtrerKb() {
     const mots = sansAccents(kbFiltre.q).split(/\s+/).filter(Boolean);
@@ -760,13 +845,25 @@
     s.addEventListener("change", () => { kbFiltre[cle] = s.value; kbFiltre.limite = KB_PAGE; rendreResultatsKb(); });
     return s;
   }
+  // une fois les fichiers manquants reçus, les résultats se refont une seule fois même si plusieurs frappes ou filtres les attendaient
+  let renduKb = null;
+  function refaireApresChargementKb(manquants) {
+    Promise.all(manquants.map(([p, c]) => chargerFichierKb(p, c))).then(() => {
+      clearTimeout(renduKb);
+      renduKb = setTimeout(() => { majChargementKb(); if (document.getElementById("kb-resultats")) rendreResultatsKb(); }, 0);
+    });
+  }
   function rendreResultatsKb() {
     const zone = document.getElementById("kb-resultats");
     if (!zone) return;
     vider(zone);
+    // fichiers que ce filtre demande et qui manquent : ils partent tout de suite, le résultat se refait quand ils sont là
+    const manquants = fichiersRequisKb().filter(([p, c]) => !etatKb().charges.has(cleKb(p, c)));
+    if (manquants.length) refaireApresChargementKb(manquants);
+    majChargementKb();
     const liste = filtrerKb();
     const commentees = liste.filter((e) => e.commentee).length;
-    zone.append(el("p", { class: "sous-titre", role: "status", text: `${liste.length} entrée(s) affichable(s) · ${commentees}/${liste.length} commentée(s)` }));
+    zone.append(el("p", { class: "sous-titre", role: "status", text: `${liste.length} entrée(s) affichable(s) · ${commentees}/${liste.length} commentée(s)${manquants.length ? " · provisoire, chargement en cours" : ""}` }));
     zone.append(el("ul", { class: "liste" }, ...liste.slice(0, kbFiltre.limite).map(carteKb)));
     if (liste.length > kbFiltre.limite) {
       const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(KB_PAGE, liste.length - kbFiltre.limite)} de plus` });
@@ -778,7 +875,7 @@
     const frag = document.createDocumentFragment();
     frag.append(el("h2", { text: "Référence" }));
     const kb = etat.kb;
-    if (!kb || !kb.entrees.length) {
+    if (!kb || (!kb.entrees.length && kbComplet())) {
       frag.append(el("p", { class: "vide", text: "La base de référence n'est pas encore publiée." }));
       return frag;
     }
@@ -790,10 +887,11 @@
       return frag;
     }
     const total = kb.entrees.length, faites = kb.entrees.filter((e) => e.commentee).length;
-    const barre = el("div", { class: "avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
+    const barre = el("div", { class: "avancement", id: "kb-avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
       el("progress", { max: String(total), value: String(faites), "aria-label": "Avancement des commentaires" }));
     frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
-    if (kb.erreurs.length) frag.append(el("p", { class: "erreur", text: `Fichiers illisibles : ${kb.erreurs.join(" ; ")}` }));
+    frag.append(el("div", { id: "kb-chargement", class: "avancement kb-chargement", role: "status", "aria-live": "polite" }),
+      el("p", { id: "kb-erreurs", class: "erreur", hidden: true }));
     const recherche = el("input", { type: "search", placeholder: "Rechercher (nom, usage, description…)", "aria-label": "Recherche plein texte", value: kbFiltre.q });
     let minuterie = null;
     recherche.addEventListener("input", () => { clearTimeout(minuterie); minuterie = setTimeout(() => { kbFiltre.q = recherche.value; kbFiltre.limite = KB_PAGE; rendreResultatsKb(); }, 150); });
