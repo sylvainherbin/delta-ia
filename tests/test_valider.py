@@ -643,6 +643,20 @@ def test_regles_pour_toi_r1_a_r5_dans_les_trois_textes():
             assert f"**{r} (D85" in texte, f"{f} : règle {r} absente (D85)"
 
 
+def test_r3_exige_un_lien_concret_et_r4_l_emporte_miroir_exact_des_trois_textes():
+    """Audit A1 : un mot commun avec une priorité ne suffit pas ; la ligne R3 est la même dans les trois textes."""
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    lignes = {}
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        (l,) = [x.strip() for x in (racine / f).read_text(encoding="utf-8").splitlines() if "**R3 (D85)" in x]
+        lignes[f] = l
+        assert "une commande, un réglage, une action ou un changement de limite qui la fait avancer, cité dans l'`action`" in l, f
+        assert "un mot commun avec la priorité" in l and "ne suffit pas" in l, f
+        assert "R4 l'emporte" in l and "`impact: nul`" in l and "Claude Code 2.1.289" in l, f
+    assert len(set(lignes.values())) == 1, "R3 identique dans la skill Claude, la skill Codex et prompts/codex-delta.md"
+
+
 def test_r5_disponibilite_sur_tous_les_forfaits_n_est_pas_d71():
     """Élément Google Workspace du 08/10 (titre réduit) : « forfaits payants » dit où la fonction est disponible."""
     gw = {"titre": "Claude pour Google Workspace en bêta publique sur tous les forfaits payants, avec des connecteurs",
