@@ -216,8 +216,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Avec un Wi-Fi fragile, le serveur distant delta-ia peut décrocher : la reconnexion est automatique, et `/mcp` permettrait de vérifier son état après une coupure."
+    "verdict": "ignorer",
+    "pourquoi": "La reconnexion d'un serveur HTTP ou SSE est automatique, sans réglage à activer ; les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et `/mcp` reste le moyen de vérifier l'état du connecteur delta-ia (HTTP) en cas de doute."
    },
    "sources": [
     {
@@ -243,10 +243,23 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "connecteur delta-ia en HTTP, portée locale"
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Wi-Fi : décrochages cessés après la connexion directe à la box"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -353,7 +366,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "C'est la réponse technique au point en attente : trading-sim voit le connecteur de compte Delta-IA malgré sa règle « aucun accès web ». Ce réglage dans `trading-sim/.claude/settings.json`, ou une entrée `deniedMcpServers` pour Delta-IA seul, fermerait cet accès si Work le décide."
+    "pourquoi": "C'est la réponse technique à l'écart de trading-sim, qui reçoit les connecteurs de compte malgré sa règle « aucun accès web » : `disableClaudeAiConnectors: true` dans son `.claude/settings.json`, ou `deniedMcpServers` pour Delta-IA seul, le fermerait ; la décision revient à Work, qui a reçu la question."
    },
    "sources": [
     {
@@ -366,7 +379,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -375,10 +388,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "écart trading-sim, question du deny transmise à Work"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "règle aucun accès web, connecteurs refusés"
+    }
+   }
   },
   {
    "id": "claude-code-mcp-dynamic-tool-updates",
@@ -662,8 +688,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tes sessions tournent dans tmux, donc dans le premier cas : un réglage de projet sur trading-sim s'y appliquerait, alors qu'il ne jouerait pas dans une session de l'app de bureau."
+    "verdict": "ignorer",
+    "pourquoi": "Page de référence : les sessions durables de Sylvain sont des sessions de terminal sous tmux, donc du cas où Claude Code récupère lui-même les connecteurs ; elle éclaire la décision de Work sur trading-sim (voir `disableClaudeAiConnectors`), sans rien à essayer par elle-même."
    },
    "sources": [
     {
@@ -676,7 +702,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -685,10 +711,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions de terminal sous tmux"
+    },
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "connecteurs de compte appliqués par défaut, écart trading-sim"
+    }
+   }
   },
   {
    "id": "claude-code-mcp-images-in-tool-results",

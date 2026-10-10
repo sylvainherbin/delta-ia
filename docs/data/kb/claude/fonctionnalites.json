@@ -285,7 +285,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sylvain utilise déjà les artefacts dans l'app Claude et pilote depuis l'iPhone ; un rapport de campagne trading-sim publié en artefact se lirait sur le téléphone au lieu du terminal. Sur trading-sim, vérifier d'abord que la politique de capacités du projet autorise la publication."
+    "pourquoi": "Sylvain utilise déjà les artefacts dans l'app Claude et pilote depuis l'iPhone : un rapport de campagne trading-sim publié en artefact privé se lirait sur le téléphone ; vérifie d'abord que la politique de capacités du projet (qui interdit les connecteurs claude.ai) ne l'empêche pas."
    },
    "sources": [
     {
@@ -298,7 +298,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -311,10 +311,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "utilise déjà les artefacts de claude.ai"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "l'iPhone est l'interface principale"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "connecteurs claude.ai refusés dans .claude/settings.json"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-auto-mode-config",
@@ -391,7 +408,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La section sur la vérification rejoint les tests `unittest` de trading-sim et `node --test` de carnet ; celle sur le contexte touche directement la consommation des limites hebdomadaires."
+    "pourquoi": "La section sur la vérification rejoint les tests `unittest` de trading-sim et `node --test` de carnet ; celle sur le contexte touche la consommation des limites hebdomadaires, qui reste une friction récurrente."
    },
    "sources": [
     {
@@ -404,7 +421,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -417,10 +434,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "tests unittest, vérification formelle"
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "tests node --test sur copies figées"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-channels",
@@ -479,7 +513,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Bash domine l'usage observé (≈2 900 appels contre 177 Edit) : les fichiers modifiés par `rm`, `mv` ou un script ne sont pas restaurables, git reste le filet sur trading-sim. « Summarize up to here » allège le contexte des sessions longues reprises par `--resume`."
+    "pourquoi": "Bash domine l'usage mesuré le 25/09 (≈2 900 appels contre 177 Edit) : les fichiers changés par `rm`, `mv` ou un script ne sont pas restaurables, git reste donc le filet. « Summarize up to here » allège le contexte des sessions longues reprises par `--resume`."
    },
    "sources": [
     {
@@ -509,10 +543,23 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "usage réel des outils : Bash très dominant (relevé du 25/09)"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "git comme filet sur un projet à fichiers gelés"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -530,7 +577,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Chrome est déjà appelé (4 fois) mais l'extension est souvent déconnectée ; sur carnet, vérifier un écran de la PWA dans le navigateur serait l'usage direct. trading-sim interdit le navigateur dans ses réglages."
+    "pourquoi": "L'extension Chrome est souvent déconnectée selon les frictions relevées ; sur carnet, `claude --chrome` pour vérifier un écran de la PWA dans le navigateur serait l'usage direct, à condition qu'elle soit reconnectée. trading-sim interdit le navigateur dans ses réglages."
    },
    "sources": [
     {
@@ -543,7 +590,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -556,10 +603,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "extension Chrome souvent déconnectée"
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "PWA React/Vite à contrôler à l'écran"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "navigateur interdit dans .claude/settings.json"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-code-on-the-web",
@@ -787,7 +851,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Carnet est public et synchronise par l'API GitHub Contents avec un jeton : une analyse ciblée sur cette chaîne aurait un sens, à lancer un jour où la limite hebdomadaire le permet."
+    "pourquoi": "Le plugin repose sur des workflows multi-agents, que Sylvain n'autorise que sur son accord, et chaque analyse compte dans les limites du plan : à lancer sur la synchro de carnet (dépôt public, API GitHub Contents) un jour où la limite hebdomadaire le permet."
    },
    "sources": [
     {
@@ -800,7 +864,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -813,10 +877,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "workflows multi-agents seulement sur accord de Sylvain"
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "dépôt public, synchro par l'API GitHub Contents"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-tag",
@@ -1250,10 +1327,10 @@
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"version\": \"0.0.1\",\n  \"configurations\": [\n    {\n      \"name\": \"my-app\",\n      \"runtimeExecutable\": \"npm\",\n      \"runtimeArgs\": [\"run\", \"dev\"],\n      \"port\": 3000\n    }\n  ]\n}",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sylvain veut exploiter toutes les fonctions de Claude Desktop utiles au développement ; sur carnet (Vite), le panneau navigateur permettrait de voir la PWA pendant que Claude vérifie ses changements."
+    "pourquoi": "Sylvain utilise Claude Desktop en mode Claude Code (Claude Design) et veut en exploiter toutes les fonctions utiles ; le panneau de prévisualisation (`launch.json`, `npm run dev`) permettrait de voir la console `carnet-console` (React/Vite) pendant que la session la modifie."
    },
    "sources": [
     {
@@ -1266,7 +1343,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1283,10 +1360,23 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "veut utiliser toutes les fonctions utiles de Claude Desktop"
+    },
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "console carnet-console en React construite par la session Design"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -1639,7 +1729,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, une mission dont la fin se vérifie par les tests `unittest` pourrait tourner sans relance depuis l'iPhone ; la validation pas à pas exigée par Sylvain limite l'usage aux étapes déjà approuvées."
+    "pourquoi": "Sur trading-sim, `/goal` convient à une étape déjà validée par Sylvain dont la fin se vérifie par `unittest` : la session tourne sans relance depuis l'iPhone ; un jalon à valider reste soumis à son go."
    },
    "sources": [
     {
@@ -1652,7 +1742,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1665,10 +1755,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "tests unittest, jalons validés par Sylvain"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "trading-sim en validations choisies, un tour de revue par jalon"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-headless",
@@ -2648,7 +2751,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "CONTEXTE range les routines planifiées parmi les fonctions à explorer ; tournant dans le cloud sur un clone GitHub, une routine ne dépend ni du Wi-Fi ni de la machine, mais elle n'a pas accès aux fichiers locaux."
+    "pourquoi": "carnet n'a pas de CI (ses tests ne tournent qu'en local) : une routine déclenchée par un événement GitHub (push) lancerait `node --test` dans le cloud sur le clone, sans la machine ; elle n'a pas accès aux fichiers locaux et consomme les limites du plan."
    },
    "sources": [
     {
@@ -2661,7 +2764,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2678,10 +2781,27 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "pas de CI, tests node --test seulement en local"
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "carnet : tests qui ne tournent qu'en local, pas de CI"
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "routines planifiées : fonction à explorer"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -2994,7 +3114,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Afficher modèle et pourcentage de contexte dans chacune des six sessions tmux aiderait à surveiller la consommation des limites et à distinguer les sessions."
+    "pourquoi": "Afficher modèle et pourcentage de contexte dans les sessions durables sous tmux aiderait à surveiller la consommation des limites et à les distinguer ; `/statusline` génère le script, à poser dans `~/.claude/settings.json`."
    },
    "sources": [
     {
@@ -3007,7 +3127,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3020,10 +3140,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions durables sous tmux, une par rôle"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-sub-agents",
@@ -3132,7 +3265,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les six sessions tournent sous tmux ; la section tmux dit quoi régler si les touches ou les notifications n'y passent pas, en complément des notifications push déjà actives."
+    "pourquoi": "Les sessions durables tournent sous tmux (`claude-session@<nom>`) : la section tmux dit quoi régler si touches ou notifications n'y passent pas, en complément des notifications push déjà actives."
    },
    "sources": [
     {
@@ -3145,7 +3278,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3162,10 +3295,23 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions Claude Code sous tmux -L <nom>"
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "notifications push des agents déjà actives"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -3183,7 +3329,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La politique de capacités de trading-sim refuse déjà WebFetch, WebSearch et le navigateur ; cette table donne les noms exacts à reprendre si la liste doit évoluer."
+    "pourquoi": "trading-sim refuse WebFetch, WebSearch et le navigateur dans `.claude/settings.json` ; compare cette table à sa liste `deny` pour repérer les outils qui sortent du projet (Artifact, CronCreate…) et non couverts, puis soumets l'écart à Work (résultat attendu : liste de noms d'outils)."
    },
    "sources": [
     {
@@ -3196,7 +3342,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3209,10 +3355,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "politique de capacités : WebFetch, WebSearch, navigateur et connecteurs refusés"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-ultrareview",
@@ -3229,7 +3384,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Complément possible aux audits Codex de trading-sim, sur une PR avant fusion ; la revue d'une branche téléverse le dépôt privé, à confronter à la politique de capacités du projet."
+    "pourquoi": "Complément possible aux audits Codex de trading-sim, sur une PR avant fusion ; la revue d'une branche téléverse le dépôt privé dans le cloud, à confronter à la politique de capacités du projet et à valider avec Work, et la boîte de dialogue donne les essais gratuits restants."
    },
    "sources": [
     {
@@ -3242,7 +3397,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3255,10 +3410,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "audits adversariaux, dépôt privé, politique de capacités"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work arbitre, Codex audite"
+    }
+   }
   },
   {
    "id": "claude-code-fonctionnalites-page-voice-dictation",

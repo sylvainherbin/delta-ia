@@ -3482,7 +3482,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Avant chaque commit sur carnet ou trading-sim, relire les modifications dans la session correspond à ta validation pas à pas."
+    "pourquoi": "Avant un commit sur trading-sim, où les commits sont rares et formels (passés par une PR), `/diff` relit dans la session ce que Claude a modifié ; résultat attendu : la liste des fichiers touchés avant le `git commit`."
    },
    "sources": [
     {
@@ -3495,7 +3495,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3512,10 +3512,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "commits rares et formels par PR : relire le diff avant"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "commits formels sur trading-sim, petits et fréquents sur carnet"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -3700,7 +3713,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour les audits croisés, exporter la session herbin-trading dans chatgpt-trading-sim donne à Codex la trace exacte de l'exécution à auditer."
+    "pourquoi": "Pour un audit croisé, `/export` d'une session trading-sim en fichier donne à Codex (qui audite le travail de Claude) la trace exacte de l'exécution ; à déposer là où Work et Codex lisent les missions."
    },
    "sources": [
     {
@@ -3713,7 +3726,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3730,10 +3743,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Codex fait l'audit adversarial, les missions passent par des fichiers"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "projet audité par Codex"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -4701,7 +4727,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les règles transversales (français, tutoiement, validation pas à pas) restent dispersées dans tes mémoires ; le `~/.claude/CLAUDE.md` global existe depuis le 24/09 mais ne contient que la consigne du connecteur delta-ia, et `/memory` sert à préparer leur regroupement si tu le décides."
+    "pourquoi": "Les règles transversales de Sylvain (français, tutoiement, factuel/déduit) restent dispersées dans les mémoires et `~/.claude/CLAUDE.md` ne porte que la consigne du connecteur delta-ia ; `/memory` ouvre ces fichiers pour préparer leur regroupement, sur accord explicite de Sylvain."
    },
    "sources": [
     {
@@ -4714,7 +4740,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4731,10 +4757,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "CLAUDE.md global limité à la consigne du connecteur delta-ia"
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "centraliser les règles transversales, sur accord explicite"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -5064,7 +5103,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le mode plan correspond à ta méthode (diagnostic, proposition, accord explicite, puis exécution) ; sur trading-sim, il empêcherait toute modification avant ton accord."
+    "pourquoi": "Sur trading-sim, seul projet en VALIDATIONS_CHOISIES (un tour de revue par jalon), `/plan` fait proposer le jalon sans rien modifier avant le go de Sylvain ; ailleurs, tous les projets sont en FULL_AUTO."
    },
    "sources": [
     {
@@ -5077,7 +5116,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5090,10 +5129,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "FULL_AUTO partout sauf trading-sim, en validations à chaque jalon"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "jalons validés par Sylvain avant exécution"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-plugin",
@@ -5472,7 +5524,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "En reprenant une session depuis l'iPhone après une coupure Wi-Fi ou une nuit, une ligne suffit pour savoir où en est herbin-trading."
+    "pourquoi": "À la reprise d'une session durable depuis l'iPhone (`--resume`, Remote Control) après une nuit, `/recap` donne en une ligne où en est la session ; résultat attendu : une phrase sur l'état courant, sans relire l'historique."
    },
    "sources": [
     {
@@ -5485,7 +5537,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5502,10 +5554,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions durables reprises par --resume, pilotées par Remote Control"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "l'iPhone est l'interface principale"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -5976,7 +6041,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur carnet, où les commits sont fréquents et petits, revenir sur une modification ratée de Claude sans passer par git ; sur trading-sim, vérifier que les fichiers gelés ne sont pas concernés."
+    "pourquoi": "Sur carnet (commits petits et fréquents), `/rewind` en mode code seul annule une modification ratée de Claude sans passer par git ; il ne suit pas les fichiers changés par Bash (`rm`, `mv`, scripts), donc git reste le filet sur trading-sim."
    },
    "sources": [
     {
@@ -5989,7 +6054,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6006,10 +6071,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "commits fréquents et petits, modifications à annuler vite"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "fichiers gelés : git reste le filet"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -6027,7 +6105,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "trading-sim a déjà une politique de capacités stricte dans `.claude/settings.json` ; le sandbox pourrait la compléter en bornant les commandes Bash, si Linux Mint est pris en charge."
+    "pourquoi": "trading-sim a déjà une politique de capacités stricte dans `.claude/settings.json` ; `/sandbox` pourrait la compléter en bornant Bash, si la plateforme Linux Mint est prise en charge (à vérifier dans la session) ; le réglage du projet dépend de Work."
    },
    "sources": [
     {
@@ -6040,7 +6118,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6057,10 +6135,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "politique de capacités restrictive dans .claude/settings.json"
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Linux Mint 22.1, plateforme à vérifier"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -6078,7 +6169,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les routines planifiées sont sur ta liste à explorer ; le plan du jour de carnet, écrit par herbin-carnet dans un dépôt public, pourrait tourner en routine cloud sans occuper une session de la machine."
+    "pourquoi": "Les routines planifiées sont sur la liste à explorer de Sylvain ; `/schedule` crée une routine cloud sur le dépôt carnet (résumé hebdomadaire des commits), sans session ni machine allumée, mais elle consomme les limites du plan."
    },
    "sources": [
     {
@@ -6091,7 +6182,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6108,10 +6199,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "routines planifiées : fonction à explorer"
+    },
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "dépôt GitHub sur lequel la routine tournerait"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -6184,7 +6288,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "carnet est un dépôt public qui ne doit contenir aucun secret ; une revue avant de pousser une fonctionnalité touchant l'API GitHub Contents vérifie ce point."
+    "pourquoi": "carnet est un dépôt public qui ne doit contenir ni secret ni donnée personnelle : `/security-review` avant de pousser une modification de la synchro `carnet-data.json` (API GitHub Contents) vérifie injection et exposition de données ; elle exige un distant `origin`."
    },
    "sources": [
     {
@@ -6197,7 +6301,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6214,10 +6318,19 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "dépôt public, synchro par l'API GitHub Contents, aucun secret"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -6968,7 +7081,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les trois exécutions gratuites permettent de comparer, sur une PR de trading-sim, ses résultats à ceux de l'audit Codex, dans l'esprit des audits croisés ; dépôt privé envoyé dans le cloud, à valider avec ChatGPT Work."
+    "pourquoi": "Sur une PR de trading-sim, `/ultrareview` compare une revue cloud multi-agents à l'audit Codex (audits croisés) ; Max inclut 3 exécutions gratuites : lis le compteur dans la boîte de dialogue avant de lancer, car la revue d'une branche envoie le dépôt privé dans le cloud, à valider avec Work."
    },
    "sources": [
     {
@@ -6981,7 +7094,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6998,10 +7111,27 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "PR et audits adversariaux, dépôt privé"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work arbitre, Codex audite"
+    },
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "abonnement Max (20x) : essais gratuits et crédits d'usage"
+    }
+   },
    "exemple_origine": "compose"
   },
   {

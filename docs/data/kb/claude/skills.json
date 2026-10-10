@@ -712,8 +712,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Moins de demandes de permission allégeraient le pilotage depuis l'iPhone sur carnet ou delta-ia. Il écrit durablement dans `.claude/settings.json` : à éviter sur trading-sim, dont les capacités sont volontairement restreintes."
+    "verdict": "ignorer",
+    "pourquoi": "Depuis le 06/10 les sessions locales tournent en `bypassPermissions` (sauf trading) : il n'y a plus de demandes de permission à réduire, et la liste `allow` n'est plus déterminante ; sur trading-sim les capacités sont volontairement restreintes, la skill y écrirait contre ce choix."
    },
    "sources": [
     {
@@ -739,10 +739,23 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "bypassPermissions partout sauf trading depuis le 06/10"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "capacités volontairement restreintes"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -897,7 +910,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur carnet, il vérifierait dans l'app lancée une correction de saisie ou une nouvelle courbe, que les 13 fichiers de test `node --test` ne couvrent pas à l'écran."
+    "pourquoi": "Sur carnet (Vite), `/run` lance la PWA pour constater à l'écran une correction de saisie ou une nouvelle courbe de l'onglet Stats, que les fichiers `node --test` ne couvrent pas ; résultat attendu : le comportement vu dans l'app lancée."
    },
    "sources": [
     {
@@ -923,10 +936,19 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "PWA React/Vite, tests node --test sans contrôle à l'écran"
+    }
+   },
    "exemple_origine": "source"
   },
   {
