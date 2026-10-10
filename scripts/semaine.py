@@ -8,6 +8,8 @@ Sans option, la semaine ISO en cours (jour local). Rassemble, par recopie de cha
 les éléments D71 (en tête), les éléments `fort` et `moyen` des trois périmètres, les entrées de la base ajoutées pendant la
 semaine et celles passées au verdict `utiliser` ou `tester`. Le fichier est écrit même pour une semaine vide ; une source
 illisible donne `statut: echec` avec la raison, signalée par une ligne `! AVERTISSEMENT` (code de sortie 0 : le fichier est écrit).
+Limite connue : le passage `actu` produit le bilan avant `codex-delta` ; les éléments `openai` du jour n'y entrent que la nuit
+suivante, et ceux du dimanche n'entrent pas dans la semaine close (la rattraper à la main le lundi avec `--semaine <précédente>`).
 Un contenu identique à l'existant (hors `genere_le`) n'est pas réécrit. Code 1 : écriture impossible ; code 2 : semaine invalide.
 """
 
