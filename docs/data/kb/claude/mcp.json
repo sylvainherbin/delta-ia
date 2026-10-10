@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-10",
+ "maj_le": "2026-10-11",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -54,7 +54,7 @@
    "description_source": "MCP servers aren't specific to Claude Code, so a server's setup instructions may be written for Claude Desktop, Cursor, or another MCP client and give no claude mcp add command. To add the server anyway, look in those instructions for a URL, a launch command, or a JSON block:",
    "usage": "claude mcp add --transport http example https://mcp.example.com/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport http example https://mcp.example.com/mcp",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -72,7 +72,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -81,10 +81,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-authenticate-from-the-command-line",
@@ -155,7 +160,7 @@
    "description_source": "An MCP tool call in the main conversation that is still running after two minutes moves to a background task instead of blocking the session. Claude receives the task ID immediately and keeps working, and the result arrives as a task notification when the call settles. Automatic backgrounding requires Claude Code v2.1.212 or later.",
    "usage": "/tasks",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/tasks",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -173,7 +178,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -182,10 +187,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-automatic-reconnection",
@@ -197,7 +207,7 @@
    "description_source": "Claude Code reconnects a remote server that drops mid-session and retries an HTTP or SSE server's first connection after a transient error. Stdio servers are local processes, and Claude Code doesn't reconnect them automatically.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/mcp",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -215,7 +225,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -224,10 +234,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-configure-tool-search",
@@ -281,7 +296,7 @@
    "description_source": "Toggle a server off in the /mcp panel to stop Claude Code from connecting to it without losing its configuration. Claude Code still lists the server in /mcp, marked as disabled.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/mcp",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -299,7 +314,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -308,10 +323,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-disable-claude-ai-connectors",
@@ -411,7 +431,7 @@
    "description_source": "Claude Code supports environment variable expansion in .mcp.json files, allowing teams to share configurations while maintaining flexibility for machine-specific paths and sensitive values like API keys.",
    "usage": "{\n  \"mcpServers\": {\n    \"api-server\": {\n      \"type\": \"http\",\n      \"url\": \"${API_BASE_URL:-https://api.example.com}/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${API_KEY}\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"mcpServers\": {\n    \"api-server\": {\n      \"type\": \"http\",\n      \"url\": \"${API_BASE_URL:-https://api.example.com}/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${API_KEY}\"\n      }\n    }\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -429,7 +449,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -438,10 +458,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-execute-mcp-prompts",
@@ -453,7 +478,7 @@
    "description_source": "Type / to see the commands available to you, including those from MCP servers. Claude Code lists each MCP prompt as /servername:promptname (MCP). Typing /mcp__servername__promptname also runs it.",
    "usage": "    /mcp__github__list_prs",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/mcp__github__list_prs",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -471,7 +496,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP prompts as commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -480,10 +505,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-exempt-a-server-from-deferral",
@@ -693,7 +723,7 @@
    "description_source": "Local scope is the default. A local-scoped server loads only in the project where you added it and stays private to you. Claude Code stores it in ~/.claude.json under that project's path, so the same server won't appear in your other projects. Use local scope for personal development servers, experimental configurations, or servers with credentials you don't want in version control.",
    "usage": "# Add a local-scoped server (default)\nclaude mcp add --transport http stripe https://mcp.stripe.com\n\n# Explicitly specify local scope\nclaude mcp add --transport http stripe --scope local https://mcp.stripe.com",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
@@ -711,7 +741,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -728,6 +758,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -736,7 +770,8 @@
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
      "pourquoi": "delta-ia ajouté en `--scope local` dans ~/projets et ~/projets/delta-ia ; portée liée au cwd"
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-mcp-managing-your-servers",
@@ -748,7 +783,7 @@
    "description_source": "Once configured, you can manage your MCP servers with these commands:",
    "usage": "# List all configured servers\nclaude mcp list\n\n# Get details for a specific server\nclaude mcp get notion\n\n# Remove a server\nclaude mcp remove notion\n\n# (within Claude Code) Check server status\n/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "cd ~/projets/trading-sim && claude mcp list",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -766,7 +801,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -783,6 +818,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -791,7 +830,8 @@
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
      "pourquoi": "portée locale rattachée au cwd ; delta-ia absent de ~/projets/trading-sim"
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-mcp-mcp-client-runtimes",
@@ -845,7 +885,7 @@
    "description_source": "HTTP servers are the recommended option for connecting to remote MCP servers. This is the most widely supported transport for cloud-based services.",
    "usage": "# Basic syntax\nclaude mcp add --transport http <name> <url>\n\n# Real example: Connect to Notion\nclaude mcp add --transport http notion https://mcp.notion.com/mcp\n\n# Example with Bearer token\nclaude mcp add --transport http secure-api https://api.example.com/mcp \\\n  --header \"Authorization: Bearer your-token\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport http delta-ia https://delta-mcp-ruddy.vercel.app/mcp",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
@@ -863,7 +903,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -880,6 +920,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -888,7 +932,8 @@
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
      "pourquoi": "commande exacte d'ajout de delta-ia le 24/09 ; trading-sim gouverné par Work"
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-mcp-option-2-add-a-remote-sse-server",
@@ -900,7 +945,7 @@
    "description_source": "The SSE (Server-Sent Events) transport is deprecated. Use HTTP servers instead, where available.",
    "usage": "# Basic syntax\nclaude mcp add --transport sse <name> <url>\n\n# Real example: Connect to Asana\nclaude mcp add --transport sse asana https://mcp.asana.com/sse\n\n# Example with authentication header\nclaude mcp add --transport sse private-api https://api.company.com/sse \\\n  --header \"X-API-Key: your-key-here\"",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport sse asana https://mcp.asana.com/sse",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -918,7 +963,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -927,10 +972,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-option-3-add-a-local-stdio-server",
@@ -942,7 +992,7 @@
    "description_source": "Stdio servers run as local processes on your machine. They're ideal for tools that need direct system access or custom scripts.",
    "usage": "# Basic syntax\nclaude mcp add [options] <name> -- <command> [args...]\n\n# Real example: Add Airtable server\nclaude mcp add --env AIRTABLE_API_KEY=YOUR_KEY --transport stdio airtable \\\n  -- npx -y airtable-mcp-server",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --env AIRTABLE_API_KEY=YOUR_KEY --transport stdio airtable \\\n  -- npx -y airtable-mcp-server",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -960,7 +1010,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -969,10 +1019,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-option-4-add-a-remote-websocket-server",
@@ -984,7 +1039,7 @@
    "description_source": "WebSocket servers hold a persistent bidirectional connection, which suits remote MCP servers that push events to Claude unprompted. Use HTTP instead when your server only responds to requests, since HTTP supports OAuth and the claude mcp add --transport flag, while WebSocket supports neither.",
    "usage": "claude mcp add-json events-server \\\n  '{\"type\":\"ws\",\"url\":\"wss://mcp.example.com/socket\",\"headers\":{\"Authorization\":\"Bearer YOUR_TOKEN\"}}'",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add-json events-server \\\n  '{\"type\":\"ws\",\"url\":\"wss://mcp.example.com/socket\",\"headers\":{\"Authorization\":\"Bearer YOUR_TOKEN\"}}'",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1002,7 +1057,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1011,10 +1066,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-override-oauth-metadata-discovery",
@@ -1026,7 +1086,7 @@
    "description_source": "Point Claude Code at a specific OAuth authorization server metadata URL to bypass the default discovery chain. Set authServerMetadataUrl when the MCP server's standard endpoints error, or when you want to route discovery through an internal proxy. By default, Claude Code first checks RFC 9728 Protected Resource Metadata at /.well-known/oauth-protected-resource, then falls back to RFC 8414 authorization server metadata at /.well-known/oauth-authorization-server.",
    "usage": "{\n  \"mcpServers\": {\n    \"my-server\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"oauth\": {\n        \"authServerMetadataUrl\": \"https://auth.example.com/.well-known/openid-configuration\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"mcpServers\": {\n    \"my-server\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"oauth\": {\n        \"authServerMetadataUrl\": \"https://auth.example.com/.well-known/openid-configuration\"\n      }\n    }\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1044,7 +1104,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1053,10 +1113,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-plugin-provided-mcp-servers",
@@ -1114,7 +1179,7 @@
    "description_source": "Project-scoped servers enable team collaboration by storing configurations in a .mcp.json file at your project's root directory. When you add a project-scoped server, Claude Code automatically creates or updates this file with the appropriate configuration structure. Check .mcp.json into version control so everyone on your team gets the same MCP tools and services.",
    "usage": "# Add a project-scoped server\nclaude mcp add --transport http shared-server --scope project https://example.com/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport http shared-server --scope project https://example.com/mcp",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1132,7 +1197,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1141,10 +1206,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-push-messages-with-channels",
@@ -1244,7 +1314,7 @@
    "description_source": "Type @ in your prompt to see available resources from all connected MCP servers. Resources appear alongside files in the autocomplete menu.",
    "usage": "    Can you analyze @github:issue://123 and suggest a fix?",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "Can you analyze @github:issue://123 and suggest a fix?",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1262,7 +1332,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP resources",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1271,10 +1341,15 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-restrict-oauth-scopes",

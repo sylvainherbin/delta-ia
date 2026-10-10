@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-10",
+ "maj_le": "2026-10-11",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 132,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1077,7 +1077,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions parallèles sont des sessions tmux systemd, pas des sessions d'arrière-plan ; cette vue ne les voit pas."
+    "pourquoi": "Tes sessions durables sont des services systemd sous tmux, pas des sessions d'arrière-plan ; leur liste et leur état se lisent dans OPÉRER (`operer qui`)."
    },
    "sources": [
     {
@@ -1090,7 +1090,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1099,10 +1099,20 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables en services systemd sous tmux, listées par OPÉRER."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-attach-id",
@@ -1305,12 +1315,12 @@
    "description_source": "Show authentication status as JSON. Use --text for human-readable output. Exits with code 0 if logged in, 1 if not. The JSON includes a configDirectory field naming the configuration directory the CLI uses. The field requires Claude Code v2.1.268 or later. The JSON's authMethod field is one of none, claude.ai, oauth_token, api_key, api_key_helper, or third_party — claude auth status",
    "usage": "claude auth status",
    "usage_nature": "syntaxe",
-   "exemple": "claude auth status --text",
+   "exemple": "claude auth status",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pourrait servir à un contrôle de santé des sessions dans console-mur, mais ce projet est hors périmètre de la veille."
+    "pourquoi": "CONTEXTE.md ne décrit aucun problème d'authentification ; seul usage plausible, un contrôle de santé scripté (code de sortie 0 ou 1) des sessions systemd, sans scénario arrêté."
    },
    "sources": [
     {
@@ -1323,7 +1333,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1352,16 +1362,20 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "projet.restoration-id": {
-     "sha1": "fa8476b43814e6dd02af96a248e178016f655ad4",
-     "pourquoi": "console-mur est cité hors périmètre à la fin de cette section."
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions systemd durables : seul terrain d'un contrôle de santé scripté."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-auto-mode-defaults",
@@ -1819,7 +1833,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ta configuration Codex n'a ni AGENTS.md global ni prompts ; le seul AGENTS.md (carnet) est déjà importé par `@AGENTS.md`."
+    "pourquoi": "Le `~/.claude/CLAUDE.md` et le `~/.codex/AGENTS.md` portent déjà la même consigne (consulter Delta-IA), et Codex n'a que ses skills système : rien d'utile à importer."
    },
    "sources": [
     {
@@ -1832,7 +1846,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1841,10 +1855,24 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "`~/.codex/AGENTS.md` global existe déjà ; pas de prompts ni de skills Codex propres."
+    },
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "`~/.claude/CLAUDE.md` porte déjà la consigne connecteur delta-ia."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-install-version",
@@ -2308,12 +2336,12 @@
    "description_source": "Delete all local Claude Code state for a project: transcripts, task lists, debug logs, file-edit history, prompt history lines, and the project's entry in ~/.claude.json. Omit [path] to pick from an interactive list. Flags: --dry-run to preview, -y/--yes to skip confirmation, -i/--interactive to confirm each item, --all for every project. See Clear local data — claude purge ~/work/repo --dry-run",
    "usage": "claude purge [path]",
    "usage_nature": "syntaxe",
-   "exemple": "claude purge ~/work/repo --dry-run",
+   "exemple": "claude purge ~/projets/delta-ia --dry-run",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Destructif et sans scénario d'essai précis dans CONTEXTE.md ; si tu y recours un jour, lance d'abord `claude purge ~/projets/<dossier> --dry-run`, car les transcriptions des sessions herbin-* y passeraient."
+    "pourquoi": "Destructif et sans scénario d'essai dans CONTEXTE.md ; l'entrée du projet dans `~/.claude.json` partirait avec, or tes MCP en portée locale sont rattachés au dossier de travail. Si tu y recours un jour, lance d'abord `--dry-run`."
    },
    "sources": [
     {
@@ -2323,17 +2351,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Les six sessions herbin-* gardent leurs transcriptions dans l'état local du projet."
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "MCP en portée locale rattachés au dossier de travail (delta-ia dans ~/projets et ~/projets/delta-ia)."
     }
    },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-10-03",
@@ -2342,8 +2370,13 @@
     {
      "date": "2026-10-03",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-claude-query",
@@ -3038,7 +3071,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sonnet est déjà ton défaut voulu ; pour une seule session, le sélecteur de `/model` avec `s` suffit, sans réglage enregistré."
+    "pourquoi": "Le modèle et l'effort de chaque session sont fixés par son lanceur (`--model opus --effort medium` pour le chef) et Sonnet reste ton défaut voulu ; pour une seule session, le sélecteur de `/model` avec `s` suffit, sans réglage enregistré."
    },
    "sources": [
     {
@@ -3051,7 +3084,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3092,15 +3125,24 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Modèle et effort fixés au lancement de chaque service de session."
+    },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`, réactivé à chaque reprise."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; `/advisor opus` réactivé avant chaque mission."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-context",
@@ -3261,7 +3303,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "WebSearch est interdit sur trading-sim et un workflow multi-agents consomme beaucoup de ta limite hebdomadaire ; aucun besoin de recherche de ce type dans CONTEXTE."
+    "pourquoi": "C'est un workflow multi-agents, que tu n'autorises que sur accord explicite, et il consomme beaucoup de la limite hebdomadaire, ta friction principale ; WebSearch est en outre interdit sur trading-sim."
    },
    "sources": [
     {
@@ -3274,7 +3316,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3287,10 +3329,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Workflows multi-agents (outil Workflow) seulement sur accord de Sylvain."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -4550,11 +4605,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4587,6 +4642,10 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -5073,7 +5132,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sert à écrire un mod, et aucun mod n'est en projet dans CONTEXTE.md ; à reprendre si tu veux remplacer un hook par un mod."
+    "pourquoi": "Aucun mod n'est en projet dans CONTEXTE.md ; elle servirait si la piste 3 (transformer des contrôles manuels en hooks, au-delà du seul `PermissionDenied`) passait par un mod."
    },
    "sources": [
     {
@@ -5083,17 +5142,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Aucun hook, commande ni plugin propre : pas de mod à écrire pour l'instant."
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : contrôles répétés qui pourraient devenir des hooks ; un seul hook aujourd'hui."
     }
    },
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-10-03",
@@ -5106,6 +5165,10 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source"
@@ -5770,7 +5833,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions herbin-* reprennent leur conversation au démarrage du service ; `/resume` ne servirait qu'à retrouver une conversation laissée par `/clear`."
+    "pourquoi": "Tes services de session reprennent leur conversation seuls (`claude --resume <id>`) ; `/resume` ne servirait qu'à retrouver une conversation laissée par le `/clear` qui vide chaque dev avant une mission."
    },
    "sources": [
     {
@@ -5783,7 +5846,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5804,13 +5867,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Sessions herbin-* en tmux sous systemd, reprises au démarrage."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
+    },
+    "methode.organisation": {
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+     "pourquoi": "Un dev est vidé avant chaque mission."
     }
    },
    "exemple_origine": "source"
@@ -6429,7 +6500,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucune session d'arrière-plan : tes sessions tournent sous tmux."
+    "pourquoi": "CONTEXTE.md ne décrit aucune session d'arrière-plan : tes sessions tournent sous tmux comme services systemd, arrêtés et relancés par ces services."
    },
    "sources": [
     {
@@ -6442,7 +6513,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6463,13 +6534,17 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Sessions herbin-* sous tmux, sans session d'arrière-plan décrite."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions en services systemd sous tmux, sans session d'arrière-plan décrite."
     }
    },
    "exemple_origine": "source"
