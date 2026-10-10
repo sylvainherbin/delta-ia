@@ -447,9 +447,9 @@ et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `
 ### Missions, worktrees et Codex
 <!-- ctx-id: methode.missions -->
 
-- **`mission-dev <delta|discipline|design> [--advisor]`** : prépare un dev avant une mission, **vide son contexte**
+- **`mission-dev <delta|discipline|design> [--advisor]`** : lanceur appelé par OPÉRER pour préparer le dev avant sa remise, **vide son contexte**
   (`/clear`), remet son nom de session et règle le conseiller (`--advisor` = Opus) ; refuse si le dev travaille encore ;
-  inscrit la mission dans OPÉRER. Le chef envoie ensuite le brief.
+  la mission reste inscrite et suivie dans OPÉRER.
 - **`mission-codex <worktree> <consigne> [nom]`** : lance `codex exec` en arrière-plan avec **`-s danger-full-access`**
   (plus de bac à sable `workspace-write`). Le **modèle et l'effort sont toujours passés explicitement**, jamais hérités de
   `~/.codex/config.toml`, selon la **nature** de la mission (barème `codex_modeles.py` de `discipline`) : mécanique →
