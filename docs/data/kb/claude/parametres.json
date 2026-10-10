@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 652,
- "commentees": 595,
+ "commentees": 619,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -15377,7 +15377,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tournent dans le terminal, pas dans Claude Desktop."
+    "pourquoi": "Tu utilises Claude Desktop pour Claude Design, mais rien dans CONTEXTE.md ne demande de purger ses transcripts ; sans cette clé, ils sont gardés sans limite d'âge."
    },
    "sources": [
     {
@@ -15386,11 +15386,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15407,10 +15407,19 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-dialogexpiry",
@@ -15422,12 +15431,12 @@
    "description_source": "Set the deadline for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message. On Claude Code v2.1.236 or later, the same deadline bounds the mid-session Fable usage-credits consent prompt in a session that may have nobody at the terminal. When no answer arrives before the deadline, Claude Code cancels the dialog and continues with its no-action default. Requires Claude Code v2.1.224 or later.",
    "usage": "{\n  \"dialogExpiry\": \"10m\"\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"dialogExpiry\": \"10m\"\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu réponds depuis l'iPhone par Remote Control : un délai adapté éviterait qu'une demande expire pendant une coupure du Wi-Fi ou reste ouverte trop longtemps."
+    "pourquoi": "Tu réponds depuis l'iPhone par Remote Control : fixer un délai évite qu'un dialogue transmis reste ouvert trop longtemps ou expire avant ta réponse ; vérifie d'abord la valeur par défaut dans la page."
    },
    "sources": [
     {
@@ -15436,11 +15445,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15453,10 +15462,20 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Pilotage à distance : l'iPhone est l'interface principale (Remote Control)."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-difftool",
@@ -16290,7 +16309,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À ne pas poser : Opus est ton modèle par défaut, sans cache il consommerait davantage des limites."
+    "pourquoi": "À ne pas poser : Opus sert au chef et aux conseillers, et sans cache il consommerait davantage des limites hebdomadaires."
    },
    "sources": [
     {
@@ -16299,11 +16318,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16316,13 +16335,21 @@
     {
      "date": "2026-09-30",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
-    "config.claude-code": {
-     "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
-     "pourquoi": "modèle par défaut relevé dans etat.json (opus)"
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Sonnet par défaut voulu ; Opus pour le chef et comme conseiller."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     }
    }
   },
@@ -16350,11 +16377,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16367,10 +16394,19 @@
     {
      "date": "2026-09-30",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-disable-slash-commands",
@@ -16978,11 +17014,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17003,13 +17039,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
-     "pourquoi": "Plugins : aucun plugin propre observé."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Aucun plugin propre ; frontend-design seul, en essai non adopté."
     }
    }
   },
@@ -17070,7 +17110,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations ; tu travailles sur ta machine."
+    "pourquoi": "Pensé pour les organisations ; tu travailles sur ta machine, et Claude Design y tourne en session locale de Claude Desktop."
    },
    "sources": [
     {
@@ -17079,11 +17119,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17096,10 +17136,19 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-disabledmcpjsonservers",
@@ -17789,11 +17838,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17806,10 +17855,19 @@
     {
      "date": "2026-10-06",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-enable-claudeai-mcp-servers",
@@ -18793,11 +18851,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18810,13 +18868,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage hebdomadaire et Fable parmi les frictions récurrentes"
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     }
    }
   },
@@ -19290,11 +19352,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19307,10 +19369,19 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-forceloginorguuid",
@@ -19336,11 +19407,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19353,10 +19424,19 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-fork-session",
@@ -19428,7 +19508,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'exploites pas le mode `-p` en `stream-json`."
+    "pourquoi": "Concerne le mode non interactif (`claude -p`), utilisé par la chaîne D70 et par JUGER, mais aucun besoin de ce réglage n'y est décrit dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -19437,11 +19517,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19454,10 +19534,23 @@
     {
      "date": "2026-10-08",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 en mode non interactif."
+    },
+    "methode.juger-design": {
+     "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+     "pourquoi": "Rôles LLM de JUGER appelés par `claude -p`."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-from-pr",
@@ -19950,7 +20043,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin de tracer le chargement des instructions n'est décrit ; ton seul hook filtre des commandes Bash."
+    "pourquoi": "Aucun besoin de tracer le chargement des instructions n'est décrit ; ton seul hook est `PermissionDenied` → `operer refus`."
    },
    "sources": [
     {
@@ -19959,11 +20052,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19984,13 +20077,17 @@
     {
      "date": "2026-10-07",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "98a750d6969e37abc0c53fc83d3bd2fb5e0923e2",
-     "pourquoi": "Un seul hook perso : PreToolUse check-bash.sh."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook : PermissionDenied, qui lance `operer refus`."
     }
    }
   },
@@ -20116,10 +20213,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Journaliser les refus du mode auto dans herbin-mint (hook `PermissionDenied` qui ajoute la commande à un fichier) pendant une semaine pour voir quelles écritures système le classificateur bloque."
+    "verdict": "utiliser",
+    "pourquoi": "Tu l'utilises déjà : ton seul hook, `PermissionDenied` dans `~/.claude/settings.json`, lance `operer refus` et consigne les refus dans OPÉRER ; d'après la page il ne se déclenche qu'en mode auto, donc peu depuis le régime bypassPermissions."
    },
    "sources": [
     {
@@ -20128,11 +20225,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20149,17 +20246,21 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "classificateur du mode auto qui bloque certaines écritures système"
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook : PermissionDenied, qui lance `operer refus`."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-mint gère système et réseau"
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
    }
   },
@@ -20178,7 +20279,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Répondre automatiquement aux demandes irait contre ta validation pas à pas."
+    "pourquoi": "Tes sessions locales tournent en bypassPermissions, sans demande de permission à laquelle répondre ; ton seul hook est `PermissionDenied`."
    },
    "sources": [
     {
@@ -20187,11 +20288,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20208,13 +20309,21 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "validation humaine pas à pas"
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook : PermissionDenied, qui lance `operer refus`."
     }
    }
   },
@@ -21358,7 +21467,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin identifié."
+    "pourquoi": "Aucun besoin identifié dans CONTEXTE.md ; ton seul hook est `PermissionDenied`."
    },
    "sources": [
     {
@@ -21367,11 +21476,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21388,13 +21497,17 @@
     {
      "date": "2026-10-04",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
-     "pourquoi": "aucun hook perso configuré"
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook : PermissionDenied, qui lance `operer refus`."
     }
    }
   },
@@ -21413,7 +21526,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun usage de worktrees."
+    "pourquoi": "Ne se déclenche que pour les worktrees créés par Claude Code ; les tiens viennent de `git worktree add` ou d'OPÉRER, et aucun besoin de remplacer `git worktree` n'est décrit."
    },
    "sources": [
     {
@@ -21422,11 +21535,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21443,13 +21556,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
-     "pourquoi": "aucun hook perso configuré"
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Worktrees créés par git ou OPÉRER, retirés par `operer menage` ; `--worktree` et les hooks Worktree* non utilisés."
     }
    }
   },
@@ -21468,7 +21585,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun usage de worktrees."
+    "pourquoi": "Ne se déclenche que pour les worktrees créés par un hook `WorktreeCreate` ; le retrait des tiens passe par `operer menage --appliquer`."
    },
    "sources": [
     {
@@ -21477,11 +21594,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21498,13 +21615,17 @@
     {
      "date": "2026-10-08",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "39f57edf4d055778909192a520fd66e1ac2cdc4c",
-     "pourquoi": "aucun hook perso configuré"
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Worktrees créés par git ou OPÉRER, retirés par `operer menage` ; `--worktree` et les hooks Worktree* non utilisés."
     }
    }
   },
@@ -22347,11 +22468,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22384,17 +22505,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 1 : règles transversales (français…) dispersées dans les mémoires"
-    },
-    "profil": {
-     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-     "pourquoi": "Sylvain travaille en français"
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 1 : règles transversales (français, tutoiement) dispersées dans les mémoires."
     }
    }
   },
@@ -22524,11 +22645,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22545,13 +22666,17 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "profil": {
-     "sha1": "bfc2435f9fec480f789b9c2c894a4ad60ca518b8",
-     "pourquoi": "abonnement Claude Max (5x)"
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
     }
    }
   },
@@ -22579,11 +22704,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-05",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22596,10 +22721,19 @@
     {
      "date": "2026-10-05",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia, aux réponses courtes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-max-structured-output-retries",
@@ -22667,11 +22801,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22696,10 +22830,19 @@
     {
      "date": "2026-10-08",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Sonnet par défaut, Opus pour le chef : modèles 5.x."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-max-turns",
@@ -22758,7 +22901,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Plafonner partout gênerait herbin-trading ; `/effort` par session suffit."
+    "pourquoi": "Plafonner partout gênerait les sessions qui ont besoin d'un effort élevé (trading-sim, chef) ; `/effort` par session suffit."
    },
    "sources": [
     {
@@ -22767,11 +22910,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22784,10 +22927,19 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Modèle et effort fixés par le lanceur de chaque session (ex. `--effort medium` pour le chef)."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-maxprosewidth",
@@ -22915,11 +23067,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22936,13 +23088,17 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "portée locale et connecteurs de compte"
+     "pourquoi": "Serveurs MCP ajoutés par `claude mcp add` et connecteurs de compte."
     }
    }
   },
@@ -23298,11 +23454,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23315,10 +23471,19 @@
     {
      "date": "2026-10-04",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia, sans problème de connexion décrit."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-mcp-remote-server-connection-batch-size",
