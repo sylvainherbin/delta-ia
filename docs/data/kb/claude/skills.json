@@ -576,12 +576,12 @@
    "description_source": "Skill. Convert your repo's React design system and upload it to Claude Design, so designs it produces use your real components. Optionally name the design system, for example /design-sync Acme DS. A first-time sync verifies every component and can take a few hours on a large repo. Available on the Anthropic API. It needs claude.ai, which the CLI doesn't contact on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or Claude Platform on AWS, or through a Claude apps gateway, so the command is unavailable there",
    "usage": "/design-sync [hint]",
    "usage_nature": "syntaxe",
-   "exemple": "/design-sync Acme DS",
+   "exemple": "/design-sync Console Delta",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "carnet est en React mais CONTEXTE.md ne décrit aucun design system, et `/design` n'est pas recommandé."
+    "verdict": "tester",
+    "pourquoi": "La Console de pilotage (`carnet-console`) est en React avec Vite et son langage visuel Delta repose sur des jetons de couleur : `/design-sync` y convertirait les composants pour que Claude Design les réutilise dans ses maquettes. Lance-le d'abord après `/design-login`, en gardant du temps : la première synchronisation vérifie chaque composant."
    },
    "sources": [
     {
@@ -594,7 +594,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -603,10 +603,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design utilisé intensivement ; Console en React, donc /design-sync pertinent (consigne du 29/09)."
+    },
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "Console de pilotage `carnet-console` en React avec Vite."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-skills-doctor",
