@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-10-01",
+ "maj_le": "2026-10-10",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -290,12 +290,12 @@
    "description_source": "Analyze codebases and recommend tailored Claude Code automations such as hooks, skills, MCP servers, and subagents.",
    "usage": "/plugin install claude-code-setup@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install claude-code-setup@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu n'as ni hook ni commande perso alors que des gestes reviennent (pistes 3 et 5) ; lancé sur trading-sim, il dresserait une liste de candidats à trier avec ton accord."
+    "pourquoi": "Lancé sur delta-ia, il dresserait une liste de hooks et de skills candidats à comparer aux contrôles manuels de la piste 3 et aux scripts de `~/.local/bin` ; il propose seulement, ce qui respecte le principe d'optimiser l'existant."
    },
    "sources": [
     {
@@ -305,21 +305,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Pistes 3 et 5 : aucun hook, aucune commande perso, gestes récurrents à automatiser."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Pistes 3 et 5 : un seul hook, gestes répétés en scripts de ~/.local/bin, contrôles encore manuels."
     },
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Un agent perso testé une fois, aucun hook, aucune commande."
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Principe : optimiser l'existant ou créer des outils intégrés à Delta plutôt qu'adopter des outils tiers."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -340,8 +340,13 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-claude-md-management",
@@ -353,12 +358,12 @@
    "description_source": "Tools to maintain and improve CLAUDE.md files - audit quality, capture session learnings, and keep project memory current.",
    "usage": "/plugin install claude-md-management@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install claude-md-management@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Il aiderait à centraliser dans `~/.claude/CLAUDE.md` les règles dispersées dans tes mémoires (piste 1), sur proposition et avec ton accord ; `/doctor prompt-audit`, intégré depuis 2.1.283, couvre déjà l'audit."
+    "pourquoi": "Essai : lui faire proposer, à partir des mémoires d'environ 70 fichiers, les règles transversales à centraliser dans `~/.claude/CLAUDE.md` (piste 1), puis ne retenir que ce que tu acceptes."
    },
    "sources": [
     {
@@ -368,17 +373,25 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 1 : règles transversales dispersées dans les mémoires, à centraliser sur accord."
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Mémoire automatique : environ 70 mémoires dans ~/projets au 04/10."
+    },
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "~/.claude/CLAUDE.md limité à la consigne du connecteur delta-ia."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -399,8 +412,13 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-claude-security",
@@ -412,12 +430,12 @@
    "description_source": "Deep vulnerability scanning of your own code, run entirely inside your Claude Code session at a chosen effort tier, with every finding challenged before it is reported and the verification tally computed in code. Turns surviving findings into targeted patches, each verified by a panel of agents, that you apply when you choose.",
    "usage": "/plugin install claude-security@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install claude-security@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "carnet est public et se synchronise par l'API GitHub Contents : une analyse ciblée sur cette chaîne aurait un sens, un jour où la limite hebdomadaire le permet."
+    "pourquoi": "carnet est public et se synchronise par l'API GitHub Contents : une analyse au niveau d'effort le plus bas sur cette chaîne de synchronisation dirait si un secret ou une donnée personnelle peut fuir, un jour où la limite hebdomadaire le permet."
    },
    "sources": [
     {
@@ -427,21 +445,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "Dépôt public, synchronisation par l'API GitHub Contents, aucun secret ni donnée personnelle admis."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires : une analyse profonde coûte des jetons."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "security",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -450,8 +468,13 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-code-modernization",
@@ -1229,12 +1252,12 @@
    "description_source": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions. Define rules via simple markdown files.",
    "usage": "/plugin install hookify@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install hookify@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Plutôt que d'écrire un hook à la main comme le hook de test retiré le 27/09, hookify permettrait d'écrire en markdown la vérification SHA-256 d'une mission avant lancement sur herbin-trading, puis de vérifier qu'elle se déclenche."
+    "pourquoi": "Plutôt que d'écrire un deuxième hook à la main à côté de `PermissionDenied`, écrire en markdown la vérification SHA-256 d'une mission avant son lancement sur trading-sim (piste 3), puis vérifier qu'elle bloque une mission dont le `.sha256` diffère."
    },
    "sources": [
     {
@@ -1244,21 +1267,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 3 : aucun hook ; SHA-256 des missions et PYTHONDONTWRITEBYTECODE contrôlés à la main"
-    },
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "hooks : aucun ; un hook de test installé le 26/09 a été retiré le 27/09"
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook aujourd'hui, PermissionDenied ; hook de test retiré le 27/09."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : SHA-256 des missions contrôlé à la main, candidat à un hook."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -1279,8 +1302,13 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-jdtls-lsp",
@@ -1681,12 +1709,12 @@
    "description_source": "Skills for designing and building MCP servers that work seamlessly with Claude. Guides you through deployment models (remote HTTP, MCPB, local), tool design patterns, auth, and interactive MCP apps.",
    "usage": "/plugin install mcp-server-dev@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install mcp-server-dev@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le serveur MCP delta-ia, développé par la session herbin-delta, pourrait s'appuyer sur ses conseils de conception d'outils au moment de sa V1.1."
+    "pourquoi": "Le connecteur delta-ia est un serveur MCP HTTP distant ; à la prochaine mission qui le modifie, faire relire la conception de ses outils par ces skills et ne garder que les remarques applicables."
    },
    "sources": [
     {
@@ -1696,21 +1724,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Serveur MCP delta-ia maison, distant en HTTP."
-    },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "herbin-delta développe la web app delta-ia."
+     "pourquoi": "Connecteur MCP delta-ia, transport HTTP, hébergé sur Vercel."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -1723,8 +1747,13 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-mcp-tunnels",
@@ -2176,12 +2205,12 @@
    "description_source": "Python language server (Pyright) for type checking and code intelligence",
    "usage": "/plugin install pyright-lsp@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install pyright-lsp@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "trading-sim est en Python 3.12 : Claude verrait les erreurs de type dès l'édition, sans lancer les tests `unittest` ; un serveur de langage de plus pèserait toutefois sur une machine lente pour les calculs."
+    "pourquoi": "trading-sim est en Python 3.12 : Claude verrait les erreurs de type dès l'édition, sans lancer les tests `unittest` ; un serveur de langage de plus pèserait toutefois sur une machine modeste."
    },
    "sources": [
     {
@@ -2194,7 +2223,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2219,19 +2248,24 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Python 3.12, bibliothèque standard, tests unittest."
     },
     "env.machine": {
-     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
-     "pourquoi": "Machine modeste, 4 cœurs, 14 Gio."
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Machine modeste : 4 cœurs, 14 Gio de RAM."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-ralph-loop",
@@ -2561,12 +2595,12 @@
    "description_source": "Generate an explorable HTML report of Claude Code session usage — tokens, cache efficiency, subagents, skills, and the most expensive prompts — from local ~/.claude/projects transcripts.",
    "usage": "/plugin install session-report@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install session-report@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Il montrerait quelles sessions et quels prompts consomment le plus tes limites hebdomadaires, par exemple les longues missions de herbin-trading, pour décider où baisser modèle ou effort."
+    "pourquoi": "Pour le bilan d'usage du Max (20x) à l'essai, à préparer avant le 03/11 (renouvellement le 07/11) : générer le rapport et vérifier quelles sessions et quels prompts consomment le plus, pour décider du forfait et des modèles par rôle."
    },
    "sources": [
     {
@@ -2576,21 +2610,25 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) à l'essai depuis le 07/10, bilan d'usage avant le 07/11 (date du 03/11 venue de Delta)."
+    },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires et Fable, friction récurrente."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2611,8 +2649,13 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-skill-creator",
@@ -2624,12 +2667,12 @@
    "description_source": "Create new skills, improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, or benchmark skill performance with variance analysis.",
    "usage": "/plugin install skill-creator@claude-plugins-official",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/plugin install skill-creator@claude-plugins-official",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Essai : faire du relais d'une mission vers herbin-trading (piste 5, geste récurrent sans commande ni skill) un skill avec skill-creator, puis comparer ses évaluations avant de l'adopter."
+    "pourquoi": "Essai : faire de la revue machine d'une campagne trading-sim, encore faite à la main (piste 5), un skill avec skill-creator, puis comparer ses évaluations avant de l'adopter."
    },
    "sources": [
     {
@@ -2639,21 +2682,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Piste 5 : aucune commande perso, relais de mission vers herbin-trading et revue de campagne récurrents."
-    },
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Plugins : marketplace claude-plugins-official déclarée, aucun plugin propre observé."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 5 : revue machine d'une campagne et synchronisation git encore faites à la main."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2674,8 +2713,13 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-plugins-slack",

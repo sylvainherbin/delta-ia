@@ -231,7 +231,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La commande n'affiche plus qu'un rappel ; ton agent perso `executant` se trouve déjà dans `~/projets/.claude/agents/`, et un éventuel agent pour les gestes de la piste 5 se décrirait directement dans ce dossier."
+    "pourquoi": "La commande n'affiche plus qu'un rappel ; ton agent perso `executant` se trouve déjà dans `~/projets/.claude/agents/`, et tes sous-agents (`Explore`, `general-purpose`) s'appellent sans elle."
    },
    "sources": [
     {
@@ -244,7 +244,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -265,20 +265,24 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Un agent perso `executant` dans ~/projets/.claude/agents/, testé une fois le 25/09, non adopté."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Agent perso `executant` dans ~/projets/.claude/agents/, rarement appelé, non adopté."
     },
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 5 : gestes répétés (relais de mission, revue machine) sans commande ni agent adopté."
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés : general-purpose, Explore, executant."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-artifacts",
@@ -560,7 +564,7 @@
    "description_source": "Detach the current session to run as a background agent and free this terminal. Pass a prompt to send one more instruction before detaching. Monitor the session with claude agents. To copy the conversation into a new background session while this one keeps running, use /fork. Alias: /bg",
    "usage": "/background [prompt]",
    "usage_nature": "syntaxe",
-   "exemple": "/background lance .venv/bin/pytest -q puis rends compte",
+   "exemple": "/background lance ~/projets/delta-ia/.venv/bin/pytest -q puis rends compte",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -578,7 +582,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -591,10 +595,19 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables en services systemd sous tmux, pilotées par Remote Control."
+    }
+   },
    "exemple_origine": "compose"
   },
   {

@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-10-09",
+ "maj_le": "2026-10-10",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -979,12 +979,12 @@
    "description_source": "Skill. Describe a settings change, such as allowing a command, setting an environment variable, or adding a hook, and Claude edits the matching settings.json file. For options such as theme and model, use /config instead",
    "usage": "/update-config [request]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/update-config ajoute la variable d'environnement PYTHONDONTWRITEBYTECODE=1 à ~/.claude/settings.json",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Il transformerait en hooks les contrôles répétés à la main de la piste 3 (vérification SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`, interdiction de `pkill -f`) ; le changement est écrit durablement dans le `settings.json` choisi."
+    "pourquoi": "Essai sur la piste 3 : lui demander d'ajouter `PYTHONDONTWRITEBYTECODE=1` à `env` de `~/.claude/settings.json`, puis vérifier le fichier ; le changement est durable et vaut pour toutes les sessions."
    },
    "sources": [
     {
@@ -997,7 +997,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1006,10 +1006,24 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 et SHA-256 des missions contrôlés à la main."
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "~/.claude/settings.json : thème, notifications, modèle, liste allow, un hook."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-skills-verify",

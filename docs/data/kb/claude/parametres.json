@@ -13875,7 +13875,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Si herbin-dev, désormais allumée à la demande, restait inactive plus longtemps que cette période, son transcript pourrait être supprimé et `claude --resume <id>` échouer ; vérifie la valeur en vigueur dans `/config`."
+    "pourquoi": "Les services relancent chaque session par `claude --resume <id>` et `dev` et `school` ne démarrent qu'à la demande : lis la valeur en vigueur dans `/config` et vérifie qu'elle dépasse leur plus longue période d'inactivité, sinon leur reprise échouerait."
    },
    "sources": [
     {
@@ -13888,7 +13888,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13905,13 +13905,17 @@
     {
      "date": "2026-09-29",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Sessions lancées par claude --resume <id> ; herbin-dev ne démarre plus automatiquement depuis le 23/09."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services claude-session@<nom> lancés par `claude --resume <id>` ; dev et school démarrés à la demande."
     }
    }
   },
@@ -16655,10 +16659,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Ajouter `--effort low` à la commande `claude --resume … --remote-control herbin-mint` du service de herbin-mint, puis comparer la consommation hebdomadaire dans `/usage` sans toucher aux autres sessions (piste 11)."
+    "verdict": "utiliser",
+    "pourquoi": "Tes services de session passent déjà un effort par rôle (`--effort medium` pour le chef) ; baisser l'effort des rôles aux tâches simples dans leur ligne de lancement ménagerait les limites hebdomadaires (piste 11) sans toucher au défaut global."
    },
    "sources": [
     {
@@ -16671,7 +16675,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16712,17 +16716,21 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : limites hebdomadaires approchées ; choix d'effort par session pour étaler la charge."
-    },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "Sessions lancées par `claude --resume <id> --remote-control herbin-<nom>` ; herbin-mint gère la machine."
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque service lance `claude --resume <id>` avec un modèle et un effort propres au rôle, par exemple `--effort medium` pour le chef."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge sur les limites hebdomadaires."
     }
    }
   },
@@ -16741,7 +16749,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Fixer `\"effortLevel\": \"medium\"` avec Sonnet par défaut et garder un effort plus haut pour les missions de construction trading-sim permettrait de mesurer dans `/usage` si les limites hebdomadaires tiennent mieux (piste 11)."
+    "pourquoi": "Les services qui passent `--effort` l'ignorent ; fixer `\"effortLevel\": \"medium\"` dans `~/.claude/settings.json` puis lancer `dev` ou une session ouverte à la main sans `--effort` et vérifier avec `/effort` que ce niveau s'applique, au profit des limites hebdomadaires (piste 11)."
    },
    "sources": [
     {
@@ -16754,7 +16762,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16791,17 +16799,25 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code": {
      "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
-     "pourquoi": "Effort par défaut relevé dans etat.json."
+     "pourquoi": "Modèle et effort par défaut relevés dans etat.json."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services lancés avec un effort propre au rôle ; dev et school démarrés à la demande."
     },
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 11 : Sonnet par défaut voulu ; limites hebdomadaires approchées ; missions trading-sim en Sonnet + `/advisor opus`."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : effort choisi par session pour étaler la charge sur les limites hebdomadaires."
     }
    }
   },
@@ -17425,7 +17441,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17462,17 +17478,21 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
-     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 contrôlé à la main."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : PYTHONDONTWRITEBYTECODE=1 encore contrôlé à la main."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Python 3.12, tests unittest."
+     "pourquoi": "Python 3.12, tests unittest, `.claude/settings.json` propre au projet."
     }
    }
   },
@@ -18444,7 +18464,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour reprendre à part une conversation de herbin-trading sans toucher à l'ID que relance son service systemd : `claude --resume <id> --fork-session`, puis vérifier que le service repart sur l'ancien fil."
+    "pourquoi": "Pour explorer à part la conversation d'une session de service (le chef delta-ia, par exemple) sans toucher à l'ID que relance son service : `claude --resume <id> --fork-session`, puis vérifier que le service repart sur l'ancien fil."
    },
    "sources": [
     {
@@ -18457,7 +18477,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18470,13 +18490,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "chaque service relance sa session par `claude --resume <id>`"
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
     }
    }
   },
@@ -19676,7 +19700,7 @@
    "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après le hook de test retiré le 27/09, un essai utile viserait la piste 3 : bloquer sur herbin-trading le lancement d'une mission dont le fichier `.sha256` ne correspond pas."
+    "pourquoi": "Ton seul hook est `PermissionDenied` ; un `PreToolUse` sur `Bash` dans `.claude/settings.json` de trading-sim qui refuse le lancement d'une mission dont le `.sha256` ne correspond pas automatiserait le premier contrôle de la piste 3."
    },
    "sources": [
     {
@@ -19689,7 +19713,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-04",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19730,17 +19754,25 @@
     {
      "date": "2026-10-04",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "Hooks : aucun ; hook de test installé le 26/09, retiré le 27/09."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook (PermissionDenied → operer refus), aucun autre ni dans les projets."
     },
     "optimisation.pistes": {
-     "sha1": "2580ea0bbf8089e495902f1144e39c27ffc33a01",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 3 : vérification SHA-256 des missions faite à la main, candidate à un hook."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Empreinte SHA-256 des missions dans un fichier `.sha256` séparé."
     }
    }
   },
@@ -20478,10 +20510,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Tu n'as plus aucun hook depuis le retrait du hook de test le 27/09 ; un hook `PreToolUse` qui vérifie l'empreinte SHA-256 d'une mission avant son lancement sur herbin-trading serait le premier contrôle de la piste 3 à automatiser."
+    "verdict": "utiliser",
+    "pourquoi": "Tu y déclares déjà `PermissionDenied` → `operer refus` dans `~/.claude/settings.json` ; les contrôles de la piste 3 (SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`) s'ajouteraient sous la même clé, de préférence dans le `.claude/settings.json` du projet concerné."
    },
    "sources": [
     {
@@ -20494,7 +20526,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20527,17 +20559,21 @@
     {
      "date": "2026-10-02",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
-     "sha1": "f1a0385cd4e2bd4bbf3ed6724a982aa01e291d34",
-     "pourquoi": "hooks : aucun ; un hook de test installé le 26/09 a été retiré le 27/09"
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook, PermissionDenied dans ~/.claude/settings.json, qui lance `operer refus`."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "piste 3 : aucun hook ; SHA-256 des missions et PYTHONDONTWRITEBYTECODE contrôlés à la main"
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 3 : SHA-256 des missions et PYTHONDONTWRITEBYTECODE contrôlés à la main, candidats à des hooks."
     }
    }
   },
@@ -20943,7 +20979,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Activer « Push when actions required » dans `/config` sur herbin-mint, puis vérifier que l'iPhone sonne quand une demande de permission attend : une session bloquée ne resterait plus inaperçue."
+    "pourquoi": "Depuis `bypassPermissions`, il ne servirait plus guère qu'aux questions : activer « Push when actions required » dans `/config` d'une session pilotée par Remote Control, puis vérifier que l'iPhone sonne quand elle pose une question."
    },
    "sources": [
     {
@@ -20956,7 +20992,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20969,17 +21005,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "pilotage depuis l'iPhone, notifications push"
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "L'iPhone est l'interface principale (Remote Control, notifications push)."
     },
-    "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "sessions pilotées à distance par Remote Control"
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "settings.json : notifications push des agents déjà activées."
     }
    }
   },
@@ -22443,10 +22487,10 @@
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Ajouter `--model sonnet` au lancement d'herbin-mint pour ses tâches machine simples (piste 11), sans changer le défaut `opus` ; les six services partageant le gabarit `claude-session@`, l'option devrait viser mint seule."
+    "verdict": "utiliser",
+    "pourquoi": "Tes services passent déjà un modèle par rôle (`--model opus` pour le chef) ; garder `--model sonnet` pour les rôles aux tâches machine simples suit la piste 11 sans changer le défaut Sonnet voulu."
    },
    "sources": [
     {
@@ -22459,7 +22503,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22492,17 +22536,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 11 : Sonnet pour les tâches machine simples"
-    },
     "env.multi-sessions": {
-     "sha1": "ed09aece97334b3647314b21c924226298790c41",
-     "pourquoi": "services `claude-session@{…}` lancés par un même gabarit"
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Services lancés avec un modèle propre au rôle, par exemple `--model opus` pour le chef."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : Sonnet pour les tâches machine simples ; Sonnet par défaut voulu par Sylvain."
     }
    }
   },
@@ -27088,7 +27136,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27117,17 +27165,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 4 : `latex-manuscrit` et `verif-numerique` jamais déclenchés"
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 4 : `latex-manuscrit` et `verif-numerique` jamais déclenchés."
     },
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "usage observé des skills perso"
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Usage observé des skills perso : latex-manuscrit et verif-numerique jamais invoqués."
     }
    }
   },
@@ -29553,7 +29605,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Mettre `\"workflowSizeGuideline\": \"small\"` et comparer dans `/usage` la consommation du prochain workflow à celle des précédents : tes 13 workflows pèsent sur des limites déjà tendues."
+    "pourquoi": "Les workflows ne se lancent que sur ton accord et pèsent sur des limites déjà tendues : mettre `\"workflowSizeGuideline\": \"small\"` puis comparer dans `/usage` la consommation du prochain workflow accordé à celle des précédents."
    },
    "sources": [
     {
@@ -29566,7 +29618,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-09-28",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29587,17 +29639,21 @@
     {
      "date": "2026-09-28",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Workflow : 13 appels observés"
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Workflows multi-agents seulement sur accord de Sylvain."
     },
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage parmi les frictions récurrentes."
     }
    }
   },
