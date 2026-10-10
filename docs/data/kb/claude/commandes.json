@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 129,
+ "commentees": 132,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1156,7 +1156,7 @@
    "categorie": "commandes",
    "nom": "claude attach <id|name>",
    "gabarit": "complet",
-   "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan. Depuis la v2.1.290, un fragment du nom de la session en cours suffit à la place de l'identifiant.",
+   "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan. Depuis la v2.1.290, un fragment du nom de la session suffit à la place de l'identifiant.",
    "description_source": "Attach to a background session in this terminal. Passing part of a session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
    "usage": "claude attach <id|name>",
    "usage_nature": "syntaxe",
@@ -1165,7 +1165,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md décrit des sessions tmux sous systemd (`claude --resume … --remote-control`), pas des sessions d'arrière-plan gérées par `claude agents` ; aucun scénario d'essai concret."
+    "pourquoi": "Tes sessions durables sont des services systemd sous tmux (`claude --resume … --remote-control`), pas des sessions d'arrière-plan de `claude agents` ; aucun scénario d'essai concret."
    },
    "sources": [
     {
@@ -1174,9 +1174,14 @@
      "officielle": true
     }
    ],
-   "commentee": false,
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
-   "contexte_sections": {},
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables en services claude-session@<nom> sous tmux, pilotées par Remote Control."
+    }
+   },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1193,8 +1198,13 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentée"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-auth-login",
@@ -1930,7 +1940,7 @@
    "categorie": "commandes",
    "nom": "claude logs <id|name>",
    "gabarit": "complet",
-   "description": "Affiche la sortie récente d'une session Claude Code d'arrière-plan. Depuis la v2.1.290, un fragment du nom de la session en cours remplace l'identifiant.",
+   "description": "Affiche la sortie récente d'une session Claude Code d'arrière-plan. Depuis la v2.1.290, un fragment du nom de la session remplace l'identifiant.",
    "description_source": "Print recent output from a background session. Passing part of a session's name in place of the ID requires Claude Code v2.1.290 or later — claude logs 7c5dcf5d",
    "usage": "claude logs <id|name>",
    "usage_nature": "syntaxe",
@@ -1939,7 +1949,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Concerne les sessions d'arrière-plan de `claude agents`, que CONTEXTE.md ne mentionne pas ; les sessions de Sylvain se lisent par tmux, sans scénario d'essai concret ici."
+    "pourquoi": "Elle vise les sessions d'arrière-plan de `claude agents` ; tes sessions tournent sous tmux, où leur sortie se lit déjà, sans scénario d'essai concret ici."
    },
    "sources": [
     {
@@ -1948,9 +1958,14 @@
      "officielle": true
     }
    ],
-   "commentee": false,
-   "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
-   "contexte_sections": {},
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables en services systemd, chacune dans sa session tmux dédiée."
+    }
+   },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1967,8 +1982,13 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentée"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-mcp",
@@ -2032,7 +2052,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le connecteur claude.ai Vercel est refermé volontairement et ne doit pas être réautorisé ; aucun autre serveur de ta configuration ne demande d'authentification OAuth."
+    "pourquoi": "Le connecteur claude.ai Vercel est refermé volontairement et ne doit pas être réautorisé, et aucun autre serveur de ta configuration ne demande d'OAuth ; une autorisation OAuth reste de toute façon un geste à toi."
    },
    "sources": [
     {
@@ -2041,7 +2061,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -2070,15 +2090,24 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur Vercel refermé volontairement le 24/09, à ne pas réautoriser ; delta-ia sans authentification."
+     "pourquoi": "Connecteur Vercel refermé volontairement le 24/09, à ne pas réautoriser ; delta-ia ajouté sans authentification."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Les autorisations OAuth restent des gestes de Sylvain."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-mcp-logout-name",
