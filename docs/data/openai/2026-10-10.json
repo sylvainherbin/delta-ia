@@ -1,0 +1,355 @@
+{
+  "date": "2026-10-10",
+  "perimetre": "openai",
+  "agent": "codex",
+  "elements": [
+    {
+      "id": "rust-v0.162.1",
+      "ids_bruts": [
+        "rust-v0.162.1"
+      ],
+      "produit": "codex",
+      "titre": "Codex CLI 0.162.1 : correctifs des questions multilignes et du serveur en arrière-plan",
+      "version": "0.162.1",
+      "date_publication": "2026-10-09",
+      "type": "correction",
+      "resume": "La release corrige un plantage du terminal lors de questions asynchrones multilignes, en conservant les retours à la ligne et les destinations complètes des liens. Elle corrige aussi les échecs de démarrage dus à des paramètres de fonctionnalités différents entre le serveur en arrière-plan et les défauts CLI : la compatibilité ne contrôle désormais que les options explicitement passées en ligne de commande.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.162.1",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/codex/cli",
+          "libelle": "Codex CLI",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Codex CLI sous tmux avec remote control pour auditer Claude. Le relevé du 10 octobre donne 0.160.1 pour la CLI npm : ces deux correctifs concernent ce flux de terminal et de serveur en arrière-plan ; aucun de ces incidents n’est constaté sur ta machine. Le binaire D70 embarqué, relevé en 0.162.0-alpha.17.2, suit le canal de l’app et ne se compare pas comme une stable npm.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Mets à jour la CLI npm avec `npm install -g @openai/codex@0.162.1`, puis lis `codex --version` ; essai : reprends un audit trading-sim sous tmux et remote control ; résultat attendu : version 0.162.1 et démarrage de la session conservée sans conflit de fonctionnalités implicites.",
+        "etapes": [
+          "Termine le travail de la session CLI avant sa relance.",
+          "Exécute `npm install -g @openai/codex@0.162.1` puis `codex --version` dans le terminal qui utilise le binaire du PATH.",
+          "Reprends le flux d’audit trading-sim et contrôle le démarrage ; cette mise à jour npm ne met pas à jour le binaire de l’app utilisé par D70."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-fonctionnalites-page-codex-cli"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "La CLI npm sous tmux et le binaire D70 de l’app sont distincts, avec remote control utilisé."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Codex effectue les audits du simulateur."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-commandes-codex-apply",
+      "ids_bruts": [
+        "kb-codex-commandes-codex-apply",
+        "kb-codex-commandes-codex-archive",
+        "kb-codex-commandes-codex-cloud",
+        "kb-codex-commandes-codex-completion",
+        "kb-codex-commandes-codex-debug-app-server-send-message-v2",
+        "kb-codex-commandes-codex-debug-prompt-input",
+        "kb-codex-commandes-codex-delete",
+        "kb-codex-commandes-codex-exec",
+        "kb-codex-commandes-codex-fork",
+        "kb-codex-commandes-codex-resume",
+        "kb-codex-commandes-codex-review",
+        "kb-codex-commandes-codex-unarchive"
+      ],
+      "produit": "codex",
+      "titre": "Base : arguments de 12 commandes Codex désormais conservés",
+      "version": null,
+      "date_publication": null,
+      "type": "amelioration",
+      "resume": "La réextraction de la base conserve désormais les arguments documentés de 12 commandes ; cela corrige leur présentation locale, sans établir une nouvelle fonctionnalité du produit. Syntaxes reprises de la documentation :\n`codex apply <TASK_ID>`\n`codex archive <SESSION>`\n`codex cloud [QUERY]`\n`codex completion <SHELL>`\n`codex debug app-server send-message-v2 <USER_MESSAGE>`\n`codex debug prompt-input [PROMPT]`\n`codex delete <SESSION>\ncodex delete <SESSION_UUID> --force`\n`codex exec [PROMPT]`\n`codex fork [SESSION_ID]`\n`codex resume [SESSION_ID]`\n`codex review [PROMPT]`\n`codex unarchive <SESSION>`",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+          "libelle": "developer-commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu travailles dans la CLI sous tmux et tu cites la méconnaissance des commandes comme irritant principal. Les fiches distinguent maintenant TASK_ID obligatoire pour apply, SHELL obligatoire pour completion et SESSION obligatoire pour archive/unarchive/delete ; exec, resume, fork et review conservent leurs arguments facultatifs. Pour tes audits trading-sim, la fiche completion propose un essai Bash sans modifier la configuration du shell.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Exécute `codex completion bash` dans le terminal utilisé pour les audits trading-sim ; essai : lis le script de complétion produit pour ce flux CLI/tmux ; résultat attendu : un script Bash sur stdout, sans installation ni modification du shell.",
+        "etapes": [
+          "Lis les syntaxes et exemples des 12 fiches de commandes modifiées.",
+          "Exécute `codex completion bash` et constate la sortie du script ; son installation dans le shell n’est pas réalisée par cette commande."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-commandes-codex-apply",
+        "codex-commandes-codex-archive",
+        "codex-commandes-codex-cloud",
+        "codex-commandes-codex-completion",
+        "codex-commandes-codex-debug-app-server-send-message-v2",
+        "codex-commandes-codex-debug-prompt-input",
+        "codex-commandes-codex-delete",
+        "codex-commandes-codex-exec",
+        "codex-commandes-codex-fork",
+        "codex-commandes-codex-resume",
+        "codex-commandes-codex-review",
+        "codex-commandes-codex-unarchive"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "La CLI sous tmux est utilisée."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "L’irritant déclaré est la méconnaissance des commandes."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Le flux choisi pour l’essai est l’audit Codex du simulateur."
+        }
+      }
+    },
+    {
+      "id": "openai-status-01M4HA7BCCXVHTR5DCYMSBQF2H",
+      "ids_bruts": [
+        "openai-status-01M4HA7BCCXVHTR5DCYMSBQF2H"
+      ],
+      "produit": "chatgpt",
+      "titre": "Gestion des plugins d’espace ChatGPT : incident résolu",
+      "version": null,
+      "date_publication": "2026-10-09",
+      "type": "correction",
+      "resume": "Des administrateurs d’espaces ChatGPT ne pouvaient pas consulter ou gérer la disponibilité et les réglages des plugins ; certains utilisateurs voyaient aussi des plugins indisponibles. L’incident du 9 octobre, ouvert à 21:48:34 UTC, est déclaré entièrement résolu à 23:26:59 UTC.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M4HA7BCCXVHTR5DCYMSBQF2H",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "L’usage décrit est un abonnement personnel Pro et les connecteurs, sans administration d’espace."
+        }
+      }
+    },
+    {
+      "id": "openai-status-01M4H7FKXDA425TDNP2CRGEYA3",
+      "ids_bruts": [
+        "openai-status-01M4H7FKXDA425TDNP2CRGEYA3"
+      ],
+      "produit": "chatgpt",
+      "titre": "Contenu ChatGPT Android indisponible : incident résolu",
+      "version": null,
+      "date_publication": "2026-10-09",
+      "type": "correction",
+      "resume": "Certains utilisateurs Android voyaient un message de contenu indisponible dans leur version de l’app ; OpenAI a déployé un correctif dans la dernière version et proposé le web en repli. L’incident ouvert le 9 octobre à 21:00:39 UTC est déclaré résolu le 10 octobre à 00:26:44 UTC.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M4H7FKXDA425TDNP2CRGEYA3",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Le mobile utilisé est un iPhone ; aucun usage Android n’est décrit."
+        }
+      }
+    },
+    {
+      "id": "openai-status-01M4GV1M2A3K38T73JCVCD9G0R",
+      "ids_bruts": [
+        "openai-status-01M4GV1M2A3K38T73JCVCD9G0R"
+      ],
+      "produit": "chatgpt",
+      "titre": "Données de coûts Compliance API : rattrapage sous surveillance",
+      "version": null,
+      "date_publication": "2026-10-09",
+      "type": "correction",
+      "resume": "Les données de coûts de la Compliance API ont pris du retard le 9 octobre ; une mitigation appliquée à 22:03:59 UTC remet les données en traitement, avec un rattrapage attendu jusqu’au dimanche 11 octobre. OpenAI précise que l’usage ChatGPT, les requêtes API Platform et son endpoint de coûts d’organisation ne sont pas affectés ; le brut ne contient pas de résolution.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M4GV1M2A3K38T73JCVCD9G0R",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Le contexte décrit ChatGPT Pro personnel, sans utilisation de la Compliance API."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-commandes-sandbox-add-read-dir",
+      "ids_bruts": [
+        "kb-codex-commandes-sandbox-add-read-dir",
+        "kb-codex-commandes-setup-default-sandbox",
+        "kb-codex-skills-page-extend-record-and-replay",
+        "kb-codex-parametres-features-prefer-mxc"
+      ],
+      "produit": "codex",
+      "titre": "Base : 4 fiche(s) Windows/macOS écartée(s) du profil",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "Le catalogue marque comme retirées les fiches suivantes après application des exclusions Windows/macOS de profil.yaml : /sandbox-add-read-dir, /setup-default-sandbox, Record & Replay, features.prefer_mxc. Le relevé de récupération les identifie comme exclusions de systèmes ; ce statut local ne prouve aucun retrait du produit ou de sa documentation.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+          "libelle": "developer-commands",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/record-and-replay",
+          "libelle": "Record & Replay",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+          "libelle": "config-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-commandes-sandbox-add-read-dir",
+        "codex-commandes-setup-default-sandbox",
+        "codex-skills-page-extend-record-and-replay",
+        "codex-parametres-features-prefer-mxc"
+      ],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Le profil servi utilise Linux Mint et un iPhone ; Windows/macOS sont exclus de la base."
+        }
+      }
+    },
+    {
+      "id": "kb-chatgpt-fonctionnalites-page-computer-use",
+      "ids_bruts": [
+        "kb-chatgpt-fonctionnalites-page-computer-use"
+      ],
+      "produit": "chatgpt",
+      "titre": "Base : 1 fiche(s) Windows/macOS écartée(s) du profil",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "Le catalogue marque comme retirées les fiches suivantes après application des exclusions Windows/macOS de profil.yaml : Computer Use. Le relevé de récupération les identifie comme exclusions de systèmes ; ce statut local ne prouve aucun retrait du produit ou de sa documentation.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/computer-use",
+          "libelle": "Computer Use",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "chatgpt-fonctionnalites-page-computer-use"
+      ],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "Le profil servi utilise Linux Mint et un iPhone ; Windows/macOS sont exclus de la base."
+        }
+      }
+    },
+    {
+      "id": "releasebot-66318",
+      "ids_bruts": [
+        "releasebot-66318"
+      ],
+      "produit": "chatgpt",
+      "titre": "Réévaluation de l’import audio : aucun usage établi",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "nouveaute",
+      "resume": "Réévaluation après modification de la section Usage hors machine de CONTEXTE.md : le contexte décrit les audits de Claude et les connecteurs ChatGPT Desktop, sans usage d’enregistrements audio. L’import audio déjà annoncé le 7 octobre ne justifie donc plus la recommandation hypothétique d’un brouillon de consigne depuis l’iPhone.",
+      "sources": [
+        {
+          "url": "https://releasebot.io/updates/openai/chatgpt",
+          "libelle": "Relais des notes de version ChatGPT",
+          "officielle": false
+        },
+        {
+          "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+          "libelle": "Notes officielles ChatGPT, entrée du 6 octobre consultée et recoupée",
+          "officielle": true
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Aucun usage d’enregistrements audio n’est décrit ; le scénario hypothétique est retiré."
+        }
+      },
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "kb-chatgpt-raccourcis-close-other-tabs",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "rust-v0.160.1",
+      "raison": "réévalué, inchangé"
+    }
+  ],
+  "genere_le": "2026-10-10T04:08:52+02:00",
+  "synthese": "Codex CLI 0.162.1 corrige deux échecs possibles dans le flux de terminal et de serveur en arrière-plan ; ta CLI npm est relevée en 0.160.1. La base conserve maintenant les arguments de 12 commandes, avec un essai Bash de completion pour le flux d’audit trading-sim. Les incidents de plugins d’espace, d’Android et de Compliance API ne changent pas l’usage décrit ; l’import audio est réévalué à impact nul.",
+  "sources_en_echec": [],
+  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40"
+}
