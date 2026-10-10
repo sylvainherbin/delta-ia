@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 42,
- "commentees": 31,
+ "commentees": 42,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -101,7 +101,7 @@
    "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session. For a claude.ai connector, follow Authorize a connector again from your shell.",
    "usage": "claude mcp login sentry",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp login sentry",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -115,11 +115,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -140,15 +140,20 @@
     {
      "date": "2026-10-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur Vercel refermé volontairement, à ne pas réautoriser ; delta-ia sans authentification."
+     "pourquoi": "Connecteur Vercel refermé volontairement (D66) ; delta-ia sans authentification."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-automatic-backgrounding-of-long-tool-calls",
@@ -390,7 +395,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Mécanisme automatique, côté serveur ; le connecteur delta-ia expose cinq outils fixes."
+    "pourquoi": "Mécanisme automatique, côté serveur ; rien à régler pour le connecteur delta-ia, qui expose des outils de consultation en lecture seule."
    },
    "sources": [
     {
@@ -399,11 +404,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -416,10 +421,19 @@
     {
      "date": "2026-10-03",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia."
+    }
+   }
   },
   {
    "id": "claude-code-mcp-environment-variable-expansion-in-mcp-json",
@@ -525,7 +539,7 @@
    "description_source": "If a server's tools should always be visible to Claude without a search step, set alwaysLoad to true in that server's configuration. The server's tools then load into context regardless of the ENABLE_TOOL_SEARCH setting. Use this for a small number of tools that Claude needs on every turn, since each upfront tool consumes context that would otherwise be available for your conversation.",
    "usage": "{\n  \"mcpServers\": {\n    \"core-tools\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"alwaysLoad\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"mcpServers\": {\n    \"core-tools\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"alwaysLoad\": true\n    }\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -539,11 +553,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -556,10 +570,24 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "Le CLAUDE.md global demande de consulter delta-ia avant de choisir une commande, sans l'appeler à chaque tour."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-for-mcp-server-authors",
@@ -1133,12 +1161,12 @@
    "description_source": "Plugins can bundle MCP servers that provide tools and integrations when you enable the plugin.",
    "usage": "{\n  \"mcpServers\": {\n    \"database-tools\": {\n      \"command\": \"${CLAUDE_PLUGIN_ROOT}/servers/db-server\",\n      \"args\": [\"--config\", \"${CLAUDE_PLUGIN_ROOT}/config.json\"],\n      \"env\": {\n        \"DB_URL\": \"${DB_URL}\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"mcpServers\": {\n    \"database-tools\": {\n      \"command\": \"${CLAUDE_PLUGIN_ROOT}/servers/db-server\",\n      \"args\": [\"--config\", \"${CLAUDE_PLUGIN_ROOT}/config.json\"],\n      \"env\": {\n        \"DB_URL\": \"${DB_URL}\"\n      }\n    }\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'as aucun plugin installé d'après CONTEXTE.md."
+    "pourquoi": "Tu n'as aucun plugin propre (seul `frontend-design` est installé, en essai non adopté), donc aucun serveur MCP embarqué."
    },
    "sources": [
     {
@@ -1147,11 +1175,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1164,10 +1192,20 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Aucun plugin propre ; frontend-design seul, en essai non adopté."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-project-scope",
@@ -1268,7 +1306,7 @@
    "description_source": "If you're building an MCP server, you can allow individual tools to return results larger than the default persist-to-disk threshold of 50,000 characters by setting _meta[\"anthropic/maxResultSizeChars\"] in the tool's tools/list response entry. Claude Code raises that tool's threshold to the annotated value, up to a hard ceiling of 500,000 characters.",
    "usage": "{\n  \"name\": \"get_schema\",\n  \"description\": \"Returns the full database schema\",\n  \"_meta\": {\n    \"anthropic/maxResultSizeChars\": 200000\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"name\": \"get_schema\",\n  \"description\": \"Returns the full database schema\",\n  \"_meta\": {\n    \"anthropic/maxResultSizeChars\": 200000\n  }\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1282,11 +1320,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP output limits and warnings",
-   "maj_le": "2026-10-05",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1299,10 +1337,20 @@
     {
      "date": "2026-10-05",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-reference-mcp-resources",
@@ -1613,7 +1661,7 @@
    "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide the credentials when adding the server.",
    "usage": "        claude mcp add --transport http \\\n          --client-id your-client-id --client-secret --callback-port 8080 \\\n          my-server https://mcp.example.com/mcp",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "claude mcp add --transport http \\\n  --client-id your-client-id --client-secret --callback-port 8080 \\\n  my-server https://mcp.example.com/mcp",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1627,11 +1675,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1644,10 +1692,20 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteur local delta-ia, sans authentification."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-user-scope",
@@ -1720,11 +1778,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1737,10 +1795,19 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Connecteurs de compte connectés : Gmail, Drive, Calendar, Canva, GoDaddy ; GitHub n'y figure pas."
+    }
+   }
   },
   {
    "id": "claude-mcp-page-10949351-getting-started-with-local-mcp-servers-on-claude-desktop",
@@ -1766,11 +1833,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1783,10 +1850,19 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Claude Desktop : il veut en exploiter les fonctions utiles au développement."
+    }
+   }
   },
   {
    "id": "claude-mcp-page-11175166-get-started-with-custom-connectors-using-remote-mcp",
@@ -1871,11 +1947,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1920,17 +1996,21 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "Claude : connecteurs utilisés"
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Il utilise les artefacts, les connecteurs et les skills de Claude."
     },
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "piste 9 : Gmail, Drive, Calendar, Canva, GoDaddy jamais appelés"
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 9 : Gmail, Drive, Calendar, Canva et GoDaddy connectés mais jamais appelés dans Claude Code."
     }
    }
   },
@@ -1987,7 +2067,7 @@
    "usage": "1. Open Claude Desktop\n2. Click your initials or name in the lower left corner\n3. Navigate to Organization settings > Connectors\n4. Switch to the \"Desktop\" tab:",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Team et Enterprise (propriétaires)",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -2000,11 +2080,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2017,10 +2097,19 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation Team ou Enterprise."
+    }
+   }
   },
   {
    "id": "claude-mcp-page-13454812-use-interactive-connectors-in-claude",
@@ -2033,7 +2122,7 @@
    "usage": "1. Navigate to the **[Connectors Directory](https://claude.ai/directory)**.\n2. Look for connectors marked with the \"Interactive\" badge.\n3. Connect and authenticate with the connector.\n4. Start a conversation with Claude and ask about something the connector handles—the interactive elements will appear automatically when relevant.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Claude, Cowork, Claude Desktop, Claude pour iOS et Android",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -2046,11 +2135,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2063,10 +2152,19 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 9 : connecteurs déjà connectés sans usage dans Claude Code."
+    }
+   }
   },
   {
    "id": "claude-mcp-page-14730684-how-claude-suggests-connected-apps",
