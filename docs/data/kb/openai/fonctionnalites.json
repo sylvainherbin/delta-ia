@@ -130,7 +130,7 @@
    "usage": "1. Bring the app window you want to share to the front.\n2. Press both Command keys on macOS or both Alt keys on Windows, or use the custom hotkey you configured in ChatGPT settings.\n3. Complete the permission setup if ChatGPT asks.\n4. Ask ChatGPT to perform a task with the appshot.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "macOS et Windows",
+   "disponibilite": "App ChatGPT de bureau sur macOS et Windows",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -147,7 +147,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -168,12 +168,16 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
      "pourquoi": "La machine principale fonctionne sous Linux Mint."
     }
    }
@@ -251,7 +255,7 @@
    "categorie": "fonctionnalites",
    "nom": "Scheduled tasks",
    "gabarit": "complet",
-   "description": "Scheduled tasks lance des tâches récurrentes en arrière-plan et affiche leurs exécutions. Certaines offres prennent aussi en charge les déclenchements par événements d'app sur le web ou mobile.",
+   "description": "Scheduled tasks exécute des tâches récurrentes et affiche leur état et leurs exécutions dans Scheduled. L’app de bureau peut travailler sur des fichiers locaux si l’ordinateur et l’app restent actifs ; la CLI ne fournit pas cette interface de gestion.",
    "description_source": "Schedule recurring tasks to run in the background. On ChatGPT web and mobile, eligible plans can also run tasks from supported app events. Review active, paused, and completed tasks and recent runs in Scheduled. You can combine scheduled tasks with skills for more complex work.",
    "usage": "Scan all of the `~/.codex/sessions` files from the past day and if there have been any issues using particular skills, update the skills to be more helpful. Personal skills only, no repo skills.\n\nIf there’s anything we’ve been doing often and struggle with that we should save as a skill to speed up future work, let’s do it.\n\nDefinitely don't feel like you need to update any- only if there's a good reason!\n\nLet me know if you make any.",
    "usage_nature": "syntaxe",
@@ -260,7 +264,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun suivi récurrent à déléguer n'est décrit ; le passage Delta reste manuel et une automatisation changerait ce fonctionnement."
+    "pourquoi": "Le passage Delta est déjà automatisé par le timer D70 et la CLI n’offre pas l’interface Scheduled ; aucun autre suivi récurrent à y transférer n’est déclaré, et toute tâche existante utilisant GPT-5.5 doit être vérifiée avant son retrait le 14/10/2026."
    },
    "sources": [
     {
@@ -273,7 +277,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -290,13 +294,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Le passage Delta reste manuel et aucun contrôle périodique n'est demandé."
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Delta dispose déjà d’une chaîne systemd quotidienne D70."
+    },
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée ; l’app de bureau n’est pas lancée au démarrage."
     }
    }
   },
@@ -361,7 +373,7 @@
    "categorie": "fonctionnalites",
    "nom": "Browser extension",
    "gabarit": "complet",
-   "description": "L'extension donne à ChatGPT accès aux onglets de navigateurs compatibles déjà ouverts. Elle peut lire ou agir dans une session connectée, sous les permissions du navigateur.",
+   "description": "L’extension relie ChatGPT Desktop aux onglets de Chrome, Edge, Brave, Opera ou Vivaldi et permet d’y lire ou d’agir avec le profil déjà connecté. Opera prend en charge le contrôle des onglets mais pas le side chat.",
    "description_source": "Use the ChatGPT browser extension to work in Google Chrome, Microsoft Edge, Brave, Opera, or Vivaldi from the ChatGPT desktop app. ChatGPT can read or act on sites where you're already signed in, such as LinkedIn, Salesforce, Gmail, or internal tools.",
    "usage": "@Edge open Salesforce and update the account from these call notes.",
    "usage_nature": "syntaxe",
@@ -370,7 +382,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L'extension est parfois déconnectée et aucun flux actuel n'exige un onglet de navigateur déjà authentifié ; le navigateur intégré suffit aux essais décrits."
+    "pourquoi": "Aucun flux actuel de ChatGPT Desktop n’exige un onglet déjà authentifié pour les audits ; la déconnexion de l’extension Chrome mentionnée dans le contexte n’identifie pas un usage de cette extension OpenAI."
    },
    "sources": [
     {
@@ -383,7 +395,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -400,13 +412,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "L'extension de navigateur est parfois déconnectée, ce qui limite ce flux."
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "ChatGPT Desktop est déclaré utilisé seulement pour les connecteurs."
     }
    }
   },
@@ -1534,7 +1550,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1551,9 +1567,13 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -1564,10 +1584,11 @@
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     },
     "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-fonctionnalites-page-agent-configuration-agents-md",
@@ -1784,7 +1805,7 @@
    "description_source": "ChatGPT Work and Codex can run subagent workflows by spawning specialized agents in parallel and then collecting their results in one response. This can be particularly helpful for complex tasks that are highly parallel, such as codebase exploration or implementing a multi-step feature plan.",
    "usage": "Review this branch with parallel subagents. Spawn one subagent for security risks, one for test gaps, and one for maintainability. Wait for all three, then summarize the findings by category with file references.",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "Review this branch with parallel subagents. Spawn one subagent for security risks, one for test gaps, and one for maintainability. Wait for all three, then summarize the findings by category with file references.",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1802,7 +1823,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1819,9 +1840,13 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -1832,10 +1857,11 @@
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     },
     "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-fonctionnalites-page-cli-customization",
@@ -2531,12 +2557,12 @@
    "categorie": "fonctionnalites",
    "nom": "Worktrees",
    "gabarit": "complet",
-   "description": "Les worktrees donnent aux conversations Codex des copies de travail distinctes d'un dépôt Git. Depuis le mobile, on peut guider et relire ces conversations, mais le dépôt, le worktree et les commandes restent sur l'ordinateur connecté ou son environnement distant ; Handoff déplace la conversation et le code entre Local et Worktree.",
+   "description": "Les worktrees donnent aux conversations Codex des copies de travail distinctes d’un dépôt Git. Le mobile pilote le travail sur l’ordinateur connecté ; Handoff déplace la conversation et le code entre Local et Worktree.",
    "description_source": "Worktrees let Codex run multiple independent chats in the same project without interfering with each other. The repository, worktree, and commands remain on the computer or remote development environment that contains the project. You can work directly in the ChatGPT desktop app, or use Codex in the ChatGPT mobile app to start, guide, approve, and review worktree chats on a connected computer.",
    "usage": "# .worktreeinclude\n.env\n.env.local\nconfig/secrets.json",
    "usage_nature": "syntaxe",
-   "exemple": "Select **Worktree** under the composer.",
-   "disponibilite": "Dépôts Git ; app ChatGPT de bureau ou mobile sur ordinateur connecté ; worktrees exécutés sur l'hôte, pas sur le téléphone.",
+   "exemple": null,
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
@@ -2553,7 +2579,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2574,17 +2600,21 @@
     {
      "date": "2026-10-07",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.discipline": {
      "sha1": "94f7999d4a666931335a8f8526affbd6ca45ac97",
      "pourquoi": "Discipline utilise une branche et un worktree par mission."
     },
     "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "L'iPhone pilote les conversations Codex sous tmux ; usage du sélecteur Worktree de l'app non établi."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    }
   },
@@ -2901,7 +2931,7 @@
    "description_source": "For work that may take many steps, give ChatGPT a clear outcome, constraints, and definition of done. Keep related work in the same chat so ChatGPT can use the same context to choose the next step and decide when the work is complete.",
    "usage": "Migrate this codebase from JavaScript to TypeScript. Preserve existing behavior,\ncompile in strict mode without explicit `any` types, and make the full test suite pass.",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "Migrate this codebase from JavaScript to TypeScript. Preserve existing behavior,\ncompile in strict mode without explicit `any` types, and make the full test suite pass.",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -2919,7 +2949,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2936,9 +2966,13 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -2949,10 +2983,11 @@
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     },
     "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-fonctionnalites-page-mcp-server",
@@ -3490,8 +3525,8 @@
    "description_source": "The sandbox is the boundary that lets the agent act autonomously without giving it unrestricted access to your machine. When a local chat runs commands in the ChatGPT desktop app, Codex CLI, or IDE extension, those commands run inside a constrained environment instead of running with full access by default.",
    "usage": "sudo apt install bubblewrap",
    "usage_nature": "syntaxe",
-   "exemple": "sudo systemctl reload apparmor.service",
-   "disponibilite": "Linux et WSL2 pour les prérequis bubblewrap décrits",
+   "exemple": "sudo apt install bubblewrap",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
@@ -3508,7 +3543,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3525,23 +3560,28 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     },
     "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-fonctionnalites-page-sandboxing-auto-review",

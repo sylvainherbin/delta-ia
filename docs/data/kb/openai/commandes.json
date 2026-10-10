@@ -381,7 +381,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le contrôle mobile documenté exige un hôte macOS ou Windows, alors que la machine est sous Linux, et aucun hôte SSH distinct n’est déclaré."
+    "pourquoi": "Codex est piloté par la CLI sous tmux et remote control depuis l’iPhone ; aucun besoin d’ouvrir un réglage de connexion dans l’app de bureau n’est identifié."
    },
    "sources": [
     {
@@ -394,7 +394,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -435,17 +435,17 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "3d977f6b6b96ee2d395429828e9a92cfd17ea63c",
-     "pourquoi": "La machine principale fonctionne sous Linux Mint."
-    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L’app Codex est utilisée localement et aucun hôte SSH distinct n’est déclaré."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "L’usage actuel est la CLI sous tmux avec contrôle mobile, sans besoin déclaré de ce lien d’app."
     }
    },
    "exemple_origine": "source"
@@ -456,7 +456,7 @@
    "categorie": "commandes",
    "nom": "codex://settings/connections/ssh/add?name=<ssh-config-host>",
    "gabarit": "complet",
-   "description": "Le lien `codex://settings/connections/ssh/add?name=<ssh-config-host>` ouvre l’ajout dans Codex d’un hôte déjà déclaré dans la configuration SSH locale. Le paramètre `name` doit correspondre à l’alias SSH à importer.",
+   "description": "Ce lien importe dans Codex un hôte déclaré dans `~/.ssh/config` et ouvre ses réglages SSH. Le paramètre `name` doit correspondre à son alias ; l’ajout désactive la connexion automatique pour cet hôte.",
    "description_source": "Adds a host from your SSH config to Codex.",
    "usage": "codex://settings/connections/ssh/add?name=<ssh-config-host>",
    "usage_nature": "syntaxe",
@@ -465,7 +465,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun alias SSH destiné à Codex n’est décrit ; l’objectif d’accès depuis l’iPhone ne justifie pas d’ajouter un hôte supposé."
+    "pourquoi": "Aucun alias SSH destiné à Codex n’est déclaré dans le contexte ; ce lien ajoute une connexion et désactive sa connexion automatique, sans répondre à un besoin établi du pilotage depuis l’iPhone."
    },
    "sources": [
     {
@@ -478,7 +478,7 @@
    "retiree": false,
    "origine": "chatgpt-app-commandes",
    "groupe": "Supported links",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -515,16 +515,20 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun usage d’une connexion SSH gérée par Codex n’est attesté."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "L’objectif de pilotage distant ne précise aucun hôte SSH."
     }
    }
