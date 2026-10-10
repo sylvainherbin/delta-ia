@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 24,
- "commentees": 21,
+ "commentees": 24,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -388,7 +388,7 @@
    "description_source": "Skill. Design guidance for charts, graphs, and dashboards. Claude picks the chart form for the data, assigns color by role, validates the palette for colorblind safety and contrast with a bundled script, and applies mark, interaction, and accessibility rules. Uses a brand-neutral placeholder palette that you replace with your own",
    "usage": "/dataviz [request]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/dataviz courbes de nuit de l'onglet Stats de carnet : durée de sommeil avec seuil et SpO2",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -402,11 +402,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-03",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -419,10 +419,20 @@
     {
      "date": "2026-10-03",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "Travail en cours : courbes de nuit de l'onglet Stats (sommeil avec seuil, SpO2), en Recharts."
+    }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-skills-debug",
@@ -582,16 +592,16 @@
    "categorie": "skills",
    "nom": "/doctor",
    "gabarit": "complet",
-   "description": "Skill de bilan d'installation : doublons, PATH, fichiers de réglages illisibles, skills, serveurs MCP et plugins inutilisés rapportés à leur coût en contexte, hooks lents, nouvelle version disponible ; il peut aussi alléger les CLAUDE.md et proposer le mode auto par défaut, après confirmation. Nouveau : `/doctor prompt-audit [path]` fait auditer par Claude les CLAUDE.md, skills et autres réglages à la recherche de consignes périmées ou contradictoires, au lieu du bilan (Claude Code 2.1.283 ou plus). `claude doctor` dans le terminal donne un diagnostic en lecture seule, sans session ; alias `/checkup`.",
+   "description": "Skill de bilan d'installation : doublons, PATH, fichiers de réglages illisibles, skills, serveurs MCP et plugins inutilisés rapportés à leur coût en contexte, hooks lents, nouvelle version disponible ; il peut aussi alléger les CLAUDE.md et proposer le mode auto par défaut, après confirmation. `/doctor prompt-audit [path]` fait auditer par Claude les CLAUDE.md, skills et autres réglages à la recherche de consignes périmées ou contradictoires, au lieu du bilan (Claude Code 2.1.283 ou plus). `claude doctor` dans le terminal donne un diagnostic en lecture seule, sans session ; alias `/checkup`.",
    "description_source": "Skill. Run a setup checkup that diagnoses installation, settings, extension, and CLAUDE.md problems and proposes fixes that Claude applies after you confirm. For what the checkup covers, or to audit your instructions with prompt-audit instead, see Check your setup with /doctor. The prompt-audit subcommand requires Claude Code v2.1.283 or later. Alias: /checkup",
    "usage": "/doctor [prompt-audit [path]]",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "/doctor prompt-audit ~/projets",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans herbin-mint (`~/projets`, 2.1.283 installée), `/doctor prompt-audit` signalerait les consignes dispersées entre mémoires et CLAUDE.md (piste 1) et les skills dormants `latex-manuscrit` et `verif-numerique` (piste 4). Le bilan interactif `/doctor` propose de modifier CLAUDE.md et le mode par défaut : commence par `claude doctor`, en lecture seule, et n'accepte aucun changement sur trading-sim, gouverné par Work."
+    "pourquoi": "Dans la session qui travaille sur `~/projets`, `/doctor prompt-audit` signalerait les consignes dispersées entre mémoires et CLAUDE.md (piste 1) et les skills dormants `latex-manuscrit` et `verif-numerique` (piste 4). Le bilan interactif `/doctor` propose de modifier CLAUDE.md et le mode par défaut : commence par `claude doctor`, en lecture seule, et n'accepte aucun changement sur trading-sim, gouverné par Work."
    },
    "sources": [
     {
@@ -600,11 +610,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -629,23 +639,28 @@
     {
      "date": "2026-10-09",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "bb99e14936e00ce198428393b81ca83709ce8ccb",
-     "pourquoi": "Pistes 1 (règles dispersées, CLAUDE.md global minimal) et 4 (skills dormants) : cibles directes de prompt-audit et du bilan."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Pistes 1 (règles dispersées) et 4 (skills dormants) : cibles directes de prompt-audit et du bilan."
     },
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "Skills perso dont latex-manuscrit et verif-numerique jamais invoqués, skills claude.ai synchronisés peu utilisés."
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Skills perso dont latex-manuscrit et verif-numerique jamais invoqués."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Dépôt gouverné par Work, CLAUDE.md gelé : aucun changement proposé par /doctor à y accepter."
     }
-   }
+   },
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-skills-fewer-permission-prompts",
@@ -1264,11 +1279,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1305,17 +1320,21 @@
     {
      "date": "2026-09-29",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "skills claude.ai : surtout red-team, les autres peu ou pas"
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Skills claude.ai : surtout red-team, les autres peu ou pas."
     },
     "config.claude-code.skills": {
-     "sha1": "3ddbebf32871cc2c088df08b0caace1af5e751cf",
-     "pourquoi": "skills claude.ai synchronisés, non invoqués sauf ask-the-council ×1"
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Skills claude.ai synchronisés, non invoqués sauf ask-the-council ×1."
     }
    }
   },
