@@ -966,7 +966,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À essayer seulement si `/run` ne sait pas lancer carnet seul (Vite, service worker)."
+    "pourquoi": "Si `/run` ne sait pas démarrer carnet seul (Vite, service worker), `/run-skill-generator` écrit un skill propre au projet dans `~/projets/carnet` ; résultat attendu : `/run` puis `/verify` lancent la PWA sans explication."
    },
    "sources": [
     {
@@ -992,10 +992,19 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "PWA Vite avec service worker versionné à lancer pour la vérifier"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -1013,7 +1022,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Utilisable sur les petits commits de carnet ; il applique ses corrections sans demander, donc à éviter sur trading-sim, où noyaux gelés et spécification passent par l'audit."
+    "pourquoi": "Utilisable sur les petits commits de carnet ; le skill applique ses corrections sans demander, donc à éviter sur trading-sim, dont les noyaux gelés en lecture seule et la spécification passent par l'audit."
    },
    "sources": [
     {
@@ -1039,10 +1048,27 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "commits petits et fréquents"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "noyaux gelés en lecture seule, audités par Codex"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "spécification gelée, audits contradictoires"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -1168,7 +1194,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Même usage que `/run` sur carnet : constater à l'écran une correction de la PWA avant de la déployer avec `scripts/deploy.sh`."
+    "pourquoi": "Même usage que `/run` sur carnet : constater dans l'app lancée une correction de la PWA avant de la déployer avec `scripts/deploy.sh` ; résultat attendu : le comportement observé à l'écran, au-delà de `node --test`."
    },
    "sources": [
     {
@@ -1194,10 +1220,19 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "PWA déployée par scripts/deploy.sh, tests node --test sans contrôle à l'écran"
+    }
+   },
    "exemple_origine": "source"
   },
   {

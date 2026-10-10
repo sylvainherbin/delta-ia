@@ -482,7 +482,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Contraire à ta validation pas à pas et à la politique de capacités de trading-sim."
+    "pourquoi": "Depuis le 06/10 toutes les sessions locales tournent déjà en `bypassPermissions`, sauf trading ; sur trading-sim, l'ajouter au cycle Maj+Tab irait contre la politique de capacités."
    },
    "sources": [
     {
@@ -495,7 +495,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -504,10 +504,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "bypassPermissions pour toutes les sessions locales sauf trading"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "politique de capacités restrictive"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-allowallclaudeaimcps",
@@ -2239,7 +2252,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le délai par défaut couvre déjà les coupures du Wi-Fi ; l'allonger retarderait seulement le constat d'échec."
+    "pourquoi": "Le délai par défaut de 10 minutes suffit : les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et l'allonger retarderait seulement le constat d'un échec."
    },
    "sources": [
     {
@@ -2252,7 +2265,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2261,10 +2274,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Wi-Fi : décrochages cessés après la connexion directe à la box"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-apikeyhelper",
@@ -3079,7 +3101,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes mémoires sont rangées par projet (racine et trading-sim) ; un dossier unique mélangerait leurs règles."
+    "pourquoi": "Les mémoires sont rangées par dossier de travail (environ 70 pour `~/projets`, 7 pour `~` au 04/10) ; un dossier unique mélangerait les règles de projets différents."
    },
    "sources": [
     {
@@ -3092,7 +3114,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3101,10 +3123,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "mémoire automatique par dossier : ≈70 dans ~/projets, 7 dans ~ (04/10)"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-automemoryenabled",
@@ -4305,7 +4336,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Claude in Chrome passe déjà par le connecteur ; trading-sim interdit le navigateur."
+    "pourquoi": "L'essai de `claude --chrome` est porté par la fiche de la fonctionnalité Chrome ; trading-sim interdit le navigateur et l'extension reste souvent déconnectée."
    },
    "sources": [
     {
@@ -4318,7 +4349,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4327,10 +4358,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "navigateur interdit dans .claude/settings.json"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "extension Chrome souvent déconnectée"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-afk-countdown-ms",
@@ -5008,7 +5052,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À envisager seulement si `/add-dir` vers chatgpt-trading-sim devenait courant et que ce dossier avait ses propres consignes."
+    "pourquoi": "À envisager seulement si `--add-dir` vers chatgpt-trading-sim devenait courant et que ce dossier hors git avait ses propres consignes ; rien ne l'indique."
    },
    "sources": [
     {
@@ -5021,7 +5065,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5030,10 +5074,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "dossier local hors git, missions et rapports de ChatGPT"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-alt-screen-full-repaint",
@@ -7048,7 +7101,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Garder les points de restauration protège carnet et trading-sim contre une modification ratée."
+    "pourquoi": "Garder les points de restauration protège carnet et trading-sim contre une modification ratée de Claude ; aucune raison de les couper."
    },
    "sources": [
     {
@@ -7061,7 +7114,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7070,10 +7123,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "modifications fréquentes à pouvoir annuler"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "fichiers gelés à protéger"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-git-instructions",
@@ -7342,7 +7408,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Couperait aussi les mises à jour automatiques et d'autres services, sans gain décrit pour ton Wi-Fi."
+    "pourquoi": "Couperait aussi les mises à jour automatiques et d'autres services alors que `claude update` suit déjà les versions installées ; aucun gain décrit pour la machine."
    },
    "sources": [
     {
@@ -7355,7 +7421,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7364,10 +7430,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "mises à jour natives suivies par claude update"
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Claude Code installé en natif"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-nonstreaming-fallback",
@@ -11514,7 +11593,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "trading-sim est déjà restreint par son `.claude/settings.json`."
+    "pourquoi": "trading-sim est déjà restreint par son `.claude/settings.json` (WebFetch, WebSearch, navigateur et connecteurs refusés) ; le mode restreint n'y ajouterait rien de décrit."
    },
    "sources": [
     {
@@ -11527,7 +11606,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11536,10 +11615,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "politique de capacités déjà restrictive"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-resume-interrupted-turn",
@@ -14133,7 +14221,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "trading-sim n'a pas de `.venv` d'après CONTEXTE.md, et aucun environnement à activer avant chaque commande n'est décrit."
+    "pourquoi": "trading-sim n'a pas de `.venv` et `pytest` n'existe que dans `delta-ia/.venv`, appelé par chemin explicite ; aucun environnement à activer avant chaque commande Bash n'est décrit."
    },
    "sources": [
     {
@@ -14146,7 +14234,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14159,10 +14247,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "pas de .venv dans ce projet"
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "pytest seulement dans delta-ia/.venv"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-job-dir",
@@ -15022,7 +15123,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Contraire à ta validation pas à pas et à la politique de capacités de trading-sim."
+    "pourquoi": "C'est déjà le régime des sessions locales depuis le 06/10 (lanceur `claude-session.sh`, `bypassPermissions`), sauf trading ; à ne pas appliquer à trading-sim, dont les capacités sont volontairement restreintes."
    },
    "sources": [
     {
@@ -15035,7 +15136,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15044,10 +15145,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "bypassPermissions par le lanceur, sauf trading, depuis le 06/10"
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "capacités volontairement restreintes"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-debug",
@@ -19593,7 +19707,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les sessions ne sont liées que si Claude crée la PR ; rien n'indique que ce soit le cas sur trading-sim."
+    "pourquoi": "Les sessions ne sont liées que si Claude crée la PR ; rien n'indique que ce soit le cas des PR de trading-sim, passées par un circuit formel."
    },
    "sources": [
     {
@@ -19606,7 +19720,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19615,10 +19729,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "trading-sim : commits rares et formels, passés par une PR"
+    }
+   }
   },
   {
    "id": "claude-code-parametres-gatewayinternalnetworks",

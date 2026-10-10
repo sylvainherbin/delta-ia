@@ -531,7 +531,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun de tes dépôts n'a de CI, et les PR de trading-sim sont auditées par Codex ; des correctifs poussés automatiquement contourneraient la validation pas à pas."
+    "pourquoi": "carnet n'a pas de CI et les PR de trading-sim sont auditées par Codex sous l'arbitrage de Work ; des correctifs poussés par une session cloud hors du circuit chef, dev et OK de fusion contourneraient la relecture."
    },
    "sources": [
     {
@@ -544,7 +544,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -553,10 +553,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "pas de CI GitHub Actions"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work arbitre, Codex audite"
+    },
+    "methode.organisation": {
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+     "pourquoi": "le dev pousse après l'OK du chef"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-background",
@@ -2729,7 +2746,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pour un essai d'ultrareview sur trading-sim, `/code-review ultra` dans la session suffit ; la forme non interactive ne sert que dans un script."
+    "pourquoi": "Pour un essai d'ultrareview sur une PR de trading-sim, `/code-review ultra` dans la session suffit ; la forme non interactive ne sert que dans un script, et `--post` publierait un commentaire sur un dépôt gouverné par Work."
    },
    "sources": [
     {
@@ -2742,7 +2759,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2751,10 +2768,19 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "dépôt privé gouverné par Work, audits par Codex"
+    }
+   }
   },
   {
    "id": "claude-code-commandes-claude-update",
@@ -4297,7 +4323,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "carnet et trading-sim ont déjà leur CLAUDE.md, gelé sur trading-sim ; les sites, sans CLAUDE.md, sont en maintenance."
+    "pourquoi": "carnet a déjà son `CLAUDE.md` (`@AGENTS.md`), trading-sim aussi (périmé et gelé) et les sites, sans `CLAUDE.md`, sont en maintenance ; `/init` n'apporterait rien."
    },
    "sources": [
     {
@@ -4310,7 +4336,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4323,10 +4349,27 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "CLAUDE.md réduit à @AGENTS.md"
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "trading-sim/CLAUDE.md périmé, gelé"
+    },
+    "projet.ceramist": {
+     "sha1": "77a460848e4f24c9bd151f2e5141a2593c2d3a67",
+     "pourquoi": "site en maintenance, sans CLAUDE.md"
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -4395,7 +4438,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun de tes projets n'a de CI, et les revues de trading-sim passent par Codex ; ouvrir Claude aux PR ajouterait un circuit parallèle."
+    "pourquoi": "carnet n'a pas de CI et les revues de trading-sim passent par Codex ; ouvrir Claude aux PR et à GitHub Actions ajouterait un circuit parallèle au circuit chef, dev et OK de fusion."
    },
    "sources": [
     {
@@ -4408,7 +4451,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4421,10 +4464,27 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "pas de CI GitHub Actions"
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "revues par Codex, arbitrage par Work"
+    },
+    "methode.organisation": {
+     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+     "pourquoi": "relecture par le chef avant fusion"
+    }
+   },
    "exemple_origine": "source"
   },
   {
