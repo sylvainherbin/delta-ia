@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-09",
+ "maj_le": "2026-10-10",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,7 +41,7 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 41,
+ "total": 42,
  "commentees": 31,
  "entrees": [
   {
@@ -93,7 +93,7 @@
    "nom": "Authenticate from the command line",
    "gabarit": "complet",
    "description": "`claude mcp login <nom>` lance le flux OAuth d'un serveur MCP configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session. Il fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai.",
-   "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session.",
+   "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session. For a claude.ai connector, follow Authorize a connector again from your shell.",
    "usage": "claude mcp login sentry",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -110,11 +110,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -131,6 +131,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -552,10 +556,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -572,6 +576,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -1368,6 +1376,53 @@
      "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteur de compte partout."
     }
    }
+  },
+  {
+   "id": "claude-code-mcp-tool-search-for-mcp-server-authors",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Tool search for MCP server authors",
+   "gabarit": "complet",
+   "description": "Section destinée aux auteurs de serveurs MCP : avec la recherche d'outils activée, le champ d'instructions du serveur aide Claude à savoir quand chercher ses outils. Un outil peut aussi déclarer `\"anthropic/alwaysLoad\"` dans son objet `_meta` (dans l'entrée `tools/list`) pour se charger d'emblée ; la personne qui configure le serveur peut le surcharger avec `alwaysLoad` (false exige la 2.1.287 ou plus).",
+   "description_source": "If you're building an MCP server, the server instructions field becomes more useful with tool search enabled. Server instructions help Claude understand when to search for your tools, similar to how skills work.",
+   "usage": "{\n  \"name\": \"search_tickets\",\n  \"description\": \"Searches the ticket tracker by keyword\",\n  \"_meta\": {\n    \"anthropic/alwaysLoad\": true\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md décrit le connecteur delta-ia côté consommateur (MCP en portée locale) et ne dit pas que Sylvain écrit un serveur MCP à doter de `_meta`."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#tool-search-for-mcp-server-authors",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "pourquoi": "Décrit le connecteur MCP delta-ia en portée locale, côté utilisateur ; aucun serveur MCP écrit par Sylvain."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Scale with MCP tool search",
+   "maj_le": "2026-10-10",
+   "historique": [
+    {
+     "date": "2026-10-10",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-use-a-fixed-oauth-callback-port",

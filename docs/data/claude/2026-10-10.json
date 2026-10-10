@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-10",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-10T02:03:37+00:00",
+  "synthese": "Compte et quotas : aucune page d'aide ni aucune offre n'a changé cette nuit ; quotas lus : Claude session 5 h 1 % (remise à zéro le 10/10 à 04 h 49 UTC), Claude semaine 78 % et semaine Fable 36 % (remise à zéro le 11/10 à 15 h 59 UTC), ChatGPT semaine 26 % (remise à zéro le 14/10 à 05 h 29 UTC) ; aucun seuil de 80 % atteint, mais la semaine Claude s'en approche. Un tarif touche le compte : Claude Code 2.1.296, déjà installée, chiffre désormais la lecture du cache de Sonnet 5.5 à 0,10 $ par Mtok (0,20 $ avant) dans `/cost` et `--max-budget-usd`. Ce qui compte pour toi : la 2.1.296 apporte `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL`, qui permet de caler les agents d'un workflow sur un modèle moins cher, pour ta priorité sur les limites hebdomadaires. Le reste (workflows dynamiques de Managed Agents, ruptures API de Haiku 5.5, remplaçant des anciens Sonnet, deux fiches ajoutées à la base) ne change rien à ton usage.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.296",
+      "ids_bruts": [
+        "claude-code-2.1.296"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.296 : `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL`, `autoCompactWindow` pour un sous-agent, cache de Sonnet 5.5 chiffré à 0,10 $ par Mtok dans `/cost`",
+      "version": "2.1.296",
+      "date_publication": "2026-10-09",
+      "type": "nouveaute",
+      "resume": "Ajouts : la variable `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` fait tourner tous les agents d'un workflow sur un seul modèle pendant que les autres sous-agents gardent le leur ; `autoCompactWindow` s'écrit dans le frontmatter d'un sous-agent et dans `--agents`, pour qu'il se compacte plus tôt que la conversation principale ; `CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS` allonge le plafond d'attente avant de relancer une requête en erreur 529 ; l'outil Read accepte `allow_large` pour lire un gros fichier texte en un appel ; `/plugin` signale un plugin dont les hooks sont écartés parce qu'un autre plugin actif porte le même nom ; clé `code` dans `managed.policies[]` de la passerelle Claude apps. Changements : `/cost`, la ligne de statut, `--max-budget-usd` et les chiffres du SDK comptent la lecture du cache de Sonnet 5.5 à 0,10 $ par million de jetons (0,20 $ avant) ; la limite par défaut des descriptions d'outils MCP envoyées d'emblée et des instructions de serveur MCP passe de 2 048 à 4 096 caractères ; `←` arrête désormais un tour ou une commande `!` lancé pendant le passage en arrière-plan. Correctifs notables : les hooks `PreToolUse` et `prompt` des réglages gérés qui refusent un appel n'arrêtaient pas le tour ; une session headless démarrait un `.mcp.json` ou un serveur MCP de plugin désactivé pour le dossier après un changement de dossier ou un rechargement des plugins ; `/code-review` finissait sur un tableau JSON brut en session cloud, dans le SDK et les IDE ; Edit et NotebookEdit remplaçaient tous les caractères non ASCII d'un fichier qui n'est pas en UTF-8 (ces éditions sont refusées) ; la vérification Bash laissait passer sans demande certaines commandes qui affectent `BASH_ARGV0`. Le reste concerne Windows, VS Code, Claude Tag (Slack), Code Review et les sessions cloud auto-hébergées. Aucune commande d'archivage de session cloud n'est ajoutée dans cette version.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21296",
+          "libelle": "Changelog Claude Code 2.1.296",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.296 est déjà installée (`docs/data/versions.json` : a_jour). Les sous-agents sont utilisés (31 appels `Agent` en cinq jours le 04/10, dont 11 `Explore`) et l'outil `Workflow` aussi, sur accord : la variable `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` permet de caler les agents d'un workflow sur un modèle moins cher que celui de la session, ce qui touche ta priorité sur les limites hebdomadaires (Claude semaine à 78 % au dernier relevé) ; la fiche voisine `CLAUDE_CODE_SUBAGENT_MODEL` est marquée non utilisée, donc rien n'est réglé aujourd'hui pour les sous-agents. `autoCompactWindow` en frontmatter ne vaut que pour tes agents définis par fichier : `executant` est le seul et il est rarement appelé. La chaîne D70 lance `claude -p` ; le correctif des serveurs MCP désactivés pour un dossier la concerne, puisque le dossier delta-ia porte le connecteur local delta-ia. Ton modèle par défaut est Sonnet : `/cost` et `--max-budget-usd` afficheront un coût de lecture du cache plus bas, sans que la page dise si le décompte des limites de l'abonnement suit ce tarif. Le doublement de la limite des descriptions MCP (4 096 caractères) s'ajoute à celle de la 2.1.295 pour les descriptions chargées par la recherche d'outils (16 384). L'ajout `allow_large` de l'outil Read, `CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS` et la note de `/plugin` ne demandent rien : CONTEXTE.md ne décrit ni erreurs 529 rencontrées ni plugin en service (`frontend-design` est installé, non adopté).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essaie `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` sur le prochain workflow que tu autorises ; résultat attendu : les agents du workflow tournent sur le modèle choisi et non sur celui de la session.",
+        "etapes": [
+          "Lance une session de test avec `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL=sonnet claude` depuis `~/projets/delta-ia` (valeur : un alias de modèle comme pour `CLAUDE_CODE_SUBAGENT_MODEL`, dont la fiche accepte un alias ou un nom complet ; la documentation de la nouvelle variable n'est pas encore dans la base).",
+          "Demande à cette session de lancer un petit workflow de lecture seule sur le dépôt delta-ia (par exemple trois agents qui résument chacun un dossier) : tu es la seule à pouvoir l'autoriser, d'après ta consigne du 04/10.",
+          "Compare la consommation de la semaine avant et après dans `/usage` ; revérifier le 16/10, aucune échéance publiée."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-subagent-model",
+        "claude-code-parametres-autocompactwindow",
+        "claude-code-parametres-agents",
+        "claude-code-commandes-cost",
+        "claude-code-commandes-plugin"
+      ],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents et outil Workflow utilisés ; CLAUDE_CODE_SUBAGENT_MODEL non utilisée."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "La chaîne D70 appelle `claude -p` : concernée par le correctif des MCP désactivés."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Connecteur local delta-ia dans ~/projets/delta-ia ; limites de description MCP."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 11 : Sonnet par défaut, charge hebdomadaire à étaler."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-10-09",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-09"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 09/10 : workflows dynamiques pour Claude Managed Agents, en bêta",
+      "version": null,
+      "date_publication": "2026-10-09",
+      "type": "nouveaute",
+      "resume": "Un agent Claude Managed Agents peut écrire et lancer un workflow, programme qui exécute plusieurs agents par phases et combine leurs résultats, côté serveur et en arrière-plan. Bêta avec l'en-tête `managed-agents-2026-04-01` ; activation par le champ `multiagent` de l'agent : `{\"type\": \"multiagent_20261001\", \"workflows\": {\"type\": \"enabled\"}}` ; chaque exécution se suit par les événements `workflow_run.*` du flux de la session.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-07"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 07/10 (révision) : liste détaillée des ruptures de l'API entre Claude Haiku 4.5 et 5.5",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "revision": true,
+      "resume": "La page détaille ce qui casse en passant de Claude Haiku 4.5 à 5.5 : ajoutée, la liste de 400 pour `budget_tokens`, `temperature`, `top_p`, `top_k`, le préremplissage de message assistant, `computer_20250124` (remplacé par `computer_toolset_20260801` sur l'API Claude et Google Cloud, `computer_20251124` sur Amazon Bedrock) et les blocs de réflexion renvoyés après un changement de `system`, `tools` ou des tours antérieurs ; ajoutées aussi, l'absence des sorties structurées pour Haiku 5.5 sur Amazon Bedrock et la réflexion adaptative active par défaut, dont le texte est omis sauf `thinking.display` réglé à `\"summarized\"`. Retirée, la phrase qui résumait ces ruptures en une ligne ; le renvoi au guide de migration devient « pour chaque changement ». Prix, SDK et restrictions de Managed Agents de l'élément du 08/10 ne changent pas.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-deprecations-2026-04-14-claude-sonnet-4-and-claude-opus-4-models",
+      "ids_bruts": [
+        "anthropic-deprecations-2026-04-14-claude-sonnet-4-and-claude-opus-4-models",
+        "anthropic-deprecations-2025-10-28-claude-sonnet-3-7-model",
+        "anthropic-deprecations-2025-08-13-claude-sonnet-3-5-models",
+        "anthropic-deprecations-2025-01-21-claude-2-claude-2-1-and-claude-sonnet-3-models"
+      ],
+      "produit": "claude",
+      "titre": "Dépréciations des modèles Claude : le remplaçant recommandé des anciens Sonnet (3, 3.5, 3.7 et 4) passe à `claude-sonnet-5-5`",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "revision": true,
+      "resume": "Dans le tableau des modèles déjà retirés, la colonne « Recommended replacement » passe de `claude-sonnet-4-6` à `claude-sonnet-5-5` pour `claude-sonnet-4-20250514` (retiré le 15/06/2026), `claude-3-7-sonnet-20250219` (19/02/2026), `claude-3-5-sonnet-20240620` et `claude-3-5-sonnet-20241022` (28/10/2025) et `claude-3-sonnet-20240229` (21/07/2025). Les dates de retrait ne changent pas et les remplaçants d'Opus 4, de `claude-2.0` et de `claude-2.1` (`claude-opus-4-8`) non plus.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+          "libelle": "Dépréciations des modèles Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-enable-cfc",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-enable-cfc"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable CLAUDE_CODE_ENABLE_CFC",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche ajoutée à la base : `CLAUDE_CODE_ENABLE_CFC=1` démarre une session de la CLI avec l'intégration Chrome activée, `0` sans ; elle l'emporte sur `claudeInChromeDefaultEnabled`, les options `--chrome` et `--no-chrome` l'emportent sur les deux, et un `1` placé dans les réglages de projet ou locaux est ignoré.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-enable-cfc"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-tool-search-for-mcp-server-authors",
+      "ids_bruts": [
+        "kb-claude-code-mcp-tool-search-for-mcp-server-authors"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : recherche d'outils MCP pour les auteurs de serveurs (`anthropic/alwaysLoad`)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche ajoutée à la base : un auteur de serveur MCP place `\"anthropic/alwaysLoad\": true` dans le `_meta` d'un outil de `tools/list` pour qu'il se charge d'emblée ; `false` le laisse différé quand la configuration de l'utilisateur met `alwaysLoad: true` (2.1.285 ou plus), et l'utilisateur peut tout différer avec `\"alwaysLoad\": false` (2.1.287 ou plus).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#tool-search-for-mcp-server-authors",
+          "libelle": "Claude Code — MCP",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-tool-search-for-mcp-server-authors"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40"
+}

@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-09",
+ "maj_le": "2026-10-10",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 133,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1144,7 +1144,7 @@
    "nom": "claude attach <id|name>",
    "gabarit": "complet",
    "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan. Depuis la v2.1.290, un fragment du nom de la session en cours suffit à la place de l'identifiant.",
-   "description_source": "Attach to a background session in this terminal. Passing part of a running session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
+   "description_source": "Attach to a background session in this terminal. Passing part of a session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
    "usage": "claude attach <id|name>",
    "usage_nature": "syntaxe",
    "exemple": "claude attach 7c5dcf5d",
@@ -1161,13 +1161,13 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {},
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-10-06",
@@ -1176,6 +1176,10 @@
     {
      "date": "2026-10-06",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -1914,7 +1918,7 @@
    "nom": "claude logs <id|name>",
    "gabarit": "complet",
    "description": "Affiche la sortie récente d'une session Claude Code d'arrière-plan. Depuis la v2.1.290, un fragment du nom de la session en cours remplace l'identifiant.",
-   "description_source": "Print recent output from a background session. Passing part of a running session's name in place of the ID requires Claude Code v2.1.290 or later — claude logs 7c5dcf5d",
+   "description_source": "Print recent output from a background session. Passing part of a session's name in place of the ID requires Claude Code v2.1.290 or later — claude logs 7c5dcf5d",
    "usage": "claude logs <id|name>",
    "usage_nature": "syntaxe",
    "exemple": "claude logs 7c5dcf5d",
@@ -1931,13 +1935,13 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fa2e557a0ce89d8a2e1c8acb6f0cae0075978c09",
    "contexte_sections": {},
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-06",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-10-06",
@@ -1946,6 +1950,10 @@
     {
      "date": "2026-10-06",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -2003,7 +2011,7 @@
    "nom": "claude mcp login <name>",
    "gabarit": "complet",
    "description": "Lance depuis le shell le flux OAuth d'un serveur MCP configuré, sans ouvrir le panneau `/mcp` ; fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai. En SSH, `--no-browser` affiche l'URL d'autorisation au lieu d'ouvrir un navigateur, puis on recolle l'URL de retour.",
-   "description_source": "Run a configured MCP server's OAuth flow without opening the interactive /mcp panel. Works for HTTP, SSE, and claude.ai connector servers. Add --no-browser over SSH to print the authorization URL instead of opening a browser, then paste the redirect URL back at the prompt. See Authenticate from the command line — claude mcp login sentry",
+   "description_source": "Run a configured MCP server's OAuth flow without opening the interactive /mcp panel. Works for HTTP, SSE, and claude.ai connector servers. Add --no-browser over SSH to print the authorization URL instead of opening a browser. For an HTTP or SSE server, paste the redirect URL back at the prompt. For a claude.ai connector, see Authorize a connector again from your shell. See Authenticate from the command line — claude mcp login sentry",
    "usage": "claude mcp login <name>",
    "usage_nature": "syntaxe",
    "exemple": "claude mcp login sentry",
@@ -2020,11 +2028,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2045,6 +2053,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
@@ -4424,7 +4436,7 @@
    "nom": "/mcp",
    "gabarit": "complet",
    "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur, `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs.",
-   "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. Also available in non-interactive mode (-p), where running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
+   "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. In non-interactive mode (-p), running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
    "usage": "/mcp [reconnect (<server>|all)|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
    "exemple": "/mcp reconnect delta-ia",
@@ -4441,11 +4453,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4474,6 +4486,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",

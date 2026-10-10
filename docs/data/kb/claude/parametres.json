@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-09",
+ "maj_le": "2026-10-10",
  "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 651,
- "commentees": 563,
+ "total": 652,
+ "commentees": 562,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -7246,10 +7246,10 @@
      "pourquoi": "Linux Mint 22.1, sans PowerShell."
     }
    },
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-26",
@@ -7258,6 +7258,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "absente de la documentation"
     }
    ]
   },
@@ -7884,6 +7888,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-enable-cfc",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_ENABLE_CFC",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui démarre une session de la CLI avec l'intégration Chrome activée (1) ou désactivée (0). Elle l'emporte sur le réglage claudeInChromeDefaultEnabled ; les options --chrome et --no-chrome l'emportent sur les deux, et un 1 placé dans les réglages de projet ou locaux est ignoré.",
+   "description_source": "Set to 1 to start a CLI session with Chrome integration on, or 0 to start with it off. Takes precedence over the claudeInChromeDefaultEnabled setting. The --chrome and --no-chrome flags take precedence over both. Claude Code ignores 1 in project and local settings",
+   "usage": "CLAUDE_CODE_ENABLE_CFC",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md note une extension Chrome souvent déconnectée mais ne dit pas que Sylvain démarre ses sessions avec l'intégration ; aucun scénario d'essai nommé."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Frictions récurrentes : extension Chrome souvent déconnectée, seul lien avec cette variable ; aucun usage déclaré."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-10",
+   "historique": [
+    {
+     "date": "2026-10-10",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-enable-fine-grained-tool-streaming",
@@ -8595,10 +8646,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8607,6 +8658,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9514,7 +9569,7 @@
    "nom": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe combien de temps le premier tour d'une session non interactive attend les serveurs MCP en cours de connexion.",
-   "description_source": "How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. When set, the wait covers every pending server. Set to 0 to skip the wait. A --permission-prompt-tool server keeps its own MCP_TIMEOUT wait regardless of the value. Requires Claude Code v2.1.274 or later",
+   "description_source": "How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. When set, the wait covers every pending server; in a self-hosted environment, it changes only how long the wait lasts. Set to 0 to skip the wait. A --permission-prompt-tool server keeps its own MCP_TIMEOUT wait regardless of the value. Requires Claude Code v2.1.274 or later",
    "usage": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9531,11 +9586,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9544,6 +9599,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -10562,10 +10621,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10574,6 +10633,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -14495,10 +14558,10 @@
      "pourquoi": "OS Linux Mint 22.1 et Claude Desktop en paquet Debian : hors des plateformes de --desktop."
     }
    },
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-01",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-10-01",
@@ -14507,6 +14570,10 @@
     {
      "date": "2026-10-01",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "absente de la documentation"
     }
    ]
   },
@@ -21698,7 +21765,7 @@
    "nom": "--mcp-config",
    "gabarit": "court",
    "description": "Option CLI qui charge des serveurs MCP depuis des fichiers ou chaînes JSON ; avec `-p`, attend leur connexion jusqu'à `MCP_TIMEOUT`.",
-   "description_source": "Load MCP servers from JSON files or strings (space-separated). When you pass this flag with -p, Claude Code waits for still-pending servers to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default; a server with a cached tool list skips the wait and connects on first use. The wait requires Claude Code v2.1.221 or later — claude --mcp-config ./mcp.json",
+   "description_source": "Load MCP servers from JSON files or strings (space-separated). When you pass this flag with -p, Claude Code waits for still-pending servers to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default; a server with a cached tool list skips the wait and connects on first use. In a self-hosted environment, a shorter wait applies instead. The wait requires Claude Code v2.1.221 or later — claude --mcp-config ./mcp.json",
    "usage": "--mcp-config",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21715,11 +21782,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21732,6 +21799,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
