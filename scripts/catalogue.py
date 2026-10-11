@@ -24,7 +24,8 @@ Usage :
       commentaires = {id: {description, statut_usage, recommandation: {verdict, pourquoi},
                            contexte_sections: {ctx-id: "pourquoi, une ligne, 160 car. max"}, exemple?, exemple_origine?, disponibilite?}}
       exemple non nul : exemple_origine = source (recopié de la documentation) ou compose (D91) ; {id: {exemple, exemple_origine}}
-      seuls, sur une entrée déjà commentée, ajoutent l'exemple (lot exemples)
+      seuls, sur une entrée déjà commentée, ajoutent l'exemple (lot exemples) ; {id: {exemple_impossible: "raison courte"}} seul,
+      retire l'entrée du lot exemples quand aucun exemple honnête n'est possible (D116, 160 car. max)
       (ctx-id : `scripts/contexte.py` ; {} si le jugement ne dépend d'aucune section ; D64-bis)
       `usage` n'est jamais modifiable par un commentaire.
 """
@@ -158,8 +159,8 @@ def main(argv=None) -> int:
         if lot is None:
             p.error(f"lot inconnu : {a.lot!r} (voir `catalogue.py lots`)")
         champs = ["id", "produit", "categorie", "nom", "gabarit", "usage", "usage_nature", "description_source", "sources", "groupe",
-                  "description", "statut_usage", "recommandation", "exemple", "exemple_origine", "contexte_empreinte",
-                  "contexte_sections"]
+                  "description", "statut_usage", "recommandation", "exemple", "exemple_origine", "exemple_impossible",
+                  "contexte_empreinte", "contexte_sections"]
         sortie = [{**{k: entrees[i].get(k) for k in champs}, **({"motif": motifs[i]} if i in motifs else {})}
                   for i in lot["ids"] if a.tout or not entrees[i].get("commentee")]
         json.dump(sortie, sys.stdout, ensure_ascii=False, indent=1)

@@ -551,7 +551,7 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
              "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "contexte_sections", "retiree",
              "origine", "groupe", "maj_le", "historique"}
-CHAMPS_KB_FACULTATIFS = {"exemple_origine"}  # D91 : présent seulement quand un exemple a été écrit sous la règle de provenance
+CHAMPS_KB_FACULTATIFS = {"exemple_origine", "exemple_impossible"}  # D91 : présent seulement quand un exemple a été écrit sous la règle de provenance ; D116 : raison courte d'une entrée sans exemple possible
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
 MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
 LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
@@ -629,8 +629,14 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                 r.erreur(o, "`exemple_origine` sans `exemple`")
             elif origine is not None and e["usage_nature"] != "syntaxe":
                 r.erreur(o, "`exemple_origine` sur une entrée dont `usage_nature` est `etapes` (exemple: null)")
+            impossible = e.get("exemple_impossible")
+            if "exemple_impossible" in e:  # D116
+                if not (isinstance(impossible, str) and impossible.strip()) or len(impossible) > 160:
+                    r.erreur(o, "`exemple_impossible` : raison en texte non vide de 160 caractères au plus")
+                elif isinstance(exemple, str) and exemple.strip():
+                    r.erreur(o, "`exemple_impossible` sur une entrée qui a un `exemple`")
             if (cat in ("commandes", "fonctionnalites") and e["retiree"] is not True and e["usage_nature"] == "syntaxe"
-                    and not (isinstance(exemple, str) and exemple.strip())):
+                    and not (isinstance(exemple, str) and exemple.strip()) and not impossible):
                 sans_exemple += 1
             src = e["sources"]
             if not isinstance(src, list) or not src or not all(
