@@ -13,7 +13,7 @@ from deltalib.kb.modeles import EntreeExtraite
 CONTEXTE = "# Profil\n<!-- ctx-id: profil -->\n\nUn profil.\n"
 JOUR = "2026-10-08"
 EMPREINTE = hashlib.sha1(CONTEXTE.encode("utf-8")).hexdigest()
-CHAMPS = {"id", "produit", "categorie", "nom", "usage", "usage_nature", "exemple", "verdict", "pourquoi", "date_ajout"}
+CHAMPS = {"id", "produit", "categorie", "nom", "usage", "usage_nature", "exemple", "verdict", "pourquoi", "date_ajout", "essai"}
 
 
 def entree(nom="resume", ajout="2026-10-05", produit="claude-code", categorie="commandes", verdict="tester", statut="inconnu",
@@ -57,6 +57,7 @@ def test_selection_tri_et_champs():
     premier = doc["entrees"][0]
     assert premier["verdict"] == "tester" and premier["pourquoi"] == "Pourquoi alpha." and premier["exemple"] == "claude --resume projet"
     assert doc["entrees"][4]["date_ajout"] is None
+    assert all(e["essai"] is None for e in doc["entrees"]), "sans kb-essais.yaml, aucun essai déclaré"
 
 
 def test_plafond_les_utiliser_sont_coupes_en_premier(monkeypatch):
@@ -103,6 +104,77 @@ def test_taille_bornee_sur_la_base_publiee():
         assert publie.stat().st_size < 200_000
 
 
+# ----------------------------------------------------------------------------------------------- D119 : kb-essais.yaml
+
+def declarer(racine, texte):
+    (racine / cat.ESSAIS_FICHIER).write_text(texte, encoding="utf-8")
+
+
+def test_lire_essais_absent_vide_et_plus_recent(tmp_path):
+    assert cat.lire_essais(tmp_path) == {}
+    declarer(tmp_path, "")
+    assert cat.lire_essais(tmp_path) == {}
+    declarer(tmp_path, "- {date: 2026-10-11, id: claude-code-commandes-a, par: m-9871226c4940, rapport: rapports/r.md}\n"
+                       "- {date: '2026-10-09', id: claude-code-commandes-a, par: m-ancienne}\n"
+                       "- {date: '2026-10-10', id: claude-code-commandes-b, par: session:Design}\n")
+    assert cat.lire_essais(tmp_path) == {
+        "claude-code-commandes-a": {"date": "2026-10-11", "par": "m-9871226c4940", "rapport": "rapports/r.md"},
+        "claude-code-commandes-b": {"date": "2026-10-10", "par": "session:Design", "rapport": None}}
+
+
+@pytest.mark.parametrize("texte, attendu", [
+    ("{date: 2026-10-11}", "liste de déclarations"),
+    ("- {date: hier, id: x, par: m-1}", "date AAAA-MM-JJ"),
+    ("- {date: 2026-10-11, id: 'Pas Un Id', par: m-1}", "id de fiche"),
+    ("- {date: 2026-10-11, id: x, par: 'deux mots'}", "`par`"),
+    ("- {date: 2026-10-11, id: x, par: m-1, fait: true}", "{date, id, par, rapport}"),
+    ("- {date: 2026-10-11, id: x, par: m-1, rapport: ''}", "`rapport`"),
+    ("- [", "YAML invalide"),
+])
+def test_lire_essais_refuse_une_declaration_mal_formee(tmp_path, texte, attendu):
+    declarer(tmp_path, texte)
+    with pytest.raises(ValueError, match=attendu.replace("{", r"\{").replace("}", r"\}")):
+        cat.lire_essais(tmp_path)
+
+
+def test_essai_declare_porte_dans_a_tester_sans_toucher_la_fiche(tmp_path):
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE, encoding="utf-8")
+    a, b = entree("a"), entree("b", verdict="utiliser")
+    declarer(tmp_path, f"- {{date: '2026-10-11', id: {a['id']}, par: m-9871226c4940, rapport: rapports/r.md}}\n")
+    cat.ecrire(tmp_path, "claude", base(a, b))
+    doc = json.loads(cat.chemin_a_tester(tmp_path).read_text(encoding="utf-8"))
+    essais = {e["nom"]: e["essai"] for e in doc["entrees"]}
+    assert essais == {"a": "2026-10-11", "b": None}, "la date seule est publiée"
+    r = valider.Rapport()
+    valider.verifier_organisation_privee(tmp_path, r)
+    assert r.erreurs == [], "D77 : ni l'id de mission ni le rapport ne passent dans docs/data"
+    fiche = cat.charger(tmp_path, "claude")[a["id"]]
+    assert fiche["statut_usage"] == "inconnu" and "essai" not in fiche, "D69 : un essai ne change ni la fiche ni statut_usage"
+
+
+def test_declaration_mal_formee_n_arrete_pas_le_passage(tmp_path, capsys):
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE, encoding="utf-8")
+    declarer(tmp_path, "- {date: hier, id: x, par: m-1}\n")
+    cat.ecrire(tmp_path, "claude", base(entree("a")))
+    doc = json.loads(cat.chemin_a_tester(tmp_path).read_text(encoding="utf-8"))
+    assert [e["essai"] for e in doc["entrees"]] == [None]
+    assert "écrit sans les essais déclarés" in capsys.readouterr().err
+
+
+def test_id_inconnu_signale_sans_bloquer(tmp_path, capsys):
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE, encoding="utf-8")
+    declarer(tmp_path, "- {date: '2026-10-11', id: claude-code-commandes-fantome, par: m-1}\n")
+    cat.ecrire(tmp_path, "claude", base(entree("a")))
+    assert "id inconnus dans la base : claude-code-commandes-fantome" in capsys.readouterr().err
+
+
+def test_declaration_du_depot_valide_et_connue():
+    """Le fichier du dépôt se lit, et chaque id déclaré existe dans la base."""
+    essais = cat.lire_essais(RACINE)
+    ids = {k for per in ("claude", "openai") for k in cat.charger(RACINE, per)}
+    assert set(essais) <= ids, sorted(set(essais) - ids)
+
+
 # ----------------------------------------------------------------------------------------------- valider.py --kb
 
 def racine_valide(tmp_path, *entrees):
@@ -135,12 +207,32 @@ def modifier(tmp_path, fn):
     (lambda d: d.update(tronque=True), "`tronque`"),
     (lambda d: d.update(total=0), "`total`"),
     (lambda d: d.update(entrees="x"), "liste `entrees`"),
+    (lambda d: d["entrees"][0].update(essai="hier"), "`essai` doit valoir null"),
+    (lambda d: d["entrees"][0].update(essai={"date": "2026-10-11"}), "`essai` doit valoir null"),
+    (lambda d: d["entrees"][0].update(essai=True), "`essai` doit valoir null"),
 ])
 def test_valider_refuse_un_fichier_incoherent(tmp_path, capsys, modif, attendu):
     args = racine_valide(tmp_path, entree("a", ajout="2026-10-07"), entree("b", ajout="2026-10-05"), entree("c", verdict="utiliser"))
     modifier(tmp_path, modif)
     assert valider.main(args) == 1
     assert attendu in capsys.readouterr().err
+
+
+def test_valider_accepte_un_essai_declare_et_un_fichier_d_avant_d119(tmp_path):
+    a = entree("a")
+    (tmp_path / "CONTEXTE.md").write_text(CONTEXTE, encoding="utf-8")
+    declarer(tmp_path, f"- {{date: '2026-10-11', id: {a['id']}, par: m-9871226c4940, rapport: rapports/r.md}}\n")
+    args = racine_valide(tmp_path, a)
+    assert valider.main(args) == 0
+    modifier(tmp_path, lambda d: [e.pop("essai") for e in d["entrees"]])
+    assert valider.main(args) == 0, "le fichier publié avant D119 reste valide jusqu'au passage suivant"
+
+
+def test_valider_refuse_une_declaration_mal_formee(tmp_path, capsys):
+    args = racine_valide(tmp_path, entree("a"))
+    declarer(tmp_path, "- {date: hier, id: x, par: m-1}\n")
+    assert valider.main(args) == 1
+    assert "kb-essais.yaml" in capsys.readouterr().err
 
 
 def test_valider_refuse_un_depassement_du_plafond(tmp_path, capsys, monkeypatch):
@@ -178,6 +270,17 @@ def test_section_essais_sous_les_actions_avec_la_meme_case_fait():
         assert champ in carte, champ
     assert 'el("pre", { class: "usage"' in carte and "el(\"code\"" in carte, "usage et exemple en code"
     assert "innerHTML" not in carte and "innerHTML" not in app[app.index("function sectionEssais"):app.index("function pageATester")]
+
+
+def test_essai_declare_coche_sans_geste_sur_le_site():
+    """D119 : un essai déclaré par une mission compte comme fait, case cochée et figée, provenance affichée."""
+    app = app_js()
+    carte = app[app.index("function essaiDeclare"):app.index("function sectionEssais")]
+    assert 'ISO_JOUR.test(e.essai || "")' in carte
+    assert 'disabled: true' in carte and "caseFait.checked = true" in carte
+    assert "Fait le ${dateFr(declare)} pendant une mission" in carte
+    section = app[app.index("function sectionEssais"):app.index("function pageATester")]
+    assert "!essaiFait(e, faits)" in section and "entrees.filter((e) => essaiFait(e, faits))" in section
     section = app[app.index("function sectionEssais"):app.index("function pageATester")]
     assert "Essais de la base (${ouverts.length})" in section and "Essais faits (${faitsListe.length})" in section
     assert "ouverts.slice(0, etat.essaisLimite)" in section, "affichage borné"

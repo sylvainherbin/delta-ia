@@ -184,9 +184,10 @@ async function aTester() {
   }
   actions.sort((a, b) => ["fort", "moyen", "faible", "nul"].indexOf(a.impact) - ["fort", "moyen", "faible", "nul"].indexOf(b.impact) || b.date.localeCompare(a.date));
   const base = await fichierLeger("kb/a-tester.json");  // déjà triée : verdict `tester` d'abord, puis `utiliser` pas encore essayées
-  const essais = { total: base.entrees.length, affichees: Math.min(base.entrees.length, MAX_BASE), entrees: base.entrees.slice(0, MAX_BASE).map((e) => ligneBase(e, true)) };
+  const restants = base.entrees.filter((e) => !e.essai);  // D119 : un essai déclaré fait par une mission n'est plus proposé
+  const essais = { total: restants.length, affichees: Math.min(restants.length, MAX_BASE), entrees: restants.slice(0, MAX_BASE).map((e) => ligneBase(e, true)) };
   if (base.tronque === true) essais.avis = "le fichier des essais est tronqué (300 entrées au plus, les `utiliser` partent les premiers)";
-  return { avertissement: AVERTISSEMENT + " La case « fait » du site n'est pas visible ici.", actions, essais_base: essais };
+  return { avertissement: AVERTISSEMENT + " La case « fait » cochée dans le navigateur n'est pas visible ici ; les essais déclarés faits par une mission sont retirés.", actions, essais_base: essais };
 }
 
 const LECTURE = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };

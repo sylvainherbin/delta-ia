@@ -242,11 +242,55 @@ def chemin_a_tester(racine: Path) -> Path:
     return racine / "docs" / "data" / "kb" / "a-tester.json"
 
 
-def construire_a_tester(entrees: list[dict], jour: str | None = None) -> dict:
+ESSAIS_FICHIER = "kb-essais.yaml"  # D119 : essais déclarés par les missions, lus à chaque écriture de a-tester.json
+RE_PAR = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$")  # identifiant de mission OPÉRER ou nom de session, sans espace
+
+
+def lire_essais(racine: Path) -> dict[str, dict]:
+    """D119 : {id: {date, par, rapport}} depuis kb-essais.yaml (liste de déclarations {date, id, par, rapport?}) ; le même id
+    déclaré deux fois garde la déclaration la plus récente. Absent ou vide : {}. Mal formé : ValueError (valider.py le refuse)."""
+    chemin = racine / ESSAIS_FICHIER
+    if not chemin.exists():
+        return {}
+    try:
+        decl = yaml.safe_load(chemin.read_text(encoding="utf-8"))
+    except yaml.YAMLError as err:
+        raise ValueError(f"{ESSAIS_FICHIER} : YAML invalide : {err}") from err
+    if decl is None:
+        return {}
+    if not isinstance(decl, list):
+        raise ValueError(f"{ESSAIS_FICHIER} : liste de déclarations {{date, id, par, rapport}} attendue")
+    res: dict[str, dict] = {}
+    for n, d in enumerate(decl, 1):
+        ou = f"{ESSAIS_FICHIER} : déclaration {n}"
+        if not isinstance(d, dict) or set(d) - {"date", "id", "par", "rapport"}:
+            raise ValueError(f"{ou} : {{date, id, par, rapport}} attendu")
+        jour = str(d.get("date", ""))  # safe_load accepte aussi les dates YAML non citées
+        try:
+            if date.fromisoformat(jour).isoformat() != jour:
+                raise ValueError
+        except ValueError as err:
+            raise ValueError(f"{ou} : date AAAA-MM-JJ attendue") from err
+        ident, par, rapport = d.get("id"), d.get("par"), d.get("rapport")
+        if not isinstance(ident, str) or not re.fullmatch(r"[a-z0-9-]+", ident):
+            raise ValueError(f"{ou} : id de fiche attendu")
+        if not isinstance(par, str) or not RE_PAR.match(par):
+            raise ValueError(f"{ou} : `par` (mission ou session, sans espace) attendu")
+        if rapport is not None and (not isinstance(rapport, str) or not rapport.strip() or "\n" in rapport or len(rapport) > 200):
+            raise ValueError(f"{ou} : `rapport` = chemin sur une ligne (200 car. au plus) ou absent")
+        if ident not in res or jour >= res[ident]["date"]:
+            res[ident] = {"date": jour, "par": par, "rapport": rapport}
+    return res
+
+
+def construire_a_tester(entrees: list[dict], jour: str | None = None, essais: dict[str, dict] | None = None) -> dict:
     """D103 : essais de la base pour l'onglet « À tester ». Entrées commentées non retirées au verdict `tester`, puis au
     verdict `utiliser` quand l'usage n'est pas déjà `utilise` (pas encore essayées) ; verdict `tester` d'abord, puis date
-    d'ajout décroissante (inconnue en dernier), nom puis id ; au plus A_TESTER_MAX. `total` = entrées retenues avant coupe."""
+    d'ajout décroissante (inconnue en dernier), nom puis id ; au plus A_TESTER_MAX. `total` = entrées retenues avant coupe.
+    D119 : `essai` = date de la déclaration de kb-essais.yaml pour cet id, sinon null ; ni mission ni rapport (D77 : aucun
+    identifiant OPÉRER dans docs/data) ; la fiche n'en change pas."""
     jour = jour or date.today().isoformat()
+    essais = essais or {}
     retenues = []
     for e in entrees:
         reco = e.get("recommandation") if e.get("commentee") and not e.get("retiree") else None
@@ -255,7 +299,8 @@ def construire_a_tester(entrees: list[dict], jour: str | None = None) -> dict:
             continue
         retenues.append({"id": e["id"], "produit": e.get("produit"), "categorie": e.get("categorie"), "nom": e.get("nom"),
                          "usage": e.get("usage"), "usage_nature": e.get("usage_nature"), "exemple": e.get("exemple"),
-                         "verdict": verdict, "pourquoi": reco.get("pourquoi"), "date_ajout": date_ajout(e)})
+                         "verdict": verdict, "pourquoi": reco.get("pourquoi"), "date_ajout": date_ajout(e),
+                         "essai": (essais.get(e["id"]) or {}).get("date")})
     retenues.sort(key=lambda x: (str(x["nom"]), x["id"]))
     retenues.sort(key=lambda x: x["date_ajout"] or "", reverse=True)  # tri stable : nom puis id gardés à égalité de date
     retenues.sort(key=lambda x: A_TESTER_VERDICTS.index(x["verdict"]))
@@ -265,7 +310,16 @@ def construire_a_tester(entrees: list[dict], jour: str | None = None) -> dict:
 
 def ecrire_a_tester(racine: Path, jour: str | None = None) -> dict:
     """Écrit docs/data/kb/a-tester.json depuis la base des deux périmètres telle qu'elle est sur disque."""
-    doc = construire_a_tester(_toutes_les_entrees(racine), jour)
+    entrees = _toutes_les_entrees(racine)
+    try:
+        essais = lire_essais(racine)
+    except ValueError as err:  # une déclaration mal formée n'arrête pas le passage : valider.py la refuse en mission
+        print(f"! {err} ; a-tester.json écrit sans les essais déclarés", file=sys.stderr)
+        essais = {}
+    inconnus = set(essais) - {e["id"] for e in entrees}
+    if inconnus:
+        print(f"! {ESSAIS_FICHIER} : id inconnus dans la base : {', '.join(sorted(inconnus))}", file=sys.stderr)
+    doc = construire_a_tester(entrees, jour, essais)
     _ecrire_fichier_leger(chemin_a_tester(racine), doc)
     return doc
 

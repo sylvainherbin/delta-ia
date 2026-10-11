@@ -836,7 +836,12 @@ def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -
     accepté (l'onglet « À tester » s'en passe) ; présent : schéma, tri, plafond, et chaque entrée de ce périmètre existe."""
     from deltalib.kb.catalogue import A_TESTER_MAX, A_TESTER_VERDICTS, chemin_a_tester
     from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE
+    from deltalib.kb.catalogue import ESSAIS_FICHIER, lire_essais
     chemin, ou = chemin_a_tester(racine), "kb/a-tester.json"
+    try:  # D119 : les déclarations d'essais des missions sont contrôlées même sans a-tester.json
+        lire_essais(racine)
+    except ValueError as err:
+        r.erreur(ESSAIS_FICHIER, str(err))
     if not chemin.exists():
         return
     texte = chemin.read_text(encoding="utf-8")
@@ -865,7 +870,7 @@ def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -
         if not isinstance(e, dict):
             r.erreur(o, "objet attendu")
             continue
-        if set(e) != {"id", "produit", "categorie", "nom", "usage", "usage_nature", "exemple", "verdict", "pourquoi", "date_ajout"}:
+        if set(e) - {"essai"} != {"id", "produit", "categorie", "nom", "usage", "usage_nature", "exemple", "verdict", "pourquoi", "date_ajout"}:
             r.erreur(o, f"champs inattendus ou manquants : {sorted(e)}")
             continue
         if not isinstance(e["id"], str) or e["id"] in vus:
@@ -882,6 +887,9 @@ def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -
             r.erreur(o, "`exemple` doit être une chaîne ou null")
         if e["pourquoi"] is not None and not isinstance(e["pourquoi"], str):
             r.erreur(o, "`pourquoi` doit être une chaîne ou null")
+        x = e.get("essai")  # D119 : absent dans un fichier écrit avant D119, accepté jusqu'à la prochaine écriture
+        if x is not None and not (isinstance(x, str) and RE_DATE.match(x)):
+            r.erreur(o, "`essai` doit valoir null ou une date AAAA-MM-JJ (D119)")
         if e["verdict"] not in A_TESTER_VERDICTS:
             r.erreur(o, f"`verdict` doit valoir tester ou utiliser : {e['verdict']!r}")
             continue

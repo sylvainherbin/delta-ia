@@ -293,15 +293,26 @@ test("nouveautes_base : fichier absent, illisible ou de forme inattendue = isErr
 test("a_tester : les actions d'abord, puis les essais de la base (tester d'abord, 30 au plus)", async () => {
   const s = (await appel("a_tester")).corps.result.structuredContent;
   assert.deepEqual(Object.keys(s), ["avertissement", "actions", "essais_base"]);
-  const fichier = lireDonnee("kb/a-tester.json");
+  const restants = lireDonnee("kb/a-tester.json").entrees.filter((x) => !x.essai);
   const e = s.essais_base;
-  assert.equal(e.total, fichier.entrees.length);
-  assert.equal(e.affichees, Math.min(30, fichier.entrees.length));
-  assert.deepEqual(e.entrees.map((x) => x.id), fichier.entrees.slice(0, 30).map((x) => x.id));
+  assert.equal(e.total, restants.length);
+  assert.equal(e.affichees, Math.min(30, restants.length));
+  assert.deepEqual(e.entrees.map((x) => x.id), restants.slice(0, 30).map((x) => x.id));
   for (const x of e.entrees) assert.deepEqual(Object.keys(x), [...CLES_LIGNE.slice(0, 8), "pourquoi", "date_ajout"]);
   const verdicts = e.entrees.map((x) => x.verdict);
   assert.equal(verdicts[0], "tester");
   assert.ok(verdicts.indexOf("utiliser") === -1 || verdicts.lastIndexOf("tester") < verdicts.indexOf("utiliser"), "tester avant utiliser");
+});
+
+test("a_tester : un essai déclaré fait par une mission (D119) n'est plus proposé", async () => {
+  const fichier = lireDonnee("kb/a-tester.json");
+  const [premier, ...reste] = fichier.entrees;
+  const doc = { ...fichier, entrees: [{ ...premier, essai: "2026-10-11" }, ...reste] };
+  await avecDonnees({ "kb/a-tester.json": JSON.stringify(doc) }, async (outil) => {
+    const e = (await outil("a_tester")).result.structuredContent.essais_base;
+    assert.equal(e.total, fichier.entrees.filter((x) => !x.essai).length - (premier.essai ? 0 : 1));
+    assert.ok(!e.entrees.some((x) => x.id === premier.id));
+  });
 });
 
 test("a_tester : fichier des essais absent ou illisible = isError clair, actions non rendues comme complètes", async () => {

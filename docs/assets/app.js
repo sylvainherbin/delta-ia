@@ -1027,11 +1027,15 @@
     return frag;
   }
   const ESSAIS_PAGE = 50;
+  // D119 : essai déclaré par une mission (champ `essai` de a-tester.json, date venue de kb-essais.yaml) : fait sans geste
+  function essaiDeclare(e) { return ISO_JOUR.test(e.essai || "") ? e.essai : null; }
+  function essaiFait(e, faits) { return Boolean(faits[String(e.id || "")] || essaiDeclare(e)); }
   // carte d'un essai de la base : usage et exemple en code, pourquoi, date d'ajout, case « fait » (même stockage local que les actions)
   function carteEssai(e, surFait) {
     const faits = lireFaits();
     const id = String(e.id || "");
-    const c = el("li", { class: "carte kb essai" + (faits[id] ? " fait" : "") });
+    const declare = essaiDeclare(e);
+    const c = el("li", { class: "carte kb essai" + (essaiFait(e, faits) ? " fait" : "") });
     const verdict = VERDICTS[e.verdict] ? e.verdict : null;
     c.append(el("div", { class: "badges" },
       badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
@@ -1045,6 +1049,12 @@
     }
     if (texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
     if (texte(e.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.pourquoi })));
+    if (declare) {  // cochée par la mission : la case ne se décoche pas, la provenance est dite
+      const caseFait = el("input", { type: "checkbox", disabled: true });
+      caseFait.checked = true;
+      c.append(el("div", { class: "action" }, el("label", null, caseFait, `Fait le ${dateFr(declare)} pendant une mission`)));
+      return c;
+    }
     const caseFait = el("input", { type: "checkbox" });
     caseFait.checked = Boolean(faits[id]);
     caseFait.addEventListener("change", () => {
@@ -1059,11 +1069,11 @@
     const sec = el("section", { class: "essais-base" });
     const faits = lireFaits();
     const entrees = doc.entrees.filter((e) => e && typeof e === "object" && e.id);
-    const ouverts = entrees.filter((e) => !faits[String(e.id)]);
-    const faitsListe = entrees.filter((e) => faits[String(e.id)]);
+    const ouverts = entrees.filter((e) => !essaiFait(e, faits));
+    const faitsListe = entrees.filter((e) => essaiFait(e, faits));
     const surFait = () => rendre();
     sec.append(el("h3", { class: "compte-actions", text: `Essais de la base (${ouverts.length})` }),
-      el("p", { class: "sous-titre", text: "Entrées de la base de référence au verdict « à tester », puis « à utiliser » pas encore utilisées. La case « fait » reste dans ce navigateur." }));
+      el("p", { class: "sous-titre", text: "Entrées de la base de référence au verdict « à tester », puis « à utiliser » pas encore utilisées. La case « fait » reste dans ce navigateur ; un essai fait par une mission se coche seul au passage suivant." }));
     if (doc.tronque === true) sec.append(el("p", { class: "doux", text: `Liste coupée : ${entrees.length} essais affichables sur ${doc.total}.` }));
     const ul = el("ul", { class: "liste" }, ...ouverts.slice(0, etat.essaisLimite).map((e) => carteEssai(e, surFait)));
     sec.append(ouverts.length ? ul : el("p", { class: "vide", text: "Aucun essai ouvert." }));

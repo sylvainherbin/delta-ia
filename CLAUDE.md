@@ -17,6 +17,7 @@ SPEC.md (cahier des charges) se consulte quand une tâche en dépend ; il n'est 
 - Le code (`scripts/`, `docs/*.html`, `docs/assets/`) ne change qu'en session de développement, jamais pendant un passage quotidien.
 - Passage quotidien : `/delta` (skill `.claude/skills/delta/SKILL.md`), lancé à la demande de Sylvain ou automatiquement par la tâche planifiée de Claude Desktop selon D68 (section « Mode automatique (D68) » de la skill). Le pilotage du projet est délégué à la session Delta-IA : ses décisions numérotées s'appliquent sans plan préalable. Chaîne automatique (D70, après son activation) : `scripts/passage-auto.sh` enchaîne `/delta`, `$delta`, `/delta-kb`, `$delta-kb` et une supervision ; Dev-delta et prof ne commitent pas pendant la fenêtre de la chaîne, de 03 h 30 à 08 h 00 heure locale (timer à 04 h 00, décision de Sylvain du 01/10/2026 ; un `.git/delta-passage.lock` tenu signale la chaîne en cours, la garde s'arrête alors au code 14).
 - Missions OPÉRER (décision de Sylvain du 03/10/2026) : une mission transmise par OPÉRER, qui porte la marque `[OPÉRER]` et sa source, s'exécute comme une mission de Delta ; l'accusé se donne avec `operer ack <id>`.
+- Essai d'une fiche de la base fait pendant une mission (D119) : l'inscrire dans `kb-essais.yaml` (`date`, `id`, `par` = id de mission, `rapport`) et le commiter avec la mission ; le passage suivant coche « fait » dans l'onglet À tester. Ne jamais demander à Sylvain de cocher la case lui-même.
 
 ## Rapports (D63, amendée le 29/09/2026)
 
