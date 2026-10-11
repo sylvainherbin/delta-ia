@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 652,
- "commentees": 652,
+ "total": 653,
+ "commentees": 644,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -761,7 +761,7 @@
    "nom": "--allowedTools",
    "gabarit": "court",
    "description": "Option de lancement qui liste les outils exécutés sans demande de permission, selon la syntaxe des règles de permission.",
-   "description_source": "Tools that execute without prompting for permission. See permission rule syntax for pattern matching. To restrict which tools are available, use --tools instead. If you name one of the task-tracking tools here, Claude Code also opts the session in — \"Bash(git log *)\" \"Bash(git diff *)\" \"Read\"",
+   "description_source": "Tools that execute without prompting for permission, apart from reads from network paths. See permission rule syntax for pattern matching. To restrict which tools are available, use --tools instead. If you name one of the task-tracking tools here, Claude Code also opts the session in — \"Bash(git log *)\" \"Bash(git diff *)\" \"Read\"",
    "usage": "--allowedTools, --allowed-tools",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -778,11 +778,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -791,6 +791,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -4653,7 +4657,7 @@
    "nom": "CLAUDE_AUTO_BACKGROUND_TASKS",
    "gabarit": "court",
    "description": "Variable qui force le passage en arrière-plan des tâches d'agent longues au bout d'environ deux minutes.",
-   "description_source": "Set to 1 to force-enable automatic backgrounding of long-running agent tasks. When enabled, subagents are moved to the background after running for approximately two minutes. Also enables automatic backgrounding of long MCP tool calls in non-interactive mode on Claude Code v2.1.212 or later",
+   "description_source": "Set to 1 to force-enable automatic backgrounding of long-running agent tasks. When enabled, a subagent moves to the background after running for approximately two minutes. If Claude queued a tool call such as a file edit behind the subagent, the subagent finishes in the foreground before that call starts. Also enables automatic backgrounding of long MCP tool calls in non-interactive mode on Claude Code v2.1.212 or later",
    "usage": "CLAUDE_AUTO_BACKGROUND_TASKS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4670,11 +4674,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4683,6 +4687,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -7860,7 +7868,7 @@
    "nom": "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
    "gabarit": "court",
    "description": "Variable qui coupe la mise à jour automatique du titre du terminal et la requête de fond qui génère le titre de session.",
-   "description_source": "Set to 1 to disable automatic terminal title updates based on conversation context. This also skips the background small/fast-model request that generates a session title",
+   "description_source": "Set to 1 to disable automatic terminal title updates based on conversation context. This also skips the background small/fast-model request that generates a session title, and turns off status reports to your terminal",
    "usage": "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7877,11 +7885,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7890,6 +7898,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -8820,7 +8832,7 @@
    "nom": "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS",
    "gabarit": "court",
    "description": "Variable qui relève la limite de jetons d'une lecture de fichier, pour lire en entier de gros fichiers.",
-   "description_source": "Override the default token limit for file reads. Useful when you need to read larger files in full",
+   "description_source": "Override the default token limit for file reads, which is 25,000 tokens. Useful when you need to read larger files in full. A read that Claude makes with the allow_large parameter can go past this limit when the context window has room",
    "usage": "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8837,11 +8849,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8850,6 +8862,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -14213,7 +14229,7 @@
    "nom": "CLAUDE_ENV_FILE",
    "gabarit": "court",
    "description": "Variable qui désigne un script shell exécuté avant chaque commande Bash, pour garder par exemple un environnement virtuel activé.",
-   "description_source": "Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks",
+   "description_source": "Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. PowerShell commands receive its variables too, in v2.1.296 or later, under the conditions in Persisted variables in PowerShell commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks",
    "usage": "CLAUDE_ENV_FILE",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14230,7 +14246,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
@@ -14251,6 +14267,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -14916,7 +14936,7 @@
    "nom": "copyFullResponse",
    "gabarit": "court",
    "description": "Réglage qui fait copier à `/copy` la réponse entière à chaque fois, sans le sélecteur de blocs de code ; il apparaît dans `/config` comme « Skip the /copy picker ».",
-   "description_source": "Make /copy copy the full response every time, without the picker it otherwise shows when the response contains code blocks. Selecting Always copy full response in that picker sets this key to true. Appears in /config as Skip the /copy picker.",
+   "description_source": "Make /copy copy the full response every time, without showing the picker. Selecting Always copy full response in that picker sets this key to true. Appears in /config as Skip the /copy picker.",
    "usage": "{\n  \"copyFullResponse\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14933,7 +14953,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.skills": {
@@ -14961,6 +14981,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -18207,7 +18231,7 @@
    "nom": "enableArtifact",
    "gabarit": "court",
    "description": "Réglage qui, à `false`, coupe l'outil Artifact (publication d'une sortie de session en page web privée sur claude.ai) ; la ligne Artifacts de `/config` l'écrit.",
-   "description_source": "Turn off the Artifact tool, which publishes session output as a private web page on claude.ai. When you turn the Artifacts row off in /config, Claude Code writes this key to your user settings, so you don't usually edit it by hand. Requires Claude Code v2.1.196 or later.",
+   "description_source": "Turn off the Artifact tool, which publishes session output as a private web page on claude.ai. When you turn the Artifacts row off in /config, Claude Code writes this key to your user settings, so you don't usually edit it by hand.",
    "usage": "{\n  \"enableArtifact\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18224,7 +18248,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
@@ -18245,6 +18269,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -24226,7 +24254,7 @@
    "nom": "--name",
    "gabarit": "court",
    "description": "Option CLI qui donne à la session un nom affiché dans `/resume` et le titre du terminal, repris par `claude --resume <nom>`.",
-   "description_source": "Set a display name for the session, shown in /resume and the terminal title. You can resume a named session with claude --resume <name>. In an interactive session, if another live session on this machine already uses the name, Claude Code applies a variant of it instead. /rename changes the name mid-session and also shows it on the prompt bar — claude -n \"my-feature-work\"",
+   "description_source": "Set a display name for the session, shown in /resume and the terminal title. You can resume a named session with claude --resume <name>. /rename changes the name mid-session and also shows it on the prompt bar — claude -n \"my-feature-work\"",
    "usage": "--name, -n",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24243,7 +24271,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
@@ -24260,6 +24288,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -29388,7 +29420,7 @@
    "nom": "sshConfigs",
    "gabarit": "court",
    "description": "Réglage de connexions SSH ajoutées au menu d'environnement de l'app de bureau.",
-   "description_source": "Add SSH connections to the Desktop environment dropdown. Administrators use it to distribute shared connections to a team. Connections you define in managed settings show as managed, so users can select them but can't edit or delete them in the app.",
+   "description_source": "Add SSH connections to the Desktop environment dropdown. Administrators use it to distribute shared connections to a team. Connections you define in managed settings show as managed. Users can select them and set their own Worktree folder for them, but can't edit anything else or delete them in the app.",
    "usage": "{\n  \"sshConfigs\": [\n    {\n      \"id\": \"dev-vm\",\n      \"name\": \"Dev VM\",\n      \"sshHost\": \"user@dev.example.com\"\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -29405,11 +29437,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29418,6 +29450,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -31765,6 +31801,53 @@
      "pourquoi": "Worktrees créés par git ou OPÉRER ; pas de session d'arrière-plan Claude Code."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-worktree-location",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "worktree.location",
+   "gabarit": "court",
+   "description": "Clé de réglage qui choisit le dossier, sur une machine distante, où les sessions SSH de l'app Desktop créent leurs worktrees, au lieu de <racine-du-projet>/.claude/worktrees/. Seule l'app Desktop la lit (v1.44121.0 ou plus) ; --worktree, l'outil EnterWorktree, les sous-agents isolés et les sessions en arrière-plan l'ignorent.",
+   "description_source": "Choose the folder on a remote machine where Desktop SSH sessions create their worktrees, instead of <project-root>/.claude/worktrees/. Only the desktop app reads this key: --worktree, the EnterWorktree tool, isolated subagents, and background sessions ignore it. Requires Claude Desktop v1.44121.0 or later.",
+   "usage": "{\n  \"worktree\": {\n    \"location\": \"~/worktrees\"\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "App Claude Desktop v1.44121.0 ou plus (sessions SSH)",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md décrit des worktrees créés par `git worktree add` ou par OPÉRER, sans `--worktree` ni session SSH de l'app Desktop ; la clé ne s'applique à aucun de ces flux."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#worktreelocation",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Worktrees créés par `git worktree add` ou OPÉRER, pas par `--worktree` ni par l'app Desktop en SSH."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Agents, sessions, and worktrees",
+   "maj_le": "2026-10-11",
+   "historique": [
+    {
+     "date": "2026-10-11",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-worktree-sparsepaths",

@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 133,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1192,7 +1192,7 @@
    "nom": "claude attach <id|name>",
    "gabarit": "complet",
    "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan. Depuis la v2.1.290, un fragment du nom de la session suffit à la place de l'identifiant.",
-   "description_source": "Attach to a background session in this terminal. Passing part of a session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
+   "description_source": "Attach to a background session in this terminal. Passing part of a running session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
    "usage": "claude attach <id|name>",
    "usage_nature": "syntaxe",
    "exemple": "claude attach 7c5dcf5d",
@@ -1209,7 +1209,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "env.multi-sessions": {
@@ -1220,7 +1220,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-10-06",
@@ -1237,6 +1237,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "exemple_origine": "source"
@@ -1740,7 +1744,7 @@
    "nom": "claude daemon stop --any",
    "gabarit": "complet",
    "description": "Arrête le superviseur des sessions d'arrière-plan et les sessions qu'il héberge ; `--keep-workers` laisse tourner les sessions pour qu'un nouveau superviseur s'y reconnecte. Sert à débloquer un superviseur qui ne répond plus.",
-   "description_source": "Stop the background-session supervisor and the sessions it hosts. Pass --keep-workers to leave background sessions running so the next supervisor reconnects to them. --any confirms stopping an on-demand supervisor, which is the default. Use this to recover from an unresponsive supervisor — claude daemon stop --any --keep-workers",
+   "description_source": "Stop the background-session supervisor and the sessions it hosts. Pass --keep-workers to leave background sessions running for the next supervisor to reconnect to. --any confirms stopping an on-demand supervisor, which is the default. Use this to recover from an unresponsive supervisor — claude daemon stop --any --keep-workers",
    "usage": "claude daemon stop --any",
    "usage_nature": "syntaxe",
    "exemple": "claude daemon stop --any --keep-workers",
@@ -1757,11 +1761,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1770,6 +1774,10 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -3240,7 +3248,7 @@
    "nom": "/copy",
    "gabarit": "complet",
    "description": "Copie la dernière réponse dans le presse-papiers, ou la N-ième plus récente avec un nombre. Avec des blocs de code, un sélecteur permet d'en choisir un ; `w` écrit la sélection dans un fichier, utile en SSH.",
-   "description_source": "Copy the last assistant response to clipboard. Pass a number N to copy the Nth-latest response: /copy 2 copies the second-to-last. When code blocks are present, shows an interactive picker to select individual blocks or the full response. Press w in the picker to write the selection to a file instead of the clipboard, which is useful over SSH",
+   "description_source": "Copy the last assistant response to clipboard. Pass a number N to copy the Nth-latest response: /copy 2 copies the second-to-last. When code blocks or blockquotes are present, shows an interactive picker to select individual blocks or the full response. Press w in the picker to write the selection to a file instead of the clipboard, which is useful over SSH",
    "usage": "/copy [N]",
    "usage_nature": "syntaxe",
    "exemple": "/copy 2",
@@ -3257,11 +3265,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3270,6 +3278,10 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -5928,7 +5940,7 @@
    "nom": "/rename",
    "gabarit": "complet",
    "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique. Les caractères de contrôle ou invisibles sont remplacés et le nom est limité à 200 caractères ; si une autre session active de la machine porte déjà ce nom, une variante est appliquée.",
-   "description_source": "Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later. From every rename surface, including claude.ai and the desktop app, Claude Code replaces control and invisible characters in the new name with spaces and caps the name at 200 characters. If the name is empty once invisible characters are removed, Claude Code rejects it and shows That name is empty once invisible characters are removed. Usage: /rename <name>. The character replacement and length cap require Claude Code v2.1.221 or later. If another live session on this machine already uses a name you pass, Claude Code applies a variant of it instead",
+   "description_source": "Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later. From every rename surface, including claude.ai and the desktop app, Claude Code replaces control and invisible characters in the new name with spaces and caps the name at 200 characters. If the name is empty once invisible characters are removed, Claude Code rejects it and shows That name is empty once invisible characters are removed. Usage: /rename <name>. The character replacement and length cap require Claude Code v2.1.221 or later",
    "usage": "/rename [name]",
    "usage_nature": "syntaxe",
    "exemple": "/rename",
@@ -5945,11 +5957,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5962,6 +5974,10 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
