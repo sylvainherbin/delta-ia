@@ -787,3 +787,114 @@ def test_r4_conditionnel_de_bout_en_bout_sans_changer_le_code(racine, capsys):
     _reecrire(chemin, q)
     assert validation(racine, "claude", brut=False) == 0
     assert any("R4 : `pour_toi` conditionnel" in l for l in capsys.readouterr().out.splitlines())
+
+
+# --- Second audit (11/10, D117) : R1 hors pages de compte, R4 « rien ne s'applique », R5 revérification, doublons `fort` ---
+
+@pytest.mark.parametrize("champs", [
+    {"id": "claude-aide-credits-article", "ids_bruts": ["claude-aide-credits-article"], "titre": "Page d'aide révisée"},
+    {"id": "openai-tarifs-plans-credits", "ids_bruts": ["openai-tarifs-plans-credits"], "produit": "codex", "titre": "Tarifs"},
+    {"titre": "Politique d'usage 2026 : nouvelle version", "produit": "claude",
+     "sources": [{"url": "https://www.anthropic.com/news/2026-usage-policy-update", "libelle": "x", "officielle": True}]},
+    {"titre": "Crédits API mensuels inclus dans Max et Team", "produit": "claude", "version": None},
+], ids=["aide-compte", "tarifs", "politique", "annonce-d71-sans-version"])
+def test_r1_ne_vise_pas_une_page_de_compte_de_politique_ou_de_tarif(champs):
+    avert = _avert(**{"type": "nouveaute", "action": None, **champs})
+    assert not [a for a in avert if "R1" in a], avert
+
+
+def test_r1_note_de_version_ou_fiche_qui_cite_un_tarif_reste_un_ajout():
+    titre = "Claude Code 2.1.296 : cache de Sonnet 5.5 chiffré à 0,10 $ par Mtok dans `/cost`"
+    assert any("R1" in a for a in _avert(type="nouveaute", titre=titre, version="2.1.296", action=None))
+    fiche = {"id": "kb-x", "ids_bruts": ["kb-x"], "kb_refs": ["x"], "titre": "Base : quota de la variable X"}
+    assert any("R1" in a for a in _avert(type="nouveaute", action=None, **fiche))
+
+
+@pytest.mark.parametrize("pour_toi", [
+    "Tes sessions tournent dans tmux, où ce réglage n'aide pas.", "Sur carnet, rien ne change.",
+    "Rien à faire aujourd'hui.", "Ce réglage ne s’applique pas à ta configuration.",
+    "Sans objet tant que tu restes en connexion directe.",
+])
+def test_r4_faible_qui_conclut_que_rien_ne_s_applique_avertit(pour_toi):
+    avert = [a for a in _avert(pour_toi=pour_toi, action=None) if "rien ne s'applique" in a]
+    assert len(avert) == 1 and "R4" in avert[0] and "`impact: nul`" in avert[0]
+
+
+def test_r4_rien_ne_s_applique_seulement_pour_faible():
+    pour_toi = "Rien ne change pour l'instant sur ta configuration."
+    for impact in ("moyen", "fort"):
+        assert not [a for a in _avert(impact=impact, pour_toi=pour_toi, action=None) if "rien ne s'applique" in a]
+    assert not [a for a in _avert(pour_toi="Cela change ton flux de nuit.", action=None) if "rien ne s'applique" in a]
+
+
+def _avert_jour(jour, **champs):
+    r = v.Rapport()
+    v.avertir_element(_element_d85(**champs), 0, r, "x.json", None, jour)
+    return [a for a in r.avertissements if "R5" in a]
+
+
+@pytest.mark.parametrize("texte", [
+    "Revérifier le 09/10/2026 le forfait et le solde ; aucune échéance publiée.",
+    "Ouvre Paramètres > Utilisation ; revérifier le 09/10, aucune échéance publiée.",
+    "Revérifie le 2026-10-08 ton solde.",
+])
+def test_r5_reverification_du_jour_meme_ou_d_avant_avertit(texte):
+    avert = _avert_jour("2026-10-09", titre="Crédits du forfait", type="correction", action=_action(texte))
+    assert len(avert) == 1 and "revérification datée du jour même" in avert[0]
+
+
+def test_r5_reverification_posterieure_ou_echeance_sans_avertissement():
+    d71 = {"titre": "Crédits du forfait", "type": "correction"}
+    assert _avert_jour("2026-10-09", **d71, action=_action("Revérifier le 16/10, aucune échéance publiée.")) == []
+    assert _avert_jour("2026-10-09", **d71, action=_action("Avant le 09/10, ouvre Paramètres > Utilisation.")) == []
+    assert _avert_jour(None, **d71, action=_action("Revérifier le 01/10.")) == []  # sans date de fichier : pas de contrôle
+
+
+@pytest.mark.parametrize("titre", [
+    "Lecture du cache de Sonnet 5.5 à 0,10 $ par Mtok", "Cache read price drops", "Prompt caching now cheaper",
+    "Cache facturé 0,10 $ par million de jetons",
+])
+def test_d71_couvre_les_tarifs_du_cache(titre):
+    from deltalib import sujet_d71
+    assert sujet_d71.mots_trouves_element(titre) and sujet_d71.mots_trouves_index(titre)
+
+
+def test_d71_prompt_caching_hors_de_la_base():
+    from deltalib import sujet_d71
+    assert sujet_d71.mots_trouves_base("ENABLE_PROMPT_CACHING_1H requests one hour") == []
+    assert sujet_d71.mots_trouves_base("Cache read tokens cost $0.10/MTok") == ["cache read", "mtok"]
+
+
+def _fort(url, **champs):
+    return {"impact": "fort", "sources": [{"url": url, "libelle": "x", "officielle": True}], **champs}
+
+
+def test_deux_forts_meme_url_meme_fichier():
+    u = "https://support.claude.com/en/articles/12429409-manage-usage-credits"
+    q = {"elements": [_fort(u), _fort(u + "/"), _fort("https://example.org/autre"), {**_fort(u), "impact": "moyen"}]}
+    assert v.forts_meme_url(q) == [(0, 1, [u])]
+    assert v.forts_meme_url({"elements": [_fort(u), _fort("https://example.org/b")]}) == []
+
+
+def test_deux_forts_meme_url_de_bout_en_bout(racine, capsys):
+    chemin, q = _quotidien_valide(racine)
+    e = q["elements"][0]
+    double = json.loads(json.dumps(e))
+    double.update(id="fx-double", ids_bruts=["fx-double"])
+    e["impact"] = double["impact"] = "fort"
+    q["elements"] = [e, double]  # index.json n'est pas mis à jour : erreur attendue, l'avertissement sort quand même
+    _reecrire(chemin, q)
+    validation(racine, "claude", brut=False)
+    sortie = capsys.readouterr().out
+    assert any("deux éléments `fort` (elements[0], elements[1]) citent la même URL" in l for l in sortie.splitlines())
+
+
+def test_skills_delta_d117_dans_les_trois_textes():
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        texte = (racine / f).read_text(encoding="utf-8")
+        for attendu in ("R1 ne vise pas une page de compte, de politique ou de tarif", "« sans objet »",
+                        "postérieure au jour du fichier, jamais le jour même", "« par Mtok »",
+                        "Deux éléments `fort` du même fichier qui citent la même URL"):
+            assert attendu in texte, f"{f} : {attendu}"

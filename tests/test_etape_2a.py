@@ -74,7 +74,9 @@ def test_deux_listes_constantes_distinctes():
     assert base < index and {"limit", "plan", "reset", "offer", "offre", "limite"} <= index - base
     assert not {"limit", "plan", "reset", "offer", "offre", "limite", "usage"} & base
     assert {"usage limit", "rate limit", "limit reset", "extra usage", "free trial", "remise à zéro", "quota", "credits", "crédits",
-            "billing", "subscription", "abonnement", "pricing", "price", "tarif", "forfait", "promotion", "réinitialisation"} == base
+            "billing", "subscription", "abonnement", "pricing", "price", "tarif", "forfait", "promotion", "réinitialisation",
+            "cache read", "mtok", "million de jetons"} == base
+    assert "prompt caching" in index and "prompt caching" not in base  # nom de réglages dans la base (ENABLE_PROMPT_CACHING_1H)
     assert "credit score" in sujet_d71.EXCLUSIONS and "plan mode" in sujet_d71.EXCLUSIONS
 
 

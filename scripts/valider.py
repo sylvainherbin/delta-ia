@@ -9,7 +9,7 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
-Lignes `! AVERTISSEMENT` (D85, D97, D107) : ajout à un outil sans commande exacte, sans projet ni flux de CONTEXTE.md nommé ou sans « résultat attendu » dans `action` (R1), élément D71 sans date absolue (R5), ajout des `puces` du brut (D95) dont un nom figure
+Lignes `! AVERTISSEMENT` (D85, D97, D107, second audit) : ajout à un outil (hors page de compte, de politique ou de tarif) sans commande exacte, sans projet ni flux de CONTEXTE.md nommé ou sans « résultat attendu » dans `action` (R1), élément D71 sans date absolue ou revérifié le jour du fichier (R5), élément `faible` dont le `pour_toi` conclut que rien ne s'applique (R4), deux éléments `fort` d'un même fichier sur la même URL, ajout des `puces` du brut (D95) dont un nom figure
 dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2), `pour_toi` conditionnel sans commande qui le tranche dans `action`
 et `pour_toi` recopié du même id dans un fichier des 7 jours précédents (R4) ; sans effet sur le code de sortie.
 Ancrage (D101) : `pour_toi` d'un élément d'impact faible ou plus qui ne nomme aucun projet, outil ni habitude de CONTEXTE.md (fichiers postérieurs au 24/09) ; sans effet sur le code de sortie.
@@ -63,10 +63,24 @@ RE_SEGMENT_CODE = re.compile(r"`[^`\n]+`")
 # D107 (R1) : l'`action` d'un ajout nomme aussi l'essai (projet ou flux de CONTEXTE.md, mêmes termes que l'ancrage) et son « résultat attendu ».
 RE_RESULTAT_ATTENDU = re.compile(r"r[ée]sultat\s+attendu|attendu\s*:", re.I)
 RE_DATE_ACTION = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{2}/\d{2}\b")
+# Second audit (11/10) : R1 vise un ajout à un outil (commande, option, réglage, fonctionnalité), pas une page de compte, de
+# politique ou de tarif. Hors champ : élément tiré d'une source compte et quotas (identifiant brut préfixé par l'id d'une telle
+# source de sources.yaml, ou `etat-initial-`), source d'une page de politique, de conditions ou de tarifs, ou annonce sans version
+# dont le titre porte un sujet D71 (« Crédits API mensuels inclus dans Max ») : R5 la régit. Une note de version d'outil
+# (`version` renseignée) ou une fiche de la base (`kb-`) qui cite un tarif reste un ajout (2.1.296 et le cache de Sonnet 5.5).
+PREFIXES_PAGES_COMPTE = ("claude-aide-", "openai-tarifs-", "openai-aide-", "openai-usage-commande", "etat-initial-")
+RE_URL_PAGE_COMPTE = re.compile(r"usage-polic|/legal/|/policies/|/polic(?:y|ies)\b|/terms\b|/pricing\b|/pricing\.md", re.I)
+# R5 : une date de revérification (« revérifier le 12/10 ») est postérieure au jour du fichier, jamais le jour même.
+RE_REVERIFICATION = re.compile(r"rev[ée]rifi\w*\s+(?:le\s+|au\s+)?(\d{4}-\d{2}-\d{2}|\d{2}/\d{2}(?:/\d{4})?)", re.I)
 # R4 : un `pour_toi` qui pose une condition doit voir sa commande dans `action` ; le même id ne répète pas le texte de la veille.
 MARQUEURS_CONDITIONNEL = ("si tu", "si vous", "au cas où", "éventuellement")
 RE_CONDITIONNEL = re.compile(r"(?<!\w)(?:" + "|".join(re.escape(m).replace(r"\ ", r"\s+") for m in MARQUEURS_CONDITIONNEL) + r")(?!\w)", re.I)
 RECOPIE_JOURS = 7
+# R4 (second audit) : un élément `faible` dont le `pour_toi` conclut que rien ne s'applique vaut `nul`.
+# « sans objet » : élément GZIP du 07/10 (« Sans objet tant que tu restes en connexion directe »).
+MARQUEURS_RIEN_NE_S_APPLIQUE = ("rien ne change", "rien à faire", "ne s'applique pas", "n'aide pas", "sans objet")
+RE_RIEN_NE_S_APPLIQUE = re.compile(r"(?<!\w)(?:" + "|".join(
+    re.escape(m).replace(r"\ ", r"\s+").replace("'", "['’]") for m in MARQUEURS_RIEN_NE_S_APPLIQUE) + r")(?!\w)", re.I)
 # D101 (ancrage) : un `pour_toi` d'un élément d'impact faible ou plus nomme un projet, un outil ou une habitude de CONTEXTE.md
 # (termes de `deltalib.contexte.termes_ancrage`, sections citées par l'élément) ; `contexte_sections` vide ou absent : avertissement d'office.
 MESSAGE_ANCRAGE = "ancrage : `pour_toi` sans projet, outil ni habitude nommés de CONTEXTE.md"
@@ -225,10 +239,11 @@ def _texte_action(action) -> str:
     return "\n".join(str(x) for x in [action.get("description"), *etapes] if isinstance(x, str))
 
 
-def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None = None) -> None:
+def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None = None, jour: str | None = None) -> None:
     """D85 (R1, R5), D101 (ancrage) : avertissements sur un élément, sans effet sur le code de sortie.
 
-    `ancrage` : `deltalib.contexte.termes_ancrage` du CONTEXTE.md ; None, aucun contrôle d'ancrage."""
+    `ancrage` : `deltalib.contexte.termes_ancrage` du CONTEXTE.md ; None, aucun contrôle d'ancrage.
+    `jour` : date du fichier (AAAA-MM-JJ) ; None, aucun contrôle de la date de revérification (R5)."""
     if not isinstance(e, dict) or e.get("impact") not in IMPACTS - {"nul"}:
         return
     ou = f"{ou} elements[{i}] ({e.get('id')})"
@@ -240,10 +255,18 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None =
             r.avertissement(ou, "R1 : ajout à un outil sans projet ni flux de CONTEXTE.md nommé dans `action`")
         if not RE_RESULTAT_ATTENDU.search(texte):
             r.avertissement(ou, "R1 : ajout à un outil sans « résultat attendu » dans `action`")
-    if mots_trouves_element(e.get("titre"), e.get("resume")) and not RE_DATE_ACTION.search(texte):
-        r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
+    if est_d71(e):
+        perimees = reverifications_perimees(texte, jour)
+        if not RE_DATE_ACTION.search(texte):
+            r.avertissement(ou, "R5 : élément compte et quotas (D71) sans date absolue (AAAA-MM-JJ ou JJ/MM) dans `action`")
+        elif perimees:
+            r.avertissement(ou, f"R5 : revérification datée du jour même du fichier ou d'avant ({', '.join(perimees)}) "
+                                "dans `action` : une date de revérification est postérieure au jour du fichier")
     if conditionnel_sans_commande(e):
         r.avertissement(ou, "R4 : `pour_toi` conditionnel sans commande entre accents graves dans `action` qui le tranche")
+    if e.get("impact") == "faible" and isinstance(e.get("pour_toi"), str) and RE_RIEN_NE_S_APPLIQUE.search(e["pour_toi"]):
+        r.avertissement(ou, "R4 : élément `faible` dont le `pour_toi` conclut que rien ne s'applique "
+                            f"(« {RE_RIEN_NE_S_APPLIQUE.search(e['pour_toi']).group(0)} ») : `impact: nul`, `pour_toi: null`")
     if ancrage is not None and isinstance(e.get("pour_toi"), str) and e["pour_toi"].strip():
         citees = citees_du_pour_toi(e)
         if not citees or not termes_nommes(e["pour_toi"], ancrage, citees):
@@ -251,8 +274,62 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None =
 
 
 def r1_champ(e: dict) -> bool:
-    """R1 : élément d'impact faible ou plus, ajout (nouveauté, amélioration) à un produit d'outil (pas `actu`)."""
-    return e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu"
+    """R1 : élément d'impact faible ou plus, ajout (nouveauté, amélioration) à un produit d'outil (pas `actu`), hors page de
+    compte, de politique ou de tarif (`page_de_compte`)."""
+    return e.get("type") in TYPES_AJOUT and e.get("produit") in PRODUITS and e["produit"] != "actu" \
+        and not page_de_compte(e)
+
+
+def est_d71(e: dict) -> bool:
+    """Sujet compte et quotas (D71) : mots-clés de `deltalib.sujet_d71` dans `titre` ou `resume` (pas `pour_toi`)."""
+    return bool(mots_trouves_element(e.get("titre"), e.get("resume")))
+
+
+def page_de_compte(e: dict) -> bool:
+    """Second audit (11/10) : élément de compte, de politique ou de tarif, hors du champ de R1 (voir PREFIXES_PAGES_COMPTE)."""
+    bruts = [b for b in [e.get("id"), *(e.get("ids_bruts") or [])] if isinstance(b, str)]
+    if any(b.startswith(PREFIXES_PAGES_COMPTE) for b in bruts):
+        return True
+    if e.get("version") is None and not any(b.startswith("kb-") for b in bruts) and mots_trouves_element(e.get("titre")):
+        return True
+    return any(isinstance(s, dict) and isinstance(s.get("url"), str) and RE_URL_PAGE_COMPTE.search(s["url"])
+               for s in e.get("sources") or [])
+
+
+def reverifications_perimees(texte: str, jour: str | None) -> list[str]:
+    """R5 : dates de revérification de `texte` (« revérifier le JJ/MM ») qui ne sont pas postérieures à `jour` (AAAA-MM-JJ).
+    JJ/MM sans année prend l'année de `jour`. Date illisible : ignorée (RE_DATE_ACTION reste le seul contrôle)."""
+    try:
+        ref = date.fromisoformat(jour) if jour else None
+    except ValueError:
+        ref = None
+    if ref is None:
+        return []
+    trouvees = []
+    for m in RE_REVERIFICATION.finditer(texte):
+        brut = m.group(1)
+        try:
+            if "-" in brut:
+                d = date.fromisoformat(brut)
+            else:
+                jj, mm, *aaaa = brut.split("/")
+                d = date(int(aaaa[0]) if aaaa else ref.year, int(mm), int(jj))
+        except ValueError:
+            continue
+        if d <= ref and brut not in trouvees:
+            trouvees.append(brut)
+    return trouvees
+
+
+def forts_meme_url(q: dict) -> list[tuple[int, int, list[str]]]:
+    """Second audit (11/10, crédit API de 200 $ en double le 09/10) : paires d'éléments `fort` d'un même fichier quotidien
+    (donc d'un même jour et d'un même périmètre) qui citent au moins une même URL ; (indice, indice, URL communes)."""
+    forts = []
+    for i, e in enumerate(q.get("elements") or []):
+        if isinstance(e, dict) and e.get("impact") == "fort":
+            forts.append((i, {s["url"].rstrip("/") for s in e.get("sources") or []
+                              if isinstance(s, dict) and isinstance(s.get("url"), str)}))
+    return [(i, j, sorted(ui & uj)) for k, (i, ui) in enumerate(forts) for j, uj in forts[k + 1:] if ui & uj]
 
 
 def citees_du_pour_toi(e: dict) -> list[str]:
@@ -388,7 +465,8 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
     bruts: list[str] = []
     for i, e in enumerate(elements):
         verifier_element(e, i, perimetre, projets, r, ou, ctx_disparu_permis)
-        avertir_element(e, i, r, ou, ancrage if isinstance(q.get("date"), str) and q["date"] > DATE_D64 else None)
+        avertir_element(e, i, r, ou, ancrage if isinstance(q.get("date"), str) and q["date"] > DATE_D64 else None,
+                        chemin.stem)
         if isinstance(e, dict) and "contexte_sections" not in e and isinstance(q.get("date"), str) and q["date"] > DATE_D64:
             r.erreur(f"{ou} elements[{i}]", "`contexte_sections` absent : sections de CONTEXTE.md citées (D64)")
         if isinstance(e, dict) and isinstance(q.get("date"), str) and q["date"] > DATE_ID_WEB:
@@ -398,6 +476,9 @@ def verifier_quotidien(chemin: Path, perimetre: str, projets: set[str], r: Rappo
                 ids.append(e["id"])
             if isinstance(e.get("ids_bruts"), list):
                 bruts.extend(b for b in e["ids_bruts"] if isinstance(b, str))
+    for i, j, urls in forts_meme_url(q):
+        r.avertissement(ou, f"deux éléments `fort` (elements[{i}], elements[{j}]) citent la même URL : {' ; '.join(urls)} ; "
+                            "un fait, un élément (fusion des doublons)")
     for doublon in sorted({x for x in ids if ids.count(x) > 1}):
         r.erreur(ou, f"identifiant d'élément en double : {doublon}")
     for doublon in sorted({x for x in bruts if bruts.count(x) > 1}):

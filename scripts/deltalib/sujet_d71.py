@@ -24,12 +24,19 @@ _COMMUNS = (
     "remise à zéro", "réinitialisation", "crédits", "forfait", "tarif", "abonnement",
 )
 
-MOTS_CLES_BASE = _COMMUNS
+# Tarifs du cache (second audit, 11/10 : la 2.1.296 chiffrait la lecture du cache de Sonnet 5.5 « à 0,10 $ par Mtok » sans être
+# repérée D71). « mtok » couvre « par Mtok », « per MTok » et « $/MTok ». « prompt caching » nomme aussi des réglages
+# (`ENABLE_PROMPT_CACHING_1H`, page « How Claude Code uses prompt caching ») : hors de la base, gardé pour l'index et les éléments.
+TARIFS_CACHE = ("cache read", "mtok", "million de jetons")
 
-MOTS_CLES_INDEX = _COMMUNS + (
+MOTS_CLES_BASE = _COMMUNS + TARIFS_CACHE
+
+MOTS_CLES_INDEX = MOTS_CLES_BASE + (
     "limit", "reset", "plan", "offer",  # double sens dans une fiche technique, ciblés dans un titre d'article d'aide
-    "limite", "offre",
+    "limite", "offre", "prompt caching",
 )
+
+MOTS_CLES_ELEMENT = MOTS_CLES_BASE + ("prompt caching",)
 
 # Bruit connu : la fonction Finances de ChatGPT parle de « credit score » (23/09) ; « plan mode » (commande /plan de Claude
 # Code) ne parle pas de forfait. Une exclusion porte sur l'expression seulement : elle est retirée du texte avant la recherche,
@@ -53,6 +60,7 @@ def _motif(expression: str) -> re.Pattern:
 
 _MOTIFS_BASE = [(m, _motif(m)) for m in MOTS_CLES_BASE]
 _MOTIFS_INDEX = [(m, _motif(m)) for m in MOTS_CLES_INDEX]
+_MOTIFS_ELEMENT = [(m, _motif(m)) for m in MOTS_CLES_ELEMENT]
 _EXCLUS = [_motif(m) for m in EXCLUSIONS]
 _EXCLUS_DISPONIBILITE = [_motif(m) for m in EXCLUSIONS_DISPONIBILITE]
 
@@ -75,8 +83,9 @@ def mots_trouves_base(*textes: str | None) -> list[str]:
 
 
 def mots_trouves_element(*textes: str | None) -> list[str]:
-    """Mots-clés de la base présents dans un élément publié, hors disponibilité d'une fonction « sur tous les forfaits » (R5)."""
-    return _trouves(_MOTIFS_BASE, textes, _EXCLUS + _EXCLUS_DISPONIBILITE)
+    """Mots-clés de la base et « prompt caching » présents dans un élément publié, hors disponibilité d'une fonction
+    « sur tous les forfaits » (R5)."""
+    return _trouves(_MOTIFS_ELEMENT, textes, _EXCLUS + _EXCLUS_DISPONIBILITE)
 
 
 def correspond_index(*textes: str | None) -> bool:
