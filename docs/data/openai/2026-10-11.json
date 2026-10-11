@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-11",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-11T02:05:50+00:00",
+  "synthese": "Compte et quotas : la génération des suggestions Composer predictions est incluse sans quota ni crédits pendant la bêta Pro ; les messages envoyés restent comptés, et l’annonce concerne l’app de bureau, pas ton pilotage CLI/iPhone habituel. Le guide GPT-6 est réévalué pour le barème explicite de mission-codex : mesurer le modèle réellement lancé. Neuf autres réévaluations ne changent pas les recommandations ; aucune entrée de la base n’est ajoutée ou modifiée.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "releasebot-66880",
+      "ids_bruts": [
+        "releasebot-66880"
+      ],
+      "produit": "chatgpt",
+      "titre": "Suggestions Codex : génération sans quota pendant la bêta Pro",
+      "version": null,
+      "date_publication": "2026-10-09",
+      "type": "nouveaute",
+      "resume": "La bêta Composer predictions propose le prochain message dans les fils locaux et SSH de l’app Codex avec GPT-6 Astra ou GPT-6.1 Sol, pour les adultes sur un forfait Pro personnel. Les suggestions sont activées par défaut ; Tab les accepte sans les envoyer. Leur génération ne consomme ni quota Codex ni crédits pendant la bêta ; tout message envoyé suit la consommation habituelle.",
+      "sources": [
+        {
+          "url": "https://releasebot.io/updates/openai/chatgpt",
+          "libelle": "releasebot-chatgpt",
+          "officielle": false
+        },
+        {
+          "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+          "libelle": "Notes officielles consultées, 9 octobre",
+          "officielle": true
+        },
+        {
+          "url": "https://help.openai.com/en/articles/20001601-composer-predictions-in-codex",
+          "libelle": "Conditions et réglage officiels consultés",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tu as ChatGPT Pro 100, mais ton pilotage Codex habituel passe par la CLI sous tmux depuis l’iPhone ; l’app de bureau sert ponctuellement aux connecteurs. Cette annonce ne documente pas des suggestions pour la CLI ou iOS. Un essai dans un fil local de l’app déjà ouverte permet de découvrir le réglage, sans considérer les messages acceptés puis envoyés comme gratuits.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 11/10/2026 le réglage `Settings > General > Composer > Show predictions` dans l’app de bureau déjà ouverte ; aucune échéance de fin de bêta publiée. Essai : dans un fil local delta-ia avec GPT-6.1 Sol, demander un résumé du dernier passage puis accepter une éventuelle suggestion avec `Tab` ; résultat attendu : le texte remplit le champ sans être envoyé.",
+        "etapes": [
+          "Contrôler le forfait Pro personnel, le modèle et le type de fil ; la source exige un compte adulte et la dernière app de bureau. La version du paquet relevée est 26.1007.21434 ; cela ne prouve pas l’accès du compte à la bêta.",
+          "Relire la suggestion avant tout envoi ; désactiver `Show predictions` dans ce même écran pour arrêter les suggestions. Leur absence après une réponse ne prouve pas une panne."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "ChatGPT Pro 100 déclaré ; souhait de découvrir les fonctionnalités et de suivre les quotas."
+        },
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Pilotage habituel CLI sous tmux/iPhone ; l’app ouverte peut entrer en conflit avec le remote control."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "ChatGPT Desktop est utilisé pour les connecteurs ; pas d’usage déclaré de ces suggestions."
+        }
+      }
+    },
+    {
+      "id": "https://openai.com/index/practical-guide-building-gpt-6",
+      "ids_bruts": [
+        "https://openai.com/index/practical-guide-building-gpt-6"
+      ],
+      "produit": "chatgpt",
+      "titre": "Réévaluation GPT-6 : mesurer la consommation du modèle choisi par mission",
+      "version": null,
+      "date_publication": "2026-10-02",
+      "type": "actu",
+      "resume": "La section Missions, worktrees et Codex précise maintenant le barème de mission-codex : mécanique en gpt-6-luna medium, code ou correctif en gpt-6.1-sol high, Astra avec motif. La recommandation de mesurer résultat et consommation s’applique donc au modèle réellement lancé, distinct du défaut global Sol high relevé le 11 octobre.",
+      "sources": [
+        {
+          "url": "https://openai.com/index/practical-guide-building-gpt-6/",
+          "libelle": "Guide officiel de la famille GPT-6",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+          "libelle": "Référence officielle des commandes Codex, dont /usage",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tes missions Codex sur delta-ia et discipline passent par un lanceur qui fixe le modèle et l’effort selon leur nature. Le changement de CONTEXTE.md permet de distinguer ces missions des audits trading-sim avec leurs profils explicites : la consommation d’une lecture courte ne se transpose pas automatiquement à une autre nature de mission.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Revérifier le 11/10/2026 la consommation avec `/usage` avant et après une lecture de rapport trading-sim ; aucune échéance publiée. Résultat attendu : un résumé vérifiable et une mesure attribuée au modèle réellement utilisé.",
+        "etapes": [
+          "Dans le client utilisé pour l’audit, noter le modèle et l’effort actifs, puis saisir `/usage` : la fiche donne cette syntaxe et cet exemple.",
+          "Demander : `Lis un rapport d’audit trading-sim déjà présent, sans exécuter de commande ni modifier de fichier. Résume le verdict et trois preuves citées dans le rapport.` Comparer les preuves au document, puis relire `/usage`.",
+          "Pour une mission de développement delta-ia ou discipline, lire le modèle et l’effort consignés par le lanceur dans OPÉRER ; ne pas leur attribuer le défaut global ni le profil audit."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "codex-fonctionnalites-page-agent-configuration-speed",
+        "codex-fonctionnalites-page-model-selection",
+        "codex-commandes-usage"
+      ],
+      "contexte_sections": {
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Les audits contradictoires sont coûteux ; une lecture de rapport fournit un essai vérifiable."
+        },
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Codex CLI et exec sont utilisés ; D70 charge une configuration explicite."
+        },
+        "config.codex.profils": {
+          "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+          "pourquoi": "audit, rapide et securite sont utilisés ; leurs valeurs courantes sont dans etat.json."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Le barème fixe explicitement Luna medium pour la mécanique et Sol high pour code/correctif."
+        },
+        "methode.travail": {
+          "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+          "pourquoi": "Les longs prompts et limites hebdomadaires restent des frictions."
+        }
+      },
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://openai.com/index/gpt-6-for-everyone",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "oa-codex/2026-10-02-mobile",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "rust-v0.162.0",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-chatgpt-raccourcis-copy-session-id",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "oa-codex/2026-10-07-mobile",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "rust-v0.161.0",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "openai-status-01M47HC9SGHGFPBN44KGC6SKAQ",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "openai-status-01M45E0JFFJZ6EQ3BWYPW74R2Z",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-chatgpt-raccourcis-close-other-tabs",
+      "raison": "réévalué, inchangé"
+    }
+  ],
+  "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9"
+}
