@@ -1,6 +1,7 @@
 """m-944fab565b10 : bouton « Envoyer à Delta » de l'onglet Référence et relais local vers la porte des idées."""
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -320,10 +321,27 @@ def test_aide_dit_la_regle_d_une_heure():
 
 # ---- m-94f3b7e1274b : exécution du bouton, sans appeler le service installé ----
 
+def _version_nvm(chemin):
+    """v24.20.0 → (24, 20, 0) ; un nom illisible passe en dernier."""
+    m = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", Path(chemin).parent.parent.name)
+    return tuple(map(int, m.groups())) if m else (-1,)
+
+
+def trouver_node():
+    """Node du PATH, sinon le plus récent de nvm (absent du PATH des sessions et de verrou-tests)."""
+    du_path = shutil.which("node")
+    if du_path:
+        return du_path
+    nvm = [p for p in Path.home().glob(".nvm/versions/node/*/bin/node") if os.access(p, os.X_OK)]
+    return str(max(nvm, key=_version_nvm)) if nvm else None
+
+
 def bouton_execute(**options):
     """Le vrai code du bouton sous Node : réseau, onglets, horloge et presse-papier simulés."""
-    node = shutil.which("node")
-    assert node, "Node est nécessaire aux tests du bouton (présent sur ubuntu-24.04 en CI)"
+    node = trouver_node()
+    if not node:
+        assert not os.environ.get("CI"), "Node est nécessaire aux tests du bouton (présent sur ubuntu-24.04 en CI)"
+        pytest.skip("Node introuvable (PATH, ~/.nvm/versions/node/*/bin/node) : tests du bouton lancés par la CI")
     code = APP[APP.index("const RELAIS"):APP.index("// D64-bis : péremption")]
     script = r"""
 const vm = require('node:vm');
@@ -382,6 +400,28 @@ vm.runInContext(code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole,
                          text=True, capture_output=True, timeout=10)
     assert res.returncode == 0, res.stderr
     return json.loads(res.stdout)
+
+
+def test_node_de_nvm_le_plus_recent_hors_path(tmp_path, monkeypatch):
+    for v in ("v9.11.2", "v24.20.0", "v24.3.1", "inconnu"):
+        exe = tmp_path / ".nvm/versions/node" / v / "bin/node"
+        exe.parent.mkdir(parents=True); exe.write_text("#!/bin/sh\n"); exe.chmod(0o755)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    monkeypatch.setattr(shutil, "which", lambda nom: None)
+    assert trouver_node() == str(tmp_path / ".nvm/versions/node/v24.20.0/bin/node")
+    monkeypatch.setattr(shutil, "which", lambda nom: "/usr/bin/node")
+    assert trouver_node() == "/usr/bin/node"
+
+
+def test_sans_node_skip_en_local_echec_en_ci(tmp_path, monkeypatch):
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    monkeypatch.setattr(shutil, "which", lambda nom: None)
+    monkeypatch.delenv("CI", raising=False)
+    with pytest.raises(pytest.skip.Exception, match="Node introuvable"):
+        bouton_execute()
+    monkeypatch.setenv("CI", "true")
+    with pytest.raises(AssertionError, match="Node est nécessaire"):
+        bouton_execute()
 
 
 def test_bureau_relais_prioritaire_meme_console_reliee():
