@@ -637,6 +637,8 @@ EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp", "paramet
 EXEMPLES_VERDICTS_PARAMETRES = ("utiliser", "tester")  # D113 : un paramètre n'a d'exemple que s'il vaut l'essai
 ORIGINES_EXEMPLE = ("source", "compose")
 CHAMPS_EXEMPLE = {"exemple", "exemple_origine"}
+CHAMP_IMPOSSIBLE = "exemple_impossible"  # D116 : raison courte pour laquelle aucun exemple honnête n'est possible
+RAISON_IMPOSSIBLE_MAX = 160
 
 
 # D113 : un paramètre a un exemple seulement quand son nom est une clé du fichier de réglage (`settings.json` de Claude Code en
@@ -661,7 +663,10 @@ def cle_de_reglage(e: dict) -> list[str] | None:
 def sans_exemple(e: dict) -> bool:
     """D91 : entrée commentée, de syntaxe, de l'une des catégories du lot `exemples`, sans exemple ; une entrée dont
     `usage_nature` est `etapes` n'a jamais d'exemple et n'est donc jamais due. D113 : un paramètre n'est dû que si c'est
-    une clé de fichier de réglage (`cle_de_reglage`) au verdict `utiliser` ou `tester`."""
+    une clé de fichier de réglage (`cle_de_reglage`) au verdict `utiliser` ou `tester`. D116 : une entrée qui porte
+    `exemple_impossible` n'est plus due."""
+    if str(e.get(CHAMP_IMPOSSIBLE) or "").strip():
+        return False
     if not (bool(e.get("commentee")) and not e.get("retiree") and e.get("categorie") in EXEMPLES_CATEGORIES
             and e.get("usage_nature") == "syntaxe" and not str(e.get("exemple") or "").strip()):
         return False
@@ -880,6 +885,8 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
     """Applique {id: {description, statut_usage, recommandation, exemple?, exemple_origine?, disponibilite?}} ; jamais `usage`.
     D113 : `exclure_systemes` (`profil.yaml`, `base.exclure_systemes`) permet de refuser l'exemple d'une fiche dont la
     `disponibilite` exclut tous les systèmes du profil.
+    D116 : {exemple_impossible: <raison courte>} seul, sur une entrée commentée sans exemple, retire l'entrée du lot `exemples`
+    (historique « exemple impossible ») ; un exemple ajouté ensuite efface la raison.
     D91 : `exemple` non nul exige `exemple_origine` (`source` ou `compose`) ; {exemple, exemple_origine} seuls, sur une entrée
     déjà commentée, ajoutent l'exemple sans refaire le commentaire (historique « exemple ajouté »).
     `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
@@ -895,9 +902,26 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
             erreurs.append(f"{k}: identifiant inconnu")
             continue
         interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "exemple_origine", "disponibilite",
-                              "contexte_sections"}
+                              "contexte_sections", CHAMP_IMPOSSIBLE}
         if interdits:
             erreurs.append(f"{k}: champs non modifiables par le commentaire : {sorted(interdits)}")
+            continue
+        if CHAMP_IMPOSSIBLE in c and set(c) != {CHAMP_IMPOSSIBLE}:
+            erreurs.append(f"{k}: `exemple_impossible` se pose seul ({{id: {{exemple_impossible: raison}}}})")
+            continue
+        if set(c) == {CHAMP_IMPOSSIBLE}:  # D116 : aucun exemple honnête, sans refaire le jugement
+            raison = c[CHAMP_IMPOSSIBLE]
+            if not e.get("commentee") or e.get("retiree"):
+                erreurs.append(f"{k}: `exemple_impossible` réservé aux entrées commentées")
+            elif str(e.get("exemple") or "").strip():
+                erreurs.append(f"{k}: `exemple_impossible` refusé, l'entrée a déjà un exemple")
+            elif not isinstance(raison, str) or not raison.strip():
+                erreurs.append(f"{k}: `exemple_impossible` : une raison courte (texte non vide)")
+            elif len(raison.strip()) > RAISON_IMPOSSIBLE_MAX:
+                erreurs.append(f"{k}: `exemple_impossible` : {len(raison.strip())} caractères, {RAISON_IMPOSSIBLE_MAX} au plus")
+            else:
+                e.update({CHAMP_IMPOSSIBLE: raison.strip(), "maj_le": jour})
+                e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "exemple impossible"}]
             continue
         if c and set(c) <= CHAMPS_EXEMPLE:  # D91 : ajout d'exemple seul, sans refaire le jugement
             if not e.get("commentee") or e.get("retiree"):
@@ -908,6 +932,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
                 erreurs.append(f"{k}: {message}")
             else:
                 e.update({"exemple": c["exemple"], "exemple_origine": c["exemple_origine"], "maj_le": jour})
+                e.pop(CHAMP_IMPOSSIBLE, None)
                 e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "exemple ajouté"}]
             continue
         if not isinstance(c.get("description"), str) or not c["description"].strip():
@@ -944,6 +969,8 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
         if "exemple" in c and not str(c["exemple"] or "").strip():
             e["exemple"] = None
             e.pop("exemple_origine", None)
+        elif str(c.get("exemple") or "").strip():
+            e.pop(CHAMP_IMPOSSIBLE, None)
         if motif and journal is not None:
             journal.append({"date": jour, "id": k, "verdict_avant": verdict_avant, "verdict_apres": r["verdict"],
                             "motif": motif})

@@ -381,3 +381,93 @@ def test_skills_regles_d113():
         for attendu in ("paramètres", "`source`", "`compose`", "/agents", "chemin absolu", "disponibilite", "`<…>`"):
             assert attendu in item, (chemin, attendu)
         assert "settings.json" in t and "config.toml" in t and "extrait minimal" in t, chemin
+
+
+# ----------------------------------------------------------------------------------------------- D116 : exemple impossible
+
+RAISON = "commande retirée de la documentation (v2.1.91)"
+
+
+def test_exemple_impossible_retire_l_entree_du_lot_et_se_journalise():
+    e = entree(nom="retiree-doc")
+    ent = base(e, entree(nom="autre"))
+    assert cat.exemples_detail(ent) == ["claude-code-commandes-autre", "claude-code-commandes-retiree-doc"]
+    assert cat.appliquer_commentaires(ent, {e["id"]: {"exemple_impossible": f"  {RAISON} "}}, jour=JOUR) == []
+    assert e["exemple_impossible"] == RAISON and e["maj_le"] == JOUR and e["exemple"] is None
+    assert e["historique"][-1] == {"date": JOUR, "changement": "exemple impossible"}
+    assert e["recommandation"]["verdict"] == "utiliser" and e["description"], "le commentaire n'est pas refait"
+    assert cat.exemples_detail(ent, maximum=None) == ["claude-code-commandes-autre"]
+
+
+@pytest.mark.parametrize("champ,attendu", [
+    ({"exemple_impossible": ""}, "raison courte"),
+    ({"exemple_impossible": "   "}, "raison courte"),
+    ({"exemple_impossible": 3}, "raison courte"),
+    ({"exemple_impossible": "x" * 161}, "161 caractères"),
+    ({"exemple_impossible": RAISON, "exemple": "claude --resume", "exemple_origine": "source"}, "se pose seul"),
+    ({"exemple_impossible": RAISON, "description": "Texte."}, "se pose seul"),
+])
+def test_exemple_impossible_refus(champ, attendu):
+    e = entree()
+    erreurs = cat.appliquer_commentaires({e["id"]: e}, {e["id"]: champ}, jour=JOUR)
+    assert len(erreurs) == 1 and attendu in erreurs[0] and "exemple_impossible" not in e
+
+
+def test_exemple_impossible_refuse_une_entree_non_commentee_retiree_ou_avec_exemple():
+    for e, attendu in ((entree(commentee=False), "commentées"), (entree(nom="a", exemple="claude --resume"), "déjà un exemple")):
+        erreurs = cat.appliquer_commentaires({e["id"]: e}, {e["id"]: {"exemple_impossible": RAISON}}, jour=JOUR)
+        assert len(erreurs) == 1 and attendu in erreurs[0]
+    e = entree(nom="retiree")
+    e["retiree"] = True
+    assert "commentées" in cat.appliquer_commentaires({e["id"]: e}, {e["id"]: {"exemple_impossible": RAISON}}, jour=JOUR)[0]
+
+
+def test_un_exemple_ajoute_ensuite_efface_la_raison():
+    e = entree()
+    ent = {e["id"]: e}
+    cat.appliquer_commentaires(ent, {e["id"]: {"exemple_impossible": RAISON}}, jour=JOUR)
+    assert cat.appliquer_commentaires(ent, {e["id"]: {"exemple": "claude --resume", "exemple_origine": "source"}}, jour=JOUR) == []
+    assert "exemple_impossible" not in e and e["exemple"] == "claude --resume"
+    cat.appliquer_commentaires(ent, {e["id"]: {"exemple": None, "exemple_origine": None, "description": "Texte.",
+                                               "statut_usage": "inconnu", "recommandation": e["recommandation"]}}, jour=JOUR)
+    e["exemple_impossible"] = RAISON
+    complet = {"description": "Texte.", "statut_usage": "inconnu", "recommandation": e["recommandation"],
+               "exemple": "claude --resume", "exemple_origine": "source"}
+    assert cat.appliquer_commentaires(ent, {e["id"]: complet}, jour=JOUR) == []
+    assert "exemple_impossible" not in e
+
+
+def test_valider_accepte_et_controle_exemple_impossible(tmp_path, capsys):
+    e = entree()
+    e["exemple_impossible"] = RAISON
+    assert valider.main(kb(tmp_path, e)) == 0
+    sortie = capsys.readouterr()
+    assert "sans exemple" not in sortie.out + sortie.err, "une entrée sans exemple possible ne compte pas dans l'avertissement"
+    for valeur, attendu in (("", "exemple_impossible"), (3, "exemple_impossible"), ("x" * 161, "160 caractères")):
+        e["exemple_impossible"] = valeur
+        assert valider.main(kb(tmp_path, e)) == 1 and attendu in capsys.readouterr().err
+    e.update({"exemple": "claude --resume", "exemple_origine": "source", "exemple_impossible": RAISON})
+    assert valider.main(kb(tmp_path, e)) == 1
+    assert "a un `exemple`" in capsys.readouterr().err
+
+
+def test_cli_exemple_impossible_vide_le_lot(tmp_path, capsys):
+    a, b = entree(nom="a"), entree(nom="b")
+    args = kb(tmp_path, a, b)[:-1]
+    f = tmp_path / "impossible.json"
+    f.write_text(json.dumps({a["id"]: {"exemple_impossible": RAISON}}), encoding="utf-8")
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 2
+    assert cli.main(["appliquer", *args, "--fichier", str(f)]) == 0
+    capsys.readouterr()
+    assert valider.main([*args, "--kb"]) == 0
+    capsys.readouterr()
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 1
+    assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
+    assert [x["nom"] for x in json.loads(capsys.readouterr().out)] == ["b"]
+
+
+@pytest.mark.parametrize("chemin", [".claude/skills/delta-kb/SKILL.md", ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta-kb.md"])
+def test_skills_decrivent_exemple_impossible(chemin):
+    t = (RACINE / chemin).read_text(encoding="utf-8")
+    assert "`exemple_impossible`" in t and "160 caractères" in t
+    assert "saute l'entrée" not in t
