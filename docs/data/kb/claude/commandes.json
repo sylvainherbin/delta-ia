@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 129,
+ "commentees": 132,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1191,7 +1191,7 @@
    "categorie": "commandes",
    "nom": "claude attach <id|name>",
    "gabarit": "complet",
-   "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan. Depuis la v2.1.290, un fragment du nom de la session suffit à la place de l'identifiant.",
+   "description": "Rattache le terminal courant à une session Claude Code lancée en arrière-plan, désignée par son identifiant. Depuis la v2.1.290, une partie du nom d'une session en cours suffit à la place de l'identifiant.",
    "description_source": "Attach to a background session in this terminal. Passing part of a running session's name in place of the ID requires Claude Code v2.1.290 or later — claude attach 7c5dcf5d",
    "usage": "claude attach <id|name>",
    "usage_nature": "syntaxe",
@@ -1200,7 +1200,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions durables sont des services systemd sous tmux (`claude --resume … --remote-control`), pas des sessions d'arrière-plan de `claude agents` ; aucun scénario d'essai concret."
+    "pourquoi": "Tes sessions durables sont des services systemd sous tmux (`claude --resume … --remote-control`), pas des sessions d'arrière-plan de Claude Code ; aucun scénario d'essai concret."
    },
    "sources": [
     {
@@ -1209,8 +1209,8 @@
      "officielle": true
     }
    ],
-   "commentee": false,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "commentee": true,
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
@@ -1241,6 +1241,10 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
    "exemple_origine": "source"
@@ -1743,7 +1747,7 @@
    "categorie": "commandes",
    "nom": "claude daemon stop --any",
    "gabarit": "complet",
-   "description": "Arrête le superviseur des sessions d'arrière-plan et les sessions qu'il héberge ; `--keep-workers` laisse tourner les sessions pour qu'un nouveau superviseur s'y reconnecte. Sert à débloquer un superviseur qui ne répond plus.",
+   "description": "Arrête le superviseur des sessions d'arrière-plan et les sessions qu'il héberge ; `--any` confirme l'arrêt d'un superviseur lancé à la demande, le cas par défaut. `--keep-workers` laisse tourner les sessions pour qu'un nouveau superviseur s'y reconnecte, ce qui sert à débloquer un superviseur qui ne répond plus.",
    "description_source": "Stop the background-session supervisor and the sessions it hosts. Pass --keep-workers to leave background sessions running for the next supervisor to reconnect to. --any confirms stopping an on-demand supervisor, which is the default. Use this to recover from an unresponsive supervisor — claude daemon stop --any --keep-workers",
    "usage": "claude daemon stop --any",
    "usage_nature": "syntaxe",
@@ -1752,7 +1756,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sans objet tant que tu n'utilises pas de sessions d'arrière-plan."
+    "pourquoi": "Sans objet : tes sessions passent par systemd et tmux, pas par le superviseur des sessions d'arrière-plan. Effet de bord à retenir : sans `--keep-workers`, la commande arrête aussi les sessions hébergées."
    },
    "sources": [
     {
@@ -1761,7 +1765,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1778,10 +1782,20 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables en services claude-session@<nom> sous tmux, sans superviseur d'arrière-plan cité."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-doctor",
@@ -3247,7 +3261,7 @@
    "categorie": "commandes",
    "nom": "/copy",
    "gabarit": "complet",
-   "description": "Copie la dernière réponse dans le presse-papiers, ou la N-ième plus récente avec un nombre. Avec des blocs de code, un sélecteur permet d'en choisir un ; `w` écrit la sélection dans un fichier, utile en SSH.",
+   "description": "Copie la dernière réponse dans le presse-papiers, ou la N-ième plus récente avec un nombre (`/copy 2` copie l'avant-dernière). Avec des blocs de code ou des citations, un sélecteur permet d'en choisir un ; `w` dans ce sélecteur écrit la sélection dans un fichier au lieu du presse-papiers, utile en SSH.",
    "description_source": "Copy the last assistant response to clipboard. Pass a number N to copy the Nth-latest response: /copy 2 copies the second-to-last. When code blocks or blockquotes are present, shows an interactive picker to select individual blocks or the full response. Press w in the picker to write the selection to a file instead of the clipboard, which is useful over SSH",
    "usage": "/copy [N]",
    "usage_nature": "syntaxe",
@@ -3256,7 +3270,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu pilotes les sessions depuis l'iPhone, où le presse-papiers du PC ne te sert pas."
+    "pourquoi": "Tu pilotes les sessions depuis l'iPhone par Remote Control, où le presse-papiers du PC ne te sert pas ; aucun scénario d'essai concret."
    },
    "sources": [
     {
@@ -3265,7 +3279,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3282,10 +3296,20 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "iPhone qui pilote le PC à distance (Remote Control, app Claude iOS)."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-cost",
