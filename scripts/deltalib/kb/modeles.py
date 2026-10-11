@@ -41,6 +41,7 @@ class EntreeExtraite:
     groupe: str | None = None  # section de la page, pour lire et découper
     cle: str | None = None  # base du slug si différente du nom
     usage_nature: str = "syntaxe"  # D49 : `syntaxe` ou `etapes` (page narrative)
+    retiree: bool = False  # D118 : la page la liste encore mais la dit retirée (« Removed … »)
     id: str = field(default="")
 
     def __post_init__(self) -> None:

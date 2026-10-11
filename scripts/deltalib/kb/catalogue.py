@@ -7,6 +7,8 @@ Fusion (D40, D44) :
 - autre changement de la source (URL, groupe, nature de l'usage) : mis à jour sans toucher au commentaire ;
 - entrée absente d'une page extraite avec succès : `retiree: true` (jamais supprimée) ; elle reparaît si la page
   la décrit de nouveau. Les pages non extraites (échec, pas de copie) ne retirent rien.
+- entrée que la page liste encore mais dit retirée (D118, option `retiree_si` de l'extracteur `tableau`) :
+  `retiree: true`, historique « retirée dans la documentation ».
 """
 
 from __future__ import annotations
@@ -346,9 +348,10 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
         e = res.get(x.id)
         if e is None:
             res[x.id] = nouvelle_entree(x, jour)
+            res[x.id]["retiree"] = x.retiree
             modif["ajoutees"].append(x.id)
             continue
-        if e.get("retiree"):
+        if e.get("retiree") and not x.retiree:
             e["retiree"] = False
             e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "de nouveau dans la documentation"}]
             e["maj_le"] = jour
@@ -369,6 +372,11 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
         e["sources"] = [{"url": x.url, "libelle": x.libelle, "officielle": True}] + [
             s for s in e.get("sources", [])[1:] if s.get("url") != x.url]
         e["nom"], e["groupe"], e["origine"] = x.nom, x.groupe, x.origine
+        if x.retiree and not e.get("retiree"):  # D118 : listée, mais dite retirée par la page
+            e["retiree"] = True
+            e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "retirée dans la documentation"}]
+            e["maj_le"] = jour
+            modif["retirees"].append(x.id)
     for k, e in res.items():
         if k not in presentes and e.get("origine") in docs_ok and not e.get("retiree"):
             e["retiree"] = True

@@ -93,6 +93,7 @@ def tableau(doc, fichiers: dict) -> list[EntreeExtraite]:
     texte = _texte(fichiers)
     lignes, secs = sections(texte)
     exclure = _rx_exclure(o.get("exclure"))
+    retiree_si = _rx(o.get("retiree_si"))  # D118 : description qui commence par ce motif = entrée retirée
     if o.get("section"):
         spans = _sections_retenues(secs, o["section"])
         if not spans:
@@ -135,7 +136,7 @@ def tableau(doc, fichiers: dict) -> list[EntreeExtraite]:
                 res.append(EntreeExtraite(
                     produit=doc.produit, categorie=categorie, nom=(o.get("prefixe_nom") or "") + nom, usage=usage,
                     description_source=description, url=doc.url_publique, libelle=doc.libelle, origine=doc.id,
-                    groupe=groupe))
+                    groupe=groupe, retiree=bool(retiree_si and retiree_si.match(description))))
     if not res:
         raise FormatInattendu("tableaux trouvés mais aucune ligne retenue : gabarit changé ?")
     return res
