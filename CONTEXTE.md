@@ -403,8 +403,10 @@ Depuis le 02/10, l'écosystème n'est plus conduit session par session par Sylva
 - **Un chef par projet** (delta-ia, discipline, delta-core, marketing, veille-shopify — dont le chef est une session **Codex** —,
   trading-sim ; le chef de delta-desktop est celui de discipline, celui de la console est Delta) : il **relit, décide et ne commite pas** (convention
   d'organisation, rôle de relecteur : ce n'est plus un réglage qui l'en empêche depuis le 06/10, et il peut faire de petits
-  gestes git de maintenance, worktree ou branche) ; il lance son dev, relit le résultat, donne l'OK de fusion et clôt la
-  mission, Dev-delta fusionne et pousse après son OK.
+  gestes git de maintenance, worktree ou branche) ; il ne lance plus lui-même le dev (mission simple : ouverte et suivie
+  par OPÉRER, qui la remet au dev ; mission composée : planifiée par Delta, compilée par FORGE, remise par OPÉRER) : il relit le
+  résultat, donne l'OK de fusion, intervient quand son jugement est utile et clôt la mission, le dev fusionne et pousse après son OK
+  [déclaré : décision de Sylvain du 09/10, `~/projets/DECISIONS.md`, « MISSIONS COMPOSÉES SANS RELAIS DE CHEF »].
 - **Des devs** (Dev-delta pour delta-ia, Dev-discipline pour discipline, Dev-core pour delta-core) **commitent et poussent**
   après l'OK du chef, jamais `--force`, après tests et validation. Un dev est vidé avant chaque mission. Depuis le 07/10
   les chefs peuvent créer **une deuxième session dev** au besoin (Dev-delta-2, Dev-discipline-2, Dev-core-2) et utiliser les
