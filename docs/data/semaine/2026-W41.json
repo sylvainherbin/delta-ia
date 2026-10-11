@@ -2,7 +2,7 @@
   "semaine": "2026-W41",
   "du": "2026-10-05",
   "au": "2026-10-11",
-  "genere_le": "2026-10-10T02:04:33+00:00",
+  "genere_le": "2026-10-11T02:03:16+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -15,7 +15,8 @@
         "2026-10-07",
         "2026-10-08",
         "2026-10-09",
-        "2026-10-10"
+        "2026-10-10",
+        "2026-10-11"
       ]
     },
     "actu": {
@@ -27,7 +28,8 @@
         "2026-10-07",
         "2026-10-08",
         "2026-10-09",
-        "2026-10-10"
+        "2026-10-10",
+        "2026-10-11"
       ]
     },
     "openai": {
@@ -37,7 +39,8 @@
         "2026-10-06",
         "2026-10-07",
         "2026-10-08",
-        "2026-10-09"
+        "2026-10-09",
+        "2026-10-10"
       ]
     },
     "kb-claude": {
@@ -175,18 +178,6 @@
       "date_publication": "2026-10-06",
       "jour": "2026-10-07",
       "action": "Avant un premier essai de Cowork, ne connecter que des dossiers sans donnée de laboratoire ni de patient, et tester le transfert vers Claude Code."
-    },
-    {
-      "perimetre": "openai",
-      "id": "releasebot-66318",
-      "produit": "chatgpt",
-      "titre": "Import de fichiers audio dans ChatGPT",
-      "version": null,
-      "impact": "faible",
-      "certitude": "rapporte",
-      "date_publication": "2026-10-06",
-      "jour": "2026-10-07",
-      "action": null
     }
   ],
   "elements": [
@@ -213,6 +204,30 @@
       "date_publication": "2026-10-09",
       "jour": "2026-10-10",
       "action": "Essaie `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` sur le prochain workflow que tu autorises ; résultat attendu : les agents du workflow tournent sur le modèle choisi et non sur celui de la session."
+    },
+    {
+      "perimetre": "openai",
+      "id": "kb-codex-commandes-codex-apply",
+      "produit": "codex",
+      "titre": "Base : arguments de 12 commandes Codex désormais conservés",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-10",
+      "action": "Exécute `codex completion bash` dans le terminal utilisé pour les audits trading-sim ; essai : lis le script de complétion produit pour ce flux CLI/tmux ; résultat attendu : un script Bash sur stdout, sans installation ni modification du shell."
+    },
+    {
+      "perimetre": "openai",
+      "id": "rust-v0.162.1",
+      "produit": "codex",
+      "titre": "Codex CLI 0.162.1 : correctifs des questions multilignes et du serveur en arrière-plan",
+      "version": "0.162.1",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-09",
+      "jour": "2026-10-10",
+      "action": "Mets à jour la CLI npm avec `npm install -g @openai/codex@0.162.1`, puis lis `codex --version` ; essai : reprends un audit trading-sim sous tmux et remote control ; résultat attendu : version 0.162.1 et démarrage de la session conservée sans conflit de fonctionnalités implicites."
     },
     {
       "perimetre": "claude",
@@ -410,13 +425,25 @@
   "base_ajoutees": [
     {
       "perimetre": "claude",
+      "id": "claude-code-parametres-worktree-location",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "worktree.location",
+      "usage": "{\n  \"worktree\": {\n    \"location\": \"~/worktrees\"\n  }\n}",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-11"
+    },
+    {
+      "perimetre": "claude",
       "id": "claude-code-mcp-tool-search-for-mcp-server-authors",
       "produit": "claude-code",
       "categorie": "mcp",
       "nom": "Tool search for MCP server authors",
       "usage": "{\n  \"name\": \"search_tickets\",\n  \"description\": \"Searches the ticket tracker by keyword\",\n  \"_meta\": {\n    \"anthropic/alwaysLoad\": true\n  }\n}",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "{\n  \"name\": \"search_tickets\",\n  \"description\": \"Searches the ticket tracker by keyword\",\n  \"_meta\": {\n    \"anthropic/alwaysLoad\": true\n  }\n}",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-10-10"
     },
@@ -596,7 +623,7 @@
       "nom": "claude attach <id|name>",
       "usage": "claude attach <id|name>",
       "exemple": "claude attach 7c5dcf5d",
-      "exemple_origine": null,
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-10-06"
     },
@@ -608,7 +635,7 @@
       "nom": "claude logs <id|name>",
       "usage": "claude logs <id|name>",
       "exemple": "claude logs 7c5dcf5d",
-      "exemple_origine": null,
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-10-06"
     },
@@ -674,6 +701,66 @@
     }
   ],
   "base_verdicts": [
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-effort",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "--effort",
+      "usage": "--effort",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "utiliser",
+      "date": "2026-10-10",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "Tes services de session passent déjà un effort par rôle (`--effort medium` pour le chef) ; baisser l'effort des rôles aux tâches simples dans leur ligne de lancement ménagerait les limites hebdomadaires (piste 11) sans toucher au défaut global."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-model",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "--model",
+      "usage": "--model",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "utiliser",
+      "date": "2026-10-10",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "Tes services passent déjà un modèle par rôle (`--model opus` pour le chef) ; garder `--model sonnet` pour les rôles aux tâches machine simples suit la piste 11 sans changer le défaut Sonnet voulu."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-hooks",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "hooks",
+      "usage": "{\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Bash\",\n        \"hooks\": [\n          { \"type\": \"command\", \"command\": \"~/.claude/hooks/check-bash.sh\" }\n        ]\n      }\n    ]\n  }\n}",
+      "exemple": "{\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Bash\",\n        \"hooks\": [\n          { \"type\": \"command\", \"command\": \"~/.claude/hooks/check-bash.sh\" }\n        ]\n      }\n    ]\n  }\n}",
+      "exemple_origine": "source",
+      "verdict": "utiliser",
+      "date": "2026-10-10",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "Tu y déclares déjà `PermissionDenied` → `operer refus` dans `~/.claude/settings.json` ; les contrôles de la piste 3 (SHA-256 des missions, `PYTHONDONTWRITEBYTECODE=1`) s'ajouteraient sous la même clé, de préférence dans le `.claude/settings.json` du projet concerné."
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-codex-model-m",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "codex --model, -m",
+      "usage": "codex --model, -m",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "utiliser",
+      "date": "2026-10-10",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "Pour les missions Codex de delta-ia et discipline, conserver le modèle explicite du barème de mission-codex et vérifier celui transmis avant le lancement afin de maîtriser le coût en jetons."
+    },
     {
       "perimetre": "claude",
       "id": "claude-code-commandes-list-agents",
@@ -785,14 +872,14 @@
       "produit": "codex",
       "categorie": "commandes",
       "nom": "codex exec",
-      "usage": "codex exec",
+      "usage": "codex exec [PROMPT]",
       "exemple": "codex exec \"Décris la structure du dépôt delta-ia sans modifier les fichiers.\"",
       "exemple_origine": "compose",
       "verdict": "utiliser",
       "date": "2026-10-06",
       "verdict_avant": "tester",
       "verdict_apres": "utiliser",
-      "pourquoi": "Conserve `codex exec` pour la chaîne D70 de delta-ia et les missions des chefs : le binaire de l'app et celui du PATH ont des usages distincts. Respecte les permissions explicites du lancement et la convention de `mission-codex`, dont le lanceur commite les chemins déclarés sans push."
+      "pourquoi": "Conserve codex exec pour la chaîne D70 de delta-ia et les missions des chefs : le binaire de l’app et celui du PATH ont des usages distincts, avec les permissions explicites du lanceur."
     },
     {
       "perimetre": "openai",
@@ -815,14 +902,59 @@
       "produit": "codex",
       "categorie": "commandes",
       "nom": "codex resume",
-      "usage": "codex resume",
+      "usage": "codex resume [SESSION_ID]",
       "exemple": "codex resume",
       "exemple_origine": "source",
       "verdict": "utiliser",
       "date": "2026-10-06",
       "verdict_avant": "tester",
       "verdict_apres": "utiliser",
-      "pourquoi": "Conserve `codex resume <id>` pour reprendre les audits dans tes sessions tmux pilotées depuis l'iPhone ; cette commande fait déjà partie du fonctionnement décrit. Contrôle le dossier de reprise pour retrouver les fichiers de la mission voulue."
+      "pourquoi": "Conserve codex resume pour tes audits sous tmux pilotés depuis l’iPhone ; contrôle le dossier de reprise pour retrouver les fichiers de la mission voulue."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-fonctionnalites-page-cloud-environments",
+      "produit": "claude-code",
+      "categorie": "fonctionnalites",
+      "nom": "Configure cloud environments",
+      "usage": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
+      "exemple": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
+      "exemple_origine": "source",
+      "verdict": "tester",
+      "date": "2026-10-11",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "OPÉRER confie des missions de nature `code` et `mecanique` à l'exécutant `claude-cloud`, dont les crédits sont à épuiser avant le 05/11 : un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait de lancer `.venv/bin/pytest -q` sur delta-ia dans la session ; ne place aucun jeton en clair dans les variables."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-bridge-session-id",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_BRIDGE_SESSION_ID",
+      "usage": "CLAUDE_CODE_BRIDGE_SESSION_ID",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date": "2026-10-11",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "Toutes tes sessions durables tournent en Remote Control : dans le hook `PermissionDenied` (`operer refus`), lire `$CLAUDE_CODE_BRIDGE_SESSION_ID` permettrait de rattacher un refus à l'URL de sa session ; vérifie d'abord avec `printenv CLAUDE_CODE_BRIDGE_SESSION_ID` dans un appel Bash d'une session."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-skills-design",
+      "produit": "claude-code",
+      "categorie": "skills",
+      "nom": "/design",
+      "usage": "/design [brief]",
+      "exemple": "/design maquette mobile de l'onglet Atelier de la console de pilotage, jetons monochrome avec violet #a78bfa, cyan #22d3ee et rouge #ff6b61",
+      "exemple_origine": "compose",
+      "verdict": "tester",
+      "date": "2026-10-11",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "Tu utilises Claude Design intensivement dans Claude Desktop pour la Console de pilotage ; essaie `/design` dans une session Claude Code (2.1.265 ou plus) sur la maquette d'un onglet de la console, avec les jetons Delta (violet, cyan, rouge), et compare l'artefact à ce que produit la session Design. Vérifie d'abord que le modèle Design est activé sur ton compte."
     }
   ]
 }
