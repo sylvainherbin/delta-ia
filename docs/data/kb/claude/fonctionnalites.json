@@ -1015,7 +1015,7 @@
    "description_source": "Set up automated PR reviews that catch logic errors, security vulnerabilities, and regressions using multi-agent analysis of your full codebase",
    "usage": "gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \\\n  --jq '.output.text | split(\"bughunter-severity: \")[1] | split(\" -->\")[0] | fromjson'",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "@claude review",
    "disponibilite": "Team et Enterprise (aperçu de recherche)",
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1033,7 +1033,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1042,10 +1042,15 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-common-workflows",
@@ -1699,7 +1704,7 @@
    "description_source": "Learn about integrating Claude Code into your development workflow with GitLab CI/CD",
    "usage": "stages:\n  - ai\n\nclaude:\n  stage: ai\n  image: node:24-alpine3.21\n  # Adjust rules to fit how you want to trigger the job:\n  # - manual runs\n  # - merge request events\n  # - web/API triggers when a comment contains '@claude'\n  rules:\n    - if: '$CI_PIPELINE_SOURCE == \"web\"'\n…",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "@claude implement this feature based on the issue description",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1717,7 +1722,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1726,10 +1731,15 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-goal",
@@ -2059,7 +2069,7 @@
    "description_source": "Configure Claude Code for monorepos and large single-tree codebases with nested CLAUDE.md files, sparse worktrees, code intelligence, and per-package skills so Claude stays focused on the code you're working in.",
    "usage": "monorepo/\n  CLAUDE.md                     # root instructions\n  packages/\n    api/\n      CLAUDE.md                 # API-specific instructions\n      .claude/skills/\n      src/\n    web/\n      CLAUDE.md                 # frontend-specific instructions\n      .claude/skills/\n      src/\n    shared/\n…",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"claudeMdExcludes\": [\n    \"**/packages/web/**\"\n  ]\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -2090,6 +2100,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -2098,7 +2112,8 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "31 fichiers .py au total"
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-memory",
@@ -3363,7 +3378,7 @@
    "description_source": "Complete reference for the tools Claude Code can use, including permission requirements and per-tool behavior.",
    "usage": "{\n  \"env\": {\n    \"CLAUDE_CODE_USE_POWERSHELL_TOOL\": \"1\"\n  }\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "What tools do you have access to?",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -3398,6 +3413,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-11",
+     "changement": "exemple ajouté"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -3406,7 +3425,8 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "politique de capacités : WebFetch, WebSearch, navigateur et connecteurs refusés"
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-ultrareview",
