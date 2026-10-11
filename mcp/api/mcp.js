@@ -122,7 +122,7 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
 async function ficheReference({ id } = {}) {
   if (typeof id !== "string" || !/^[a-z0-9-]+$/.test(id)) throw new ErreurParametre("`id` invalide (ex. claude-code-commandes-model)");
   const e = (await toutesEntrees()).find((x) => x.id === id);
-  if (!e) throw new ErreurParametre(`aucune entrée ${id}`);
+  if (!e) throw new ErreurParametre(`aucune entrée ${id} : chercher l'identifiant avec chercher_reference`);
   return { avertissement: AVERTISSEMENT, fiche: fiche(e, true) };
 }
 
@@ -191,21 +191,24 @@ async function aTester() {
 
 const LECTURE = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 const OUTILS = {
-  resume_du_jour: { f: resumeDuJour, description: "Synthèse Delta du jour (ou d'une date) pour Claude Code, ChatGPT/Codex et l'actu IA : éléments d'impact fort et moyen, ce qu'ils changent pour Sylvain, action proposée. À appeler pour savoir ce qui a changé aujourd'hui ou à une date donnée ; pour les ajouts de la base de référence, utiliser nouveautes_base.",
-    inputSchema: { type: "object", properties: { date: { type: "string", description: "AAAA-MM-JJ ; par défaut le dernier passage" },
-      inclure_faibles: { type: "boolean", description: "inclure aussi les éléments d'impact faible" } }, additionalProperties: false } },
-  chercher_reference: { f: chercherReference, description: "Cherche dans la base de référence Delta (commandes, fonctionnalités, skills, plugins, MCP, paramètres, raccourcis de Claude Code, Claude, Codex, ChatGPT) : syntaxe exacte, explication en français, recommandation pour Sylvain. À appeler AVANT de donner une commande, une option ou un réglage de ces outils, ou de choisir entre eux. Le nom exact d'une commande ou d'une option (« /rename », « --add-dir ») passe en premier ; sinon recherche plein texte (« worktree », « config.toml model »). Détail d'une entrée : fiche_reference.",
-    inputSchema: { type: "object", required: ["requete"], properties: { requete: { type: "string" },
-      produit: { type: "string", enum: PRODUITS }, categorie: { type: "string", enum: CATEGORIES },
-      limite: { type: "integer", minimum: 1, maximum: 20 } }, additionalProperties: false } },
-  fiche_reference: { f: ficheReference, description: "Fiche complète d'une entrée de la base de référence Delta, par identifiant (donné par chercher_reference, nouveautes_base ou a_tester) : syntaxe, description, exemple et son origine, disponibilité, recommandation. À appeler quand le résumé de chercher_reference ne suffit pas.",
-    inputSchema: { type: "object", required: ["id"], properties: { id: { type: "string" } }, additionalProperties: false } },
-  etat_versions: { f: etatVersions, description: "Versions installées sur la machine de Sylvain (Claude Code, Codex de l'app ChatGPT, Codex CLI autonome, ChatGPT Desktop, Claude Desktop) et dernière version publiée connue de Delta ; statut à jour, en retard, inconnu ou embarqué (non comparé). À appeler avant de conseiller une fonctionnalité qui dépend d'une version, ou pour savoir si une mise à jour est en attente.",
+  resume_du_jour: { f: resumeDuJour, titre: "Résumé du jour", description: "Synthèse Delta du jour (ou d'une date) pour Claude Code, ChatGPT/Codex et l'actu IA : éléments d'impact fort et moyen, ce qu'ils changent pour Sylvain, action proposée. À appeler pour savoir ce qui a changé aujourd'hui ou à une date donnée ; pour les ajouts de la base de référence, utiliser nouveautes_base.",
+    inputSchema: { type: "object", properties: { date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "AAAA-MM-JJ ; par défaut le dernier passage" },
+      inclure_faibles: { type: "boolean", default: false, description: "inclure aussi les éléments d'impact faible" } }, additionalProperties: false } },
+  chercher_reference: { f: chercherReference, titre: "Chercher dans la référence", description: "Cherche dans la base de référence Delta (commandes, fonctionnalités, skills, plugins, MCP, paramètres, raccourcis de Claude Code, Claude, Codex, ChatGPT) : syntaxe exacte, explication en français, recommandation pour Sylvain. À appeler AVANT de donner une commande, une option ou un réglage de ces outils, ou de choisir entre eux. Le nom exact d'une commande ou d'une option (« /rename », « --add-dir ») passe en premier ; sinon recherche plein texte (« worktree », « config.toml model »). Détail d'une entrée : fiche_reference.",
+    inputSchema: { type: "object", required: ["requete"], properties: {
+      requete: { type: "string", minLength: 1, description: "nom exact (« /rename », « --add-dir ») ou mots à chercher, accents indifférents" },
+      produit: { type: "string", enum: PRODUITS, description: "restreindre à un produit ; tous par défaut" },
+      categorie: { type: "string", enum: CATEGORIES, description: "restreindre à une catégorie de la base ; toutes par défaut" },
+      limite: { type: "integer", minimum: 1, maximum: 20, default: 8, description: "nombre de fiches rendues, 8 par défaut ; `total` dit combien correspondent" } }, additionalProperties: false } },
+  fiche_reference: { f: ficheReference, titre: "Fiche de référence", description: "Fiche complète d'une entrée de la base de référence Delta, par identifiant (donné par chercher_reference, nouveautes_base ou a_tester) : syntaxe, description, exemple et son origine, disponibilité, recommandation. À appeler quand le résumé de chercher_reference ne suffit pas.",
+    inputSchema: { type: "object", required: ["id"], properties: { id: { type: "string", pattern: "^[a-z0-9-]+$",
+      description: "identifiant d'entrée (ex. claude-code-commandes-model), rendu par chercher_reference, nouveautes_base ou a_tester" } }, additionalProperties: false } },
+  etat_versions: { f: etatVersions, titre: "État des versions", description: "Versions installées sur la machine de Sylvain (Claude Code, Codex de l'app ChatGPT, Codex CLI autonome, ChatGPT Desktop, Claude Desktop) et dernière version publiée connue de Delta ; statut à jour, en retard, inconnu ou embarqué (non comparé). À appeler avant de conseiller une fonctionnalité qui dépend d'une version, ou pour savoir si une mise à jour est en attente.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  a_tester: { f: aTester, description: "Ce que Delta propose d'essayer : les actions des 30 derniers jours (étapes et effort, les plus importantes d'abord), puis les essais de la base de référence (`essais_base` : verdict `tester` d'abord, puis `utiliser` pas encore essayés, 30 au plus). À appeler quand Sylvain demande quoi tester, par où continuer ou ce qu'il a laissé de côté.",
+  a_tester: { f: aTester, titre: "À tester", description: "Ce que Delta propose d'essayer : les actions des 30 derniers jours (étapes et effort, les plus importantes d'abord), puis les essais de la base de référence (`essais_base` : verdict `tester` d'abord, puis `utiliser` pas encore essayés, 30 au plus). À appeler quand Sylvain demande quoi tester, par où continuer ou ce qu'il a laissé de côté.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  nouveautes_base: { f: nouveautesBase, description: "Entrées ajoutées à la base de référence Delta depuis N jours (1 à 30, défaut 7), les plus récentes d'abord, 30 au plus : nom, produit, catégorie, syntaxe, exemple, verdict, date d'ajout, identifiant. À appeler pour savoir ce qui est nouveau dans les commandes, options, skills et réglages de Claude Code et de Codex ; fiche_reference donne le détail.",
-    inputSchema: { type: "object", properties: { jours: { type: "integer", minimum: 1, maximum: 30, description: "fenêtre en jours, 7 par défaut" } }, additionalProperties: false } },
+  nouveautes_base: { f: nouveautesBase, titre: "Nouveautés de la base", description: "Entrées ajoutées à la base de référence Delta depuis N jours (1 à 30, défaut 7), les plus récentes d'abord, 30 au plus : nom, produit, catégorie, syntaxe, exemple, verdict, date d'ajout, identifiant. À appeler pour savoir ce qui est nouveau dans les commandes, options, skills et réglages de Claude Code et de Codex ; fiche_reference donne le détail.",
+    inputSchema: { type: "object", properties: { jours: { type: "integer", minimum: 1, maximum: 30, default: 7, description: "fenêtre en jours, 7 par défaut" } }, additionalProperties: false } },
 };
 
 class ErreurParametre extends Error {}
@@ -220,12 +223,12 @@ async function traiter(msg, mesure = {}) {
     case "initialize":
       return ok(id, { protocolVersion: typeof params.protocolVersion === "string" ? params.protocolVersion : PROTOCOLE,
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "delta", title: "Delta — veille IA de Sylvain", version: "0.2.0" },
+        serverInfo: { name: "delta", title: "Delta — veille IA de Sylvain", version: "0.2.1" },
         instructions: "Serveur en lecture seule sur les données publiques de Delta (https://sylvainherbin.github.io/delta-ia/). Il ne peut rien lancer ni modifier." });
     case "ping":
       return ok(id, {});
     case "tools/list":
-      return ok(id, { tools: Object.entries(OUTILS).map(([name, o]) => ({ name, title: name.replace(/_/g, " "), description: o.description,
+      return ok(id, { tools: Object.entries(OUTILS).map(([name, o]) => ({ name, title: o.titre, description: o.description,
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
       const o = OUTILS[params.name];

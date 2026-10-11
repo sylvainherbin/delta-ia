@@ -41,10 +41,39 @@ test("initialize, notification et liste des outils", async () => {
   const liste = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
   const noms = liste.corps.result.tools.map((t) => t.name).sort();
   assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "nouveautes_base", "resume_du_jour"]);
-  assert.equal(init.corps.result.serverInfo.version, "0.2.0");
-  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.0");
+  assert.equal(init.corps.result.serverInfo.version, "0.2.1");
+  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.1");
   for (const t of liste.corps.result.tools) assert.match(t.description, /À appeler/, `${t.name} : dire quand l'appeler`);
   for (const t of liste.corps.result.tools) assert.equal(t.annotations.readOnlyHint, true);
+});
+
+// Grille de relecture (mcp/RELECTURE.md) : les remarques du plugin mcp-server-dev retenues comme applicables.
+test("grille de relecture : titres, annotations et paramètres décrits", async () => {
+  const outils = (await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" })).corps.result.tools;
+  for (const t of outils) {
+    assert.ok(t.name.length <= 64, `${t.name} : nom de 64 caractères au plus`);
+    assert.ok(typeof t.title === "string" && t.title !== t.name.replace(/_/g, " "), `${t.name} : titre lisible, pas le nom recopié`);
+    for (const a of ["readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"]) assert.equal(typeof t.annotations[a], "boolean", `${t.name} : ${a}`);
+    assert.equal(t.inputSchema.additionalProperties, false, `${t.name} : schéma fermé`);
+    for (const [p, s] of Object.entries(t.inputSchema.properties)) assert.ok(s.description, `${t.name}.${p} : paramètre décrit`);
+  }
+  const schema = Object.fromEntries(outils.map((t) => [t.name, t.inputSchema.properties]));
+  assert.equal(schema.chercher_reference.limite.default, 8);
+  assert.equal(schema.nouveautes_base.jours.default, 7);
+  assert.equal(schema.resume_du_jour.inclure_faibles.default, false);
+  // Les motifs du schéma sont ceux que le serveur vérifie lui-même.
+  assert.ok(new RegExp(schema.fiche_reference.id.pattern).test("claude-code-commandes-model"));
+  assert.ok(!new RegExp(schema.fiche_reference.id.pattern).test("../x"));
+  assert.match((await appel("fiche_reference", { id: "../x" })).corps.result.content[0].text, /^Paramètre invalide : `id`/);
+  assert.ok(new RegExp(schema.resume_du_jour.date.pattern).test("2026-10-11"));
+  assert.ok(!new RegExp(schema.resume_du_jour.date.pattern).test("11/10/2026"));
+  assert.match((await appel("resume_du_jour", { date: "11/10/2026" })).corps.result.content[0].text, /^Paramètre invalide : `date`/);
+});
+
+test("fiche_reference : un identifiant inconnu renvoie vers chercher_reference", async () => {
+  const r = (await appel("fiche_reference", { id: "entree-qui-n-existe-pas" })).corps.result;
+  assert.equal(r.isError, true);
+  assert.match(r.content[0].text, /aucune entrée entree-qui-n-existe-pas : chercher l'identifiant avec chercher_reference/);
 });
 
 test("lecture seule : aucun outil d'écriture ni de déclenchement", async () => {
