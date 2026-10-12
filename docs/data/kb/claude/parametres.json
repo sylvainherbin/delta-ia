@@ -25035,7 +25035,7 @@
    "categorie": "parametres",
    "nom": "permissions.blockReadsOutsideWorkingDirectories",
    "gabarit": "court",
-   "description": "Réglage qui interdit à Read, Grep, Glob et LSP de lire hors des dossiers de travail, dans tous les modes.",
+   "description": "Réglage qui interdit à Read, Grep, Glob et LSP de lire hors des dossiers de travail, dans tous les modes, bypassPermissions compris.",
    "description_source": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or later.",
    "usage": "{\n  \"permissions\": {\n    \"blockReadsOutsideWorkingDirectories\": true\n  }\n}",
    "usage_nature": "syntaxe",
@@ -25044,7 +25044,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La session herbin-mint, gestionnaire de la machine, doit lire tout le système ; aucun besoin de cloisonnement n'est déclaré ailleurs, et le régime full auto s'y oppose."
+    "pourquoi": "herbin-mint, gestionnaire de la machine, doit lire tout le système et les sessions locales tournent en bypassPermissions par décision de Sylvain ; aucun besoin de cloisonnement des lectures n'est déclaré."
    },
    "sources": [
     {
@@ -25057,7 +25057,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25078,13 +25078,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "methode.organisation": {
-     "sha1": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
-     "pourquoi": "herbin-mint gère la machine ; régime full auto."
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "herbin-mint gère la machine (installations, services, réglages)."
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
