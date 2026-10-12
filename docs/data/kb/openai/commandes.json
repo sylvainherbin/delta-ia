@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-11",
+ "maj_le": "2026-10-12",
  "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -696,12 +696,12 @@
    "description_source": "Switch the active agent thread. — Inspect or continue work in a spawned subagent thread.",
    "usage": "/agent , /subagents",
    "usage_nature": "syntaxe",
-   "exemple": "1. Type `/agent` or `/subagents` and press Enter.\n2. Select the thread you want from the picker.",
-   "disponibilite": "Codex CLI",
+   "exemple": "/agent",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n'est pas utilisée ; aucun fil de sous-agent Codex à inspecter dans son interface n'est déclaré pour les audits."
+    "pourquoi": "Aucun fil de sous-agent Codex à inspecter n’est décrit dans le contexte ; l’usage de sous-agents Claude ne prouve pas ce besoin dans Codex."
    },
    "sources": [
     {
@@ -714,7 +714,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -731,15 +731,20 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-app",
@@ -798,12 +803,12 @@
    "description_source": "Approve one retry of a recent auto review denial. — Retry a command or action that the auto reviewer denied.",
    "usage": "/approve",
    "usage_nature": "syntaxe",
-   "exemple": "1. Type `/approve`.\n2. Confirm the retry when Codex shows the relevant denied action.",
-   "disponibilite": "Codex CLI",
+   "exemple": "/approve",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n'est pas utilisée ; un refus de revue automatique ne justifie pas de recommander cette commande CLI sans action précise à retenter."
+    "pourquoi": "Aucun refus récent de revue automatique Codex n’est décrit ; autoriser une nouvelle tentative sans action identifiée n’a pas d’essai défini."
    },
    "sources": [
     {
@@ -816,7 +821,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -833,15 +838,20 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-apps",
@@ -853,12 +863,12 @@
    "description_source": "Browse apps (connectors) and insert them into your prompt. — Attach an app as $app-slug before asking Codex to use it.",
    "usage": "/apps",
    "usage_nature": "syntaxe",
-   "exemple": "1. Type `/apps`.\n2. Pick an app from the list.",
-   "disponibilite": "Codex CLI",
+   "exemple": "/apps",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n'est pas utilisée ; les connecteurs de ChatGPT Desktop ne prouvent pas un besoin de les insérer par `/apps` dans une session CLI."
+    "verdict": "tester",
+    "pourquoi": "Dans delta-ia, essayer `/apps`, sélectionner Delta-IA puis demander une fiche avec ses sources ; vérifier que le connecteur est proposé et que la réponse cite la fiche."
    },
    "sources": [
     {
@@ -871,7 +881,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -888,19 +898,20 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
-    },
-    "usage.hors-machine": {
-     "sha1": "23a4e1519303a94f92274e1c8fc91b0e065d496a",
-     "pourquoi": "ChatGPT Desktop est utilisé pour ses connecteurs."
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Delta-IA est déclaré utilisé par Codex et ChatGPT Work."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-archive",
@@ -912,12 +923,12 @@
    "description_source": "Archive the current session and exit Codex. — Remove the current session from active session lists without deleting its transcript.",
    "usage": "/archive",
    "usage_nature": "syntaxe",
-   "exemple": "1. Type `/archive` and press Enter.\n2. Confirm that you want to archive the current session and exit Codex.",
-   "disponibilite": "Codex CLI",
+   "exemple": "/archive",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n'est pas utilisée ; les audits clos dans l'app ne créent pas de besoin d'archiver une session CLI avec `/archive`."
+    "pourquoi": "Les sessions Codex sous tmux sont durables et aucun fil clos à archiver n’est identifié ; la commande retire la session des listes actives et quitte Codex."
    },
    "sources": [
     {
@@ -930,7 +941,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -947,15 +958,24 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Sylvain utilise l'app de bureau, pas la CLI autonome."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-clear",
@@ -967,12 +987,12 @@
    "description_source": "Clear the terminal and start a fresh chat. — Reset the visible UI and chat context together when you want a fresh start.",
    "usage": "/clear",
    "usage_nature": "syntaxe",
-   "exemple": "/clear release prep",
+   "exemple": "/clear",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI Codex n'est pas l'interface de travail actuelle ; `/clear` ne sert donc pas aux audits menés dans l'app de bureau."
+    "pourquoi": "Les sessions Codex sont durables ; aucun besoin déclaré ne justifie d’effacer le terminal et de réinitialiser leur contexte avec `/clear`."
    },
    "sources": [
     {
@@ -985,7 +1005,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1002,15 +1022,20 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Les audits Codex passent principalement par l'app de bureau ; la CLI autonome n'est pas utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-cloud",
@@ -1747,7 +1772,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun incident local Codex à diagnostiquer n'est décrit pour les audits actuels ; lancer `codex doctor` sans symptôme n'a pas de résultat attendu précis."
+    "pourquoi": "L’incident 409 du remote control a été résolu en fermant l’app ; aucun problème actuel ne justifie de produire un nouveau diagnostic."
    },
    "sources": [
     {
@@ -1760,7 +1785,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1785,13 +1810,17 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app de bureau est l'interface courante et aucun incident CLI précis n'y est décrit."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "L’erreur 409 du remote control a disparu après fermeture de l’app de bureau."
     }
    },
    "exemple_origine": "source"
@@ -1976,10 +2005,10 @@
    "usage_nature": "syntaxe",
    "exemple": "codex features list",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex sous tmux ne désigne aucun indicateur à activer ; modifier `config.toml` sans essai ciblé créerait un effet persistant inutile."
+    "pourquoi": "Aucun indicateur précis à modifier n’est désigné pour les audits ; `enable` et `disable` persistent les changements pour les sessions futures dans `config.toml`."
    },
    "sources": [
     {
@@ -1992,7 +2021,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2017,17 +2046,17 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Codex sous tmux et Remote Control reste un objectif, sans indicateur de fonctionnalité désigné."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
    "exemple_origine": "source"
@@ -3196,7 +3225,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les missions et rapports d'audit sont déjà relayés comme fichiers horodatés ; aucun transfert actuel depuis le presse-papiers d'une CLI Codex n'est décrit."
+    "pourquoi": "Les audits trading-sim sont transmis comme fichiers horodatés ; aucun transfert de sortie du TUI par presse-papiers n’est décrit."
    },
    "sources": [
     {
@@ -3209,7 +3238,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3230,17 +3259,21 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "Sylvain relaie des missions et rapports dans des fichiers horodatés."
-    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex est surtout utilisé dans l'app de bureau."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
     }
    },
    "exemple_origine": "source"
@@ -3494,7 +3527,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sylvain travaille actuellement dans l'app de bureau Codex ; aucun besoin déclaré ne justifie de modifier ces options expérimentales persistantes du TUI."
+    "pourquoi": "Aucun besoin précis ne justifie ces options expérimentales ; les choix persistent dans la configuration et peuvent nécessiter un redémarrage."
    },
    "sources": [
     {
@@ -3507,7 +3540,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3524,13 +3557,17 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex est surtout utilisé dans l'app de bureau, pas dans la CLI autonome."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
    "exemple_origine": "source"
@@ -4216,7 +4253,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "trading-sim n'a volontairement pas d'AGENTS.md et carnet en possède déjà un ; ne pas modifier cette décision par commodité."
+    "pourquoi": "trading-sim n’a volontairement pas d’AGENTS.md et carnet possède déjà ce fichier ; `/init` créerait des instructions persistantes sans besoin déclaré."
    },
    "sources": [
     {
@@ -4229,7 +4266,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4242,10 +4279,27 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "L’absence d’AGENTS.md dans trading-sim est volontaire."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -4258,12 +4312,12 @@
    "description_source": "Remap TUI keyboard shortcuts. — Inspect and persist custom shortcut bindings in config.toml .",
    "usage": "/keymap",
    "usage_nature": "syntaxe",
-   "exemple": "ctrl-a",
+   "exemple": "/keymap",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI Codex autonome n'est pas utilisée et aucun conflit de raccourci TUI n'est décrit ; changer `config.toml` n'apporterait rien à l'usage actuel dans l'app."
+    "pourquoi": "Aucun conflit de raccourcis TUI n’est décrit ; `/keymap` enregistrerait des liaisons personnalisées dans `config.toml` sans essai ciblé."
    },
    "sources": [
     {
@@ -4276,7 +4330,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-09-29",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4289,15 +4343,20 @@
     {
      "date": "2026-09-29",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app de bureau est l'interface actuelle ; la CLI autonome n'est pas utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-local",
@@ -4305,7 +4364,7 @@
    "categorie": "commandes",
    "nom": "/local",
    "gabarit": "complet",
-   "description": "Bascule la conversation vers l'espace de travail local lorsque ce mode est disponible. La commande permet de poursuivre le fil avec les fichiers de la machine.",
+   "description": "La commande demande l’exécution de la conversation dans l’espace de travail local. La fiche ne fournit pas d’options ni de procédure de basculement supplémentaires.",
    "description_source": "Run the chat in your local workspace.",
    "usage": "/local",
    "usage_nature": "syntaxe",
@@ -4314,7 +4373,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les audits Codex décrits portent déjà sur le dépôt local trading-sim ; CONTEXTE.md ne décrit aucun basculement cloud vers local à résoudre."
+    "pourquoi": "Les audits Codex portent déjà sur les dépôts locaux ; aucun basculement vers le mode local n’est demandé par le contexte."
    },
    "sources": [
     {
@@ -4327,7 +4386,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4348,17 +4407,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'usage décrit est l'app de bureau sur les projets approuvés."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits portent sur le dépôt privé local."
+     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
     }
    },
    "exemple_origine": "source"
@@ -4699,8 +4762,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Sylvain utilise l'app de bureau Codex et non la CLI autonome ; démarrer un autre fil dans le même TUI ne répond à aucun besoin actuel déclaré."
+    "verdict": "tester",
+    "pourquoi": "Pour un audit indépendant de la console de pilotage dans sa session Codex, essayer `/new` et vérifier que le contexte repart de zéro dans le même dépôt avant la nouvelle revue."
    },
    "sources": [
     {
@@ -4713,7 +4776,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4734,13 +4797,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas utilisée actuellement."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
+    },
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "La console de pilotage est construite par Design et auditée avec Codex."
     }
    },
    "exemple_origine": "source"
@@ -5053,7 +5124,7 @@
    "categorie": "commandes",
    "nom": "/project",
    "gabarit": "complet",
-   "description": "Choisit le projet auquel seront rattachées les nouvelles conversations. La sélection ne change pas nécessairement le projet du fil courant.",
+   "description": "La commande choisit le projet des nouvelles conversations. La source extraite ne précise pas d’argument pour sélectionner un projet.",
    "description_source": "Choose a project for new chats.",
    "usage": "/project",
    "usage_nature": "syntaxe",
@@ -5062,7 +5133,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les dossiers approuvés dans Codex sont déjà identifiés et CONTEXTE.md ne signale aucune erreur de sélection de projet à corriger."
+    "pourquoi": "Les sessions sont attachées à leurs projets et les missions utilisent des worktrees ; aucun mauvais rattachement de nouvelle conversation n’est décrit."
    },
    "sources": [
     {
@@ -5075,7 +5146,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5092,13 +5163,17 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Les projets approuvés incluent trading-sim et un dossier de travail Codex."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
    "exemple_origine": "source"
@@ -5117,8 +5192,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "La CLI Codex autonome n'est pas utilisée et aucun suivi de terminal d'arrière-plan Codex n'est décrit pour les audits trading-sim."
+    "verdict": "tester",
+    "pourquoi": "Sur une mission Codex de discipline qui lance des tests longs en arrière-plan, essayer `/ps` et vérifier que leurs sorties récentes restent consultables dans le fil."
    },
    "sources": [
     {
@@ -5131,7 +5206,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5152,17 +5227,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app de bureau est utilisée ; la CLI autonome ne l'est pas."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les campagnes de calcul sont distinctes du rôle d'audit de Codex."
+    "projet.discipline": {
+     "sha1": "94f7999d4a666931335a8f8526affbd6ca45ac97",
+     "pourquoi": "Des missions de développement et leurs tests sont conduits sur discipline."
     }
    },
    "exemple_origine": "source"
@@ -5229,7 +5308,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sylvain réalise ses audits Codex dans l'app de bureau ; aucun besoin actuel de copie depuis le TUI n'est déclaré."
+    "pourquoi": "Le pilotage principal passe par l’iPhone et les résultats livrés ; aucune difficulté de sélection ou de copie d’une sortie du terminal n’est décrite."
    },
    "sources": [
     {
@@ -5242,7 +5321,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5259,13 +5338,17 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Le TUI de la CLI autonome n'est pas l'interface utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
    "exemple_origine": "source"
