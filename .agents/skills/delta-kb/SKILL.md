@@ -41,7 +41,7 @@ Cette section ne s'applique **que si la consigne la demande explicitement** (« 
 
 1. `.venv/bin/python scripts/catalogue.py a-commenter --perimetre openai --lot <lot> > raw/kb/a-commenter-<lot>.json`.
 2. Commente par tranches de 25 à 40 entrées : écris `raw/kb/commentaires-<lot>-<n>.json`, puis applique-le avec `scripts/catalogue.py appliquer --perimetre openai --fichier …`. Une tranche appliquée n'est jamais perdue si la suite échoue.
-3. `.venv/bin/python scripts/valider.py --perimetre openai --kb` doit rendre 0. Corrige tes commentaires (jamais `usage`) jusqu'à ce qu'il passe.
+3. `.venv/bin/python scripts/valider.py --perimetre openai --kb` doit rendre 0. Corrige tes commentaires (jamais `usage`) jusqu'à ce qu'il passe. Lance `valider.py` seul (jamais `| tail`, `| head`, `| grep`) ; s'il faut réduire la sortie, redirige-la dans un fichier sous `raw/` et lis-la ensuite ; le code se lit par `echo $?` juste après.
 4. Relis ce que tu as écrit : aucun secret, aucune donnée de tiers identifiable (REGLES §5).
 5. `git add docs/data/kb/openai docs/data/kb/recent.json docs/data/kb/a-tester.json docs/data/kb/noms.json` (jamais `git add -A`), message `delta-kb(openai): lot <lot> — <n> entrées commentées`, puis `git push`.
 

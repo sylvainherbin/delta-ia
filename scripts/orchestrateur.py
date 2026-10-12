@@ -25,7 +25,11 @@ Pour chaque étape, sans aucun LLM :
    inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
    jamais un `.git/index.lock` (D21) et ne touche jamais à `raw/` (historique du brut, D72) ;
-5. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
+5. contrôle de `valider.py` : étape réussie, `valider.py` relancé seul (sans tube : son code est lu directement) sur l'arbre
+   après l'étape, un appel par périmètre (`valider` de la configuration, avec `--date` du jour ; `--kb` du produit pour une
+   étape kb). Un échec marque l'étape en échec (code 131, détail dans la ligne de sortie de l'étape et dans la supervision) ;
+   rien n'est annulé ni poussé de plus (jamais de `--force`), la chaîne continue ;
+6. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
    `rapports/auto/AAAA-MM-JJ-<étape>.log` (jamais l'environnement).
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
@@ -33,7 +37,8 @@ fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatal
 fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ;
-130 sautée, quota de l'agent épuisé (refus constaté de Codex, arbre propre, sans seuil : la chaîne continue) ; autre : code de sortie de l'agent.
+130 sautée, quota de l'agent épuisé (refus constaté de Codex, arbre propre, sans seuil : la chaîne continue) ;
+131 étape réussie mais `valider.py` échoue sur l'arbre qu'elle a laissé (déjà poussé : signalé, la chaîne continue) ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
 Aucun appel à `claude` ou `codex` hors de `lancer()` ; les tests y injectent de fausses commandes.
@@ -65,6 +70,8 @@ AGENT_JOURNAL = "orchestrateur"
 
 CODE_DELAI, CODE_PERMISSION, CODE_ETAT, CODE_BINAIRE, CODE_NON_LANCEE, CODE_SANS_LOT = 124, 125, 126, 127, 128, 129
 CODE_QUOTA_EPUISE = 130  # Codex refuse de tourner (limite d'usage atteinte) : étape sautée, la chaîne continue
+CODE_VALIDATION = 131    # l'étape a réussi mais `valider.py` échoue sur l'arbre qu'elle a laissé : échec signalé, la chaîne continue
+DELAI_VALIDATION_S = 300
 SIGNATURE_QUOTA_CODEX = re.compile(r"You[’']ve hit your usage limit", re.IGNORECASE)
 REPRISE_QUOTA_CODEX = re.compile(r"try again at ([^\r\n]*?)\.?\s*$", re.IGNORECASE | re.MULTILINE)
 CODES_GARDE_SAUTEE = (11, 12)  # l'étape est sautée, la chaîne continue ; tout autre code de garde arrête la chaîne
@@ -79,6 +86,8 @@ class Etape:
     garde: str | None = None        # valeur de `garde.py --etape` ; None : pas de garde (supervision)
     commits_attendus: list[str] = field(default_factory=list)  # débuts de sujets de commit que l'étape doit produire (refus non fatal)
     kb: str | None = None           # périmètre kb : étape sautée quand aucun lot n'est dû
+    valider: list[str] = field(default_factory=list)  # périmètres quotidiens que `valider.py` contrôle après l'étape
+    valider_kb: bool = False        # étape kb : `valider.py --kb` du produit `kb` contrôlé après l'étape
     supervision: bool = False
     checkout: list[str] = field(default_factory=list)
     clean: list[str] = field(default_factory=list)
@@ -171,7 +180,7 @@ def construire_etapes(cfg: dict, racine: Path = RACINE) -> list[Etape]:
         prompt = (racine / e["prompt_fichier"]).read_text(encoding="utf-8") if e.get("prompt_fichier") else e["prompt"]
         cmd = commande_claude(cfg, e, racine, prompt) if e["agent"] == "claude" else commande_codex(cfg, e, racine, prompt)
         etapes.append(Etape(nom=nom, agent=e["agent"], commande=cmd, delai_s=e["delai_min"] * 60, garde=e.get("garde"),
-                            kb=e.get("kb"), supervision=bool(e.get("supervision")), checkout=list(e.get("checkout", [])),
+                            kb=e.get("kb"), valider=list(e.get("valider", [])), valider_kb=bool(e.get("valider_kb")), supervision=bool(e.get("supervision")), checkout=list(e.get("checkout", [])),
                             commits_attendus=list(e.get("commits_attendus", [])),
                             clean=list(e.get("clean", []))))
     return etapes
@@ -346,7 +355,7 @@ def reprise_quota_codex(res: Resultat) -> str | None:
 
 
 def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Resultat, code: int, detail: str,
-                  jouees: list[str], version: str | None = None) -> Path:
+                  jouees: list[str], version: str | None = None, controle: str = "") -> Path:
     dossier = racine / cfg["chaine"]["sortie_dossier"]
     dossier.mkdir(parents=True, exist_ok=True)
     f = dossier / f"{jour.isoformat()}-{etape.nom}.log"
@@ -357,6 +366,8 @@ def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Result
         for j in jouees:
             h.write(f"arrêt propre : {j}\n")
         h.write("----- stdout\n" + res.stdout.rstrip() + "\n----- stderr\n" + res.stderr.rstrip() + "\n")
+        if controle:
+            h.write("===== contrôle valider.py après l'étape\n" + controle.rstrip() + "\n")
     return f
 
 
@@ -375,6 +386,41 @@ def rapport_supervision_ecrit(racine: Path, jour: date, debut: float) -> bool:
         except OSError:
             continue
     return False
+
+
+# --------------------------------------------------------------------------------------------- contrôle de valider.py
+
+def commande_valider(racine: Path, perimetre: str, jour: date, kb: bool = False) -> list[str]:
+    """`valider.py` seul : aucun tube ni redirection, l'orchestrateur lit le code de sortie du processus lui-même."""
+    c = [sys.executable, str(racine / "scripts" / "valider.py"), "--perimetre", perimetre]
+    c += ["--kb"] if kb else ["--date", jour.isoformat()]
+    return c + ["--racine", str(racine)]
+
+
+def controles_valider(etape: Etape) -> list[tuple[str, bool]]:
+    """(périmètre, kb) à contrôler après l'étape : `valider` pour le quotidien, le produit `kb` avec `valider_kb` pour une étape kb."""
+    return [(p, False) for p in etape.valider] + ([(etape.kb, True)] if etape.kb and etape.valider_kb else [])
+
+
+def verifier_arbre(racine: Path, etape: Etape, jour: date, env: dict) -> tuple[bool, str, str]:
+    """Relance `valider.py` pour chaque périmètre de l'étape. Renvoie (tout valide, détail court, sortie complète du journal)."""
+    echecs, journal = [], []
+    for perimetre, kb in controles_valider(etape):
+        cmd = commande_valider(racine, perimetre, jour, kb)
+        nom = f"valider.py --perimetre {perimetre}" + (" --kb" if kb else "")
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=DELAI_VALIDATION_S, env=env, cwd=racine,
+                               stdin=subprocess.DEVNULL)
+            code, out, err = r.returncode, r.stdout, r.stderr
+        except subprocess.TimeoutExpired:
+            code, out, err = CODE_DELAI, "", f"délai dépassé ({DELAI_VALIDATION_S} s)"
+        except OSError as e:
+            code, out, err = CODE_BINAIRE, "", str(e)
+        journal.append(f"{nom} : code {code}\n----- stdout\n{out.rstrip()}\n----- stderr\n{err.rstrip()}")
+        if code != 0:
+            premiere = next((l.strip() for l in (err + out).splitlines() if l.strip().startswith("-")), (err or out).strip()[:120])
+            echecs.append(f"{nom} : code {code}" + (f" ({premiere[:160]})" if premiere else ""))
+    return not echecs, " ; ".join(echecs), "\n".join(journal)
 
 
 # ------------------------------------------------------------------------------------------------------ garde, kb
@@ -506,9 +552,14 @@ class Chaine:
         if modifies:  # priorité sur tout autre motif : l'intégrité de git ne se rétablit pas automatiquement
             code, stop = CODE_ETAT, True
             detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
-        if code != 0 and code != CODE_QUOTA_EPUISE and not stop and not etape.supervision:
+        controle = ""
+        if code == 0 and not stop and not etape.supervision and controles_valider(etape):
+            valide, resume, controle = verifier_arbre(racine, etape, self.jour, env)
+            if not valide:  # le push est déjà fait : on signale, on ne rétablit rien ; la chaîne continue (périmètres indépendants)
+                code, detail = CODE_VALIDATION, "valider.py échoue sur l'arbre laissé par l'étape (déjà poussé) : " + resume
+        if code not in (0, CODE_QUOTA_EPUISE, CODE_VALIDATION) and not stop and not etape.supervision:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)
-        ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees, version)
+        ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, jouees, version, controle)
         apres = tete_courte(racine)
         issue = self._fin(etape, code, code in (0, CODE_QUOTA_EPUISE), stop, detail, apres if apres != avant else "aucun")
         if avertissement and code == 0:  # avertissement journalisé : la supervision le relève, la chaîne continue

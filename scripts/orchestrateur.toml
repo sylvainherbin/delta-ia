@@ -48,6 +48,8 @@ prompt = "Lis .claude/skills/delta/SKILL.md et exécute le passage en mode autom
 # Sujets de commit que l'étape doit produire : un refus de permission n'est un simple avertissement que si l'étape les a tous
 # produits et poussés (sinon code 125, fatal). Un début de sujet suffit (`delta(claude): 2026-10-02 — 9 éléments (3 fort)`).
 commits_attendus = ["delta(claude):", "delta(actu):"]
+# Après l'étape, l'orchestrateur relance `valider.py --perimetre <p> --date <jour>` pour chacun (code 131 si l'un échoue ; étapes kb : `--kb` du produit `kb`).
+valider = ["claude", "actu"]
 # Arrêt propre (D68) : seuls ces chemins sont remis en place, jamais autre chose.
 checkout = ["docs/data/versions.json", "docs/data/etat.json", "docs/data/claude", "docs/data/actu", "docs/data/kb/claude",
             "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "docs/data/semaine", "docs/data/recherche.json", "state/claude.json", "state/actu.json"]
@@ -59,6 +61,7 @@ garde = "codex-delta"
 delai_min = 45
 prompt = "Lis .agents/skills/delta/SKILL.md et exécute le passage en mode automatique (D70), sans poser de question."
 commits_attendus = ["delta(openai):"]
+valider = ["openai"]
 checkout = ["docs/data/openai", "docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json", "state/openai.json"]
 clean = ["docs/data/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.json", "docs/data/kb/noms.json"]
 
@@ -66,6 +69,7 @@ clean = ["docs/data/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.
 agent = "claude"
 garde = "delta-kb"
 kb = "claude"                        # étape sautée (ligne à 0, code 129) quand aucun lot n'est dû
+valider_kb = true                    # après l'étape : `valider.py --perimetre claude --kb` (code 131 s'il échoue)
 modele = "opus"                      # la skill /delta-kb fixe Opus 5.5 (épargne la limite Fable)
 effort = "high"
 delai_min = 45
@@ -78,6 +82,7 @@ clean = ["docs/data/kb/claude", "docs/data/kb/recent.json", "docs/data/kb/a-test
 agent = "codex"
 garde = "codex-delta-kb"
 kb = "openai"
+valider_kb = true                    # après l'étape : `valider.py --perimetre openai --kb` (code 131 s'il échoue)
 delai_min = 45
 prompt = "Lis .agents/skills/delta-kb/SKILL.md et exécute le lancement en mode automatique (D70), sans poser de question."
 commits_attendus = ["delta-kb(openai):"]

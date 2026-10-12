@@ -3,6 +3,7 @@
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -761,6 +762,7 @@ def depot_sh(depot, tmp_path):
     toml = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
     toml = toml.replace('bin = "~/.local/bin/claude"', f'bin = "{faux}"').replace('bin = "/usr/lib/chatgpt/resources/codex"', f'bin = "{faux}"')
     toml = toml.replace("delai_min = 45", "delai_min = 1")
+    toml = re.sub(r"^valider = .*$", "valider = []", toml, flags=re.MULTILINE).replace("valider_kb = true", "valider_kb = false")  # dépôt de test : données vides
     (tmp_path / "faux.toml").write_text(toml)
     depot.sh("git", "add", "-A")
     depot.sh("git", "commit", "-qm", "scripts")
@@ -1003,3 +1005,125 @@ def test_la_version_est_lue_sur_le_binaire_de_l_etape_codex_seulement(depot, cfg
     chaine(depot, cfg, etapes).executer()
     assert lus == [sys.executable]
     assert "version codex" not in (depot / "rapports" / "auto" / "2026-10-02-delta-kb.log").read_text(encoding="utf-8")
+
+
+# --- contrôle de valider.py après chaque étape (mission m-ad2482a418f1) ------------------------------------------
+
+FAUX_VALIDER = r'''
+import sys
+from pathlib import Path
+a = sys.argv[1:]
+racine = Path(a[a.index("--racine") + 1])
+perimetre = a[a.index("--perimetre") + 1]
+with open(racine / "rapports" / "valider-appels.txt", "a") as f:
+    f.write(" ".join(a[:-2]) + "\n")
+if (racine / "rapports" / f"ko-{perimetre}").exists():
+    print(f"valider.py : 1 erreur(s) pour {perimetre}", file=sys.stderr)
+    print("  - action.effort : « 10min » n'est pas une valeur permise", file=sys.stderr)
+    sys.exit(1)
+print(f"valider.py : {perimetre} valide")
+'''
+
+
+@pytest.fixture
+def faux_valider(depot, tmp_path, monkeypatch):
+    script = tmp_path / "faux_valider.py"
+    script.write_text(FAUX_VALIDER)
+    reel = orc.commande_valider
+
+    def commande(racine, perimetre, jour, kb=False):
+        c = reel(racine, perimetre, jour, kb)
+        return [c[0], str(script), *c[2:]]  # mêmes arguments que la vraie commande, autre programme
+
+    monkeypatch.setattr(orc, "commande_valider", commande)
+    appels = depot / "rapports" / "valider-appels.txt"
+    return lambda: appels.read_text().splitlines() if appels.exists() else []
+
+
+def avec_valider(e, *perimetres, kb=False):
+    e.valider, e.valider_kb = list(perimetres), kb
+    return e
+
+
+def test_valider_est_relance_par_perimetre_apres_chaque_etape(depot, cfg, faux_valider):
+    etapes = [
+        avec_valider(etape(depot, "delta", "ok", "docs/data/claude", "a.json", checkout=DELTA_CLAUDE), "claude", "actu"),
+        avec_valider(etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"), "openai"),
+        avec_valider(etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"), kb=True),
+        avec_valider(etape(depot, "codex-delta-kb", "ok-codex", "docs/data/kb/openai", "d.json", agent="codex", garde="codex-delta-kb", kb="openai"),
+                     kb=True),
+        etape(depot, "supervision", "supervision", supervision=True),
+    ]
+    assert chaine(depot, cfg, etapes, compte_lots=lambda r, p: 3).executer() == 0
+    assert faux_valider() == [
+        "--perimetre claude --date 2026-10-02", "--perimetre actu --date 2026-10-02", "--perimetre openai --date 2026-10-02",
+        "--perimetre claude --kb", "--perimetre openai --kb"]
+    assert codes(depot)["chaine"] == 0
+
+
+def test_valider_en_echec_marque_l_etape_131_et_la_chaine_continue(depot, cfg, faux_valider):
+    (depot / "rapports" / "ko-claude").write_text("")
+    etapes = [
+        avec_valider(etape(depot, "delta", "ok", "docs/data/claude", "a.json", checkout=DELTA_CLAUDE), "claude", "actu"),
+        avec_valider(etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"), "openai"),
+        etape(depot, "supervision", "supervision", supervision=True),
+    ]
+    ch = chaine(depot, cfg, etapes)
+    assert ch.executer() == 1
+    assert codes(depot) == {"delta": 131, "codex-delta": 0, "supervision": 0, "chaine": 1}
+    issue = ch.issues[0]
+    assert issue.code == orc.CODE_VALIDATION == 131 and not issue.ok and not issue.arret_chaine
+    assert "valider.py --perimetre claude : code 1" in issue.detail and "10min" in issue.detail
+    assert (depot / "rapports" / "supervision-lancee.txt").exists()
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
+    assert "code 131" in log and "contrôle valider.py après l'étape" in log and "10min" in log
+    assert ahead(depot) == 0  # rien n'est annulé ni poussé de plus
+
+
+def test_valider_n_est_pas_relance_apres_un_echec_ou_une_etape_sautee(depot, cfg, faux_valider):
+    depot.sh("git", "checkout", "-q", "--", "notes.txt")
+    etapes = [
+        avec_valider(etape(depot, "delta", "echec", "docs/data/claude", checkout=DELTA_CLAUDE + ("notes.txt",), clean=DELTA_CLAUDE), "claude", "actu"),
+        etape(depot, "supervision", "supervision", supervision=True),
+    ]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == 3 and faux_valider() == []
+    (depot / "rapports" / "passages.log").unlink()
+    sans_lot = avec_valider(etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"), kb=True)
+    assert chaine(depot, cfg, [sans_lot], compte_lots=lambda r, p: 0).executer() == 0
+    assert codes(depot)["delta-kb"] == 129 and faux_valider() == []
+
+
+def test_commande_valider_est_seule_sans_tube_et_acceptee_par_le_vrai_valider(tmp_path):
+    for kb in (False, True):
+        c = orc.commande_valider(RACINE, "claude", JOUR, kb)
+        assert not any(x in ("|", "tail", "head", "grep", ">", "2>&1") for x in c) and c[1].endswith("scripts/valider.py")
+        r = subprocess.run([*c[:-1], str(tmp_path)], capture_output=True, text=True)  # racine vide : erreurs de données, pas d'usage
+        assert r.returncode in (0, 1), r.stderr
+
+
+def test_configuration_declare_les_controles_valider_des_quatre_etapes():
+    cfg = orc.charger_config()["etapes"]
+    assert cfg["delta"]["valider"] == ["claude", "actu"] and cfg["codex-delta"]["valider"] == ["openai"]
+    assert cfg["delta-kb"]["kb"] == "claude" and cfg["codex-delta-kb"]["kb"] == "openai"
+    assert cfg["delta-kb"]["valider_kb"] is True and cfg["codex-delta-kb"]["valider_kb"] is True
+    assert "valider" not in cfg["supervision"]
+    etapes = {e.nom: e for e in orc.construire_etapes(orc.charger_config(), RACINE)}
+    assert [orc.controles_valider(etapes[n]) for n in ("delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision")] == [
+        [("claude", False), ("actu", False)], [("openai", False)], [("claude", True)], [("openai", True)], []]
+
+
+SKILLS_PASSAGE = (".claude/skills/delta/SKILL.md", ".claude/skills/delta-kb/SKILL.md",
+                  ".agents/skills/delta/SKILL.md", ".agents/skills/delta-kb/SKILL.md")
+
+
+@pytest.mark.parametrize("skill", SKILLS_PASSAGE)
+def test_les_skills_de_passage_interdisent_le_tube_sur_valider(skill):
+    t = (RACINE / skill).read_text(encoding="utf-8")
+    assert "Lance `valider.py` seul (jamais `| tail`, `| head`, `| grep`)" in t and "`echo $?` juste après" in t
+    assert "sous `raw/`" in t
+
+
+def test_supervision_est_prevenue_du_code_131():
+    t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "131 étape réussie mais `valider.py` échoue" in t

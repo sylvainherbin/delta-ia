@@ -4,7 +4,7 @@
 # net toute relance manuelle pendant ce temps. Fixe lui-même HOME, PATH et le dossier de travail (aucun environnement hérité
 # d'une session graphique : mode nuit). Ne lance rien d'autre que scripts/orchestrateur.py, qui porte toute la logique.
 #
-# Codes de sortie : 0 chaîne sans échec ; 1 au moins une étape en échec ; 2 mauvais argument ; 14 chaîne déjà en cours ;
+# Codes de sortie : 0 chaîne sans échec ; 1 au moins une étape en échec (dont le contrôle de valider.py après une étape, code 131 dans le journal) ; 2 mauvais argument ; 14 chaîne déjà en cours ;
 # 16 environnement du dépôt illisible (.venv absent).
 set -u
 
