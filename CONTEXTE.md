@@ -269,7 +269,7 @@ pilotage, pas ici.
 | Connecteur MCP delta-ia (local) | ajouté le 24/09 (`claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp`) dans `~/projets` et `~/projets/delta-ia` ; absent de `~/projets/trading-sim` (dossier dédié vérifié avant l'ajout) | [observé] |
 | Connecteurs de compte claude.ai | s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet concerné | [observé] |
 | Écart trading-sim | trading-sim reçoit quand même les connecteurs de compte (Delta-IA compris), car son `.claude/settings.json` ne les liste pas dans son `deny` ; contraire à sa règle « aucun accès web en Lot 001 ». herbin-mint n'y touche pas (dépôt gouverné par Work) ; Sylvain a transmis la question du `deny` à Work | [observé] |
-| Connecteur claude.ai Vercel | refermé volontairement par Sylvain le 24/09 après usage ponctuel (D66) ; son état « Needs authentication » est voulu, ne pas proposer de le réautoriser | [déclaré] |
+| Connecteur claude.ai Vercel | `claude mcp list` du 12/10/2026 : `claude.ai Vercel: https://mcp.vercel.com - ✔ Connected` (refermé par Sylvain le 24/09 après usage ponctuel, D66, puis de nouveau autorisé) | [observé] |
 
 ### Règles globales
 <!-- ctx-id: config.claude-code.regles-globales -->
