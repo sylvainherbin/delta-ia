@@ -113,6 +113,9 @@ def test_encart_compte_et_quotas():
     assert "const SEUIL_ALERTE_PCT = 80;" in app and "hebdo && q.pct > SEUIL_ALERTE_PCT" in corps
     assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in app
     assert '["claude_session_5h", "Claude, session 5 h", false]' in app
+    # D120 : le relevé de chaque quota est affiché ; plus de 30 min (ou date inconnue) : « ancien »
+    assert "const ANCIEN_MIN = 30;" in app and "maintenant - tRel > ANCIEN_MIN * 60000" in corps and '" · ancien"' in corps
+    assert "date du relevé inconnue" in corps
     # une valeur inconnue ou périmée n'est jamais présentée comme actuelle
     assert '"inconnu"' in corps and "valeur périmée" in corps
     # jamais d'injection de HTML, heure locale

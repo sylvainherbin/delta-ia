@@ -1,5 +1,6 @@
 """D65 : état volatil des outils -> docs/data/etat.json, et son contrôle."""
 
+import inspect
 import json
 import subprocess
 from pathlib import Path
@@ -151,62 +152,119 @@ def test_dry_run_ne_lit_pas_organisation_et_n_ecrit_rien(tmp_path, monkeypatch, 
     assert not (tmp_path / "docs").exists()
 
 
-# ---------- D93 : bloc `comptes` (quotas D71 de rapports/usage.json) ----------
-USAGE = {"releve_le": "2026-10-08T09:32:55.668Z", "source": "console-mur 0.0.0",
-         "claude": {"session_5h": {"pct": 12, "remise_a_zero": "2026-10-08T10:00:01.012Z"},
-                    "semaine": {"pct": 85, "remise_a_zero": "2026-10-11T16:00:01.012Z"},
-                    "semaine_fable": {"pct": 0, "remise_a_zero": "2026-10-11T16:00:00.000Z"}},
-         "chatgpt": {"semaine": {"pct": 5, "remise_a_zero": "2026-10-14T05:29:59.000Z", "releve_le": "2026-10-08T09:32:40.508Z"}},
-         "machine": {"cpu_pct": 100, "disque_libre_go": 850.4}, "wifi": {"signal_pct": 44}}
+# ---------- D93, D120 : bloc `comptes` (quotas lus dans `observatory-lire --json`) ----------
+def _ind(valeur, releve, rz, statut="mesure", note=None):
+    return {"valeur": valeur, "statut": statut, "source": "usage.json (carnet-console)", "releve_le": releve, "unite": "%",
+            "note": note if note is not None else f"remise à zéro {rz}"}
 
 
-def _usage(tmp_path, contenu):
-    (tmp_path / "rapports").mkdir(exist_ok=True)
-    (tmp_path / "rapports" / "usage.json").write_text(contenu if isinstance(contenu, str) else json.dumps(contenu))
-    return tmp_path
+INSTANTANE = {"schema": "delta.observatory.instantane", "version": 3, "genere_le": "2026-10-08T09:33:00+00:00", "age_min": 0.1, "frais": True,
+              "indicateurs": {
+                  "quotas.claude.session_5h": _ind(12, "2026-10-08T09:32:55.668Z", "2026-10-08T10:00:01.012Z"),
+                  "quotas.claude.semaine": _ind(85, "2026-10-08T09:32:55.668Z", "2026-10-11T16:00:01.012Z"),
+                  "quotas.claude.semaine_fable": _ind(0, "2026-10-08T09:32:55.668Z", "2026-10-11T16:00:00.000Z"),
+                  "quotas.chatgpt.semaine": _ind(5, "2026-10-08T09:32:40.508Z", "2026-10-14T05:29:59.000Z")}}
 
 
-def test_comptes_recopie_les_quatre_quotas_sans_machine_ni_wifi(tmp_path):
-    c = etat.comptes(_usage(tmp_path, USAGE))
-    assert c["statut"] == "ok" and c["releve_le"] == USAGE["releve_le"]
+def _lire(instantane):
+    return lambda: instantane
+
+
+def _erreur(message):
+    def lire():
+        raise etat.LectureObservatory(message)
+    return lire
+
+
+def test_comptes_lit_les_quatre_quotas_avec_leur_releve(tmp_path):
+    c = etat.comptes(_lire(INSTANTANE))
+    assert c["statut"] == "ok" and c["releve_le"] == "2026-10-08T09:32:55.668Z" and c["source"].startswith("observatory-lire")
     assert list(c["quotas"]) == ["claude_session_5h", "claude_semaine", "claude_semaine_fable", "chatgpt_semaine"]
-    assert c["quotas"]["claude_semaine"] == {"pct": 85, "remise_a_zero": "2026-10-11T16:00:01.012Z", "releve_le": USAGE["releve_le"]}
+    assert c["quotas"]["claude_semaine"] == {"pct": 85, "remise_a_zero": "2026-10-11T16:00:01.012Z", "releve_le": "2026-10-08T09:32:55.668Z"}
     assert c["quotas"]["chatgpt_semaine"]["releve_le"] == "2026-10-08T09:32:40.508Z"
     texte = json.dumps(c)
     assert "machine" not in texte and "wifi" not in texte and "cpu" not in texte and "disque" not in texte
     assert _valider(tmp_path, {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {},
-                               "instructions_globales": [], "comptes": c}) == []
+                                           "instructions_globales": [], "comptes": c}) == []
 
 
-def test_comptes_fichier_absent_ou_illisible_donne_inconnu(tmp_path):
-    for contenu in (None, "{pas du json", "[]", {"claude": {}}):
-        racine = tmp_path / str(abs(hash(str(contenu))))
-        racine.mkdir()
-        if contenu is not None:
-            _usage(racine, contenu)
-        c = etat.comptes(racine)
+def test_comptes_instantane_absent_ou_illisible_donne_inconnu(tmp_path):
+    vide = {**INSTANTANE, "indicateurs": {}}
+    sans_quota = {**INSTANTANE, "indicateurs": {k: _ind(None, None, None, "non_mesure", "absent de usage.json") for k in INSTANTANE["indicateurs"]}}
+    for lire in (_erreur("observatory-lire : instantané absent : /x"), _erreur("exécutable observatory-lire introuvable"),
+                 _lire(vide), _lire(sans_quota)):
+        c = etat.comptes(lire)
         assert c["statut"] == "inconnu" and c["raison"] and set(c) == {"statut", "raison"}
         assert _valider(tmp_path, {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {},
                                    "instructions_globales": [], "comptes": c}) == []
 
 
-def test_comptes_valeur_invalide_est_null_avec_raison(tmp_path):
-    u = json.loads(json.dumps(USAGE))
-    u["claude"]["semaine"]["pct"] = 140
-    u["claude"]["semaine_fable"]["pct"] = "beaucoup"
-    u["claude"]["session_5h"]["remise_a_zero"] = "demain"
-    u["chatgpt"]["semaine"]["pct"] = 33.4
-    c = etat.comptes(_usage(tmp_path, u))
-    q = c["quotas"]
+def test_comptes_valeur_invalide_ou_non_mesuree_est_null_avec_raison():
+    i = json.loads(json.dumps(INSTANTANE))
+    ind = i["indicateurs"]
+    ind["quotas.claude.semaine"]["valeur"] = 140
+    ind["quotas.claude.semaine_fable"] = _ind(None, None, None, "non_mesure", "claude.semaine_fable absent de usage.json")
+    ind["quotas.claude.session_5h"]["note"] = "remise à zéro demain"
+    ind["quotas.chatgpt.semaine"]["valeur"] = 33.4
+    ind["quotas.chatgpt.semaine"]["releve_le"] = "hier"
+    q = etat.comptes(_lire(i))["quotas"]
     assert q["claude_semaine"]["pct"] is None and "0 à 100" in q["claude_semaine"]["raison"]
-    assert q["claude_semaine_fable"]["pct"] is None
+    assert q["claude_semaine_fable"]["pct"] is None and "absent de usage.json" in q["claude_semaine_fable"]["raison"]
+    assert q["claude_semaine_fable"]["releve_le"] is None and q["claude_semaine_fable"]["remise_a_zero"] is None
     assert q["claude_session_5h"]["pct"] == 12 and q["claude_session_5h"]["remise_a_zero"] is None
-    assert q["chatgpt_semaine"]["pct"] == 33
+    assert q["chatgpt_semaine"]["pct"] == 33 and q["chatgpt_semaine"]["releve_le"] is None
+
+
+def test_comptes_instantane_perime_est_rendu_tel_quel_avec_ses_releves():
+    c = etat.comptes(_lire({**INSTANTANE, "frais": False, "age_min": 45.0}))
+    assert c["statut"] == "ok" and c["quotas"]["claude_semaine"]["releve_le"] == "2026-10-08T09:32:55.668Z"
+
+
+def _lanceur(monkeypatch, code, sortie):
+    appels = []
+
+    def lancer(args, **options):
+        appels.append((args, options))
+        return subprocess.CompletedProcess(args, code, json.dumps(sortie) if not isinstance(sortie, str) else sortie, "")
+    monkeypatch.setattr(etat.subprocess, "run", lancer)
+    monkeypatch.setattr(etat, "_lanceur_lire", lambda: "/bin/observatory-lire")
+    return appels
+
+
+def test_lire_observatory_appelle_le_lanceur_en_lecture_seule(monkeypatch):
+    appels = _lanceur(monkeypatch, 3, {**INSTANTANE, "frais": False})
+    assert etat.lire_observatory()["frais"] is False  # code 3 : périmé, rendu quand même
+    (args, options), = appels
+    assert args == ["/bin/observatory-lire", "--json", "--cle", "quotas"] and options["shell"] is False
+
+
+@pytest.mark.parametrize("code, sortie, attendu", [
+    (4, {**INSTANTANE, "indicateurs": {}, "erreur": "instantané absent : /x"}, "instantané absent"),
+    (4, {**INSTANTANE, "indicateurs": {}}, "code de sortie 4"),
+    (0, "pas du json", "sortie illisible"),
+    (0, "[]", "structure JSON invalide"),
+])
+def test_lire_observatory_erreurs_donnent_une_raison_controlee(monkeypatch, code, sortie, attendu):
+    _lanceur(monkeypatch, code, sortie)
+    with pytest.raises(etat.LectureObservatory, match=attendu):
+        etat.lire_observatory()
+
+
+def test_lire_observatory_lanceur_absent(monkeypatch):
+    monkeypatch.setattr(etat, "_lanceur_lire", lambda: None)
+    with pytest.raises(etat.LectureObservatory, match="introuvable"):
+        etat.lire_observatory()
+
+
+def test_comptes_ne_lit_plus_usage_json():
+    """D120 : usage.json n'a qu'un producteur ; seule garde.py le lit en direct."""
+    code = inspect.getsource(etat.comptes) + inspect.getsource(etat.lire_observatory)
+    assert "usage.json" not in code and "rapports" not in code and "lire_json" not in code
 
 
 def test_valider_comptes(tmp_path):
     base = {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {}, "instructions_globales": []}
-    ok = etat.comptes(_usage(tmp_path, USAGE))
+    ok = etat.comptes(_lire(INSTANTANE))
 
     def avec(modif):
         c = json.loads(json.dumps(ok))
@@ -293,7 +351,8 @@ def test_credits_lecture_reelle_est_lecture_seule(monkeypatch):
 
 def test_main_ajoute_les_credits_aux_comptes(tmp_path, monkeypatch, etat_factice):
     (tmp_path / "profil.yaml").write_text("releves_machine: true\n", encoding="utf-8")
-    _usage(tmp_path, USAGE)
+    vrais_comptes = etat.comptes
+    monkeypatch.setattr(etat, "comptes", lambda: vrais_comptes(_lire(INSTANTANE)))
     monkeypatch.setattr(etat.organisation, "ecrire_releve", lambda racine: None)
     vraie = etat.credits_cloud
     monkeypatch.setattr(etat, "credits_cloud", lambda: vraie(_vue(CLOUD), MAINTENANT))
@@ -305,7 +364,7 @@ def test_main_ajoute_les_credits_aux_comptes(tmp_path, monkeypatch, etat_factice
 
 def test_valider_credits(tmp_path):
     base = {"releve_le": "2026-10-08T00:00:00+00:00", "outils": {}, "mcp_claude_code": {}, "instructions_globales": []}
-    ok = etat.comptes(_usage(tmp_path, USAGE))
+    ok = etat.comptes(_lire(INSTANTANE))
     ok["credits"] = etat.credits_cloud(_vue(CLOUD), MAINTENANT)
 
     def avec(modif, comptes=ok):

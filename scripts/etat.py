@@ -8,9 +8,11 @@ Relevé sur la machine, au même endroit que versions.py dans /delta :
   ~/projets et ~/projets/delta-ia, et `mcp_servers` de config.toml ;
 - présence et date des instructions globales `~/.claude/CLAUDE.md` et `~/.codex/AGENTS.md`.
 Chaque relevé : {valeur, source, raison} ; `raison` est renseignée quand la valeur est null (illisible, absente).
-Bloc `comptes` (D93, D71) : quotas recopiés de rapports/usage.json (claude.session_5h, claude.semaine, claude.semaine_fable,
-chatgpt.semaine : pct, remise_a_zero, releve_le), seulement si `releves_machine` vaut true dans profil.yaml ; fichier absent ou
-illisible : `comptes: {statut: "inconnu", raison}`. Rien de `machine` ni de `wifi`.
+Bloc `comptes` (D93, D71, D120) : quotas lus dans `observatory-lire --json --cle quotas` (clés quotas.claude.session_5h,
+quotas.claude.semaine, quotas.claude.semaine_fable, quotas.chatgpt.semaine : pct, remise_a_zero, releve_le de chaque chiffre),
+seulement si `releves_machine` vaut true dans profil.yaml ; instantané absent, illisible ou d'une autre version :
+`comptes: {statut: "inconnu", raison}`. Pas de copie de rapports/usage.json ici : il n'a qu'un producteur et garde.py le lit en direct.
+Rien de `machine` ni de `wifi`.
 `comptes.credits` (D102, D71) : crédit de sessions cloud Claude lu en lecture seule dans le bloc `cloud` de `operer --json etat`
 (solde, date du relevé, expiration), jours restants calculés ici ; valeur inconnue = null avec `raison`, jamais devinée.
 Aucun secret (REGLES §5) : ni `env`, ni arguments de commande, ni paramètres d'URL.
@@ -146,6 +148,41 @@ def claude_mcp_list(dossier: Path, exe: str | None, delai: int = 120) -> dict:
 
 
 QUOTAS_COMPTES = (("claude", "session_5h"), ("claude", "semaine"), ("claude", "semaine_fable"), ("chatgpt", "semaine"))
+DELAI_LIRE_S = 30
+RAISON_QUOTA_ABSENT = "absent ou hors de 0 à 100 dans l'instantané OBSERVATORY"
+_RE_REMISE = re.compile(r"remise à zéro (\S+)")
+
+
+class LectureObservatory(ValueError):
+    """Raison contrôlée : jamais de sortie brute du lanceur."""
+
+
+def _lanceur_lire() -> str | None:
+    return shutil.which("observatory-lire") or next((p for p in [str(MAISON / ".local" / "bin" / "observatory-lire")] if os.access(p, os.X_OK)), None)
+
+
+def lire_observatory(cles: tuple[str, ...] = ("quotas",)) -> dict:
+    """`observatory-lire --json --cle <préfixe>` (OBSERVATORY, contrat v3). Codes : 0 frais, 3 périmé (rendu quand même), 4 absent."""
+    exe = _lanceur_lire()
+    if not exe:
+        raise LectureObservatory("exécutable observatory-lire introuvable")
+    args = [exe, "--json"] + [x for c in cles for x in ("--cle", c)]
+    try:
+        r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", timeout=DELAI_LIRE_S, shell=False)
+    except subprocess.TimeoutExpired:
+        raise LectureObservatory(f"observatory-lire : délai de {DELAI_LIRE_S} s dépassé") from None
+    except (OSError, UnicodeError):
+        raise LectureObservatory("observatory-lire : exécution impossible") from None
+    try:
+        d = json.loads(r.stdout)
+    except ValueError:
+        raise LectureObservatory(f"observatory-lire : sortie illisible (code {r.returncode})") from None
+    if not isinstance(d, dict) or not isinstance(d.get("indicateurs"), dict):
+        raise LectureObservatory("observatory-lire : structure JSON invalide")
+    if r.returncode not in (0, 3) or d.get("erreur"):
+        raison = d.get("erreur") if isinstance(d.get("erreur"), str) else f"code de sortie {r.returncode}"
+        raise LectureObservatory(f"observatory-lire : {raison}")
+    return d
 
 
 def _pct_entier(v) -> int | None:
@@ -164,26 +201,31 @@ def _horodatage(v) -> str | None:
     return v
 
 
-def comptes(racine: Path) -> dict:
-    """D93 : quotas de rapports/usage.json, recopiés sans rien deviner (champ absent ou invalide = null et raison)."""
-    f = racine / "rapports" / "usage.json"
-    u, err = lire_json(f)
-    if u is None or not isinstance(u, dict):
-        return {"statut": "inconnu", "raison": err or "rapports/usage.json : objet JSON attendu"}
-    releve_global = _horodatage(u.get("releve_le"))
+def comptes(lire=lire_observatory) -> dict:
+    """D120 : quotas de l'instantané d'OBSERVATORY (clés quotas.*), chacun avec le `releve_le` de sa donnée ; un `non_mesure`,
+    un champ absent ou invalide vaut `null` (`pct` null avec `raison`), jamais une valeur devinée. L'âge n'est pas figé ici :
+    le site le calcule à l'affichage (relevé de plus de 30 min : « ancien »)."""
+    try:
+        d = lire()
+    except LectureObservatory as err:
+        return {"statut": "inconnu", "raison": str(err)}
+    ind = d["indicateurs"]
     quotas = {}
     for produit, nom in QUOTAS_COMPTES:
-        brut = (u.get(produit) or {}).get(nom) if isinstance(u.get(produit), dict) else None
+        brut = ind.get(f"quotas.{produit}.{nom}")
         brut = brut if isinstance(brut, dict) else {}
-        pct = _pct_entier(brut.get("pct"))
-        q = {"pct": pct, "remise_a_zero": _horodatage(brut.get("remise_a_zero")),
-             "releve_le": _horodatage(brut.get("releve_le")) or releve_global}
+        pct = _pct_entier(brut.get("valeur")) if brut.get("statut") != "non_mesure" else None
+        remise = _RE_REMISE.search(brut["note"]) if isinstance(brut.get("note"), str) else None
+        q = {"pct": pct, "remise_a_zero": _horodatage(remise.group(1)) if remise else None, "releve_le": _horodatage(brut.get("releve_le"))}
         if pct is None:
-            q["raison"] = f"{produit}.{nom}.pct absent ou hors de 0 à 100 dans rapports/usage.json"
+            note = brut["note"] if brut.get("statut") == "non_mesure" and isinstance(brut.get("note"), str) else None
+            q["raison"] = f"quotas.{produit}.{nom} : {note or RAISON_QUOTA_ABSENT}"
         quotas[f"{produit}_{nom}"] = q
     if all(q["pct"] is None for q in quotas.values()):
-        return {"statut": "inconnu", "raison": "aucun quota lisible dans rapports/usage.json"}
-    return {"statut": "ok", "source": "rapports/usage.json", "releve_le": releve_global, "quotas": quotas}
+        return {"statut": "inconnu", "raison": "aucun quota lisible dans l'instantané OBSERVATORY"}
+    releves = [q["releve_le"] for q in quotas.values() if q["releve_le"]]
+    return {"statut": "ok", "source": "observatory-lire --json (quotas.*)",
+            "releve_le": max(releves, key=lambda x: datetime.fromisoformat(x.replace("Z", "+00:00"))) if releves else None, "quotas": quotas}
 
 
 NOM_CREDIT_CLOUD = "Crédit sessions cloud Claude"
@@ -253,7 +295,7 @@ def main(argv=None) -> int:
     a = p.parse_args(argv)
     etat = {"pertinent_pour_profil": profil.charger(a.racine)["releves_machine"], **relever()}  # D79 : false sans profil.yaml
     if etat["pertinent_pour_profil"]:
-        etat["comptes"] = comptes(a.racine)  # D93 : même condition que les relevés de la machine
+        etat["comptes"] = comptes()  # D93, D120 : même condition que les relevés de la machine
         etat["comptes"]["credits"] = credits_cloud()  # D102
     texte = json.dumps(etat, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:

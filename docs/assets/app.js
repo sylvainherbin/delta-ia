@@ -261,6 +261,7 @@
     ["claude_session_5h", "Claude, session 5 h", false], ["claude_semaine", "Claude, semaine", true],
     ["claude_semaine_fable", "Claude, semaine Fable", true], ["chatgpt_semaine", "ChatGPT, semaine", true]];
   const SEUIL_ALERTE_PCT = 80;
+  const ANCIEN_MIN = 30;  // D120 : un relevé de plus de 30 min s'affiche « ancien » (même seuil que `fraicheur.ancien_min` d'OBSERVATORY)
   const PHRASE_D71 = "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser";
   async function chargerComptes() {
     return unefois("comptes", async () => {
@@ -329,12 +330,16 @@
       const rz = jjmmHhmm(q.remise_a_zero);
       const perimee = rz !== null && new Date(q.remise_a_zero).getTime() < maintenant;
       const fort = connu && hebdo && q.pct > SEUIL_ALERTE_PCT && !perimee;
+      const tRel = typeof q.releve_le === "string" ? new Date(q.releve_le).getTime() : NaN;
+      const relevable = !Number.isNaN(tRel);
+      const ancien = !relevable || maintenant - tRel > ANCIEN_MIN * 60000;
+      const quand = relevable ? `relevé ${jjmmHhmm(q.releve_le)} (${ageFr(q.releve_le, maintenant)})` : "date du relevé inconnue";
       if (fort) alerte = true;
       const barre = el("div", { class: "barre", role: "progressbar", "aria-label": libelle, "aria-valuemin": "0", "aria-valuemax": "100",
         "aria-valuenow": connu ? String(q.pct) : null }, el("span", { style: `width:${connu ? q.pct : 0}%` }));
-      const detail = perimee ? `remise à zéro passée (${rz}) : valeur périmée`
-        : rz ? `remise à zéro le ${rz}` : "remise à zéro inconnue";
-      liste.append(el("li", { class: "quota" + (fort ? " alerte" : "") + (perimee ? " perimee" : "") },
+      const detail = (perimee ? `remise à zéro passée (${rz}) : valeur périmée`
+        : rz ? `remise à zéro le ${rz}` : "remise à zéro inconnue") + ` · ${quand}${ancien ? " · ancien" : ""}`;
+      liste.append(el("li", { class: "quota" + (fort ? " alerte" : "") + (perimee ? " perimee" : "") + (ancien ? " ancien" : "") },
         el("span", { class: "quota-nom", text: libelle }),
         el("span", { class: "quota-pct", text: connu ? `${q.pct} %` : "inconnu" }),
         barre,

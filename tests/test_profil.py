@@ -122,13 +122,15 @@ def test_etat_comptes_seulement_si_releves_machine(tmp_path, monkeypatch):
                                                                         "profils": {"elements": []}}},
         "mcp_claude_code": {}, "instructions_globales": []})
     monkeypatch.setattr(etat_mod.organisation, "ecrire_releve", lambda racine: None)
+    vrais_comptes = etat_mod.comptes
+    instantane = {"indicateurs": {"quotas.claude.semaine": {"valeur": 9, "statut": "mesure", "releve_le": "2026-10-08T09:00:00Z",
+                                                            "note": "remise à zéro 2026-10-11T16:00:00Z"}}}
+    monkeypatch.setattr(etat_mod, "comptes", lambda: vrais_comptes(lambda: instantane))
     for contenu, attendu in ((None, False), ("releves_machine: true\n", True)):
         racine = tmp_path / str(attendu)
         racine.mkdir()
         if contenu:
             ecrire(racine, contenu)
-        (racine / "rapports").mkdir()
-        (racine / "rapports" / "usage.json").write_text('{"releve_le": "2026-10-08T09:00:00Z", "claude": {"semaine": {"pct": 9}}}')
         etat_mod.main(["--racine", str(racine)])
         e = json.loads((racine / "docs" / "data" / "etat.json").read_text(encoding="utf-8"))
         assert ("comptes" in e) is attendu
