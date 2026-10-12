@@ -23,7 +23,8 @@ export const nomClient = (v) => (typeof v === "string" ? v.normalize("NFKD").rep
 // Champs du hash du jour pour une requête, tous dérivés de la ligne du journal D66 (ligneJournal).
 export function champs(ligne) {
   const f = [`req:${ligne.methode}`];
-  const nom = ligne.outil ?? ligne.methode;
+  // -32600 et -32700 : requête ou JSON invalide, une vraie erreur, à ne pas confondre avec les méthodes « autre » qui reçoivent -32601
+  const nom = ligne.outil ?? (ligne.statut === -32600 || ligne.statut === -32700 ? "invalide" : ligne.methode);
   if (ligne.outil) f.push(`outil:${ligne.outil}`);
   if (ligne.outil && ligne.nb_resultats === 0) f.push(`zero:${ligne.outil}`);
   if (ligne.statut !== "ok") f.push(`erreur:${nom}`);

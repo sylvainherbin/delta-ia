@@ -41,8 +41,8 @@ test("initialize, notification et liste des outils", async () => {
   const liste = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
   const noms = liste.corps.result.tools.map((t) => t.name).sort();
   assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "nouveautes_base", "resume_du_jour"]);
-  assert.equal(init.corps.result.serverInfo.version, "0.2.1");
-  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.1");
+  assert.equal(init.corps.result.serverInfo.version, "0.2.2");
+  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.2");
   for (const t of liste.corps.result.tools) assert.match(t.description, /À appeler/, `${t.name} : dire quand l'appeler`);
   for (const t of liste.corps.result.tools) assert.equal(t.annotations.readOnlyHint, true);
 });
@@ -159,15 +159,36 @@ test("journal D66 : une ligne par requête, clés exactes, aucun argument", asyn
   const [init, notif, liste, cherche0, cherche, aTester, fiche, inconnu, ping, autre] = lignes;
   assert.deepEqual(init.client, { name: "claude-ai", version: "0.1.0" });
   assert.equal(init.methode, "initialize"); assert.equal(init.outil, null);
-  assert.deepEqual([notif.methode, notif.statut, notif.client], ["autre", "ok", null]);
+  assert.deepEqual([notif.methode, notif.statut, notif.client], ["notifications/initialized", "ok", null]);
   assert.deepEqual([liste.methode, liste.outil, liste.nb_resultats], ["tools/list", null, null]);
   assert.deepEqual([cherche0.outil, cherche0.nb_resultats, cherche0.statut], ["chercher_reference", 0, "ok"]);
   assert.ok(cherche.nb_resultats > 0 && cherche.client === null);
   assert.equal(aTester.outil, "a_tester"); assert.equal(typeof aTester.nb_resultats, "number");
   assert.deepEqual([fiche.outil, fiche.nb_resultats], ["fiche_reference", null]);
   assert.deepEqual([inconnu.methode, inconnu.outil, inconnu.statut], ["tools/call", "inconnu", -32602]);
-  assert.deepEqual([ping.methode, autre.methode, autre.statut], ["ping", "autre", -32601]);
+  assert.deepEqual([ping.methode, autre.methode, autre.statut], ["ping", "resources/list", -32601]);
   for (const l of lignes) { assert.equal(typeof l.duree_ms, "number"); assert.equal(l.demarrage_froid, false); }
+});
+
+test("journal D66 : méthodes MCP connues nommées, autres notifications « notification », le reste « autre »", async (t) => {
+  const SECRET = "methode-tres-particuliere-xyz42";
+  const lignes = await journal(t, async () => {
+    for (const m of ["notifications/initialized", "notifications/cancelled"]) await rpc({ jsonrpc: "2.0", method: m, params: { requestId: SECRET } });
+    await rpc({ jsonrpc: "2.0", method: "notifications/" + SECRET });
+    await rpc({ jsonrpc: "2.0", id: 1, method: "resources/list" });
+    await rpc({ jsonrpc: "2.0", id: 2, method: "resources/templates/list" });
+    await rpc({ jsonrpc: "2.0", id: 3, method: "prompts/list" });
+    await rpc({ jsonrpc: "2.0", id: 4, method: "completion/" + SECRET });
+    await rpc({ jsonrpc: "2.0", id: 5, method: "notifications/" + SECRET });  // avec id : c'est une requête, pas une notification
+    await rpc({ jsonrpc: "2.0", method: "completion/" + SECRET });
+    await rpc({ nimporte: 1 });
+  });
+  assert.deepEqual(lignes.map((l) => [l.methode, l.statut]), [
+    ["notifications/initialized", "ok"], ["notifications/cancelled", "ok"], ["notification", "ok"],
+    ["resources/list", -32601], ["resources/templates/list", -32601], ["prompts/list", -32601],
+    ["autre", -32601], ["autre", -32601], ["autre", "ok"], ["autre", -32600]]);
+  for (const l of lignes) assert.deepEqual(Object.keys(l), CLES_JOURNAL);
+  assert.ok(!JSON.stringify(lignes).includes(SECRET), "ni nom de méthode inconnu ni paramètre dans le journal");
 });
 
 test("journal D66 : démarrage à froid sur la première requête de l'instance seulement", async (t) => {
@@ -366,6 +387,97 @@ test("chercher_reference : sans kb/noms.json, plein texte seul et avis (jamais m
   }
 });
 
+// Requêtes réelles d'agents (transcripts du 12/10/2026) qui rendaient zéro avec le ET strict : produit, catégorie, début attendu.
+const REQUETES_REELLES = [
+  ["commande /model", "claude-code", "commandes", "claude-code-commandes-model"],
+  ["/compact compacter contexte", "claude-code", undefined, "claude-code-commandes-compact"],
+  ["permissions allow Bash settings.json", "claude-code", undefined, "claude-code-parametres-permissions"],
+  ["permissions.allow Bash wildcard", "claude-code", undefined, "claude-code-parametres-permissions-allow"],
+  ["Stop SessionEnd SubagentStop", "claude-code", undefined, "claude-code-parametres-hook-subagentstop"],
+  ["remote control connecter session", "claude-code", undefined, null],
+  ["subagents agents personnalisés", "claude-code", undefined, null],
+  ["claude -p headless output-format json json-schema automatisation", "claude-code", undefined, null],
+  ["codex exec non interactif JSON schema automatisation", "codex", undefined, "codex-fonctionnalites-page-non-interactive-mode"],
+  ["Fable limite hebdomadaire séparée", "claude", undefined, null],
+];
+
+test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes réelles à zéro, avis dit", async () => {
+  for (const [requete, produit, categorie, premier] of REQUETES_REELLES) {
+    const r = (await appel("chercher_reference", { requete, produit, ...(categorie ? { categorie } : {}) })).corps.result.structuredContent;
+    assert.ok(r.total > 0 && r.resultats.length > 0, `« ${requete} » rend au moins une fiche`);
+    assert.match(r.avis, /aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés/, requete);
+    if (premier) assert.equal(r.resultats[0].id, premier, requete);
+  }
+  // une requête hors base reste à zéro, sans avis de résultats partiels
+  const hors = (await appel("chercher_reference", { requete: "Groq gpt-oss" })).corps.result.structuredContent;
+  assert.deepEqual([hors.total, hors.resultats.length, hors.avis], [0, 0, undefined]);
+});
+
+function base(entrees, noms = {}) {
+  const vide = ["fonctionnalites", "skills", "plugins", "mcp", "parametres", "raccourcis"];
+  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": null };
+  for (const c of vide) { r[`kb/claude/${c}.json`] = null; r[`kb/openai/${c}.json`] = null; }
+  return r;
+}
+const fiche3 = (id, nom, usage) => ({ id, nom, produit: "claude-code", categorie: "commandes", usage, description: null, commentee: false });
+const BASE3 = [fiche3("a", "alpha-un", "alpha beta gamma"), fiche3("b", "beta-deux", "beta delta"), fiche3("c", "gamma-trois", "gamma")];
+
+test("chercher_reference : le ET strict garde la main, le repli ne joue que sans résultat", async () => {
+  await avecDonnees(base(BASE3), async (outil) => {
+    const cherche = async (requete, args = {}) => (await outil("chercher_reference", { requete, ...args })).result.structuredContent;
+    const strict = await cherche("beta gamma");  // une fiche contient les deux mots : pas de repli
+    assert.deepEqual([strict.resultats.map((x) => x.id), strict.total, strict.avis], [["a"], 1, undefined]);
+    // repli : au moins la moitié des mots retenus, arrondie au supérieur
+    const seuil2 = await cherche("alpha beta gamma zzz");  // 4 mots, seuil 2 : seule « a » en a 3
+    assert.deepEqual([seuil2.resultats.map((x) => x.id), seuil2.total], [["a"], 1]);
+    assert.match(seuil2.avis, /^aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés$/);
+    const seuil3 = await cherche("beta delta gamma zzz");  // seuil 2 : a (beta, gamma) et b (beta, delta), pas c
+    assert.deepEqual(seuil3.resultats.map((x) => x.id).sort(), ["a", "b"]);
+    assert.equal(seuil3.total, 2);
+    const trois = await cherche("alpha qqq www");  // 3 mots, seuil 2 : un seul mot trouvé ne suffit pas
+    assert.deepEqual([trois.total, trois.avis], [0, undefined]);
+    const un = await cherche("alpha zzz");  // 2 mots, seuil 1
+    assert.deepEqual(un.resultats.map((x) => x.id), ["a"]);
+    // classement par nombre de mots trouvés : a (3) avant b (2) avant c (1)
+    const classe = await cherche("alpha beta delta gamma zzzz", { limite: 8 });
+    assert.deepEqual(classe.resultats.map((x) => x.id), ["a", "b", "c"].filter((i) => classe.resultats.some((x) => x.id === i)));
+    assert.deepEqual((await cherche("alpha beta delta gamma zzzz", { limite: 1 })).resultats.map((x) => x.id), ["a"]);
+    assert.equal((await cherche("alpha beta delta gamma zzzz", { limite: 1 })).total, classe.total);
+    // mots vides et mots d'un caractère écartés : « le de » ne retient rien, « le de alpha » retient « alpha »
+    assert.equal((await cherche("le de")).total, 0);
+    assert.deepEqual((await cherche("le de alpha")).resultats.map((x) => x.id), ["a"]);
+    assert.deepEqual((await cherche("the of alpha")).resultats.map((x) => x.id), ["a"]);
+    // préfixe « - » ou « / » : cherché aussi sans lui
+    assert.deepEqual((await cherche("/alpha zzz")).resultats.map((x) => x.id), ["a"]);
+    assert.deepEqual((await cherche("--delta zzz")).resultats.map((x) => x.id), []);  // « -delta » n'est pas dans le texte
+    assert.deepEqual((await cherche("-delta zzz")).resultats.map((x) => x.id), ["b"]);
+    // les filtres s'appliquent aussi au repli
+    assert.equal((await cherche("alpha zzz", { produit: "codex" })).total, 0);
+  });
+});
+
+test("chercher_reference : chaque mot est essayé contre kb/noms.json, le nom de la requête entière reste premier", async () => {
+  await avecDonnees(base(BASE3, { "/alpha": ["c"], "alpha zzz": ["b"] }), async (outil) => {
+    const cherche = async (requete) => (await outil("chercher_reference", { requete })).result.structuredContent;
+    // « commande /alpha » : aucun mot de « commande » dans la base ; le nom exact « /alpha » désigne « c », devant « a » (mot trouvé dans le texte)
+    const mot = await cherche("commande /alpha");
+    assert.deepEqual(mot.resultats.map((x) => x.id), ["c", "a"]);
+    assert.match(mot.avis, /résultats partiels/);
+    // nom exact de la requête entière : il passe avant tout, sans avis de repli
+    const entier = await cherche("alpha zzz");
+    assert.equal(entier.resultats[0].id, "b");
+    assert.equal(entier.avis, undefined);
+  });
+});
+
+test("chercher_reference : repli et index des noms indisponible, deux avis dits", async () => {
+  await avecDonnees({ ...base(BASE3), "kb/noms.json": null }, async (outil) => {
+    const r = (await outil("chercher_reference", { requete: "alpha zzz" })).result.structuredContent;
+    assert.deepEqual(r.resultats.map((x) => x.id), ["a"]);
+    assert.match(r.avis, /^index des noms indisponible \(.+\) : recherche plein texte seule ; aucune fiche ne contient tous les mots : résultats partiels/);
+  });
+});
+
 test("compteur D100 et journal D66 couvrent nouveautes_base et a_tester sans changement", async (t) => {
   await avecUpstash(t, async ({ hash }) => {
     const lignes = await journal(t, async () => {
@@ -446,7 +558,28 @@ test("compteur : un lot est compté en un seul appel pipeline, notifications com
     await rpc([{ jsonrpc: "2.0", id: 4, method: "ping" }, { jsonrpc: "2.0", method: "notifications/initialized" }]);
     await attendre();
     assert.equal(appels.length, 1);
-    assert.deepEqual(Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`)), { "req:ping": 1, "req:autre": 1 });
+    assert.deepEqual(Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`)), { "req:ping": 1, "req:notifications/initialized": 1 });
+  });
+});
+
+test("compteur : méthodes nommées, notifications comptées, erreurs réelles distinctes des méthodes non prises en charge", async (t) => {
+  await avecUpstash(t, async ({ hash }) => {
+    await rpc({ jsonrpc: "2.0", method: "notifications/initialized" });
+    await rpc({ jsonrpc: "2.0", method: "notifications/cancelled" });
+    await rpc({ jsonrpc: "2.0", method: "notifications/roots/list_changed" });
+    await rpc({ jsonrpc: "2.0", id: 1, method: "resources/list" });
+    await rpc({ jsonrpc: "2.0", id: 2, method: "resources/templates/list" });
+    await rpc({ jsonrpc: "2.0", id: 3, method: "prompts/list" });
+    await rpc({ jsonrpc: "2.0", id: 4, method: "logging/setLevel" });
+    await rpc({ nimporte: 1 });
+    await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: "{pas du json" });
+    await appel("fiche_reference", { id: "claude-code-commandes-inexistante" });
+    await attendre();
+    assert.deepEqual(Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`)), {
+      "req:notifications/initialized": 1, "req:notifications/cancelled": 1, "req:notification": 1,
+      "req:resources/list": 1, "erreur:resources/list": 1, "req:resources/templates/list": 1, "erreur:resources/templates/list": 1,
+      "req:prompts/list": 1, "erreur:prompts/list": 1, "req:autre": 3, "erreur:autre": 1, "erreur:invalide": 2,
+      "req:tools/call": 1, "outil:fiche_reference": 1, "erreur:fiche_reference": 1 });
   });
 });
 

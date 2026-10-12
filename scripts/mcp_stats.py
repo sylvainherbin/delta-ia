@@ -26,6 +26,10 @@ RACINE = Path(__file__).resolve().parent.parent
 DELAI = 20
 GROUPES = (("req", "Requêtes par méthode"), ("outils", "Appels par outil"),
            ("zero", "Recherches à zéro résultat"), ("erreurs", "Erreurs"), ("clients", "Clients (initialize)"))
+# Champs `erreur:<nom>` qui sont la réponse -32601 du serveur à une méthode qu'il ne déclare pas (resources, prompts,
+# méthode inconnue) : pas une panne. `autre` vaut -32601 aussi pour les jours comptés avant 0.2.2, où une requête ou un
+# JSON invalide (-32600, -32700) y figurait ; depuis, ceux-ci sont comptés sous `invalide`.
+NON_PRISES_EN_CHARGE = frozenset({"resources/list", "resources/templates/list", "prompts/list", "autre"})
 
 
 class Indisponible(RuntimeError):
@@ -111,6 +115,18 @@ def _delta(n: int, avant: int) -> str:
     return f"{n} (préc. {avant}, {n - avant:+d})"
 
 
+def _erreurs(cette: dict, avant: dict) -> list[str]:
+    """Erreurs réelles (outil en isError, -32600, -32602, -32700) séparées des méthodes non prises en charge (-32601)."""
+    lignes = []
+    for titre, retenue in (("Erreurs réelles (outil en erreur, requête invalide, outil inconnu)", lambda c: c not in NON_PRISES_EN_CHARGE),
+                           ("Méthodes non prises en charge (-32601, réponse normale du serveur)", lambda c: c in NON_PRISES_EN_CHARGE)):
+        cles = sorted((c for c in set(cette["erreurs"]) | set(avant["erreurs"]) if retenue(c)),
+                      key=lambda c: (-cette["erreurs"].get(c, 0), -avant["erreurs"].get(c, 0), c))
+        lignes.append(f"{titre} :" + ("" if cles else " aucune"))
+        lignes.extend(f"  {c:<26} {_delta(cette['erreurs'].get(c, 0), avant['erreurs'].get(c, 0))}" for c in cles)
+    return lignes
+
+
 def rapport(stats: dict, semaine: str, aujourdhui: date) -> str:
     lundi = lundi_de(semaine)
     precedent = lundi - timedelta(days=7)
@@ -124,6 +140,9 @@ def rapport(stats: dict, semaine: str, aujourdhui: date) -> str:
     appels = sum(cette["outils"].values())
     lignes.append(f"Appels d'outils : {_delta(appels, sum(avant['outils'].values()))} ; requêtes : {_delta(sum(cette['req'].values()), sum(avant['req'].values()))}")
     for g, titre in GROUPES:
+        if g == "erreurs":
+            lignes.extend(_erreurs(cette, avant))
+            continue
         cles = sorted(set(cette[g]) | set(avant[g]), key=lambda c: (-cette[g].get(c, 0), -avant[g].get(c, 0), c))
         lignes.append(f"{titre} :" + ("" if cles else " aucun"))
         for c in cles:

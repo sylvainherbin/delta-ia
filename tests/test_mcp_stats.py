@@ -48,9 +48,32 @@ def test_rapport_compare_et_signale_le_signal_prioritaire():
     assert "Appels d'outils : 14 (préc. 7, +7)" in texte
     assert "chercher_reference 10 (préc. 4, +6)" in compact
     assert "resume_du_jour 0 (préc. 2, -2)" in compact
-    assert "Erreurs :\n fiche_reference 1 (préc. 0, +1)" in compact
+    assert "Erreurs réelles (outil en erreur, requête invalide, outil inconnu) :\n fiche_reference 1 (préc. 0, +1)" in compact
+    assert "Méthodes non prises en charge (-32601, réponse normale du serveur) : aucune" in compact
     assert "chercher_reference sans résultat 2 fois sur 10 (20 %)" in texte
     assert "! " not in texte  # semaine terminée, 14 jours présents
+
+
+def test_rapport_separe_erreurs_reelles_et_methodes_non_prises_en_charge():
+    jour = {"jour": "2026-10-06", "req": {"initialize": 3, "notifications/initialized": 3, "notifications/cancelled": 1, "notification": 2,
+                                          "resources/list": 4, "prompts/list": 2, "autre": 1, "tools/call": 5},
+            "outils": {"chercher_reference": 4, "inconnu": 1}, "zero": {},
+            "erreurs": {"resources/list": 4, "prompts/list": 2, "resources/templates/list": 1, "autre": 1,
+                        "fiche_reference": 2, "inconnu": 1, "invalide": 3},
+            "clients": {}}
+    texte = m.rapport({"statut": "ok", "jours": [jour]}, "2026-W41", AUJOURDHUI)
+    compact = re.sub(r" +", " ", texte)
+    reelles, non_prises = texte.split("Méthodes non prises en charge")
+    assert "Erreurs réelles" in reelles
+    for nom in ("fiche_reference 2", "inconnu 1", "invalide 3"):
+        assert nom in re.sub(r" +", " ", reelles.split("Erreurs réelles")[1]), nom
+    for nom in ("resources/list", "prompts/list", "resources/templates/list", "autre"):
+        assert nom not in reelles.split("Erreurs réelles")[1], nom
+        assert nom in non_prises.split("Clients")[0], nom
+    assert "invalide" not in non_prises.split("Clients")[0]
+    # une ligne par méthode, notifications nommées comprises
+    for ligne in ("notifications/initialized 3", "notifications/cancelled 1", "notification 2", "resources/list 4", "prompts/list 2"):
+        assert ligne in compact, ligne
 
 
 def test_rapport_signale_semaine_partielle_et_jours_absents():
