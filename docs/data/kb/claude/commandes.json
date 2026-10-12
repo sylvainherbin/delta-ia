@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-11",
- "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+ "maj_le": "2026-10-12",
+ "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -32,7 +32,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-  "methode.organisation": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+  "methode.organisation": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
   "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
   "methode.missions": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 132,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -5422,10 +5422,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5438,6 +5438,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "retirée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -5968,7 +5972,7 @@
    "categorie": "commandes",
    "nom": "/rename",
    "gabarit": "complet",
-   "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique. Les caractères de contrôle ou invisibles sont remplacés et le nom est limité à 200 caractères ; si une autre session active de la machine porte déjà ce nom, une variante est appliquée.",
+   "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique. Utilisable aussi avec `-p`. Depuis la v2.1.221, les caractères de contrôle ou invisibles sont remplacés par des espaces, le nom est limité à 200 caractères et un nom vide après ce nettoyage est refusé ; une autre session active portant le même nom reçoit une variante.",
    "description_source": "Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later. From every rename surface, including claude.ai and the desktop app, Claude Code replaces control and invisible characters in the new name with spaces and caps the name at 200 characters. If the name is empty once invisible characters are removed, Claude Code rejects it and shows That name is empty once invisible characters are removed. Usage: /rename <name>. The character replacement and length cap require Claude Code v2.1.221 or later",
    "usage": "/rename [name]",
    "usage_nature": "syntaxe",
@@ -5977,7 +5981,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions sont déjà nommées `herbin-<nom>` par l'option `--remote-control` du service systemd."
+    "pourquoi": "Tes sessions durables sont déjà nommées par `--remote-control <nom>` dans leur service systemd ; renommer en cours de route n'apporte rien à ce flux."
    },
    "sources": [
     {
@@ -5986,11 +5990,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6007,10 +6011,19 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions lancées par `claude --resume <id> --remote-control <nom>`, nommées à la création."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -7154,10 +7167,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7170,6 +7183,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "retirée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -7439,10 +7456,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7455,6 +7472,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "retirée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",

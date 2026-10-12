@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-12",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-12T02:10:00+00:00",
+  "synthese": "Compte et quotas : aucune page d'aide ni aucune offre n'a changé cette nuit, et aucune fiche de la base ne traite d'un sujet D71 ; quotas lus : Claude session 5 h 7 % (remise à zéro le 12/10 à 02 h 30 UTC), Claude semaine 7 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 11 % (remise à zéro le 18/10 à 03 h 58 UTC), aucun quota hebdomadaire au-dessus de 80 %. Aucune nouvelle version de Claude Code n'est publiée (2.1.296 installée, dernière publiée). Trois éléments publiés cette semaine sont révisés après les modifications de CONTEXTE.md : la 2.1.295 (ses correctifs Remote Control, `claude -p` et worktrees sont déjà actifs en 2.1.296), la 2.1.291 (plus rien à faire) et le passage de Cowork au cloud. La base retire trois commandes supprimées depuis longtemps (`/pr-comments`, `/ultraplan`, `/vim`) et n'ajoute aucune fiche.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-code-2.1.295",
+      "ids_bruts": [
+        "claude-code-2.1.295"
+      ],
+      "revision": true,
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.295 : notifications push corrigées en Remote Control, `claude -p` ne perd plus de réponses, hooks `onFailure: \"block\"`",
+      "version": "2.1.295",
+      "date_publication": "2026-10-08",
+      "type": "nouveaute",
+      "resume": "Ajouts : `onFailure: \"block\"` pour les hooks command et HTTP (un hook qui ne démarre pas, expire ou sort avec un code inattendu bloque l'action au lieu de la laisser passer) ; `CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS` (plafonne l'attente des erreurs 429 et 529 du mode `CLAUDE_CODE_RETRY_WATCHDOG`) ; support du protocole OSC 7501 (statut de Claude Code dans les terminaux qui l'implémentent) ; citations dans le sélecteur de `/copy` ; un avertissement de `claude plugin install`, `enable`, `disable` et `marketplace add` quand le fichier de réglages visé ne se charge pas, et un conseil de `claude plugin validate` quand le README d'un plugin n'a pas de ligne d'installation ; une ligne sur stderr qui dit ce qu'attend un `claude -p` resté ouvert ; plusieurs options pour la passerelle Claude apps (`models`, `timeouts.upstream_ttfb_ms`, `forceLoginMethod: \"gateway\"`). Correctifs : `claude -p` en sortie texte n'omet plus les réponses antérieures quand un travail en arrière-plan lance un autre tour ; PushNotification n'annonce plus à tort « non envoyé » dans les sessions `claude remote-control` ; un sous-agent dans un worktree lié voyait la branche et les commits de la session parente ; les serveurs MCP distants des sessions headless et SDK ne restent plus déconnectés après une panne de plus de 15 s (reconnexion espacée jusqu'à 30 s) ; une requête sur un modèle `[1m]` n'échoue plus quand une passerelle refuse la bêta context-1m ; `/model` ne dit plus qu'un effort Max est enregistré par défaut (il vaut pour la session) ; `/advisor` ne coche plus un conseiller devenu indisponible ; les recherches web et évaluations de hooks `agent` sont plus rapides aux efforts `xhigh` et `max`. Changements : les connecteurs claude.ai négocient par défaut la version 2026-07-28 du protocole MCP (`MCP_PROTOCOL_NEGOTIATION=legacy` pour refuser) ; les descriptions d'outils MCP chargées par la recherche d'outils sont coupées à 16 384 caractères au lieu de 2 048 ; un sous-agent précharge au plus 32 skills. Sessions cloud : correctif d'une session désarchivée qui ne répondait pas au premier message et de routines qui ne recevaient pas leur prompt. Aucune commande d'archivage de session cloud n'est ajoutée dans cette version.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21295",
+          "libelle": "Changelog Claude Code 2.1.295",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Révision : la version installée est maintenant la 2.1.296 (`docs/data/versions.json`), donc les correctifs de la 2.1.295 sont livrés avec elle ; l'ancienne demande de mise à jour est sans objet. Ils ne valent que pour les sessions relancées depuis la mise à jour, ce qui compte pour tes sessions durables `claude --resume <id> --remote-control <nom>` (notifications push corrigées), pour la chaîne D70 et les rôles de JUGER qui appellent `claude -p` (réponses antérieures plus omises) et pour les sous-agents de tes missions en worktree. La section `methode.missions` a changé : les missions sont remises par OPÉRER et `mission-dev` est un lanceur qu'il appelle, ce qui ne modifie pas ces correctifs. Reste à essayer `onFailure: \"block\"` sur ton seul hook, `PermissionDenied` vers `operer refus` ; la fiche de la base n'existe pas encore, la syntaxe est à relire dans le changelog.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Vérifier que la 2.1.296 tourne dans les sessions durables et essayer la notification push corrigée.",
+        "etapes": [
+          "Lance `claude --version` : la sortie doit afficher 2.1.296 (≥ 2.1.295). Une session ouverte avant la mise à jour garde l'ancienne version jusqu'à sa relance.",
+          "Depuis l'iPhone en Remote Control, demande à la session delta relancée d'envoyer une notification push ; résultat attendu : la notification arrive et la session ne répond plus « non envoyé »."
+        ],
+        "effort": "10min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-update",
+        "claude-code-commandes-advisor",
+        "claude-code-parametres-claude-code-retry-watchdog",
+        "claude-code-parametres-claude-code-retry-watchdog-max-wait-ms",
+        "claude-code-fonctionnalites-page-worktrees"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions `claude --resume --remote-control` pilotées depuis l'iPhone, avec notifications push."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Les étapes Claude de la chaîne D70 sont lancées par `claude -p`."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Une branche et un worktree par mission, avec sous-agents ; missions remises par OPÉRER."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+          "pourquoi": "Serveur MCP delta-ia et connecteurs de compte claude.ai."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Un seul hook perso, `PermissionDenied` vers `operer refus`."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.291",
+      "ids_bruts": [
+        "claude-code-2.1.291"
+      ],
+      "revision": true,
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.291 : correctifs de deux régressions (réponses de permission en session cloud, derniers messages perdus à la fermeture)",
+      "version": "2.1.291",
+      "date_publication": "2026-10-06",
+      "type": "correction",
+      "resume": "Corrige une régression de la 2.1.290 où des sessions cloud pouvaient perdre des réponses à des invites de permission, et une régression de la 2.1.288 où les derniers messages d'une session pouvaient être perdus à la fermeture.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21291",
+          "libelle": "Changelog Claude Code 2.1.291",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables fermées et reprises ; CONTEXTE.md décrit désormais Cowork cloud, sans lien avec ce correctif."
+        }
+      }
+    },
+    {
+      "id": "web-4c03ebea37bc",
+      "ids_bruts": [
+        "web-4c03ebea37bc"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Cowork dans le cloud sur Pro et Max depuis le 06/10 : plus de mode local, transfert vers Claude Code par `/port-task-data`",
+      "version": null,
+      "date_publication": "2026-10-06",
+      "type": "changement_rupture",
+      "resume": "Depuis le 06/10/2026, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent sur les serveurs d'Anthropic : l'option « Only on your computer » (Paramètres > Général) est supprimée et on ne peut pas revenir en arrière ; les tâches déjà lancées sur l'ordinateur y restent, et les nouvelles tâches planifiées tournent dans le cloud. Claude n'atteint les dossiers connectés qu'à travers Claude Desktop ouvert, et récupère une copie du seul fichier nécessaire ; la page de sécurité précise que l'isolation limite où le code tourne, pas ce que Claude lit ni ce qu'il fait avec les accès accordés. Pour une tâche qui doit rester sur la machine, la page renvoie vers Claude Code dans l'app de bureau et décrit le transfert : « Download task data », ouvrir le dossier dans Claude Code, puis `/port-task-data`.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile",
+          "libelle": "Use Claude Cowork on web, desktop, and mobile",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+          "libelle": "Use Claude Cowork safely",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Révision : CONTEXTE.md (`env.multi-sessions` et `usage.hors-machine`) consigne désormais ce passage au cloud comme acquis, à retenir pour ton activité de sous-traitance, sans changer le contenu de l'élément. Cowork reste dans ta liste de fonctions à explorer : au premier essai, la tâche s'exécutera dans le cloud, sans mode local possible, et une copie des fichiers ouverts sera traitée sur les serveurs d'Anthropic ; le travail qui doit rester sur la machine passe par Claude Code. Les tâches Cowork créées par Dispatch n'apparaîtraient plus dans `ListAgents` (déduction de CONTEXTE.md, à vérifier au prochain essai), et `/port-task-data` va de Cowork vers Claude Code uniquement : ce n'est pas le canal retour que tu cherches.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Avant un premier essai de Cowork, ne connecter que des dossiers sans donnée de laboratoire ni de patient, et tester le transfert vers Claude Code.",
+        "etapes": [
+          "Dans Claude Desktop, ouvre Cowork et connecte un dossier de test sans donnée de tiers.",
+          "Lance une petite tâche, puis ouvre-la et choisis « Download task data ».",
+          "Décompresse l'archive, ouvre le dossier dans une session Claude Code et tape `/port-task-data` ; vérifie que le contexte de la tâche est repris."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-fonctionnalites-page-15520349-use-claude-cowork-on-web-desktop-and-mobile",
+        "claude-fonctionnalites-page-13364135-use-claude-cowork-safely"
+      ],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Cowork à explorer, désormais dans le cloud ; échanges Cowork ↔ Claude Code à signaler en priorité."
+        },
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Dispatch, ListAgents et sessions Cowork cloud absentes de la liste (constat du 25/09) ; Cowork cloud consigné."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Gmail, Drive et Calendar connectés mais jamais appelés dans Claude Code."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-commandes-pr-comments",
+      "ids_bruts": [
+        "kb-claude-code-commandes-pr-comments",
+        "kb-claude-code-commandes-ultraplan",
+        "kb-claude-code-commandes-vim"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : trois commandes supprimées marquées retirées (`/pr-comments`, `/ultraplan`, `/vim`)",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "Trois fiches de commandes que la documentation signale comme supprimées passent en « retirées » dans la base : `/pr-comments` (supprimée en v2.1.91, demander directement à Claude d'afficher les commentaires de la PR), `/ultraplan` (supprimée, utiliser le mode plan) et `/vim` (supprimée en v2.1.92, le mode d'édition Vim se règle dans `/config`, rubrique Editor mode). Date de retrait de `/ultraplan` : null, la page ne la donne pas.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Commandes Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-pr-comments",
+        "claude-code-commandes-ultraplan",
+        "claude-code-commandes-vim"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f"
+}

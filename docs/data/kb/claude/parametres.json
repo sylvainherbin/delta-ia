@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-11",
- "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+ "maj_le": "2026-10-12",
+ "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -32,7 +32,7 @@
   "config.codex.mcp": "489642bb494856f784b36b93dd05732ae846b6d2",
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-  "methode.organisation": "a7193e5fadc9afdb2c7a05d076dba29be114711b",
+  "methode.organisation": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
   "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
   "methode.missions": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 653,
- "commentees": 644,
+ "commentees": 653,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -760,7 +760,7 @@
    "categorie": "parametres",
    "nom": "--allowedTools",
    "gabarit": "court",
-   "description": "Option de lancement qui liste les outils exécutés sans demande de permission, selon la syntaxe des règles de permission.",
+   "description": "Option de lancement qui liste les outils exécutés sans demande de permission (hors lectures de chemins réseau), selon la syntaxe des règles de permission ; nommer un outil de suivi de tâches y inscrit aussi la session.",
    "description_source": "Tools that execute without prompting for permission, apart from reads from network paths. See permission rule syntax for pattern matching. To restrict which tools are available, use --tools instead. If you name one of the task-tracking tools here, Claude Code also opts the session in — \"Bash(git log *)\" \"Bash(git diff *)\" \"Read\"",
    "usage": "--allowedTools, --allowed-tools",
    "usage_nature": "syntaxe",
@@ -769,7 +769,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes règles d'autorisation vivent dans `settings.json` ; les passer au lancement des services n'apporterait rien."
+    "pourquoi": "Toutes tes sessions locales tournent en bypassPermissions depuis le 06/10 (sauf trading) : une liste d'outils autorisés au lancement n'ajoute rien."
    },
    "sources": [
     {
@@ -778,11 +778,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -795,10 +795,19 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-alwaysthinkingenabled",
@@ -4656,7 +4665,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_AUTO_BACKGROUND_TASKS",
    "gabarit": "court",
-   "description": "Variable qui force le passage en arrière-plan des tâches d'agent longues au bout d'environ deux minutes.",
+   "description": "Variable qui force le passage en arrière-plan d'un sous-agent après environ deux minutes ; depuis la v2.1.212, elle fait aussi passer en arrière-plan les longs appels d'outils MCP en mode non interactif.",
    "description_source": "Set to 1 to force-enable automatic backgrounding of long-running agent tasks. When enabled, a subagent moves to the background after running for approximately two minutes. If Claude queued a tool call such as a file edit behind the subagent, the subagent finishes in the foreground before that call starts. Also enables automatic backgrounding of long MCP tool calls in non-interactive mode on Claude Code v2.1.212 or later",
    "usage": "CLAUDE_AUTO_BACKGROUND_TASKS",
    "usage_nature": "syntaxe",
@@ -4665,7 +4674,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun lien avec un projet ou une habitude décrits dans CONTEXTE.md ; le comportement par défaut convient."
+    "pourquoi": "Aucun besoin décrit dans CONTEXTE.md : les étapes `claude -p` de la chaîne D70 n'appellent pas d'outil MCP (aucun MCP pendant un passage) et le comportement par défaut convient."
    },
    "sources": [
     {
@@ -4674,11 +4683,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4691,10 +4700,19 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 lancées par `claude -p` en bypassPermissions."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-autocompact-pct-override",
@@ -6603,8 +6621,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "gabarit": "court",
-   "description": "Variable qui arrête les commandes et sous-agents d'arrière-plan d'une session de fond quand son superviseur la redémarre, au lieu de les transmettre.",
-   "description_source": "Set to 1 to stop a background session's running background shell commands, dynamic workflows, and, as of v2.1.198, background subagents when the supervisor stops, restarts, or updates that session's process, instead of handing them to the session's next process. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight work over, and CLAUDE_DISABLE_ADOPT turns off both. Requires Claude Code v2.1.196 or later",
+   "description": "Variable qui arrête les commandes shell, workflows dynamiques et (depuis la v2.1.198) sous-agents d'arrière-plan d'une session de fond quand son superviseur l'arrête, la redémarre ou la met à jour, au lieu de les transmettre au processus suivant ; `← ` ou `/background` transmettent toujours le travail en cours.",
+   "description_source": "Set to 1 to stop a background session's running background shell commands, dynamic workflows, and, as of v2.1.198, background subagents when the supervisor stops, restarts, or updates that session's process, instead of handing them to the session's next process. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over, and CLAUDE_DISABLE_ADOPT turns off both. Requires Claude Code v2.1.196 or later",
    "usage": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6625,7 +6643,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6634,10 +6652,18 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-disable-bg-shell-pressure-reap",
@@ -7867,7 +7893,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
    "gabarit": "court",
-   "description": "Variable qui coupe la mise à jour automatique du titre du terminal et la requête de fond qui génère le titre de session.",
+   "description": "Variable qui coupe la mise à jour automatique du titre du terminal, la requête de fond du petit modèle qui génère le titre de session et les rapports d'état envoyés au terminal.",
    "description_source": "Set to 1 to disable automatic terminal title updates based on conversation context. This also skips the background small/fast-model request that generates a session title, and turns off status reports to your terminal",
    "usage": "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
    "usage_nature": "syntaxe",
@@ -7885,11 +7911,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7902,10 +7928,14 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-disable-thinking",
@@ -8831,7 +8861,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS",
    "gabarit": "court",
-   "description": "Variable qui relève la limite de jetons d'une lecture de fichier, pour lire en entier de gros fichiers.",
+   "description": "Variable qui remplace la limite de 25 000 jetons d'une lecture de fichier, pour lire en entier de gros fichiers ; une lecture faite avec le paramètre `allow_large` peut dépasser cette limite si le contexte a de la place.",
    "description_source": "Override the default token limit for file reads, which is 25,000 tokens. Useful when you need to read larger files in full. A read that Claude makes with the allow_large parameter can go past this limit when the context window has room",
    "usage": "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS",
    "usage_nature": "syntaxe",
@@ -8840,7 +8870,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Lire de plus gros fichiers d'un coup coûterait plus de contexte ; rien de décrit ne l'exige."
+    "pourquoi": "Lire de plus gros fichiers d'un coup coûterait plus de contexte ; rien de décrit dans CONTEXTE.md ne l'exige."
    },
    "sources": [
     {
@@ -8849,11 +8879,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8866,10 +8896,14 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-force-session-persistence",
@@ -14228,7 +14262,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_ENV_FILE",
    "gabarit": "court",
-   "description": "Variable qui désigne un script shell exécuté avant chaque commande Bash, pour garder par exemple un environnement virtuel activé.",
+   "description": "Variable qui désigne un script shell exécuté avant chaque commande Bash dans le même processus, pour garder par exemple un environnement virtuel activé ; les hooks SessionStart, Setup, CwdChanged et FileChanged peuvent aussi l'alimenter, et les commandes PowerShell en reçoivent les variables depuis la v2.1.296.",
    "description_source": "Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. PowerShell commands receive its variables too, in v2.1.296 or later, under the conditions in Persisted variables in PowerShell commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks",
    "usage": "CLAUDE_ENV_FILE",
    "usage_nature": "syntaxe",
@@ -14246,11 +14280,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14271,9 +14305,13 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -14935,7 +14973,7 @@
    "categorie": "parametres",
    "nom": "copyFullResponse",
    "gabarit": "court",
-   "description": "Réglage qui fait copier à `/copy` la réponse entière à chaque fois, sans le sélecteur de blocs de code ; il apparaît dans `/config` comme « Skip the /copy picker ».",
+   "description": "Réglage qui fait copier à `/copy` la réponse entière à chaque fois, sans le sélecteur de blocs de code ; choisir « Always copy full response » dans le sélecteur l'écrit à `true`, et il apparaît dans `/config` comme « Skip the /copy picker ».",
    "description_source": "Make /copy copy the full response every time, without showing the picker. Selecting Always copy full response in that picker sets this key to true. Appears in /config as Skip the /copy picker.",
    "usage": "{\n  \"copyFullResponse\": true\n}",
    "usage_nature": "syntaxe",
@@ -14944,7 +14982,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "`/copy` ne figure pas parmi tes commandes tapées, et tu pilotes surtout depuis l'iPhone, où le presse-papiers du PC ne te sert pas."
+    "pourquoi": "`/copy` ne figure pas parmi tes commandes tapées relevées, et l'iPhone est ton interface principale de pilotage."
    },
    "sources": [
     {
@@ -14953,8 +14991,8 @@
      "officielle": true
     }
    ],
-   "commentee": false,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "commentee": true,
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -14968,7 +15006,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-29",
@@ -14985,6 +15023,10 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ]
   },
@@ -18235,7 +18277,7 @@
    "categorie": "parametres",
    "nom": "enableArtifact",
    "gabarit": "court",
-   "description": "Réglage qui, à `false`, coupe l'outil Artifact (publication d'une sortie de session en page web privée sur claude.ai) ; la ligne Artifacts de `/config` l'écrit.",
+   "description": "Réglage qui, à `false`, coupe l'outil Artifact (publication d'une sortie de session en page web privée sur claude.ai) ; la ligne Artifacts de `/config` écrit cette clé dans les réglages utilisateur.",
    "description_source": "Turn off the Artifact tool, which publishes session output as a private web page on claude.ai. When you turn the Artifacts row off in /config, Claude Code writes this key to your user settings, so you don't usually edit it by hand.",
    "usage": "{\n  \"enableArtifact\": false\n}",
    "usage_nature": "syntaxe",
@@ -18244,7 +18286,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Rien à régler : laisse la valeur par défaut, tu utilises les artefacts côté Claude."
+    "pourquoi": "Rien à régler : laisse la valeur par défaut ; CONTEXTE.md dit que tu utilises les artefacts côté Claude."
    },
    "sources": [
     {
@@ -18253,11 +18295,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18278,13 +18320,17 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "usage.hors-machine": {
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Sylvain utilise les artefacts de Claude"
+     "pourquoi": "Sylvain utilise les artefacts de Claude."
     }
    }
   },
@@ -21699,8 +21745,8 @@
    "categorie": "parametres",
    "nom": "Hook WorktreeCreate",
    "gabarit": "court",
-   "description": "Événement de hook déclenché à la création d'un worktree, qui peut remplacer `git worktree` par une autre méthode.",
-   "description_source": "Runs when a worktree is being created, whether from claude --worktree, from a subagent using isolation: \"worktree\", or for a background session that Claude Code isolates in its own worktree. By default Claude Code creates the isolated working copy with git worktree. Configuring a WorktreeCreate hook replaces that default git behavior, letting you use a different version control system like SVN, Perforce, or Mercurial.",
+   "description": "Événement de hook déclenché quand Claude Code crée un worktree ; sa commande peut remplacer `git worktree` par une autre méthode (l'exemple de la documentation fait un `svn checkout`) et imprimer le chemin créé.",
+   "description_source": "Runs when Claude Code creates a worktree in cases such as these:",
    "usage": "{\n  \"hooks\": {\n    \"WorktreeCreate\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'NAME=$(jq -r .name); DIR=\\\"$HOME/.claude/worktrees/$NAME\\\"; svn checkout https://svn.example.com/repo/trunk \\\"$DIR\\\" >&2 && echo \\\"$DIR\\\"'\"\n          }\n        ]\n      }\n    ]\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21721,7 +21767,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21742,13 +21788,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "Worktrees créés par git ou OPÉRER, retirés par `operer menage` ; `--worktree` et les hooks Worktree* non utilisés."
+     "pourquoi": "Worktrees créés par git ou OPÉRER ; `--worktree` et les hooks Worktree* non utilisés."
     }
    }
   },
@@ -24263,7 +24317,7 @@
    "categorie": "parametres",
    "nom": "--name",
    "gabarit": "court",
-   "description": "Option CLI qui donne à la session un nom affiché dans `/resume` et le titre du terminal, repris par `claude --resume <nom>`.",
+   "description": "Option CLI qui donne à la session un nom affiché dans `/resume` et le titre du terminal, repris par `claude --resume <nom>` ; `/rename` le change en cours de session.",
    "description_source": "Set a display name for the session, shown in /resume and the terminal title. You can resume a named session with claude --resume <name>. /rename changes the name mid-session and also shows it on the prompt bar — claude -n \"my-feature-work\"",
    "usage": "--name, -n",
    "usage_nature": "syntaxe",
@@ -24272,7 +24326,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions sont déjà nommées par leur service, via `--remote-control <nom>`."
+    "pourquoi": "Tes sessions durables sont déjà nommées par `--remote-control <nom>` dans leur service systemd."
    },
    "sources": [
     {
@@ -24281,11 +24335,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24302,9 +24356,13 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
@@ -29429,7 +29487,7 @@
    "categorie": "parametres",
    "nom": "sshConfigs",
    "gabarit": "court",
-   "description": "Réglage de connexions SSH ajoutées au menu d'environnement de l'app de bureau.",
+   "description": "Réglage de connexions SSH ajoutées au menu d'environnement de l'app de bureau, surtout pour distribuer des connexions partagées à une équipe ; en réglages gérés, elles s'affichent comme gérées, l'utilisateur ne peut qu'en choisir le dossier de worktree.",
    "description_source": "Add SSH connections to the Desktop environment dropdown. Administrators use it to distribute shared connections to a team. Connections you define in managed settings show as managed. Users can select them and set their own Worktree folder for them, but can't edit anything else or delete them in the app.",
    "usage": "{\n  \"sshConfigs\": [\n    {\n      \"id\": \"dev-vm\",\n      \"name\": \"Dev VM\",\n      \"sshHost\": \"user@dev.example.com\"\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
@@ -29438,7 +29496,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu travailles sur ta machine, sans machine distante."
+    "pourquoi": "CONTEXTE.md ne décrit aucune machine distante ni équipe : tu travailles sur une seule machine."
    },
    "sources": [
     {
@@ -29447,11 +29505,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29464,10 +29522,19 @@
     {
      "date": "2026-10-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Une seule machine décrite (portable HP sous Linux Mint)."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-sshhostallowlist",
