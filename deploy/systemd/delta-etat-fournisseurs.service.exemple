@@ -1,0 +1,15 @@
+# Installé le 13/10/2026 (mission m-f8034da39359, FULL_AUTO) dans ~/.config/systemd/user/delta-etat-fournisseurs.service.
+# Copie de référence ; le relevé n'écrit que ~/.local/state/delta/etat-fournisseurs.json (jamais docs/data, state/ ni raw/).
+[Unit]
+Description=Delta — état des fournisseurs en continu (pages d'état OpenAI et Anthropic)
+Documentation=file:%h/projets/delta-ia/scripts/etat_fournisseurs.py
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/projets/delta-ia
+ExecStart=%h/projets/delta-ia/.venv/bin/python -B scripts/etat_fournisseurs.py
+# operer (message au rôle delta) vit dans ~/.local/bin, absent du PATH par défaut de systemd --user.
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+# Code 1 : une page d'état en échec (le fichier est écrit quand même) ; l'unité l'affiche « failed » jusqu'au relevé suivant.
+Nice=10
+TimeoutStartSec=3min

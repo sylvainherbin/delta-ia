@@ -61,7 +61,11 @@ def _contenu(it: dict) -> str:
     return "\n".join(lignes)
 
 
-def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
+def incidents_lus(donnees) -> list[tuple[dict, str]]:
+    """Valide la réponse et rend `(incident, date d'ouverture AAAA-MM-JJ)` pour tous les incidents, filtre non appliqué.
+
+    Partagé avec le relevé continu (`etat_fournisseurs.py`) : même schéma, mêmes erreurs explicites.
+    """
     if not isinstance(donnees, dict):
         raise FormatInattendu("la racine n'est pas un objet JSON")
     incidents = donnees.get("incidents")
@@ -69,10 +73,7 @@ def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
         raise FormatInattendu("clé `incidents` absente ou pas une liste : format Statuspage attendu")
     if not incidents:
         raise FormatInattendu("liste `incidents` vide : jamais un résultat vide silencieux")
-    base = _base(donnees, source)
-    ignores = {str(i).lower() for i in (source.options.get("ignorer_impacts") or [])}
-    elements: list[Element] = []
-    dates: list[str] = []
+    lus: list[tuple[dict, str]] = []
     for it in incidents:
         if not isinstance(it, dict):
             raise FormatInattendu("incident qui n'est pas un objet")
@@ -82,6 +83,17 @@ def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
         date_iso = analyser_date(str(it["created_at"]))
         if date_iso is None:
             raise FormatInattendu(f"`created_at` illisible dans l'incident {it['id']!r} : {it['created_at']!r}")
+        lus.append((it, date_iso))
+    return lus
+
+
+def parser_statuspage(donnees, source) -> tuple[list[Element], str | None]:
+    lus = incidents_lus(donnees)
+    base = _base(donnees, source)
+    ignores = {str(i).lower() for i in (source.options.get("ignorer_impacts") or [])}
+    elements: list[Element] = []
+    dates: list[str] = []
+    for it, date_iso in lus:
         dates.append(date_iso)
         if str(it.get("impact") or "").lower() in ignores:
             continue

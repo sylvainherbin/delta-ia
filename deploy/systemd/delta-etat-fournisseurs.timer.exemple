@@ -1,0 +1,12 @@
+# Installé le 13/10/2026 (mission m-f8034da39359). `systemctl --user enable --now delta-etat-fournisseurs.timer`.
+[Unit]
+Description=Delta — relève l'état des fournisseurs toutes les 10 minutes
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+AccuracySec=30s
+Unit=delta-etat-fournisseurs.service
+
+[Install]
+WantedBy=timers.target
