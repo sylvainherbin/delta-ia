@@ -9,7 +9,7 @@ import subprocess
 import sys
 import textwrap
 import time
-from datetime import date
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -100,6 +100,24 @@ elif mode.startswith("supervision-refus"):
         sys.exit(2)
 elif mode == "env":
     ecrire("rapports/env-vu.txt", os.environ.get("DELTA_CHAINE_PID", "") + "|" + os.environ.get("PATH", "") + "|" + os.environ.get("GIT_OPTIONAL_LOCKS", "-")); claude_ok()
+elif mode.startswith("reseau"):   # D122 : argv = compteur, échecs avant le succès, dossier, fichier, JSON de Claude (fixture ou variante)
+    compteur, echecs, dossier, fichier, charge = sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5], sys.argv[6]
+    n = int(open(compteur).read()) + 1 if os.path.exists(compteur) else 1
+    open(compteur, "w").write(str(n))
+    if n <= echecs:
+        ecrire(f"{dossier}/index.json", "modifié par une tentative en échec\n")
+        ecrire(f"{dossier}/nouveau.json", "{}\n")
+        if mode == "reseau-sale":
+            ecrire("notes.txt", "touché hors périmètre\n")
+        if mode in ("reseau-claude", "reseau-sale"):
+            print(open(charge).read())
+        else:   # lignes réelles de Codex (journal du 13/10/2026), sur stderr ou sur stdout
+            texte = "ERROR: Selected model is at capacity. Please try a different model.\n" * 2 + "tokens used\n46,297"
+            print(texte, file=sys.stderr if mode == "reseau-codex" else sys.stdout)
+        sys.exit(1)
+    passage(dossier, fichier)
+    if mode != "reseau-codex" and mode != "reseau-codex-stdout":
+        claude_ok()
 elif mode.startswith("quota"):   # Codex refuse de tourner : limite d'usage atteinte (message réel du 05/10)
     if mode == "quota-sale":
         ecrire("notes.txt", "touché hors périmètre\n")
@@ -1127,3 +1145,254 @@ def test_les_skills_de_passage_interdisent_le_tube_sur_valider(skill):
 def test_supervision_est_prevenue_du_code_131():
     t = (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
     assert "131 étape réussie mais `valider.py` échoue" in t
+
+
+# --- échec réseau : relances (D122, incident delta:1 du 13/10/2026) ---------------------------------------------
+
+FIXTURE_RESEAU = RACINE / "tests" / "fixtures" / "orchestrateur_claude_api_error_reseau.json"
+DOSSIER_CLAUDE = "docs/data/claude"
+NUIT = datetime(2026, 10, 2, 4, 3)
+
+
+class Horloge:
+    """Temps simulé : `dormir` n'attend rien et fait avancer `maintenant`."""
+
+    def __init__(self, debut=NUIT):
+        self.t, self.pauses = debut, []
+
+    def dormir(self, s):
+        self.pauses.append(s)
+        self.t = self.t + timedelta(seconds=s)
+
+    def maintenant(self):
+        return self.t
+
+
+def reseau(depot, cfg, mode, echecs, horloge=None, resoudre=lambda h: True, charge=FIXTURE_RESEAU, agent="claude", delais=(0, 0, 0)):
+    """Chaîne `delta` (puis supervision) dont l'agent échoue `echecs` fois sur le réseau avant de réussir."""
+    cfg["chaine"]["relances_reseau_s"] = list(delais)
+    horloge = horloge or Horloge()
+    compteur = depot.parent / "compteur"
+    e = etape(depot, "delta", mode, str(compteur), str(echecs), DOSSIER_CLAUDE, "a.json", str(charge), agent=agent, garde=None,
+              checkout=[DOSSIER_CLAUDE], clean=[DOSSIER_CLAUDE])
+    c = chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)],
+               dormir=horloge.dormir, maintenant=horloge.maintenant, resoudre=resoudre)
+    return c, compteur, horloge
+
+
+def tentatives(compteur):
+    return int(compteur.read_text())
+
+
+def test_fixture_reelle_est_un_echec_reseau_sans_jeton_et_sans_session():
+    d = json.loads(FIXTURE_RESEAU.read_text(encoding="utf-8"))
+    assert d["terminal_reason"] == "api_error" and d["is_error"] is True and "ENOTFOUND" in d["result"]
+    assert "session_id" not in d and "uuid" not in d and d["usage"]["output_tokens"] == 0
+
+
+def test_echec_reseau_relance_puis_succes(depot, cfg):
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=1)
+    assert c.executer() == 0
+    assert tentatives(compteur) == 2
+    assert codes(depot) == {"delta": 0, "supervision": 0, "chaine": 0}, "une seule ligne par étape, code final"
+    assert (depot / DOSSIER_CLAUDE / "a.json").exists() and ahead(depot) == 0 and not depot.sh("git", "status", "--porcelain").stdout
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
+    assert "tentative 1/4 échouée, réseau (ENOTFOUND)" in log and "arrêt propre : git checkout -- docs/data/claude" in log
+    assert "étape delta : code 0" in log, "la tentative réussie est journalisée aussi"
+
+
+def test_echec_reseau_arret_propre_avant_chaque_relance(depot, cfg):
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=2)
+    assert c.executer() == 0 and tentatives(compteur) == 3
+    assert (depot / DOSSIER_CLAUDE / "index.json").read_text() == "{}\n" and not (depot / DOSSIER_CLAUDE / "nouveau.json").exists()
+
+
+@pytest.mark.parametrize("mode", ["reseau-codex", "reseau-codex-stdout"])
+def test_codex_modele_a_capacite_est_relance_sur_stderr_comme_sur_stdout(depot, cfg, mode):
+    c, compteur, _ = reseau(depot, cfg, mode, echecs=1, agent="codex")
+    assert c.executer() == 0 and tentatives(compteur) == 2
+    assert codes(depot)["delta"] == 0
+
+
+def test_trois_echecs_de_relance_puis_abandon_code_132(depot, cfg):
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=9)
+    suite = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde=None)
+    c.etapes.insert(1, suite)
+    assert c.executer() == 1
+    assert tentatives(compteur) == 4, "la tentative initiale et trois relances, pas une de plus"
+    assert orc.CODE_RESEAU == 132 and codes(depot) == {"delta": 132, "codex-delta": orc.CODE_NON_LANCEE, "supervision": 0, "chaine": 1}
+    assert "abandonnée après 4 tentatives (ENOTFOUND)" in c.issues[0].detail and c.issues[0].arret_chaine
+    assert (depot / DOSSIER_CLAUDE / "index.json").read_text() == "{}\n" and not depot.sh("git", "status", "--porcelain").stdout
+    log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
+    assert [f"tentative {i}/4 échouée" in log for i in (1, 2, 3)] == [True] * 3 and "étape delta : code 132" in log
+    assert (depot / "rapports" / "supervision-lancee.txt").exists()
+
+
+def variante(tmp_path, **champs):
+    d = json.loads(FIXTURE_RESEAU.read_text(encoding="utf-8"))
+    for cle, valeur in champs.items():
+        if cle == "jetons":
+            d["usage"]["output_tokens"] = valeur
+        else:
+            d[cle] = valeur
+    f = tmp_path / "variante.json"
+    f.write_text(json.dumps(d), encoding="utf-8")
+    return f
+
+
+@pytest.mark.parametrize("champs", [
+    {"result": "API Error: 500 Internal server error"},
+    {"result": "API Error: Request rejected (429) rate limit"},
+    {"terminal_reason": "max_turns"},
+    {"jetons": 12},
+    {"is_error": False},
+])
+def test_echec_non_reseau_n_est_jamais_relance(depot, cfg, tmp_path, champs):
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=9, charge=variante(tmp_path, **champs))
+    assert c.executer() == 1 and tentatives(compteur) == 1
+    assert codes(depot)["delta"] == 1 and "tentative" not in (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
+
+
+def test_codex_en_echec_sans_la_ligne_de_capacite_n_est_pas_relance(depot, cfg):
+    depot.sh("git", "checkout", "-q", "--", "notes.txt")
+    e = etape(depot, "delta", "echec", DOSSIER_CLAUDE, agent="codex", garde=None, checkout=[DOSSIER_CLAUDE, "notes.txt"], clean=[DOSSIER_CLAUDE])
+    cfg["chaine"]["relances_reseau_s"] = [0, 0, 0]
+    c = chaine(depot, cfg, [e], dormir=lambda s: pytest.fail("aucune attente"))
+    assert c.executer() == 1 and codes(depot)["delta"] == 3
+
+
+@pytest.mark.parametrize("agent, stdout, stderr, attendu", [
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0, "output_tokens": 0},
+                           "result": "API Error: Can\u2019t reach the API server \u2014 check your internet or DNS (ECONNRESET)"}), "", "ECONNRESET"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0, "output_tokens": 0},
+                           "result": "API Error: connect ETIMEDOUT 1.2.3.4:443"}), "", "ETIMEDOUT"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0, "output_tokens": 0},
+                           "result": "API Error: connect ECONNREFUSED"}), "", "ECONNREFUSED"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0, "output_tokens": 0},
+                           "result": "getaddrinfo EAI_AGAIN api.anthropic.com"}), "", "EAI_AGAIN"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0, "output_tokens": 0},
+                           "result": "API Error: Can't reach the API server"}), "", "Can't reach the API server"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "usage": {"input_tokens": 0}, "result": "ENOTFOUND"}), "", "ENOTFOUND"),
+    ("claude", json.dumps({"is_error": True, "terminal_reason": "api_error", "result": "ENOTFOUND"}), "", None),  # usage absent : ambigu
+    ("claude", "pas du JSON ENOTFOUND", "", None),
+    ("codex", "", "ERROR: Selected model is at capacity. Please try a different model.\n", "ERROR: Selected model is at capacity. Please try a different model."),
+    ("codex", "ERROR: Selected model is at capacity. Please try a different model.", "", "ERROR: Selected model is at capacity. Please try a different model."),
+    ("codex", "", "model is at capacity", None),   # pas la ligne relevée : rien de deviné
+    ("codex", "ENOTFOUND", "ECONNRESET", None),     # motifs de Claude, jamais appliqués à Codex
+])
+def test_motif_reseau_reconnu_sans_ambiguite(depot, agent, stdout, stderr, attendu):
+    e = etape(depot, "delta", "ok", agent=agent)
+    assert orc.motif_reseau(e, orc.Resultat(1, stdout, stderr, False, 1.0)) == attendu
+
+
+def test_motif_reseau_ignore_delai_depasse_succes_et_binaire(depot):
+    e = etape(depot, "delta", "ok")
+    sortie = FIXTURE_RESEAU.read_text(encoding="utf-8")
+    assert orc.motif_reseau(e, orc.Resultat(1, sortie, "", True, 1.0)) is None
+    assert orc.motif_reseau(e, orc.Resultat(0, sortie, "", False, 1.0)) is None
+    assert orc.motif_reseau(e, orc.Resultat(orc.CODE_BINAIRE, sortie, "", False, 1.0)) is None
+
+
+def test_delais_5_10_20_minutes_sans_dns_pour_un_motif_non_dns(depot, cfg):
+    h = Horloge()
+    c, compteur, _ = reseau(depot, cfg, "reseau-codex", echecs=9, agent="codex", horloge=h, delais=(300, 600, 1200),
+                            resoudre=lambda hote: True)
+    c.executer()
+    # le DNS répond toujours (capacité du modèle, pas une panne DNS) : les délais pleins sont quand même attendus
+    assert [sum(h.pauses[i:j]) for i, j in ((0, 20), (20, 60), (60, 140))] == [300, 600, 1200], h.pauses[:5]
+    assert tentatives(compteur) == 4 and h.t - NUIT == timedelta(minutes=35)
+
+
+def test_panne_dns_relance_des_que_l_hote_se_resout(depot, cfg):
+    h = Horloge()
+    reponses = iter([False, False, False, True])
+    hotes = []
+
+    def resoudre(hote):
+        hotes.append(hote)
+        return next(reponses)
+
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=1, horloge=h, delais=(300, 600, 1200), resoudre=resoudre)
+    assert c.executer() == 0 and tentatives(compteur) == 2
+    assert sum(h.pauses) == 3 * orc.PAS_DNS_S, "trois sondages sans réponse, la relance part au quatrième"
+    assert set(hotes) == {"api.anthropic.com"}
+
+
+def test_panne_dns_persistante_relance_apres_le_delai_au_plus(depot, cfg):
+    h = Horloge()
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=9, horloge=h, delais=(300, 600, 1200), resoudre=lambda hote: False)
+    c.executer()
+    assert sum(h.pauses) == 300 + 600 + 1200 and tentatives(compteur) == 4, "trois attentes bornées par leurs délais, puis abandon"
+
+
+def test_codex_attend_le_dns_de_l_hote_codex(depot, cfg):
+    hotes = []
+    c, _, _ = reseau(depot, cfg, "reseau-codex", echecs=1, agent="codex", delais=(1, 1, 1), resoudre=lambda h: hotes.append(h) or True)
+    c.executer()
+    assert hotes and set(hotes) == {cfg["chaine"]["reseau_hotes"]["codex"]}
+
+
+def test_resoudre_hote_repond_faux_quand_la_resolution_echoue(monkeypatch):
+    def echec(*a, **k):
+        raise OSError("ENOTFOUND")
+    monkeypatch.setattr(orc.socket, "getaddrinfo", echec)
+    assert orc.resoudre_hote("api.anthropic.com") is False
+    monkeypatch.setattr(orc.socket, "getaddrinfo", lambda *a, **k: [("x",)])
+    assert orc.resoudre_hote("api.anthropic.com") is True
+
+
+@pytest.mark.parametrize("heure, interdit", [
+    (datetime(2026, 10, 2, 7, 29, 59), False), (datetime(2026, 10, 2, 7, 30), True), (datetime(2026, 10, 2, 7, 59, 59), True),
+    (datetime(2026, 10, 2, 8, 0), False), (datetime(2026, 10, 2, 3, 40), False), (datetime(2026, 10, 2, 9, 10), False),
+])
+def test_relance_interdite_entre_07h30_et_08h00(depot, cfg, heure, interdit):
+    assert chaine(depot, cfg, []).relance_interdite(heure) is interdit
+
+
+@pytest.mark.parametrize("debut, delai, relance", [
+    (datetime(2026, 10, 2, 7, 31), 300, False),     # déjà dans la fin de fenêtre
+    (datetime(2026, 10, 2, 7, 26), 300, False),     # l'attente de 5 min mène à 07:31 : inutile d'attendre
+    (datetime(2026, 10, 2, 7, 20), 1200, False),    # 20 min d'attente mènent à 07:40
+    (datetime(2026, 10, 2, 7, 5), 1200, True),      # 07:25 : tentative permise, finie avant 08:00 par le délai de l'étape
+])
+def test_aucune_tentative_ne_commence_apres_07h30(depot, cfg, debut, delai, relance):
+    h = Horloge(debut)
+    c, compteur, _ = reseau(depot, cfg, "reseau-codex", echecs=1, agent="codex", horloge=h, delais=(delai, 0, 0))
+    c.executer()
+    assert (tentatives(compteur) == 2) is relance
+    if not relance:
+        assert codes(depot)["delta"] == 132 and "fin de fenêtre (07:30)" in c.issues[0].detail and h.pauses == [], "pas d'attente inutile"
+    else:
+        assert codes(depot)["delta"] == 0
+
+
+def test_panne_dns_relance_possible_si_le_dns_revient_avant_07h30(depot, cfg):
+    h = Horloge(datetime(2026, 10, 2, 7, 20))
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=1, horloge=h, delais=(1200, 0, 0), resoudre=lambda hote: True)
+    assert c.executer() == 0 and tentatives(compteur) == 2 and h.pauses == []
+
+
+def test_panne_dns_dont_la_fin_tombe_apres_07h30_abandonne_sans_relancer(depot, cfg):
+    h = Horloge(datetime(2026, 10, 2, 7, 20))
+    reponses = iter([False] * 100)
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=9, horloge=h, delais=(1200, 0, 0), resoudre=lambda hote: next(reponses))
+    c.executer()
+    assert tentatives(compteur) == 1 and codes(depot)["delta"] == 132 and h.t.hour == 7 and h.t.minute >= 30
+
+
+def test_pas_de_relance_si_l_etat_n_est_plus_celui_d_avant_l_etape(depot, cfg):
+    c, compteur, _ = reseau(depot, cfg, "reseau-sale", echecs=9)
+    assert c.executer() == 1 and tentatives(compteur) == 1, "fichier hors périmètre touché : pas de relance sur un arbre sale"
+    assert codes(depot)["delta"] == orc.CODE_ETAT and (depot / "notes.txt").read_text() == "touché hors périmètre\n"
+
+
+def test_configuration_des_relances_reseau():
+    ch = orc.charger_config()["chaine"]
+    assert ch["relances_reseau_s"] == [300, 600, 1200] and ch["relances_limite"] == "07:30" and ch["fenetre_fin"] == "08:00"
+    assert set(ch["reseau_hotes"]) == {"claude", "codex"}
+
+
+def test_code_132_documente_dans_la_docstring_et_la_spec():
+    assert "132 étape abandonnée sur échec réseau" in orc.__doc__ and "échec réseau (D122)" in orc.__doc__
+    spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
+    assert re.search(r"^\| D122 \|[^\n]*07:30[^\n]*132", spec, re.M)

@@ -29,7 +29,15 @@ Pour chaque étape, sans aucun LLM :
    après l'étape, un appel par périmètre (`valider` de la configuration, avec `--date` du jour ; `--kb` du produit pour une
    étape kb). Un échec marque l'étape en échec (code 131, détail dans la ligne de sortie de l'étape et dans la supervision) ;
    rien n'est annulé ni poussé de plus (jamais de `--force`), la chaîne continue ;
-6. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
+6. échec réseau (D122) : une étape Claude ou Codex en échec dont la sortie dit sans ambiguïté qu'Internet ou le service est
+   indisponible (Claude : `terminal_reason` `api_error`, aucun jeton, `result` avec ENOTFOUND, ECONNREFUSED, ETIMEDOUT,
+   ECONNRESET, EAI_AGAIN ou « Can't reach the API server » ; Codex : « Selected model is at capacity ») est remise en place par
+   l'arrêt propre puis relancée, trois fois au plus, après 5, 10 puis 20 min d'attente (`chaine.relances_reseau_s`) ; pendant
+   l'attente, la résolution DNS de l'hôte de l'API est testée (une panne DNS relance dès qu'elle répond), aucune tentative ne
+   commence entre 07 h 30 et 08 h 00 (`relances_limite`, `fenetre_fin`) ; chaque tentative est journalisée dans la sortie de
+   l'étape, la ligne de `passages.log` reste unique (code final) ; une relance n'a lieu que si l'arbre, `.git` et le dépôt
+   distant sont dans l'état d'avant l'étape, sinon l'échec suit le chemin ordinaire (126, 15) ;
+7. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
    `rapports/auto/AAAA-MM-JJ-<étape>.log` (jamais l'environnement).
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
@@ -38,7 +46,8 @@ fatal, étape réussie avec ses commits poussés ou son rapport de supervision �
 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ;
 130 sautée, quota de l'agent épuisé (refus constaté de Codex, arbre propre, sans seuil : la chaîne continue) ;
-131 étape réussie mais `valider.py` échoue sur l'arbre qu'elle a laissé (déjà poussé : signalé, la chaîne continue) ; autre : code de sortie de l'agent.
+131 étape réussie mais `valider.py` échoue sur l'arbre qu'elle a laissé (déjà poussé : signalé, la chaîne continue) ;
+132 étape abandonnée sur échec réseau (trois relances échouées, ou relance interdite en fin de fenêtre) : la chaîne s'arrête ; autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
 Aucun appel à `claude` ou `codex` hors de `lancer()` ; les tests y injectent de fausses commandes.
@@ -53,12 +62,14 @@ import os
 import pwd
 import re
 import signal
+import socket
 import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, time as heure, timedelta
 from pathlib import Path
+from time import sleep
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -71,9 +82,15 @@ AGENT_JOURNAL = "orchestrateur"
 CODE_DELAI, CODE_PERMISSION, CODE_ETAT, CODE_BINAIRE, CODE_NON_LANCEE, CODE_SANS_LOT = 124, 125, 126, 127, 128, 129
 CODE_QUOTA_EPUISE = 130  # Codex refuse de tourner (limite d'usage atteinte) : étape sautée, la chaîne continue
 CODE_VALIDATION = 131    # l'étape a réussi mais `valider.py` échoue sur l'arbre qu'elle a laissé : échec signalé, la chaîne continue
+CODE_RESEAU = 132        # échec réseau persistant : relances épuisées ou interdites en fin de fenêtre (D122)
 DELAI_VALIDATION_S = 300
 SIGNATURE_QUOTA_CODEX = re.compile(r"You[’']ve hit your usage limit", re.IGNORECASE)
 REPRISE_QUOTA_CODEX = re.compile(r"try again at ([^\r\n]*?)\.?\s*$", re.IGNORECASE | re.MULTILINE)
+CODES_RESEAU_CLAUDE = re.compile(r"ENOTFOUND|ECONNREFUSED|ETIMEDOUT|ECONNRESET|EAI_AGAIN")
+PHRASE_RESEAU_CLAUDE = re.compile(r"Can[’']t reach the API server")
+MOTIFS_DNS = re.compile(r"ENOTFOUND|EAI_AGAIN")  # panne de résolution : la relance part dès que le DNS répond
+MOTIF_RESEAU_CODEX = re.compile(r"^ERROR: Selected model is at capacity\. Please try a different model\.\s*$", re.MULTILINE)  # relevé le 13/10/2026
+PAS_DNS_S = 15
 CODES_GARDE_SAUTEE = (11, 12)  # l'étape est sautée, la chaîne continue ; tout autre code de garde arrête la chaîne
 
 
@@ -354,6 +371,33 @@ def reprise_quota_codex(res: Resultat) -> str | None:
     return None
 
 
+def motif_reseau(etape: Etape, res: Resultat) -> str | None:
+    """Motif d'un échec réseau reconnu sans ambiguïté (D122), sinon None. Claude : `is_error`, `terminal_reason` `api_error`, aucun
+    jeton consommé et un motif réseau dans `result`. Codex : la ligne d'erreur de capacité relevée sur un vrai journal (des jetons
+    ont pu être consommés et l'étape écrire avant l'échec : l'arrêt propre remet l'arbre en place avant la relance)."""
+    if res.delai_depasse or res.code in (0, CODE_BINAIRE):
+        return None
+    if etape.agent == "codex":
+        m = next((m for t in (res.stdout, res.stderr) if (m := MOTIF_RESEAU_CODEX.search(t))), None)
+        return m.group(0).strip() if m else None
+    try:
+        d = json.loads(res.stdout)
+        usage = d["usage"]
+        jetons = sum(int(usage.get(k) or 0) for k in ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
+        m = CODES_RESEAU_CLAUDE.search(d["result"]) or PHRASE_RESEAU_CLAUDE.search(d["result"])  # le code précis d'abord
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return None
+    return m.group(0) if d.get("is_error") is True and d.get("terminal_reason") == "api_error" and jetons == 0 and m else None
+
+
+def resoudre_hote(hote: str) -> bool:
+    try:
+        socket.getaddrinfo(hote, 443)
+        return True
+    except OSError:
+        return False
+
+
 def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Resultat, code: int, detail: str,
                   jouees: list[str], version: str | None = None, controle: str = "") -> Path:
     dossier = racine / cfg["chaine"]["sortie_dossier"]
@@ -470,11 +514,12 @@ def lots_dus(racine: Path, perimetre: str) -> int:
 
 class Chaine:
     def __init__(self, racine: Path, cfg: dict, etapes: list[Etape], jour: date | None = None, distant: bool = True,
-                 compte_lots=lots_dus) -> None:
+                 compte_lots=lots_dus, dormir=sleep, maintenant=datetime.now, resoudre=resoudre_hote) -> None:
         self.racine, self.cfg, self.etapes = racine, cfg, etapes
         self.jour = jour or date.today()
         self.distant = distant
         self.compte_lots = compte_lots
+        self.dormir, self.maintenant, self.resoudre = dormir, maintenant, resoudre  # injectés par les tests
         self.issues: list[Issue] = []
 
     def _fin(self, etape: Etape, code: int, ok: bool, arret: bool, detail: str, commit: str = "aucun") -> Issue:
@@ -482,6 +527,53 @@ class Chaine:
         issue = Issue(etape.nom, code, ok, arret, detail, commit)
         self.issues.append(issue)
         return issue
+
+    def relance_interdite(self, quand: datetime) -> bool:
+        """D122 : aucune tentative ne commence entre `relances_limite` (07:30) et `fenetre_fin` (08:00), la fin de la fenêtre de la chaîne."""
+        ch = self.cfg["chaine"]
+        return heure.fromisoformat(ch["relances_limite"]) <= quand.time() < heure.fromisoformat(ch["fenetre_fin"])
+
+    def attendre_reseau(self, delai_s: float, hote: str, dns_suffit: bool) -> None:
+        """Attente avant une relance. Panne DNS : relance dès que l'hôte se résout (au plus `delai_s`). Autre motif : `delai_s` pleins,
+        puis attente de la résolution DNS (au plus `delai_s` de plus) ; la relance part ensuite dans tous les cas."""
+        ecoule, minimum, plafond = 0.0, (0.0 if dns_suffit else delai_s), (delai_s if dns_suffit else 2 * delai_s)
+        while ecoule < plafond:
+            if ecoule >= minimum and self.resoudre(hote):
+                return
+            pas = min(PAS_DNS_S, (minimum if ecoule < minimum else plafond) - ecoule)
+            self.dormir(pas)
+            ecoule += pas
+
+    def lancer_avec_relances(self, etape: Etape, env: dict, git_avant: dict[str, str]) -> tuple[Resultat, int, str]:
+        """Lance l'étape ; sur un échec réseau (`motif_reseau`), arrêt propre, attente, nouvelle tentative (trois au plus, délais de
+        `chaine.relances_reseau_s`). Renvoie le résultat de la dernière tentative, son code et son détail (CODE_RESEAU à l'abandon)."""
+        ch = self.cfg["chaine"]
+        delais = ch["relances_reseau_s"]
+        hote = ch["reseau_hotes"][etape.agent]
+        tentative = 1
+        while True:
+            res = lancer(etape, self.racine, env, ch["arret_delai_s"])
+            code, detail = evaluer(etape, res)
+            motif = motif_reseau(etape, res) if code != 0 else None
+            if not motif:
+                return res, code, detail
+            total = f"{tentative} tentative{'s' if tentative > 1 else ''}"
+            dns = bool(MOTIFS_DNS.search(motif))
+            if tentative > len(delais):
+                return res, CODE_RESEAU, f"réseau : étape abandonnée après {total} ({motif})"
+            delai = delais[tentative - 1]
+            if self.relance_interdite(self.maintenant() + timedelta(seconds=0 if dns else delai)):
+                return res, CODE_RESEAU, f"réseau : relance interdite en fin de fenêtre ({ch['relances_limite']}), abandon après {total} ({motif})"
+            jouees = arret_propre(self.racine, etape) if etape.checkout or etape.clean else []
+            etat = etat_depot(self.racine, self.distant)
+            if (etat["index_lock"] or etat["sales"] or etat["en_avance"] or differences_git(git_avant, empreinte_git(self.racine))):
+                return res, code, detail  # état différent d'avant l'étape : pas de relance, le chemin ordinaire le qualifie (126, 15)
+            ecrire_sortie(self.racine, self.cfg, self.jour, etape, res, code,
+                          f"tentative {tentative}/{len(delais) + 1} échouée, réseau ({motif}) : relance après {delai // 60:g} min d'attente au plus", jouees)
+            self.attendre_reseau(delai, hote, dns)
+            if self.relance_interdite(self.maintenant()):
+                return res, CODE_RESEAU, f"réseau : relance interdite en fin de fenêtre ({ch['relances_limite']}), abandon après {total} ({motif})"
+            tentative += 1
 
     def executer_etape(self, etape: Etape) -> Issue:
         racine = self.racine
@@ -498,8 +590,7 @@ class Chaine:
         git_avant = empreinte_git(racine)
         version = version_codex(etape.commande[0]) if etape.agent == "codex" else None
         debut = datetime.now().timestamp()
-        res = lancer(etape, racine, env, self.cfg["chaine"]["arret_delai_s"])
-        code, detail = evaluer(etape, res)
+        res, code, detail = self.lancer_avec_relances(etape, env, git_avant)
         refus = refus_permission(res) if etape.agent == "claude" else []
         if refus and code != 0:  # étape déjà en échec : le refus s'ajoute à la cause, il reste fatal
             detail = f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(refus[:5]) + f" ; {detail}"

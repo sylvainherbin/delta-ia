@@ -9,6 +9,12 @@ etapes_actives = ["delta", "codex-delta", "delta-kb", "codex-delta-kb"]
 verrou = ".git/delta-passage.lock"   # tenu par scripts/passage-auto.sh (flock) pendant toute la chaîne ; testé par la garde (code 14)
 arret_delai_s = 10                   # après SIGTERM, attente avant SIGKILL sur tout le groupe de processus de l'étape
 sortie_dossier = "rapports/auto"     # une sortie par étape et par jour ; rapports/ n'est jamais commité
+# D122 : échec réseau d'une étape (voir orchestrateur.py) : trois relances au plus, après 5, 10 puis 20 min ; aucune tentative qui commence
+# entre relances_limite et fenetre_fin (fin de la fenêtre de la chaîne) ; hôte dont la résolution DNS est attendue, par agent.
+relances_reseau_s = [300, 600, 1200]
+relances_limite = "07:30"
+fenetre_fin = "08:00"
+reseau_hotes = { claude = "api.anthropic.com", codex = "chatgpt.com" }
 path = ["~/.local/bin", "/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"]
 
 [claude]
