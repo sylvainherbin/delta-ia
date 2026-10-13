@@ -17,7 +17,7 @@ def morceau(texte, debut, fin):
 
 
 def test_les_quatorze_fichiers_du_disque_sont_ceux_du_site():
-    cats = set(re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};")))
+    cats = set(re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};"))) - {"methodes"}  # D121 : fichier local, hors périmètres
     perimetres = set(json.loads(re.search(r"const KB_PERIMETRES = (\[[^\]]*\]);", APP).group(1)))
     sur_disque = {(f.parent.name, f.stem) for f in KB.glob("*/*.json")}
     assert perimetres == set(PERIMETRES)
@@ -40,7 +40,7 @@ def test_chaque_id_donne_son_fichier():
     assert json.loads(re.search(r"const KB_PRODUIT_PERIMETRE = (\{[^}]*\});", APP).group(1).replace("claude:", '"claude":').replace("codex:", '"codex":').replace("chatgpt:", '"chatgpt":')) == perim
     cats = re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};"))
     motif = re.compile(rf"^(claude-code|claude|codex|chatgpt)-({'|'.join(cats)})-")
-    assert "(claude-code|claude|codex|chatgpt)" in APP and "const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).join(\"|\")})-`);" in APP
+    assert "(claude-code|claude|codex|chatgpt)" in APP and "const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== \"methodes\").join(\"|\")})-`);" in APP
     for f in KB.glob("*/*.json"):
         for e in json.loads(f.read_text(encoding="utf-8"))["entrees"]:
             m = motif.match(e["id"])
@@ -52,7 +52,7 @@ def test_chargement_par_fichier_memorise_et_sans_liste_vide_muette():
     charge = morceau(APP, "function chargerFichierKb", "const kbComplet")
     assert "kb.promesses.has(cle)" in charge and "kb.promesses.set(cle" in charge, "un fichier n'est lu qu'une fois, même demandé deux fois"
     assert "kb.erreurs.push(`${cle} : ${err.message || err}`)" in charge, "un fichier en échec est signalé, jamais ignoré"
-    assert 'lireJson(`data/kb/${p}/${c}.json`)' in charge and "fichier sans `entrees`" in charge
+    assert 'lireJson(cheminKb(p, c))' in charge and "`data/kb/${p}/${c}.json`" in APP and "fichier sans `entrees`" in charge
     for champ in ("_sections", "_deprecies", "_ajout", "_texte"):
         assert f"e.{champ} =" in charge, champ
     assert "fusionnerParNomKb(kb.entrees, nouvelles.sort(comparerNomKb))" in charge, "tri alphabétique conservé à chaque fichier reçu"

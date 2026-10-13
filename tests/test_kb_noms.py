@@ -259,7 +259,7 @@ def test_fiche_seule_et_recherche_par_l_url():
     route = morceau(app, "function lireRoute", "async function rendre")
     assert 'params.get("id")' in route and "etat.kbFicheId" in route
     assert 'params.get("q")' in route and "Object.assign(kbFiltre, { q," in route, "la recherche repart de filtres vides"
-    fiche = morceau(app, "if (etat.kbFicheId)", "const total = kb.entrees.length")
+    fiche = morceau(app, "if (etat.kbFicheId)", "const extraites = kb.entrees.filter((e) => e.categorie !== \"methodes\");  // D121\n")
     assert "carteKb(fiche)" in fiche and 'href: "#reference", text: "← Toute la référence"' in fiche
     assert "return frag;" in fiche, "pas de filtres ni de liste sous la fiche"
     assert "Aucune fiche pour cet identifiant" in fiche
