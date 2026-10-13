@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-12",
+ "maj_le": "2026-10-13",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -762,7 +762,7 @@
    "categorie": "parametres",
    "nom": "agents",
    "gabarit": "court",
-   "description": "La table des agents regroupe les réglages multi-agents et les rôles personnalisés de Codex.",
+   "description": "La table agents regroupe les réglages multi-agents et les rôles personnalisés ; les noms des réglages scalaires sont réservés.",
    "description_source": "Type : table. Multi-agent settings and custom role declarations. Scalar setting names are reserved and can't be used as custom role names.",
    "usage": "agents",
    "usage_nature": "syntaxe",
@@ -771,7 +771,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "Les rôles de mission décrits dans OPÉRER ne constituent pas des rôles de sous-agents Codex et ne justifient pas une nouvelle table de réglages."
    },
    "sources": [
     {
@@ -784,7 +784,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -801,13 +801,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'usage actuel de l'app et l'objectif CLI ne prévoient pas de rôle multi-agent personnalisé."
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions sont lancées et suivies par OPÉRER, avec modèle et effort explicites."
     }
    }
   },
@@ -817,7 +825,7 @@
    "categorie": "parametres",
    "nom": "agents.default_subagent_model",
    "gabarit": "court",
-   "description": "Le modèle par défaut des sous-agents s’applique aux agents lancés sans choix explicite.",
+   "description": "Définit le modèle par défaut des sous-agents lancés sans choix explicite, un modèle passé au lancement étant prioritaire.",
    "description_source": "Type : string. Default model for spawned agents. An explicit spawn model takes precedence.",
    "usage": "agents.default_subagent_model",
    "usage_nature": "syntaxe",
@@ -826,7 +834,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun sous-agent Codex personnel n’est déclaré ; le réglage serait prématuré."
+    "pourquoi": "Les missions Codex ont déjà un modèle explicite et aucun scénario de sous-agent Codex sans modèle n'est décrit."
    },
    "sources": [
     {
@@ -839,7 +847,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -848,10 +856,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Le modèle de chaque mission Codex est fixé explicitement selon sa nature."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-default-subagent-reasoning-effort",
@@ -859,7 +880,7 @@
    "categorie": "parametres",
    "nom": "agents.default_subagent_reasoning_effort",
    "gabarit": "court",
-   "description": "L’effort de raisonnement par défaut s’applique aux sous-agents lancés sans choix explicite.",
+   "description": "Définit l'effort de raisonnement par défaut des sous-agents lancés sans choix explicite, un effort passé au lancement étant prioritaire.",
    "description_source": "Type : string. Default reasoning effort for spawned agents. An explicit spawn effort takes precedence.",
    "usage": "agents.default_subagent_reasoning_effort",
    "usage_nature": "syntaxe",
@@ -868,7 +889,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun sous-agent Codex personnel n’est déclaré ; le réglage serait prématuré."
+    "pourquoi": "Les missions Codex ont déjà un effort explicite et aucun essai de sous-agent Codex nécessitant un défaut global n'est décrit."
    },
    "sources": [
     {
@@ -881,7 +902,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -890,10 +911,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "L'effort de chaque mission Codex est fixé explicitement selon sa nature."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-enabled",
@@ -901,7 +935,7 @@
    "categorie": "parametres",
    "nom": "agents.enabled",
    "gabarit": "court",
-   "description": "Le commutateur des agents active ou désactive les outils multi-agents de Codex.",
+   "description": "Active ou désactive les outils multi-agents de Codex, activés par défaut.",
    "description_source": "Type : boolean. Enable or disable multi-agent tools (default: true).",
    "usage": "agents.enabled",
    "usage_nature": "syntaxe",
@@ -910,7 +944,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin de désactiver les outils multi-agents n’est exprimé."
+    "pourquoi": "Aucun besoin de désactiver les outils multi-agents Codex n'est déclaré dans l'usage CLI et les missions décrits."
    },
    "sources": [
     {
@@ -923,7 +957,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -932,10 +966,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI et les missions non interactives sont utilisées, sans besoin déclaré de ce réglage."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-interrupt-message",
@@ -943,7 +990,7 @@
    "categorie": "parametres",
    "nom": "agents.interrupt_message",
    "gabarit": "court",
-   "description": "Le réglage des interruptions détermine si elles laissent un message visible pour le modèle.",
+   "description": "Détermine si l'interruption d'un tour d'agent inscrit un message visible par le modèle, ce comportement étant activé par défaut.",
    "description_source": "Type : boolean. Record a model-visible message when an agent turn is interrupted (default: true).",
    "usage": "agents.interrupt_message",
    "usage_nature": "syntaxe",
@@ -952,7 +999,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun problème d’interruption des sous-agents n’est signalé."
+    "pourquoi": "Aucun problème d'interruption de sous-agent Codex n'est décrit pour les audits ou les missions."
    },
    "sources": [
     {
@@ -965,7 +1012,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -974,10 +1021,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex sert aux audits et aux missions, sans problème de sous-agent interrompu signalé."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-max-concurrent-threads-per-session",
@@ -985,7 +1045,7 @@
    "categorie": "parametres",
    "nom": "agents.max_concurrent_threads_per_session",
    "gabarit": "court",
-   "description": "La limite de threads simultanés borne le nombre de sous-agents ouverts dans une session.",
+   "description": "Borne le nombre de fils de sous-agents ouverts simultanément, hors fil principal, avec un défaut choisi par Codex quand la clé est absente.",
    "description_source": "Type : number. Maximum number of spawned-agent threads that can be open concurrently, excluding the primary thread. When unset, Codex chooses the default.",
    "usage": "agents.max_concurrent_threads_per_session",
    "usage_nature": "syntaxe",
@@ -994,7 +1054,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun usage de sous-agents Codex ne justifie une limite personnalisée."
+    "pourquoi": "La machine est modeste, mais aucune saturation due aux sous-agents Codex n'est décrite pour justifier une limite persistante."
    },
    "sources": [
     {
@@ -1007,7 +1067,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1016,10 +1076,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "La machine est modeste et les campagnes lourdes sont bridées par une tranche systemd."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-max-threads",
@@ -1027,7 +1100,7 @@
    "categorie": "parametres",
    "nom": "agents.max_threads",
    "gabarit": "court",
-   "description": "Le paramètre historique donne un ancien nom à la limite de threads simultanés.",
+   "description": "Est l'ancien alias de agents.max_concurrent_threads_per_session pour limiter les fils de sous-agents simultanés.",
    "description_source": "Type : number. Legacy alias for agents.max_concurrent_threads_per_session.",
    "usage": "agents.max_threads",
    "usage_nature": "syntaxe",
@@ -1036,7 +1109,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Un alias ancien n’apporte rien à la configuration actuelle décrite."
+    "pourquoi": "Les missions Codex décrites ne requièrent aucune limite personnalisée de sous-agents et un alias ancien n'ajoute pas de bénéfice."
    },
    "sources": [
     {
@@ -1049,7 +1122,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1058,10 +1131,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions utilisent un lanceur avec des réglages explicites."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-name-config-file",
@@ -1069,7 +1155,7 @@
    "categorie": "parametres",
    "nom": "agents.<name>.config_file",
    "gabarit": "court",
-   "description": "Le fichier de configuration d’un rôle définit une couche TOML propre à cet agent.",
+   "description": "Définit le chemin d'une couche TOML propre à un rôle de sous-agent, les chemins relatifs étant résolus depuis le fichier qui déclare ce rôle.",
    "description_source": "Type : string (path). Path to a TOML config layer for that role; relative paths resolve from the config file that declares the role.",
    "usage": "agents.<name>.config_file",
    "usage_nature": "syntaxe",
@@ -1078,7 +1164,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun rôle Codex personnalisé n’est déclaré."
+    "pourquoi": "Les chefs et devs de l'organisation sont des sessions suivies par OPÉRER ; aucun rôle de sous-agent Codex personnalisé n'est déclaré."
    },
    "sources": [
     {
@@ -1091,7 +1177,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1100,10 +1186,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "L'organisation distingue les sessions chefs et devs suivies par OPÉRER."
+    }
+   }
   },
   {
    "id": "codex-parametres-agents-name-description",
@@ -1111,7 +1210,7 @@
    "categorie": "parametres",
    "nom": "agents.<name>.description",
    "gabarit": "court",
-   "description": "La description d’un rôle guide Codex dans le choix de cet agent personnalisé.",
+   "description": "Fournit la description d'un rôle présentée à Codex pour choisir et lancer ce type de sous-agent.",
    "description_source": "Type : string. Role guidance shown to Codex when choosing and spawning that agent type.",
    "usage": "agents.<name>.description",
    "usage_nature": "syntaxe",
@@ -1120,7 +1219,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun rôle Codex personnalisé n’est déclaré."
+    "pourquoi": "Les rôles de sessions dans OPÉRER ne justifient pas une description persistante d'un rôle de sous-agent Codex sans scénario d'essai."
    },
    "sources": [
     {
@@ -1133,7 +1232,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1142,10 +1241,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Les chefs et devs sont des sessions durables, pas des définitions de rôles de sous-agents Codex."
+    }
+   }
   },
   {
    "id": "codex-parametres-allow-login-shell",
@@ -1153,7 +1265,7 @@
    "categorie": "parametres",
    "nom": "allow_login_shell",
    "gabarit": "court",
-   "description": "Le réglage `allow_login_shell` autorise ou refuse les outils shell utilisant la sémantique d’un shell de connexion.",
+   "description": "Autorise les outils shell à utiliser un shell de connexion par défaut ; false rejette login = true et choisit un shell sans connexion quand login est omis.",
    "description_source": "Type : boolean. Allow shell-based tools to use login-shell semantics. Defaults to true; when false, login = true requests are rejected and omitted login defaults to non-login shells.",
    "usage": "allow_login_shell",
    "usage_nature": "syntaxe",
@@ -1162,7 +1274,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex sous tmux n’exige pas de modifier la sémantique du shell et aucun problème correspondant n’est décrit."
+    "pourquoi": "La CLI Codex sous tmux ne présente aucun problème déclaré de shell de connexion justifiant un changement de ce réglage."
    },
    "sources": [
     {
@@ -1175,7 +1287,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1208,13 +1320,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif Codex sous tmux ne mentionne aucun besoin lié au shell de connexion."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "L'usage CLI sous tmux ne signale aucun problème de shell de connexion."
     }
    }
   },
@@ -1224,7 +1344,7 @@
    "categorie": "parametres",
    "nom": "approval_policy",
    "gabarit": "court",
-   "description": "`approval_policy` définit les demandes d'approbation avec `on-request`, `never` ou des catégories granulaires ; `untrusted` n'est plus pris en charge et `on-failure` est déprécié.",
+   "description": "Définit les demandes d'approbation avec on-request, never ou des catégories granulaires ; untrusted n'est plus pris en charge et on-failure est déprécié.",
    "description_source": "Type : on-request | never | { granular = { sandbox_approval = bool, rules = bool, mcp_elicitations = bool, request_permissions = bool, skill_approval = bool } }. Controls when Codex pauses for approval before executing commands. You can also use approval_policy = { granular = { ... } } to allow or auto-reject specific prompt categories while keeping other prompts interactive. untrusted is unsupported, and on-failure is deprecated; use on-request for interactive runs or never for non-interactive runs.",
    "usage": "approval_policy",
    "usage_nature": "syntaxe",
@@ -1233,7 +1353,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les passages delta-ia ont déjà leur profil de permissions explicite et les missions `mission-codex` sont autonomes ; le contexte ne demande aucun nouveau réglage persistant d'approbation."
+    "pourquoi": "D70 utilise déjà un profil de permissions explicite et mission-codex s'exécute en danger-full-access ; aucun nouveau défaut persistant d'approbation n'est demandé."
    },
    "sources": [
     {
@@ -1246,7 +1366,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1263,21 +1383,25 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "methode.chaine-nuit": {
-     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
-     "pourquoi": "D70 possède un profil de permissions explicite."
-    },
     "methode.missions": {
-     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
-     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "mission-codex s'exécute en danger-full-access avec modèle et effort explicites."
     },
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "D70 utilise codex exec avec un profil de permissions explicite."
     }
    }
   },
@@ -1287,7 +1411,7 @@
    "categorie": "parametres",
    "nom": "approval_policy.granular.mcp_elicitations",
    "gabarit": "court",
-   "description": "Le réglage des sollicitations MCP autorise ou rejette automatiquement leurs demandes d’approbation.",
+   "description": "Autorise l'affichage des sollicitations MCP quand true, au lieu de leur rejet automatique.",
    "description_source": "Type : boolean. When true, MCP elicitation prompts are allowed to surface instead of being auto-rejected.",
    "usage": "approval_policy.granular.mcp_elicitations",
    "usage_nature": "syntaxe",
@@ -1296,7 +1420,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "Delta-IA est déjà utilisé par le connecteur OpenAI et aucune sollicitation MCP bloquée n'est décrite pour justifier ce réglage granulaire."
    },
    "sources": [
     {
@@ -1309,7 +1433,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1326,13 +1450,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun besoin de politique granulaire pour les audits dans l'app n'est décrit."
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Delta-IA est utilisé par le connecteur du compte OpenAI."
     }
    }
   },
@@ -1342,7 +1474,7 @@
    "categorie": "parametres",
    "nom": "approval_policy.granular.request_permissions",
    "gabarit": "court",
-   "description": "Le réglage des demandes de permission autorise leur affichage ou leur rejet automatique.",
+   "description": "Le réglage autorise l'affichage des demandes de permission issues de request_permissions quand sa valeur est true.",
    "description_source": "Type : boolean. When true, prompts from the request_permissions tool are allowed to surface.",
    "usage": "approval_policy.granular.request_permissions",
    "usage_nature": "syntaxe",
@@ -1351,7 +1483,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "Les missions Codex autonomes décrites ne comportent aucun besoin signalé d'afficher des demandes request_permissions."
    },
    "sources": [
     {
@@ -1364,7 +1496,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1381,13 +1513,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun besoin de politique granulaire pour les audits dans l'app n'est décrit."
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions Codex s'exécutent en danger-full-access."
     }
    }
   },
@@ -1397,7 +1537,7 @@
    "categorie": "parametres",
    "nom": "approval_policy.granular.rules",
    "gabarit": "court",
-   "description": "Le réglage des règles autorise ou rejette les approbations déclenchées par les règles d’exécution.",
+   "description": "Autorise l'affichage des approbations déclenchées par les règles execpolicy de type prompt quand true.",
    "description_source": "Type : boolean. When true, approvals triggered by execpolicy prompt rules are allowed to surface.",
    "usage": "approval_policy.granular.rules",
    "usage_nature": "syntaxe",
@@ -1406,7 +1546,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "La règle Codex actuelle doit être simplifiée, mais aucun besoin d'afficher des approbations execpolicy n'est décrit."
    },
    "sources": [
     {
@@ -1419,7 +1559,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1436,13 +1576,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun besoin de politique granulaire pour les audits dans l'app n'est décrit."
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "La règle Codex actuelle autorise un script entier ; des préfixes courts sont proposés."
     }
    }
   },
@@ -1452,7 +1600,7 @@
    "categorie": "parametres",
    "nom": "approval_policy.granular.sandbox_approval",
    "gabarit": "court",
-   "description": "Le réglage du bac à sable autorise ou rejette les demandes d’élévation de permissions.",
+   "description": "Autorise l'affichage des demandes d'élévation au-delà du sandbox quand true.",
    "description_source": "Type : boolean. When true, sandbox escalation approval prompts are allowed to surface.",
    "usage": "approval_policy.granular.sandbox_approval",
    "usage_nature": "syntaxe",
@@ -1461,7 +1609,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "Les missions Codex utilisent danger-full-access et D70 son profil explicite ; aucun essai de demandes d'élévation interactives n'est déclaré."
    },
    "sources": [
     {
@@ -1474,7 +1622,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1491,13 +1639,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions s'exécutent en danger-full-access."
+    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun besoin de politique granulaire pour les audits dans l'app n'est décrit."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "D70 utilise codex exec avec un profil de permissions explicite."
     }
    }
   },

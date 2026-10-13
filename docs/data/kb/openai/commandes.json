@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-12",
+ "maj_le": "2026-10-13",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -5519,7 +5519,7 @@
    "categorie": "commandes",
    "nom": "/rename",
    "gabarit": "complet",
-   "description": "Renomme la conversation active sans quitter le TUI. Le nouveau titre facilite sa reconnaissance dans la liste des sessions sauvegardées.",
+   "description": "Renomme la conversation active sans quitter la TUI. Le titre enregistré facilite sa reconnaissance dans les sessions sauvegardées.",
    "description_source": "Rename the current chat. — Give a saved session a recognizable name without leaving the TUI.",
    "usage": "/rename",
    "usage_nature": "syntaxe",
@@ -5528,7 +5528,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les fils Codex sont déjà nommés dans l'app de bureau et la CLI autonome n'est pas utilisée ; cette commande TUI ne répond à aucun besoin signalé."
+    "pourquoi": "Les conversations Codex sont déjà organisées par rôle sous tmux ; aucun besoin supplémentaire de renommage n'est décrit."
    },
    "sources": [
     {
@@ -5541,7 +5541,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5562,13 +5562,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "dd5c555239c518cb8238a29694a565249da7569f",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Des fils nommés existent dans l'app ; la CLI autonome n'est pas utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée, avec des conversations nommées par rôle."
     }
    },
    "exemple_origine": "source"
@@ -6189,16 +6197,16 @@
    "categorie": "commandes",
    "nom": "/title",
    "gabarit": "complet",
-   "description": "La commande `/title` choisit et ordonne les champs du titre de la fenêtre ou de l’onglet terminal. La sélection est enregistrée dans `tui.terminal_title` de `config.toml` pour les sessions suivantes.",
+   "description": "Choisit et ordonne les champs du titre de la fenêtre ou de l'onglet terminal. La sélection est enregistrée dans tui.terminal_title de config.toml pour les sessions suivantes.",
    "description_source": "Configure terminal window or tab title fields interactively. — Pick and reorder title items such as project, status, thread, branch, model, and task progress.",
    "usage": "/title",
    "usage_nature": "syntaxe",
    "exemple": "/title",
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin de titre terminal personnalisé n’est décrit pour l’objectif Codex sous tmux ; conserver la valeur actuelle évite un réglage persistant sans bénéfice établi."
+    "pourquoi": "L'usage Codex sous tmux ne comporte aucun besoin déclaré de titre personnalisé ; ce réglage persistant n'apporte pas de bénéfice établi."
    },
    "sources": [
     {
@@ -6211,7 +6219,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6232,17 +6240,21 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif Codex sous tmux ne mentionne pas de besoin de titre personnalisé."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI est utilisée sous tmux, sans besoin déclaré de personnaliser le titre."
     }
    },
    "exemple_origine": "source"
@@ -6376,7 +6388,7 @@
    "categorie": "commandes",
    "nom": "/worktree",
    "gabarit": "complet",
-   "description": "`/worktree` lance le chat dans un nouveau worktree Git selon le tableau des commandes de l'extension IDE. Ce répertoire de travail distinct isole les fichiers du chat ; cette ligne ne confirme pas une commande équivalente dans la TUI CLI.",
+   "description": "Lance la conversation dans un nouveau worktree Git selon le tableau des commandes de l'extension IDE. Cette ligne ne confirme pas une commande équivalente dans la TUI CLI.",
    "description_source": "Run the chat in a new Git worktree.",
    "usage": "/worktree",
    "usage_nature": "syntaxe",
@@ -6385,7 +6397,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les missions de Delta utilisent déjà une branche et un worktree préparés par Git ou OPÉRER, et l'usage Codex décrit est la CLI sous tmux ; aucun scénario d'adoption de cette commande IDE n'est identifié."
+    "pourquoi": "Les missions utilisent des worktrees préparés par Git ou OPÉRER, puis la CLI sous tmux ; aucun essai de cette commande IDE n'est justifié."
    },
    "sources": [
     {
@@ -6398,7 +6410,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6423,17 +6435,25 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "397ddbbb3f11ffa0c73d6ca9f26d3bced7041f3b",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
-    },
     "methode.missions": {
-     "sha1": "5febe185754388d19e7dea4e6296fc8b58798361",
-     "pourquoi": "Les worktrees sont préparés par Git ou OPÉRER avant les missions, puis retirés après relecture."
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les worktrees sont préparés par Git ou OPÉRER avant les missions."
+    },
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex utilise la CLI sous tmux et les missions non interactives."
     }
    },
    "exemple_origine": "source"
