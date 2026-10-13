@@ -205,3 +205,17 @@ def ecrire_quotidien(racine: Path, perimetre: str, brut: dict, jour: str, couvri
         jours.append({"date": d["date"], "genere_le": d["genere_le"], "elements": len(d["elements"]), "impact": impacts, "ecartes": len(d["ecartes"])})
     (dossier / "index.json").write_text(json.dumps({"perimetre": perimetre, "agent": AGENTS[perimetre], "maj_le": f"{jour}T12:00:00+00:00", "jours": jours}, ensure_ascii=False, indent=1), encoding="utf-8")
     return dossier / f"{jour}.json"
+
+
+POLITIQUE_INSTANCE = {"alertes": {"quotas": {"semaine_pct": 80, "arret_session_5h_pct": 80, "arret_semaine_pct": 98}}}
+
+
+@pytest.fixture(autouse=True)
+def politique(tmp_path_factory, monkeypatch):
+    """OBS6 : seuils de quotas de garde.py, lus dans la politique d'instance de discipline ; ici un fichier de test
+    (DELTA_INSTANCE_POLICY), jamais le vrai `../discipline/config/instance-policy.json`."""
+    import json
+    f = tmp_path_factory.mktemp("politique") / "instance-policy.json"
+    f.write_text(json.dumps(POLITIQUE_INSTANCE), encoding="utf-8")
+    monkeypatch.setenv("DELTA_INSTANCE_POLICY", str(f))
+    return f

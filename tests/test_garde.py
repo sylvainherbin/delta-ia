@@ -4,6 +4,7 @@ import json
 import os
 import time
 from datetime import date, datetime, timezone
+from pathlib import Path
 
 import pytest
 
@@ -508,3 +509,33 @@ def test_d70_etape_inconnue_est_refusee(racine):
     with pytest.raises(SystemExit) as e:
         garde.main(["--racine", str(racine), "--etape", "inconnue"])
     assert e.value.code == 2
+
+
+def test_obs6_seuils_lus_dans_la_politique(racine, politique):
+    usage(racine, s5=85, sem=90)
+    assert garde.controler(racine, J)["code"] == garde.CODE_QUOTA
+    politique.write_text(json.dumps({"alertes": {"quotas": {"semaine_pct": 95, "arret_session_5h_pct": 90,
+                                                             "arret_semaine_pct": 99}}}), encoding="utf-8")
+    res = garde.controler(racine, J)
+    assert res["code"] == 0
+    assert not any("quota hebdomadaire" in a for a in res["avertissements"]), "90 % < seuil D71 de 95 %"
+
+
+@pytest.mark.parametrize("contenu", [None, "pas du json", json.dumps({"alertes": {}}),
+                                     json.dumps({"alertes": {"quotas": {"semaine_pct": "80"}}})])
+def test_obs6_politique_illisible_aucun_arret_et_avertissement(racine, politique, contenu):
+    if contenu is None:
+        politique.unlink()
+    else:
+        politique.write_text(contenu, encoding="utf-8")
+    usage(racine, s5=99, sem=99)
+    res = garde.controler(racine, J)
+    assert res["code"] == 0
+    assert any("seuils de quotas inconnus" in a for a in res["avertissements"])
+    assert not any("quota hebdomadaire" in a for a in res["avertissements"])
+
+
+def test_obs6_aucun_seuil_ecrit_dans_garde():
+    import re
+    source = (Path(garde.__file__)).read_text(encoding="utf-8")
+    assert not re.search(r"^SEUIL_\w+\s*=\s*\d", source, re.M)

@@ -6,14 +6,19 @@ Contrôles, dans l'ordre :
 1 bis. D70 : `.git/delta-passage.lock` tenu (flock) par l'orchestrateur `scripts/passage-auto.sh` et cet appel n'en fait pas
    partie -> arrêt, code 14. La garde teste le verrou, elle ne le prend pas (ouverture en lecture seule, flock non bloquant,
    relâché aussitôt). Un appel de la chaîne s'identifie par `DELTA_CHAINE_PID`, égal au PID écrit dans le fichier de verrou.
-2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= 80 ou `claude.semaine.pct` >= 98 -> arrêt,
+2. `rapports/usage.json` (console-mur) : `claude.session_5h.pct` >= `arret_session_5h_pct` ou `claude.semaine.pct` >=
+   `arret_semaine_pct` -> arrêt,
    code 11. Fichier absent, illisible ou modifié il y a plus de 15 minutes : la console est sans doute arrêtée ;
    les pourcentages ne sont plus fiables, le passage continue et l'avertissement est signalé (code 0).
    D71 : un fichier absent, illisible ou sans `claude.session_5h.pct` / `claude.semaine.pct` (la console le réécrit) est relu
    une seule fois après 3 s ; s'il reste incomplet, comportement inchangé (« quotas inconnus », aucun arrêt nouveau).
-   D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= 80 ajoute un avertissement, sans arrêt, même sur un relevé périmé
+   D71 : `claude.semaine.pct` ou `chatgpt.semaine.pct` >= `semaine_pct` ajoute un avertissement, sans arrêt, même sur un relevé périmé
    (mention « relevé périmé, il y a N min ») ; ChatGPT n'arrête jamais le passage. Quotas Claude inconnus : l'avertissement
    ajoute « vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71) ».
+   Seuils (OBS6, 13/10/2026) : écrits en un seul endroit, `alertes.quotas` de `discipline/config/instance-policy.json`
+   (`DELTA_INSTANCE_POLICY`, sinon `../discipline/config/instance-policy.json` à côté de ce dépôt). Politique absente,
+   illisible ou seuil invalide (nombre de 0 à 100 attendu) : avertissement « seuils de quotas inconnus », aucun arrêt ni
+   avertissement de quota fondé sur ce seuil (comme pour des quotas inconnus).
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
    code 12.
 4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
@@ -44,9 +49,10 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
-SEUIL_SESSION_5H = 80
-SEUIL_SEMAINE = 98
-SEUIL_ALERTE_HEBDO = 80  # D71 : avertissement seulement, sur Claude et sur ChatGPT
+POLITIQUE_DEFAUT = RACINE.parent / "discipline" / "config" / "instance-policy.json"
+# OBS6 : nom de chaque seuil dans `alertes.quotas` de la politique d'instance ; aucune valeur écrite ici
+CLES_SEUILS = {"session_5h": "arret_session_5h_pct", "semaine": "arret_semaine_pct",
+               "alerte_hebdo": "semaine_pct"}  # alerte_hebdo : D71, avertissement seulement, sur Claude et sur ChatGPT
 FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
 RAPPEL_CLAUDE = "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)"
@@ -118,6 +124,22 @@ def commits_non_pousses(racine: Path) -> int | None:
     return int(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip().isdigit() else None
 
 
+def seuils(chemin: Path | str | None = None) -> tuple[dict, str | None]:
+    """Seuils de quotas de `alertes.quotas` de la politique d'instance : ({nom: pct}, avertissement ou None).
+    Un seuil absent ou invalide manque au dictionnaire ; jamais de valeur par défaut."""
+    chemin = Path(chemin or os.environ.get("DELTA_INSTANCE_POLICY") or POLITIQUE_DEFAUT).expanduser()
+    try:
+        quotas = json.loads(chemin.read_text(encoding="utf-8"))["alertes"]["quotas"]
+        if not isinstance(quotas, dict):
+            raise TypeError("alertes.quotas n'est pas un objet")
+    except (OSError, ValueError, KeyError, TypeError) as e:
+        return {}, f"seuils de quotas inconnus ({chemin} : {type(e).__name__}) : aucun arrêt ni alerte de quota (OBS6)"
+    out = {nom: quotas[cle] for nom, cle in CLES_SEUILS.items()
+           if type(quotas.get(cle)) in (int, float) and 0 <= quotas[cle] <= 100}
+    manquants = [CLES_SEUILS[nom] for nom in CLES_SEUILS if nom not in out]
+    return out, (f"seuils de quotas inconnus dans {chemin} : {', '.join(manquants)} (OBS6)" if manquants else None)
+
+
 def controler(racine: Path, jour: date, maintenant: datetime | None = None, delai_relecture: float = DELAI_RELECTURE_S,
               etape: str | None = None) -> dict:
     maintenant = maintenant or datetime.now(timezone.utc)
@@ -147,7 +169,11 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         res["controles"].append(f"chaîne : .git/delta-passage.lock tenu (pid {pid or 'inconnu'}) par une autre chaîne — arrêt (D70)")
         arret(CODE_CHAINE, "chaîne de passages en cours (.git/delta-passage.lock)")
 
-    # 2. quotas Claude (console-mur)
+    # 2. quotas Claude (console-mur) ; seuils de la politique d'instance (OBS6)
+    s, alerte_seuils = seuils()
+    if alerte_seuils:
+        res["avertissements"].append(alerte_seuils)
+    s_5h, s_sem, s_hebdo = s.get("session_5h"), s.get("semaine"), s.get("alerte_hebdo")
     usage = racine / "rapports" / "usage.json"
     age_min, u, erreur = _lire_usage(usage, maintenant)
     if not _complet(u):  # D71 : le fichier est réécrit par la console ; une seule relecture, après un délai court et borné
@@ -165,15 +191,15 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         elif s5 is None or sem is None:
             res["avertissements"].append(f"usage.json sans claude.session_5h.pct ou claude.semaine.pct : quotas inconnus. {RAPPEL_CLAUDE}")
             res["controles"].append("quotas : champs absents — le passage continue")
-        elif quota_claude and (s5 >= SEUIL_SESSION_5H or sem >= SEUIL_SEMAINE):
-            res["controles"].append(f"quotas : session 5 h {s5} % (seuil {SEUIL_SESSION_5H}), semaine {sem} % (seuil {SEUIL_SEMAINE}) — arrêt")
+        elif quota_claude and ((s_5h is not None and s5 >= s_5h) or (s_sem is not None and sem >= s_sem)):
+            res["controles"].append(f"quotas : session 5 h {s5} % (seuil {s_5h}), semaine {sem} % (seuil {s_sem}) — arrêt")
             arret(CODE_QUOTA, f"quota Claude : session 5 h {s5} %, semaine {sem} %")
         else:
             res["controles"].append(f"quotas : session 5 h {s5} %, semaine {sem} % (relevé il y a {age_min:.0f} min)")
         # D71 : l'alerte vaut aussi sur un relevé périmé (avertissement seulement, jamais d'arrêt sur un relevé périmé)
         perime = f" (relevé périmé, il y a {age_min:.0f} min)" if age_min > FRAICHEUR_MAX_MIN else ""
         for produit, pct in (("Claude", sem), ("ChatGPT", _pct(u, "chatgpt", "semaine", "pct"))):
-            if pct is not None and pct >= SEUIL_ALERTE_HEBDO:
+            if pct is not None and s_hebdo is not None and pct >= s_hebdo:
                 res["avertissements"].append(f"quota hebdomadaire {produit} à {pct:g} %{perime} — vérifie tes remises à zéro disponibles "
                                              "(Paramètres > Utilisation) avant d'économiser (D71)")
 

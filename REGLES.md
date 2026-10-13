@@ -82,8 +82,8 @@ D71 — Compte et quotas (30/09/2026). Toute information sur les limites, les qu
 1. est traitée en premier dans la synthèse, avec un `impact` au moins `fort`, et une `action` qui dit ce que Sylvain doit vérifier ou activer, et avant quand ;
 2. figure dans un bloc « Compte et quotas » placé en tête de tout compte rendu (REGLES §8, rapports D63, supervision, comptes rendus du pilote), avant tout le reste ; bloc absent seulement s'il n'y a rien à y dire ;
 3. si elle vient de la base de référence (fiche de ce sujet ajoutée ou modifiée), remonte dans la veille du jour en une ligne ;
-4. dès qu'un quota hebdomadaire dépasse 80 %, l'alerte dit : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ».
+4. dès qu'un quota hebdomadaire atteint le seuil D71 (`alertes.quotas.semaine_pct` de `../discipline/config/instance-policy.json`), l'alerte dit : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ».
 
 Origine : remises à zéro Claude (23/09) et Codex (découvertes par Sylvain le 30/09) non signalées alors que la base connaissait le mécanisme.
 
-Contenu minimal du bloc : les quotas lus dans `rapports/usage.json` (Claude session 5 h, Claude semaine, ChatGPT semaine, avec leurs heures de remise à zéro), l'alerte du point 4 si un quota hebdomadaire dépasse 80 %, les éléments et fiches D71 du passage. Dans un rapport D63, le bloc suit immédiatement l'en-tête. La limite de 10 lignes du §8 ne s'applique pas au bloc.
+Contenu minimal du bloc : les quotas lus dans `rapports/usage.json` (Claude session 5 h, Claude semaine, ChatGPT semaine, avec leurs heures de remise à zéro), l'alerte du point 4 si un quota hebdomadaire atteint le seuil D71, les éléments et fiches D71 du passage. Dans un rapport D63, le bloc suit immédiatement l'en-tête. La limite de 10 lignes du §8 ne s'applique pas au bloc.

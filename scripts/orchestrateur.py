@@ -161,8 +161,9 @@ def environnement(cfg: dict, supervision: bool = False, extra: dict | None = Non
     }
     if supervision:
         env["GIT_OPTIONAL_LOCKS"] = "0"  # la supervision ne laisse jamais de .git/index.lock
-    if "XDG_RUNTIME_DIR" in os.environ:
-        env["XDG_RUNTIME_DIR"] = os.environ["XDG_RUNTIME_DIR"]
+    for cle in ("XDG_RUNTIME_DIR", "DELTA_INSTANCE_POLICY"):   # DELTA_INSTANCE_POLICY : seuils de garde.py (OBS6)
+        if cle in os.environ:
+            env[cle] = os.environ[cle]
     env.update(extra or {})
     return env
 
