@@ -1,8 +1,8 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-12",
- "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+ "maj_le": "2026-10-13",
+ "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -21,7 +21,7 @@
   "config.claude-code": "e32384f8fd8cbc79900681e800d92559daeb3072",
   "config.claude-code.interface": "585bf9bde6f77d1a08b743563de158ea53fe1360",
   "config.claude-code.skills": "ea1c593e91f0effefae69579902550750c762b86",
-  "config.claude-code.mcp": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+  "config.claude-code.mcp": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
   "config.claude-code.regles-globales": "571d760f16857a79730fc43372b11d3cd17ddf08",
   "config.claude-code.mode-auto": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
   "config.claude-code.sous-agents": "5ee183a9303b683bb41985498260b10b233ebba0",
@@ -5162,8 +5162,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT",
    "gabarit": "court",
-   "description": "Variable qui envoie le paramètre d'effort même aux modèles non reconnus, derrière une passerelle.",
-   "description_source": "Set to 1 to send the effort parameter with every request, even when Claude Code does not recognize the model ID as effort-capable. Use this when routing through an LLM gateway or third-party provider that serves models under custom identifiers. Models that reject the effort parameter at the API, including Claude 3 models, Sonnet 4.0 and 4.5, Opus 4.0 and 4.1, and Haiku 4.5, are still excluded so requests do not fail",
+   "description": "Variable qui envoie le paramètre d'effort avec chaque requête, même quand le modèle n'est pas reconnu comme compatible, derrière une passerelle LLM ou un fournisseur tiers. Les modèles dont l'API refuse ce paramètre (Opus 4.1, Sonnet 4.5, Haiku 4.5 et antérieurs) restent exclus.",
+   "description_source": "Set to 1 to send the effort parameter with every request, even when Claude Code does not recognize the model ID as effort-capable. Use this when routing through an LLM gateway or third-party provider that serves models under custom identifiers. Models that reject the effort parameter at the API, including Claude Opus 4.1, Claude Sonnet 4.5, Claude Haiku 4.5, and earlier models, are still excluded so requests do not fail",
    "usage": "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5171,7 +5171,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'API, de passerelle ou de fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
+    "pourquoi": "Réglage de passerelle ou de fournisseur tiers ; CONTEXTE.md décrit un abonnement Max sans passerelle."
    },
    "sources": [
     {
@@ -5184,7 +5184,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5193,10 +5193,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Claude Max (20x) : pas de passerelle ni de fournisseur tiers décrits."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-api-key-helper-ttl-ms",
@@ -7265,8 +7278,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP",
    "gabarit": "court",
-   "description": "Variable qui empêche le renvoi automatique d'Opus 4.0 et 4.1 vers l'Opus actuel.",
-   "description_source": "Set to 1 to prevent automatic remapping of Opus 4.0 and 4.1 to the current Opus version on the Anthropic API. Use when you intentionally want to pin an older model. The remap does not run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry",
+   "description": "Variable qui empêche, sur l'API Anthropic, le renvoi automatique d'Opus 4 et d'Opus 4.1 vers la version actuelle d'Opus, pour garder volontairement un ancien modèle. Le renvoi ne s'exécute pas sur Bedrock, Google Cloud Agent Platform ni Microsoft Foundry.",
+   "description_source": "Set to 1 to prevent automatic remapping of Opus 4 and Opus 4.1 to the current Opus version on the Anthropic API. Use when you intentionally want to pin an older model. The remap does not run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry",
    "usage": "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7274,7 +7287,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'utilises pas ces anciens modèles."
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage d'Opus 4 ni d'Opus 4.1 à épingler."
    },
    "sources": [
     {
@@ -7287,7 +7300,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7296,10 +7309,18 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-disable-model-access-fallback",
