@@ -761,6 +761,8 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     verifier_recent(racine, perimetre, ids, r)
     verifier_a_tester(racine, perimetre, ids, r)
     verifier_noms(racine, perimetre, ids, r)
+    if perimetre == "claude":  # fichier commun aux deux périmètres : un seul contrôle
+        verifier_methodes(racine, r)
     return ids
 
 
@@ -904,6 +906,71 @@ def verifier_a_tester(racine: Path, perimetre: str, ids: set[str], r: Rapport) -
             precedente = cle
         if e["produit"] in mes_produits and e["id"] not in ids:
             r.erreur(o, f"`id` absent de la base {perimetre}")
+
+
+def verifier_methodes(racine: Path, r: Rapport) -> None:
+    """D121 : docs/data/kb/methodes.json (fiches de méthode locales, tirées de kb-methodes/*.md). Sans dossier source ni
+    fichier : accepté ; sinon le fichier existe, ne porte aucun secret ni chemin personnel, et reproduit exactement ce que
+    `catalogue.py methodes` tire des fichiers source (une fiche retirée ou modifiée sans régénération est une erreur)."""
+    from deltalib.kb import methodes as m
+    chemin, ou = m.chemin_methodes(racine), "kb/methodes.json"
+    if not chemin.exists():
+        if (racine / m.DOSSIER_SOURCE).is_dir() and any((racine / m.DOSSIER_SOURCE).glob("*.md")):
+            r.erreur(ou, f"absent alors que {m.DOSSIER_SOURCE}/ contient des fiches : lancer `catalogue.py methodes`")
+        return
+    texte = chemin.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    if "/home/" in texte:
+        r.erreur(ou, "chemin personnel `/home/` interdit")
+    try:
+        doc = json.loads(texte)
+    except json.JSONDecodeError as e:
+        r.erreur(ou, f"JSON invalide : {e}")
+        return
+    if not isinstance(doc, dict) or doc.get("categorie") != m.CATEGORIE or not isinstance(doc.get("entrees"), list):
+        r.erreur(ou, "en-tête attendu : categorie `methodes`, origine, maj_le, total, entrees")
+        return
+    if doc.get("total") != len(doc["entrees"]):
+        r.erreur(ou, "compteur `total` incohérent")
+    vus: set[str] = set()
+    for i, e in enumerate(doc["entrees"]):
+        o = f"{ou} [{i}] {e.get('id', '?') if isinstance(e, dict) else '?'}"
+        if not isinstance(e, dict):
+            r.erreur(o, "n'est pas un objet")
+            continue
+        manquants = [c for c in ("id", "produit", "produits", "categorie", "nom", "description", "usage", "sources", "certitude",
+                                 "versions", "verifie_le", "origine", "fichier_source", "commentee", "retiree") if c not in e]
+        if manquants:
+            r.erreur(o, f"champs manquants : {manquants}")
+            continue
+        if not re.fullmatch(r"methode-[a-z0-9-]+", str(e["id"])):
+            r.erreur(o, "identifiant attendu : methode-<slug>")
+        if e["id"] in vus:
+            r.erreur(o, "identifiant en double")
+        vus.add(e["id"])
+        if e["categorie"] != m.CATEGORIE or e["origine"] != "locale" or e["commentee"] is not True or e["retiree"] is not False:
+            r.erreur(o, "categorie `methodes`, origine `locale`, commentee true et retiree false attendus")
+        if not isinstance(e["produits"], list) or not e["produits"] or e["produit"] != e["produits"][0]:
+            r.erreur(o, "`produits` : liste non vide dont le premier est `produit`")
+        if e["certitude"] not in m.CERTITUDES:
+            r.erreur(o, f"certitude {e['certitude']!r} inconnue")
+        for champ in ("nom", "description", "usage"):
+            if not isinstance(e[champ], str) or not e[champ].strip():
+                r.erreur(o, f"`{champ}` vide")
+        srcs = e["sources"]
+        if not isinstance(srcs, list) or not srcs:
+            r.erreur(o, "`sources` : au moins une URL")
+        else:
+            for s in srcs:
+                if not isinstance(s, dict) or not str(s.get("url", "")).startswith("https://") or not str(s.get("libelle", "")).strip():
+                    r.erreur(o, f"source sans URL https ou sans libellé : {s!r}")
+    try:
+        attendu = m.construire_methodes(racine)
+    except m.FicheMethodeInvalide as err:
+        r.erreur("kb-methodes", str(err))
+        return
+    if attendu != doc:
+        r.erreur(ou, f"différent de ce que tirent les fichiers {m.DOSSIER_SOURCE}/*.md : lancer `catalogue.py methodes`")
 
 
 def verifier_noms(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:

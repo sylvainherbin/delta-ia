@@ -41,8 +41,8 @@ test("initialize, notification et liste des outils", async () => {
   const liste = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
   const noms = liste.corps.result.tools.map((t) => t.name).sort();
   assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "nouveautes_base", "resume_du_jour"]);
-  assert.equal(init.corps.result.serverInfo.version, "0.2.2");
-  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.2");
+  assert.equal(init.corps.result.serverInfo.version, "0.2.3");
+  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.3");
   for (const t of liste.corps.result.tools) assert.match(t.description, /À appeler/, `${t.name} : dire quand l'appeler`);
   for (const t of liste.corps.result.tools) assert.equal(t.annotations.readOnlyHint, true);
 });
@@ -357,6 +357,39 @@ test("fiche_reference rend exemple_origine avec l'exemple, null sans exemple", a
   assert.deepEqual([g.exemple, g.exemple_origine], [null, null]);
 });
 
+test("méthodes locales (D121) : la consultation croisée se trouve, se lit en entier avec ses sources officielles", async () => {
+  const enum_ = OUTILS.chercher_reference.inputSchema.properties.categorie.enum;
+  assert.ok(enum_.includes("methodes"));
+  const trouve = async (args) => (await appel("chercher_reference", args)).corps.result.structuredContent;
+  for (const args of [{ requete: "consultation croisée" }, { requete: "ask-codex ask-claude", categorie: "methodes" }, { requete: "consulter", produit: "codex" }, { requete: "consulter", produit: "claude-code" }]) {
+    const r = await trouve(args);
+    const m = r.resultats.find((x) => x.id === "methode-consultation-croisee");
+    assert.ok(m, JSON.stringify(args)); assert.equal(m.categorie, "methodes");
+  }
+  assert.equal((await trouve({ requete: "consulter", produit: "chatgpt" })).resultats.some((x) => x.id === "methode-consultation-croisee"), false);
+  assert.equal((await trouve({ requete: "consultation croisée" })).resultats[0].id, "methode-consultation-croisee", "le slug de la méthode compte dans le nom");
+  const f = (await appel("fiche_reference", { id: "methode-consultation-croisee" })).corps.result.structuredContent.fiche;
+  assert.deepEqual(f.produits, ["claude-code", "codex"]);
+  assert.equal(f.origine, "locale"); assert.equal(f.certitude, "officiel"); assert.equal(f.verifie_le, "2026-10-13");
+  assert.ok(f.description.includes("codex exec -s read-only"));
+  assert.ok(f.sources.length >= 6 && f.sources.every((x) => x.url.startsWith("https://") && x.libelle));
+  assert.ok(f.sources.some((x) => x.url === "https://code.claude.com/docs/en/headless"));
+  assert.equal(f.versions["codex"], "0.162.1");
+  assert.equal(JSON.stringify(f).includes("/home/"), false);
+});
+
+test("méthodes locales (D121) : fichier absent ou retirée = ignoré, le reste de la base répond", async () => {
+  const m = lireDonnee("kb/methodes.json");
+  await avecDonnees({ "kb/methodes.json": null }, async (outil) => {
+    const r = (await outil("chercher_reference", { requete: "consultation croisée" })).result.structuredContent;
+    assert.equal(r.resultats.some((x) => x.id === "methode-consultation-croisee"), false);
+    assert.equal((await outil("chercher_reference", { requete: "/model", produit: "claude-code" })).result.structuredContent.resultats[0].id, "claude-code-commandes-model");
+  });
+  await avecDonnees({ "kb/methodes.json": { ...m, entrees: m.entrees.map((e) => ({ ...e, retiree: true })) } }, async (outil) => {
+    assert.equal((await outil("fiche_reference", { id: "methode-consultation-croisee" })).result.isError, true);
+  });
+});
+
 test("chercher_reference : le nom exact de kb/noms.json passe avant le plein texte", async () => {
   const noms = lireDonnee("kb/noms.json");
   const ids = noms["/model"];
@@ -415,7 +448,7 @@ test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes r
 
 function base(entrees, noms = {}) {
   const vide = ["fonctionnalites", "skills", "plugins", "mcp", "parametres", "raccourcis"];
-  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": null };
+  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": null, "kb/methodes.json": null };
   for (const c of vide) { r[`kb/claude/${c}.json`] = null; r[`kb/openai/${c}.json`] = null; }
   return r;
 }

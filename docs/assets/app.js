@@ -538,12 +538,12 @@
   }
   /* ---------- Référence (phase 4) : base extraite de la documentation, commentée par les agents ---------- */
   const KB_PERIMETRES = ["claude", "openai"];
-  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis" };
+  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis", methodes: "Méthodes" };
   const VERDICTS = { utiliser: "à utiliser", tester: "à tester", ignorer: "à ignorer" };
   const STATUTS = { utilise: "utilisé", non_utilise: "non utilisé", inconnu: "usage inconnu" };
   const KB_PAGE = 50;
   const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE };
-  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"] };
+  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"], methodes: ["méthode", "méthodes"] };
   const KB_JOURS_RECENTS = ["7", "30"];
   const LIGNE_AJOUT = "ajoutée à l'inventaire";
   const ISO_JOUR = /^\d{4}-\d{2}-\d{2}$/;
@@ -609,6 +609,7 @@
     console.log(`delta:kb premiers fichiers ${kb.entrees.length} entrées en ${Math.round(performance.now() - kb.debut)} ms`);
     if (kb.entrees.length) chargerResteKb();
     else { chargerResteKb(); await kb.reste; }  // rien de lisible dans les premiers fichiers : conclure sur toute la base
+    await chargerFichierKb(KB_LOCALE, "methodes");  // D121 : les méthodes locales, un petit fichier, après les tests de lisibilité ci-dessus
   }
   /* Chargement par morceaux (m-b6207baf75ca) : la base tient en 14 fichiers (périmètre × catégorie, environ 3 Mo). Les commandes et
      les fonctionnalités des deux périmètres suffisent à la première page ; le reste se charge en arrière-plan, deux fichiers à la fois,
@@ -618,8 +619,13 @@
   const KB_ARRIERE_PLAN = ["skills", "plugins", "mcp", "raccourcis", "parametres"]; // les petits fichiers d'abord, le plus lourd à la fin
   const KB_PARALLELE = 2;
   const KB_PRODUIT_PERIMETRE = { claude: "claude", "claude-code": "claude", codex: "openai", chatgpt: "openai" };
-  const KB_FICHIERS = KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).map((c) => [p, c]));
-  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).join("|")})-`);
+  /* D121 : les fiches de méthode (rédigées à la main, kb-methodes/) tiennent dans un seul fichier hors périmètre, docs/data/kb/methodes.json ;
+     son « périmètre » est LOCALE. Petit, il part avec les premiers fichiers. */
+  const KB_LOCALE = "locale";
+  const KB_FICHIERS = [...KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes").map((c) => [p, c])), [KB_LOCALE, "methodes"]];
+  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes").join("|")})-`);
+  const RE_ID_METHODE = /^methode-/;
+  const cheminKb = (p, c) => p === KB_LOCALE ? `data/kb/${c}.json` : `data/kb/${p}/${c}.json`;
   function etatKb() {
     if (!etat.kb) etat.kb = { entrees: [], erreurs: [], charges: new Set(), promesses: new Map(), debut: performance.now(), reste: null, ms: null };
     return etat.kb;
@@ -643,7 +649,7 @@
       kb.promesses.set(cle, (async () => {
         const nouvelles = [];
         try {
-          const d = await lireJson(`data/kb/${p}/${c}.json`);
+          const d = await lireJson(cheminKb(p, c));
           if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
           for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
             e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
@@ -666,13 +672,14 @@
   const kbComplet = () => etatKb().charges.size === KB_FICHIERS.length;
   // fichier d'une entrée d'après son id (`<produit>-<catégorie>-…`), null si l'id n'a pas cette forme
   function fichierDeIdKb(id) {
+    if (RE_ID_METHODE.test(String(id || ""))) return [KB_LOCALE, "methodes"];
     const m = RE_ID_KB.exec(String(id || ""));
     return m ? [KB_PRODUIT_PERIMETRE[m[1]], m[2]] : null;
   }
   // fichiers que le filtre courant peut lire : produit → son périmètre, catégorie → ce fichier ; sans l'un ni l'autre, toute la base
   function fichiersRequisKb() {
     const perimetre = kbFiltre.produit ? KB_PRODUIT_PERIMETRE[kbFiltre.produit] : null;
-    return KB_FICHIERS.filter(([p, c]) => (!perimetre || p === perimetre) && (!kbFiltre.categorie || c === kbFiltre.categorie));
+    return KB_FICHIERS.filter(([p, c]) => (!perimetre || p === perimetre || p === KB_LOCALE) && (!kbFiltre.categorie || c === kbFiltre.categorie));
   }
   // charge ce qui reste, hors fichiers déjà chargés ou en cours, KB_PARALLELE à la fois ; une seule fois
   function chargerResteKb() {
@@ -692,12 +699,13 @@
       zone.append(el("span", { text: `Chargement de la base en arrière-plan : ${kb.charges.size}/${KB_FICHIERS.length} fichiers. Compteurs et résultats provisoires.` }));
     }
     zone.setAttribute("aria-busy", kbComplet() ? "false" : "true");
-    const faites = kb.entrees.filter((e) => e.commentee).length;
+    const extraites = kb.entrees.filter((e) => e.categorie !== "methodes");  // D121 : une méthode est rédigée, pas à commenter
+    const faites = extraites.filter((e) => e.commentee).length;
     const av = document.getElementById("kb-avancement");
     if (av) {
-      av.querySelector("span").textContent = `${faites}/${kb.entrees.length} entrées commentées${kbComplet() ? "" : " (provisoire)"}`;
+      av.querySelector("span").textContent = `${faites}/${extraites.length} entrées commentées${kbComplet() ? "" : " (provisoire)"}`;
       const pr = av.querySelector("progress");
-      pr.max = Math.max(kb.entrees.length, 1); pr.value = faites;
+      pr.max = Math.max(extraites.length, 1); pr.value = faites;
     }
     const err = document.getElementById("kb-erreurs");
     if (err) { err.textContent = kb.erreurs.length ? `Fichiers illisibles : ${kb.erreurs.join(" ; ")}` : ""; err.hidden = !kb.erreurs.length; }
@@ -707,7 +715,7 @@
     const ref = jourLocalIso(new Date());
     const liste = etat.kb.entrees.filter((e) =>
       (!kbFiltre.depuis || ajouteeDepuis(e, kbFiltre.depuis, ref)) &&
-      (!kbFiltre.produit || e.produit === kbFiltre.produit) &&
+      (!kbFiltre.produit || e.produit === kbFiltre.produit || (Array.isArray(e.produits) && e.produits.includes(kbFiltre.produit))) &&
       (!kbFiltre.categorie || e.categorie === kbFiltre.categorie) &&
       (!kbFiltre.statut || e.statut_usage === kbFiltre.statut) &&
       (!kbFiltre.verdict || (kbFiltre.verdict === "attente" ? !e.commentee : e.commentee && e.recommandation && e.recommandation.verdict === kbFiltre.verdict)) &&
@@ -731,7 +739,67 @@
     return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: "Nouveau dans la base (7 jours) : " }), `${minimum ? "au moins " : ""}${parties.join(", ")} `,
       el("a", { href: "#reference?recent=7", text: "Voir les nouveautés" }));
   }
+  /* D121 : corps d'une fiche de méthode, en Markdown limité à ce que les fiches écrivent : titres #, paragraphes, listes « - »,
+     blocs ``` et, dans le texte, `code` et **gras**. Construit en nœuds DOM, jamais en innerHTML. */
+  function noeudsEnLigne(s) {
+    const out = [];
+    let fin = 0;
+    for (const m of String(s).matchAll(/`([^`\n]+)`|\*\*([^*\n]+)\*\*/g)) {
+      if (m.index > fin) out.push(s.slice(fin, m.index));
+      out.push(m[1] !== undefined ? el("code", { text: m[1] }) : el("strong", { text: m[2] }));
+      fin = m.index + m[0].length;
+    }
+    if (fin < s.length) out.push(s.slice(fin));
+    return out;
+  }
+  function rendreMarkdownMethode(source) {
+    const corps = el("div", { class: "methode-corps" });
+    let paragraphe = [], liste = null, bloc = null;
+    const fermerParagraphe = () => { if (paragraphe.length) corps.append(el("p", null, ...noeudsEnLigne(paragraphe.join(" ")))); paragraphe = []; };
+    for (const ligne of String(source || "").split("\n")) {
+      if (bloc) {
+        if (/^```\s*$/.test(ligne)) { corps.append(el("pre", { class: "usage" }, el("code", { text: bloc.join("\n") }))); bloc = null; }
+        else bloc.push(ligne);
+        continue;
+      }
+      if (/^```/.test(ligne)) { fermerParagraphe(); liste = null; bloc = []; continue; }
+      const titre = /^(#{1,3})\s+(.+)$/.exec(ligne);
+      if (titre) { fermerParagraphe(); liste = null; corps.append(el("h4", null, ...noeudsEnLigne(titre[2]))); continue; }
+      const puce = /^- (.+)$/.exec(ligne);
+      if (puce) {
+        fermerParagraphe();
+        if (!liste) { liste = el("ul", null); corps.append(liste); }
+        liste.append(el("li", null, ...noeudsEnLigne(puce[1])));
+        continue;
+      }
+      if (liste && /^\s+\S/.test(ligne)) { liste.lastChild.append(" ", ...noeudsEnLigne(ligne.trim())); continue; }
+      liste = null;
+      if (!ligne.trim()) fermerParagraphe(); else paragraphe.push(ligne.trim());
+    }
+    if (bloc) corps.append(el("pre", { class: "usage" }, el("code", { text: bloc.join("\n") })));  // bloc non fermé : rendu tel quel
+    fermerParagraphe();
+    return corps;
+  }
+  function carteMethode(e) {
+    const c = el("li", { class: "carte kb methode" });
+    const produits = Array.isArray(e.produits) && e.produits.length ? e.produits : [e.produit];
+    c.append(el("div", { class: "badges" },
+      ...produits.map((p) => badge("produit", PRODUITS[p] || String(p || "?"))),
+      badge("type", KB_CATEGORIES.methodes),
+      badge("statut", "méthode locale à Delta"),
+      e.certitude === "officiel" ? badge("verdict utiliser", "commandes officielles") : null));
+    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
+    const versions = e.versions && typeof e.versions === "object" ? Object.entries(e.versions).map(([p, v]) => `${PRODUITS[p] || p} ${v}`) : [];
+    c.append(el("div", { class: "meta", text: [e.verifie_le ? `vérifiée le ${dateFr(e.verifie_le)}` : null, ...versions].filter(Boolean).join(" · ") }));
+    c.append(rendreMarkdownMethode(e.description));
+    if (Array.isArray(e.sources) && e.sources.length) {
+      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
+        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
+    }
+    return c;
+  }
   function carteKb(e) {
+    if (e.categorie === "methodes") return carteMethode(e);
     const c = el("li", { class: "carte kb" + (e.commentee ? "" : " attente") });
     const verdict = e.commentee && e.recommandation ? e.recommandation.verdict : null;
     c.append(el("div", { class: "badges" },
@@ -1012,10 +1080,11 @@
       window.scrollTo(0, 0);
       return frag;
     }
-    const total = kb.entrees.length, faites = kb.entrees.filter((e) => e.commentee).length;
+    const extraites = kb.entrees.filter((e) => e.categorie !== "methodes");  // D121
+    const total = extraites.length, faites = extraites.filter((e) => e.commentee).length;
     const barre = el("div", { class: "avancement", id: "kb-avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
       el("progress", { max: String(total), value: String(faites), "aria-label": "Avancement des commentaires" }));
-    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
+    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle ; méthodes locales, rédigées à la main. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
     frag.append(el("div", { id: "kb-chargement", class: "avancement kb-chargement", role: "status", "aria-live": "polite" }),
       el("p", { id: "kb-erreurs", class: "erreur", hidden: true }));
     const recherche = el("input", { type: "search", placeholder: "Rechercher (nom, usage, description…)", "aria-label": "Recherche plein texte", value: kbFiltre.q });
