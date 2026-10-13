@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-13",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-13T07:16:14+00:00",
+  "synthese": "Aucune nouveauté ChatGPT ou Codex dans les 11 sources lues. Deux recommandations réévaluées tiennent compte de la CLI npm déjà en 0.162.1 et du workflow OPÉRER : les essais de copie et de Daybreak ne nécessitent plus la mise à jour précédemment conseillée. Les huit autres réévaluations restent inchangées ; aucune fiche de référence n’a été ajoutée, modifiée ou retirée.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "rust-v0.162.0",
+      "ids_bruts": [
+        "rust-v0.162.0"
+      ],
+      "produit": "codex",
+      "titre": "Réévaluation Codex 0.162 : copie sur la CLI déjà à jour et worktrees du workflow OPÉRER",
+      "version": "0.162.0",
+      "date_publication": "2026-10-08",
+      "type": "amelioration",
+      "resume": "Réévaluation liée à la section methode.missions : OPÉRER remet les missions simples aux devs, tandis que les chefs relisent ; la branche et le worktree par mission restent la convention. La CLI npm relevée le 13 octobre est en 0.162.1 : la mise à jour conseillée le 9 octobre avant l’essai de /copy n’est plus nécessaire.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.162.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu audites Claude avec Codex sous tmux et tes missions utilisent une branche et un worktree dédiés. Le relevé du 13 octobre donne la CLI npm en 0.162.1 et le binaire D70 en 0.162.0-alpha.17.2 : tu peux essayer la copie sur la CLI npm déjà installée. Les nouveaux outils de worktrees gérés restent une possibilité à évaluer dans le workflow OPÉRER ; aucune adoption n’est établie. L’épinglage par p et les liens cliquables peuvent aider à retrouver les audits et leurs sources ; aucun usage de fournisseur Responses personnalisé ni de recherche classée n’est établi.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Essayer `/copy` sur un résumé d’audit trading-sim avec la CLI npm déjà installée ; résultat attendu : le verdict copié correspond au texte affiché.",
+        "etapes": [
+          "Dans le terminal utilisé sous tmux, lire `codex --version` et comparer au relevé du 13 octobre : 0.162.1.",
+          "Dans une session CLI de test, faire résumer un rapport d’audit trading-sim existant en lecture seule, puis saisir `/copy` ; l’exemple de la fiche est `/copy`. Copier la sortie terminée dans un brouillon ; résultat attendu : le verdict reste identique à celui affiché.",
+          "Essayer `Ctrl+Insert` sur une sélection si le terminal transmet ce raccourci, et `p` sur la tâche de test dans le Command Center lorsque l’option est proposée ; résultat attendu : présence dans Pinned, sans nouvelle mission."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-commandes-copy",
+        "codex-fonctionnalites-page-codex-cli",
+        "codex-fonctionnalites-page-environments-git-worktrees"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI npm sous tmux, distincte du binaire de l’app qui exécute D70."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Les rapports d’audit existants permettent un essai de copie en lecture seule."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "OPÉRER remet les missions ; une branche et un worktree par mission restent la convention."
+        },
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé pour les outils de référence."
+        }
+      },
+      "revision": true
+    },
+    {
+      "id": "rust-v0.161.0",
+      "ids_bruts": [
+        "rust-v0.161.0"
+      ],
+      "produit": "codex",
+      "titre": "Réévaluation Codex 0.161 : essai Daybreak sans mise à jour de la CLI",
+      "version": "0.161.0",
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Réévaluation liée à la section config.codex.interface : les vérifications et essais de la session tmux portent sur la CLI npm, distincte du binaire de la chaîne D70. Le relevé du 13 octobre donne 0.162.1 pour cette CLI : la mise à jour conseillée le 8 octobre n’est plus nécessaire ; Daybreak reste une activation explicite selon la release 0.161.0.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.161.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/codex/cli",
+          "libelle": "Codex CLI",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises les profils audit, rapide et securite dans Codex sous tmux. La CLI npm est désormais en 0.162.1 ; le défaut relevé reste gpt-6.1-sol et le profil securite reste gpt-daybreak-blue-latest. L’essai de Daybreak peut donc porter directement sur le profil securite, sans mise à jour ; son activation et l’éligibilité du compte restent à contrôler. La connexion MCP en session reste utile pour un serveur OAuth, mais le seul serveur relevé dans config.toml est node_repl en stdio ; le choix audio concerne un essai vocal dont l’usage quotidien n’est pas déclaré.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Essayer `codex -p securite --enable cli_daybreak -C /home/herbin/projets/trading-sim` sur une lecture d’audit trading-sim ; résultat attendu : contrôles Daybreak visibles si le compte et le modèle sont éligibles.",
+        "etapes": [
+          "Dans le terminal de la CLI npm, lire `codex --version` et comparer au relevé 0.162.1 du 13 octobre.",
+          "Dans un terminal de test, lancer `codex -p securite --enable cli_daybreak -C /home/herbin/projets/trading-sim`, puis saisir `/daybreak` ; lire les options annoncées sans changer les fichiers.",
+          "Demander uniquement le résumé d’un rapport d’audit existant, sans modification ni exécution ; résultat attendu : résumé des constats et contrôle Daybreak visible lorsque le compte et le modèle sont éligibles."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-fonctionnalites-page-codex-cli",
+        "codex-parametres-codex-enable",
+        "codex-parametres-codex-profile-p",
+        "codex-mcp-codex-mcp-login-name"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "La CLI npm sous tmux et le binaire D70 distinct sont utilisés."
+        },
+        "config.codex.profils": {
+          "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+          "pourquoi": "Les profils audit, rapide et securite sont utilisés."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Codex audite les rapports et documents de trading-sim."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Les audits de Claude constituent l’usage principal de Codex."
+        }
+      },
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://openai.com/index/gpt-6-for-everyone",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "oa-codex/2026-10-02-mobile",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-chatgpt-raccourcis-copy-session-id",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "oa-codex/2026-10-07-mobile",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "openai-status-01M47HC9SGHGFPBN44KGC6SKAQ",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "openai-status-01M45E0JFFJZ6EQ3BWYPW74R2Z",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-chatgpt-raccourcis-close-other-tabs",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "rust-v0.160.1",
+      "raison": "réévalué, inchangé"
+    }
+  ],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be"
+}
