@@ -321,19 +321,13 @@ def test_aide_dit_la_regle_d_une_heure():
 
 # ---- m-94f3b7e1274b : exécution du bouton, sans appeler le service installé ----
 
-def _version_nvm(chemin):
-    """v24.20.0 → (24, 20, 0) ; un nom illisible passe en dernier."""
-    m = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", Path(chemin).parent.parent.name)
-    return tuple(map(int, m.groups())) if m else (-1,)
-
-
 def trouver_node():
-    """Node du PATH, sinon le plus récent de nvm (absent du PATH des sessions et de verrou-tests)."""
+    """Node du PATH, sinon ~/.nvm/current/bin (absent du PATH des sessions et de verrou-tests), jamais un chemin de version."""
     du_path = shutil.which("node")
     if du_path:
         return du_path
-    nvm = [p for p in Path.home().glob(".nvm/versions/node/*/bin/node") if os.access(p, os.X_OK)]
-    return str(max(nvm, key=_version_nvm)) if nvm else None
+    nvm = Path.home() / ".nvm/current/bin/node"
+    return str(nvm) if os.access(nvm, os.X_OK) else None
 
 
 def bouton_execute(**options):
@@ -341,7 +335,7 @@ def bouton_execute(**options):
     node = trouver_node()
     if not node:
         assert not os.environ.get("CI"), "Node est nécessaire aux tests du bouton (présent sur ubuntu-24.04 en CI)"
-        pytest.skip("Node introuvable (PATH, ~/.nvm/versions/node/*/bin/node) : tests du bouton lancés par la CI")
+        pytest.skip("Node introuvable (PATH, ~/.nvm/current/bin/node) : tests du bouton lancés par la CI")
     code = APP[APP.index("const RELAIS"):APP.index("// D64-bis : péremption")]
     script = r"""
 const vm = require('node:vm');
@@ -402,13 +396,14 @@ vm.runInContext(code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole,
     return json.loads(res.stdout)
 
 
-def test_node_de_nvm_le_plus_recent_hors_path(tmp_path, monkeypatch):
-    for v in ("v9.11.2", "v24.20.0", "v24.3.1", "inconnu"):
-        exe = tmp_path / ".nvm/versions/node" / v / "bin/node"
-        exe.parent.mkdir(parents=True); exe.write_text("#!/bin/sh\n"); exe.chmod(0o755)
+def test_node_de_nvm_current_hors_path(tmp_path, monkeypatch):
+    version = tmp_path / ".nvm/versions/node/v24.3.1/bin/node"
+    version.parent.mkdir(parents=True); version.write_text("#!/bin/sh\n"); version.chmod(0o755)
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     monkeypatch.setattr(shutil, "which", lambda nom: None)
-    assert trouver_node() == str(tmp_path / ".nvm/versions/node/v24.20.0/bin/node")
+    assert trouver_node() is None  # une version installée hors du lien current n'est jamais prise
+    (tmp_path / ".nvm/current").symlink_to(version.parent.parent)
+    assert trouver_node() == str(tmp_path / ".nvm/current/bin/node")
     monkeypatch.setattr(shutil, "which", lambda nom: "/usr/bin/node")
     assert trouver_node() == "/usr/bin/node"
 
