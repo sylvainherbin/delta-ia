@@ -25182,7 +25182,7 @@
    "categorie": "parametres",
    "nom": "permissions.deny",
    "gabarit": "court",
-   "description": "Liste des usages d'outils bloqués ; pour les fichiers de secrets, Claude Code les exclut aussi de la découverte et de la recherche.",
+   "description": "Liste des usages d'outils bloqués ; pour les fichiers de secrets, Claude Code les exclut aussi de la découverte et de la recherche et bloque leur lecture et leur modification.",
    "description_source": "List the tool uses Claude Code blocks. Use it for files that hold API keys, secrets, or environment values: Claude Code excludes matching files from file discovery and search results, denies reads of them, and blocks the Edit and Write tools on the matching paths.",
    "usage": "{\n  \"permissions\": {\n    \"deny\": [\n      \"Read(./.env)\",\n      \"Read(./.env.*)\",\n      \"Read(./secrets/**)\",\n      \"Read(./config/credentials.json)\",\n      \"Bash(curl *)\"\n    ]\n  }\n}",
    "usage_nature": "syntaxe",
@@ -25191,7 +25191,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "trading-sim s'en sert pour WebFetch, WebSearch, le navigateur et les connecteurs listés ; les connecteurs de compte n'y figurent pas, question transmise à Work."
+    "pourquoi": "trading-sim s'en sert pour WebFetch, WebSearch, le navigateur et les connecteurs listés ; les connecteurs de compte (Delta-IA, et Vercel de nouveau connecté le 12/10) n'y figurent pas, question transmise à Work."
    },
    "sources": [
     {
@@ -25204,7 +25204,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25221,17 +25221,21 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur, connecteurs"
+     "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, navigateur, connecteurs."
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "connecteurs de compte absents du `deny` de trading-sim"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs de compte absents du `deny` de trading-sim ; Vercel « Connected » au 12/10."
     }
    },
    "exemple_origine": "source"

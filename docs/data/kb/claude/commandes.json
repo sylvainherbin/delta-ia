@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-12",
+ "maj_le": "2026-10-13",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -59,7 +59,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans la session herbin-trading (dossier `~/projets/trading-sim`), `/add-dir` vers le dossier chatgpt-trading-sim donnerait accès aux missions `NEXT-CLAUDE-MISSION-*` sans relancer la session ailleurs ; vérifier ensuite que la lecture d'une mission marche dans le même tour."
+    "pourquoi": "Dans une session dont le dossier est `~/projets/delta-ia` (delta, delta-ia), `/add-dir ~/projets/discipline` donnerait accès au code d'OPÉRER, par exemple au barème `codex_modeles.py`, sans relancer la session ailleurs ; vérifier que la lecture marche dans le même tour et que le `.claude/` de discipline n'est pas chargé."
    },
    "sources": [
     {
@@ -72,7 +72,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -101,17 +101,25 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Missions `NEXT-CLAUDE-MISSION-*` dans un dossier local hors git ; Claude Code exécute."
-    },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "herbin-trading a son propre dossier de travail `~/projets/trading-sim`."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta et delta-ia partagent le dossier de travail `~/projets/delta-ia`."
+    },
+    "projet.discipline": {
+     "sha1": "94f7999d4a666931335a8f8526affbd6ca45ac97",
+     "pourquoi": "Dépôt `~/projets/discipline` qui porte OPÉRER et JUGER."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Barème `codex_modeles.py` de `discipline` utilisé par `mission-codex`."
     }
    },
    "exemple_origine": "compose"
@@ -3954,7 +3962,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Taper `/focus on` depuis l'iPhone sur la session herbin-trading pendant une mission, puis vérifier que seuls le résumé et la réponse finale s'affichent ; la variante Remote Control ne vaut que pour la session, alors que `/focus` au terminal enregistre le choix pour toutes les sessions."
+    "pourquoi": "Taper `/focus on` depuis l'iPhone sur une session pilotée par Remote Control pendant une mission, puis vérifier que seuls le résumé et la réponse finale s'affichent ; cette variante ne vaut que pour la session, alors que `/focus` au terminal enregistre le choix pour toutes les sessions."
    },
    "sources": [
     {
@@ -3967,7 +3975,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3992,20 +4000,24 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "L'iPhone est l'interface principale de pilotage (Remote Control, notifications push)."
     },
-    "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "herbin-trading travaille dans `~/projets/trading-sim`."
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables sous tmux lancées avec `--remote-control`, pilotées depuis l'iPhone."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-fork",
@@ -4759,7 +4771,7 @@
    "categorie": "commandes",
    "nom": "/mcp",
    "gabarit": "complet",
-   "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur, `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs.",
+   "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur (`reconnect all` relance tous ceux en échec ou à authentifier), `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs (v2.1.205 ou plus).",
    "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. In non-interactive mode (-p), running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
    "usage": "/mcp [reconnect (<server>|all)|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
@@ -4768,7 +4780,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) : `/mcp disable <server>` dans une session de dev les retirerait sans dialogue, et `/mcp reconnect delta-ia` relancerait le connecteur local s'il décroche. Sur trading-sim, couper le connecteur Delta-IA reste une décision de Work."
+    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) : `/mcp disable <server>` dans une session de dev les retirerait sans dialogue, et `/mcp reconnect delta-ia` relancerait le connecteur local s'il décroche. Sur trading-sim, couper un connecteur de compte reste une décision de Work."
    },
    "sources": [
     {
@@ -4781,7 +4793,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4818,16 +4830,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 9 : connecteurs connectés mais jamais appelés dans Claude Code."
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "Connecteur MCP local `delta-ia` ; écart trading-sim sur les connecteurs de compte, question transmise à Work."
     }
    },

@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-11",
+ "maj_le": "2026-10-13",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -801,7 +801,7 @@
    "categorie": "mcp",
    "nom": "Local scope",
    "gabarit": "complet",
-   "description": "Portée par défaut : le serveur n'est chargé que dans le projet où on l'a ajouté, reste privé, et Claude Code l'enregistre dans `~/.claude.json` sous le chemin de ce projet.",
+   "description": "Portée par défaut : le serveur n'est chargé que dans le projet où on l'a ajouté, reste privé, et Claude Code l'enregistre dans `~/.claude.json` sous le chemin de ce projet. Elle convient aux serveurs personnels, expérimentaux ou porteurs d'identifiants à garder hors du dépôt.",
    "description_source": "Local scope is the default. A local-scoped server loads only in the project where you added it and stays private to you. Claude Code stores it in ~/.claude.json under that project's path, so the same server won't appear in your other projects. Use local scope for personal development servers, experimental configurations, or servers with credentials you don't want in version control.",
    "usage": "# Add a local-scoped server (default)\nclaude mcp add --transport http stripe https://mcp.stripe.com\n\n# Explicitly specify local scope\nclaude mcp add --transport http stripe --scope local https://mcp.stripe.com",
    "usage_nature": "syntaxe",
@@ -810,7 +810,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est la portée choisie pour delta-ia le 24/09, dans `~/projets` et `~/projets/delta-ia` ; elle tient trading-sim à l'écart parce que herbin-trading travaille dans `~/projets/trading-sim`."
+    "pourquoi": "C'est la portée choisie pour delta-ia le 24/09, dans `~/projets` et `~/projets/delta-ia` ; comme elle suit le dossier de travail, elle tient trading-sim à l'écart, herbin-trading travaillant dans `~/projets/trading-sim`."
    },
    "sources": [
     {
@@ -823,7 +823,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -844,13 +844,17 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia ajouté en `--scope local` dans ~/projets et ~/projets/delta-ia ; portée liée au cwd"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia ajouté en `--scope local` dans ~/projets et ~/projets/delta-ia ; portée liée au cwd, absent de trading-sim."
     }
    },
    "exemple_origine": "compose"
@@ -861,16 +865,16 @@
    "categorie": "mcp",
    "nom": "Managing your servers",
    "gabarit": "complet",
-   "description": "`claude mcp list` liste les serveurs configurés, `claude mcp get <nom>` en donne le détail, `claude mcp remove <nom>` en retire un ; dans une session, `/mcp` montre leur état.",
+   "description": "`claude mcp list` liste les serveurs configurés et leur état de connexion, `claude mcp get <nom>` en donne le détail, `claude mcp remove <nom>` en retire un ; dans une session, `/mcp` montre leur état.",
    "description_source": "Once configured, you can manage your MCP servers with these commands:",
    "usage": "# List all configured servers\nclaude mcp list\n\n# Get details for a specific server\nclaude mcp get notion\n\n# Remove a server\nclaude mcp remove notion\n\n# (within Claude Code) Check server status\n/mcp",
    "usage_nature": "syntaxe",
    "exemple": "cd ~/projets/trading-sim && claude mcp list",
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "La portée locale dépend du dossier de travail : après tout ajout ou retrait, `claude mcp list` lancé dans `~/projets`, `~/projets/delta-ia` et `~/projets/trading-sim` vérifie que delta-ia reste absent de trading-sim."
+    "pourquoi": "`claude mcp list` a servi le 12/10 à constater que le connecteur Vercel était de nouveau « Connected » ; la portée locale dépendant du dossier de travail, le lancer dans `~/projets`, `~/projets/delta-ia` et `~/projets/trading-sim` après tout ajout ou retrait vérifie que delta-ia reste absent de trading-sim."
    },
    "sources": [
     {
@@ -883,7 +887,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -904,13 +908,17 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "portée locale rattachée au cwd ; delta-ia absent de ~/projets/trading-sim"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "`claude mcp list` du 12/10 (Vercel « Connected ») ; portée locale rattachée au cwd ; delta-ia absent de trading-sim."
     }
    },
    "exemple_origine": "compose"
@@ -968,7 +976,7 @@
    "categorie": "mcp",
    "nom": "Option 1: Add a remote HTTP server",
    "gabarit": "complet",
-   "description": "Ajout d'un serveur MCP distant en HTTP, le transport recommandé : `claude mcp add --transport http <nom> <url>`, avec `--header` si le serveur demande un jeton.",
+   "description": "Ajout d'un serveur MCP distant en HTTP, le transport recommandé pour les services en ligne : `claude mcp add --transport http <nom> <url>`, avec `--header` si le serveur demande un jeton.",
    "description_source": "HTTP servers are the recommended option for connecting to remote MCP servers. This is the most widely supported transport for cloud-based services.",
    "usage": "# Basic syntax\nclaude mcp add --transport http <name> <url>\n\n# Real example: Connect to Notion\nclaude mcp add --transport http notion https://mcp.notion.com/mcp\n\n# Example with Bearer token\nclaude mcp add --transport http secure-api https://api.example.com/mcp \\\n  --header \"Authorization: Bearer your-token\"",
    "usage_nature": "syntaxe",
@@ -977,7 +985,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "C'est la commande employée pour delta-ia le 24/09 (`--transport http --scope local`) ; à réutiliser telle quelle dans un autre dossier de projet, pas dans celui de trading-sim, gouverné par Work."
+    "pourquoi": "C'est la commande employée pour delta-ia le 24/09 (`--transport http --scope local`) ; à réutiliser telle quelle dans un autre dossier de projet, pas dans `~/projets/trading-sim`, gouverné par Work."
    },
    "sources": [
     {
@@ -990,7 +998,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1011,13 +1019,17 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "commande exacte d'ajout de delta-ia le 24/09 ; trading-sim gouverné par Work"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Commande exacte d'ajout de delta-ia le 24/09 ; trading-sim gouverné par Work."
     }
    },
    "exemple_origine": "compose"
@@ -1943,16 +1955,16 @@
    "categorie": "mcp",
    "nom": "Get started with custom connectors using remote MCP",
    "gabarit": "complet",
-   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis. L'ajout demande désormais de choisir le mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in ») et, avec connexion, la façon dont Claude s'identifie au serveur OAuth (identité publiée de Claude recommandée, enregistrement automatique ou client OAuth propre).",
+   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis. L'ajout demande de choisir le mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in ») et, avec connexion, la façon dont Claude s'identifie au serveur OAuth (identité publiée de Claude recommandée, enregistrement automatique ou client OAuth propre).",
    "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector.",
    "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Free (un connecteur), Pro, Max, Team, Enterprise",
+   "disponibilite": "Free, Pro, Max, Team et Enterprise ; Claude, Cowork et Claude Desktop",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton connecteur de compte Delta-IA passe par ce mécanisme ; il s'applique à toutes tes sessions Claude Code, trading-sim compris tant que son settings.json ne le refuse pas."
+    "pourquoi": "Ton connecteur de compte Delta-IA, serveur MCP distant, passerait par ce mécanisme ; comme tout connecteur de compte, il s'applique à toutes tes sessions Claude Code, trading-sim compris tant que son settings.json ne le refuse pas."
    },
    "sources": [
     {
@@ -1965,7 +1977,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-02",
+   "maj_le": "2026-10-13",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1986,13 +1998,17 @@
     {
      "date": "2026-10-02",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-13",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets, écart trading-sim sans deny."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans deny."
     }
    }
   },
