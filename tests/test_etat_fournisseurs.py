@@ -279,3 +279,124 @@ def test_ecriture_impossible_donne_le_code_2(sources, tmp_path, monkeypatch, cap
     (tmp_path / "bloque").write_text("fichier", encoding="utf-8")
     assert ef.main(["--sortie", str(tmp_path / "bloque" / "etat.json"), "--sans-message"]) == 2
     assert "écriture impossible" in capsys.readouterr().err
+
+
+# --- Doublons du 13/10 (18:40, 18:50, 19:00) : `operer message envoyer` écrit le message dans son journal, puis la
+# remise `--maintenant` dépasse 60 s ; le relevé prenait l'expiration pour un refus et renvoyait le même avis à chaque
+# passe. Journal OPÉRER simulé dans un dossier temporaire (OPERER_DIR) : jamais le vrai journal, jamais `operer`.
+
+@pytest.fixture(autouse=True)
+def journal_isole(tmp_path, monkeypatch):
+    dossier = tmp_path / "operer"
+    dossier.mkdir()
+    monkeypatch.setenv("OPERER_DIR", str(dossier))
+    return dossier / "journal.jsonl"
+
+
+def operer_simule(journal, remis, *, panne=None):
+    """Imite `operer message envoyer --maintenant` : l'événement est écrit au journal, puis la remise peut échouer."""
+
+    def envoyer(texte):
+        from datetime import datetime
+        e = {"type": "message", "id": f"m{len(remis)}", "role": ef.ROLE_DESTINATAIRE, "texte": texte,
+             "de": ef.EXPEDITEUR, "ts": datetime.now().astimezone().isoformat()}
+        with journal.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(e, ensure_ascii=False) + "\n")
+        remis.append(texte)
+        if panne is not None:
+            raise panne
+
+    return envoyer
+
+
+def _incident_resolu(banc):
+    faux, _, passer = banc
+    doc, _ = passer("2026-10-13T16:20:00Z")
+    page = resoudre(OPENAI)
+    page["incidents"].insert(0, incident("01M4T4ZCM54D3ZPTQXRSWFG0XS",
+                                         "Degraded performance in GPT-6.1 Sol Codex and Work mode", impact="minor"))
+    faux.regler("openai", page)
+    doc, _ = passer("2026-10-13T16:30:00Z", doc)
+    page["incidents"][0].update(status="resolved", resolved_at="2026-10-13T16:35:00Z")
+    return doc
+
+
+def test_resolution_ecrite_par_operer_puis_remise_expiree_n_est_pas_renvoyee(banc, journal_isole):
+    import subprocess
+    faux, messages, passer = banc
+    doc = _incident_resolu(banc)
+    remis = []
+    expire = subprocess.TimeoutExpired(["operer"], 60)
+    doc, _ = passer("2026-10-13T16:40:00Z", doc, envoyer=operer_simule(journal_isole, remis, panne=expire))
+    doc, _ = passer("2026-10-13T16:50:00Z", doc, envoyer=operer_simule(journal_isole, remis, panne=expire))
+    doc, _ = passer("2026-10-13T17:00:00Z", doc, envoyer=operer_simule(journal_isole, remis))
+    assert len(remis) == 1 and remis[0].startswith("[ÉTAT FOURNISSEURS] RÉSOLU")
+    assert doc["message_en_attente"] is None
+    assert sum(1 for _ in journal_isole.open(encoding="utf-8")) == 1
+
+
+def test_refus_sans_ecriture_au_journal_reste_renvoye(banc, journal_isole):
+    faux, messages, passer = banc
+    doc = _incident_resolu(banc)
+
+    def refuse(texte):
+        raise RuntimeError("operer message envoyer : code 1 : rôle inconnu")
+
+    doc, _ = passer("2026-10-13T16:40:00Z", doc, envoyer=refuse)
+    assert doc["message_en_attente"] and "RÉSOLU" in doc["message_en_attente"]
+    remis = []
+    doc, _ = passer("2026-10-13T16:50:00Z", doc, envoyer=operer_simule(journal_isole, remis))
+    assert len(remis) == 1 and doc["message_en_attente"] is None
+
+
+def test_passe_tuee_pendant_l_envoi_ne_renvoie_pas_apres_redemarrage(sources, tmp_path, monkeypatch, journal_isole):
+    faux = Faux(sources)
+    faux.regler("openai", resoudre(OPENAI))
+    faux.regler("anthropic", resoudre(CLAUDE))
+    monkeypatch.setattr(ef, "Client", lambda: faux)
+    sortie = tmp_path / "etat-fournisseurs.json"
+    remis = []
+    monkeypatch.setattr(ef, "envoyer_operer", operer_simule(journal_isole, remis))
+    assert ef.main(["--sortie", str(sortie)]) == 0
+    page = resoudre(OPENAI)
+    page["incidents"].insert(0, incident("INC1", "Elevated errors in Codex"))
+    faux.regler("openai", page)
+    assert ef.main(["--sortie", str(sortie)]) == 0
+    assert len(remis) == 1
+    page["incidents"][0].update(status="resolved", resolved_at="2026-10-13T11:00:00Z")
+    # systemd tue la passe (TimeoutStartSec) pendant la remise, après l'écriture au journal OPÉRER.
+    monkeypatch.setattr(ef, "envoyer_operer", operer_simule(journal_isole, remis, panne=KeyboardInterrupt()))
+    with pytest.raises(KeyboardInterrupt):
+        ef.main(["--sortie", str(sortie)])
+    assert len(remis) == 2 and "RÉSOLU" in remis[1]
+    monkeypatch.setattr(ef, "envoyer_operer", operer_simule(journal_isole, remis))
+    for _ in range(3):  # redémarrage : les passes suivantes relisent l'état écrit avant l'envoi
+        assert ef.main(["--sortie", str(sortie)]) == 0
+    assert len(remis) == 2
+    assert ef.charger_precedent(sortie)["message_en_attente"] is None
+
+
+def test_passe_tuee_avant_l_ecriture_au_journal_renvoie_une_fois(sources, tmp_path, monkeypatch, journal_isole):
+    faux = Faux(sources)
+    faux.regler("openai", resoudre(OPENAI))
+    faux.regler("anthropic", resoudre(CLAUDE))
+    monkeypatch.setattr(ef, "Client", lambda: faux)
+    sortie = tmp_path / "etat-fournisseurs.json"
+    remis = []
+    monkeypatch.setattr(ef, "envoyer_operer", operer_simule(journal_isole, remis))
+    assert ef.main(["--sortie", str(sortie)]) == 0
+    page = resoudre(OPENAI)
+    page["incidents"].insert(0, incident("INC1", "Elevated errors in Codex"))
+    faux.regler("openai", page)
+
+    def tue(texte):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(ef, "envoyer_operer", tue)
+    with pytest.raises(KeyboardInterrupt):
+        ef.main(["--sortie", str(sortie)])
+    assert remis == [] and ef.charger_precedent(sortie)["envoi_tente_le"]
+    monkeypatch.setattr(ef, "envoyer_operer", operer_simule(journal_isole, remis))
+    for _ in range(2):
+        assert ef.main(["--sortie", str(sortie)]) == 0
+    assert len(remis) == 1 and "OUVERT" in remis[0]  # l'avis n'est ni perdu ni doublé

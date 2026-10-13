@@ -18,6 +18,13 @@ inscrite dans le fichier (`lecture: "echec"`, `erreur`) et n'est jamais lue comm
 de suite (une heure) un message le signale, une fois. Un message que `operer` refuse est gardé (`message_en_attente`) et
 renvoyé au relevé suivant.
 
+Un seul avis par transition (correctif du 13/10/2026, RÉSOLU remis trois fois à 18:40, 18:50 et 19:00) : `operer message
+envoyer` inscrit d'abord le message dans son journal, puis tente la remise `--maintenant` ; une remise qui expire ou
+échoue après cette inscription laisse le message au tic d'OPÉRER, qui le remet. Avant l'envoi, l'état est écrit avec
+le message en attente et `envoi_tente_le` (une passe tuée pendant l'envoi ne recalcule donc pas la transition) ; après
+un échec, et au relevé suivant si `envoi_tente_le` est posé, le journal d'OPÉRER (`$OPERER_DIR/journal.jsonl`, lecture
+seule) dit si le message y est déjà : présent, il n'est pas renvoyé ; absent, il l'est.
+
 Schéma du fichier (`schema: 1`, lu par OBSERVATORY ; dates en UTC, format de la page d'état) :
 
     {"schema": 1, "maj": "2026-10-13T12:20:01Z",
@@ -29,7 +36,7 @@ Schéma du fichier (`schema: 1`, lu par OBSERVATORY ; dates en UTC, format de la
          "incidents_ouverts": [{"id", "nom", "impact", "statut", "ouvert_le", "maj_le", "lien",
                                 "produits": ["codex" | "claude-code" | "api" | "chatgpt" | "claude.ai" | "claude"],
                                 "composants": ["<nom>", …]}]}},
-     "message_en_attente": null | "<texte>"}
+     "message_en_attente": null | "<texte>", "envoi_tente_le": null | "<maj de la passe qui l'a tenté>"}
 
 Un incident est « ouvert » tant que son statut n'est ni `resolved`, `postmortem` ni `completed` ; les impacts ignorés
 (`ignorer_impacts`, soit `none`) n'y figurent pas. `produits` : règles `produits_par_mot` de la source (tous les mots
@@ -68,6 +75,7 @@ STATUTS_FERMES = frozenset({"resolved", "postmortem", "completed"})
 PRODUITS_SUIVIS = frozenset({"codex", "claude-code", "api"})  # ceux qui déclenchent un message
 SEUIL_INJOIGNABLE = 6  # relevés de suite en échec (une heure) avant le message d'alerte
 ROLE_DESTINATAIRE = "delta"
+JOURNAL_OPERER_DEFAUT = "~/.local/state/delta/operer"  # VRAI_DOSSIER_ETAT d'OPÉRER ; OPERER_DIR le remplace
 EXPEDITEUR = "etat-fournisseurs"
 COMPLEMENTS = {"api": re.compile(r"\bapi\b"), "chatgpt": re.compile(r"chatgpt"), "claude.ai": re.compile(r"claude\.ai")}
 PARIS = ZoneInfo("Europe/Paris")
@@ -183,6 +191,42 @@ def envoyer_operer(texte: str) -> None:
         raise RuntimeError(f"operer message envoyer : code {p.returncode} : {(p.stderr or p.stdout).strip()[:200]}")
 
 
+def _instant(iso: str) -> datetime | None:
+    try:
+        d = datetime.fromisoformat(str(iso).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return d if d.tzinfo else None
+
+
+def deja_au_journal(texte: str, depuis: str) -> bool:
+    """Vrai si le journal d'OPÉRER porte déjà ce message de ce relevé, inscrit à `depuis` ou après (lecture seule).
+
+    Journal illisible : faux (le message est renvoyé ; un doublon vaut mieux qu'un avis perdu)."""
+    debut = _instant(depuis)
+    if debut is None:
+        return False
+    chemin = Path(os.environ.get("OPERER_DIR") or JOURNAL_OPERER_DEFAUT).expanduser() / "journal.jsonl"
+    marque = json.dumps(EXPEDITEUR)
+    try:
+        with chemin.open(encoding="utf-8") as f:
+            for ligne in f:
+                if marque not in ligne:
+                    continue
+                try:
+                    e = json.loads(ligne)
+                except ValueError:
+                    continue
+                if (isinstance(e, dict) and e.get("type") == "message" and e.get("de") == EXPEDITEUR
+                        and e.get("texte") == texte):
+                    ts = _instant(e.get("ts") or "")
+                    if ts is not None and ts >= debut:
+                        return True
+    except OSError:
+        return False
+    return False
+
+
 def charger_precedent(chemin: Path) -> dict:
     try:
         doc = json.loads(chemin.read_text(encoding="utf-8"))
@@ -198,8 +242,14 @@ def ecrire_atomique(chemin: Path, doc: dict) -> None:
     os.replace(tmp, chemin)
 
 
-def releve(sources: dict, client, precedent: dict, maintenant: str, envoyer=envoyer_operer, avec_message: bool = True) -> tuple[dict, int]:
-    """Un relevé complet : `(document à écrire, code de sortie)`. `envoyer` est remplaçable pour les tests."""
+def releve(sources: dict, client, precedent: dict, maintenant: str, envoyer=None, avec_message: bool = True,
+           persister=None, deja_remis=None) -> tuple[dict, int]:
+    """Un relevé complet : `(document à écrire, code de sortie)`.
+
+    `envoyer` (défaut `envoyer_operer`) et `deja_remis` (défaut `deja_au_journal`) sont remplaçables pour les tests ;
+    `persister(doc)`, s'il est donné, écrit l'état juste avant l'envoi (une exception l'empêche)."""
+    envoyer = envoyer or envoyer_operer
+    deja_remis = deja_remis or deja_au_journal
     anciens = precedent.get("fournisseurs") or {}
     fournisseurs: dict[str, dict] = {}
     par_fournisseur: dict[str, list[dict]] = {}
@@ -227,19 +277,32 @@ def releve(sources: dict, client, precedent: dict, maintenant: str, envoyer=envo
             entree.update(derniere_lecture_ok=maintenant, incidents_ouverts=ouverts)
         fournisseurs[nom] = entree
     en_attente = precedent.get("message_en_attente")
+    tente_le = precedent.get("envoi_tente_le")
+    if en_attente and tente_le and deja_remis(en_attente, tente_le):
+        en_attente, tente_le = None, None  # déjà inscrit chez OPÉRER par une passe précédente : son tic le remet
     texte = texte_message(par_fournisseur, injoignables)
     if en_attente and texte:
         texte = en_attente + "\n" + texte
     texte = texte or en_attente
-    if texte and avec_message:
+    doc = {"schema": 1, "maj": maintenant, "fournisseurs": fournisseurs, "message_en_attente": texte,
+           "envoi_tente_le": None}
+    if not avec_message:
+        doc["message_en_attente"], doc["envoi_tente_le"] = en_attente, tente_le
+    elif texte:
+        doc["envoi_tente_le"] = maintenant
+        if persister is not None:
+            persister(doc)  # l'état (incidents et message en cours) précède l'envoi : une passe tuée ne le refait pas
         try:
             envoyer(texte)
-            texte = None
+            remis = True
         except Exception as e:  # noqa: BLE001 — le message reste en attente, jamais perdu
-            print(f"message non remis, gardé pour le relevé suivant : {e}", file=sys.stderr)
-    elif not avec_message:
-        texte = en_attente
-    return {"schema": 1, "maj": maintenant, "fournisseurs": fournisseurs, "message_en_attente": texte}, code
+            remis = deja_remis(texte, maintenant)
+            print(f"remise immédiate en échec ({e}) : "
+                  + ("message déjà inscrit au journal d'OPÉRER, son tic le remet" if remis
+                     else "message gardé pour le relevé suivant"), file=sys.stderr)
+        if remis:
+            doc["message_en_attente"], doc["envoi_tente_le"] = None, None
+    return doc, code
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -256,8 +319,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"sources.yaml inutilisable : {e}", file=sys.stderr)
         return 2
     maintenant = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    doc, code = releve(sources, Client(), charger_precedent(args.sortie), maintenant, avec_message=not args.sans_message)
     try:
+        doc, code = releve(sources, Client(), charger_precedent(args.sortie), maintenant, envoyer=envoyer_operer,
+                           avec_message=not args.sans_message, persister=lambda d: ecrire_atomique(args.sortie, d))
         ecrire_atomique(args.sortie, doc)
     except OSError as e:
         print(f"écriture impossible ({args.sortie}) : {e}", file=sys.stderr)
