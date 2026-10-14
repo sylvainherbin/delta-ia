@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-14",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -2139,7 +2139,7 @@
    "categorie": "commandes",
    "nom": "claude mcp login <name>",
    "gabarit": "complet",
-   "description": "Lance depuis le shell le flux OAuth d'un serveur MCP configuré, sans ouvrir le panneau `/mcp` ; fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai. En SSH, `--no-browser` affiche l'URL d'autorisation au lieu d'ouvrir un navigateur, puis on recolle l'URL de retour.",
+   "description": "Lance depuis le shell le flux OAuth d'un serveur MCP configuré, sans ouvrir le panneau `/mcp` ; fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai. Sans navigateur local (SSH, Linux sans affichage), ou avec `--no-browser`, il affiche l'URL d'autorisation et attend qu'on recolle l'URL de retour.",
    "description_source": "Run a configured MCP server's OAuth flow without opening the interactive /mcp panel. Works for HTTP, SSE, and claude.ai connector servers. Add --no-browser over SSH to print the authorization URL instead of opening a browser. For an HTTP or SSE server, paste the redirect URL back at the prompt. For a claude.ai connector, see Authorize a connector again from your shell. See Authenticate from the command line — claude mcp login sentry",
    "usage": "claude mcp login <name>",
    "usage_nature": "syntaxe",
@@ -2148,7 +2148,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le connecteur claude.ai Vercel est refermé volontairement et ne doit pas être réautorisé, et aucun autre serveur de ta configuration ne demande d'OAuth ; une autorisation OAuth reste de toute façon un geste à toi."
+    "pourquoi": "Aucun serveur de ta configuration n'attend d'autorisation : le connecteur Vercel est de nouveau « Connected » au 12/10 et delta-ia n'a pas d'authentification ; une autorisation OAuth reste de toute façon un geste à toi."
    },
    "sources": [
     {
@@ -2161,7 +2161,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2190,17 +2190,21 @@
     {
      "date": "2026-10-10",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur Vercel refermé volontairement le 24/09, à ne pas réautoriser ; delta-ia ajouté sans authentification."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur Vercel « Connected » au 12/10 ; delta-ia ajouté en HTTP sans authentification"
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Les autorisations OAuth restent des gestes de Sylvain."
+     "pourquoi": "les autorisations OAuth restent des gestes de Sylvain"
     }
    },
    "exemple_origine": "source"
@@ -2220,7 +2224,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun serveur MCP local à authentification OAuth dans ta configuration ; delta-ia n'en a pas."
+    "pourquoi": "Le seul MCP local, delta-ia, n'a pas d'identifiants OAuth, et le connecteur Vercel, autorisé côté compte claude.ai, n'est pas un serveur configuré localement ; aucun scénario d'usage dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -2233,7 +2237,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2254,15 +2258,20 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Seul MCP local : delta-ia, public et sans authentification."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "seul MCP local : delta-ia, sans authentification ; Vercel est un connecteur de compte"
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-p-query",
@@ -2400,7 +2409,7 @@
    "categorie": "commandes",
    "nom": "claude purge [path]",
    "gabarit": "complet",
-   "description": "Supprime tout l'état local de Claude Code pour un projet : transcriptions, listes de tâches, journaux de débogage, historique d'édition de fichiers, lignes d'historique de prompts et l'entrée du projet dans `~/.claude.json`. Sans `[path]`, ouvre une liste interactive ; `--dry-run` prévisualise, `-y` saute la confirmation, `-i` confirme chaque élément, `--all` vise tous les projets. Remplace l'ancien nom `claude project purge`, qui fonctionne encore et affiche un avis.",
+   "description": "Supprime tout l'état local de Claude Code pour un projet : transcriptions, listes de tâches, journaux de débogage, historique d'édition de fichiers, lignes d'historique de prompts et l'entrée du projet dans `~/.claude.json`. Sans `[path]`, ouvre une liste interactive ; `--dry-run` prévisualise, `-y` saute la confirmation, `-i` confirme chaque élément, `--all` vise tous les projets.",
    "description_source": "Delete all local Claude Code state for a project: transcripts, task lists, debug logs, file-edit history, prompt history lines, and the project's entry in ~/.claude.json. Omit [path] to pick from an interactive list. Flags: --dry-run to preview, -y/--yes to skip confirmation, -i/--interactive to confirm each item, --all for every project. See Clear local data — claude purge ~/work/repo --dry-run",
    "usage": "claude purge [path]",
    "usage_nature": "syntaxe",
@@ -2409,7 +2418,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Destructif et sans scénario d'essai dans CONTEXTE.md ; l'entrée du projet dans `~/.claude.json` partirait avec, or tes MCP en portée locale sont rattachés au dossier de travail. Si tu y recours un jour, lance d'abord `--dry-run`."
+    "pourquoi": "Destructif et sans scénario d'essai dans CONTEXTE.md : sur `~/projets/delta-ia`, l'entrée du projet dans `~/.claude.json` partirait avec le serveur MCP delta-ia en portée locale, et les sessions durables reprises par `claude --resume` perdraient leurs transcriptions. Si tu y recours un jour, lance d'abord `--dry-run`."
    },
    "sources": [
     {
@@ -2419,17 +2428,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "MCP en portée locale rattachés au dossier de travail (delta-ia dans ~/projets et ~/projets/delta-ia)."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "MCP en portée locale rattachés au dossier de travail (delta-ia dans ~/projets et ~/projets/delta-ia)"
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions durables relancées par claude --resume <id>, qui dépend des transcriptions locales"
     }
    },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-10-03",
@@ -2441,6 +2454,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
      "changement": "commentaire révisé"
     }
    ],
@@ -5167,7 +5184,7 @@
    "categorie": "commandes",
    "nom": "/permissions",
    "gabarit": "complet",
-   "description": "Gère les règles d'autorisation (allow, ask, deny) des outils : consultation par portée, ajout ou retrait de règles, répertoires de travail, refus récents du mode auto. L'onglet Auto mode permet de voir et modifier les règles du classificateur. Lancée pendant une réponse, les changements s'appliquent dès l'appel d'outil suivant. Alias : `/allowed-tools`.",
+   "description": "Gère les règles d'autorisation (allow, ask, deny) des outils : consultation par portée, ajout ou retrait de règles, répertoires de travail, refus récents du mode auto ; l'onglet Auto mode montre et modifie les règles du classificateur. Lancée pendant une réponse, elle s'ouvre aussitôt et ses changements s'appliquent dès l'appel d'outil suivant. Alias : `/allowed-tools`.",
    "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. When you run it while Claude is responding, Claude Code opens the dialog immediately and applies your changes starting with Claude's next tool call in the same turn. Before v2.1.234, Claude Code queued the command until the turn finished. Alias: /allowed-tools",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
@@ -5176,7 +5193,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Depuis le 06/10 tes sessions locales tournent en `bypassPermissions` (sauf trading) et la liste `allow` n'est plus déterminante : les règles et refus du mode auto que montre ce dialogue ne changent plus rien hors de trading-sim, dont les réglages relèvent de Work."
+    "pourquoi": "Depuis le 06/10 tes sessions locales tournent en `bypassPermissions` (sauf trading) et la liste `allow` n'est plus déterminante : ce dialogue ne change plus rien hors de trading-sim, dont les réglages relèvent de Work."
    },
    "sources": [
     {
@@ -5189,7 +5206,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5206,24 +5223,28 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Toutes les sessions locales en `bypassPermissions` depuis le 06/10, sauf trading."
+     "pourquoi": "toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading"
     },
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "La liste `allow` globale subsiste mais n'est plus déterminante depuis le 06/10."
+     "pourquoi": "la liste allow globale subsiste mais n'est plus déterminante depuis le 06/10"
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Dépôt trading-sim gouverné par Work ; herbin-mint n'y touche pas."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "dépôt trading-sim gouverné par Work ; herbin-mint n'y touche pas"
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-plan",

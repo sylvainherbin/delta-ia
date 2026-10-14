@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-14",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -97,7 +97,7 @@
    "categorie": "mcp",
    "nom": "Authenticate from the command line",
    "gabarit": "complet",
-   "description": "`claude mcp login <nom>` lance le flux OAuth d'un serveur MCP configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session. Il fonctionne pour les serveurs HTTP, SSE et les connecteurs claude.ai.",
+   "description": "`claude mcp login <nom>` lance le flux OAuth d'un serveur MCP configuré directement depuis le shell, sans ouvrir le panneau `/mcp` dans une session ; `claude mcp logout <nom>` efface ensuite les identifiants. Sans navigateur local, la commande affiche l'URL d'autorisation et demande de recoller l'URL de retour, d'où `ssh -t` à distance.",
    "description_source": "The claude mcp login <name> command runs a configured server's OAuth flow directly from your shell, so you don't need to open the /mcp panel inside a session. For a claude.ai connector, follow Authorize a connector again from your shell.",
    "usage": "claude mcp login sentry",
    "usage_nature": "syntaxe",
@@ -106,7 +106,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le seul connecteur en attente d'authentification, Vercel, est refermé volontairement ; delta-ia n'a aucune authentification."
+    "pourquoi": "Aucun serveur n'attend d'authentification : le connecteur Vercel est « Connected » au 12/10 et delta-ia n'a pas d'authentification ; une autorisation OAuth reste un geste à toi."
    },
    "sources": [
     {
@@ -119,7 +119,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -144,13 +144,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur Vercel refermé volontairement (D66) ; delta-ia sans authentification."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur Vercel « Connected » au 12/10 ; delta-ia sans authentification"
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "les autorisations OAuth restent des gestes de Sylvain"
     }
    },
    "exemple_origine": "source"
@@ -357,7 +365,7 @@
    "categorie": "mcp",
    "nom": "Disable claude.ai connectors",
    "gabarit": "complet",
-   "description": "Le réglage `disableClaudeAiConnectors: true` coupe tous les connecteurs claude.ai que Claude Code récupère lui-même (sessions du terminal), dans n'importe quelle portée de réglages ; un `true` l'emporte toujours. Pour n'en bloquer que certains, `deniedMcpServers` les vise par nom (par exemple `\"claude.ai Slack\"`) ou par URL ; `ENABLE_CLAUDEAI_MCP_SERVERS=false` fait de même pour un seul lancement.",
+   "description": "Le réglage `disableClaudeAiConnectors: true` coupe les connecteurs claude.ai que Claude Code récupère lui-même, dans n'importe quelle portée de réglages ; il n'agit pas sur les connecteurs livrés par un hôte cloud ou par l'app de bureau. `ENABLE_CLAUDEAI_MCP_SERVERS=false` produit le même effet pour la session de shell courante, et `deniedMcpServers` bloque un connecteur précis par nom ou par URL.",
    "description_source": "Claude Code applies disableClaudeAiConnectors only to the connectors it fetches itself, not to the connectors a cloud host or the desktop app delivers. To turn off the connectors it fetches, set the setting to true in any settings scope:",
    "usage": "{\n  \"disableClaudeAiConnectors\": true\n}",
    "usage_nature": "syntaxe",
@@ -366,7 +374,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "C'est la réponse technique à l'écart de trading-sim, qui reçoit les connecteurs de compte malgré sa règle « aucun accès web » : `disableClaudeAiConnectors: true` dans son `.claude/settings.json`, ou `deniedMcpServers` pour Delta-IA seul, le fermerait ; la décision revient à Work, qui a reçu la question."
+    "pourquoi": "C'est la réponse technique à l'écart de trading-sim, qui reçoit les connecteurs de compte (Delta-IA, Vercel, Gmail…) malgré sa règle « aucun accès web » : `disableClaudeAiConnectors: true` dans son `.claude/settings.json` les fermerait tous ; la décision revient à Work, qui a reçu la question."
    },
    "sources": [
     {
@@ -379,7 +387,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -392,19 +400,24 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "écart trading-sim, question du deny transmise à Work"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "écart trading-sim : connecteurs de compte reçus faute de deny ; question transmise à Work ; Vercel de nouveau connecté le 12/10"
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "règle aucun accès web, connecteurs refusés"
+     "pourquoi": "politique de capacités : aucun connecteur claude.ai ni accès web sur ce projet"
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-dynamic-tool-updates",
@@ -1528,7 +1541,7 @@
    "categorie": "mcp",
    "nom": "Scope hierarchy and precedence",
    "gabarit": "complet",
-   "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une fois, avec la définition la plus prioritaire : local, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Plugins et connecteurs se comparent par URL ou commande.",
+   "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition la plus prioritaire : portée locale, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Les trois portées se comparent par nom ; plugins et connecteurs se comparent par URL ou commande.",
    "description_source": "When the same server is defined in more than one place, Claude Code connects to it once, using the definition from the highest-precedence source. The entire server entry from that source is used; fields are not merged across scopes.",
    "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
    "usage_nature": "etapes",
@@ -1537,7 +1550,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le serveur local delta-ia et le connecteur de compte Delta-IA ont la même URL : dans `~/projets` et `~/projets/delta-ia`, seule la définition locale sert ; dans trading-sim, seul le connecteur de compte reste."
+    "pourquoi": "Le serveur local delta-ia et le connecteur de compte Delta-IA viseraient la même URL : dans `~/projets` et `~/projets/delta-ia`, seule la définition locale servirait, dans trading-sim seul le connecteur de compte ; à vérifier par `/mcp` dans une session de chacun de ces dossiers."
    },
    "sources": [
     {
@@ -1550,7 +1563,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1571,13 +1584,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteur de compte partout."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteurs de compte partout, trading-sim compris"
     }
    }
   },

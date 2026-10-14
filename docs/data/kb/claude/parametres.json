@@ -15547,7 +15547,7 @@
    "categorie": "parametres",
    "nom": "deniedMcpServers",
    "gabarit": "court",
-   "description": "Réglage qui bloque des serveurs MCP précis, par nom ou par URL, où qu'ils soient définis, connecteurs claude.ai compris.",
+   "description": "Réglage qui bloque des serveurs MCP précis, par nom ou par URL, où qu'ils soient définis, plugins et connecteurs claude.ai récupérés par Claude Code compris.",
    "description_source": "Block specific MCP servers. Claude Code refuses to load a matching server wherever it's defined, including plugin servers, servers passed with --mcp-config, servers from managed-mcp.json, servers from managedMcpServers, and the claude.ai connectors it fetches itself. In-process type: \"sdk\" servers are exempt; the app that started the session registers them.",
    "usage": "{\n  \"deniedMcpServers\": [\n    { \"serverName\": \"filesystem\" }\n  ]\n}",
    "usage_nature": "syntaxe",
@@ -15556,7 +15556,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une entrée visant le connecteur Delta-IA dans `trading-sim/.claude/settings.json` fermerait l'accès que ce projet a aujourd'hui malgré sa règle « aucun accès web » ; la décision revient à Work, herbin-mint n'y touche pas."
+    "pourquoi": "Une entrée `{ \"serverName\": \"claude.ai Delta-IA\" }` dans `trading-sim/.claude/settings.json` fermerait l'accès que ce projet a malgré sa règle « aucun accès web », sans couper les autres projets ; la décision revient à Work, herbin-mint n'y touche pas."
    },
    "sources": [
     {
@@ -15569,7 +15569,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15586,17 +15586,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "écart trading-sim : connecteurs de compte reçus malgré la règle"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "écart trading-sim : connecteurs de compte reçus malgré la règle ; dépôt gouverné par Work"
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "règle aucun accès web, dépôt gouverné par Work"
+     "pourquoi": "politique de capacités : aucun connecteur claude.ai sur ce projet"
     }
    },
    "exemple_origine": "source"
@@ -17294,7 +17298,7 @@
    "categorie": "parametres",
    "nom": "disableClaudeAiConnectors",
    "gabarit": "court",
-   "description": "Réglage qui empêche Claude Code de récupérer et de connecter les connecteurs MCP de claude.ai ; un `true` dans le `.claude/settings.json` d'un dépôt en exclut ce dépôt.",
+   "description": "Réglage qui empêche Claude Code de récupérer et de connecter les connecteurs MCP de claude.ai ; un `true` dans le `.claude/settings.json` d'un dépôt en exclut ce dépôt, et un `false` de projet ne l'emporte pas sur un `true` utilisateur.",
    "description_source": "Turn off the claude.ai MCP connectors Claude Code fetches itself, so it neither fetches nor connects them. A true in any settings file applies: a checked-in project .claude/settings.json can opt a repository out of those connectors, but a project-level false can't override a user- or managed-level true.",
    "usage": "{\n  \"disableClaudeAiConnectors\": true\n}",
    "usage_nature": "syntaxe",
@@ -17303,7 +17307,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "C'est le mécanisme qui réglerait l'écart de trading-sim : proposer à Work `\"disableClaudeAiConnectors\": true` dans son `.claude/settings.json`, puis vérifier par `/mcp` dans herbin-trading que Delta-IA et Gmail n'y sont plus."
+    "pourquoi": "C'est le mécanisme qui réglerait l'écart de trading-sim : proposer à Work `\"disableClaudeAiConnectors\": true` dans son `.claude/settings.json`, puis vérifier par `/mcp` dans herbin-trading que Delta-IA, Vercel et Gmail n'y figurent plus."
    },
    "sources": [
     {
@@ -17316,7 +17320,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17333,13 +17337,17 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "trading-sim reçoit les connecteurs de compte faute de `deny` ; question transmise à Work"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "trading-sim reçoit les connecteurs de compte faute de deny ; question transmise à Work ; Vercel connecté au 12/10"
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -22224,7 +22232,7 @@
    "description_source": "Idle compaction compacts a long conversation that you've stepped away from, shortly before its prompt cache expires. Your next message then sends a summary instead of the whole conversation. When you come back, the conversation shows Compacted while idle, before the prompt cache expired.",
    "usage": "{\n  \"idleCompaction\": false\n}",
    "usage_nature": "syntaxe",
-   "exemple": null,
+   "exemple": "{\n  \"idleCompaction\": false\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -22266,8 +22274,13 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "exemple ajouté"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-include-hook-events",
