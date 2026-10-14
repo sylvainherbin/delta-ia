@@ -2,7 +2,7 @@
   "semaine": "2026-W42",
   "du": "2026-10-12",
   "au": "2026-10-18",
-  "genere_le": "2026-10-13T07:11:22+00:00",
+  "genere_le": "2026-10-14T02:05:39+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -11,7 +11,8 @@
       "raison": null,
       "jours": [
         "2026-10-12",
-        "2026-10-13"
+        "2026-10-13",
+        "2026-10-14"
       ]
     },
     "actu": {
@@ -19,14 +20,16 @@
       "raison": null,
       "jours": [
         "2026-10-12",
-        "2026-10-13"
+        "2026-10-13",
+        "2026-10-14"
       ]
     },
     "openai": {
       "statut": "ok",
       "raison": null,
       "jours": [
-        "2026-10-12"
+        "2026-10-12",
+        "2026-10-13"
       ]
     },
     "kb-claude": {
@@ -58,6 +61,18 @@
   },
   "d71": [
     {
+      "perimetre": "claude",
+      "id": "claude-aide-limites-article",
+      "produit": "claude",
+      "titre": "Pages d'aide limites d'usage et forfait Max révisées : un changement de forfait applique ses limites tout de suite",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-14",
+      "action": "Revérifier le 2026-10-18 (remise à zéro hebdomadaire à 16 h 00 UTC, aucune échéance publiée pour ces pages) la jauge de semaine et la jauge Fable dans Paramètres > Utilisation, avec les remises à zéro disponibles, pour nourrir le bilan de l'essai Max 20x du 07/11."
+    },
+    {
       "perimetre": "actu",
       "id": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
       "produit": "actu",
@@ -84,6 +99,30 @@
   ],
   "elements": [
     {
+      "perimetre": "openai",
+      "id": "rust-v0.161.0",
+      "produit": "codex",
+      "titre": "Réévaluation Codex 0.161 : essai Daybreak sans mise à jour de la CLI",
+      "version": "0.161.0",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-07",
+      "jour": "2026-10-13",
+      "action": "Essayer `codex -p securite --enable cli_daybreak -C /home/herbin/projets/trading-sim` sur une lecture d’audit trading-sim ; résultat attendu : contrôles Daybreak visibles si le compte et le modèle sont éligibles."
+    },
+    {
+      "perimetre": "openai",
+      "id": "rust-v0.162.0",
+      "produit": "codex",
+      "titre": "Réévaluation Codex 0.162 : copie sur la CLI déjà à jour et worktrees du workflow OPÉRER",
+      "version": "0.162.0",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-08",
+      "jour": "2026-10-13",
+      "action": "Essayer `/copy` sur un résumé d’audit trading-sim avec la CLI npm déjà installée ; résultat attendu : le verdict copié correspond au texte affiché."
+    },
+    {
       "perimetre": "claude",
       "id": "claude-code-2.1.295",
       "produit": "claude-code",
@@ -96,7 +135,44 @@
       "action": "Vérifier que la 2.1.296 tourne dans les sessions durables et essayer la notification push corrigée."
     }
   ],
-  "base_ajoutees": [],
+  "base_ajoutees": [
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-idlecompaction",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "idleCompaction",
+      "usage": "{\n  \"idleCompaction\": false\n}",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date_ajout": "2026-10-14"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-idle-compact-min-tokens",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
+      "usage": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-14"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-overloaded-retry-max-delay-ms",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
+      "usage": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-14"
+    }
+  ],
   "base_verdicts": [
     {
       "perimetre": "openai",
