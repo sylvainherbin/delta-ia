@@ -898,3 +898,30 @@ def test_skills_delta_d117_dans_les_trois_textes():
                         "postérieure au jour du fichier, jamais le jour même", "« par Mtok »",
                         "Deux éléments `fort` du même fichier qui citent la même URL"):
             assert attendu in texte, f"{f} : {attendu}"
+
+
+def test_d124_action_d71_qui_demande_un_releve_de_jauge_avertit():
+    """Retour de Sylvain du 14/10 : relevés manuels demandés alors qu'OBSERVATORY les fait (rapports/usage.json)."""
+    d71 = {"titre": "Un changement de forfait applique ses limites tout de suite", "type": "correction"}
+    for texte in ("Revérifier le 2026-10-18 la jauge de semaine dans Paramètres > Utilisation.",
+                  "Le 18/10, tape `/usage` et compare les jauges à rapports/usage.json.",
+                  "Le 18/10, ouvre https://claude.ai/settings/usage : relève la semaine."):
+        r = v.Rapport()
+        v.avertir_element(_element_d85(**d71, action=_action(texte)), 0, r, "x.json", None, "2026-10-14")
+        assert any("D124" in a for a in r.avertissements), texte
+    for texte in ("Revérifier le 18/10, aucune échéance publiée ; semaine à 31 % relevée le 14/10 à 15 h 17.",
+                  "Avant le 18/10, utilise ta remise à zéro dans Paramètres > Utilisation."):
+        r = v.Rapport()
+        v.avertir_element(_element_d85(**d71, action=_action(texte)), 0, r, "x.json", None, "2026-10-14")
+        assert not any("D124" in a for a in r.avertissements), texte
+
+
+def test_d124_meme_texte_dans_les_trois_consignes():
+    from pathlib import Path
+    racine = Path(fetch.RACINE)
+    lignes = []
+    for f in (".claude/skills/delta/SKILL.md", ".agents/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        (l,) = [x.strip() for x in (racine / f).read_text(encoding="utf-8").splitlines() if "**R5 (D85)" in x]
+        assert "**D124, aucun relevé que Delta fait déjà**" in l and "**D124, sens du changement d'abord**" in l, f
+        lignes.append(l)
+    assert len(set(lignes)) == 1

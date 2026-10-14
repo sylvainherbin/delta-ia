@@ -3,7 +3,7 @@
  "perimetre": "claude",
  "agent": "claude-code",
  "genere_le": "2026-10-14T02:04:00+00:00",
- "synthese": "Compte et quotas : deux pages d'aide ont changé (forfait Max, limites d'usage) ; une phrase nouvelle dit qu'un changement de forfait applique ses limites tout de suite, utile pour le bilan de l'essai Max 20x avant le 07/11. Quotas lus : Claude session 5 h 13 % (remise à zéro le 14/10 à 02 h 59 UTC), Claude semaine 27 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 14 % (remise à zéro le 20/10 à 07 h 12 UTC) ; aucun quota hebdomadaire au-dessus de 80 %. Aucune nouvelle version de Claude Code (2.1.296 installée, dernière publiée). La base reçoit trois réglages : la compaction à l'inactivité (`idleCompaction`, active par défaut depuis la 2.1.290) est le seul qui touche tes sessions durables et la limite hebdomadaire.",
+ "synthese": "Compte et quotas : deux pages d'aide ont changé (forfait Max, limites d'usage) ; une phrase nouvelle dit qu'en passant à un forfait supérieur, ses limites plus hautes s'appliquent tout de suite, sans attendre la remise à zéro (rien n'est remis à zéro), utile pour le bilan de l'essai Max 20x avant le 07/11. Quotas lus : Claude session 5 h 13 % (remise à zéro le 14/10 à 02 h 59 UTC), Claude semaine 27 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 14 % (remise à zéro le 20/10 à 07 h 12 UTC) ; aucun quota hebdomadaire au-dessus de 80 %. Aucune nouvelle version de Claude Code (2.1.296 installée, dernière publiée). La base reçoit trois réglages : la compaction à l'inactivité (`idleCompaction`, active par défaut depuis la 2.1.290) est le seul qui touche tes sessions durables et la limite hebdomadaire.",
  "sources_en_echec": [],
  "ecartes": [
   {
@@ -20,11 +20,11 @@
     "claude-aide-forfait-max-article"
    ],
    "produit": "claude",
-   "titre": "Pages d'aide limites d'usage et forfait Max révisées : un changement de forfait applique ses limites tout de suite",
+   "titre": "Pages d'aide limites d'usage et forfait Max révisées : passer à un forfait supérieur applique ses limites tout de suite, sans remise à zéro",
    "version": null,
    "date_publication": null,
    "type": "nouveaute",
-   "resume": "« How do usage and length limits work? » : ajoutée, la phrase « If you upgrade, your new plan's limits apply right away » (à la limite atteinte, attendre la remise à zéro ou passer à un forfait supérieur). « What is the Max plan? » : ajoutée, une remise pour les organisations à but non lucratif éligibles sur les forfaits Team et Enterprise ; modifiée, « aucune remise standard sur aucun forfait payant » devient « aucune remise standard sur les forfaits individuels (Pro et Max) ». Les prix de la page sont inchangés : Max 5x 100 $ par mois, Max 20x 200 $ par mois.",
+   "resume": "« How do usage and length limits work? » : ajoutée, la phrase « If you upgrade, your new plan's limits apply right away » (à la limite atteinte, attendre la remise à zéro ou passer à un forfait supérieur). « What is the Max plan? » : ajoutée, un rabais (discount, pas une remise à zéro) pour les organisations à but non lucratif éligibles sur les forfaits Team et Enterprise ; modifiée, « aucun rabais standard sur aucun forfait payant » devient « aucun rabais standard sur les forfaits individuels (Pro et Max) ». Les prix de la page sont inchangés : Max 5x 100 $ par mois, Max 20x 200 $ par mois.",
    "sources": [
     {
      "url": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work#how-do-usage-and-length-limits-work",
@@ -39,14 +39,12 @@
    ],
    "certitude": "officiel",
    "impact": "fort",
-   "pour_toi": "CONTEXTE.md (profil) te place en Max 20x depuis le 07/10, à l'essai jusqu'au 07/11 avec un bilan d'usage à préparer ; `rapports/usage.json` donne ce matin la semaine à 27 % et la semaine Fable à 3 %. Si ton bilan conclut à un autre palier, la page dit que les nouvelles limites s'appliquent immédiatement, sans attendre la remise à zéro. La précision sur les remises (réservées aux forfaits individuels, sauf pour les organisations à but non lucratif) ne change rien à ton abonnement : aucune remise standard n'existe sur Max.",
+   "pour_toi": "Limites en hausse dès le changement, sans remise à zéro : la page dit qu'en passant à un forfait supérieur, les limites du nouveau forfait s'appliquent tout de suite, au lieu d'attendre la remise à zéro. CONTEXTE.md (profil) te place en Max 20x depuis le 07/10, à l'essai jusqu'au 07/11 : c'est déjà le palier individuel le plus haut, la phrase ne joue donc que si tu passais de Pro à Max ou de Max 5x à Max 20x. L'autre ajout parle de rabais sur le prix, pas de remise à zéro des quotas : aucun rabais standard sur Pro et Max, un rabais pour les organisations à but non lucratif sur Team et Enterprise.",
    "projets_concernes": [],
    "action": {
-    "description": "Revérifier le 2026-10-18 (remise à zéro hebdomadaire à 16 h 00 UTC, aucune échéance publiée pour ces pages) la jauge de semaine et la jauge Fable dans Paramètres > Utilisation, avec les remises à zéro disponibles, pour nourrir le bilan de l'essai Max 20x du 07/11.",
+    "description": "Aucun relevé à faire : OBSERVATORY suit les jauges dans `rapports/usage.json` (semaine Claude à 31 % le 14/10 à 15 h 17, remise à zéro le 18/10 à 17 h 59). Revérifier le 07/11, fin de l'essai Max 20x, aucune échéance publiée pour ces pages.",
     "etapes": [
-     "Ouvre claude.ai > Paramètres > Utilisation (https://claude.ai/settings/usage) : relève la semaine, la semaine Fable et tes remises à zéro disponibles avant d'économiser.",
-     "Dans une session Claude Code, tape `/usage` et compare les jauges à `rapports/usage.json` (13 % session, 27 % semaine, 3 % Fable ce matin).",
-     "Résultat attendu : les trois valeurs concordent ; si tu changes de palier pendant l'essai, la jauge repart avec les limites du nouveau palier tout de suite, sans attendre le 18/10."
+     "Au bilan de l'essai Max 20x du 07/11, décide de garder ou non ce forfait à partir des relevés de `rapports/usage.json`."
     ],
     "effort": "5min"
    },

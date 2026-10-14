@@ -9,7 +9,7 @@ Usage :
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
 et la cohérence de `index.json`. Code de sortie 0 si tout est valide, 1 sinon ; les erreurs sont listées.
-Lignes `! AVERTISSEMENT` (D85, D97, D107, second audit) : ajout à un outil (hors page de compte, de politique ou de tarif) sans commande exacte, sans projet ni flux de CONTEXTE.md nommé ou sans « résultat attendu » dans `action` (R1), élément D71 sans date absolue ou revérifié le jour du fichier (R5), élément `faible` dont le `pour_toi` conclut que rien ne s'applique (R4), deux éléments `fort` d'un même fichier sur la même URL, ajout des `puces` du brut (D95) dont un nom figure
+Lignes `! AVERTISSEMENT` (D85, D97, D107, second audit) : ajout à un outil (hors page de compte, de politique ou de tarif) sans commande exacte, sans projet ni flux de CONTEXTE.md nommé ou sans « résultat attendu » dans `action` (R1), élément D71 sans date absolue ou revérifié le jour du fichier (R5), action D71 qui demande un relevé de jauge déjà mesuré (D124), élément `faible` dont le `pour_toi` conclut que rien ne s'applique (R4), deux éléments `fort` d'un même fichier sur la même URL, ajout des `puces` du brut (D95) dont un nom figure
 dans CONTEXTE.md ou la base et que ni `resume` ni `pour_toi` ne cite (R2), `pour_toi` conditionnel sans commande qui le tranche dans `action`
 et `pour_toi` recopié du même id dans un fichier des 7 jours précédents (R4) ; sans effet sur le code de sortie.
 Ancrage (D101) : `pour_toi` d'un élément d'impact faible ou plus qui ne nomme aucun projet, outil ni habitude de CONTEXTE.md (fichiers postérieurs au 24/09) ; sans effet sur le code de sortie.
@@ -83,6 +83,10 @@ RE_RIEN_NE_S_APPLIQUE = re.compile(r"(?<!\w)(?:" + "|".join(
     re.escape(m).replace(r"\ ", r"\s+").replace("'", "['’]") for m in MARQUEURS_RIEN_NE_S_APPLIQUE) + r")(?!\w)", re.I)
 # D101 (ancrage) : un `pour_toi` d'un élément d'impact faible ou plus nomme un projet, un outil ou une habitude de CONTEXTE.md
 # (termes de `deltalib.contexte.termes_ancrage`, sections citées par l'élément) ; `contexte_sections` vide ou absent : avertissement d'office.
+# D124 : une `action` D71 ne demande pas à Sylvain de relever ou de comparer une jauge qu'OBSERVATORY relève déjà dans
+# `rapports/usage.json` (écran Paramètres > Utilisation ou commande `/usage` avec un verbe de relevé ou le mot « jauge »).
+RE_ECRAN_USAGE = re.compile(r"Param[eè]tres\s*>\s*Utilisation|settings/usage|`/usage`|(?<![\w/])/usage(?!\w)", re.I)
+RE_RELEVE = re.compile(r"(?<!\w)(?:rel[eè]ve[rsz]?|relevé|compare[rsz]?|jauges?)(?!\w)", re.I)
 MESSAGE_ANCRAGE = "ancrage : `pour_toi` sans projet, outil ni habitude nommés de CONTEXTE.md"
 RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks")]
 
@@ -262,6 +266,9 @@ def avertir_element(e: dict, i: int, r: Rapport, ou: str, ancrage: dict | None =
         elif perimees:
             r.avertissement(ou, f"R5 : revérification datée du jour même du fichier ou d'avant ({', '.join(perimees)}) "
                                 "dans `action` : une date de revérification est postérieure au jour du fichier")
+        if RE_ECRAN_USAGE.search(texte) and RE_RELEVE.search(texte):
+            r.avertissement(ou, "D124 : `action` D71 qui demande un relevé de jauge déjà fait par OBSERVATORY "
+                                "(`rapports/usage.json`) : cite la valeur relevée, garde seulement le geste de Sylvain")
     if conditionnel_sans_commande(e):
         r.avertissement(ou, "R4 : `pour_toi` conditionnel sans commande entre accents graves dans `action` qui le tranche")
     if e.get("impact") == "faible" and isinstance(e.get("pour_toi"), str) and RE_RIEN_NE_S_APPLIQUE.search(e["pour_toi"]):
