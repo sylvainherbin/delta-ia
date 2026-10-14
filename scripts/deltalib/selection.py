@@ -7,7 +7,7 @@ Budget d'attention : au plus TAILLE_MAX entrées par semaine ISO. La sélection 
 (`rapports/selection/AAAA-Www.json`) ; les appels suivants la relisent. Tout est local : `rapports/` n'est jamais commité et
 rien n'entre dans `docs/`.
 
-Retours (écrits par S2, lus ici) : `rapports/selection/retours.yaml`, liste de {date, id, retour}, retour parmi RETOURS. Le
+Retours (écrits par `scripts/retour.py`, S2 ; lus ici) : `rapports/selection/retours.yaml`, liste de {date, id, retour}, retour parmi RETOURS. Le
 dernier retour d'un id décide :
 - `connu`, `sans_interet`, `utile` : l'entrée ne revient plus (un `utile` est jugé ; l'essai se déclare dans kb-essais.yaml) ;
 - `a_revoir` : l'entrée revient `revoir_apres` jours après le retour.
@@ -28,7 +28,9 @@ compte rendu ; ils ne montent ici que par les priorités de profil.yaml (« limi
 
 from __future__ import annotations
 
+import fcntl
 import json
+import os
 import re
 import unicodedata
 from datetime import date, timedelta
@@ -148,6 +150,94 @@ def dernier_retour(retours: list[dict]) -> dict[str, dict]:
         if r["id"] not in res or r["date"] >= res[r["id"]]["date"]:
             res[r["id"]] = r
     return res
+
+
+FICHIER_VERROU = "retours.yaml.lock"
+MARQUE_ID_INCONNU = "identifiant absent de toute sélection"
+
+
+class IdInconnu(SelectionInvalide):
+    pass
+
+
+def ids_proposes(dossier: Path) -> dict[str, str]:
+    """{id: première semaine où l'entrée a été proposée}, lu dans les fichiers AAAA-Www.json de `dossier`."""
+    res: dict[str, str] = {}
+    for chemin in sorted(dossier.glob("*.json")) if dossier.is_dir() else []:
+        if not RE_SEMAINE_FICHIER.fullmatch(chemin.name):
+            continue
+        doc = lire_figee(dossier, chemin.stem)
+        for e in doc["entrees"]:
+            res.setdefault(e["id"], chemin.stem)
+    return res
+
+
+def enregistrer_retour(dossier: Path, ident: str, retour: str, jour: date) -> tuple[dict, bool]:
+    """Ajoute {date, id, retour} à la fin de retours.yaml ; (ligne, ajoutee). Même retour le même jour : rien n'est écrit (ajoutee=False).
+
+    Refuse un retour hors RETOURS (ValueError), un id absent de toute sélection (IdInconnu) et un fichier existant mal formé
+    (SelectionInvalide) sans rien écrire. Verrou exclusif sur un fichier à part, écriture par fichier temporaire puis `replace` ;
+    les lignes déjà présentes, clés supplémentaires (`note`) comprises, sont conservées telles quelles.
+    """
+    if retour not in RETOURS:
+        raise ValueError(f"retour {retour!r} inconnu : {', '.join(RETOURS)}")
+    ident = ident.strip()
+    dossier.mkdir(parents=True, exist_ok=True)
+    with open(dossier / FICHIER_VERROU, "a", encoding="utf-8") as verrou:
+        fcntl.flock(verrou, fcntl.LOCK_EX)
+        connus = ids_proposes(dossier)
+        if ident not in connus:
+            raise IdInconnu(f"{MARQUE_ID_INCONNU} : {ident!r}")
+        existants = lire_retours(dossier)  # valide le fichier : mal formé -> SelectionInvalide, avant toute écriture
+        ligne = {"date": jour.isoformat(), "id": ident, "retour": retour}
+        if dernier_retour(existants).get(ident) == ligne:
+            return ligne, False
+        chemin = dossier / FICHIER_RETOURS
+        brut = yaml.safe_load(chemin.read_text(encoding="utf-8")) if chemin.exists() else None
+        tmp = chemin.with_name(chemin.name + ".tmp")
+        tmp.write_text(yaml.safe_dump((brut or []) + [ligne], allow_unicode=True, sort_keys=False), encoding="utf-8")
+        os.replace(tmp, chemin)
+    return ligne, True
+
+
+def bilan_mensuel(dossier: Path, mois: str) -> dict:
+    """Bilan des entrées proposées pendant le mois `mois` (AAAA-MM) : une semaine appartient au mois de son lundi.
+
+    Chaque id compte une fois (sa première apparition du mois) avec son dernier retour connu à l'appel, quelle qu'en soit la date.
+    `taux_utiles` = utiles / proposées (un silence compte contre) ; `taux_utiles_sur_retours` = utiles / entrées avec retour (None sans retour).
+    """
+    try:
+        debut = date.fromisoformat(f"{mois}-01")
+    except ValueError as err:
+        raise ValueError(f"mois {mois!r} : AAAA-MM attendu") from err
+    if debut.strftime("%Y-%m") != mois:
+        raise ValueError(f"mois {mois!r} : AAAA-MM attendu")
+    dernier = dernier_retour(lire_retours(dossier))
+    vus: dict[str, str] = {}
+    semaines = []
+    for chemin in sorted(dossier.glob("*.json")) if dossier.is_dir() else []:
+        if not RE_SEMAINE_FICHIER.fullmatch(chemin.name) or _lundi(chemin.stem).strftime("%Y-%m") != mois:
+            continue
+        semaines.append(chemin.stem)
+        for e in lire_figee(dossier, chemin.stem)["entrees"]:
+            vus.setdefault(e["id"], chemin.stem)
+    repartition = {r: 0 for r in RETOURS} | {"sans_retour": 0}
+    for ident in vus:
+        repartition[(dernier.get(ident) or {}).get("retour") or "sans_retour"] += 1
+    n, avec = len(vus), len(vus) - repartition["sans_retour"]
+    taux = lambda a, b: round(100 * a / b, 1) if b else None  # noqa: E731
+    return {"mois": mois, "semaines": semaines, "proposees": n, "avec_retour": avec, "repartition": repartition,
+            "taux_utiles": taux(repartition["utile"], n), "taux_utiles_sur_retours": taux(repartition["utile"], avec)}
+
+
+def rendre_bilan(b: dict) -> str:
+    if not b["proposees"]:
+        return f"Bilan {b['mois']} : aucune entrée proposée ce mois-ci"
+    r = b["repartition"]
+    pct = lambda v: "—" if v is None else f"{v:g} %"  # noqa: E731
+    return "\n".join([f"Bilan {b['mois']} : {b['proposees']} entrée(s) proposée(s) en {len(b['semaines'])} semaine(s), {b['avec_retour']} avec retour",
+                      f"  utile {r['utile']} · connu {r['connu']} · sans_interet {r['sans_interet']} · a_revoir {r['a_revoir']} · sans retour {r['sans_retour']}",
+                      f"  Taux d'entrées utiles : {pct(b['taux_utiles'])} des proposées ; {pct(b['taux_utiles_sur_retours'])} des entrées avec retour"])
 
 
 # --- caducité ----------------------------------------------------------------------------------------------------------
