@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-14",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 653,
- "commentees": 653,
+ "total": 656,
+ "commentees": 656,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -9635,6 +9635,57 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-idle-compact-min-tokens",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
+   "gabarit": "court",
+   "description": "Variable qui fixe la taille de contexte, en jetons, à partir de laquelle la compaction à l'inactivité s'applique (200 000 par défaut ; toute valeur inférieure à 100 000 est relevée à 100 000, et une valeur non entière est ignorée).",
+   "description_source": "Context size, in tokens, at which idle compaction applies to a conversation (default: 200000). Accepts a positive whole number, and anything else is ignored. Values below 100000 are raised to 100000, the lowest threshold. Idle compaction is on by default for conversations that meet its conditions. To turn it off, set idleCompaction to false. Requires Claude Code v2.1.290 or later",
+   "usage": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le seuil par défaut suffit tant que la compaction à l'inactivité n'a pas été observée sur une session durable (voir `idleCompaction`)."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables concernées par la compaction à l'inactivité."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-max-concurrent-subagents",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -9737,8 +9788,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH",
    "gabarit": "court",
-   "description": "Variable qui fixe la longueur maximale des descriptions d'outils MCP et des instructions de serveur envoyées au modèle, 2 048 caractères par défaut.",
-   "description_source": "Maximum length in characters of each MCP tool description and each MCP server's instructions that Claude Code sends to the model (default: 2048). Claude Code truncates longer text. Accepts a positive whole number in plain digits. Anything else is ignored and the default applies. Requires Claude Code v2.1.280 or later",
+   "description": "Variable qui fixe la longueur maximale de chaque description d'outil MCP et des instructions de chaque serveur MCP envoyées au modèle : 4 096 caractères par défaut, 16 384 pour la description d'un outil chargé par la recherche d'outils ; la valeur remplace les deux limites (v2.1.280 ou plus).",
+   "description_source": "Maximum length in characters of each MCP tool description and each MCP server's instructions that Claude Code sends to the model. The value you set replaces both default limits: 4096, and 16384 for the description of a tool that Claude loads through tool search. Claude Code truncates longer text. Accepts a positive whole number in plain digits. Anything else is ignored and the defaults apply. Requires Claude Code v2.1.280 or later",
    "usage": "CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9746,7 +9797,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les instructions de ton serveur delta-ia doivent tenir dans 2 048 caractères ; il vaut mieux les raccourcir que relever la limite pour toutes les sessions."
+    "pourquoi": "Le serveur delta-ia est le seul serveur MCP local décrit ; tant que ses instructions restent courtes, la limite par défaut suffit."
    },
    "sources": [
     {
@@ -9759,7 +9810,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9768,10 +9819,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur MCP delta-ia local déclaré pour les sessions de ~/projets et de delta-ia."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-max-output-tokens",
@@ -10848,6 +10916,52 @@
     {
      "date": "2026-10-09",
      "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-overloaded-retry-max-delay-ms",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
+   "gabarit": "court",
+   "description": "Variable qui relève le plafond du délai d'attente exponentiel entre deux relances automatiques d'une requête rejetée par l'API avec une erreur 529 (surcharge) : 32 000 ms par défaut, de 32 000 à 64 000 ms. Sans effet avec `CLAUDE_CODE_RETRY_WATCHDOG=1` ni en mode rapide.",
+   "description_source": "Ceiling in milliseconds, in place of the default 32000, on the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it so that later retries keep spreading apart when the API is at capacity. Give whole milliseconds from 32000 to 64000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.296 or later",
+   "usage": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucune erreur 529 récurrente à absorber."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -15752,8 +15866,8 @@
    "categorie": "parametres",
    "nom": "DISABLE_AUTO_COMPACT",
    "gabarit": "court",
-   "description": "Variable qui désactive la compaction automatique en laissant `/compact` disponible.",
-   "description_source": "Set to 1 to disable automatic compaction when approaching the context limit. The manual /compact command remains available. Use when you want explicit control over when compaction occurs. Overrides the autoCompactEnabled setting",
+   "description": "Variable (valeur 1) qui désactive la compaction automatique à l'approche de la limite de contexte, ainsi que la compaction à l'inactivité ; `/compact` reste disponible et la variable l'emporte sur le réglage `autoCompactEnabled`.",
+   "description_source": "Set to 1 to disable automatic compaction when approaching the context limit, along with idle compaction. The manual /compact command remains available. Use when you want explicit control over when compaction occurs. Overrides the autoCompactEnabled setting",
    "usage": "DISABLE_AUTO_COMPACT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15761,7 +15875,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions longues risqueraient un contexte plein ; tu tapes déjà `/compact` quand il faut."
+    "pourquoi": "Tes sessions longues risqueraient un contexte plein ; pour couper seulement la compaction à l'inactivité, la clé `idleCompaction` à `false` suffit."
    },
    "sources": [
     {
@@ -15774,7 +15888,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15783,10 +15897,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Réglages et habitudes de Claude Code ; `/compact` fait partie des commandes tapées."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-disable-autoupdater",
@@ -18209,8 +18340,8 @@
    "categorie": "parametres",
    "nom": "ENABLE_TOOL_SEARCH",
    "gabarit": "court",
-   "description": "Variable qui contrôle la recherche d'outils MCP ; par défaut, Claude Code diffère le chargement de tous les outils MCP.",
-   "description_source": "Controls MCP tool search. Unset, Claude Code defers all MCP tools by default. It still loads them upfront on Google Cloud's Agent Platform models earlier than the Claude 4.5 generation, on a Microsoft Foundry deployment hosted on Azure, and when ANTHROPIC_BASE_URL points to a non-first-party host. true always defers and sends the beta header, except on those same Agent Platform models and Microsoft Foundry deployments; requests fail on proxies that don't support tool_reference. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. A value you set yourself is ignored when CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS is set. Before v2.1.221, Claude Code disabled tool search for all models on Google Cloud's Agent Platform unless you set this variable to true",
+   "description": "Variable qui contrôle la recherche d'outils MCP : sans valeur, Claude Code diffère le chargement de tous les outils MCP, sauf si `ANTHROPIC_BASE_URL` pointe vers un hôte tiers ; `true` les diffère aussi sur un hôte tiers, `auto` ou `auto:N` charge d'avance quand les définitions tiennent dans 10 % (ou N %) du contexte, `false` charge tout d'avance.",
+   "description_source": "Controls MCP tool search. Unset, Claude Code defers all MCP tools by default, and loads them upfront instead when ANTHROPIC_BASE_URL points to a non-first-party host. true keeps them deferred on such a host too. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. For the models and deployments that load every tool upfront whatever this value is, see Configure tool search",
    "usage": "ENABLE_TOOL_SEARCH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18231,7 +18362,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18240,9 +18371,21 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {}
   },
   {
@@ -22070,6 +22213,61 @@
      "pourquoi": "sessions tmux lancées par systemd"
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-idlecompaction",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "idleCompaction",
+   "gabarit": "court",
+   "description": "Clé qui règle la compaction d'une conversation longue laissée inactive : environ 54 minutes après la dernière requête, avant l'expiration du cache de prompt, elle est résumée et le message suivant envoie le résumé. Active par défaut (v2.1.290 ou plus) à partir de 200 000 jetons ; `false` la désactive.",
+   "description_source": "Idle compaction compacts a long conversation that you've stepped away from, shortly before its prompt cache expires. Your next message then sends a summary instead of the whole conversation. When you come back, the conversation shows Compacted while idle, before the prompt cache expired.",
+   "usage": "{\n  \"idleCompaction\": false\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Essai : laisser une session durable (par exemple le chef delta-ia) inactive environ une heure avec un contexte long, puis la reprendre ; la ligne « Compacted while idle, before the prompt cache expired » dit si la reprise a été résumée, ce qui touche la consommation de la limite hebdomadaire."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code durables sous tmux, souvent inactives puis reprises à distance."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Memory and context",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-include-hook-events",

@@ -1,0 +1,141 @@
+{
+ "date": "2026-10-14",
+ "perimetre": "claude",
+ "agent": "claude-code",
+ "genere_le": "2026-10-14T02:04:00+00:00",
+ "synthese": "Compte et quotas : deux pages d'aide ont changé (forfait Max, limites d'usage) ; une phrase nouvelle dit qu'un changement de forfait applique ses limites tout de suite, utile pour le bilan de l'essai Max 20x avant le 07/11. Quotas lus : Claude session 5 h 13 % (remise à zéro le 14/10 à 02 h 59 UTC), Claude semaine 27 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 14 % (remise à zéro le 20/10 à 07 h 12 UTC) ; aucun quota hebdomadaire au-dessus de 80 %. Aucune nouvelle version de Claude Code (2.1.296 installée, dernière publiée). La base reçoit trois réglages : la compaction à l'inactivité (`idleCompaction`, active par défaut depuis la 2.1.290) est le seul qui touche tes sessions durables et la limite hebdomadaire.",
+ "sources_en_echec": [],
+ "ecartes": [
+  {
+   "id": "https://claude.com/blog/uber-s-ciso-on-building-an-insider-threat-program-for-ai",
+   "raison": "entretien client de marketing (programme de menaces internes pour agents chez Uber), sans changement de produit ni de condition d'usage"
+  }
+ ],
+ "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+ "elements": [
+  {
+   "id": "claude-aide-limites-article",
+   "ids_bruts": [
+    "claude-aide-limites-article",
+    "claude-aide-forfait-max-article"
+   ],
+   "produit": "claude",
+   "titre": "Pages d'aide limites d'usage et forfait Max révisées : un changement de forfait applique ses limites tout de suite",
+   "version": null,
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "« How do usage and length limits work? » : ajoutée, la phrase « If you upgrade, your new plan's limits apply right away » (à la limite atteinte, attendre la remise à zéro ou passer à un forfait supérieur). « What is the Max plan? » : ajoutée, une remise pour les organisations à but non lucratif éligibles sur les forfaits Team et Enterprise ; modifiée, « aucune remise standard sur aucun forfait payant » devient « aucune remise standard sur les forfaits individuels (Pro et Max) ». Les prix de la page sont inchangés : Max 5x 100 $ par mois, Max 20x 200 $ par mois.",
+   "sources": [
+    {
+     "url": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work#how-do-usage-and-length-limits-work",
+     "libelle": "How do usage and length limits work?",
+     "officielle": true
+    },
+    {
+     "url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan#what-is-the-max-plan",
+     "libelle": "What is the Max plan?",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "fort",
+   "pour_toi": "CONTEXTE.md (profil) te place en Max 20x depuis le 07/10, à l'essai jusqu'au 07/11 avec un bilan d'usage à préparer ; `rapports/usage.json` donne ce matin la semaine à 27 % et la semaine Fable à 3 %. Si ton bilan conclut à un autre palier, la page dit que les nouvelles limites s'appliquent immédiatement, sans attendre la remise à zéro. La précision sur les remises (réservées aux forfaits individuels, sauf pour les organisations à but non lucratif) ne change rien à ton abonnement : aucune remise standard n'existe sur Max.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Revérifier le 2026-10-18 (remise à zéro hebdomadaire à 16 h 00 UTC, aucune échéance publiée pour ces pages) la jauge de semaine et la jauge Fable dans Paramètres > Utilisation, avec les remises à zéro disponibles, pour nourrir le bilan de l'essai Max 20x du 07/11.",
+    "etapes": [
+     "Ouvre claude.ai > Paramètres > Utilisation (https://claude.ai/settings/usage) : relève la semaine, la semaine Fable et tes remises à zéro disponibles avant d'économiser.",
+     "Dans une session Claude Code, tape `/usage` et compare les jauges à `rapports/usage.json` (13 % session, 27 % semaine, 3 % Fable ce matin).",
+     "Résultat attendu : les trois valeurs concordent ; si tu changes de palier pendant l'essai, la jauge repart avec les limites du nouveau palier tout de suite, sans attendre le 18/10."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [],
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Forfait Max 20x pris le 07/10, à l'essai jusqu'au 07/11 avec bilan d'usage."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Demande déclarée : signaler en priorité offres, remises à zéro et conditions des limites."
+    }
+   },
+   "revision": true
+  },
+  {
+   "id": "kb-claude-code-parametres-idlecompaction",
+   "ids_bruts": [
+    "kb-claude-code-parametres-idlecompaction"
+   ],
+   "produit": "claude-code",
+   "titre": "Base : réglage `idleCompaction` (compaction d'une conversation laissée inactive)",
+   "version": null,
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "Ajouts à la base : le réglage `idleCompaction` et la variable `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`. D'après la documentation, une conversation longue laissée inactive est résumée environ 54 minutes après la dernière requête, avant l'expiration du cache de prompt d'une heure ; le message suivant envoie le résumé au lieu de toute la conversation. Active par défaut (v2.1.290 ou plus) pour une session interactive dont le contexte atteint 200 000 jetons ; `false` la désactive, et la variable relève ou abaisse le seuil (100 000 au minimum).",
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "faible",
+   "pour_toi": "CONTEXTE.md décrit des sessions Claude Code durables sous tmux, reprises à distance, et les limites hebdomadaires comme friction récurrente. La 2.1.296 installée dépasse la 2.1.290 : la compaction à l'inactivité s'applique donc déjà à toute session interactive qui remplit les conditions de la page. Le texte de la documentation ne mesure pas l'effet sur la consommation, et un résumé remplace le détail de la conversation à la reprise.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Pour observer l'effet : `claude --resume` sur une session durable au contexte long, laissée inactive environ une heure ; pour la couper, ajoute `\"idleCompaction\": false` dans `~/.claude/settings.json`.",
+    "etapes": [
+     "Laisse inactive environ une heure une session durable au contexte d'au moins 200 000 jetons (par exemple le chef delta-ia), puis envoie un message.",
+     "Résultat attendu : la conversation affiche « Compacted while idle, before the prompt cache expired » ; sans cette ligne, une des conditions de la page n'est pas remplie (cache d'une heure, récupération des drapeaux de fonctionnalité).",
+     "Pour la désactiver, ajoute la clé `idleCompaction` à `false` selon `usage` de la fiche `claude-code-parametres-idlecompaction` dans `~/.claude/settings.json` ; `DISABLE_AUTO_COMPACT=1` coupe aussi la compaction automatique, ce qui est plus large."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [
+    "claude-code-parametres-idlecompaction",
+    "claude-code-parametres-claude-code-idle-compact-min-tokens"
+   ],
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code durables sous tmux, inactives puis reprises à distance."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes."
+    }
+   }
+  },
+  {
+   "id": "kb-claude-code-parametres-claude-code-overloaded-retry-max-delay-ms",
+   "ids_bruts": [
+    "kb-claude-code-parametres-claude-code-overloaded-retry-max-delay-ms"
+   ],
+   "produit": "claude-code",
+   "titre": "Base : variable `CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS` (plafond d'attente entre relances sur erreur 529)",
+   "version": "2.1.296",
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "Ajout à la base : la variable relève le plafond du délai d'attente exponentiel entre deux relances automatiques après une erreur 529 (surcharge de l'API), de 32 000 ms par défaut à une valeur entre 32 000 et 64 000 ms. Sans effet avec `CLAUDE_CODE_RETRY_WATCHDOG=1` ni en mode rapide ; demande la 2.1.296 ou plus.",
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [
+    "claude-code-parametres-claude-code-overloaded-retry-max-delay-ms"
+   ],
+   "contexte_sections": {}
+  }
+ ]
+}
