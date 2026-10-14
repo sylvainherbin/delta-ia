@@ -492,7 +492,7 @@ def adoptions_en_attente(racine: Path, perimetre: str, entrees: dict) -> int:
 
 def lots_dus(racine: Path, perimetre: str) -> int:
     """Nombre d'éléments dus pour une étape kb : adoptions déclarées dans PROGRESSION.md pas encore appliquées (le signal le
-    plus fiable), lot `perimees` (D64-bis), lot `exemples` (D91) et entrées à commenter des lots ordinaires."""
+    plus fiable), lot `perimees` (D64-bis), lot `exemples` (D91), lot `provenance` (D127) et entrées à commenter des lots ordinaires."""
     sys.path.insert(0, str(racine / "scripts"))
     from deltalib.contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections
     from deltalib.kb import catalogue as cat
@@ -507,6 +507,7 @@ def lots_dus(racine: Path, perimetre: str) -> int:
         dues += len(cat.perimees_detail(entrees, empreintes_sections(racine), deprecies_contexte(racine), maximum=None,
                                        rejugements=rejugements))
     dues += len(cat.exemples_detail(entrees, maximum=None))  # D91 : lot `exemples`
+    dues += len(cat.provenance_detail(entrees, maximum=None))  # D127 : lot `provenance`
     dues += sum(l["a_commenter"] for l in cat.lots(entrees, perimetre))
     return dues
 

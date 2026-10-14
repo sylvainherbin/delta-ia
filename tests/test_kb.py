@@ -235,7 +235,8 @@ def test_fusion_ajout_usage_modifie_retrait_reapparition():
     ent, m = cat.fusionner(ent, [x("/a", "/a <x> [--y]"), x("/b", "/b")], {"doc-a"}, jour="2026-09-26")
     a = ent["claude-code-commandes-a"]
     assert m["usage_modifie"] == [a["id"]] and a["commentee"] is False and a["usage"] == "/a <x> [--y]"
-    assert a["historique"][-1] == {"date": "2026-09-26", "changement": "usage modifié dans la documentation"}
+    assert a["historique"][-1] == {"date": "2026-09-26", "changement": "usage modifié dans la documentation",
+                                   "avant": "/a <x>", "raison": "modifié dans la documentation"}  # D127
     # absente d'une page extraite avec succès : retirée, jamais supprimée
     ent, m = cat.fusionner(ent, [x("/a", "/a <x> [--y]")], {"doc-a"}, jour="2026-09-27")
     assert m["retirees"] == ["claude-code-commandes-b"] and ent["claude-code-commandes-b"]["retiree"] is True
@@ -541,7 +542,9 @@ def test_d64bis_appliquer_peremption_et_journal(racine_kb, monkeypatch, capsys):
     k = "claude-code-parametres-advisormodel"
     f = racine_kb / "c.json"
     base = {"description": "Choisit le modèle qui conseille la session.", "statut_usage": "inconnu",
-            "recommandation": {"verdict": "tester", "pourquoi": "Essai sur trading-sim : `/advisor opus` pendant un audit."}}
+            "recommandation": {"verdict": "tester", "pourquoi": "Essai sur trading-sim : `/advisor opus` pendant un audit."},
+            "provenance": [{"affirmation": "Le réglage choisit le modèle conseiller.", "source": "https://example.org/settings",
+                            "releve_le": "2026-10-01", "caduc_si": "le réglage est renommé ou retiré"}]}
 
     def appliquer(cs, attendu):
         f.write_text(json.dumps({k: base if cs is None else {**base, "contexte_sections": cs}}))
@@ -573,6 +576,7 @@ def test_d64bis_appliquer_peremption_et_journal(racine_kb, monkeypatch, capsys):
     assert lot() == [(k, "section:projet.trading-sim")]
     # réévaluation : journal et taux
     base["recommandation"] = {"verdict": "ignorer", "pourquoi": "Le robot n'a plus d'audit d'après CONTEXTE."}
+    del base["provenance"]  # `ignorer` n'en porte pas (D127)
     assert "verdicts changés : 1 (100 %)" in appliquer({"projet.trading-sim": "Audits arrêtés."}, 0).out
     j = [json.loads(l) for l in (racine_kb / "docs" / "data" / "kb" / "claude" / "reevaluations.jsonl").read_text().splitlines()]
     assert j == [{"date": date.today().isoformat(), "id": k, "verdict_avant": "tester", "verdict_apres": "ignorer",

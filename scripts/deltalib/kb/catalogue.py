@@ -391,6 +391,17 @@ def nouvelle_entree(x: EntreeExtraite, jour: str) -> dict:
     }
 
 
+def _noter_source_modifiee(e: dict, jour: str, changement: str, avant, recommandait: bool) -> None:
+    """D127 : la documentation a changé sous une fiche qui recommandait. L'historique garde l'ancienne valeur et la raison ;
+    la provenance, fondée sur l'ancienne page, part dans `historique` aussi et la fiche redevient due au lot `provenance`."""
+    h = {"date": jour, "changement": changement}
+    if recommandait:
+        h.update({"avant": avant, "raison": "modifié dans la documentation"})
+    e["historique"] = e.get("historique", []) + [h]
+    if recommandait and e.get(CHAMP_PROVENANCE):
+        noter_correction(e, jour, "provenance", e.pop(CHAMP_PROVENANCE), "documentation modifiée : provenance à refaire")
+
+
 def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs_ok: set[str],
               jour: str | None = None) -> tuple[dict[str, dict], dict]:
     jour = jour or date.today().isoformat()
@@ -410,16 +421,17 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
             e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "de nouveau dans la documentation"}]
             e["maj_le"] = jour
             modif["reapparues"].append(x.id)
+        recommandait = recommande(e)  # D127 : seules les fiches qui recommandent gardent l'ancienne valeur et la raison
         if e.get("usage") != x.usage:
+            _noter_source_modifiee(e, jour, "usage modifié dans la documentation", e.get("usage"), recommandait)
             e["usage"] = x.usage
             e["commentee"] = False
-            e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "usage modifié dans la documentation"}]
             e["maj_le"] = jour
             modif["usage_modifie"].append(x.id)
         if e.get("description_source") != x.description_source:  # D48
+            _noter_source_modifiee(e, jour, "description d'origine modifiée dans la documentation", e.get("description_source"), recommandait)
             e["description_source"] = x.description_source
             e["commentee"] = False
-            e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "description d'origine modifiée dans la documentation"}]
             e["maj_le"] = jour
             modif["description_source_modifiee"].append(x.id)
         e["usage_nature"] = x.usage_nature
@@ -694,6 +706,100 @@ def perimees(entrees: dict[str, dict], courantes: dict[str, str] | None, depreci
     return [x["id"] for x in perimees_detail(entrees, courantes or {}, deprecies_, maximum, rejugements=rejugements)]
 
 
+# D127 : provenance et caducité des fiches qui recommandent (verdict `utiliser` ou `tester`). Les fiches `ignorer` n'en portent pas.
+VERDICTS_RECOMMANDANTS = ("utiliser", "tester")
+CHAMP_PROVENANCE = "provenance"
+CHAMPS_PROVENANCE_SEULE = {CHAMP_PROVENANCE, "raison_correction"}
+PROVENANCE_MAX = 25  # D127 : fiches à reprendre par lancement, en plus de `perimees`, `exemples` et des lots ordinaires
+AFFIRMATIONS_MAX = 8
+CHAMPS_AFFIRMATION = {"affirmation", "source", "releve_le", "caduc_si", "revoir_le"}
+LONGUEUR_AFFIRMATION, LONGUEUR_CADUC, LONGUEUR_RAISON = 300, 200, 200
+RE_SOURCE_CONTEXTE = re.compile(r"contexte:([a-z0-9][a-z0-9._-]*)")
+RE_SOURCE_ESSAI = re.compile(r"essai:([a-z0-9-]+)")
+
+
+def recommande(e: dict) -> bool:
+    """D127 : fiche commentée dont le verdict recommande quelque chose (`utiliser` ou `tester`)."""
+    return bool(e.get("commentee")) and (e.get("recommandation") or {}).get("verdict") in VERDICTS_RECOMMANDANTS
+
+
+def provenance_due(e: dict) -> bool:
+    """D127 : fiche qui recommande, non retirée, sans provenance."""
+    return recommande(e) and not e.get("retiree") and not e.get(CHAMP_PROVENANCE)
+
+
+def provenance_detail(entrees: dict[str, dict], maximum: int | None | Literal["auto"] = "auto") -> list[str]:
+    """D127 : lot `provenance`. Fiches dues, `utiliser` avant `tester`, puis catégorie dans l'ordre de ORDRE_LOTS, puis identifiant.
+    Plafond PROVENANCE_MAX par défaut, `maximum=None` pour compter toutes les fiches dues."""
+    if maximum == "auto":
+        maximum = PROVENANCE_MAX
+    rang = {v: n for n, v in enumerate(VERDICTS_RECOMMANDANTS)}
+    dues = [k for k, e in entrees.items() if provenance_due(e)]
+    dues.sort(key=lambda k: (rang[entrees[k]["recommandation"]["verdict"]],
+                             ORDRE_LOTS.index(entrees[k]["categorie"]) if entrees[k]["categorie"] in ORDRE_LOTS else 99, k))
+    return dues if maximum is None else dues[:maximum]
+
+
+def _date_iso(v) -> bool:
+    try:
+        return isinstance(v, str) and date.fromisoformat(v).isoformat() == v
+    except ValueError:
+        return False
+
+
+def verifier_provenance(prov, sections: set[str] | None, jour: str | None = None, essais: set[str] | None = None) -> str | None:
+    """D127 : message d'erreur, ou None si `provenance` est valide. Liste de 1 à AFFIRMATIONS_MAX affirmations
+    {affirmation, source, releve_le, caduc_si, revoir_le?} :
+    - `source` : URL http(s) de la documentation, `contexte:<ctx-id>` (section de CONTEXTE.md citée par la fiche, `sections`),
+      ou `essai:<id>` (essai déclaré dans kb-essais.yaml, `essais` quand il est connu) ;
+    - `releve_le` : jour où la source a été lue, jamais après `jour` quand il est fourni ;
+    - `caduc_si` : ce qui rendrait l'affirmation fausse ou périmée ; `revoir_le` : jour facultatif de revérification."""
+    if not isinstance(prov, list) or not 1 <= len(prov) <= AFFIRMATIONS_MAX:
+        return f"`provenance` : liste de 1 à {AFFIRMATIONS_MAX} affirmations {{affirmation, source, releve_le, caduc_si}} (D127)"
+    for n, a in enumerate(prov, 1):
+        ou = f"`provenance` affirmation {n}"
+        if not isinstance(a, dict) or not {"affirmation", "source", "releve_le", "caduc_si"} <= set(a) or set(a) - CHAMPS_AFFIRMATION:
+            return f"{ou} : {{affirmation, source, releve_le, caduc_si, revoir_le?}} attendu"
+        for champ, maxi in (("affirmation", LONGUEUR_AFFIRMATION), ("caduc_si", LONGUEUR_CADUC)):
+            v = a[champ]
+            if not isinstance(v, str) or not v.strip() or len(v.strip()) > maxi:
+                return f"{ou} : `{champ}` en texte non vide de {maxi} caractères au plus"
+        src = a["source"]
+        if not isinstance(src, str):
+            return f"{ou} : `source` en texte"
+        if src.startswith(("http://", "https://")):
+            if " " in src:
+                return f"{ou} : `source` URL sans espace"
+        elif (m := RE_SOURCE_CONTEXTE.fullmatch(src)):
+            if sections is None or m.group(1) not in sections:
+                return f"{ou} : `source` {src} : section non citée par `contexte_sections` de la fiche"
+        elif (m := RE_SOURCE_ESSAI.fullmatch(src)):
+            if essais is not None and m.group(1) not in essais:
+                return f"{ou} : `source` {src} : essai absent de {ESSAIS_FICHIER}"
+        else:
+            return f"{ou} : `source` = URL http(s), `contexte:<ctx-id>` ou `essai:<id>` ({src!r})"
+        if not _date_iso(a["releve_le"]):
+            return f"{ou} : `releve_le` doit être AAAA-MM-JJ"
+        if jour and a["releve_le"] > jour:
+            return f"{ou} : `releve_le` {a['releve_le']} postérieur au {jour} (jour de lecture de la source, jamais deviné)"
+        if "revoir_le" in a and not (_date_iso(a["revoir_le"]) and a["revoir_le"] > a["releve_le"]):
+            return f"{ou} : `revoir_le` doit être une date AAAA-MM-JJ postérieure à `releve_le`"
+    return None
+
+
+def revoir_echu(prov, jour: str) -> bool:
+    """D127 : vrai quand une affirmation porte un `revoir_le` atteint (avertissement de valider.py)."""
+    return isinstance(prov, list) and any(isinstance(a, dict) and isinstance(a.get("revoir_le"), str) and a["revoir_le"] <= jour
+                                          for a in prov)
+
+
+def noter_correction(e: dict, jour: str, champ: str, avant, raison: str) -> None:
+    """D127 : historique des corrections d'une fiche qui recommande : l'ancienne valeur et la raison restent lisibles dans
+    `historique` ({date, changement, avant, raison})."""
+    e["historique"] = e.get("historique", []) + [
+        {"date": jour, "changement": f"{champ} corrigée", "avant": avant, "raison": raison}]
+
+
 EXEMPLES_MAX = 50  # D91 : exemples à produire par lancement, en plus de `perimees` et des lots ordinaires
 EXEMPLES_CATEGORIES = ("commandes", "fonctionnalites", "skills", "mcp", "parametres")  # ordre de traitement du lot `exemples`
 EXEMPLES_VERDICTS_PARAMETRES = ("utiliser", "tester")  # D113 : un paramètre n'a d'exemple que s'il vaut l'essai
@@ -941,9 +1047,39 @@ def lots(entrees: dict[str, dict], perimetre: str) -> list[dict]:
     return res
 
 
+def _raison_correction(c: dict) -> str | None:
+    """D127 : message d'erreur si `raison_correction` est présente et invalide."""
+    if "raison_correction" in c:
+        r = c["raison_correction"]
+        if not isinstance(r, str) or not r.strip() or len(r.strip()) > LONGUEUR_RAISON:
+            return f"`raison_correction` : texte non vide de {LONGUEUR_RAISON} caractères au plus"
+    return None
+
+
+def _poser_provenance(e: dict, c: dict, jour: str, essais: set[str] | None) -> str | None:
+    """D127 : {provenance, raison_correction?} seuls. Retourne un message d'erreur, ou None (fiche modifiée ou sans changement)."""
+    if not recommande(e) or e.get("retiree"):
+        return "`provenance` réservée aux fiches commentées, non retirées, au verdict utiliser ou tester"
+    if (msg := _raison_correction(c)) or (msg := verifier_provenance(c[CHAMP_PROVENANCE], set(e.get("contexte_sections") or {}), jour, essais)):
+        return msg
+    avant, nouvelle = e.get(CHAMP_PROVENANCE), c[CHAMP_PROVENANCE]
+    if avant == nouvelle:
+        return None
+    if avant:
+        if not str(c.get("raison_correction") or "").strip():
+            return "`provenance` déjà présente : `raison_correction` obligatoire (l'ancienne valeur est gardée dans l'historique)"
+        noter_correction(e, jour, "provenance", avant, c["raison_correction"].strip())
+    else:
+        e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "provenance ajoutée"}]
+    e[CHAMP_PROVENANCE] = nouvelle
+    e["maj_le"] = jour
+    return None
+
+
 def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: str | None = None,
                            contexte: str | None = None, resoudre=None, journal: list | None = None,
-                           motif_de=None, exclure_systemes: list[str] | None = None) -> list[str]:
+                           motif_de=None, exclure_systemes: list[str] | None = None,
+                           essais: set[str] | None = None, exiger_provenance: bool = False) -> list[str]:
     """Applique {id: {description, statut_usage, recommandation, exemple?, exemple_origine?, disponibilite?}} ; jamais `usage`.
     D113 : `exclure_systemes` (`profil.yaml`, `base.exclure_systemes`) permet de refuser l'exemple d'une fiche dont la
     `disponibilite` exclut tous les systèmes du profil.
@@ -951,6 +1087,10 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
     (historique « exemple impossible ») ; un exemple ajouté ensuite efface la raison.
     D91 : `exemple` non nul exige `exemple_origine` (`source` ou `compose`) ; {exemple, exemple_origine} seuls, sur une entrée
     déjà commentée, ajoutent l'exemple sans refaire le commentaire (historique « exemple ajouté »).
+    D127 (`exiger_provenance`, vrai pour `catalogue.py appliquer`) : `provenance` ([{affirmation, source, releve_le, caduc_si, revoir_le?}]) est obligatoire pour un commentaire au verdict
+    `utiliser` ou `tester` (celui du commentaire, ou celle que la fiche porte déjà), refusée pour `ignorer` ; {provenance,
+    raison_correction?} seuls, sur une fiche commentée qui recommande, la posent sans refaire le jugement (historique « provenance
+    ajoutée », ou « provenance corrigée » avec l'ancienne valeur et la raison, `raison_correction` obligatoire dans ce cas).
     `contexte` : empreinte de CONTEXTE.md au moment du commentaire, inscrite sur chaque entrée (D60).
     `resoudre` (D64-bis) : fonction {ctx-id: pourquoi} -> {ctx-id: {sha1, pourquoi}} ; quand elle est fournie, chaque
     commentaire doit citer `contexte_sections` ({} si le jugement ne dépend d'aucune section).
@@ -964,7 +1104,7 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
             erreurs.append(f"{k}: identifiant inconnu")
             continue
         interdits = set(c) - {"description", "statut_usage", "recommandation", "exemple", "exemple_origine", "disponibilite",
-                              "contexte_sections", CHAMP_IMPOSSIBLE}
+                              "contexte_sections", CHAMP_IMPOSSIBLE, *CHAMPS_PROVENANCE_SEULE}
         if interdits:
             erreurs.append(f"{k}: champs non modifiables par le commentaire : {sorted(interdits)}")
             continue
@@ -984,6 +1124,11 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
             else:
                 e.update({CHAMP_IMPOSSIBLE: raison.strip(), "maj_le": jour})
                 e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "exemple impossible"}]
+            continue
+        if c and CHAMP_PROVENANCE in c and set(c) <= CHAMPS_PROVENANCE_SEULE:  # D127 : provenance seule, sans refaire le jugement
+            msg = _poser_provenance(e, c, jour, essais)
+            if msg:
+                erreurs.append(f"{k}: {msg}")
             continue
         if c and set(c) <= CHAMPS_EXEMPLE:  # D91 : ajout d'exemple seul, sans refaire le jugement
             if not e.get("commentee") or e.get("retiree"):
@@ -1024,10 +1169,37 @@ def appliquer_commentaires(entrees: dict[str, dict], commentaires: dict, jour: s
                 except ValueError as err:
                     erreurs.append(f"{k}: {err}")
                     continue
+        if (msg := _raison_correction(c)):
+            erreurs.append(f"{k}: {msg}")
+            continue
+        if r["verdict"] == "ignorer":
+            if c.get(CHAMP_PROVENANCE) is not None:
+                erreurs.append(f"{k}: `provenance` refusée pour un verdict ignorer (D127)")
+                continue
+        elif c.get(CHAMP_PROVENANCE) is not None or exiger_provenance:
+            prov = c.get(CHAMP_PROVENANCE) if c.get(CHAMP_PROVENANCE) is not None else e.get(CHAMP_PROVENANCE)
+            sections = set(c["contexte_sections"]) if isinstance(c.get("contexte_sections"), dict) else set(e.get("contexte_sections") or {})
+            if not prov:
+                erreurs.append(f"{k}: `provenance` obligatoire pour un verdict {r['verdict']} (D127) : [{{affirmation, source, releve_le, caduc_si}}]")
+                continue
+            if (msg := verifier_provenance(prov, sections, jour, essais)):
+                erreurs.append(f"{k}: {msg}")
+                continue
         deja = e.get("commentee")
+        rec_avant = dict(e["recommandation"]) if recommande(e) else None
+        prov_avant = e.get(CHAMP_PROVENANCE)
         verdict_avant = (e.get("recommandation") or {}).get("verdict") if deja else None
         motif = motif_de(e) if (deja and motif_de) else None
-        e.update({kk: c[kk] for kk in c if kk != "contexte_sections"})
+        e.update({kk: c[kk] for kk in c if kk not in ("contexte_sections", "raison_correction")})
+        raison = str(c.get("raison_correction") or "").strip() or motif or "commentaire révisé"
+        if r["verdict"] == "ignorer":
+            if prov_avant:
+                noter_correction(e, jour, "provenance", prov_avant, "verdict passé à ignorer")
+                e.pop(CHAMP_PROVENANCE, None)
+        elif c.get(CHAMP_PROVENANCE) is not None and prov_avant and prov_avant != c[CHAMP_PROVENANCE]:
+            noter_correction(e, jour, "provenance", prov_avant, raison)
+        if rec_avant and rec_avant != r:
+            noter_correction(e, jour, "recommandation", rec_avant, raison)
         if "exemple" in c and not str(c["exemple"] or "").strip():
             e["exemple"] = None
             e.pop("exemple_origine", None)

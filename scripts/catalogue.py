@@ -13,6 +13,9 @@ Usage :
   catalogue.py a-commenter --perimetre P --lot exemples        D91 : au plus 50 entrées commentées de syntaxe sans exemple (D113 : et les clés de réglage `utiliser`/`tester`)
                                                                (commandes, fonctionnalites, skills, mcp ; dans chacune `utiliser`,
                                                                `tester`, puis `ignorer`) ; appliquer reçoit {id: {exemple, exemple_origine}}
+  catalogue.py a-commenter --perimetre P --lot provenance      D127 : au plus 25 fiches `utiliser`/`tester` sans provenance (`utiliser` d'abord) ;
+                                                               appliquer reçoit {id: {provenance: [{affirmation, source, releve_le, caduc_si}],
+                                                               raison_correction?}} sans refaire le commentaire
   catalogue.py methodes [--dry-run]                            D121 : fiches de méthode locales (kb-methodes/*.md) → docs/data/kb/methodes.json,
                                                                sans réseau ni modèle ; hors lots, hors périmètres, jamais lancé par un passage
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
@@ -28,6 +31,9 @@ Usage :
       exemple non nul : exemple_origine = source (recopié de la documentation) ou compose (D91) ; {id: {exemple, exemple_origine}}
       seuls, sur une entrée déjà commentée, ajoutent l'exemple (lot exemples) ; {id: {exemple_impossible: "raison courte"}} seul,
       retire l'entrée du lot exemples quand aucun exemple honnête n'est possible (D116, 160 car. max)
+      provenance (D127) : obligatoire pour un commentaire `utiliser` ou `tester`, refusée pour `ignorer` ; source = URL de la
+      documentation, `contexte:<ctx-id>` ou `essai:<id>` ; {id: {provenance, raison_correction}} seuls corrigent une provenance
+      (l'ancienne valeur et la raison restent dans `historique`)
       (ctx-id : `scripts/contexte.py` ; {} si le jugement ne dépend d'aucune section ; D64-bis)
       `usage` n'est jamais modifiable par un commentaire.
 """
@@ -52,6 +58,14 @@ from deltalib.modeles import empreinte_contexte  # noqa: E402
 from deltalib import profil  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
+
+
+def ids_essais(racine: Path) -> set[str] | None:
+    """D127 : ids de kb-essais.yaml, pour contrôler une source `essai:<id>` ; None si le fichier est illisible."""
+    try:
+        return set(cat.lire_essais(racine))
+    except ValueError:
+        return None
 
 
 def main(argv=None) -> int:
@@ -148,6 +162,10 @@ def main(argv=None) -> int:
         if sans:
             print(f"{'exemples':<22} {'(D91)':<8} {min(len(sans), cat.EXEMPLES_MAX):>4} entrées ce lancement sur {len(sans)} sans exemple ; "
                   f"plafond {cat.EXEMPLES_MAX}")
+        sans_prov = cat.provenance_detail(entrees, maximum=None)
+        if sans_prov:
+            print(f"{'provenance':<22} {'(D127)':<8} {min(len(sans_prov), cat.PROVENANCE_MAX):>4} fiches ce lancement sur {len(sans_prov)} "
+                  f"qui recommandent sans provenance ; plafond {cat.PROVENANCE_MAX}")
         for l in cat.lots(entrees, a.perimetre):
             print(f"{l['lot']:<22} {l['gabarit']:<8} {l['entrees']:>4} entrées, {l['a_commenter']:>4} à commenter")
         return 0
@@ -165,13 +183,16 @@ def main(argv=None) -> int:
         elif a.lot == "exemples":
             lot = {"ids": cat.exemples_detail(entrees)}
             a.tout = True
+        elif a.lot == "provenance":
+            lot = {"ids": cat.provenance_detail(entrees)}
+            a.tout = True
         else:
             lot = next((l for l in cat.lots(entrees, a.perimetre) if l["lot"] == a.lot), None)
         if lot is None:
             p.error(f"lot inconnu : {a.lot!r} (voir `catalogue.py lots`)")
         champs = ["id", "produit", "categorie", "nom", "gabarit", "usage", "usage_nature", "description_source", "sources", "groupe",
                   "description", "statut_usage", "recommandation", "exemple", "exemple_origine", "exemple_impossible",
-                  "contexte_empreinte", "contexte_sections"]
+                  "contexte_empreinte", "contexte_sections", "provenance"]
         sortie = [{**{k: entrees[i].get(k) for k in champs}, **({"motif": motifs[i]} if i in motifs else {})}
                   for i in lot["ids"] if a.tout or not entrees[i].get("commentee")]
         json.dump(sortie, sys.stdout, ensure_ascii=False, indent=1)
@@ -221,7 +242,7 @@ def main(argv=None) -> int:
         erreurs = cat.appliquer_commentaires(entrees, json.loads(a.fichier.read_text(encoding="utf-8")), contexte=contexte,
                                              resoudre=lambda cites: resoudre_sections(a.racine, cites),
                                              journal=journal, motif_de=motif_de,
-                                             exclure_systemes=exclus)
+                                             exclure_systemes=exclus, essais=ids_essais(a.racine), exiger_provenance=True)
         for e in erreurs:
             print(f"  ! {e}", file=sys.stderr)
         if erreurs:

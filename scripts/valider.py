@@ -639,7 +639,7 @@ def verifier_index(dossier: Path, perimetre: str, quotidiens: dict[str, dict], r
 CHAMPS_KB = {"id", "produit", "categorie", "nom", "gabarit", "description", "description_source", "usage", "usage_nature", "exemple",
              "disponibilite", "statut_usage", "recommandation", "sources", "commentee", "contexte_empreinte", "contexte_sections", "retiree",
              "origine", "groupe", "maj_le", "historique"}
-CHAMPS_KB_FACULTATIFS = {"exemple_origine", "exemple_impossible"}  # D91 : présent seulement quand un exemple a été écrit sous la règle de provenance ; D116 : raison courte d'une entrée sans exemple possible
+CHAMPS_KB_FACULTATIFS = {"exemple_origine", "exemple_impossible", "provenance"}  # D91 : présent seulement quand un exemple a été écrit sous la règle de provenance ; D116 : raison courte d'une entrée sans exemple possible ; D127 : provenance des fiches qui recommandent
 MOTS_FR = {"le", "la", "les", "des", "du", "une", "un", "et", "pour", "est", "dans", "qui", "sur", "avec", "pas", "ton", "tes", "tu", "au", "aux", "ce", "cette"}
 MOTS_EN = {"the", "and", "to", "of", "is", "for", "with", "this", "that", "you", "your", "when", "are", "it"}
 LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
@@ -653,7 +653,7 @@ def est_francais(texte: str) -> bool:
 
 
 def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
-    from deltalib.kb.catalogue import ORIGINES_EXEMPLE
+    from deltalib.kb.catalogue import ORIGINES_EXEMPLE, lire_essais, provenance_due, recommande, revoir_echu, verifier_provenance
     from deltalib.kb.modeles import CATEGORIES, PRODUITS_PAR_PERIMETRE, STATUTS_USAGE, VERDICTS, gabarit_de
     if perimetre not in PRODUITS_PAR_PERIMETRE:
         r.erreur("kb", f"pas de base de référence pour le périmètre {perimetre!r}")
@@ -661,6 +661,13 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     dossier = racine / "docs" / "data" / "kb" / perimetre
     ids: set[str] = set()
     sans_exemple = 0
+    sans_provenance: list[str] = []  # D127 : fiches qui recommandent sans provenance (avertissement)
+    a_revoir: list[str] = []  # D127 : `revoir_le` atteint
+    try:
+        essais = set(lire_essais(racine))
+    except ValueError:  # kb-essais.yaml mal formé : déjà refusé par ailleurs ; les sources `essai:` ne sont pas contrôlées
+        essais = None
+    aujourdhui = date.today().isoformat()
     for cat in CATEGORIES:
         chemin = dossier / f"{cat}.json"
         ou = f"kb/{perimetre}/{cat}.json"
@@ -748,6 +755,18 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                 verifier_sections(e["contexte_sections"], o, r, ctx_disparu_permis=True)
             if e["commentee"] is True and ce is None:
                 r.erreur(o, "entrée commentée sans `contexte_empreinte` (D60)")
+            if "provenance" in e:  # D127 : réservée aux fiches qui recommandent
+                if not recommande(e):
+                    r.erreur(o, "`provenance` sur une fiche qui ne recommande pas (verdict ignorer ou non commentée) (D127)")
+                else:
+                    cs = e["contexte_sections"]
+                    msg = verifier_provenance(e["provenance"], set(cs) if isinstance(cs, dict) else None, None, essais)
+                    if msg:
+                        r.erreur(o, msg)
+                    elif revoir_echu(e["provenance"], aujourdhui):
+                        a_revoir.append(e["id"])
+            elif provenance_due(e):
+                sans_provenance.append(e["id"])
             if e["commentee"] is True:
                 lim = LONGUEURS[e["gabarit"]]
                 d = e["description"]
@@ -764,6 +783,12 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
                     r.erreur(o, f"`pourquoi` trop long pour le gabarit {e['gabarit']}")
     if sans_exemple:  # D91 : avertissement seulement, jamais un arrêt
         r.avertissement(f"kb/{perimetre}", f"{sans_exemple} entrées commandes/fonctionnalités sans exemple")
+    if sans_provenance:  # D127 : avertissement seulement, le lot `provenance` de delta-kb les reprend
+        r.avertissement(f"kb/{perimetre}", f"{len(sans_provenance)} fiches utiliser/tester sans provenance (D127) : "
+                        + ", ".join(sorted(sans_provenance)[:5]) + (" …" if len(sans_provenance) > 5 else ""))
+    if a_revoir:
+        r.avertissement(f"kb/{perimetre}", f"{len(a_revoir)} fiches dont une affirmation est à revérifier (`revoir_le` atteint) : "
+                        + ", ".join(sorted(a_revoir)[:5]) + (" …" if len(a_revoir) > 5 else ""))
     verifier_journal(dossier / "reevaluations.jsonl", f"kb/{perimetre}/reevaluations.jsonl", ids, r)
     verifier_recent(racine, perimetre, ids, r)
     verifier_a_tester(racine, perimetre, ids, r)

@@ -149,7 +149,8 @@ def test_valider_avertit_sans_changer_le_code(tmp_path, capsys):
 def test_valider_sans_avertissement_quand_tout_a_un_exemple(tmp_path, capsys):
     args = kb(tmp_path, entree(nom="a", exemple="claude --resume"))
     assert valider.main(args) == 0
-    assert "AVERTISSEMENT" not in capsys.readouterr().out
+    avertissements = [l for l in capsys.readouterr().out.splitlines() if "AVERTISSEMENT" in l and "provenance (D127)" not in l]
+    assert not avertissements
 
 
 @pytest.mark.parametrize("champs,erreur", [
@@ -190,7 +191,7 @@ def test_cli_lots_a_commenter_appliquer_et_lots_dus(tmp_path, capsys):
     assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
     lot = json.loads(capsys.readouterr().out)
     assert [x["nom"] for x in lot] == [f"c{i:02}" for i in range(50)] and all("exemple_origine" in x for x in lot)
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 61, "toutes les entrées dues comptent, pas seulement le plafond"
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 122, "toutes les entrées dues comptent (61 exemples + 61 provenance, D127), pas seulement le plafond"
     f = tmp_path / "exemples.json"
     f.write_text(json.dumps({x["id"]: {"exemple": f"claude --resume {x['nom']}", "exemple_origine": "compose"} for x in lot}),
                  encoding="utf-8")
@@ -198,7 +199,7 @@ def test_cli_lots_a_commenter_appliquer_et_lots_dus(tmp_path, capsys):
     capsys.readouterr()
     assert valider.main([*args, "--kb"]) == 0
     capsys.readouterr()
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 11
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 72  # 11 exemples + 61 provenance
     assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
     assert [x["nom"] for x in json.loads(capsys.readouterr().out)] == [f"c{i:02}" for i in range(50, 60)] + ["serveur"]
 
@@ -456,12 +457,12 @@ def test_cli_exemple_impossible_vide_le_lot(tmp_path, capsys):
     args = kb(tmp_path, a, b)[:-1]
     f = tmp_path / "impossible.json"
     f.write_text(json.dumps({a["id"]: {"exemple_impossible": RAISON}}), encoding="utf-8")
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 2
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 4  # 2 exemples + 2 provenance (D127)
     assert cli.main(["appliquer", *args, "--fichier", str(f)]) == 0
     capsys.readouterr()
     assert valider.main([*args, "--kb"]) == 0
     capsys.readouterr()
-    assert orchestrateur.lots_dus(tmp_path, "claude") == 1
+    assert orchestrateur.lots_dus(tmp_path, "claude") == 3  # 1 exemple + 2 provenance
     assert cli.main(["a-commenter", *args, "--lot", "exemples"]) == 0
     assert [x["nom"] for x in json.loads(capsys.readouterr().out)] == ["b"]
 

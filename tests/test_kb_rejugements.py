@@ -26,6 +26,8 @@ def entree(ident="codex-commandes-exemple", verdict="tester", commente="2026-10-
     assert cat.appliquer_commentaires({ident: e}, {ident: commentaire(verdict)}, jour=commente,
                                      resoudre=lambda cs: cs) == []
     e["exemple"], e["exemple_origine"] = "exemple", "compose"  # hors du lot `exemples` (D91) : ces tests ne mesurent que D78
+    e["provenance"] = [{"affirmation": "La commande existe.", "source": "https://example.org/commandes", "releve_le": commente,
+                        "caduc_si": "la commande disparaît de la documentation"}]  # hors du lot `provenance` (D127)
     return e
 
 
