@@ -289,7 +289,8 @@ def element(ident, impact="moyen", action="Essayer `codex --version`.", certitud
 def test_nouveautes_de_la_veille_entrent_avec_pour_toi_et_version(tmp_path, capsys):
     racine = depot(tmp_path, [fiche("f", categorie="skills")], elements=[
         element("e-fort", "fort", version="1.2.3"), element("e-faible", "faible"), element("e-rumeur", "fort", certitude="non_confirme"),
-        element("e-sans-action", "fort", action=None)])
+        element("e-sans-action", "fort", action=None),
+        element("e-reverif", "fort", action="Revérifier le 09/10/2026 le forfait ; aucune échéance publiée.")])
     capsys.readouterr()
     lancer(racine, "--json")
     doc = json.loads(capsys.readouterr().out)

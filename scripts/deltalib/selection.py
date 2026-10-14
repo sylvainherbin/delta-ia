@@ -224,8 +224,13 @@ def _candidat_element(racine: Path, ligne: dict) -> dict:
     }
 
 
+# Une action qui commence par « revérifier » (R5, D71 sans échéance publiée) est un rendez-vous de contrôle, pas un essai.
+RE_REVERIFICATION = re.compile(r"^\W*rev[ée]rifi", re.I)
+
+
 def _lignes_veille(racine: Path, jour: date) -> tuple[list[dict], list[str]]:
-    """Éléments `fort` ou `moyen` à action des sept derniers jours (bilans de la semaine en cours et de la précédente)."""
+    """Éléments `fort` ou `moyen` à action des sept derniers jours (bilans de la semaine en cours et de la précédente), hors
+    revérifications (`RE_REVERIFICATION`)."""
     debut = (jour - timedelta(days=FENETRE_VEILLE_J)).isoformat()
     lignes, avertissements = {}, []
     for semaine in dict.fromkeys([sem.semaine_de(jour - timedelta(days=7)), sem.semaine_de(jour)]):
@@ -233,7 +238,7 @@ def _lignes_veille(racine: Path, jour: date) -> tuple[list[dict], list[str]]:
         if doc["statut"] != "ok":
             avertissements.append(f"veille {semaine} : {doc['raison']}")
         for l in [*doc["d71"], *doc["elements"]]:
-            if l.get("action") and l["jour"] >= debut and l["jour"] <= jour.isoformat() and l.get("certitude") != "non_confirme":
+            if l.get("action") and not RE_REVERIFICATION.search(_plat(l["action"])) and l["jour"] >= debut and l["jour"] <= jour.isoformat() and l.get("certitude") != "non_confirme":
                 lignes[(l["perimetre"], l["id"])] = l
     return list(lignes.values()), avertissements
 
