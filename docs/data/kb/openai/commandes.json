@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-14",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 108,
- "commentees": 108,
+ "total": 119,
+ "commentees": 119,
  "entrees": [
   {
    "id": "chatgpt-commandes-codex-automations",
@@ -736,10 +736,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -760,6 +760,10 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
@@ -769,6 +773,54 @@
      "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-agents",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/agents",
+   "gabarit": "complet",
+   "description": "Ouvre le centre de commandes des agents sur le serveur connecté. Il affiche les conversations et permet de passer de l’une à l’autre.",
+   "description_source": "Open the agent command center. — Browse chats and switch between agents on the connected server.",
+   "usage": "/agents",
+   "usage_nature": "syntaxe",
+   "exemple": "/agents",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans la CLI sous tmux, essayer `/agents` entre deux audits trading-sim ; résultat attendu : les conversations du serveur partagé sont visibles et sélectionnables."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
@@ -944,8 +996,8 @@
    "categorie": "commandes",
    "nom": "/archive",
    "gabarit": "complet",
-   "description": "Archive la session courante puis quitte Codex. Le transcript reste conservé mais disparaît des listes de sessions actives.",
-   "description_source": "Archive the current session and exit Codex. — Remove the current session from active session lists without deleting its transcript.",
+   "description": "Archive la session courante en conservant son transcript. Sur un serveur partagé, la commande revient au centre de commandes ; sinon Codex quitte, et un tour actif est arrêté après confirmation.",
+   "description_source": "Archive the current session. — Remove the current session from active session lists without deleting its transcript.",
    "usage": "/archive",
    "usage_nature": "syntaxe",
    "exemple": "/archive",
@@ -953,7 +1005,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les sessions Codex sous tmux sont durables et aucun fil clos à archiver n’est identifié ; la commande retire la session des listes actives et quitte Codex."
+    "pourquoi": "Les sessions Codex sous tmux sont durables ; archiver un fil le retire des listes actives et peut arrêter son tour, sans besoin d’archivage établi."
    },
    "sources": [
     {
@@ -966,7 +1018,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -987,20 +1039,72 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
     }
    },
    "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-cd",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/cd",
+   "gabarit": "complet",
+   "description": "Change le répertoire de travail de la conversation principale au repos. La forme `/cd <path>` choisit un chemin ; `/cd` seul sélectionne le dossier personnel, sans saisie en attente ni terminal en arrière-plan.",
+   "description_source": "Change the session’s working directory. — Continue an idle primary chat in another directory.",
+   "usage": "/cd",
+   "usage_nature": "syntaxe",
+   "exemple": "/cd ~/projets/delta-ia",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans une conversation de lecture de delta-ia au repos, essayer `/cd ~/projets/delta-ia` puis `/pwd` ; résultat attendu : le répertoire annoncé est celui du dépôt."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "compose"
   },
   {
    "id": "codex-commandes-clear",
@@ -1242,6 +1346,54 @@
      "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
     }
    },
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-codex-agents",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "codex agents",
+   "gabarit": "complet",
+   "description": "Ouvre le centre de commandes des agents depuis le terminal. Il nécessite un serveur partagé local ou distant et ne prend pas en charge `--no-daemon`.",
+   "description_source": "Open the agent command center on a shared local or remote server. (maturité : Stable)",
+   "usage": "codex agents",
+   "usage_nature": "syntaxe",
+   "exemple": "codex agents",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Depuis le terminal des sessions Codex sous tmux, essayer `codex agents` ; résultat attendu : le centre affiche les conversations du serveur partagé."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Command overview",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
@@ -1871,16 +2023,16 @@
    "categorie": "commandes",
    "nom": "codex exec",
    "gabarit": "complet",
-   "description": "Exécute une tâche sans interface interactive. Le prompt peut être fourni en argument ou sur stdin.",
-   "description_source": "Run Codex non-interactively. Alias: codex e . Stream results to stdout or JSONL and optionally resume previous sessions. (maturité : Stable)",
-   "usage": "codex exec [PROMPT]",
+   "description": "Exécute une tâche non interactive avec sortie texte ou JSONL, reprise ou fork de session. Les exemples documentés ajoutent `--worktree`, réservé à l’exécution locale et incompatible notamment avec `--ignore-user-config`, resume, review et `--ephemeral`.",
+   "description_source": "Run Codex non-interactively. Alias: codex e . Stream results to stdout or JSONL, resume sessions, or fork them into new sessions. (maturité : Stable)",
+   "usage": "codex exec --worktree \"implement the next step\"\ncodex exec fork <SESSION_ID> --worktree \"try an alternative approach\"",
    "usage_nature": "syntaxe",
    "exemple": "codex exec \"Décris la structure du dépôt delta-ia sans modifier les fichiers.\"",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Conserve `codex exec` pour la chaîne D70 de delta-ia et les missions de développement : `mission-codex` fixe explicitement le modèle, l’effort et les permissions selon la mission."
+    "pourquoi": "Conserver `codex exec` pour delta-ia et mission-codex, avec modèle et effort explicites ; ne pas ajouter `--worktree` à D70 qui emploie `--ignore-user-config`, ni remplacer les worktrees préparés par OPÉRER."
    },
    "sources": [
     {
@@ -1893,7 +2045,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1934,21 +2086,29 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI sous tmux est utilisée et pilotée depuis l’iPhone."
-    },
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "mission-codex lance codex exec avec modèle et effort explicites."
+     "pourquoi": "Worktrees préparés par OPÉRER ; modèle et effort fixés par mission-codex."
     },
     "methode.chaine-nuit": {
      "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
-     "pourquoi": "La chaîne D70 utilise codex exec et un profil de permissions explicite."
+     "pourquoi": "D70 exécute codex exec avec --ignore-user-config."
     }
    },
    "exemple_origine": "compose"
@@ -2798,6 +2958,53 @@
    "exemple_impossible": "Aucun plugin avec sa marketplace à retirer n’est identifié dans le contexte."
   },
   {
+   "id": "codex-commandes-codex-queue",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "codex queue",
+   "gabarit": "complet",
+   "description": "Met en attente un message texte pour une session existante, désignée par UUID ou nom exact. Un UUID évite les ambiguïtés entre noms identiques ; les pièces jointes image ne sont pas prises en charge.",
+   "description_source": "Queue a text message for an existing session by UUID or exact name. (maturité : Stable)",
+   "usage": "codex queue --thread <SESSION_ID> --message \"Run the remaining checks\"",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour le flux d’audit trading-sim, préparer `codex queue --thread <SESSION_ID> --message \"Accuse réception du rapport\"` avec l’UUID réel du destinataire ; résultat attendu : un message texte en attente dans le fil désigné."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Flux de transmission des audits à l’arbitre."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Command overview",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-commandes-codex-remote-control",
    "produit": "codex",
    "categorie": "commandes",
@@ -3349,6 +3556,54 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-commandes-daemon",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/daemon",
+   "gabarit": "complet",
+   "description": "Affiche la connexion au serveur en arrière-plan et ses actions disponibles. Confirmer une mise à jour du serveur local quitte Codex et peut interrompre du travail actif ; un serveur distant se gère sur son hôte.",
+   "description_source": "Open background server controls. — Inspect the connection and manage a local server owned by Codex.",
+   "usage": "/daemon",
+   "usage_nature": "syntaxe",
+   "exemple": "/daemon",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans la CLI sous tmux, essayer `/daemon` en consultation ; résultat attendu : la connexion est visible sans confirmer de mise à jour, qui quitterait Codex et pourrait interrompre les sessions."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
+  },
+  {
    "id": "codex-commandes-debug-config",
    "produit": "codex",
    "categorie": "commandes",
@@ -3426,8 +3681,8 @@
    "categorie": "commandes",
    "nom": "/delete",
    "gabarit": "complet",
-   "description": "Supprime définitivement la session courante puis quitte Codex. La suppression inclut le transcript et les sessions descendantes, contrairement à l'archivage.",
-   "description_source": "Permanently delete the current session and exit Codex. — Remove the transcript and descendant sessions when archiving isn’t enough.",
+   "description": "Supprime définitivement le transcript de la session et ses sessions descendantes. La commande est indisponible pendant un tour actif ou dans une conversation secondaire.",
+   "description_source": "Permanently delete the current session. — Remove the transcript and descendant sessions when archiving isn’t enough.",
    "usage": "/delete",
    "usage_nature": "syntaxe",
    "exemple": "/delete",
@@ -3435,7 +3690,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les transcripts d'audit servent de trace pour trading-sim ; archive-les au lieu de les supprimer."
+    "pourquoi": "Les audits trading-sim conservent des traces ; cette suppression définitive des transcripts et descendants ne répond pas à cet usage."
    },
    "sources": [
     {
@@ -3448,7 +3703,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3461,10 +3716,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits formels et rapports conservés."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -3640,6 +3908,58 @@
      "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
     }
    },
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-export",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/export",
+   "gabarit": "complet",
+   "description": "Exporte la conversation complète au format Markdown. Le sélecteur propose le presse-papiers ou un fichier ; attendre la fin du tour avant l’export.",
+   "description_source": "Export the conversation as Markdown. — Save a complete transcript to a file or copy it to the clipboard.",
+   "usage": "/export",
+   "usage_nature": "syntaxe",
+   "exemple": "/export",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "À la fin d’un audit trading-sim, essayer `/export` et choisir un fichier ; résultat attendu : un transcript Markdown consultable, distinct du rapport d’audit."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits conservés dans des rapports formels."
+    },
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Audits effectués depuis la CLI sous tmux."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
@@ -4994,8 +5314,8 @@
    "categorie": "commandes",
    "nom": "/personality",
    "gabarit": "complet",
-   "description": "Choisit le style de communication des réponses, par exemple plus concis, explicatif ou collaboratif. Le réglage n'ajoute pas de consigne métier ni de capacité à l'agent.",
-   "description_source": "Choose a communication style for responses. — Make Codex more concise, more explanatory, or more collaborative without changing your instructions.",
+   "description": "Ouvre le choix du style de réponse quand le modèle courant prend en charge les personnalités. Cette disponibilité dépend du modèle ; les réglages de compatibilité `personality` ne sélectionnent plus de style friendly ou pragmatic.",
+   "description_source": "Choose how Codex responds, when the current model supports personalities.",
    "usage": "/personality",
    "usage_nature": "syntaxe",
    "exemple": "/personality",
@@ -5003,11 +5323,11 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes exigences de français, densité et critique franche doivent rester dans les instructions, pas dépendre d'un style d'interface."
+    "pourquoi": "Les exigences de français et de méthode relèvent des instructions globales, sans usage établi du sélecteur de personnalité."
    },
    "sources": [
     {
-     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
      "libelle": "developer-commands",
      "officielle": true
     }
@@ -5015,8 +5335,8 @@
    "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
-   "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-10",
+   "groupe": "Available slash commands",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5029,10 +5349,23 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "Instructions globales utilisées pour le comportement."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -5347,6 +5680,54 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-commandes-pwd",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/pwd",
+   "gabarit": "complet",
+   "description": "Affiche le répertoire de travail de la session active. `/cwd` est un alias de `/pwd`.",
+   "description_source": "Show the working directory. — Check the directory the active session uses.",
+   "usage": "/pwd , /cwd",
+   "usage_nature": "syntaxe",
+   "exemple": "/pwd",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Avant un audit trading-sim sous tmux, essayer `/pwd` ; résultat attendu : le dossier affiché correspond au dépôt à auditer."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
+  },
+  {
    "id": "codex-commandes-quit",
    "produit": "codex",
    "categorie": "commandes",
@@ -5511,6 +5892,54 @@
      "pourquoi": "Les profils audit et rapide différencient l'effort de raisonnement."
     }
    },
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-recap",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/recap",
+   "gabarit": "complet",
+   "description": "Produit un résumé de la conversation courante au repos. Il reste disponible quand `tui.auto_recap` vaut false et ne compacte pas le contexte.",
+   "description_source": "Generate a summary of the current conversation. — Catch up on the chat without compacting its context.",
+   "usage": "/recap",
+   "usage_nature": "syntaxe",
+   "exemple": "/recap",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "À la reprise d’un audit trading-sim sous tmux, essayer `/recap` ; résultat attendu : un résumé du fil sans compactage de son contexte."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
@@ -6145,6 +6574,54 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-commandes-subagents",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/subagents",
+   "gabarit": "complet",
+   "description": "Ouvre le sélecteur des fils de sous-agents de la session courante. Sélectionner un fil permet d’inspecter ou de poursuivre son travail.",
+   "description_source": "Switch the active subagent thread. — Inspect or continue work in a subagent from the current session.",
+   "usage": "/subagents",
+   "usage_nature": "syntaxe",
+   "exemple": "/subagents",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md décrit des sous-agents Claude, sans établir l’usage de fils de sous-agents Codex."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Usage de sous-agents établi pour Claude seulement."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
+  },
+  {
    "id": "codex-commandes-theme",
    "produit": "codex",
    "categorie": "commandes",
@@ -6257,6 +6734,54 @@
      "pourquoi": "La CLI est utilisée sous tmux, sans besoin déclaré de personnaliser le titre."
     }
    },
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-tui",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/tui",
+   "gabarit": "complet",
+   "description": "Choisit le mode terminal utilisé au prochain lancement : historique de défilement ou transcript plein écran. Le choix est enregistré et nécessite un redémarrage ; une option de lancement peut encore le remplacer.",
+   "description_source": "Choose the terminal mode for the next launch. — Switch between terminal scrollback and a fullscreen transcript.",
+   "usage": "/tui",
+   "usage_nature": "syntaxe",
+   "exemple": "/tui",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans la CLI sous tmux, essayer `/tui` et choisir le mode de défilement ; résultat attendu : ce mode enregistré s’applique au prochain lancement de Codex."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
@@ -6383,13 +6908,61 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-commandes-warnings",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/warnings",
+   "gabarit": "complet",
+   "description": "Affiche les avertissements conservés et leurs détails de diagnostic. Il permet de relire les messages apparus pendant la session.",
+   "description_source": "View retained warnings and diagnostics. — Revisit warnings that appeared during the session.",
+   "usage": "/warnings",
+   "usage_nature": "syntaxe",
+   "exemple": "/warnings",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans la CLI sous tmux après un diagnostic de connexion, essayer `/warnings` ; résultat attendu : les avertissements retenus peuvent être relus."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
+   "historique": [
+    {
+     "date": "2026-10-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
+  },
+  {
    "id": "codex-commandes-worktree",
    "produit": "codex",
    "categorie": "commandes",
    "nom": "/worktree",
    "gabarit": "complet",
-   "description": "Lance la conversation dans un nouveau worktree Git selon le tableau des commandes de l'extension IDE. Cette ligne ne confirme pas une commande équivalente dans la TUI CLI.",
-   "description_source": "Run the chat in a new Git worktree.",
+   "description": "Crée un worktree Git géré et y démarre une nouvelle conversation ou poursuit la conversation courante. La commande exige un dépôt Git local et la prise en charge des worktrees, et reste indisponible pendant une tâche active.",
+   "description_source": "Start or continue a chat in a managed Git worktree. — Work in a separate checkout of a local repository.",
    "usage": "/worktree",
    "usage_nature": "syntaxe",
    "exemple": "/worktree",
@@ -6397,11 +6970,11 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les missions utilisent des worktrees préparés par Git ou OPÉRER, puis la CLI sous tmux ; aucun essai de cette commande IDE n'est justifié."
+    "pourquoi": "Les missions delta-ia et discipline utilisent déjà des branches et worktrees préparés par Git ou OPÉRER ; aucun remplacement de ce cycle n’est demandé."
    },
    "sources": [
     {
-     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#available-slash-commands",
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
      "libelle": "developer-commands",
      "officielle": true
     }
@@ -6409,8 +6982,8 @@
    "commentee": true,
    "retiree": false,
    "origine": "oa-cli",
-   "groupe": "Available slash commands",
-   "maj_le": "2026-10-13",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6443,17 +7016,21 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "Les worktrees sont préparés par Git ou OPÉRER avant les missions."
-    },
-    "config.codex.interface": {
-     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex utilise la CLI sous tmux et les missions non interactives."
+     "pourquoi": "Worktrees préparés par OPÉRER ; modèle et effort fixés par mission-codex."
     }
    },
    "exemple_origine": "source"

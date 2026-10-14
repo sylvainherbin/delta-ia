@@ -1,0 +1,307 @@
+{
+  "date": "2026-10-14",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-14T02:13:30+00:00",
+  "synthese": "Les ajouts de la base documentent `/recap` et `/export` pour reprendre et conserver tes audits sous tmux, ainsi que `/agents`, `codex queue` et 13 paramètres de lancement et de terminal. Les worktrees gérés restent incompatibles avec --ignore-user-config dans D70, et confirmer une mise à jour dans /daemon peut interrompre du travail. L’incident GPT-6.1 Sol du 13 octobre est résolu ; les retraits API GPT-4 annoncés pour le 14 janvier 2027 ne correspondent à aucun usage établi dans ton contexte.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "openai-deprecations-2026-10-14-gpt-4-series-model-deprecations",
+      "ids_bruts": [
+        "openai-deprecations-2026-10-14-gpt-4-series-model-deprecations"
+      ],
+      "produit": "codex",
+      "titre": "API : retrait de certains GPT-4o et GPT-4.1 le 14 janvier 2027",
+      "version": null,
+      "date_publication": "2026-10-14",
+      "type": "depreciation",
+      "resume": "OpenAI annonce le retrait de l’API le 14/01/2027 des instantanés GPT-4o gpt-4o-2024-08-06 et gpt-4o-2024-11-20, GPT-4o mini gpt-4o-mini-2024-07-18, GPT-4.1 gpt-4.1-2025-04-14 et GPT-4.1 mini gpt-4.1-mini-2025-04-14. Le remplacement recommandé est `gpt-6-luna` ; les versions affinées suivent la même échéance.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "openai-status-01M4T4ZCM54D3ZPTQXRSWFG0XS",
+      "ids_bruts": [
+        "openai-status-01M4T4ZCM54D3ZPTQXRSWFG0XS"
+      ],
+      "produit": "codex",
+      "titre": "GPT-6.1 Sol dans Codex et Work : incident du 13 octobre résolu",
+      "version": null,
+      "date_publication": "2026-10-13",
+      "type": "correction",
+      "resume": "OpenAI signale des performances dégradées de GPT-6.1 Sol dans Codex et ChatGPT Work le 13/10/2026, entre 08:10 et 16:36:42 UTC. Une mitigation a été appliquée à 09:30 UTC ; le suivi est désormais résolu.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M4T4ZCM54D3ZPTQXRSWFG0XS",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Codex sous tmux pour auditer Claude et ChatGPT Work pour trading-sim ; le défaut Codex relevé aujourd’hui est gpt-6.1-sol. Cet incident pourrait expliquer des lenteurs de ces outils hier, sans prouver la cause d’un échec particulier ; OpenAI annonce le rétablissement.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI sous tmux utilisée pour les audits."
+        },
+        "projet.chatgpt-trading-sim": {
+          "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+          "pourquoi": "ChatGPT Work arbitre trading-sim."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-commandes-agents",
+      "ids_bruts": [
+        "kb-codex-commandes-agents"
+      ],
+      "produit": "codex",
+      "titre": "Base : 11 commandes pour les conversations et le terminal Codex",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Commande — `/agents` : centre des conversations sur le serveur connecté.\nCommande — `/cd` : changement du répertoire de la conversation principale au repos.\nCommande — `codex agents` : ouverture du centre de commandes sur un serveur partagé local ou distant.\nCommande — `codex queue --thread <SESSION_ID> --message \"Run the remaining checks\"` : mise en attente d’un message texte pour une session par UUID ou nom exact.\nCommande — `/daemon` : inspection de la connexion et gestion du serveur local.\nCommande — `/export` : export complet en Markdown vers un fichier ou le presse-papiers.\nCommande — `/pwd`, alias `/cwd` : affichage du répertoire de travail.\nCommande — `/recap` : résumé au repos sans compactage du contexte.\nCommande — `/subagents` : inspection ou poursuite d’un sous-agent de la conversation courante.\nCommande — `/tui` : choix enregistré du mode terminal au prochain lancement.\nCommande — `/warnings` : relecture des avertissements et diagnostics conservés.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+          "libelle": "developer-commands",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+          "libelle": "developer-commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu pilotes tes audits trading-sim avec la CLI sous tmux : `/recap` résume sans compacter, `/export` conserve le transcript et `/pwd` affiche le dossier avant un audit. `/agents` et `codex agents` regroupent les conversations du serveur partagé, tandis que `codex queue` prépare un message texte pour un fil existant ; `/subagents` concerne les fils de sous-agents Codex, dont l’usage n’est pas établi dans CONTEXTE.md. `/warnings` permet de relire un diagnostic ; `/daemon` inspecte la connexion mais confirmer une mise à jour quitte Codex et peut interrompre du travail. `/tui` enregistre le mode du prochain lancement ; `/cd <path>` change le dossier seulement dans une conversation principale au repos, sans saisie en attente ni terminal en arrière-plan, et `/cd` seul revient au dossier personnel.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Essai : dans la CLI sous tmux d’un audit trading-sim au repos, lance `/recap`, puis `/export` ; résultat attendu : un résumé sans compactage et un transcript Markdown complet.",
+        "etapes": [
+          "Attendre que le tour de l’audit soit terminé.",
+          "Taper `/recap`, puis `/export` et choisir le fichier de destination.",
+          "Taper `/pwd` pour contrôler le dépôt ; ouvrir `/warnings` pour relire les diagnostics."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-commandes-agents",
+        "codex-commandes-cd",
+        "codex-commandes-codex-agents",
+        "codex-commandes-codex-queue",
+        "codex-commandes-daemon",
+        "codex-commandes-export",
+        "codex-commandes-pwd",
+        "codex-commandes-recap",
+        "codex-commandes-subagents",
+        "codex-commandes-tui",
+        "codex-commandes-warnings"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI sous tmux et pilotage iPhone."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Audits formels à conserver."
+        },
+        "projet.chatgpt-trading-sim": {
+          "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+          "pourquoi": "Rapports transmis à l’arbitre."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-parametres-codex-approve-for-me-not-so-yolo",
+      "ids_bruts": [
+        "kb-codex-parametres-codex-approve-for-me-not-so-yolo"
+      ],
+      "produit": "codex",
+      "titre": "Base : 13 paramètres pour exec, le serveur et la TUI",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Paramètre — `codex --approve-for-me`, alias `--not-so-yolo` : revue automatique avec on-request et workspace-write, incompatible avec --sandbox, --yolo et --ask-for-approval en interactif.\nParamètre — `codex exec --approve-for-me`, alias `--not-so-yolo` : même préréglage de revue automatique pour exec, incompatible avec --sandbox et --yolo.\nParamètre — `codex exec --worktree` : worktree géré local pour une nouvelle session ou un fork, incompatible avec resume, review, --ephemeral et --ignore-user-config.\nParamètre — `codex --no-daemon` : CLI sans serveur partagé, incompatible avec --remote et codex agents.\nParamètre — `codex --worktree` : nouveau worktree géré local pour les sessions interactives, fork et exec.\nParamètre — `features.ultrafast_mode` : contrôles Ultrafast actifs par défaut, indépendants de Fast, selon le modèle et le compte.\nParamètre — `mcp_servers.<id>.oauth.client_secret` : secret OAuth préenregistré stocké en configuration, avec client_id et secret non vides.\nParamètre — `model_providers.<id>.capabilities.external_web_access` : capacité de recherche web directe du fournisseur, omise pour conserver ses défauts.\nParamètre — `model_providers.<id>.capabilities.remote_compaction` : protocole unsupported (local) ou v2 (Responses), omis pour conserver les défauts.\nParamètre — `model_providers.<id>.model_catalog_url` : URL complète d’un catalogue au format Codex, omise pour conserver la découverte par défaut.\nParamètre — `tui.auto_recap` : résumés automatiques hors focus, true par défaut ; false les désactive sans retirer /recap.\nParamètre — `tui.disable_paste_burst` : désactivation de la détection des collages en rafale, false par défaut et prioritaire sur disable_paste_burst.\nParamètre — `tui.show_server_version_notice` : avis informatifs de différence de version du serveur, true par défaut ; false conserve les erreurs de compatibilité et le statut.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+          "libelle": "developer-commands",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+          "libelle": "developer-commands",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+          "libelle": "config-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu reprends tes audits trading-sim dans la CLI sous tmux : `tui.auto_recap` distingue le résumé automatique hors focus du résumé manuel `/recap`, et les deux autres clés TUI règlent collage et avis de versions. D70 utilise `--ignore-user-config` : `codex exec --worktree` y est incompatible ; tes worktrees de mission restent préparés par OPÉRER. Les préréglages `--approve-for-me` changent permissions et approbations, et `--no-daemon` retire le serveur partagé : ce sont des choix distincts du fonctionnement décrit. Les clés de fournisseur et de secret OAuth concernent des configurations personnalisées non établies dans CONTEXTE.md ; `features.ultrafast_mode` expose les contrôles sans garantir l’accès du compte.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Essai : dans une session Codex sous tmux de trading-sim, ajoute à `~/.codex/config.toml`, dans la table `[tui]`, `auto_recap = false`, puis au prochain lancement tape `/recap` au repos ; résultat attendu : résumé manuel disponible avec résumés automatiques hors focus désactivés.",
+        "etapes": [
+          "Modifier ou compléter la table `[tui]` existante, sans la dupliquer.",
+          "Appliquer ce choix à un lancement d’essai au repos, puis taper `/recap`.",
+          "Pour revenir au défaut documenté, retirer la clé ou remettre `auto_recap = true`."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-parametres-codex-approve-for-me-not-so-yolo",
+        "codex-parametres-codex-exec-approve-for-me-not-so-yolo",
+        "codex-parametres-codex-exec-worktree",
+        "codex-parametres-codex-no-daemon",
+        "codex-parametres-codex-worktree",
+        "codex-parametres-features-ultrafast-mode",
+        "codex-parametres-mcp-servers-id-oauth-client-secret",
+        "codex-parametres-model-providers-id-capabilities-external-web-access",
+        "codex-parametres-model-providers-id-capabilities-remote-compaction",
+        "codex-parametres-model-providers-id-model-catalog-url",
+        "codex-parametres-tui-auto-recap",
+        "codex-parametres-tui-disable-paste-burst",
+        "codex-parametres-tui-show-server-version-notice"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Reprise de sessions CLI sous tmux."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Worktrees préparés par OPÉRER."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "D70 emploie --ignore-user-config."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-commandes-agent",
+      "ids_bruts": [
+        "kb-codex-commandes-agent"
+      ],
+      "produit": "codex",
+      "titre": "Documentation CLI : /agent et exec --full-auto absents de la réextraction",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "La réextraction marque `/agent` et `codex exec --full-auto` comme retirés de la page de référence ; `/subagents` possède désormais sa propre fiche et `/agents` ouvre le centre de conversations. Cette disparition documentaire ne prouve pas que les anciennes formes sont refusées par les binaires installés.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+          "libelle": "developer-commands",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+          "libelle": "developer-commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-commandes-agent",
+        "codex-parametres-codex-exec-full-auto",
+        "codex-commandes-subagents",
+        "codex-commandes-agents"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-codex-parametres-personality",
+      "ids_bruts": [
+        "kb-codex-parametres-personality"
+      ],
+      "produit": "codex",
+      "titre": "Personality : paramètres de compatibilité dépréciés ou ignorés",
+      "version": null,
+      "date_publication": null,
+      "type": "depreciation",
+      "resume": "La documentation décrit `features.personality` comme supprimé, accepté puis ignoré ; `personality` devient un réglage de compatibilité déprécié dont friendly et pragmatic ne choisissent plus de style. La valeur none omet la section Personality intégrée sans modifier les instructions explicites.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+          "libelle": "config-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-parametres-personality",
+        "codex-parametres-features-personality"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-codex-parametres-features-unified-exec",
+      "ids_bruts": [
+        "kb-codex-parametres-features-unified-exec"
+      ],
+      "produit": "codex",
+      "titre": "Exécution reprenable : la désactivation utilisateur est ignorée",
+      "version": null,
+      "date_publication": null,
+      "type": "changement_rupture",
+      "resume": "La documentation indique que `features.unified_exec` est stable et activé sur toutes les plateformes ; les désactivations utilisateur sont ignorées. Des exigences gérées peuvent désactiver les processus reprenables et write_stdin en conservant exec_command à exécution unique.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+          "libelle": "config-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-parametres-features-unified-exec"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be"
+}
