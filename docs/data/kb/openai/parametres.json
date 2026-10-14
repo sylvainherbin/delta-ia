@@ -1667,7 +1667,7 @@
    "categorie": "parametres",
    "nom": "approval_policy.granular.skill_approval",
    "gabarit": "court",
-   "description": "Le réglage des scripts de skill autorise ou rejette leurs demandes d’approbation.",
+   "description": "Autorise l’affichage des demandes d’approbation des scripts de skill lorsque `approval_policy.granular.skill_approval` vaut `true`.",
    "description_source": "Type : boolean. When true, skill-script approval prompts are allowed to surface.",
    "usage": "approval_policy.granular.skill_approval",
    "usage_nature": "syntaxe",
@@ -1676,7 +1676,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "L’objectif Codex en CLI et tmux ne définit pas de scénario d’essai précis pour ce réglage."
+    "pourquoi": "Le contexte décrit des missions Codex automatisées, sans besoin précis de modifier séparément l’approbation des scripts de skill."
    },
    "sources": [
     {
@@ -1689,7 +1689,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1706,13 +1706,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Aucun besoin de politique granulaire pour les audits dans l'app n'est décrit."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex exec sert à la chaîne D70 et aux missions non interactives."
     }
    }
   },
@@ -2373,7 +2377,7 @@
    "categorie": "parametres",
    "nom": "auto_review.extra_policy",
    "gabarit": "court",
-   "description": "Ajoute une politique Markdown locale à la politique principale de revue automatique ; une politique gérée prioritaire la remplace et une valeur vide est ignorée.",
+   "description": "Ajoute une politique Markdown locale à la revue automatique, sauf si la politique gérée `guardian_extra_policy` prime ; les valeurs vides sont ignorées.",
    "description_source": "Type : string. Additional local Markdown policy for automatic review, included alongside the main policy. Managed guardian_extra_policy takes precedence. Blank values are ignored.",
    "usage": "auto_review.extra_policy",
    "usage_nature": "syntaxe",
@@ -2382,7 +2386,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La méthode déclarée repose sur une validation humaine pas à pas, sans besoin identifié de politique supplémentaire de revue automatique."
+    "pourquoi": "Le mode FULL_AUTO hors trading-sim ne définit aucune politique supplémentaire de revue automatique à injecter dans les missions Codex."
    },
    "sources": [
     {
@@ -2392,17 +2396,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "methode.travail": {
-     "sha1": "9020d04cf1671edf67d940e6a547e5777279dd35",
-     "pourquoi": "La validation humaine pas à pas est la méthode déclarée."
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "FULL_AUTO hors trading-sim, validations choisies aux jalons sur trading-sim."
     }
    },
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-27",
@@ -2411,6 +2415,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -2754,7 +2762,7 @@
    "categorie": "parametres",
    "nom": "cli_auth_credentials_store",
    "gabarit": "court",
-   "description": "Le stockage des identifiants de la CLI choisit un fichier, un trousseau, un mode automatique ou éphémère.",
+   "description": "Choisit le stockage des identifiants CLI parmi `file`, `keyring`, `auto` et `ephemeral`.",
    "description_source": "Type : file | keyring | auto | ephemeral. Control where the CLI stores cached credentials.",
    "usage": "cli_auth_credentials_store",
    "usage_nature": "syntaxe",
@@ -2763,7 +2771,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun problème de stockage des identifiants de la CLI Codex n'est décrit pour la machine ; ne pas changer ce réglage sans symptôme."
+    "pourquoi": "La CLI Codex est utilisée sous tmux, mais aucun problème de stockage des identifiants n’est décrit qui justifierait de changer ce réglage."
    },
    "sources": [
     {
@@ -2776,7 +2784,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2793,13 +2801,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI autonome est utilisée sous tmux avec remote control."
     }
    }
   },
@@ -3103,7 +3115,7 @@
    "categorie": "parametres",
    "nom": "codex app-server --listen",
    "gabarit": "court",
-   "description": "L’option `codex app-server --listen` choisit un transport standard, WebSocket ou socket Unix pour le serveur applicatif local.",
+   "description": "Choisit le transport du serveur applicatif avec `stdio://`, `ws://IP:PORT`, `unix://`, `unix://PATH` ou `off` pour désactiver le transport local.",
    "description_source": "Transport listener URL. Use stdio:// for JSONL, ws://IP:PORT for a TCP WebSocket endpoint, unix:// for the default Unix socket, unix://PATH for a custom Unix socket, or off to disable the local transport. (valeurs : stdio:// | ws://IP:PORT | unix:// | unix://PATH | off)",
    "usage": "codex app-server --listen",
    "usage_nature": "syntaxe",
@@ -3112,7 +3124,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le serveur applicatif sert à construire un client de protocole ; aucun client local de ce type n’est prévu pour l’objectif Codex sous tmux."
+    "pourquoi": "Le pilotage Codex depuis l’iPhone fonctionne avec remote control ; aucun client de protocole à configurer avec `app-server --listen` n’est décrit."
    },
    "sources": [
     {
@@ -3125,7 +3137,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex app-server",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3158,13 +3170,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif porte sur Codex CLI et Remote Control, pas sur le développement d’un client app-server."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Le pilotage CLI depuis l’iPhone fonctionne avec remote control."
     }
    }
   },
@@ -3174,7 +3190,7 @@
    "categorie": "parametres",
    "nom": "codex app-server --stdio",
    "gabarit": "court",
-   "description": "L’option `codex app-server --stdio` utilise le transport JSONL sur l’entrée-sortie standard et ne peut pas être combinée avec `--listen`.",
+   "description": "Utilise le transport stdio, équivalent à `--listen stdio://` et incompatible avec `--listen`.",
    "description_source": "Use stdio transport. Equivalent to --listen stdio:// and mutually exclusive with --listen . (valeurs : boolean)",
    "usage": "codex app-server --stdio",
    "usage_nature": "syntaxe",
@@ -3183,7 +3199,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun client app-server local n’est prévu pour les audits et ce transport ne contribue pas au pilotage depuis l’iPhone."
+    "pourquoi": "Le flux CLI sous tmux avec remote control est atteint ; aucun besoin distinct de client app-server sur stdio n’est décrit."
    },
    "sources": [
     {
@@ -3196,7 +3212,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex app-server",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3225,13 +3241,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif porte sur Codex CLI et Remote Control, pas sur un client app-server."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et remote control sont utilisés depuis le 02/10."
     }
    }
   },
@@ -3283,16 +3303,16 @@
    "categorie": "parametres",
    "nom": "codex app-server --ws-auth",
    "gabarit": "court",
-   "description": "L’option `codex app-server --ws-auth` choisit le mode d’authentification des clients WebSocket du serveur applicatif.",
+   "description": "Choisit l’authentification WebSocket du serveur applicatif ; sans cette option, elle est désactivée et une écoute non locale déclenche un avertissement.",
    "description_source": "Authentication mode for app-server WebSocket clients. If omitted, WebSocket auth is disabled; non-local listeners warn during startup. (valeurs : capability-token | signed-bearer-token)",
    "usage": "codex app-server --ws-auth",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun client WebSocket ni serveur applicatif Codex n’est prévu ; ce réglage introduirait une gestion de jeton sans besoin établi."
+    "pourquoi": "Le remote control utilisé depuis l’iPhone ne fournit pas de scénario de client WebSocket personnalisé auquel appliquer ce réglage."
    },
    "sources": [
     {
@@ -3305,7 +3325,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex app-server",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3334,17 +3354,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif Codex sous tmux avec Remote Control ne prévoit aucun client app-server."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "L’usage observé porte sur remote control depuis l’iPhone."
     }
    }
   },
@@ -4227,16 +4247,16 @@
    "categorie": "parametres",
    "nom": "codex completion SHELL",
    "gabarit": "court",
-   "description": "La commande `codex completion SHELL` produit sur la sortie standard les complétions du shell choisi.",
+   "description": "Produit sur la sortie standard les complétions pour le shell choisi parmi `bash`, `zsh`, `fish`, `power-shell` et `elvish`.",
    "description_source": "Shell to generate completions for. Output prints to stdout. (valeurs : bash | zsh | fish | power-shell | elvish)",
    "usage": "codex completion SHELL",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La CLI autonome n’est pas utilisée et les complétions shell ne débloquent ni les audits ni le pilotage Codex depuis l’iPhone."
+    "pourquoi": "La CLI est utilisée sous tmux, mais aucun besoin de complétion shell n’est décrit dans le pilotage principalement effectué depuis l’iPhone."
    },
    "sources": [
     {
@@ -4249,7 +4269,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex completion",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4278,17 +4298,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Usage CLI sous tmux avec remote control depuis l’iPhone."
     },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif Codex sous tmux avec Remote Control ne dépend pas des complétions shell."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "L’iPhone est l’interface principale de pilotage."
     }
    }
   },
@@ -4411,7 +4435,7 @@
    "categorie": "parametres",
    "nom": "codex --dangerously-bypass-hook-trust",
    "gabarit": "court",
-   "description": "Le contournement de confiance lance des hooks sans vérification de confiance persistée.",
+   "description": "Exécute les hooks activés sans exiger leur confiance persistée pour cet appel, uniquement pour une automatisation qui vérifie déjà leurs sources.",
    "description_source": "Run enabled hooks without requiring persisted hook trust for this invocation. Intended only for automation that already vets hook sources. (valeurs : boolean)",
    "usage": "codex --dangerously-bypass-hook-trust",
    "usage_nature": "syntaxe",
@@ -4420,7 +4444,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin de hooks Codex n’est décrit et ce contournement affaiblit les contrôles."
+    "pourquoi": "Aucun hook Codex n’est configuré selon le contexte ; ce contournement n’apporte donc rien aux missions existantes."
    },
    "sources": [
     {
@@ -4433,7 +4457,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4442,10 +4466,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé des hooks précise qu’il n’existe pas de hook Codex."
+    }
+   }
   },
   {
    "id": "codex-parametres-codex-debug-app-server-send-message-v2-user-message",
@@ -4798,7 +4831,7 @@
    "categorie": "parametres",
    "nom": "codex --disable",
    "gabarit": "court",
-   "description": "La désactivation ponctuelle coupe une fonctionnalité Codex par son nom.",
+   "description": "Désactive ponctuellement un drapeau de fonctionnalité, équivalent à `-c features.<name>=false`, et accepte plusieurs occurrences.",
    "description_source": "Force-disable a feature flag (translates to -c features.<name>=false ). Repeatable. (valeurs : feature)",
    "usage": "codex --disable",
    "usage_nature": "syntaxe",
@@ -4807,7 +4840,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucune fonctionnalité Codex à désactiver temporairement n'est nommée pour les audits ou la future CLI sous tmux."
+    "pourquoi": "Le contexte décrit la CLI sous tmux et les missions non interactives sans nommer de fonctionnalité à désactiver pour un essai précis."
    },
    "sources": [
     {
@@ -4820,7 +4853,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4837,13 +4870,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas utilisée et aucun besoin de désactivation n'est déclaré."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux et codex exec sont effectivement utilisés."
     }
    }
   },
@@ -4937,16 +4974,16 @@
    "categorie": "parametres",
    "nom": "codex doctor --json",
    "gabarit": "court",
-   "description": "L’option `codex doctor --json` produit un rapport de diagnostic expurgé et lisible par programme.",
+   "description": "Produit un rapport de diagnostic expurgé au format JSON, lisible par programme.",
    "description_source": "Emit a redacted machine-readable support report. (valeurs : boolean)",
    "usage": "codex doctor --json",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun défaut de la CLI Codex n’est décrit ; produire un diagnostic JSON sans incident précis n’aurait pas de résultat attendu à vérifier."
+    "pourquoi": "Le conflit 409 entre app et CLI a été résolu en fermant l’app ; aucun incident CLI actuel ne justifie un diagnostic JSON supplémentaire."
    },
    "sources": [
     {
@@ -4959,7 +4996,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex doctor",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4992,17 +5029,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "La future utilisation sous tmux est un objectif, sans défaut CLI actuellement signalé."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Le conflit remote control 409 a été résolu avec l’app fermée."
     }
    }
   },
@@ -5054,7 +5091,7 @@
    "categorie": "parametres",
    "nom": "codex doctor --summary",
    "gabarit": "court",
-   "description": "Le résumé de diagnostic affiche les groupes de contrôles et les comptes finaux.",
+   "description": "Affiche seulement les groupes de contrôles du diagnostic et le décompte final.",
    "description_source": "Show grouped check rows and the final count summary only. (valeurs : boolean)",
    "usage": "codex doctor --summary",
    "usage_nature": "syntaxe",
@@ -5063,7 +5100,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun diagnostic CLI Codex en échec n'est signalé ; la sortie synthétique n'a pas de scénario d'essai utile à ce stade."
+    "pourquoi": "Le pilotage CLI à distance fonctionne selon le contexte ; aucun diagnostic en échec ni scénario précis ne justifie cette variante synthétique."
    },
    "sources": [
     {
@@ -5076,7 +5113,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex doctor",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5093,13 +5130,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas actuellement utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "CLI sous tmux avec remote control est un usage atteint."
     }
    }
   },
@@ -5109,7 +5150,7 @@
    "categorie": "parametres",
    "nom": "codex --enable",
    "gabarit": "court",
-   "description": "L’activation ponctuelle met en service une fonctionnalité Codex par son nom.",
+   "description": "Active ponctuellement un drapeau de fonctionnalité, équivalent à `-c features.<name>=true`, et accepte plusieurs occurrences.",
    "description_source": "Force-enable a feature flag (translates to -c features.<name>=true ). Repeatable. (valeurs : feature)",
    "usage": "codex --enable",
    "usage_nature": "syntaxe",
@@ -5118,7 +5159,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucune fonctionnalité Codex à activer temporairement n'est nommée pour les audits ou la future CLI sous tmux."
+    "pourquoi": "Les missions Codex sont déjà exécutées sous tmux ou par codex exec, sans fonctionnalité précise à activer pour un essai identifié."
    },
    "sources": [
     {
@@ -5131,7 +5172,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5148,13 +5189,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas utilisée et aucun besoin d'activation n'est déclaré."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Usage établi de la CLI sous tmux et de codex exec."
     }
    }
   },
@@ -5467,7 +5512,7 @@
    "categorie": "parametres",
    "nom": "codex exec --dangerously-bypass-hook-trust",
    "gabarit": "court",
-   "description": "Le contournement de confiance exécute les hooks sans confiance persistée pendant une tâche.",
+   "description": "Exécute les hooks activés pendant `codex exec` sans exiger leur confiance persistée, pour une automatisation qui vérifie déjà leurs sources.",
    "description_source": "Run enabled hooks without requiring persisted hook trust for this invocation. Intended only for automation that already vets hook sources. (valeurs : boolean)",
    "usage": "codex exec --dangerously-bypass-hook-trust",
    "usage_nature": "syntaxe",
@@ -5476,7 +5521,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin de hooks Codex n’est établi et ce contournement affaiblit la sécurité."
+    "pourquoi": "Les missions non interactives existent sur delta-ia et discipline, mais aucun hook Codex n’est configuré qui nécessiterait ce contournement."
    },
    "sources": [
     {
@@ -5489,7 +5534,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5498,10 +5543,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé indique explicitement l’absence de hook Codex."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Mission-codex lance des tâches non interactives de développement."
+    }
+   }
   },
   {
    "id": "codex-parametres-codex-exec-ephemeral",
@@ -6869,7 +6927,7 @@
    "categorie": "parametres",
    "nom": "CODEX_HOME",
    "gabarit": "court",
-   "description": "La variable `CODEX_HOME` choisit le répertoire des réglages, identifiants et sessions Codex.",
+   "description": "Définit la racine des données Codex, dont configuration, authentification, journaux, sessions et skills, dans un dossier qui doit déjà exister ; le défaut est `~/.codex`.",
    "description_source": "CLI, IDE extension, app-server, installers — ~/.codex — Sets the root for Codex state, including config, auth, logs, sessions, skills, and standalone package metadata. If you set it, the directory must already exist.",
    "usage": "CODEX_HOME",
    "usage_nature": "syntaxe",
@@ -6878,7 +6936,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton `AGENTS.md` global vient d’être créé dans l’emplacement par défaut ; le déplacer risquerait de séparer la configuration existante."
+    "pourquoi": "Les binaires CLI et app partagent déjà `~/.codex` ; déplacer cette racine séparerait leurs sessions et leur queue sans besoin identifié."
    },
    "sources": [
     {
@@ -6891,7 +6949,7 @@
    "retiree": false,
    "origine": "oa-variables",
    "groupe": "Core locations",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6900,10 +6958,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Les deux binaires Codex partagent CODEX_HOME et les données de session."
+    }
+   }
   },
   {
    "id": "codex-parametres-codex-image-i",
@@ -7726,16 +7793,16 @@
    "categorie": "parametres",
    "nom": "codex --remote-auth-token-env",
    "gabarit": "court",
-   "description": "L’option `--remote-auth-token-env` lit dans une variable d’environnement le jeton envoyé lors d’une connexion `--remote` compatible.",
+   "description": "Lit un jeton dans une variable d’environnement pour `--remote` et ne le transmet que via `wss://` ou un `ws://` strictement local.",
    "description_source": "Read a bearer token from this environment variable and send it when connecting with --remote . Requires --remote ; tokens are only sent over wss:// URLs or local-only ws:// URLs. (valeurs : ENV_VAR)",
    "usage": "codex --remote-auth-token-env",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun app-server distant n’est prévu ; ajouter un jeton ne contribuerait pas au Remote Control recherché depuis l’iPhone."
+    "pourquoi": "Le pilotage iPhone utilise remote control ; aucun serveur applicatif distant personnalisé nécessitant ce jeton n’est décrit."
    },
    "sources": [
     {
@@ -7748,7 +7815,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7777,17 +7844,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée ; le pilotage distant n’est pas opérationnel."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif de pilotage Codex ne décrit aucun app-server WebSocket."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Remote control est le canal de pilotage utilisé depuis l’iPhone."
     }
    }
   },
@@ -7839,16 +7906,16 @@
    "categorie": "parametres",
    "nom": "codex resume --include-non-interactive",
    "gabarit": "court",
-   "description": "L’option `codex resume --include-non-interactive` ajoute les sessions non interactives au sélecteur et au choix de `--last`.",
+   "description": "Inclut les sessions non interactives dans le sélecteur de reprise et dans la sélection `--last`.",
    "description_source": "Include non-interactive sessions in the picker and --last selection. (valeurs : boolean)",
    "usage": "codex resume --include-non-interactive",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "Aucune session Codex non interactive à reprendre n’est déclarée ; l’objectif sous tmux concerne d’abord une session CLI interactive."
+    "verdict": "tester",
+    "pourquoi": "Sur delta-ia, après une étape D70 terminée, essayer `codex resume --include-non-interactive` avec le binaire de l’app ; résultat attendu : la session codex exec apparaît dans le sélecteur."
    },
    "sources": [
     {
@@ -7861,7 +7928,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7890,17 +7957,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée ; l’essentiel des fils est dans l’app."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif sous tmux ne mentionne pas de session non interactive à reprendre."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "D70 utilise codex exec et le binaire livré avec l’app pour la chaîne."
     }
    }
   },
@@ -8497,7 +8564,7 @@
    "categorie": "parametres",
    "nom": "codex sandbox --include-managed-config",
    "gabarit": "court",
-   "description": "L’option des exigences gérées inclut ces contraintes dans un profil de permissions explicite.",
+   "description": "Inclut les exigences gérées lors de la résolution d’un profil de permissions explicite et nécessite `--permission-profile`.",
    "description_source": "Include managed requirements while resolving an explicit permissions profile. Requires --permission-profile . (valeurs : boolean)",
    "usage": "codex sandbox --include-managed-config",
    "usage_nature": "syntaxe",
@@ -8506,7 +8573,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les profils Codex utilisés concernent l'app ; aucun lancement direct de `codex sandbox` n'est décrit pour les audits."
+    "pourquoi": "D70 possède son profil de permissions explicite, mais le contexte ne décrit aucun lancement de codex sandbox qui requiert cette option distincte."
    },
    "sources": [
     {
@@ -8519,7 +8586,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8536,17 +8603,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.profils": {
-     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils audit, rapide et securite sont utilisés, sans scénario `codex sandbox`."
-    },
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas actuellement utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "D70 lance codex exec avec le profil explicite delta_auto."
     }
    }
   },
@@ -8556,7 +8623,7 @@
    "categorie": "parametres",
    "nom": "codex sandbox --permission-profile, -P",
    "gabarit": "court",
-   "description": "L’option de profil de permissions applique un profil nommé au bac à sable.",
+   "description": "Applique un profil de permissions nommé à partir de la pile de configuration active.",
    "description_source": "Apply a named permissions profile from the active configuration stack. (valeurs : NAME)",
    "usage": "codex sandbox --permission-profile, -P",
    "usage_nature": "syntaxe",
@@ -8565,7 +8632,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les profils Codex utilisés concernent l'app ; aucun lancement direct de `codex sandbox` n'est décrit pour les audits."
+    "pourquoi": "Les profils audit, rapide et securite sont utilisés, mais aucun essai de commande sous codex sandbox avec un profil de permissions n’est décrit."
    },
    "sources": [
     {
@@ -8578,7 +8645,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8595,17 +8662,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils audit, rapide et securite sont utilisés, sans scénario `codex sandbox`."
-    },
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas actuellement utilisée."
+     "pourquoi": "Trois profils sont utilisés au quotidien : audit, rapide, securite."
     }
    }
   },
@@ -8615,7 +8682,7 @@
    "categorie": "parametres",
    "nom": "codex sandbox --profile, -p",
    "gabarit": "court",
-   "description": "L’option de profil ajoute la configuration Codex nommée à la base du bac à sable.",
+   "description": "Superpose `$CODEX_HOME/NAME.config.toml` à la configuration utilisateur de base pour la commande sandbox.",
    "description_source": "Layer $CODEX_HOME/NAME.config.toml on top of the base user config. (valeurs : NAME)",
    "usage": "codex sandbox --profile, -p",
    "usage_nature": "syntaxe",
@@ -8624,7 +8691,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les profils Codex utilisés concernent l'app ; aucun lancement direct de `codex sandbox` n'est décrit pour les audits."
+    "pourquoi": "Les profils Codex sont utilisés au quotidien, sans besoin identifié de lancer codex sandbox avec cette couche de configuration."
    },
    "sources": [
     {
@@ -8637,7 +8704,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex sandbox",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8654,17 +8721,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils audit, rapide et securite sont utilisés, sans scénario `codex sandbox`."
-    },
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas actuellement utilisée."
+     "pourquoi": "Usage quotidien des profils audit, rapide et securite."
     }
    }
   },
@@ -8725,7 +8792,7 @@
    "categorie": "parametres",
    "nom": "codex --search",
    "gabarit": "court",
-   "description": "L’option `--search` active la recherche web en direct pour une session.",
+   "description": "Active la recherche web en direct avec `web_search = \"live\"` à la place du mode `cached` par défaut.",
    "description_source": "Enable live web search (sets web_search = \"live\" instead of the default \"cached\" ). (valeurs : boolean)",
    "usage": "codex --search",
    "usage_nature": "syntaxe",
@@ -8733,8 +8800,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "ignorer",
-    "pourquoi": "La recherche web en direct ne sert pas aux audits de trading-sim, dont le projet interdit l'accès web ; aucun essai CLI pertinent n'est décrit."
+    "verdict": "tester",
+    "pourquoi": "Pour la veille delta-ia, essayer `codex --search` pour recouper une nouveauté avec sa documentation officielle ; résultat attendu : une vérification en direct accompagnée de l’URL primaire."
    },
    "sources": [
     {
@@ -8747,7 +8814,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8764,17 +8831,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d68587608b25d9224caf291773108962aa37b081",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "La politique du projet exclut la recherche web."
-    },
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome n'est pas utilisée actuellement."
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "La veille doit signaler les nouvelles fonctionnalités et leur usage concret."
     }
    }
   },
@@ -8966,7 +9033,7 @@
    "categorie": "parametres",
    "nom": "computer_use.default_app_access",
    "gabarit": "court",
-   "description": "Le réglage d’accès aux applications natives définit la politique de repli pour Computer Use.",
+   "description": "Fixe à `allow` ou `deny` l’accès par défaut aux applications natives de Computer Use, sans permettre aux réglages locaux d’assouplir les restrictions gérées.",
    "description_source": "Type : allow | deny. Fallback native-app access policy for Computer Use. App-specific entries can supply a policy; local configuration cannot relax managed restrictions.",
    "usage": "computer_use.default_app_access",
    "usage_nature": "syntaxe",
@@ -8975,7 +9042,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun contrôle d'app native par Codex n'est décrit pour les audits de trading-sim ; une politique globale d'accès n'a pas de cible vérifiable."
+    "pourquoi": "Aucune application native à piloter par Codex n’est nommée pour un essai concret ; les besoins déclarés portent sur les audits et le pilotage à distance."
    },
    "sources": [
     {
@@ -8988,7 +9055,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9005,13 +9072,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app sert aux audits, sans usage déclaré de Computer Use sur une app native."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex sert surtout aux audits et s’utilise en CLI sous tmux."
     }
    }
   },
@@ -9412,7 +9483,7 @@
    "categorie": "parametres",
    "nom": "developer_instructions",
    "gabarit": "court",
-   "description": "Le champ d’instructions développeur ajoute des consignes à une session Codex.",
+   "description": "Injecte facultativement une chaîne supplémentaire de consignes développeur dans la session.",
    "description_source": "Type : string. Additional developer instructions injected into the session (optional).",
    "usage": "developer_instructions",
    "usage_nature": "syntaxe",
@@ -9421,7 +9492,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les consignes durables sont déjà placées dans `AGENTS.md` et aucun besoin de couche supplémentaire n’est exprimé."
+    "pourquoi": "Les consignes durables Codex sont déjà dans AGENTS.md et les missions ont leur consigne propre ; aucun besoin distinct d’une couche supplémentaire n’est décrit."
    },
    "sources": [
     {
@@ -9434,7 +9505,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9443,10 +9514,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "Les règles globales Codex sont dans ~/.codex/AGENTS.md."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Mission-codex reçoit une consigne explicite de mission."
+    }
+   }
   },
   {
    "id": "codex-parametres-disable-paste-burst",
@@ -9774,16 +9858,16 @@
    "categorie": "parametres",
    "nom": "features.context_management.experimental_mode",
    "gabarit": "court",
-   "description": "Le mode expérimental de gestion du contexte est documenté comme non disponible actuellement.",
+   "description": "Déclare un mode expérimental de gestion du contexte qui n’est actuellement pas disponible selon la documentation.",
    "description_source": "Type : boolean. Experimental context-management setting. The feature is not currently available.",
    "usage": "features.context_management.experimental_mode",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La fonction n’est pas disponible et la CLI autonome n’est pas utilisée."
+    "pourquoi": "La documentation indique que ce mode est indisponible ; aucun essai exécutable n’est donc à recommander pour la CLI sous tmux."
    },
    "sources": [
     {
@@ -9796,7 +9880,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9821,13 +9905,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "La CLI autonome est installée mais non utilisée."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI sous tmux est utilisée, sans dépendre de ce mode expérimental."
     }
    }
   },
@@ -9942,7 +10030,7 @@
    "categorie": "parametres",
    "nom": "features.goals",
    "gabarit": "court",
-   "description": "Le commutateur des objectifs active leur suivi persistant et la continuation automatique.",
+   "description": "Active les objectifs persistants et la continuation automatique, fonctionnalité stable activée par défaut selon la documentation.",
    "description_source": "Type : boolean. Enable persisted goals and automatic continuation (stable; on by default).",
    "usage": "features.goals",
    "usage_nature": "syntaxe",
@@ -9951,7 +10039,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun objectif persistant Codex n'est déclaré pour les audits ; l'option étant active par défaut, aucun réglage n'est à recommander."
+    "pourquoi": "Les missions Codex sont suivies par OPÉRER ; aucun objectif persistant Codex précis ne justifie de modifier ce drapeau déjà actif par défaut."
    },
    "sources": [
     {
@@ -9964,7 +10052,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9981,13 +10069,17 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "L'app Codex sert aux audits, sans usage déclaré des goals."
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions Codex sont enregistrées et suivies dans OPÉRER."
     }
    }
   },
@@ -9997,16 +10089,16 @@
    "categorie": "parametres",
    "nom": "features.hooks",
    "gabarit": "court",
-   "description": "Le commutateur `features.hooks` active les hooks de cycle de vie chargés depuis `hooks.json` ou la configuration intégrée.",
+   "description": "Active les hooks de cycle de vie de `hooks.json` ou des tables `[hooks]` ; `features.codex_hooks` est un ancien alias déprécié.",
    "description_source": "Type : boolean. Enable lifecycle hooks loaded from hooks.json or inline [hooks] config. features.codex_hooks is a deprecated alias.",
    "usage": "features.hooks",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun hook Codex n’est configuré ; activer ce commutateur seul ne mettrait en œuvre aucun des contrôles répétés envisagés."
+    "pourquoi": "Aucun hook Codex n’est configuré ; activer ce drapeau seul ne réalise pas les contrôles SHA-256 ou Python envisagés dans le contexte."
    },
    "sources": [
     {
@@ -10019,7 +10111,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10048,13 +10140,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Aucun hook Codex n’est configuré selon le relevé du contexte."
+    },
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Les contrôles SHA-256 et PYTHONDONTWRITEBYTECODE restent des candidats éventuels à des hooks."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Des contrôles SHA-256 et Python sont cités comme candidats aux hooks."
     }
    }
   },
@@ -10106,7 +10206,7 @@
    "categorie": "parametres",
    "nom": "features.multi_agent",
    "gabarit": "court",
-   "description": "Le commutateur active les outils de collaboration multi-agents, présents par défaut.",
+   "description": "Active les outils de collaboration entre agents, fonctionnalité stable activée par défaut selon la documentation.",
    "description_source": "Type : boolean. Enable multi-agent collaboration tools (spawn_agent, send_input, resume_agent, wait_agent, and close_agent) (stable; on by default).",
    "usage": "features.multi_agent",
    "usage_nature": "syntaxe",
@@ -10115,7 +10215,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun flux d'audit multi-agent Codex n'est décrit ; ce drapeau est déjà actif par défaut selon la documentation."
+    "pourquoi": "Le contexte décrit des sous-agents Claude et des missions Codex distinctes, sans essai de collaboration interne Codex justifiant de modifier ce drapeau."
    },
    "sources": [
     {
@@ -10128,7 +10228,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10145,13 +10245,21 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Codex audite Claude, mais aucun usage multi-agent Codex n'est attesté."
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Les usages de sous-agents relevés concernent Claude Code."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions Codex sont lancées séparément et suivies dans OPÉRER."
     }
    }
   },
@@ -11686,7 +11794,7 @@
    "categorie": "parametres",
    "nom": "hide_agent_reasoning",
    "gabarit": "court",
-   "description": "Le réglage de raisonnement masque les événements correspondants dans le TUI et la sortie `exec`.",
+   "description": "Masque les événements de raisonnement dans l’interface terminal et dans la sortie de `codex exec`.",
    "description_source": "Type : boolean. Suppress reasoning events in both the TUI and codex exec output.",
    "usage": "hide_agent_reasoning",
    "usage_nature": "syntaxe",
@@ -11695,7 +11803,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les audits demandent de conserver une trace lisible et aucun besoin de masquer ces événements n’est signalé."
+    "pourquoi": "Les missions Codex produisent des journaux, mais aucun besoin de masquer ces événements n’est décrit pour les audits ou la chaîne D70."
    },
    "sources": [
     {
@@ -11708,7 +11816,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11717,10 +11825,19 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Mission-codex conserve des journaux de ses exécutions."
+    }
+   }
   },
   {
    "id": "codex-parametres-history-max-bytes",
@@ -11770,7 +11887,7 @@
    "categorie": "parametres",
    "nom": "history.persistence",
    "gabarit": "court",
-   "description": "Le réglage `history.persistence` décide si Codex enregistre les transcriptions de session dans `history.jsonl`.",
+   "description": "Choisit entre `save-all` et `none` pour enregistrer les transcriptions de session dans `history.jsonl`.",
    "description_source": "Type : save-all | none. Control whether Codex saves session transcripts to history.jsonl.",
    "usage": "history.persistence",
    "usage_nature": "syntaxe",
@@ -11779,7 +11896,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun défaut de conservation des fils Codex n’est signalé ; modifier cet historique ne débloquerait pas l’objectif CLI sous tmux."
+    "pourquoi": "Les sessions CLI et app partagent leurs données ; aucun défaut d’historique ne justifie de modifier ce réglage, dont none désactive l’enregistrement."
    },
    "sources": [
     {
@@ -11792,7 +11909,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11821,17 +11938,17 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
-     "sha1": "df56f075d6430903783090d81fe79cdaa5706cef",
-     "pourquoi": "Des fils Codex existent surtout dans l’app, sans défaut d’historique signalé."
-    },
-    "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "L’objectif CLI sous tmux avec Remote Control ne dépend pas de ce réglage d’historique."
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Les deux binaires partagent leurs données de session dans ~/.codex."
     }
    }
   },
@@ -11841,16 +11958,16 @@
    "categorie": "parametres",
    "nom": "Hook Interrupt",
    "gabarit": "court",
-   "description": "Le hook `Interrupt` s’exécute lors de l’interruption d’un tour actif du fil principal pour consigner l’arrêt ou nettoyer un travail de hook.",
+   "description": "Exécute `Interrupt` lors de l’interruption d’un tour actif du fil principal, sans agir sur les fils inactifs ni les sous-agents et en ignorant tout matcher.",
    "description_source": "Interrupt runs when you interrupt an active turn on the main thread. Use it to record the interruption or clean up work started by a hook. It doesn't run for idle threads or subagents, and any configured matcher is ignored.",
    "usage": "{ \"systemMessage\": \"Saved the interrupted turn to the local audit log.\" }",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les contrôles répétés envisagés portent sur les missions et l’environnement Python, pas sur l’interruption d’un tour Codex."
+    "pourquoi": "Les contrôles envisagés concernent les missions et l’environnement Python ; aucun besoin précis de hook d’interruption Codex n’est décrit."
    },
    "sources": [
     {
@@ -11863,7 +11980,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11892,13 +12009,21 @@
     {
      "date": "2026-09-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "d50578986ee9e32b4049e889616af9a8d2214702",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "optimisation.pistes": {
-     "sha1": "5088e0fa87b2b5e6e2a5f195cb6b0a043fb304bf",
-     "pourquoi": "Les contrôles manuels cités comme candidats aux hooks ne portent pas sur les interruptions."
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Les contrôles candidats aux hooks portent sur SHA-256 et Python."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé du contexte précise qu’il n’y a pas de hook Codex."
     }
    }
   },
@@ -11908,16 +12033,16 @@
    "categorie": "parametres",
    "nom": "Hook PermissionRequest",
    "gabarit": "court",
-   "description": "Le hook `PermissionRequest` intervient avant une demande d’approbation et peut l’autoriser ou la refuser.",
+   "description": "Intervient avant une demande d’approbation pour l’autoriser, la refuser ou laisser la demande normale continuer, sans intervenir si aucune approbation n’est requise.",
    "description_source": "PermissionRequest runs when Codex is about to ask for approval, such as a shell escalation or managed-network approval. It can allow the request, deny the request, or decline to decide and let the normal approval prompt continue. It doesn't run for commands that don't need approval.",
    "usage": "{\n  \"hookSpecificOutput\": {\n    \"hookEventName\": \"PermissionRequest\",\n    \"decision\": {\n      \"behavior\": \"allow\"\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "inconnu",
+   "statut_usage": "non_utilise",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Une autorisation automatique contredirait la validation humaine pas à pas exigée pour les audits."
+    "pourquoi": "Les missions Codex sont déjà lancées en danger-full-access et aucun hook Codex n’est configuré ; ce hook n’apporte pas de scénario d’essai précis au fonctionnement déclaré."
    },
    "sources": [
     {
@@ -11930,7 +12055,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11939,10 +12064,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Mission-codex utilise danger-full-access."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé précise l’absence de hook Codex."
+    }
+   }
   },
   {
    "id": "codex-parametres-hook-postcompact",
