@@ -10357,7 +10357,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe combien de temps le premier tour d'une session non interactive attend les serveurs MCP en cours de connexion.",
+   "description": "Variable qui fixe en millisecondes combien de temps le premier tour d'une session non interactive attend les serveurs MCP encore en connexion (0 supprime l'attente).",
    "description_source": "How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. When set, the wait covers every pending server; in a self-hosted environment, it changes only how long the wait lasts. Set to 0 to skip the wait. A --permission-prompt-tool server keeps its own MCP_TIMEOUT wait regardless of the value. Requires Claude Code v2.1.274 or later",
    "usage": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "usage_nature": "syntaxe",
@@ -10366,7 +10366,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Concerne le mode non interactif (`claude -p`), utilisé par la chaîne D70 et par JUGER, mais aucun besoin de ce réglage n'y est décrit dans CONTEXTE.md."
+    "pourquoi": "Concerne le mode non interactif (`claude -p`) de la chaîne D70 et de JUGER, mais CONTEXTE.md n'y décrit aucun retard dû à l'attente des serveurs MCP."
    },
    "sources": [
     {
@@ -10379,7 +10379,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10396,21 +10396,25 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "methode.chaine-nuit": {
      "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
-     "pourquoi": "Étapes Claude de la chaîne D70 en mode non interactif."
+     "pourquoi": "étapes Claude de la chaîne D70 en mode non interactif"
     },
     "methode.juger-design": {
      "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
-     "pourquoi": "Rôles LLM de JUGER appelés par `claude -p`."
+     "pourquoi": "rôles LLM de JUGER appelés par `claude -p`"
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteurs MCP : delta-ia local, connecteurs de compte."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteurs MCP : delta-ia local, connecteurs de compte"
     }
    }
   },

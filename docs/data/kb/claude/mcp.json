@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-14",
+ "maj_le": "2026-10-15",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -216,7 +216,7 @@
    "categorie": "mcp",
    "nom": "Automatic reconnection",
    "gabarit": "complet",
-   "description": "Claude Code reconnecte seul un serveur distant (HTTP ou SSE) qui décroche en cours de session et réessaie une première connexion après une erreur passagère ; un serveur stdio, processus local, n'est pas reconnecté automatiquement. `/mcp` montre l'état et permet de relancer.",
+   "description": "Claude Code reconnecte seul un serveur distant (HTTP ou SSE) qui décroche en cours de session et réessaie une première connexion après une erreur passagère ; un serveur stdio, processus local, n'est pas reconnecté automatiquement. `/mcp` montre l'état des serveurs et permet de relancer une connexion.",
    "description_source": "Claude Code reconnects a remote server that drops mid-session and retries an HTTP or SSE server's first connection after a transient error. Stdio servers are local processes, and Claude Code doesn't reconnect them automatically.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
@@ -225,7 +225,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La reconnexion d'un serveur HTTP ou SSE est automatique, sans réglage à activer ; les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et `/mcp` reste le moyen de vérifier l'état du connecteur delta-ia (HTTP) en cas de doute."
+    "pourquoi": "La reconnexion des serveurs HTTP, comme le connecteur delta-ia, est automatique et sans réglage ; les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et `/mcp` reste le moyen de vérifier l'état d'un connecteur en cas de doute."
    },
    "sources": [
     {
@@ -238,7 +238,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -255,13 +255,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "connecteur delta-ia en HTTP, portée locale"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia en HTTP, portée locale ; connecteurs de compte claude.ai"
     },
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -425,7 +429,7 @@
    "categorie": "mcp",
    "nom": "Dynamic tool updates",
    "gabarit": "complet",
-   "description": "Claude Code prend en charge les notifications MCP `list_changed` : un serveur peut changer ses outils, prompts et ressources en cours de session, et Claude Code rafraîchit la liste sans déconnexion.",
+   "description": "Un serveur MCP peut changer ses outils, prompts ou ressources pendant la connexion et envoyer une notification `list_changed` ; Claude Code rafraîchit alors la liste sans déconnexion.",
    "description_source": "An MCP server can change the tools, prompts, or resources it offers while connected and send a list_changed notification. When one arrives:",
    "usage": "list_changed",
    "usage_nature": "syntaxe",
@@ -434,7 +438,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Mécanisme automatique, côté serveur ; rien à régler pour le connecteur delta-ia, qui expose des outils de consultation en lecture seule."
+    "pourquoi": "Mécanisme automatique côté serveur ; rien à régler pour le connecteur delta-ia ni pour les connecteurs de compte claude.ai."
    },
    "sources": [
     {
@@ -447,7 +451,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -468,13 +472,17 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia en portée locale et connecteurs de compte, consommés sans réglage"
     }
    },
    "exemple_impossible": "Usage = notification `list_changed` émise par le serveur MCP ; rien à taper côté Claude Code"
@@ -579,7 +587,7 @@
    "categorie": "mcp",
    "nom": "Exempt a server from deferral",
    "gabarit": "complet",
-   "description": "`alwaysLoad: true` dans la configuration d'un serveur charge tous ses outils dans le contexte dès le début de la session, sans passer par la recherche d'outils. À réserver à quelques outils dont Claude a besoin à chaque tour.",
+   "description": "`alwaysLoad: true` dans la configuration d'un serveur charge ses outils dans le contexte dès le début de la session, sans passer par la recherche d'outils et quel que soit `ENABLE_TOOL_SEARCH`. À réserver à quelques outils dont Claude a besoin à chaque tour, car chacun consomme du contexte.",
    "description_source": "If a server's tools should always be visible to Claude without a search step, set alwaysLoad to true in that server's configuration. The server's tools then load into context regardless of the ENABLE_TOOL_SEARCH setting. Use this for a small number of tools that Claude needs on every turn, since each upfront tool consumes context that would otherwise be available for your conversation.",
    "usage": "{\n  \"mcpServers\": {\n    \"core-tools\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.example.com/mcp\",\n      \"alwaysLoad\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -588,7 +596,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton `~/.claude/CLAUDE.md` demande de consulter delta-ia avant de choisir une commande, et la recherche d'outils le trouve déjà ; le charger en permanence coûterait du contexte à chaque tour."
+    "pourquoi": "Ton `~/.claude/CLAUDE.md` demande de consulter delta-ia avant de choisir une commande mais pas à chaque tour, et la recherche d'outils le trouve déjà ; le charger en permanence coûterait du contexte à chaque tour."
    },
    "sources": [
     {
@@ -601,7 +609,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -618,17 +626,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.regles-globales": {
      "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
-     "pourquoi": "Le CLAUDE.md global demande de consulter delta-ia avant de choisir une commande, sans l'appeler à chaque tour."
+     "pourquoi": "le CLAUDE.md global demande de consulter delta-ia avant un choix, sans l'appeler à chaque tour"
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia en portée locale"
     }
    },
    "exemple_origine": "source"
@@ -698,7 +710,7 @@
    "categorie": "mcp",
    "nom": "How connectors reach Claude Code",
    "gabarit": "complet",
-   "description": "Les connecteurs claude.ai arrivent différemment selon la session : récupérés par Claude Code lui-même dans le terminal, VS Code et l'Agent SDK ; transmis par l'hôte dans les sessions cloud ; injectés par l'app de bureau dans ses sessions locales. Seul le premier cas obéit à `disableClaudeAiConnectors`, `ENABLE_CLAUDEAI_MCP_SERVERS` et `allowAllClaudeAiMcps`.",
+   "description": "Les connecteurs claude.ai arrivent différemment selon le type de session : récupérés par Claude Code lui-même dans le terminal, transmis par l'hôte dans les sessions cloud, injectés par l'app de bureau dans ses sessions locales. Les réglages qui les gouvernent dépendent donc de l'endroit où tourne la session.",
    "description_source": "Which settings govern a claude.ai connector depends on where your session runs, because only some sessions fetch connectors from claude.ai themselves. Each row below names how connectors arrive in one kind of session and what controls them there. The desktop app's WSL sessions have no row because connectors aren't available in them yet.",
    "usage": "managed-mcp.json",
    "usage_nature": "syntaxe",
@@ -707,7 +719,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Page de référence : les sessions durables de Sylvain sont des sessions de terminal sous tmux, donc du cas où Claude Code récupère lui-même les connecteurs ; elle éclaire la décision de Work sur trading-sim (voir `disableClaudeAiConnectors`), sans rien à essayer par elle-même."
+    "pourquoi": "Page de référence : tes sessions durables tournent dans le terminal sous tmux, donc Claude Code y récupère lui-même les connecteurs de compte (Vercel compris, de nouveau connecté le 12/10) ; elle éclaire la question du `deny` sur trading-sim, sans rien à essayer par elle-même."
    },
    "sources": [
     {
@@ -720,7 +732,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -737,17 +749,21 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "sessions de terminal sous tmux"
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "connecteurs de compte appliqués par défaut, écart trading-sim"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteurs de compte appliqués par défaut, écart trading-sim, Vercel connecté le 12/10"
     }
    },
    "exemple_impossible": "Usage = nom du fichier géré `managed-mcp.json` ; son contenu n'est pas dans la source de la fiche"
@@ -758,7 +774,7 @@
    "categorie": "mcp",
    "nom": "Images in tool results",
    "gabarit": "complet",
-   "description": "Quand un outil MCP renvoie une image (PNG, JPEG, GIF, WebP), Claude la voit dans la conversation, parfois réduite, et Claude Code enregistre aussi l'original dans le dossier `tool-results` de la session. Claude peut ensuite recadrer ou convertir le fichier en pleine résolution avec Bash.",
+   "description": "Quand un outil MCP renvoie une image (PNG, JPEG, GIF, WebP), Claude la voit dans la conversation, parfois réduite, et Claude Code enregistre l'original dans le dossier `tool-results` de la session sous `~/.claude/projects/`. Claude peut ensuite recadrer ou convertir le fichier en pleine résolution avec Bash.",
    "description_source": "When an MCP tool returns a PNG, JPEG, GIF, or WebP image, Claude sees the image inline in the conversation. The inline copy may be scaled down or compressed to fit the model's image size limits. Claude Code also saves the original bytes to a file in the session's tool-results directory under ~/.claude/projects/ and gives Claude the path. Claude can then crop, convert, or reuse the full-resolution file with tools such as Bash.",
    "usage": "tool-results",
    "usage_nature": "syntaxe",
@@ -767,7 +783,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton serveur delta-ia renvoie du texte, pas d'images ; comportement automatique, rien à régler."
+    "pourquoi": "Comportement automatique, rien à régler ; le connecteur delta-ia renvoie du texte, et CONTEXTE.md ne décrit aucun usage d'un connecteur qui renvoie des images."
    },
    "sources": [
     {
@@ -777,17 +793,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Seul MCP maison : delta-ia, qui renvoie des données texte."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia (données texte) et connecteurs de compte"
     }
    },
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP output limits and warnings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-26",
@@ -804,6 +820,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_impossible": "Usage = dossier `tool-results` rempli par Claude Code ; aucune action de l'utilisateur"
@@ -1391,7 +1411,7 @@
    "categorie": "mcp",
    "nom": "Raise the limit for a specific tool",
    "gabarit": "complet",
-   "description": "Un auteur de serveur MCP peut autoriser un outil à renvoyer des résultats plus longs que le seuil d'écriture sur disque en annotant `_meta[\"anthropic/maxResultSizeChars\"]` dans sa déclaration, dans la limite d'un plafond fixe.",
+   "description": "Un auteur de serveur MCP peut autoriser un outil à renvoyer plus que le seuil d'écriture sur disque de 50 000 caractères en annotant `_meta[\"anthropic/maxResultSizeChars\"]` dans son entrée `tools/list` ; le plafond fixe est de 500 000 caractères.",
    "description_source": "If you're building an MCP server, you can allow individual tools to return results larger than the default persist-to-disk threshold of 50,000 characters by setting _meta[\"anthropic/maxResultSizeChars\"] in the tool's tools/list response entry. Claude Code raises that tool's threshold to the annotated value, up to a hard ceiling of 500,000 characters.",
    "usage": "{\n  \"name\": \"get_schema\",\n  \"description\": \"Returns the full database schema\",\n  \"_meta\": {\n    \"anthropic/maxResultSizeChars\": 200000\n  }\n}",
    "usage_nature": "syntaxe",
@@ -1413,7 +1433,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP output limits and warnings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1430,13 +1450,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia en portée locale"
     }
    },
    "exemple_origine": "source"
@@ -1604,7 +1628,7 @@
    "categorie": "mcp",
    "nom": "Tool search for MCP server authors",
    "gabarit": "complet",
-   "description": "Section destinée aux auteurs de serveurs MCP : avec la recherche d'outils activée, le champ d'instructions du serveur aide Claude à savoir quand chercher ses outils. Un outil peut aussi déclarer `\"anthropic/alwaysLoad\"` dans son objet `_meta` (dans l'entrée `tools/list`) pour se charger d'emblée ; la personne qui configure le serveur peut le surcharger avec `alwaysLoad` (false exige la 2.1.287 ou plus).",
+   "description": "Section destinée aux auteurs de serveurs MCP : avec la recherche d'outils activée, le champ d'instructions du serveur aide Claude à savoir quand chercher ses outils. Un outil peut aussi déclarer `\"anthropic/alwaysLoad\"` dans son objet `_meta` pour se charger d'emblée.",
    "description_source": "If you're building an MCP server, the server instructions field becomes more useful with tool search enabled. Server instructions help Claude understand when to search for your tools, similar to how skills work.",
    "usage": "{\n  \"name\": \"search_tickets\",\n  \"description\": \"Searches the ticket tracker by keyword\",\n  \"_meta\": {\n    \"anthropic/alwaysLoad\": true\n  }\n}",
    "usage_nature": "syntaxe",
@@ -1613,7 +1637,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md décrit le connecteur delta-ia côté consommateur (MCP en portée locale) et ne dit pas que Sylvain écrit un serveur MCP à doter de `_meta`."
+    "pourquoi": "CONTEXTE.md décrit le connecteur delta-ia côté consommateur (portée locale) et ne dit pas que Sylvain fait évoluer un serveur MCP à doter de `_meta`."
    },
    "sources": [
     {
@@ -1623,17 +1647,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Décrit le connecteur MCP delta-ia en portée locale, côté utilisateur ; aucun serveur MCP écrit par Sylvain."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "connecteur delta-ia vu côté consommateur, en portée locale"
     }
    },
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-10-10",
@@ -1646,6 +1670,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source"
@@ -1750,7 +1778,7 @@
    "categorie": "mcp",
    "nom": "Use pre-configured OAuth credentials",
    "gabarit": "complet",
-   "description": "Pour un serveur sans enregistrement dynamique de client OAuth, on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe.",
+   "description": "Pour un serveur sans enregistrement dynamique de client OAuth (erreur « does not support dynamic client registration »), on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe (`--callback-port`).",
    "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide the credentials when adding the server.",
    "usage": "        claude mcp add --transport http \\\n          --client-id your-client-id --client-secret --callback-port 8080 \\\n          my-server https://mcp.example.com/mcp",
    "usage_nature": "syntaxe",
@@ -1759,7 +1787,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui exige ce type d'authentification ; delta-ia n'en a aucune."
+    "pourquoi": "Le connecteur delta-ia n'a pas d'authentification, et Vercel passe par les connecteurs de compte claude.ai, pas par `claude mcp add` ; aucun serveur décrit n'exige ce type d'identifiants."
    },
    "sources": [
     {
@@ -1772,7 +1800,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1789,13 +1817,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia, sans authentification."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia ajouté par `claude mcp add` sans authentification ; Vercel est un connecteur de compte"
     }
    },
    "exemple_origine": "source"
@@ -1806,7 +1838,7 @@
    "categorie": "mcp",
    "nom": "User scope",
    "gabarit": "complet",
-   "description": "Portée utilisateur : le serveur est enregistré dans `~/.claude.json` et disponible dans tous les projets de la machine, en restant privé.",
+   "description": "Portée utilisateur : le serveur est enregistré dans `~/.claude.json` et disponible dans tous les projets de la machine, tout en restant privé au compte de l'utilisateur.",
    "description_source": "User-scoped servers are stored in ~/.claude.json and provide cross-project accessibility, making them available across all projects on your machine while remaining private to your user account. This scope works well for personal utility servers, development tools, or services you frequently use across different projects.",
    "usage": "# Add a user server\nclaude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/anthropic",
    "usage_nature": "syntaxe",
@@ -1828,7 +1860,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1845,12 +1877,16 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "delta-ia en portée locale, absent de ~/projets/trading-sim"
     }
    },
