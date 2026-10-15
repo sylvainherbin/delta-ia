@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 127,
+ "commentees": 130,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -963,7 +963,7 @@
    "categorie": "commandes",
    "nom": "/cd",
    "gabarit": "complet",
-   "description": "Déplace la session dans un autre répertoire de travail en gardant la conversation, avec complétion du chemin par Tab. Contrairement à `/add-dir`, la configuration du nouveau répertoire est appliquée.",
+   "description": "Déplace la session dans un autre répertoire de travail principal en gardant la conversation, avec complétion du chemin par Tab. Contrairement à `/add-dir`, Claude Code applique aussitôt la configuration du nouveau répertoire (réglages et règles de permission, hooks, serveurs MCP de portée projet et locale, skills, sous-agents) et déconnecte les serveurs MCP de portée locale de l'ancien.",
    "description_source": "Move this session to a new working directory, keeping the conversation. Type a partial path to see matching directory suggestions; press Tab to accept one. For what Claude Code applies from the new directory as soon as you move, and how /cd differs from /add-dir, see Move the session to another directory",
    "usage": "/cd <path>",
    "usage_nature": "syntaxe",
@@ -972,7 +972,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Chaque session systemd est attachée à un projet ; changer de dossier brouillerait la répartition des rôles entre sessions."
+    "pourquoi": "Chaque session durable est attachée à un dossier de travail et à un rôle ; un `/cd` de `~/projets/delta-ia` vers `~/projets/trading-sim` déconnecterait le connecteur delta-ia (portée locale) et appliquerait les règles de trading-sim, ce qui brouillerait la répartition des rôles."
    },
    "sources": [
     {
@@ -981,7 +981,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -1002,10 +1002,23 @@
     {
      "date": "2026-10-15",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "sessions durables par rôle, chacune lancée dans son dossier par un service systemd"
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "MCP de portée locale rattachés au dossier de travail ; delta-ia absent de ~/projets/trading-sim"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
@@ -3144,7 +3157,7 @@
    "categorie": "commandes",
    "nom": "/color",
    "gabarit": "complet",
-   "description": "Change la couleur de la barre de prompt de la session (red, blue, green, yellow, purple, orange, pink, cyan) ; `default` la remet à zéro, sans argument une couleur est tirée au hasard. Avec Remote Control, la couleur est synchronisée sur claude.ai/code ; disponible aussi en mode non interactif (`-p`) depuis la v2.1.205.",
+   "description": "Change la couleur de la barre de prompt de la session (red, blue, green, yellow, purple, orange, pink, cyan) ; `default` la remet à zéro et, sans argument, une couleur est tirée au hasard. Avec Remote Control, la couleur est synchronisée sur claude.ai/code ; la commande marche aussi en mode non interactif (`-p`).",
    "description_source": "Set the prompt bar color for the current session. Available colors: red, blue, green, yellow, purple, orange, pink, cyan. Use default to reset, or run with no argument to pick a random color. When Remote Control is connected, the color syncs to claude.ai/code. Also available in non-interactive mode (-p)",
    "usage": "/color [color|default]",
    "usage_nature": "syntaxe",
@@ -3162,7 +3175,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -3197,20 +3210,44 @@
      "changement": "description d'origine modifiée dans la documentation",
      "avant": "Set the prompt bar color for the current session. Available colors: red, blue, green, yellow, purple, orange, pink, cyan. Use default to reset, or run with no argument to pick a random color. When Remote Control is connected, the color syncs to claude.ai/code. Also available in non-interactive mode (-p); requires Claude Code v2.1.205 or later",
      "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "methode.organisation": {
      "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
-     "pourquoi": "Un chef par projet, des devs (Dev-delta, Dev-discipline, Dev-core), une session Design."
+     "pourquoi": "un chef par projet, des devs (Dev-delta, Dev-discipline, Dev-core), une session Design"
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control."
+     "pourquoi": "sessions pilotées depuis l'iPhone par Remote Control"
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/color [color|default]` règle la couleur de la barre de prompt de la session ; avec Remote Control connecté, la couleur se synchronise sur claude.ai/code.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la synchronisation Remote Control disparaît ou la commande change de syntaxe"
+    },
+    {
+     "affirmation": "Un chef par projet et des devs (Dev-delta, Dev-discipline, Dev-core) tournent en sessions distinctes.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'organisation par chefs et devs change"
+    },
+    {
+     "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les sessions ne sont plus pilotées par Remote Control"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-compact",
@@ -4066,7 +4103,7 @@
    "categorie": "commandes",
    "nom": "/fast",
    "gabarit": "complet",
-   "description": "Active ou coupe le mode rapide ; lancée pendant une réponse, elle bascule sans attendre la fin du tour, mais le tour en cours finit à la vitesse d'origine. Usage limité en mode `-p`.",
+   "description": "Active ou coupe le mode rapide (Opus jusqu'à 2,5 fois plus rapide, à un coût par jeton plus élevé) ; lancée pendant une réponse, elle bascule sans attendre la fin du tour, mais le tour en cours finit à la vitesse d'origine. Usage limité en mode `-p`.",
    "description_source": "Toggle fast mode on or off. Run it while Claude is responding and Claude Code toggles fast mode without waiting for the turn to end, though the running turn finishes at its original speed. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags. Availability in non-interactive mode with -p is limited; see Toggle fast mode",
    "usage": "/fast [on|off]",
    "usage_nature": "syntaxe",
@@ -4075,7 +4112,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE ne signale pas la vitesse comme un frein ; ta contrainte est la limite hebdomadaire."
+    "pourquoi": "Sur Max, le mode rapide se paie uniquement en crédits d'usage, hors des limites du forfait : garde-le coupé pendant l'essai Max (20x), et si tu l'actives, vérifie la dépense dans Paramètres > Utilisation, section « Usage credits »."
    },
    "sources": [
     {
@@ -4084,7 +4121,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4105,10 +4142,23 @@
     {
      "date": "2026-10-15",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Max (20x) à l'essai jusqu'au 07/11, bilan d'usage à préparer"
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "limites d'usage hebdomadaires parmi les frictions récurrentes"
+    }
+   },
    "exemple_origine": "compose"
   },
   {
