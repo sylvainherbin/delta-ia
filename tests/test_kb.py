@@ -926,7 +926,7 @@ def test_skills_redirections_et_consolidation():
 
 
 def test_fetch_kb_echec_total_code_5(racine_kb, monkeypatch, capsys):
-    """D68 : code 5 si aucune page n'est lue ; le code 3 (partiel) n'arrête pas le mode automatique, le 5 si."""
+    """Codes inchangés : 5 si aucune page lue, 3 si échec partiel ; reprise des autres éléments selon D129."""
     lancer_kb(racine_kb, monkeypatch)
     capsys.readouterr()
     toutes = {u: ErreurReseau("HTTP 403") for u in PAGES}

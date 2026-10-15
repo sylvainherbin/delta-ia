@@ -224,7 +224,8 @@ def test_d68_skill_et_reglages():
     assert "disable-model-invocation: true" in tete, "option A : /delta reste invocable par Sylvain seul"
     sec = skill[skill.index("## Mode automatique (D68)"):skill.index("## 0. Préparation")]
     for attendu in ("que si la consigne le demande explicitement", "scripts/garde.py --date J", "AskUserQuestion",
-                    "sans push", "delta-ia-delta-auto.md", "même après un arrêt par la garde", "git push` une seule fois"):
+                    "Arrêts bloquants seulement", "delta-ia-delta-auto.md", "même après un arrêt par la garde",
+                    "`git push` après chaque commit validé"):
         assert attendu in sec, attendu
     s = json.loads((RACINE / ".claude" / "settings.json").read_text(encoding="utf-8"))
     brut = json.dumps(s)

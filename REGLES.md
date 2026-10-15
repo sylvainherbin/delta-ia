@@ -58,7 +58,8 @@ Avant chaque commit, relire les fichiers produits pour vérifier ces deux points
 - Commit uniquement sur les chemins de l'agent (`git add <chemins>`, jamais `git add -A`).
 - Message de commit : `delta(<perimetre>): AAAA-MM-JJ — <n> éléments (<n> fort)`.
 - En cas de conflit : s'arrêter et le signaler. **Jamais de `--force`**, jamais de réécriture d'historique.
-- Ne pas pousser si `scripts/valider.py` échoue.
+- Ne pas pousser si `scripts/valider.py` échoue. En mode automatique (D70, D129), chaque lot validé et commité est poussé et journalisé avant le lot suivant ; une erreur ultérieure ne laisse pas un commit valide local (sauf échec du push lui-même, à signaler).
+- D70/D129 : une erreur de lecture, d’argument ou de patch réessayable se corrige puis se relance (au plus 2 nouvelles tentatives par commande) ; si elle persiste sur un élément, écarter cet élément avec son motif (`ecartes`) et continuer les autres. Seuls bloquent le passage une écriture hors périmètre, `valider.py` en échec après correction et les arrêts déjà prévus (garde, quota, conflit git, CONTEXTE modifié non commité, refus d’outil effectif ; échec git persistant). Les reprises ne contournent jamais un refus de permission. Toute erreur, même récupérée, est consignée dans un rapport D63 ; journal toujours, issue réelle distincte du code de garde.
 
 ## 7. Style
 

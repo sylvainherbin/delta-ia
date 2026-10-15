@@ -1,11 +1,14 @@
 """D127 : provenance et caducité des fiches qui recommandent (lot `provenance`, historique des corrections, valider.py)."""
 
 import json
+import os
+import subprocess
 
 import pytest
 
 import catalogue as cli
 import orchestrateur
+import passages
 import valider
 from deltalib.kb import catalogue as cat
 from deltalib.kb.modeles import EntreeExtraite
@@ -312,3 +315,96 @@ def test_cli_appliquer_commentaire_complet_exige_la_provenance(tmp_path, capsys)
     assert (tmp_path / "docs/data/kb/claude/commandes.json").read_bytes() == avant
     f.write_text(json.dumps({e["id"]: commentaire("tester", contexte_sections={}, provenance=[affirmation()])}), encoding="utf-8")
     assert cli.main(["appliquer", *args, "--fichier", str(f)]) == 0
+
+
+@pytest.mark.parametrize("perimetre", ["claude", "openai"])
+@pytest.mark.parametrize("reprise", ["corriger", "reparer_separement", "ecarter"])
+def test_d128_lot_refuse_sur_exemple_ancien_repris_sans_perdre_les_autres(tmp_path, capsys, perimetre, reprise):
+    """Incident du 15/10 : refus atomique, puis procédure du skill sur les deux périmètres."""
+    ancienne = entree("permission-modes", categorie="fonctionnalites", source="In the CLI, enter `/permissions`.")
+    ancienne.update(usage="/permissions", exemple="In the CLI, enter `/permissions`.", exemple_origine=None)
+    valides = [entree("a"), entree("b")]
+    fiches = [valides[0], ancienne, valides[1]]  # des fiches valides avant ET après celle qui échoue
+    if perimetre == "openai":
+        for e in fiches:
+            e.update(produit="codex", id=e["id"].replace("claude-code-", "codex-"))
+    args = kb(tmp_path, *fiches, perimetre=perimetre)[:-1]
+    assert valider.main([*args, "--kb"]) == 0, "le stock ancien sans origine est toléré"
+    capsys.readouterr()
+    lot = {e["id"]: {"provenance": [affirmation()]} for e in fiches}
+    lot[ancienne["id"]] = commentaire("tester", contexte_sections={}, provenance=[affirmation()],
+                                      exemple=ancienne["exemple"], exemple_origine=None)
+    fichier = tmp_path / "provenance.json"
+    fichier.write_text(json.dumps(lot), encoding="utf-8")
+    dossier = tmp_path / "docs/data/kb" / perimetre
+    avant = {p.name: p.read_bytes() for p in dossier.iterdir() if p.is_file()}
+    commande = ["appliquer", *args, "--fichier", str(fichier)]
+    assert cli.main(commande) == 1
+    erreur = capsys.readouterr().err
+    assert ancienne["id"] in erreur and "`exemple_origine` attendu" in erreur
+    assert "rien n'est écrit" in erreur and "retirez seulement leurs ids" in erreur
+    assert "source si recopié" in erreur and "origine null recopiée" in erreur
+    assert avant == {p.name: p.read_bytes() for p in dossier.iterdir() if p.is_file()}
+
+    if reprise == "ecarter":
+        del lot[ancienne["id"]]  # uniquement le fichier de commentaires, jamais la base
+    else:
+        if reprise == "reparer_separement":
+            reparation = tmp_path / "reparation.json"
+            reparation.write_text(json.dumps({ancienne["id"]: {"exemple": ancienne["exemple"],
+                                                               "exemple_origine": "source"}}), encoding="utf-8")
+            assert cli.main(["appliquer", *args, "--fichier", str(reparation)]) == 0
+        lot[ancienne["id"]]["exemple_origine"] = "source"  # corriger aussi la copie null du commentaire complet
+    fichier.write_text(json.dumps(lot), encoding="utf-8")
+    assert cli.main(commande) == 0, "la première relance applique toutes les autres fiches"
+    assert valider.main([*args, "--kb"]) == 0
+    relues = cat.charger(tmp_path, perimetre)
+    for e in valides:
+        assert relues[e["id"]]["provenance"] == [affirmation()]
+    assert ancienne["id"] in relues
+    if reprise == "ecarter":
+        assert relues[ancienne["id"]] == ancienne
+    else:
+        assert relues[ancienne["id"]]["exemple_origine"] == "source"
+        assert relues[ancienne["id"]]["provenance"] == [affirmation()]
+
+
+def test_d128_lot_publie_avant_le_refus_du_suivant(tmp_path, capsys):
+    """Rejoue la frontière de publication du skill : vrai appliquer, validation et origin Git local."""
+    racine = tmp_path / "depot"
+    racine.mkdir()
+    premiere = entree("a")
+    ancienne = entree("permissions", categorie="fonctionnalites")
+    ancienne.update(exemple="In the CLI, enter `/permissions`.", exemple_origine=None, usage="/permissions")
+    args = kb(racine, premiere, ancienne)[:-1]
+    env = {**os.environ, "GIT_AUTHOR_NAME": "test", "GIT_AUTHOR_EMAIL": "test@example.org",
+           "GIT_COMMITTER_NAME": "test", "GIT_COMMITTER_EMAIL": "test@example.org"}
+
+    def git(*arguments):
+        return subprocess.run(["git", *arguments], cwd=racine, env=env, check=True,
+                              capture_output=True, text=True).stdout.strip()
+
+    git("init", "-q", "--bare", str(tmp_path / "origin.git"))
+    git("init", "-q", "-b", "main")
+    git("remote", "add", "origin", str(tmp_path / "origin.git"))
+    git("add", "CONTEXTE.md", "docs/data/kb")
+    git("commit", "-qm", "base de test")
+    git("push", "-qu", "origin", "main")
+    fichier = racine / "lot.json"
+    fichier.write_text(json.dumps({premiere["id"]: {"provenance": [affirmation()]}}), encoding="utf-8")
+    assert cli.main(["appliquer", *args, "--fichier", str(fichier)]) == 0
+    assert valider.main([*args, "--kb"]) == 0
+    git("add", "docs/data/kb")
+    git("commit", "-qm", "delta-kb(claude): provenance — 1 entrée")
+    commit = git("rev-parse", "HEAD")
+    git("push", "-q", "origin", "main")  # AVANT d'ouvrir le lot suivant
+    assert passages.main(["--racine", str(racine), "--agent", "delta-ia", "--perimetre", "kb-claude",
+                          "--elements", "1", "--forts", "0", "--commit", commit, "--garde", "0"]) == 0
+
+    fichier.write_text(json.dumps({ancienne["id"]: commentaire("tester", contexte_sections={},
+                      provenance=[affirmation()], exemple=ancienne["exemple"], exemple_origine=None)}), encoding="utf-8")
+    assert cli.main(["appliquer", *args, "--fichier", str(fichier)]) == 1
+    assert "rien n'est écrit" in capsys.readouterr().err
+    assert git("rev-list", "--count", "origin/main..HEAD") == "0", "le refus ultérieur ne crée plus le cas code 15"
+    assert git("rev-parse", "origin/main") == commit
+    assert commit in (racine / "rapports/passages.log").read_text()

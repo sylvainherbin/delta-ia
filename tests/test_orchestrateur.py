@@ -762,7 +762,11 @@ def test_skills_ont_leur_section_mode_automatique_d70(fichier):
     t = (RACINE / fichier).read_text(encoding="utf-8")
     assert "## Mode automatique (D70)" in t and "--etape" in t and "Aucune question" in t
     assert "orchestrateur remet lui-même en place" in t, "le nettoyage est celui de l'orchestrateur, pas d'un LLM"
-    assert "un seul push" in t.lower() or "`git push` une seule fois" in t
+    if "delta-kb" in fichier:
+        assert "`git push` immédiatement après chaque commit" in t
+        assert "avant toute commande du lot suivant" in t
+    else:
+        assert "Un seul push" in t
 
 
 def test_delta_n_exclut_plus_le_kb_en_automatique():
@@ -939,9 +943,9 @@ def test_settings_projet_lectures_git_sans_sed_ni_git_diff():
                                      ".agents/skills/delta-kb/SKILL.md", "prompts/codex-delta.md", "prompts/codex-delta-kb.md"])
 def test_skills_reprennent_un_refus_de_lecture_au_lieu_d_arreter(fichier):
     t = (RACINE / fichier).read_text(encoding="utf-8")
-    assert "Un refus de lecture ne tue pas le passage" in t and "UNE fois" in t
+    assert "Un refus de lecture ne tue pas le passage" in t and "au plus 2 nouvelles tentatives par commande" in t
     assert "deuxième refus pour le même besoin" in t and "en écriture" in t
-    assert "outil refusé" in t or "commande refusée" in t
+    assert "refus d'outil effectif" in t
 
 
 def test_skills_claude_lisent_la_base_avec_read():

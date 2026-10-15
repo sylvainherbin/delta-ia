@@ -247,6 +247,15 @@ def main(argv=None) -> int:
             print(f"  ! {e}", file=sys.stderr)
         if erreurs:
             print(f"{len(erreurs)} erreur(s) : rien n'est écrit", file=sys.stderr)
+            print("Corrigez les fiches signalées puis relancez ; si l'erreur persiste, retirez seulement leurs ids "
+                  "du fichier de commentaires, consignez-les dans ecartes avec le motif et réappliquez le reste.",
+                  file=sys.stderr)
+            if any("`exemple_origine` attendu" in e for e in erreurs):
+                print("Exemple ancien sans origine : renseignez exemple_origine dans le commentaire complet "
+                      "(source si recopié de la documentation, sinon compose si construit à partir d'elle). "
+                      "Pour réparer séparément la fiche : {id: {exemple: <exemple existant>, "
+                      "exemple_origine: source|compose}} ; corrigez aussi toute origine null recopiée dans le lot. "
+                      "Si l'origine est invérifiable, écartez cette seule fiche.", file=sys.stderr)
             return 1
         if not a.dry_run:
             cat.ecrire(a.racine, a.perimetre, entrees)
