@@ -1,0 +1,14 @@
+[Unit]
+Description=Delta — produit et publie la sélection hebdomadaire S1
+ConditionPathExists=%h/projets/delta-ia/scripts/selection_auto.py
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/projets/delta-ia
+ExecStart=%h/projets/delta-ia/.venv/bin/python -B scripts/selection_auto.py
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=TZ=Europe/Paris LANG=C.UTF-8 LC_ALL=C.UTF-8 GIT_TERMINAL_PROMPT=0
+# Attend le verrou partagé si la chaîne de 04:00 travaille encore (au plus 4 h).
+TimeoutStartSec=4h15min
+KillMode=control-group
+Nice=10

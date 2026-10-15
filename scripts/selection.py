@@ -11,7 +11,8 @@ entrées « À tester » de la base et les nouveautés de la veille des 7 dernie
 profil.yaml et les retours de Sylvain (rapports/selection/retours.yaml : liste de {date, id, retour}, retour = utile | connu |
 sans_interet | a_revoir). « connu », « sans_interet » et « utile » ne reviennent pas ; « a_revoir » revient après
 --revoir-apres jours (28 par défaut). Chaque entrée : quoi essayer, pourquoi pour toi, ce qui la rendrait caduque (tiré de
-la fiche seule ; sinon l'entrée le dit). Tout reste local : rapports/ n'est jamais commité, rien n'entre dans docs/.
+la fiche seule ; sinon l'entrée le dit). Le JSON et un bref Markdown de cinq lignes au plus sont écrits côte à côte.
+Le minuteur hebdomadaire publie ces deux fichiers ; les retours restent locaux, rien n'entre dans docs/.
 
 Sorties : texte (défaut), --json (contrat lu par le bref de Delta-pilote et par la console : entrées avec `rang`, `id`, `quoi`,
 `pourquoi`, `caduque_si`, `classement`, `retour`, `retour_le`), --bref (une ligne par entrée), --expliquer (texte avec le

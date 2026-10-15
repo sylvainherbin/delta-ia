@@ -4,8 +4,8 @@ Candidats : les entrées « À tester » de la base (verdicts `tester` et `utili
 kb-essais.yaml) et les nouveautés de la veille des sept derniers jours (éléments `fort` ou `moyen` qui portent une action).
 
 Budget d'attention : au plus TAILLE_MAX entrées par semaine ISO. La sélection est figée à la première production de la semaine
-(`rapports/selection/AAAA-Www.json`) ; les appels suivants la relisent. Tout est local : `rapports/` n'est jamais commité et
-rien n'entre dans `docs/`.
+(`rapports/selection/AAAA-Www.json`) ; les appels suivants la relisent. Le minuteur publie ce JSON et son bref Markdown ;
+les retours restent locaux et rien n'entre dans `docs/`.
 
 Retours (écrits par `scripts/retour.py`, S2 ; lus ici) : `rapports/selection/retours.yaml`, liste de {date, id, retour}, retour parmi RETOURS. Le
 dernier retour d'un id décide :
@@ -497,6 +497,9 @@ def lire_figee(dossier: Path, semaine: str) -> dict | None:
         doc = json.loads(chemin.read_text(encoding="utf-8"))
         if not isinstance(doc, dict) or not isinstance(doc.get("entrees"), list):
             raise ValueError("clé `entrees` absente")
+        sem.bornes(semaine)
+        if doc.get("semaine") != semaine or len(doc["entrees"]) > TAILLE_MAX:
+            raise ValueError("semaine incohérente ou budget de cinq essais dépassé")
         return doc
     except (OSError, ValueError) as err:
         raise SelectionInvalide(f"{chemin} illisible : {err} (relancer avec --refaire)") from err
@@ -508,7 +511,29 @@ def ecrire(dossier: Path, doc: dict) -> Path:
     tmp = chemin.with_name(chemin.name + ".tmp")
     tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     tmp.replace(chemin)
+    ecrire_markdown(dossier, doc)
     return chemin
+
+
+def rendre_markdown(doc: dict) -> str:
+    """Cinq lignes au plus : titre et raison courte, sans les annotations privées de retour."""
+    def texte(valeur, limite):
+        return re.sub(r"([\\`*_[\]<>])", r"\\\1", _court(valeur, limite))
+
+    if not doc["entrees"]:
+        return f"Sélection {doc['semaine']} : aucun essai à proposer.\n"
+    return "\n".join(f"- {texte(e['nom'], 100)} — {texte(e['pourquoi'], 140)}"
+                     for e in doc["entrees"]) + "\n"
+
+
+def ecrire_markdown(dossier: Path, doc: dict) -> None:
+    chemin = dossier / f"{doc['semaine']}.md"
+    contenu = rendre_markdown(doc)
+    if chemin.exists() and chemin.read_text(encoding="utf-8") == contenu:
+        return
+    tmp = chemin.with_name(chemin.name + ".tmp")
+    tmp.write_text(contenu, encoding="utf-8")
+    tmp.replace(chemin)
 
 
 def annoter_retours(doc: dict, dossier: Path) -> dict:
@@ -525,6 +550,7 @@ def obtenir(racine: Path, dossier: Path, jour: date, taille: int, revoir_apres: 
     if not refaire:
         figee = lire_figee(dossier, semaine)
         if figee is not None:
+            ecrire_markdown(dossier, figee)
             return annoter_retours(figee, dossier), False
     doc = classer(racine, dossier, jour, taille, revoir_apres)
     ecrire(dossier, doc)

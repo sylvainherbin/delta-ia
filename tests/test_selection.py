@@ -221,6 +221,44 @@ def test_semaine_invalide(tmp_path):
     assert cli.main(["--racine", str(racine), "--semaine", "2026-W41", "--jour", "2026-10-12"]) == 2
 
 
+@pytest.mark.parametrize("jour,semaine", [("2026-10-19", "2026-W43"), ("2027-01-01", "2026-W53"),
+                                         ("2027-01-04", "2027-W01"), ("2024-12-30", "2025-W01")])
+def test_fichiers_et_contrat_iso_json_markdown(tmp_path, jour, semaine):
+    racine = depot(tmp_path, douze())
+    assert lancer(racine, jour=jour) == 0
+    dossier = racine / sel.DOSSIER
+    doc = json.loads((dossier / f"{semaine}.json").read_text())
+    assert doc["semaine"] == semaine and doc["jour"] == jour
+    lignes = (dossier / f"{semaine}.md").read_text().splitlines()
+    assert len(lignes) == len(doc["entrees"]) == 5
+    for ligne, entree in zip(lignes, doc["entrees"]):
+        assert entree["nom"] in ligne and entree["pourquoi"] in ligne
+        assert {"rang", "id", "quoi", "pourquoi", "caduque_si", "classement"} <= entree.keys()
+    assert all("retour" not in e for e in doc["entrees"])
+    (dossier / f"{semaine}.md").unlink()
+    assert lancer(racine, jour=jour) == 0  # reconstitue le bref d'une sélection déjà figée
+    assert (dossier / f"{semaine}.md").read_text().splitlines() == lignes
+
+
+def test_markdown_aplatit_et_abrege_sans_changer_le_bref_existant(tmp_path):
+    racine = depot(tmp_path, [fiche("x", nom="Titre\nsur deux lignes", pourquoi="Raison " * 100)])
+    assert lancer(racine) == 0
+    doc = sel.lire_figee(racine / sel.DOSSIER, SEMAINE)
+    md = (racine / sel.DOSSIER / f"{SEMAINE}.md").read_text()
+    assert len(md.splitlines()) == 1 and "Titre sur deux lignes" in md and "…" in md
+    assert "[x]" in sel.rendre_bref(doc)
+
+
+def test_semaine_figee_incoherente_est_refusee(tmp_path):
+    racine = depot(tmp_path, [fiche("x")])
+    assert lancer(racine) == 0
+    chemin = racine / sel.DOSSIER / f"{SEMAINE}.json"
+    doc = json.loads(chemin.read_text())
+    doc["semaine"] = "2026-W99"
+    chemin.write_text(json.dumps(doc))
+    assert lancer(racine) == 1
+
+
 def test_aucune_donnee_personnelle_dans_docs(tmp_path, capsys):
     racine = depot(tmp_path, [fiche("x")])
     avant = {p: p.read_bytes() for p in (racine / "docs").rglob("*") if p.is_file()}

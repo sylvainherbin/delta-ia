@@ -1,0 +1,214 @@
+"""Production S1, publication dans un distant local jetable et unités systemd (sans installation)."""
+
+import fcntl
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from datetime import date, datetime, timezone
+from pathlib import Path
+
+import pytest
+
+import selection_auto as auto
+from deltalib import selection as sel
+from test_selection import depot, douze, lancer
+
+RACINE = Path(__file__).resolve().parent.parent
+LUNDI = date(2026, 10, 19)
+SEMAINE = "2026-W43"
+
+
+def git(racine, *args):
+    return subprocess.run(["git", "-C", str(racine), *args], check=True, capture_output=True, text=True).stdout.strip()
+
+
+@pytest.fixture
+def publication(tmp_path, monkeypatch):
+    # Ni réseau, ni configuration personnelle (signature, helpers ou hooks) dans ces dépôts d'essai.
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    racine = depot(tmp_path, douze())
+    shutil.copyfile(RACINE / ".gitignore", racine / ".gitignore")
+    (racine / "scripts").mkdir()
+    (racine / "scripts/valider.py").write_text("raise SystemExit(0)\n")
+    git(racine, "init", "-b", "main")
+    git(racine, "config", "user.name", "Test S1")
+    git(racine, "config", "user.email", "s1@example.test")
+    git(racine, "add", ".")
+    git(racine, "commit", "-m", "Base de test")
+    distant = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "--bare", str(distant)], check=True, capture_output=True)
+    git(racine, "remote", "add", "origin", str(distant))
+    git(racine, "push", "-u", "origin", "main")
+    return racine, distant
+
+
+def fichiers(racine):
+    return [racine / sel.DOSSIER / f"{SEMAINE}.{ext}" for ext in ("json", "md")]
+
+
+def test_production_publication_et_relance_sans_nouveau_commit(publication):
+    racine, distant = publication
+    auto.executer(racine, LUNDI)
+    doc = json.loads(fichiers(racine)[0].read_text())
+    assert doc["semaine"] == SEMAINE and doc["jour"] == "2026-10-19"
+    assert len(doc["entrees"]) == 5
+    assert git(racine, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines() == [
+        f"rapports/selection/{SEMAINE}.json", f"rapports/selection/{SEMAINE}.md"]
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD")
+    avant = git(racine, "rev-parse", "HEAD")
+    auto.executer(racine, date(2026, 10, 20))
+    assert git(racine, "rev-parse", "HEAD") == avant
+    assert not git(racine, "status", "--porcelain")
+
+
+def test_aucune_production_avant_le_19(publication):
+    racine, distant = publication
+    avant = git(distant, "rev-parse", "main")
+    auto.executer(racine, date(2026, 10, 18))
+    assert not (racine / sel.DOSSIER).exists()
+    assert git(distant, "rev-parse", "main") == avant
+
+
+def test_horloge_de_paris_meme_si_le_jour_utc_est_encore_dimanche(monkeypatch):
+    class Horloge:
+        @staticmethod
+        def now(fuseau):
+            return datetime(2026, 10, 18, 22, 45, tzinfo=timezone.utc).astimezone(fuseau)
+
+    appels = []
+    monkeypatch.setattr(auto, "datetime", Horloge)
+    monkeypatch.setattr(auto, "executer", lambda racine, jour: appels.append(jour))
+    assert auto.main([]) == 0
+    assert appels == [LUNDI]
+
+
+@pytest.mark.parametrize("etat", ["non-suivi", "index", "commit", "branche"])
+def test_refus_de_publier_du_travail_etranger(publication, etat):
+    racine, distant = publication
+    avant = git(distant, "rev-parse", "main")
+    if etat == "branche":
+        git(racine, "checkout", "-b", "mission")
+    else:
+        (racine / "autre.txt").write_text("travail étranger")
+        if etat in ("index", "commit"):
+            git(racine, "add", "autre.txt")
+        if etat == "commit":
+            git(racine, "commit", "-m", "Étranger")
+    with pytest.raises(RuntimeError):
+        auto.executer(racine, LUNDI)
+    assert not (racine / sel.DOSSIER).exists()
+    assert git(distant, "rev-parse", "main") == avant
+
+
+def test_validation_en_echec_ne_commite_ni_ne_pousse(publication):
+    racine, distant = publication
+    (racine / "scripts/valider.py").write_text("raise SystemExit(1)\n")
+    git(racine, "add", "scripts/valider.py")
+    git(racine, "commit", "-m", "Validation défaillante de test")
+    git(racine, "push", "origin", "main")
+    avant = git(racine, "rev-parse", "HEAD")
+    with pytest.raises(RuntimeError, match="valider.py"):
+        auto.executer(racine, LUNDI)
+    assert git(racine, "rev-parse", "HEAD") == git(distant, "rev-parse", "main") == avant
+
+
+def test_reprise_du_seul_commit_apres_echec_push(publication):
+    racine, distant = publication
+    hook = distant / "hooks/pre-receive"
+    hook.write_text("#!/bin/sh\nexit 1\n")
+    hook.chmod(0o755)
+    with pytest.raises(RuntimeError, match="push"):
+        auto.executer(racine, LUNDI)
+    commit = git(racine, "rev-parse", "HEAD")
+    assert commit != git(distant, "rev-parse", "main")
+    hook.unlink()
+    auto.executer(racine, LUNDI)
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD") == commit
+
+
+def test_divergence_apres_commit_refusee(publication, tmp_path):
+    racine, distant = publication
+    hook = distant / "hooks/pre-receive"
+    hook.write_text("#!/bin/sh\nexit 1\n")
+    hook.chmod(0o755)
+    with pytest.raises(RuntimeError):
+        auto.executer(racine, LUNDI)
+    hook.unlink()
+    autre = tmp_path / "autre"
+    subprocess.run(["git", "clone", "-b", "main", str(distant), str(autre)], check=True, capture_output=True)
+    git(autre, "config", "user.name", "Test")
+    git(autre, "config", "user.email", "test@example.test")
+    (autre / "nouveau").write_text("avancée distante")
+    git(autre, "add", "nouveau")
+    git(autre, "commit", "-m", "Autre travail distant")
+    git(autre, "push", "origin", "main")
+    avant = git(distant, "rev-parse", "main")
+    with pytest.raises(RuntimeError, match="divergence"):
+        auto.executer(racine, LUNDI)
+    assert git(distant, "rev-parse", "main") == avant
+
+
+def test_avance_rapide_et_sans_distant(publication):
+    racine, distant = publication
+    git(racine, "commit", "--allow-empty", "-m", "Avancée distante")
+    git(racine, "push", "origin", "main")
+    # Le recul est limité au dépôt de test pour simuler une copie locale en retard.
+    git(racine, "reset", "--hard", "HEAD^")
+    auto.executer(racine, LUNDI)
+    assert git(racine, "rev-parse", "HEAD") == git(distant, "rev-parse", "main")
+    git(racine, "remote", "remove", "origin")
+    auto.executer(racine, date(2026, 10, 26))
+    assert (racine / sel.DOSSIER / "2026-W44.json").exists()
+
+
+def test_retours_restent_ignores(publication):
+    racine, distant = publication
+    dossier = racine / sel.DOSSIER
+    dossier.mkdir(parents=True)
+    (dossier / "retours.yaml").write_text("[]\n")
+    assert git(racine, "check-ignore", "rapports/selection/retours.yaml")
+    auto.executer(racine, LUNDI)
+    assert "retours.yaml" not in git(distant, "ls-tree", "-r", "--name-only", "main")
+
+
+def test_verrou_attend_la_chaine_avant_publication(publication):
+    racine, distant = publication
+    with (racine / ".git/delta-passage.lock").open("a") as verrou:
+        fcntl.flock(verrou, fcntl.LOCK_EX)
+        code = ("import sys; from pathlib import Path; from datetime import date; "
+                "import selection_auto as a; print('prêt', flush=True); "
+                "a.executer(Path(sys.argv[1]), date(2026,10,19))")
+        env = {**os.environ, "PYTHONPATH": str(RACINE / "scripts")}
+        proc = subprocess.Popen([sys.executable, "-B", "-c", code, str(racine)], env=env,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        try:
+            assert proc.stdout.readline().strip() == "prêt"
+            time.sleep(0.2)
+            assert proc.poll() is None and not (racine / sel.DOSSIER).exists()
+            fcntl.flock(verrou, fcntl.LOCK_UN)
+            _, err = proc.communicate(timeout=15)
+            assert proc.returncode == 0, err
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.communicate()
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD")
+
+
+def test_unites_calendrier_et_premiere_echeance():
+    timer = (RACINE / "deploy/systemd/delta-ia-selection.timer").read_text()
+    service = (RACINE / "deploy/systemd/delta-ia-selection.service").read_text()
+    assert "Persistent=true" in timer and "TZ=Europe/Paris" in service
+    assert "selection_auto.py" in service and "TimeoutStartSec=4h15min" in service
+    calendrier = next(l.split("=", 1)[1] for l in timer.splitlines() if l.startswith("OnCalendar="))
+    if not shutil.which("systemd-analyze"):
+        pytest.skip("systemd-analyze absent")
+    for base, attendu in (("2026-10-15 12:00:00", "2026-10-19 06:30:00 CEST"),
+                          ("2026-10-20 12:00:00", "2026-10-26 06:30:00 CET")):
+        res = subprocess.run(["systemd-analyze", "calendar", f"--base-time={base}", calendrier],
+                             capture_output=True, text=True, check=True, env={**os.environ, "TZ": "Europe/Paris"})
+        assert attendu in res.stdout
