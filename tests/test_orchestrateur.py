@@ -48,6 +48,16 @@ elif mode == "ok-codex":
     passage(sys.argv[2], sys.argv[3])
 elif mode == "ok-sans-commit":
     claude_ok()
+elif mode == "arret-sur-erreur":   # 15/10 04:09 : fetch --kb a modifié la base, puis une commande échoue ; `codex exec` sort en 0
+    ecrire(f"{sys.argv[2]}/{sys.argv[3]}", "modifié avant l'arrêt\n")
+    print("ctx-id inconnus ou dépréciés : ['config.chatgpt']", file=sys.stderr)
+elif mode == "elements-sans-commit":   # 15/10 04:19 : « 29 éléments » dans le journal, base modifiée, aucun commit
+    ecrire(f"{sys.argv[2]}/{sys.argv[3]}", "29 éléments commentés\n")
+elif mode == "elements-nuls":   # brut : 15 nouveautés ; fichier du jour : 0 élément, 0 écarté ; commit et push faits
+    ecrire("raw/openai-nouveautes.json", json.dumps({"perimetre": "openai", "nouveautes": 15}))
+    ecrire("docs/data/openai/2026-10-02.json", json.dumps({"perimetre": "openai", "elements": [], "ecartes": []}))
+    git("add", "docs/data/openai"); git("commit", "-qm", "delta(openai): 2026-10-02 — 0 éléments (0 fort)")
+    git("push", "-q", "origin", "HEAD:refs/heads/main")
 elif mode == "echec":
     ecrire(f"{sys.argv[2]}/index.json", "modifié par une étape en échec\n")
     ecrire(f"{sys.argv[2]}/nouveau.json", "{}\n")
@@ -89,6 +99,8 @@ elif mode == "modifie-hook":
 elif mode == "supprime-hook":
     os.remove(".git/hooks/pre-push"); claude_ok()
 elif mode == "supervision":
+    ecrire("rapports/supervision-lancee.txt", "oui\n"); ecrire("rapports/2026-10-02_0420-supervision.md", "# supervision\n"); claude_ok()
+elif mode == "supervision-muette":   # la supervision sort en code 0 sans écrire son rapport
     ecrire("rapports/supervision-lancee.txt", "oui\n"); claude_ok()
 elif mode.startswith("supervision-refus"):
     ecrire(sys.argv[2], sys.argv[3])
@@ -781,6 +793,7 @@ def depot_sh(depot, tmp_path):
     toml = toml.replace('bin = "~/.local/bin/claude"', f'bin = "{faux}"').replace('bin = "/usr/lib/chatgpt/resources/codex"', f'bin = "{faux}"')
     toml = toml.replace("delai_min = 45", "delai_min = 1")
     toml = re.sub(r"^valider = .*$", "valider = []", toml, flags=re.MULTILINE).replace("valider_kb = true", "valider_kb = false")  # dépôt de test : données vides
+    toml = re.sub(r"^commits_attendus = .*$", "commits_attendus = []", toml, flags=re.MULTILINE)  # le faux binaire ne commite rien (133 sinon)
     (tmp_path / "faux.toml").write_text(toml)
     depot.sh("git", "add", "-A")
     depot.sh("git", "commit", "-qm", "scripts")
@@ -1396,3 +1409,114 @@ def test_code_132_documente_dans_la_docstring_et_la_spec():
     assert "132 étape abandonnée sur échec réseau" in orc.__doc__ and "échec réseau (D122)" in orc.__doc__
     spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
     assert re.search(r"^\| D122 \|[^\n]*07:30[^\n]*132", spec, re.M)
+
+
+# --- faux succès : un agent qui s'arrête ou se contredit n'est jamais journalisé comme un succès (mission m-da7a0dc60ff3) ---
+
+def journal_log(depot, nom="codex-delta"):
+    return (depot / "rapports" / "auto" / f"2026-10-02-{nom}.log").read_text(encoding="utf-8")
+
+
+def passage_codex(depot, cfg, mode, *args, attendus=("delta(openai):",), nom="codex-delta"):
+    e = etape(depot, nom, mode, *args, agent="codex", garde=nom, attendus=attendus,
+              checkout=["docs/data/kb/openai", "docs/data/openai"], clean=["docs/data/openai"])
+    c = chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)])
+    return c, c.executer()
+
+
+def test_codex_arrete_sur_erreur_de_commande_en_code_0_est_un_echec_133(depot, cfg):
+    """Cas du 15/10 04:09 : contexte.py refuse `config.chatgpt`, l'agent s'arrête, `codex exec` rend 0, le journal disait « code 0 »."""
+    c, code = passage_codex(depot, cfg, "arret-sur-erreur", "docs/data/kb/openai", "x.json")
+    assert code == 1 and codes(depot)["codex-delta"] == orc.CODE_INCOMPLET == 133 and codes(depot)["chaine"] == 1
+    assert not c.issues[0].ok and c.issues[0].arret_chaine
+    assert "commit(s) attendu(s) absent(s) : delta(openai):" in c.issues[0].detail and "arbre non propre" in c.issues[0].detail
+    assert (depot / "docs/data/kb/openai/x.json").read_text() == "{}\n", "l'arrêt propre remet la base en place"
+    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
+    assert "code 133" in journal_log(depot)
+
+
+def test_elements_annonces_sans_commit_est_un_echec_133(depot, cfg):
+    """Cas du 15/10 04:19 : « 29 éléments, aucun commit, code 0 » (kb-openai)."""
+    c, code = passage_codex(depot, cfg, "elements-sans-commit", "docs/data/kb/openai", "x.json",
+                            attendus=("delta-kb(openai):",), nom="codex-delta-kb")
+    assert code == 1 and codes(depot)["codex-delta-kb"] == 133 and c.issues[0].commit == "aucun"
+    assert "commit(s) attendu(s) absent(s) : delta-kb(openai):" in c.issues[0].detail
+
+
+def test_arret_sans_rien_modifier_est_aussi_un_echec_133(depot, cfg):
+    c, code = passage_codex(depot, cfg, "ok-sans-commit")
+    assert code == 1 and codes(depot)["codex-delta"] == 133 and "commit(s) attendu(s) absent(s)" in c.issues[0].detail
+
+
+def test_compte_d_elements_nul_malgre_des_nouveautes_est_un_echec_133(depot, cfg):
+    e = etape(depot, "codex-delta", "elements-nuls", agent="codex", garde="codex-delta", attendus=("delta(openai):",))
+    e.valider = ["openai"]
+    c = chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)])
+    assert c.executer() == 1 and codes(depot)["codex-delta"] == 133
+    assert "openai : 15 nouveauté(s) au brut, aucun élément ni écarté" in c.issues[0].detail
+
+
+def test_passage_normal_reste_vert(depot, cfg):
+    e = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")
+    e.commits_attendus = ["delta:"]   # le faux agent commite « delta: b.json »
+    c = chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)])
+    assert c.executer() == 0 and codes(depot) == {"codex-delta": 0, "supervision": 0, "chaine": 0}
+    assert c.issues[0].ok and c.issues[0].commit != "aucun"
+
+
+def test_supervision_sans_rapport_est_un_echec_133(depot, cfg):
+    c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-muette", supervision=True)])
+    assert c.executer() == 1 and codes(depot)["supervision"] == 133 and "aucun rapport de supervision" in c.issues[0].detail
+
+
+def test_nuls_malgre_nouveautes_ne_signale_que_la_contradiction(depot):
+    e = etape(depot, "codex-delta", "ok-codex", agent="codex")
+    e.valider = ["openai"]
+
+    def ecrire(nouveautes, elements, ecartes, mtime=None):
+        (depot / "raw").mkdir(exist_ok=True)
+        brut = depot / "raw" / "openai-nouveautes.json"
+        brut.write_text(json.dumps({"nouveautes": nouveautes}))
+        if mtime:
+            os.utime(brut, (mtime, mtime))
+        (depot / "docs/data/openai/2026-10-02.json").write_text(json.dumps({"elements": elements, "ecartes": ecartes}))
+
+    debut = time.time() - 5
+    ecrire(0, [], [])
+    assert orc.nuls_malgre_nouveautes(depot, e, JOUR, debut) == [], "journée vide légitime"
+    ecrire(3, [{"id": "a"}], [])
+    assert orc.nuls_malgre_nouveautes(depot, e, JOUR, debut) == []
+    ecrire(3, [], [{"id": "a"}])
+    assert orc.nuls_malgre_nouveautes(depot, e, JOUR, debut) == [], "tout écarté : explicite, pas une contradiction"
+    ecrire(3, [], [], mtime=debut - 3600)
+    assert orc.nuls_malgre_nouveautes(depot, e, JOUR, debut) == [], "brut d'un autre passage : ignoré"
+    ecrire(3, [], [])
+    assert len(orc.nuls_malgre_nouveautes(depot, e, JOUR, debut)) == 1
+
+
+def test_un_passage_en_echec_133_n_est_pas_compte_comme_fait_du_jour(depot, cfg):
+    """La garde (code 12) laisse relancer un passage dont le fichier du jour existe mais dont la dernière tentative est en 133."""
+    fichier = depot / "docs/data/openai/2026-10-02.json"
+    fichier.write_text(json.dumps({"genere_le": "2026-10-02T02:10:00+00:00", "elements": [], "ecartes": []}))
+    depot.sh("git", "add", "-A"); depot.sh("git", "commit", "-qm", "delta(openai): 2026-10-02 — 0 éléments (0 fort)")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    garde = lambda: subprocess.run([sys.executable, str(depot / "scripts" / "garde.py"), "--etape", "codex-delta", "--date", "2026-10-02",
+                                    "--json", "--racine", str(depot)], capture_output=True, text=True)
+    assert json.loads(garde().stdout)["code"] == 12, "fait : sans ligne d'échec, comportement inchangé"
+    ecrire_ligne = lambda code, h: orc.passages.ajouter(depot, orc.passages.ligne(
+        "orchestrateur", "codex-delta", 0, 0, "aucun", code, quand=datetime(2026, 10, 2, h, 10)))
+    ecrire_ligne(133, 4)
+    d = json.loads(garde().stdout)
+    assert d["code"] == 0 and any("dernière tentative en échec" in c for c in d["controles"])
+    ecrire_ligne(0, 5)
+    assert json.loads(garde().stdout)["code"] == 12, "une tentative réussie ensuite referme le jour"
+
+
+def test_code_133_documente_dans_la_docstring():
+    assert "133 étape sortie en code 0 mais résultat incomplet" in orc.__doc__ and orc.CODE_INCOMPLET == 133
+
+
+def test_skills_interdisent_d_inventer_un_ctx_id():
+    for f in (".agents/skills/delta/SKILL.md", ".claude/skills/delta/SKILL.md", "prompts/codex-delta.md"):
+        t = (RACINE / f).read_text(encoding="utf-8")
+        assert "n'en invente jamais" in t and "`config.chatgpt` n'existe pas" in t and "ctx-id inconnus ou dépréciés" in t, f

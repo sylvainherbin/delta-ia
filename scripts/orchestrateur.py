@@ -12,7 +12,10 @@ Pour chaque étape, sans aucun LLM :
 2. étapes kb : sautées (code 129) quand aucun lot n'est dû ;
 3. lancement dans son propre groupe de processus, sous délai maximal ; dépassement ou échec : SIGTERM puis SIGKILL sur tout le
    groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`) ;
-4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Un refus de
+4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Le code 0 ne
+   suffit jamais (`codex exec` rend 0 même quand l'agent s'arrête sur une erreur) : le résultat produit doit être conforme
+   (`resultat_incomplet`, code 133 sinon) : chaque commit attendu présent, arbre propre, aucun compte d'éléments nul alors que le
+   brut du jour annonce des nouveautés, rapport écrit pour la supervision. Un refus de
    permission (`permission_denials` non vide) est fatal (code 125) SAUF si tout le reste est conforme : le résultat est
    `success`, l'état final est propre (126), et chaque commit attendu de l'étape (`commits_attendus`, sujets de la
    configuration) figure dans `git log` depuis le début de l'étape avec `origin/main` qui les contient. Pour la supervision,
@@ -47,7 +50,12 @@ fatal, étape réussie avec ses commits poussés ou son rapport de supervision �
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ;
 130 sautée, quota de l'agent épuisé (refus constaté de Codex, arbre propre, sans seuil : la chaîne continue) ;
 131 étape réussie mais `valider.py` échoue sur l'arbre qu'elle a laissé (déjà poussé : signalé, la chaîne continue) ;
-132 étape abandonnée sur échec réseau (trois relances échouées, ou relance interdite en fin de fenêtre) : la chaîne s'arrête ; autre : code de sortie de l'agent.
+132 étape abandonnée sur échec réseau (trois relances échouées, ou relance interdite en fin de fenêtre) : la chaîne s'arrête ;
+133 étape sortie en code 0 mais résultat incomplet ou contradictoire : l'agent s'est arrêté avant la fin de son skill (`codex exec`
+rend 0 même sur une commande en erreur), un commit attendu (`commits_attendus`) manque, l'arbre est sale (remis en place par
+l'arrêt propre), un compte d'éléments est nul alors que le brut du jour en annonce, ou la supervision n'a écrit aucun rapport :
+échec, jamais compté comme fait du jour (l'arrêt propre efface le fichier du jour, la garde ne répond pas 12), la chaîne s'arrête ;
+autre : code de sortie de l'agent.
 Dernière ligne : `orchestrateur | chaine`, code 0 si aucune étape n'a échoué, 1 sinon.
 
 Aucun appel à `claude` ou `codex` hors de `lancer()` ; les tests y injectent de fausses commandes.
@@ -83,6 +91,7 @@ CODE_DELAI, CODE_PERMISSION, CODE_ETAT, CODE_BINAIRE, CODE_NON_LANCEE, CODE_SANS
 CODE_QUOTA_EPUISE = 130  # Codex refuse de tourner (limite d'usage atteinte) : étape sautée, la chaîne continue
 CODE_VALIDATION = 131    # l'étape a réussi mais `valider.py` échoue sur l'arbre qu'elle a laissé : échec signalé, la chaîne continue
 CODE_RESEAU = 132        # échec réseau persistant : relances épuisées ou interdites en fin de fenêtre (D122)
+CODE_INCOMPLET = 133     # code 0 de l'agent mais résultat incomplet ou contradictoire (arrêt avant la fin du skill, commit manquant)
 DELAI_VALIDATION_S = 300
 SIGNATURE_QUOTA_CODEX = re.compile(r"You[’']ve hit your usage limit", re.IGNORECASE)
 REPRISE_QUOTA_CODEX = re.compile(r"try again at ([^\r\n]*?)\.?\s*$", re.IGNORECASE | re.MULTILINE)
@@ -433,6 +442,41 @@ def rapport_supervision_ecrit(racine: Path, jour: date, debut: float) -> bool:
     return False
 
 
+def nuls_malgre_nouveautes(racine: Path, etape: Etape, jour: date, debut: float) -> list[str]:
+    """Périmètres dont le fichier du jour n'a ni élément ni écarté alors que le brut `raw/<p>-nouveautes.json`, écrit pendant
+    l'étape, annonce des nouveautés : un compte nul contradictoire (le journal dirait « 0 éléments » d'un jour qui en a)."""
+    nuls = []
+    for p in etape.valider:
+        brut, quotidien = racine / "raw" / f"{p}-nouveautes.json", racine / "docs" / "data" / p / f"{jour.isoformat()}.json"
+        try:
+            if not brut.is_file() or brut.stat().st_mtime < debut or not quotidien.is_file():
+                continue
+            nouveautes = json.loads(brut.read_text(encoding="utf-8")).get("nouveautes") or 0
+            d = json.loads(quotidien.read_text(encoding="utf-8"))
+        except (OSError, ValueError, AttributeError):
+            continue
+        if nouveautes and not d.get("elements") and not d.get("ecartes"):
+            nuls.append(f"{p} : {nouveautes} nouveauté(s) au brut, aucun élément ni écarté dans le fichier du jour")
+    return nuls
+
+
+def resultat_incomplet(racine: Path, etape: Etape, jour: date, avant: str, debut: float, etat: dict) -> str | None:
+    """Cause d'un faux succès (code 0 de l'agent, résultat non conforme), None si l'étape a produit ce qu'elle devait.
+    `codex exec` rend 0 même quand l'agent s'arrête sur une erreur de commande : seul le résultat produit fait foi."""
+    if etape.supervision:
+        return None if rapport_supervision_ecrit(racine, jour, debut) else "aucun rapport de supervision écrit pendant l'étape"
+    causes = []
+    sujets = sujets_depuis(racine, avant)
+    manquants = [p for p in etape.commits_attendus if not any(x.startswith(p) for x in sujets)]
+    if manquants:
+        causes.append(f"commit(s) attendu(s) absent(s) : {', '.join(manquants)}")
+    if etat["sales"]:
+        causes.append(f"arbre non propre à la fin de l'étape ({len(etat['sales'])} fichier(s) : "
+                      + ", ".join(l[3:] for l in etat["sales"][:5]) + "), l'agent s'est arrêté avant son commit")
+    causes += nuls_malgre_nouveautes(racine, etape, jour, debut)
+    return " ; ".join(causes) or None
+
+
 # --------------------------------------------------------------------------------------------- contrôle de valider.py
 
 def commande_valider(racine: Path, perimetre: str, jour: date, kb: bool = False) -> list[str]:
@@ -603,6 +647,10 @@ class Chaine:
         if etat["index_lock"]:  # D21 : jamais supprimé par l'orchestrateur
             code, detail, stop = CODE_ETAT, ".git/index.lock présent après l'étape : non supprimé (D21)", True
         else:
+            if code == 0 and not refus:  # `codex exec` rend 0 même sur une erreur de commande : le résultat produit fait foi (un refus a son propre contrôle, 125)
+                cause = resultat_incomplet(racine, etape, self.jour, avant, debut, etat)
+                if cause:
+                    code, detail = CODE_INCOMPLET, "résultat incomplet malgré le code 0 de l'agent : " + cause
             if code != 0 or etat["sales"]:
                 jouees = arret_propre(racine, etape) if etape.checkout or etape.clean else []
                 etat = etat_depot(racine, False)

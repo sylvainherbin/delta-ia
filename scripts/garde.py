@@ -20,7 +20,8 @@ Contrôles, dans l'ordre :
    illisible ou seuil invalide (nombre de 0 à 100 attendu) : avertissement « seuils de quotas inconnus », aucun arrêt ni
    avertissement de quota fondé sur ce seuil (comme pour des quotas inconnus).
 3. `docs/data/claude/<J>.json` a déjà un `genere_le` daté du jour J (heure locale) : passage déjà fait -> arrêt,
-   code 12.
+   code 12. Exception : la dernière ligne `orchestrateur | <étape>` du jour dans `rapports/passages.log` porte le code 133
+   (faux succès : l'agent est sorti en code 0 sans avoir fini) -> le passage n'est pas fait, il se relance.
 4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
    (`docs/data/claude/`, `docs/data/actu/`, `state/`) -> arrêt, code 13, avec la liste des fichiers. Un reste
    d'arrêt (versions.json, etat.json, fichier du jour non commité) ou un CONTEXTE.md non commité bloquerait le pull.
@@ -57,6 +58,7 @@ FRAICHEUR_MAX_MIN = 15
 DELAI_RELECTURE_S = 3  # console-mur réécrit usage.json : un champ absent une fois est relu une seule fois après ce délai
 RAPPEL_CLAUDE = "vérifie tes quotas et remises à zéro Claude dans Paramètres > Utilisation (D71)"
 CODE_VERROU, CODE_QUOTA, CODE_DEJA_FAIT, CODE_ARBRE, CODE_CHAINE, CODE_NON_POUSSE = 10, 11, 12, 13, 14, 15
+CODE_INCOMPLET = 133  # code de la ligne `orchestrateur | <étape>` d'un faux succès (scripts/orchestrateur.py) : le jour n'est pas fait
 CHEMINS_PASSAGE = ("docs/data/claude/", "docs/data/actu/", "docs/data/openai/", "docs/data/kb/", "docs/data/semaine/", "docs/data/recherche.json", "state/")
 VERROU_CHAINE = Path(".git") / "delta-passage.lock"
 # D70 : par étape de la chaîne, (quota Claude applicable, dossier de données du fichier du jour pour le code 12 ou None)
@@ -122,6 +124,20 @@ def commits_non_pousses(racine: Path) -> int | None:
     except (OSError, subprocess.SubprocessError):
         return None
     return int(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip().isdigit() else None
+
+
+def dernier_code_orchestrateur(racine: Path, etape: str, jour: date) -> int | None:
+    """Code de la dernière ligne `orchestrateur | <étape>` du jour dans `rapports/passages.log` ; None s'il n'y en a pas."""
+    try:
+        lignes = (racine / "rapports" / "passages.log").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    code = None
+    for l in lignes:
+        c = l.split(" | ")
+        if len(c) == 6 and c[0].startswith(jour.isoformat()) and c[1] == "orchestrateur" and c[2] == etape and c[5].strip().isdigit():
+            code = int(c[5])
+    return code
 
 
 def seuils(chemin: Path | str | None = None) -> tuple[dict, str | None]:
@@ -218,8 +234,12 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
             fait = (g.astimezone() if g.tzinfo else g).date() == jour
         except ValueError:
             fait = False
+    incomplet = fait and etape is not None and dernier_code_orchestrateur(racine, etape, jour) == CODE_INCOMPLET
     if dossier_jour is None:
         res["controles"].append("passage du jour : sans objet pour cette étape")
+    elif incomplet:  # faux succès (133) : le fichier du jour existe mais le passage n'a pas abouti, il se relance
+        res["controles"].append(f"passage du jour : fichier du jour présent (genere_le {genere}) mais dernière tentative en échec "
+                                f"(code {CODE_INCOMPLET} dans passages.log) — pas encore fait")
     elif fait:
         res["controles"].append(f"passage du jour : déjà fait (genere_le {genere}) — arrêt")
         arret(CODE_DEJA_FAIT, f"passage {dossier_jour} du {jour.isoformat()} déjà fait ({genere})")
