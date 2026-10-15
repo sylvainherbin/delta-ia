@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-15",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -3265,8 +3265,8 @@
    "categorie": "fonctionnalites",
    "nom": "Models",
    "gabarit": "complet",
-   "description": "La page Models répertorie les modèles disponibles, leurs usages conseillés et les remplacements liés aux retraits annoncés. Elle présente GPT-6.1 Sol pour le travail agentique et annonce le retrait de GPT-5.5 de ChatGPT, Work et Codex le 14 octobre 2026, sans retrait API.",
-   "description_source": "On October 14, 2026, GPT-5.5 will retire from ChatGPT, ChatGPT Work, and Codex on all plans, including consumer, Business, Enterprise, and Edu plans. This retirement does not apply to the OpenAI API.",
+   "description": "La page Models présente les modèles et la sélection par interface. Le retrait de GPT-5.5, effectif le 14 octobre 2026 à 19:00 UTC, concerne Codex avec connexion ChatGPT ; les sessions par clé API et l’API restent hors de ce retrait.",
+   "description_source": "Effective October 14, 2026, at noon PDT (19:00 UTC), GPT-5.5 retires from Codex for users signed in with ChatGPT. The OpenAI API and Codex sessions authenticated with an API key aren't affected.",
    "usage": "codex --model gpt-6.1-sol",
    "usage_nature": "syntaxe",
    "exemple": "codex --model gpt-6.1-sol",
@@ -3274,7 +3274,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Consulter cette page avant de changer les profils Codex ; les profils actuels utilisent GPT-6 Sol, Luna et Daybreak Blue, pas GPT-5.5."
+    "pourquoi": "Pour tes audits sous tmux, consulter Models avant un changement de modèle ; le relevé actuel donne gpt-6.1-sol par défaut, gpt-6-sol pour audit et rapide, et Daybreak Blue pour securite, sans GPT-5.5."
    },
    "sources": [
     {
@@ -3287,7 +3287,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3316,16 +3316,44 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "On October 14, 2026, GPT-5.5 will retire from ChatGPT, ChatGPT Work, and Codex on all plans, including consumer, Business, Enterprise, and Edu plans. This retirement does not apply to the OpenAI API.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Audits par la CLI sous tmux."
+    },
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils déclarés utilisent GPT-6 Sol, GPT-6 Luna et Daybreak Blue."
+     "pourquoi": "Profils audit, rapide et securite utilisés au quotidien."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La page recommande GPT-6.1 Sol quand disponible et documente codex --model gpt-6.1-sol.",
+     "source": "https://learn.chatgpt.com/docs/models",
+     "releve_le": "2026-10-15",
+     "caduc_si": "La syntaxe ou les remplacements recommandés changent."
+    },
+    {
+     "affirmation": "Sylvain audite le travail de Claude avec la CLI Codex sous tmux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-15",
+     "caduc_si": "L’interface ou le rôle de Codex change."
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-non-interactive-mode",
