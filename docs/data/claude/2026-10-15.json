@@ -1,0 +1,275 @@
+{
+ "date": "2026-10-15",
+ "perimetre": "claude",
+ "agent": "claude-code",
+ "genere_le": "2026-10-15T02:15:00+00:00",
+ "synthese": "Compte et quotas : la page d'aide « Claude Code avec un plan Pro ou Max » ajoute une tolérance de fin de réponse (« Usage limit reached · wrapping up ») quand la limite de session de 5 h tombe pendant une réponse ; sur Max elle peut jouer à chaque limite de 5 h, débitée sur la limite hebdomadaire, déploiement progressif. Quotas lus à 02 h 01 UTC : Claude session 5 h 12 % (remise à zéro le 15/10 à 04 h 00 UTC), Claude semaine 46 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 19 % (remise à zéro le 20/10 à 07 h 12 UTC) ; aucun quota hebdomadaire au seuil D71 de 80 %. Claude Code 2.1.299 et 2.1.300 sont publiées et la 2.1.300 est déjà installée : la 2.1.300 corrige des sessions Remote Control marquées « stopped » alors qu'elles tournent, cas d'une machine qui en sert plusieurs ; la 2.1.299 ajoute des avertissements dans `/usage` (effort max, workflows, contexte permanent, gros résultats d'outils) qui touchent la limite hebdomadaire. La documentation des Projets claude.ai dit maintenant que des projets existants de certains utilisateurs Pro et Max sont migrés vers une nouvelle version.",
+ "sources_en_echec": [],
+ "ecartes": [
+  {
+   "id": "https://www.anthropic.com/news/singapore-office-opening",
+   "raison": "ouverture d'un bureau et protocole d'accord avec un gouvernement, sans changement de produit ni de condition d'usage"
+  },
+  {
+   "id": "https://www.anthropic.com/news/2026-us-midterms",
+   "raison": "mesures électorales de claude.ai aux États-Unis (bannière, informations de vote, résultats), politique générale sans lien avec les outils IA de l'usage"
+  },
+  {
+   "id": "claude-apps-notes-2026-09-15",
+   "raison": "révision de forme : seul un lien passe de http à https, contenu inchangé"
+  },
+  {
+   "id": "claude-apps-notes-2026-02-05",
+   "raison": "révision de forme : seul un lien passe de http à https, contenu inchangé"
+  }
+ ],
+ "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+ "elements": [
+  {
+   "id": "claude-aide-claude-code-pro-max-article",
+   "ids_bruts": [
+    "claude-aide-claude-code-pro-max-article"
+   ],
+   "produit": "claude",
+   "titre": "Page d'aide Claude Code avec Pro ou Max : tolérance « wrapping up » quand la limite de session de 5 h tombe en pleine réponse",
+   "version": null,
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "La page ajoute que, si la limite de session de 5 h est atteinte pendant une réponse, Claude Code peut continuer brièvement pour finir l'étape en cours (message « Usage limit reached · wrapping up »). Cette tolérance est petite et plafonnée, elle compte dans la limite hebdomadaire et ne vaut que pour une réponse déjà en cours, pas pour un nouveau message. Sur Pro, une fois par période hebdomadaire ; sur Max, à chaque limite de 5 h, dans la limite hebdomadaire ; déploiement progressif, donc possiblement absente du compte. Dans la base, la description d'origine de `/remote-control` perd sa mention de la v2.1.206 (« Unknown command ») ; l'exigence d'un abonnement claude.ai est inchangée.",
+   "sources": [
+    {
+     "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+     "libelle": "Claude Code avec un plan Pro ou Max",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "fort",
+   "pour_toi": "Ce qui change : une limite de session de 5 h n'interrompt plus forcément une réponse en cours, sans que la page chiffre la tolérance ni modifie une limite ; la page ne parle d'aucune remise à zéro. Ton forfait est Max 20x depuis le 07/10, à l'essai jusqu'au 07/11 (CONTEXTE.md, profil) : la tolérance peut jouer à chaque limite de 5 h, mais elle est débitée sur la limite hebdomadaire, ce qui compte pour le bilan d'usage de l'essai.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Aucune action à faire maintenant : revérifier le 22/10, aucune échéance publiée (la page annonce un déploiement progressif).",
+    "etapes": [
+     "Le 22/10, si une de tes sessions atteint la limite de 5 h pendant une réponse, regarde si « Usage limit reached · wrapping up » s'affiche ; sinon ton compte n'a pas encore la tolérance.",
+     "Au bilan de l'essai Max 20x du 07/11, compte-la parmi les consommations hebdomadaires à comparer aux relevés de `rapports/usage.json`."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [
+    "claude-code-commandes-remote-control"
+   ],
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Forfait Max 20x pris le 07/10, à l'essai jusqu'au 07/11 avec bilan d'usage."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Demande déclarée : signaler en priorité offres, remises à zéro et conditions des limites."
+    }
+   },
+   "revision": true
+  },
+  {
+   "id": "claude-code-2.1.300",
+   "ids_bruts": [
+    "claude-code-2.1.300"
+   ],
+   "produit": "claude-code",
+   "titre": "Claude Code 2.1.300",
+   "version": "2.1.300",
+   "date_publication": "2026-10-14",
+   "type": "nouveaute",
+   "resume": "Ajouts : crochets et décorations pour les mods (`virtualText`, `$.ui.view({ agentId })`, `prompt.change`, réécriture du `prompt` et du `model` d'un agent de workflow dans `agent.spawn`), champs `cache_creation_5m_tokens` et `cache_creation_1h_tokens` dans l'événement OpenTelemetry `api_request`, attributs GenAI sur les spans, `/advisor` sur Claude Platform on AWS. Correctifs : sessions Remote Control marquées arrêtées alors qu'elles tournent, sur un ordinateur qui en sert plusieurs ; reprise d'un transcript tronqué par un crash ; `claude remote-control` qui abandonnait le renouvellement de sa connexion après une brève erreur de connexion (trousseau verrouillé) ; recherche d'outils différés coupée en cours de conversation ; `claude daemon stop`. Changements : à la sortie, les commandes d'arrière-plan encore actives sont tuées au bout de 1,5 s ; les transcripts locaux enregistrent aussi le prompt système, les outils et les paramètres de chaque requête API ; les entrées `updatedInput` des hooks PreToolUse et PermissionRequest sont validées ; `--sandbox` et `--no-sandbox` sont retirés de `claude remote-control` (erreur si passés). Réglage ajouté à la base : `CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS`, à 0, publie un artefact sans appliquer de petites modifications dans le même appel.",
+   "sources": [
+    {
+     "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21300",
+     "libelle": "Claude Code 2.1.300",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "moyen",
+   "pour_toi": "CONTEXTE.md décrit une machine qui sert plusieurs sessions durables en Remote Control (`claude --resume <id> --remote-control <nom>`, pilotées depuis l'iPhone) : le correctif des sessions marquées « stopped » alors qu'elles tournent vise exactement ce cas. La 2.1.300 est déjà installée (`docs/data/versions.json`, à jour) ; les sessions ouvertes avant la mise à jour gardent l'ancienne version jusqu'à leur relance. Le lanceur de tes sessions passe `--remote-control` comme option de `claude`, pas la sous-commande `claude remote-control` : le retrait de `--sandbox` et `--no-sandbox` de cette sous-commande ne te touche pas. Tes relevés d'usage lisent les transcripts (CONTEXTE.md, « Usage réel des outils ») : ils contiendront désormais le prompt système et les outils de chaque requête, donc plus volumineux, et à relire avant tout partage. Les ajouts pour les mods, OpenTelemetry et `/advisor` sur AWS ne touchent aucun outil que CONTEXTE.md décrit (aucun mod ni plugin propre, pas d'AWS). Ton seul hook, `PermissionDenied`, n'est pas concerné par la validation de `updatedInput`.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Vérifier sur tes sessions durables relancées depuis la 2.1.300 que Remote Control ne les marque plus arrêtées.",
+    "etapes": [
+     "Lance `claude --version` : la sortie doit afficher 2.1.300 ; une session ouverte avant la mise à jour garde l'ancienne version jusqu'à sa relance.",
+     "Donne un travail long à deux sessions durables à la fois (par exemple le chef delta-ia et Dev-delta) et regarde-les depuis l'app Claude sur iPhone ; résultat attendu : aucune ne passe en « stopped » pendant qu'elle travaille."
+    ],
+    "effort": "30min"
+   },
+   "kb_refs": [
+    "claude-code-parametres-claude-code-artifact-publish-edits"
+   ],
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Plusieurs sessions durables en Remote Control lancées par `claude --resume … --remote-control`."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook (PermissionDenied), aucun mod ni plugin propre."
+    },
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Relevés d'usage tirés des transcripts de session."
+    }
+   }
+  },
+  {
+   "id": "claude-code-2.1.299",
+   "ids_bruts": [
+    "claude-code-2.1.299"
+   ],
+   "produit": "claude-code",
+   "titre": "Claude Code 2.1.299",
+   "version": "2.1.299",
+   "date_publication": "2026-10-14",
+   "type": "nouveaute",
+   "resume": "Ajouts : avertissements dans `/usage` pour l'effort max, les workflows, le contexte permanent et les gros résultats d'outils ; `/effort` et `/fast` (et un sélecteur pour `/model`, `/effort`, `/fast` sans argument) dans la vue des agents ; note unique en mode plan quand le contournement des permissions est disponible ; compaction à l'inactivité pour une conversation de plus de 200 000 jetons laissée environ 54 minutes (`\"idleCompaction\": false` la coupe, `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` règle le seuil), déjà citée le 14/10 d'après la base ; variable `CLAUDE_CODE_DISABLE_FILE_MENTIONS` (valeur 1 : Claude reçoit les chemins des mentions `@`, pas le contenu des fichiers) ; nouveautés pour les mods (`$.session.identity()` sous réglages gérés avec `forceLoginOrgUUID`, porte `queue` du crochet `session.append`, note dans `/plugin` et `claude plugin validate` sur les crochets ignorés), ligne « safe mode » dans la vue des agents (`--safe-mode`), `--shutdown-drain-sec` pour `claude self-hosted-runner orchestrator` et `claude plugin eval --disallow-tools`. Correctifs : `claude -p` qui ne disait rien quand un fichier de réglages échoue à la validation (il liste maintenant le fichier et l'entrée invalide sur stderr) ; deux pertes de prompts Remote Control ; réveils planifiés (ScheduleWakeup) qui ne partaient pas pendant une tâche d'arrière-plan dans les sessions Agent SDK, IDE et `claude remote-control` ; `/usage`, l'avertissement de limite proche et la ligne d'état qui pouvaient afficher plus de 100 % ; règles deny et ask d'un serveur MCP sans effet quand son nom normalisé contient un double tiret bas.",
+   "sources": [
+    {
+     "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21299",
+     "libelle": "Claude Code 2.1.299",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "moyen",
+   "pour_toi": "CONTEXTE.md range les limites d'usage hebdomadaires parmi les frictions récurrentes et relève l'outil Workflow parmi ses outils utilisés (13 appels, relevé du 25/09) : les avertissements de `/usage` pour l'effort max, les workflows, le contexte permanent et les gros résultats d'outils nomment ce qui pèse sur la limite, sans la chiffrer. La chaîne D70 et les rôles de JUGER appellent `claude -p` : un fichier de réglages invalide n'y passera plus sous silence, il sera listé sur stderr. Tes sessions tournent en bypassPermissions (CONTEXTE.md, `config.claude-code.mode-auto`) : la note unique du mode plan s'adresse à ce régime. Les sessions durables sont pilotées par Remote Control : les deux pertes de prompts corrigées les concernent. La 2.1.299 est incluse dans la 2.1.300 déjà installée. Les ajouts pour les mods, la vue des agents et `CLAUDE_CODE_DISABLE_FILE_MENTIONS` ne touchent aucun flux décrit : les briefs arrivent par OPÉRER, sans mention `@`.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Lire les avertissements de `/usage` sur une session qui consomme de la limite hebdomadaire.",
+    "etapes": [
+     "Dans une session de chef qui lance des workflows (par exemple le chef delta-ia), tape `/usage`.",
+     "Résultat attendu : `/usage` liste des avertissements si la session emploie l'effort max, des workflows, un contexte permanent volumineux ou de gros résultats d'outils ; note lesquels, pour le bilan d'usage de l'essai Max 20x du 07/11."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [
+    "claude-code-parametres-claude-code-disable-file-mentions",
+    "claude-code-parametres-idlecompaction"
+   ],
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "La chaîne D70 lance les étapes Claude avec `claude -p`."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions durables pilotées par Remote Control depuis l'iPhone."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10."
+    }
+   }
+  },
+  {
+   "id": "kb-claude-fonctionnalites-page-9517075-what-are-projects",
+   "ids_bruts": [
+    "kb-claude-fonctionnalites-page-9517075-what-are-projects"
+   ],
+   "produit": "claude",
+   "titre": "Base : Projets claude.ai, des projets existants de certains utilisateurs Pro et Max sont migrés vers une nouvelle version",
+   "version": null,
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "La page « What are projects? » ne dit plus que les projets existants continuent de fonctionner comme avant : Anthropic a commencé à déplacer des projets existants de certains utilisateurs Pro et Max vers la nouvelle version (bêta, déployée d'abord dans Claude Code), sans rien perdre (instructions, fichiers, historique complet, tâches planifiées), avec un courriel préalable pour un projet utilisé dans les 30 derniers jours ; les projets de chat et de Cowork restent sur la version actuelle pour l'instant. Dans la nouvelle version, un projet est une conversation qui lance des fils parallèles dans le cloud ; « Projects » apparaît dans la barre latérale de claude.ai/code et dans l'onglet Code de l'app de bureau.",
+   "sources": [
+    {
+     "url": "https://support.claude.com/en/articles/9517075-what-are-projects",
+     "libelle": "What are projects?",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "moyen",
+   "pour_toi": "CONTEXTE.md compte trois Projets claude.ai, dont « Web app ia » pour la veille, et la mémoire de claude.ai activée : la promesse que les projets existants ne changent pas disparaît de la page, et rien dans CONTEXTE.md ne dit que les tiens sont déjà migrés. Rien n'est perdu d'après la page, et un courriel précède le déplacement d'un projet utilisé dans les 30 derniers jours.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Regarder si tes Projets sont déjà passés à la nouvelle version.",
+    "etapes": [
+     "Ouvre `claude.ai/code` et cherche « Projects » dans la barre latérale ; résultat attendu : s'il y est, ton projet « Web app ia » y figure avec ses instructions, ses fichiers et son historique ; sinon ton compte n'est pas encore concerné.",
+     "Revérifier le 22/10, aucune échéance publiée pour le déploiement."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [
+    "claude-fonctionnalites-page-9517075-what-are-projects"
+   ],
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "3 Projets claude.ai dont « Web app ia » ; mémoire claude.ai activée."
+    }
+   }
+  },
+  {
+   "id": "claude-platform-notes-2026-10-14",
+   "ids_bruts": [
+    "claude-platform-notes-2026-10-14",
+    "https://claude.com/blog/agent-observability-on-the-claude-platform"
+   ],
+   "produit": "claude",
+   "titre": "Claude Platform : export OpenTelemetry en bêta pour l'API Messages et Claude Managed Agents",
+   "version": null,
+   "date_publication": "2026-10-14",
+   "type": "nouveaute",
+   "resume": "L'export OpenTelemetry est en bêta publique : les requêtes de l'API Messages et les sessions Claude Managed Agents peuvent être tracées dans un outil d'observabilité, avec une destination ajoutée dans la Claude Console ; les SDK Claude émettent des spans (Python, TypeScript, C#, Go, Java, PHP, Ruby). Les traces suivent les conventions sémantiques GenAI d'OpenTelemetry. Les déploiements planifiés de Claude Managed Agents sont disponibles sur Claude Platform on AWS.",
+   "sources": [
+    {
+     "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+     "libelle": "Claude Platform, notes de version",
+     "officielle": true
+    },
+    {
+     "url": "https://claude.com/resources/articles/agent-observability-on-the-claude-platform",
+     "libelle": "Agent observability on the Claude Platform",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  },
+  {
+   "id": "kb-claude-code-parametres-claude-code-you-should-know-debug",
+   "ids_bruts": [
+    "kb-claude-code-parametres-claude-code-you-should-know-debug"
+   ],
+   "produit": "claude-code",
+   "titre": "Base : variable `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` (lignes de débogage du mod « You should know »)",
+   "version": "2.1.287",
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "Ajout à la base : la variable, à 1, affiche au-dessus du prompt une ligne pour chacune des trois dernières vérifications du mod « You should know » dans la session, pour confirmer qu'il vérifie quand aucune note n'apparaît ; demande la 2.1.287 ou plus.",
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [
+    "claude-code-parametres-claude-code-you-should-know-debug"
+   ],
+   "contexte_sections": {}
+  }
+ ]
+}

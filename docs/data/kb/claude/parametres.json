@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-14",
+ "maj_le": "2026-10-15",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 656,
- "commentees": 656,
+ "total": 659,
+ "commentees": 658,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -5380,6 +5380,48 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-artifact-publish-edits",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS",
+   "gabarit": "court",
+   "description": "Variable (valeur 0) qui empêche Claude d'appliquer de petites modifications au fichier d'un artefact au moment de le publier : il édite alors le fichier avec ses outils d'édition, puis publie en une étape séparée (v2.1.300 ou plus).",
+   "description_source": "Set to 0 to stop Claude from applying small changes to an artifact's file as part of publishing it. Claude then edits the file with its file-editing tools and publishes it as a separate step. Requires Claude Code v2.1.300 or later",
+   "usage": "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le comportement par défaut (modification et publication en un appel) convient tant qu'aucun artefact publié depuis Claude Code ne pose problème dans CONTEXTE.md."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-15",
+   "historique": [
+    {
+     "date": "2026-10-15",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-attribution-header",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -7187,6 +7229,53 @@
      "pourquoi": "fichiers gelés à protéger"
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-file-mentions",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_FILE_MENTIONS",
+   "gabarit": "court",
+   "description": "Variable (valeur 1) qui empêche Claude Code de développer les mentions `@` de fichiers et de dossiers : Claude reçoit les chemins mentionnés avec une note l'invitant à les lire avec ses outils de fichier. Ignorée dans les réglages de projet et locaux (v2.1.299 ou plus).",
+   "description_source": "Set to 1 to stop Claude Code from expanding @ mentions of files and directories. Claude instead gets the mentioned paths with a note to read them using its file tools. Ignored in project and local settings. Requires Claude Code v2.1.299 or later",
+   "usage": "CLAUDE_CODE_DISABLE_FILE_MENTIONS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage des mentions `@` dans les sessions durables, dont les briefs arrivent par OPÉRER ; la variable n'allège donc pas une consommation observée."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.operer": {
+     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "pourquoi": "Les missions sont remises aux sessions par OPÉRER, sans mention de fichier `@`."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-15",
+   "historique": [
+    {
+     "date": "2026-10-15",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-git-instructions",
@@ -11876,7 +11965,7 @@
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "gabarit": "court",
    "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul avec `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` ; au-delà, la session démarre à l'arrêt.",
-   "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 means no bound, except that a turn whose last request failed with an API error resumes only while that error is less than six hours old. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
+   "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 sets no bound, except that some turns resume only within six hours of their last message, such as one that ended with an API error. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11893,11 +11982,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11914,6 +12003,10 @@
     {
      "date": "2026-09-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
@@ -14150,6 +14243,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-you-should-know-debug",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG",
+   "gabarit": "court",
+   "description": "Variable (valeur 1) qui affiche au-dessus du prompt une ligne pour chacune des trois dernières vérifications du mod « You should know » dans la session, pour confirmer qu'il vérifie même quand aucune note n'apparaît (v2.1.287 ou plus).",
+   "description_source": "Set to 1 to show, above the prompt, a line for each of the last three checks the You should know mod made in this session. Use it to confirm the mod is checking when no notes appear. Requires Claude Code v2.1.287 or later",
+   "usage": "CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne mentionne aucun mod installé ; la variable ne sert qu'à déboguer le mod « You should know »."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Plugins : aucun plugin ni mod propre observé."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-15",
+   "historique": [
+    {
+     "date": "2026-10-15",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-config-dir",
