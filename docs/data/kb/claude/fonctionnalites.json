@@ -653,7 +653,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -678,6 +678,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -695,7 +699,34 @@
      "pourquoi": "Pas de commande CLI d'archivage d'une session cloud au 08/10 ; archivage dans claude.ai/code et l'app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Les sessions cloud existent sur Pro, Max et Team ; `claude --cloud` crée depuis le terminal une nouvelle session cloud pour le dépôt courant.",
+     "source": "https://code.claude.com/docs/en/claude-code-on-the-web",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les forfaits éligibles ou la syntaxe `--cloud` changent"
+    },
+    {
+     "affirmation": "Crédits Claude Code cloud à utiliser avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10).",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les crédits sont épuisés ou l'échéance change",
+     "revoir_le": "2026-11-05"
+    },
+    {
+     "affirmation": "OPÉRER confie des missions `code` et `mecanique` à l'exécutant `claude-cloud`.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-10-15",
+     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+    },
+    {
+     "affirmation": "Au 08/10, aucune commande CLI n'archive une session cloud ; l'archivage se fait dans claude.ai/code et l'app.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "une commande officielle d'archivage paraît"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-directory",
@@ -1225,7 +1256,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1286,6 +1317,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -1298,7 +1333,33 @@
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Sans `crossSessionInbound`, une session en bypass retient chaque message entrant pour approbation, sauf si l'émettrice est aussi en bypass ; une session qui demande les permissions le remet, sauf s'il vient d'une session en bypass.",
+     "source": "https://code.claude.com/docs/en/cross-session-messaging",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les règles par défaut de remise ou de rétention changent"
+    },
+    {
+     "affirmation": "`crossSessionInbound` accepte `accept`, `hold` et `refuse` ; `accept` remet chaque message à Claude.",
+     "source": "https://code.claude.com/docs/en/cross-session-messaging",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la clé ou ses valeurs changent"
+    },
+    {
+     "affirmation": "Les sessions se parlent par `SendMessage`/`ListAgents` et OPÉRER remet missions et relances depuis le 03/10.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les sessions ne communiquent plus ainsi"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le régime des permissions change"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-deep-links",
@@ -2148,7 +2209,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2209,6 +2270,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -2225,7 +2290,33 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 1 : règles transversales à centraliser dans ~/.claude/CLAUDE.md, sur accord de Sylvain."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Deux mécanismes portent le savoir d'une session à l'autre : les fichiers CLAUDE.md (ou AGENTS.md) et la mémoire automatique ; un CLAUDE.md importe d'autres fichiers par `@path`.",
+     "source": "https://code.claude.com/docs/en/memory",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la syntaxe d'import ou la mémoire automatique changent"
+    },
+    {
+     "affirmation": "Environ 70 mémoires automatiques dans `~/projets` et 7 dans `~` au 04/10, très utilisées.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la mémoire automatique est désactivée ou abandonnée"
+    },
+    {
+     "affirmation": "Le CLAUDE.md de carnet se limite à `@AGENTS.md`.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le CLAUDE.md de carnet change de forme"
+    },
+    {
+     "affirmation": "Piste 1 : les règles transversales restent à centraliser dans `~/.claude/CLAUDE.md`, sur accord de Sylvain.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la centralisation est faite ou abandonnée"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-mobile",
@@ -2255,7 +2346,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2300,6 +2391,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -2317,7 +2412,33 @@
      "pourquoi": "Dispatch visible comme session Remote Control ; nouvelles tâches Cowork dans le cloud depuis le 06/10."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "L'app Claude est un client des sessions Claude Code : sessions cloud et Remote Control sont dans l'onglet Code, Dispatch est une tâche à qui l'on écrit dans l'app.",
+     "source": "https://code.claude.com/docs/en/mobile",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'organisation de l'app mobile change"
+    },
+    {
+     "affirmation": "L'iPhone pilote le PC à distance par Remote Control et l'app Claude iOS.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain ne pilote plus ses sessions depuis l'iPhone"
+    },
+    {
+     "affirmation": "Priorité déclarée : échanges directs entre Cowork (Dispatch compris) et Claude Code.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain retire cette priorité"
+    },
+    {
+     "affirmation": "Les nouvelles tâches Cowork s'exécutent dans le cloud depuis le 06/10.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "un mode local de Cowork revient"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-model-config",
@@ -2347,7 +2468,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2412,6 +2533,10 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -2429,7 +2554,33 @@
      "pourquoi": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le modèle se choisit au lancement par `claude --model <alias|name>` ou en cours de session par `/model`.",
+     "source": "https://code.claude.com/docs/en/model-config",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'option `--model` ou l'ordre de priorité des réglages change"
+    },
+    {
+     "affirmation": "Sonnet par défaut est voulu par Sylvain (30/09).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain change de modèle par défaut"
+    },
+    {
+     "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement du service.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le modèle n'est plus fixé par rôle"
+    },
+    {
+     "affirmation": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la politique adopte un défaut global"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-output-styles",
@@ -2501,7 +2652,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2526,6 +2677,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -2542,7 +2697,39 @@
      "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
      "pourquoi": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les règles deny bloquent dans tous les modes, `bypassPermissions` compris ; les règles allow n'y ont pas d'effet.",
+     "source": "https://code.claude.com/docs/en/permission-modes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le rôle des règles allow ou deny en bypass change"
+    },
+    {
+     "affirmation": "Les sessions cloud ignorent le mode `bypassPermissions` venu des fichiers de réglages.",
+     "source": "https://code.claude.com/docs/en/permission-modes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les sessions cloud acceptent ce mode depuis les réglages"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le régime des permissions change"
+    },
+    {
+     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions` (D83).",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la chaîne change de mode de permission"
+    },
+    {
+     "affirmation": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-10-15",
+     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-permissions",
@@ -2572,7 +2759,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2609,6 +2796,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -2630,7 +2821,39 @@
      "pourquoi": "Connecteurs de compte sans `deny` sur trading-sim (question à Work) ; Vercel « Connected » au 12/10."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "En `bypassPermissions`, Claude Code saute les demandes de permission sauf pour les actions qu'aucun mode n'approuve ; les garde-fous de la messagerie entre sessions restent actifs.",
+     "source": "https://code.claude.com/docs/en/permissions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le comportement du mode bypass change"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le régime des permissions change"
+    },
+    {
+     "affirmation": "La liste `allow` globale subsiste mais n'est plus déterminante depuis le régime bypassPermissions.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la liste allow est retirée ou redevient déterminante"
+    },
+    {
+     "affirmation": "Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai nommés.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la politique de capacités de trading-sim change"
+    },
+    {
+     "affirmation": "Les connecteurs de compte passent sur trading-sim faute de `deny` explicite ; Vercel est « Connected » au 12/10.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-15",
+     "caduc_si": "un `deny` des connecteurs de compte est ajouté sur trading-sim ou Vercel est déconnecté"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-prompt-caching",
@@ -2660,7 +2883,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2697,6 +2920,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -2709,7 +2936,27 @@
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
      "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Chaque modèle a son propre cache : changer de modèle relit tout l'historique sans cache ; une modification de CLAUDE.md n'atteint la session qu'après `/clear`, `/compact` ou un redémarrage.",
+     "source": "https://code.claude.com/docs/en/prompt-caching",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le cache devient partagé entre modèles ou CLAUDE.md se recharge en cours de session"
+    },
+    {
+     "affirmation": "Les limites d'usage hebdomadaires et le coût en jetons des prompts d'audit sont des frictions récurrentes.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-15",
+     "caduc_si": "ces frictions disparaissent du relevé"
+    },
+    {
+     "affirmation": "`mission-dev` vide le contexte du dev par `/clear` avant chaque mission.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "`mission-dev` ne vide plus le contexte"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-remote-control",
@@ -2739,7 +2986,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2772,6 +3019,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -2784,7 +3035,27 @@
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
      "pourquoi": "Wi-Fi seul, connexion directe à la box en 5 GHz ; décrochages déclarés clos le 02/10."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Remote Control relie claude.ai/code ou l'app Claude à une session locale, qui reste exécutée sur la machine ; Claude Code se reconnecte seul après une coupure réseau.",
+     "source": "https://code.claude.com/docs/en/remote-control",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la reconnexion automatique ou le fonctionnement local changent"
+    },
+    {
+     "affirmation": "Les services sont lancés avec `--remote-control <nom>` et pilotés depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les sessions ne sont plus lancées avec Remote Control"
+    },
+    {
+     "affirmation": "Wi-Fi seul, connexion directe à la box en 5 GHz ; décrochages déclarés clos le 02/10.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le réseau change ou les décrochages reviennent"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-routines",
@@ -3055,7 +3326,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3096,6 +3367,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -3109,7 +3384,27 @@
      "pourquoi": "Une branche et un worktree git par mission, l'arbre principal restant sur `main`."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/branch [nom]` crée une branche de la conversation courante, avec son propre ID de session.",
+     "source": "https://code.claude.com/docs/en/sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "`/branch` change de syntaxe ou disparaît"
+    },
+    {
+     "affirmation": "Chaque service relance sa session par `claude --resume <id>`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les services ne reprennent plus par `--resume`"
+    },
+    {
+     "affirmation": "Une branche et un worktree git par mission, l'arbre principal restant sur `main`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'organisation des worktrees change"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-slack",
@@ -3253,7 +3548,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3302,6 +3597,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3315,7 +3614,27 @@
      "pourquoi": "Modèle choisi dans la définition de chaque sous-agent ; agent perso `executant` non adopté."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Une définition de sous-agent porte des champs facultatifs `model` (sonnet, opus, haiku, fable, ID complet ou inherit) et `tools` ; ses requêtes comptent dans les mêmes limites que la conversation.",
+     "source": "https://code.claude.com/docs/en/sub-agents",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les champs `model` ou `tools` changent"
+    },
+    {
+     "affirmation": "31 appels `Agent` en cinq jours au 04/10 ; consigne : `Explore` pour lire les gros fichiers, vérifications en parallèle.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la consigne sur les sous-agents change"
+    },
+    {
+     "affirmation": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la politique adopte un défaut global"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-terminal-config",
@@ -3617,7 +3936,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3662,6 +3981,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -3678,7 +4001,33 @@
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Avertissement Workflow désactivé dans settings.json."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Un workflow lance de nombreux agents ; une exécution peut consommer nettement plus de jetons que la même tâche en conversation et compte dans les limites du forfait.",
+     "source": "https://code.claude.com/docs/en/workflows",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la documentation change le décompte des workflows"
+    },
+    {
+     "affirmation": "Consigne du 04/10 : workflows multi-agents seulement sur accord de Sylvain.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain lève cette consigne"
+    },
+    {
+     "affirmation": "Outil Workflow : 13 appels dans le relevé du 25/09.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "un nouveau relevé remplace ce compte"
+    },
+    {
+     "affirmation": "L'avertissement Workflow est désactivé dans settings.json.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'avertissement est réactivé"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-worktrees",
@@ -4340,7 +4689,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4389,6 +4738,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -4397,7 +4750,21 @@
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Mémoire claude.ai activée et jugée utile ; trois Projets claude.ai ; Cowork à explorer."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Pour une conversation sans mémoire : nouvelle conversation, « + » dans la zone de message, « Memory » pour la couper, puis premier message.",
+     "source": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le chemin pour couper la mémoire d'une conversation change"
+    },
+    {
+     "affirmation": "La mémoire claude.ai est activée et jugée utile ; Sylvain a trois Projets claude.ai.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain désactive la mémoire claude.ai"
+    }
+   ]
   },
   {
    "id": "claude-fonctionnalites-page-11869619-use-claude-with-ios-apps",
@@ -5349,7 +5716,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5394,6 +5761,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -5406,7 +5777,33 @@
      "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
      "pourquoi": "delta-desktop construit par la session Design ; console `carnet-console`, dev Design."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Claude Design part d'une conversation ou de l'onglet Artifacts avec un design system joint ; `/design-sync` y importe le design system pour partir des composants existants.",
+     "source": "https://support.claude.com/en/articles/14604416-get-started-with-claude-design",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le parcours ou `/design-sync` changent dans l'article"
+    },
+    {
+     "affirmation": "`/design-sync [hint]` convertit le design system React d'un dépôt et l'envoie à Claude Design.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la skill `/design-sync` change ou disparaît"
+    },
+    {
+     "affirmation": "Claude Design est utilisé intensivement ; jetons Delta `#a78bfa`, `#22d3ee`, `#ff6b61` ; la Console est en React.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain cesse d'utiliser Claude Design ou la Console quitte React"
+    },
+    {
+     "affirmation": "La session Design construit delta-desktop et la console `carnet-console`.",
+     "source": "contexte:projet.delta-desktop",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la session Design ne construit plus ces interfaces"
+    }
+   ]
   },
   {
    "id": "claude-fonctionnalites-page-14661296-use-claude-security",

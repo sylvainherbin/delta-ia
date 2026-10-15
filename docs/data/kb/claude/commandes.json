@@ -152,7 +152,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -213,6 +213,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -226,7 +230,27 @@
      "pourquoi": "Piste 11 : Sonnet par défaut voulu ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/advisor [model|off]` active ou coupe le conseiller (fable, opus, sonnet ou un ID complet) ; sans terminal interactif ou par Remote Control, le modèle se passe en argument.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande change de syntaxe, perd l'argument par Remote Control ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "`mission-dev --advisor` et `regler-advisor` règlent Opus en conseiller avant chaque mission, car le conseiller ne survit pas à un `/clear`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les lanceurs de mission ne règlent plus le conseiller ou le conseiller survit à `/clear`"
+    },
+    {
+     "affirmation": "Formule validée pour les missions de construction de trading-sim : Sonnet avec Opus en conseiller (`/advisor opus`).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la piste 11 abandonne cette formule"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-agents",
@@ -748,7 +772,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -805,6 +829,10 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
@@ -818,7 +846,27 @@
      "pourquoi": "Missions remises au dev par OPÉRER, relues par le chef avant l'OK de fusion ; un dev est vidé avant chaque mission."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/btw [question]` pose une question annexe sur la session sans l'ajouter à la conversation.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande change de comportement ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "`/btw` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "un nouveau relevé ne la montre plus parmi les commandes tapées"
+    },
+    {
+     "affirmation": "Les missions sont remises au dev par OPÉRER et relues par le chef avant l'OK de fusion.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'organisation par chefs et devs change"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-bug",
@@ -1056,7 +1104,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1093,6 +1141,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -1106,7 +1158,27 @@
      "pourquoi": "Depuis le 06/10, toutes les sessions locales sauf trading tournent en bypassPermissions (lanceur `claude-session.sh`)."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`claude` démarre une session interactive.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande change de rôle dans la référence CLI"
+    },
+    {
+     "affirmation": "Chaque service `claude-session@<nom>` lance `claude --resume <id> --remote-control <nom>` sous tmux.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les sessions durables ne sont plus lancées par ce service"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le régime des permissions des sessions change"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-claude-agents",
@@ -2537,7 +2609,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2570,6 +2642,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -2578,7 +2654,21 @@
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Chaque service relance sa session par `claude --resume <id>` sous tmux."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`claude -r \"<session>\" \"query\"` reprend une session par ID ou par nom.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'option change de syntaxe ou disparaît de la référence CLI"
+    },
+    {
+     "affirmation": "Chaque service relance sa session par `claude --resume <id>` sous tmux.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les services ne reprennent plus les sessions par `--resume`"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-claude-remote-control",
@@ -2874,7 +2964,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2895,6 +2985,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -2904,7 +2998,21 @@
      "pourquoi": "`autoUpdates: false` ; mise à jour native réussie le 22/09 et suivies depuis par `claude update`."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`claude update` met Claude Code à jour vers la dernière version.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande change ou disparaît de la référence CLI"
+    },
+    {
+     "affirmation": "`autoUpdates` vaut `false` dans `~/.claude.json` ; les mises à jour natives passent par `claude update` depuis le 22/09.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les mises à jour automatiques sont réactivées ou passent par un autre moyen"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-clear",
@@ -2934,7 +3042,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2991,6 +3099,10 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
@@ -3004,7 +3116,27 @@
      "pourquoi": "Un dev est vidé avant chaque mission ; OPÉRER remet les missions au dev."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/clear [name]` démarre une conversation au contexte vide ; un nom étiquette la conversation précédente dans le sélecteur `/resume`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'argument de nom disparaît ou la commande change de comportement"
+    },
+    {
+     "affirmation": "`mission-dev`, appelé par OPÉRER, vide le contexte du dev par `/clear` ; le conseiller ne survit pas à un `/clear`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "`mission-dev` ne vide plus le contexte par `/clear`"
+    },
+    {
+     "affirmation": "Un dev est vidé avant chaque mission remise par OPÉRER.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les devs ne sont plus vidés avant chaque mission"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-color",
@@ -3108,7 +3240,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3157,6 +3289,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -3170,7 +3306,27 @@
      "pourquoi": "Verdicts en blocs `CLÉ = VALEUR` lisibles par machine, à conserver d'une étape à l'autre."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/compact [instructions]` résume la conversation pour libérer du contexte, avec des consignes de focalisation facultatives.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'argument d'instructions disparaît ou la commande change"
+    },
+    {
+     "affirmation": "`/compact` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-15",
+     "caduc_si": "un nouveau relevé ne la montre plus parmi les commandes tapées"
+    },
+    {
+     "affirmation": "Sur trading-sim, les verdicts s'écrivent en blocs `CLÉ = VALEUR` lisibles par machine.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la convention des verdicts change"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-config",
@@ -3677,7 +3833,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3754,6 +3910,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -3767,7 +3927,27 @@
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge des limites."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/effort` règle l'effort (low à xhigh, max ou auto) et `status` l'affiche ; `max` ne vaut que pour la session et la clé `ultracode` persiste.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les niveaux, `status` ou la persistance d'`ultracode` changent dans la documentation"
+    },
+    {
+     "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement, par exemple `--model opus --effort medium` pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'effort n'est plus fixé par rôle au lancement"
+    },
+    {
+     "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge des limites hebdomadaires.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la piste 11 est close ou abandonnée"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-exit",
@@ -4670,7 +4850,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4687,6 +4867,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -4700,7 +4884,27 @@
      "pourquoi": "Priorité de veille : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/list-agents` (alias `/peers`, v2.1.224 ou plus) liste les sous-agents, coéquipiers et autres sessions joignables, avec le nom à utiliser.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande change de rôle, de version minimale ou disparaît"
+    },
+    {
+     "affirmation": "Les sessions se parlent par `SendMessage`/`ListAgents` ; `/list-agents` a montré Dispatch le 25/09 ; Cowork tourne dans le cloud depuis le 06/10.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'architecture multi-sessions ou l'exécution de Cowork change"
+    },
+    {
+     "affirmation": "Les échanges directs entre Cowork (Dispatch compris) et Claude Code sont une priorité déclarée de la veille.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain retire cette priorité"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-login",
@@ -5025,7 +5229,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5094,6 +5298,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -5107,7 +5315,27 @@
      "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; `s` dans le sélecteur ne change que la session courante.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "`/model` n'enregistre plus le défaut ou la touche `s` disparaît"
+    },
+    {
+     "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-15",
+     "caduc_si": "Sylvain change de modèle par défaut"
+    },
+    {
+     "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-15",
+     "caduc_si": "le modèle n'est plus fixé par rôle au lancement"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-output-style",
@@ -7432,7 +7660,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7461,6 +7689,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-15",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -7478,7 +7710,28 @@
      "pourquoi": "Garde de la chaîne D70 : arrêt au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/usage` montre le coût de session, les limites du forfait et, sur Pro et Max, le détail de ce qui compte dans ces limites.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-15",
+     "caduc_si": "la commande perd le détail des limites ou disparaît"
+    },
+    {
+     "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-15",
+     "caduc_si": "l'essai est tranché ou le forfait change",
+     "revoir_le": "2026-11-03"
+    },
+    {
+     "affirmation": "La garde de la chaîne D70 s'arrête au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-15",
+     "caduc_si": "les seuils de la garde changent"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-usage-credits",
