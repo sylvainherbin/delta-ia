@@ -1,0 +1,547 @@
+{
+  "date": "2026-10-16",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-16T02:14:06+00:00",
+  "synthese": "Sites renvoie désormais au centre d’aide pour les tarifs et limites, sans nouveau plafond Pro 100 établi par les textes récupérés. Codex CLI 0.163.0 ajoute /config, le guidage immédiat et Daybreak par défaut pour les comptes éligibles ; ta CLI npm relevée reste en 0.162.1. L’incident ChatGPT mobile du 15 octobre est résolu ; 12 nouvelles fiches MCP sont signalées pour consultation.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "openai-aide-index-docs-enterprise-sites",
+      "ids_bruts": [
+        "openai-aide-index-docs-enterprise-sites"
+      ],
+      "produit": "codex",
+      "titre": "Sites : administration documentée, conditions renvoyées au centre d’aide",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Une nouvelle page décrit les permissions de création, publication, consultation et modification des Sites. La fiche Sites remplace son ancien extrait sur la bêta et les limites par une présentation des usages ; la page renvoie désormais au centre d’aide pour la disponibilité, les tarifs et les limites, sans établir de nouveau plafond pour Pro 100.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/enterprise/sites",
+          "libelle": "openai-aide-index",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/sites",
+          "libelle": "Sites",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Aucun changement de limites de ton Pro 100 n’est établi par les textes récupérés ; le changement constaté porte sur la documentation. Tu as déjà ceramist sur GitHub Pages et aucun besoin de migration vers Sites n’est déclaré : cette nouvelle page d’administration ne justifie pas un changement de forfait ou d’hébergement.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 17/10/2026 les conditions Sites dans le centre d’aide ; aucune échéance publiée pour une action de compte. ChatGPT semaine : 11 % relevés le 16/10/2026 à 02:09:28 UTC ; aucun nouveau plafond Pro 100 établi par ces extraits.",
+        "etapes": [
+          "Consulter le lien Help Center de la page Sites : https://help.openai.com/en/articles/20001339 ; lire les conditions de disponibilité et de limites sans déduire leur suppression de la réécriture de la documentation."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "chatgpt-fonctionnalites-page-sites"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Abonnement ChatGPT Pro 100 et priorité aux conditions d’usage."
+        },
+        "projet.ceramist": {
+          "sha1": "77a460848e4f24c9bd151f2e5141a2593c2d3a67",
+          "pourquoi": "Portfolio déjà publié sur GitHub Pages, sans migration déclarée."
+        }
+      }
+    },
+    {
+      "id": "rust-v0.163.0",
+      "ids_bruts": [
+        "rust-v0.163.0"
+      ],
+      "produit": "codex",
+      "titre": "Codex CLI 0.163.0 : réglages recherchables, pilotage immédiat et Daybreak par défaut",
+      "version": "0.163.0",
+      "date_publication": "2026-10-15",
+      "type": "amelioration",
+      "resume": "La CLI ajoute /config avec recherche et réglages applicables à chaud, le guidage immédiat pendant une réponse, une touche de préfixe configurable via /keymap (Ctrl+X par défaut, sourdine vocale sur F9) et le redémarrage des serveurs gérés depuis /daemon. Les lectures indépendantes peuvent être parallélisées et Daybreak devient actif par défaut pour les comptes éligibles ; codex exec peut aussi le sélectionner avec une clé API si le serveur l’autorise. La reprise restaure les permissions sauvegardées sous réserve de la politique courante ; les commandes distantes conservent leurs dernières sorties et le backend zsh modifié est retiré.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.163.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        },
+        {
+          "url": "https://learn.chatgpt.com/docs/codex/cli",
+          "libelle": "Documentation CLI relue, installation npm",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Codex sous tmux pour auditer Claude : /config fournit un accès direct aux réglages sans connaître leurs clés, mais la CLI npm relevée le 16/10 reste en 0.162.1. Le guidage immédiat permet de préciser une lecture d’audit en cours ; interrompre un tour annule aussi ses cellules Code Mode et leurs outils. Pour tes sessions sous tmux, /keymap ajoute un préfixe Ctrl+X configurable ; ses changements sont persistés dans config.toml et la sourdine vocale passe à F9. /daemon ajoute un redémarrage avec avertissement et reconnexion automatique, à réserver à un moment sans travail actif sur le serveur concerné. Les lectures indépendantes de skills, mémoires et historiques peuvent être parallélisées pendant la préparation d’un audit, sans promettre un gain de quota. Le profil securite relevé utilise gpt-daybreak-blue-latest : après mise à jour vers 0.163.0, l’activation explicite --enable cli_daybreak conseillée le 13/10 n’est plus un préalable pour un compte éligible ; l’éligibilité de ton compte reste inconnue. Les correctifs de reprise des permissions et de collecte des sorties concernent aussi tes missions non interactives ; la release ne démontre pas leur présence dans le binaire distinct de D70, relevé en 0.162.0-alpha.17.2.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Après mise à jour de la CLI npm, essayer `/config` dans le flux d’audit trading-sim sous tmux ; résultat attendu : recherche de réglages et distinction des changements qui nécessitent un redémarrage.",
+        "etapes": [
+          "Hors du passage de veille et après la fin des travaux actifs, mettre à jour la CLI npm avec `npm install -g @openai/codex` ; contrôler la version publiée 0.163.0 avec `codex --version`. Le binaire livré avec l’app suit son propre canal.",
+          "Dans une session de test, ouvrir `/config` et rechercher un réglage sans le modifier ; résultat attendu : catégorie du réglage et indication des changements applicables immédiatement ou après redémarrage.",
+          "Sur le résumé en lecture seule d’un rapport trading-sim existant, envoyer une précision pendant la réponse ; résultat attendu : prise en compte immédiate de la précision.",
+          "Ouvrir `/keymap` (exemple de la fiche : `/keymap`) puis `/daemon` (exemple : `/daemon`) en consultation ; résultat attendu : raccourcis et connexion du serveur visibles. Une modification du keymap est persistante ; confirmer une action serveur pourrait interrompre les travaux."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "codex-commandes-keymap",
+        "codex-commandes-daemon",
+        "codex-commandes-side",
+        "codex-fonctionnalites-page-codex-cli"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI npm sous tmux utilisée pour les audits ; binaire distinct dans la chaîne D70."
+        },
+        "config.codex.profils": {
+          "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+          "pourquoi": "Les profils audit, rapide et securite sont utilisés."
+        },
+        "projet.chatgpt-trading-sim": {
+          "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+          "pourquoi": "Les rapports existants offrent un essai d’audit en lecture seule."
+        }
+      }
+    },
+    {
+      "id": "openai-status-01M506BA4XRSWH7THR53HQGN3Z",
+      "ids_bruts": [
+        "openai-status-01M506BA4XRSWH7THR53HQGN3Z"
+      ],
+      "produit": "chatgpt",
+      "titre": "ChatGPT mobile : dégradation du 15 octobre résolue",
+      "version": null,
+      "date_publication": "2026-10-15",
+      "type": "correction",
+      "resume": "OpenAI a signalé une dégradation étendue, notamment des connexions et inscriptions sur les applications ChatGPT iOS et Android, le 15/10 de 16:29:26 à 18:56 UTC. Tous les services touchés sont déclarés rétablis.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M506BA4XRSWH7THR53HQGN3Z",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu pilotes tes sessions Codex depuis ChatGPT sur iPhone. Une difficulté de connexion pendant cette plage pourrait correspondre à cet incident résolu ; la source ne démontre pas une panne spécifique de Remote Control.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "ChatGPT sur iPhone sert au pilotage à distance des sessions Codex."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-1-ask-the-original-gpt-for-a-rebuild-prompt",
+      "ids_bruts": [
+        "kb-codex-mcp-1-ask-the-original-gpt-for-a-rebuild-prompt"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 1. Ask the original GPT for a rebuild prompt",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 1. Ask the original GPT for a rebuild prompt : prompt de reconstruction des opérations d’un GPT en outils MCP, distinguant lectures et écritures, sans secrets.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#1-ask-the-original-gpt-for-a-rebuild-prompt",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-1-ask-the-original-gpt-for-a-rebuild-prompt"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-1-create-your-plugin",
+      "ids_bruts": [
+        "kb-codex-mcp-1-create-your-plugin"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 1. Create your plugin",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 1. Create your plugin : sélection de @Plugin Creator dans Work avec la documentation API et un exemple de consultation de tickets.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#1-create-your-plugin",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-1-create-your-plugin"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-2-check-the-prompt-against-the-action-settings",
+      "ids_bruts": [
+        "kb-codex-mcp-2-check-the-prompt-against-the-action-settings"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 2. Check the prompt against the action settings",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 2. Check the prompt against the action settings : conservation du schéma de l’action et des réglages non secrets depuis l’éditeur du GPT avant reconstruction.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#2-check-the-prompt-against-the-action-settings",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-2-check-the-prompt-against-the-action-settings"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-2-connect-your-system",
+      "ids_bruts": [
+        "kb-codex-mcp-2-connect-your-system"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 2. Connect your system",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 2. Connect your system : connexion à l’API dans la conversation de création, avec authentification et secrets hors du chat.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#2-connect-your-system",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-2-connect-your-system"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-3-create-a-new-sites-plugin",
+      "ids_bruts": [
+        "kb-codex-mcp-3-create-a-new-sites-plugin"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 3. Create a new Sites plugin",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 3. Create a new Sites plugin : création dans Work avec @Plugin Creator ou dans Codex avec $plugin-creator à partir du prompt et du schéma revus.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#3-create-a-new-sites-plugin",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-3-create-a-new-sites-plugin"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-3-publish-and-install",
+      "ids_bruts": [
+        "kb-codex-mcp-3-publish-and-install"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 3. Publish and install",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 3. Publish and install : publication par le propriétaire du Site, puis installation et connexion depuis Plugins → Personal → Created by you.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#3-publish-and-install",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-3-publish-and-install"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-4-use-your-plugin",
+      "ids_bruts": [
+        "kb-codex-mcp-4-use-your-plugin"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : 4. Use your plugin",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — 4. Use your plugin : sélection du plugin par @ dans une tâche Work et demande d’une consultation précise.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#4-use-your-plugin",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-4-use-your-plugin"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-before-you-start",
+      "ids_bruts": [
+        "kb-codex-mcp-before-you-start"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : Before you start",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — Before you start : consultation de l’annuaire des plugins et préparation de la documentation API et de la connexion.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#before-you-start",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-before-you-start"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-build-an-mcp-plugin-with-plugin-creator-and-sites",
+      "ids_bruts": [
+        "kb-codex-mcp-build-an-mcp-plugin-with-plugin-creator-and-sites"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : Build an MCP plugin with Plugin Creator and Sites",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — Build an MCP plugin with Plugin Creator and Sites : création du plugin avec Plugin Creator et hébergement du serveur MCP sur Sites.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#build-an-mcp-plugin-with-plugin-creator-and-sites",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-build-an-mcp-plugin-with-plugin-creator-and-sites"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-connect-an-existing-mcp-server",
+      "ids_bruts": [
+        "kb-codex-mcp-connect-an-existing-mcp-server"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : Connect an existing MCP server",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — Connect an existing MCP server : connexion des outils MCP distants par plugin sur le web et configuration directe partagée entre clients Codex locaux.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#connect-an-existing-mcp-server",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-connect-an-existing-mcp-server"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-replacing-a-gpt-custom-action",
+      "ids_bruts": [
+        "kb-codex-mcp-replacing-a-gpt-custom-action"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : Replacing a GPT custom action",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — Replacing a GPT custom action : reconstruction des actions GPT en nouveau plugin Sites, sans migration automatique des actions.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#replacing-a-gpt-custom-action",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-replacing-a-gpt-custom-action"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    },
+    {
+      "id": "kb-codex-mcp-troubleshooting",
+      "ids_bruts": [
+        "kb-codex-mcp-troubleshooting"
+      ],
+      "produit": "codex",
+      "titre": "Base MCP : Troubleshooting",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "MCP — Troubleshooting : contrôle de la dernière publication du Site, de l’installation du plugin et de sa connexion en cas d’outils absents.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/extend/mcp#troubleshooting",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises déjà le connecteur Delta-IA dans Codex et ChatGPT Work ; cette fiche complète l’inventaire documentaire des connexions MCP, pour consultation.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "codex-mcp-troubleshooting"
+      ],
+      "contexte_sections": {
+        "config.codex.mcp": {
+          "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+          "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+        }
+      }
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be"
+}

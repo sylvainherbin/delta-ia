@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "mcp",
- "maj_le": "2026-10-13",
+ "maj_le": "2026-10-16",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,9 +41,433 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 19,
- "commentees": 19,
+ "total": 31,
+ "commentees": 31,
  "entrees": [
+  {
+   "id": "codex-mcp-1-ask-the-original-gpt-for-a-rebuild-prompt",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "1. Ask the original GPT for a rebuild prompt",
+   "gabarit": "complet",
+   "description": "Demande au GPT d’origine un prompt décrivant son workflow sous forme d’outils MCP. Le prompt distingue lectures et écritures, recense opérations API et formats, et exclut secrets et instructions cachées.",
+   "description_source": "Open the original GPT and ask:",
+   "usage": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune action de GPT personnel à reconstruire n’est décrite dans CONTEXTE.md."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#1-ask-the-original-gpt-for-a-rebuild-prompt",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Replacing a GPT custom action",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-1-create-your-plugin",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "1. Create your plugin",
+   "gabarit": "complet",
+   "description": "Dans une tâche Work, sélectionner @Plugin Creator et joindre la documentation de l’API pour créer un plugin MCP hébergé sur Sites. L’exemple de la source demande une consultation de tickets en lecture seule.",
+   "description_source": "Start a new Work task, select @Plugin Creator, and attach your API documentation. Describe the task:",
+   "usage": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA est déjà utilisé ; aucun besoin de créer une connexion de billetterie n’est déclaré."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#1-create-your-plugin",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Build an MCP plugin with Plugin Creator and Sites",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-2-check-the-prompt-against-the-action-settings",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "2. Check the prompt against the action settings",
+   "gabarit": "complet",
+   "description": "Avant la reconstruction, conserver le schéma de l’action, sa méthode d’authentification et les réglages de connexion non secrets depuis l’éditeur du GPT. Ces informations servent à corriger les lacunes du prompt de migration.",
+   "description_source": "Before migrating, save the action schema, authentication method, and non-secret connection settings from the GPT editor's Actions section. Use these to fill gaps in the prompt, or ask the GPT owner for help.",
+   "usage": "Before migrating, save the action schema, authentication method, and non-secret connection settings from the GPT editor's [Actions section](https://help.openai.com/en/articles/9442513-configuring-actions-in-gpts). Use these to fill gaps in the prompt, or ask the GPT owner for help.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune action de GPT personnel à migrer n’est décrite dans CONTEXTE.md."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#2-check-the-prompt-against-the-action-settings",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Replacing a GPT custom action",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-2-connect-your-system",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "2. Connect your system",
+   "gabarit": "complet",
+   "description": "Dans la conversation de création, demander à Plugin Creator de connecter le serveur à l’API et de guider la connexion. La méthode d’authentification doit être approuvée et les secrets restent hors du chat.",
+   "description_source": "In the same conversation, ask Plugin Creator to connect the server to your system's API and walk you through sign-in. Use your organization's approved authentication method, and keep passwords, API keys, and other secrets out of chat.",
+   "usage": "In the same conversation, ask Plugin Creator to connect the server to your system's API and walk you through sign-in. Use your organization's approved authentication method, and keep passwords, API keys, and other secrets out of chat.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA existe déjà ; aucune nouvelle API à connecter par Sites n’est identifiée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#2-connect-your-system",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Build an MCP plugin with Plugin Creator and Sites",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-3-create-a-new-sites-plugin",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "3. Create a new Sites plugin",
+   "gabarit": "complet",
+   "description": "Créer une nouvelle tâche avec @Plugin Creator dans Work ou `$plugin-creator` dans Codex. Fournir le prompt revu et le schéma ou la documentation API, puis demander un hébergement sur Sites ; la publication crée un plugin distinct.",
+   "description_source": "Start a new task. In Work, select @Plugin Creator; in Codex, use $plugin-creator. Paste the reviewed prompt and attach the schema or API documentation. Ask it to host the server on Sites.",
+   "usage": "$plugin-creator",
+   "usage_nature": "syntaxe",
+   "exemple": "$plugin-creator",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune migration d’action GPT vers Sites n’est décrite ; le connecteur Delta-IA existant ne suffit pas à justifier cette reconstruction."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#3-create-a-new-sites-plugin",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Replacing a GPT custom action",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-mcp-3-publish-and-install",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "3. Publish and install",
+   "gabarit": "complet",
+   "description": "Le propriétaire du Site publie le serveur pour créer son plugin ; les éditeurs doivent solliciter le propriétaire. Ouvrir ensuite sa carte dans Plugins → Personal → Created by you, puis Install et Connect avec les réglages d’accès retenus.",
+   "description_source": "Ask Plugin Creator to publish the server with Sites and give you the plugin link, keeping your current access settings. The Site owner must publish to create its plugin; editors should ask the owner to do this.",
+   "usage": "1. Open the plugin card, or find it under **Plugins → Personal → Created by you**.\n2. Follow **Install** and **Connect**, and complete any required sign-in.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun plugin Sites à publier n’est identifié pour Sylvain ; Delta-IA est déjà un connecteur utilisé."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#3-publish-and-install",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Build an MCP plugin with Plugin Creator and Sites",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-4-use-your-plugin",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "4. Use your plugin",
+   "gabarit": "complet",
+   "description": "Dans une nouvelle tâche Work, sélectionner le plugin avec @ et demander une consultation précise. Ses outils peuvent être utilisés avec ceux d’autres plugins dans la même conversation.",
+   "description_source": "Start a new Work task, choose your plugin with @, and ask “What's the status of ticket 123?” using a ticket number from your system. You can use its tools alongside other plugins in the same conversation.",
+   "usage": "Start a new Work task, choose your plugin with **@**, and ask **“What's the status of ticket 123?”** using a ticket number from your system. You can use its tools alongside other plugins in the same conversation.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "L’exemple porte sur un plugin de tickets non déclaré ; aucun essai concret de ce plugin n’est identifié."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#4-use-your-plugin",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Build an MCP plugin with Plugin Creator and Sites",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-before-you-start",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "Before you start",
+   "gabarit": "complet",
+   "description": "Consulter d’abord l’annuaire des plugins avant de créer une connexion MCP. Pour une connexion nouvelle, réunir la documentation de l’API et une méthode de connexion approuvée.",
+   "description_source": "Check the Plugins directory first. If you need a new connection, gather your system's API documentation and an approved way to connect. Ask the system owner if you need help.",
+   "usage": "Check the [Plugins directory](https://chatgpt.com/plugins) first. If you need a new connection, gather your system's API documentation and an approved way to connect. Ask the system owner if you need help.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA est déjà utilisé ; aucun nouveau besoin de connexion à préparer n’est déclaré."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#before-you-start",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Build an MCP plugin with Plugin Creator and Sites",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-mcp-build-an-mcp-plugin-with-plugin-creator-and-sites",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "Build an MCP plugin with Plugin Creator and Sites",
+   "gabarit": "complet",
+   "description": "Plugin Creator crée et modifie le plugin tandis que Sites héberge son serveur MCP. La documentation déroule un exemple de consultation de tickets en lecture seule, avec connexion et publication séparées.",
+   "description_source": "Use Plugin Creator to create and edit your plugin, and Sites to host its MCP server.",
+   "usage": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de remplacer l’hébergement du connecteur Delta-IA par Sites n’est déclaré."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#build-an-mcp-plugin-with-plugin-creator-and-sites",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Model Context Protocol",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
   {
    "id": "codex-mcp-codex-mcp-add-name",
    "produit": "codex",
@@ -805,6 +1229,53 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-mcp-connect-an-existing-mcp-server",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "Connect an existing MCP server",
+   "gabarit": "complet",
+   "description": "Sur le web ChatGPT, les outils MCP distants passent par des plugins. Les clients Codex locaux peuvent aussi se connecter directement à un serveur MCP et partager leur configuration sur un même hôte.",
+   "description_source": "ChatGPT web uses remote MCP tools through plugins. If you already have a server, follow Connect and test your plugin. Local Codex clients can also connect directly to MCP servers and share their configuration.",
+   "usage": "ChatGPT web uses remote MCP tools through plugins. If you already have a server, follow [Connect and test your plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt). Local Codex clients can also connect directly to MCP servers and share their configuration.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Delta-IA est déjà déclaré utilisé dans Codex et ChatGPT Work ; aucune nouvelle connexion à configurer n’est identifiée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#connect-an-existing-mcp-server",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Model Context Protocol",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-mcp-examples-of-useful-mcp-servers",
    "produit": "codex",
    "categorie": "mcp",
@@ -908,6 +1379,53 @@
    "exemple_origine": "source"
   },
   {
+   "id": "codex-mcp-replacing-a-gpt-custom-action",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "Replacing a GPT custom action",
+   "gabarit": "complet",
+   "description": "Les actions personnalisées des GPT ne migrent pas automatiquement vers les plugins. La connexion se reconstruit dans un nouveau plugin Sites en réutilisant l’API ; les skills et fichiers de référence ne sont pas modifiables dans les plugins Sites à ce stade.",
+   "description_source": "GPT custom actions don't migrate to plugins. Rebuild the connection as a new Sites plugin, reusing the existing API where possible.",
+   "usage": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune action personnalisée de GPT utilisée par Sylvain n’est décrite ; aucune migration à entreprendre n’est établie."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#replacing-a-gpt-custom-action",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Model Context Protocol",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-mcp-supported-mcp-features",
    "produit": "codex",
    "categorie": "mcp",
@@ -974,6 +1492,53 @@
     }
    },
    "exemple_impossible": "L’usage instructions désigne un champ du protocole MCP, sans requête ou configuration exécutable complète."
+  },
+  {
+   "id": "codex-mcp-troubleshooting",
+   "produit": "codex",
+   "categorie": "mcp",
+   "nom": "Troubleshooting",
+   "gabarit": "complet",
+   "description": "Pour une erreur de connexion ou des outils absents, contrôler la publication de la dernière version par le propriétaire, puis l’installation et la connexion du plugin. Un serveur MCP distant ne suffit pas à rendre un plugin marqué Desktop only compatible avec le web.",
+   "description_source": "For a connection error or missing tools, check that the Site owner published the latest version and that the plugin is installed and connected. Share any error with Plugin Creator or the server owner.",
+   "usage": "For a connection error or missing tools, check that the Site owner published the latest version and that the plugin is installed and connected. Share any error with Plugin Creator or the server owner.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun incident de plugin hébergé sur Sites n’est déclaré dans le contexte ; ce dépannage ne correspond pas à un besoin établi."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/extend/mcp#troubleshooting",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.codex.mcp": {
+     "sha1": "489642bb494856f784b36b93dd05732ae846b6d2",
+     "pourquoi": "Le connecteur Delta-IA est déclaré utilisé dans Codex et ChatGPT Work."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-mcp",
+   "groupe": "Model Context Protocol",
+   "maj_le": "2026-10-16",
+   "historique": [
+    {
+     "date": "2026-10-16",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-mcp-use-mcp-backed-tools-in-chatgpt-web",
