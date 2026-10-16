@@ -68,10 +68,11 @@ class FauxA1:
         return {"statut": "ended", "comptes": len(res), "resultats": res}
 
 
-def test_config_livree_desactivee():
-    """Réglage réversible : livré à « aucun » tant que Delta-pilote n'a pas présenté la première dépense."""
+def test_config_livree_batch():
+    """Classement quotidien en Batch sur la clé « delta » : accord de Sylvain du 16/10/2026 (DECISIONS.md:333), après
+    l'essai mesuré ; retour possible à « aucun » dans scripts/classement.toml."""
     c = cl.charger_config()
-    assert c["mode"] == "aucun" and c["usage"] == "veille-delta-ia"
+    assert c["mode"] == "batch" and c["usage"] == "veille-delta-ia"
 
 
 def test_aucun_n_ecrit_rien(racine, capsys):
