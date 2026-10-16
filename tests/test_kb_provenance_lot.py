@@ -417,3 +417,17 @@ def test_recommentaire_fiche_qui_ferait_echouer_valider_refusee_seule(a_revoir):
     journal = (cat.dossier(racine, "claude") / "reevaluations.jsonl").read_text(encoding="utf-8").splitlines()
     assert [json.loads(l)["id"] for l in journal] == [par["r0002"]]
     assert valider.main(["--perimetre", "claude", "--racine", str(racine), "--kb"]) == 0
+
+
+def test_recommentaire_section_citee_avec_prefixe_contexte_et_longueurs_envoyees(a_revoir):
+    """Lot réel du 16/10 : 25 fiches rejetées pour `ctx_id` « contexte:<id> » (préfixe repris des titres de la consigne)."""
+    racine, ents, ids = a_revoir
+    m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
+    contenu = json.loads(pl.charger_requetes(racine, m)[0]["params"]["messages"][0]["content"])
+    assert set(contenu["longueurs_max"]) == {"description", "recommandation.pourquoi"}
+    par = {f["custom_id"]: k for k, f in m["fiches"].items()}
+    sortie = recommentaire()
+    sortie["contexte_sections"] = [{"ctx_id": "contexte:projets", "pourquoi": "Delta-IA est le projet de veille."}]
+    b = rl.appliquer(racine, m, [reponse("r0001", sortie)], jour="2026-10-17", controle=cli.controle_fiche)
+    k1 = par["r0001"]
+    assert b["appliquees"] == [k1] and set(cat.charger(racine, "claude")[k1]["contexte_sections"]) == {"projets"}

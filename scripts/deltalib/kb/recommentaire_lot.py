@@ -55,9 +55,10 @@ d'options et de produits en version originale ; aucun chiffre, version ou date a
 CONTEXTE.md décrit un projet, un outil ou une habitude de Sylvain que l'élément sert concrètement ; une restriction \
 écrite dans CONTEXTE.md (outil interdit, projet arrêté, autre outil retenu) l'emporte. Sinon `ignorer` : c'est une \
 réponse normale, jamais un échec.
-- `recommandation.pourquoi` : 1 à 3 phrases. Chaque fait personnel (projet, outil, habitude, limite, compte) qu'il nomme \
+- `description` et `recommandation.pourquoi` respectent `longueurs_max` de la fiche (caractères). \
+`recommandation.pourquoi` : 1 à 3 phrases. Chaque fait personnel (projet, outil, habitude, limite, compte) qu'il nomme \
 vient d'une section citée dans `contexte_sections`. Si aucune section ne le fonde, ne le nomme pas.
-- `contexte_sections` : les sections qui fondent le jugement (ctx-id exact de la liste, section au contenu non vide), chacune \
+- `contexte_sections` : les sections qui fondent le jugement (`ctx_id` = ctx-id exact de la liste, sans le préfixe `contexte:`, section au contenu non vide), chacune \
 avec un `pourquoi` d'une ligne, 160 caractères au plus. Liste vide si le jugement ne dépend d'aucune section.
 - `provenance` (verdict `utiliser` ou `tester`) : 1 à 8 affirmations factuelles, 300 caractères au plus, chacune \
 vérifiable dans UNE source : `source` = une URL de `urls` (ancre `#…` permise), `contexte:<ctx-id>` d'une section que tu \
@@ -110,6 +111,10 @@ def a_revoir(racine: Path, perimetre: str) -> dict[str, str]:
     return {k: v for k, v in res.items() if k in entrees and cat.provenance_due(entrees[k])}
 
 
+# Longueurs maximales par gabarit, celles de `valider.LONGUEURS` (valider.py) : envoyées avec chaque fiche.
+LONGUEURS = {"complet": {"description": 900, "pourquoi": 450}, "court": {"description": 350, "pourquoi": 300}}
+
+
 def _sections_envoyees(texte_ctx: str) -> tuple[dict[str, str], dict[str, str]]:
     """({ctx-id: texte}, {ctx-id: sha1}) des sections courantes au contenu non vide (les seules citables)."""
     courantes = analyser(texte_ctx)[0]
@@ -127,7 +132,9 @@ def requete(custom_id: str, e: dict, f: dict, consigne: str, essais: dict[str, d
     fiche = {k: e.get(k) for k in ("id", "produit", "nom", "categorie", "usage", "description_source", "description",
                                    "recommandation", "exemple")}
     fiche["contexte_sections_avant"] = {c: (v or {}).get("pourquoi") for c, v in (e.get("contexte_sections") or {}).items()}
+    lim = LONGUEURS.get(e.get("gabarit"), LONGUEURS["court"])
     contenu = {"fiche": fiche, "motif_a_revoir": f["motif_a_revoir"], "urls": f["urls"],
+               "longueurs_max": {"description": lim["description"], "recommandation.pourquoi": lim["pourquoi"]},
                "essais": {i: essais[i] for i in f["essais"]}}
     return {"custom_id": custom_id, "params": {
         "model": modele, "max_tokens": MAX_TOKENS,
@@ -212,6 +219,7 @@ def _commentaire(sortie: dict, f: dict, shas: dict[str, str]) -> dict | str:
     cs = {}
     for s in sortie.get("contexte_sections") or []:
         c = str((s or {}).get("ctx_id", "")).strip()
+        c = c[len("contexte:"):] if c.startswith("contexte:") else c  # les sections sont envoyées sous « ### contexte:<id> »
         if c not in shas:
             return f"section citée inconnue, dépréciée ou vide : {c!r}"
         cs[c] = str(s.get("pourquoi", "")).strip()
