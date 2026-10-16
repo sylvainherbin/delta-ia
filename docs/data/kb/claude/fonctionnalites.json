@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-15",
+ "maj_le": "2026-10-16",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -1047,16 +1047,16 @@
    "categorie": "fonctionnalites",
    "nom": "Code Review",
    "gabarit": "complet",
-   "description": "Service géré qui relit les pull requests GitHub avec une flotte d'agents et publie des commentaires en ligne classés par gravité, sans approuver ni bloquer la PR ; `REVIEW.md` ou `CLAUDE.md` règlent ce qui est signalé. Une revue prend 20 minutes en moyenne et se facture selon la taille de la PR.",
-   "description_source": "Set up automated PR reviews that catch logic errors, security vulnerabilities, and regressions using multi-agent analysis of your full codebase",
-   "usage": "gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \\\n  --jq '.output.text | split(\"bughunter-severity: \")[1] | split(\" -->\")[0] | fromjson'",
-   "usage_nature": "syntaxe",
-   "exemple": "@claude review",
-   "disponibilite": "Team et Enterprise (aperçu de recherche)",
+   "description": "Service géré qui relit les pull requests GitHub avec plusieurs agents, vérifie les constats puis publie des commentaires en ligne classés par gravité et un check run, sans approuver ni bloquer la PR ; `REVIEW.md` ou `CLAUDE.md` règlent ce qui est signalé. Un propriétaire choisit un niveau de revue (Quick, Standard par défaut, Deep) par organisation ou par dépôt ; la page ne parle plus d'aperçu de recherche et renvoie les coûts à une page dédiée.",
+   "description_source": "Catch bugs in GitHub pull requests with Code Review: Claude reviews each change, verifies its findings, and comments inline. For Team and Enterprise plans",
+   "usage": "1. **Find**: several agents examine the diff and the surrounding code in parallel.\n2. **Verify**: a verification step checks the candidate findings against the code and filters out false positives.\n3. **Rank**: the findings that remain are deduplicated and ranked by severity.\n4. **Post**: the review posts its results on the pull request.",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": "Team et Enterprise (dépôts GitHub)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé aux abonnements Team et Enterprise ; pour une revue locale, la commande `/code-review` reste disponible."
+    "pourquoi": "Réservé aux organisations Team et Enterprise sur des dépôts GitHub ; pour une revue locale, la commande `/code-review` reste disponible."
    },
    "sources": [
     {
@@ -1069,7 +1069,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1082,11 +1082,22 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-fonctionnalites-page-common-workflows",

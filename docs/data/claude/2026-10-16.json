@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-16",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-16T02:10:00+00:00",
+  "synthese": "Compte et quotas : aucune information nouvelle sur les limites, offres ou tarifs aujourd'hui. Quotas lus à 02 h 04 UTC : Claude session 5 h 12 % (remise à zéro le 16/10 à 05 h 00 UTC), Claude semaine 75 % et semaine Fable 3 % (remise à zéro le 18/10 à 16 h 00 UTC), ChatGPT semaine 11 % (remise à zéro le 22/10 à 07 h 07 UTC) ; aucun quota hebdomadaire au seuil D71 de 80 %. Claude Code 2.1.301 est publiée et déjà installée : elle corrige plusieurs défauts de l'outil Workflow, que le pilote Delta emploie, et ajoute une variable qui borne l'attente d'une requête sans surveillance devant une limite d'usage lointaine. Code Review passe en disponibilité générale, réservé aux organisations Team et Enterprise, donc hors de ton forfait Max.",
+  "sources_en_echec": [],
+  "ecartes": [
+    {
+      "id": "https://www.anthropic.com/news/an-update-on-independent-evaluators",
+      "raison": "gouvernance de sécurité de l'éditeur (évaluateurs indépendants METR, SecureBio, Accenture), sans changement de produit ni de condition d'usage des outils"
+    }
+  ],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+  "elements": [
+    {
+      "id": "claude-code-2.1.301",
+      "ids_bruts": ["claude-code-2.1.301"],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.301",
+      "version": "2.1.301",
+      "date_publication": "2026-10-15",
+      "type": "nouveaute",
+      "resume": "Ajouts : variable `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS`, qui fait terminer une requête du mode de relance sans surveillance (`CLAUDE_CODE_RETRY_WATCHDOG`) devant une limite d'usage dont la remise à zéro est trop lointaine, au lieu d'attendre ; mouvement `%` du mode vim (seul ou avec d, c, y) ; champ `rows` pour le `Input` d'un mod (zone de texte de plusieurs lignes) ; `classifier_verdict`, `permission_mode` et `classifier_category` dans les événements OpenTelemetry `tool_decision` ; consignes de traçage OpenTelemetry dans le skill `claude-api` ; rendu LaTeX et lien « Get more usage » dans l'extension VS Code. Correctifs : alias de modèle `fable` (et `best`) qui échouait quand le dernier modèle Fable n'est pas ouvert à l'organisation (une relance sur le Fable précédent) ; agents de workflow qui sautaient leur étape en signalant un succès après la note du harnais sur l'absence d'autorité de leur texte ; scripts de workflow qui demandaient une permission ou étaient refusés après un `cd` Bash dans la session ; un changement vers un modèle à fenêtre de contexte plus petite qui pouvait dépenser des crédits d'usage sur un résumé du modèle précédent sans demander ; connexions perdues après une commande courte comme `claude auth status` interrompue pendant le renouvellement du jeton ; Grep et Glob qui annonçaient « aucun résultat » quand le programme de recherche échouait ; lecture de fichiers binaires (.xlsm, .parquet, .epub, .heic) comme du texte. Changements : le `.catch` du hook d'un mod ne s'exécute plus que si le hook échoue ou dépasse son délai ; `$.env.set` d'un mod rend `{}` ou `{ deny }`.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21301",
+          "libelle": "Claude Code 2.1.301",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.301 est déjà installée (`docs/data/versions.json`, à jour), donc les correctifs de Workflow sont actifs : CONTEXTE.md compte l'outil Workflow parmi tes usages (13 appels) et en fait l'outil du pilote Delta, et l'agent de workflow qui sautait son étape en annonçant un succès était un défaut défavorable, silencieux. Les sessions ouvertes avant la mise à jour gardent l'ancienne version jusqu'à leur relance. La chaîne de nuit D70 lance `/delta` et `/delta-kb` en `claude -p` sans surveillance, avec une garde à 80 % de session 5 h et 98 % de semaine : la nouvelle variable ne l'intéresse que si une étape attend une remise à zéro lointaine, ce que la commande de l'action tranche. Le correctif de l'alias `fable` te concerne tant que tu emploies Fable (limite Fable citée dans CONTEXTE.md) : si le dernier Fable n'est pas ouvert à ton organisation, Claude Code retombe sur le précédent au lieu d'échouer. Sans effet pour toi : mods, OpenTelemetry, mode vim et VS Code, que CONTEXTE.md ne décrit pas comme utilisés.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lance `grep -n 'RETRY_WATCHDOG' scripts/passage-auto.sh scripts/orchestrateur.toml` : sans résultat, la chaîne D70 n'utilise pas le mode de relance sans surveillance et la variable ne change rien ; avec un résultat, ajoute `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS=<millisecondes>` à côté (valeur à choisir par Dev-delta, la page n'en donne pas d'exemple).",
+        "etapes": [
+          "Dans `~/projets/delta-ia`, lance `grep -n 'RETRY_WATCHDOG' scripts/passage-auto.sh scripts/orchestrateur.toml`.",
+          "Si la commande trouve la variable `CLAUDE_CODE_RETRY_WATCHDOG`, ajoute `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` à l'environnement des étapes Claude de la chaîne D70 (mission pour Dev-delta, hors passage).",
+          "Résultat attendu : une étape `/delta` ou `/delta-kb` qui tombe sur une limite d'usage lointaine se termine avec une erreur au lieu de rester en attente jusqu'à la remise à zéro."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Usage réel des outils : Workflow ×13, concerné par les correctifs de workflow."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes /delta et /delta-kb lancées en claude -p sans surveillance, gardes à 80 % et 98 %."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 11 : limite Fable citée, concernée par le correctif de l'alias fable."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-10-15",
+      "ids_bruts": ["claude-platform-notes-2026-10-15"],
+      "produit": "claude",
+      "titre": "Notes de la plateforme Claude du 15/10 : mode rapide d'Opus 5.5 hors aperçu de recherche, API Compliance et Microsoft Foundry",
+      "version": null,
+      "date_publication": "2026-10-15",
+      "type": "nouveaute",
+      "resume": "Le mode rapide (fast mode) de Claude Opus 5.5 sort de l'aperçu de recherche : plus de demande d'accès, l'en-tête bêta `fast-mode-2026-02-01` n'est plus requis (il reste accepté), et Opus 5.5 reçoit une limite de débit par défaut du mode rapide dans les niveaux Start, Build et Scale. Pour Claude Opus 5 et Claude Opus 4.8, le mode rapide reste en aperçu et l'en-tête reste requis. L'API Compliance renvoie, en bêta pour Claude Enterprise, les « Instructions for Claude » de claude.ai et les « Global instructions » de Cowork de chaque membre (`GET /v1/compliance/organizations/{org_uuid}/user_preferences`, portée `read:compliance_user_data`). Le mode rapide d'Opus 5.5 est aussi disponible sur Claude in Microsoft Foundry pour les déploiements hébergés sur Azure.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/code-review-is-now-generally-available",
+      "ids_bruts": ["https://claude.com/blog/code-review-is-now-generally-available"],
+      "produit": "claude",
+      "titre": "Code Review en disponibilité générale pour les organisations Team et Enterprise",
+      "version": null,
+      "date_publication": "2026-10-15",
+      "type": "nouveaute",
+      "resume": "Code Review (relecture automatique des pull requests GitHub) sort de l'aperçu de recherche pour les organisations Claude Team et Enterprise. Anthropic annonce des revues environ 3 fois plus rapides (de 20 minutes environ à 6-10 minutes par rapport à l'aperçu), des constats plus concis et un niveau Quick, Standard (par défaut) ou Deep choisi par dépôt par les administrateurs. La page de la base ne parle plus d'aperçu de recherche et renvoie les coûts à une page dédiée.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/code-review-is-now-generally-available",
+          "libelle": "Code Review is now generally available",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/code-review",
+          "libelle": "Code Review",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": ["claude-code-fonctionnalites-page-code-review"],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-raccourcis-editing-normal-mode-d",
+      "ids_bruts": ["kb-claude-code-raccourcis-editing-normal-mode-d"],
+      "produit": "claude-code",
+      "titre": "Base : raccourci `d%` / `c%` / `y%` du mode vim (jusqu'au crochet correspondant)",
+      "version": "2.1.301",
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Ajout à la base : en mode normal vim, `d%`, `c%` ou `y%` supprime, change ou copie du curseur jusqu'au crochet que `%` atteint ; demande la 2.1.301 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/interactive-mode",
+          "libelle": "Mode interactif",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": ["claude-code-raccourcis-editing-normal-mode-d"],
+      "contexte_sections": {}
+    }
+  ]
+}
