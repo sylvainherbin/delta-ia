@@ -2829,7 +2829,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Git and attribution",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2846,6 +2846,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -2859,7 +2863,45 @@
      "pourquoi": "sessions lancées avec --remote-control"
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre attribution.sessionUrl décide si Claude Code ajoute le lien de la session claude.ai lorsqu'il fait un commit ou ouvre une pull request depuis une session cloud ou Remote Control.",
+     "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé attribution.sessionUrl change de nom ou de portée, ou disparaît de la documentation des settings."
+    },
+    {
+     "affirmation": "Claude Code ajoute ce lien sous la forme d'un trailer Claude-Session sur les commits et d'un lien dans la description des pull requests.",
+     "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus le trailer Claude-Session ni le lien dans les pull requests."
+    },
+    {
+     "affirmation": "Mettre attribution.sessionUrl à false omet ce lien de session.",
+     "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La valeur false ne supprime plus le lien ou la syntaxe du réglage change."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` ; ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions durables avec --remote-control ni leur pilotage par Remote Control."
+    },
+    {
+     "affirmation": "carnet est un dépôt public qui ne doit contenir aucun secret ni donnée personnelle, d'après AGENTS.md.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme un dépôt public, ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "Sur carnet, Claude Code sert au développement et au coach ; la session Claude « coach » écrit les fichiers plan/AAAA-MM-JJ.json dans le dépôt.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code pour le développement et le coach de carnet."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-autocompact-auto-tokens",
@@ -5819,7 +5861,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5832,6 +5874,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -5844,7 +5890,45 @@
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Hook PermissionDenied qui lance `operer refus`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "CLAUDE_CODE_BRIDGE_SESSION_ID est posée automatiquement dans les sous-processus de l'outil Bash et des commandes de hooks tant que la session a une connexion Remote Control active ; elle est retirée quand la connexion se termine.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La variable disparaît de la documentation ou n'est plus posée dans les sous-processus des hooks ou de Bash."
+    },
+    {
+     "affirmation": "Sa valeur est l'ID de la session sous la forme session_, le même identifiant que dans l'URL claude.ai/code de la session, pour qu'un script puisse renvoyer à la session qui l'a lancé.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le format de la valeur ou ne la relie plus à l'URL claude.ai/code."
+    },
+    {
+     "affirmation": "La variable requiert Claude Code v2.1.199 ou ultérieur ; dans les sessions cloud, il faut lire CLAUDE_CODE_REMOTE_SESSION_ID à la place.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation modifie la version minimale ou la variable à lire en session cloud."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` dans tmux, et ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées avec --remote-control."
+    },
+    {
+     "affirmation": "Le seul hook actuel est `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` pour consigner les refus de permission dans OPÉRER, sans modèle.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus ce hook PermissionDenied ou il ne lance plus `operer refus`."
+    },
+    {
+     "affirmation": "Bash est l'outil très dominant de Sylvain, avec environ 2 900 appels au relevé du 25/09.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus Bash comme l'outil dominant dans l'usage réel."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-bs-as-ctrl-backspace",
@@ -10710,7 +10794,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10719,10 +10803,40 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "provenance": [
+    {
+     "affirmation": "Mettre CLAUDE_CODE_NO_FLICKER à 1 active le rendu plein écran (fullscreen rendering) de Claude Code.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la variable CLAUDE_CODE_NO_FLICKER disparaît de la documentation ou n'active plus le rendu plein écran"
+    },
+    {
+     "affirmation": "Ce rendu plein écran est présenté comme un aperçu de recherche (research preview) qui réduit le scintillement et garde la mémoire stable dans les longues conversations.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne qualifie plus ce mode de research preview ou ne lui attribue plus ces effets sur le scintillement et la mémoire"
+    },
+    {
+     "affirmation": "La variable CLAUDE_CODE_NO_FLICKER prend le pas sur le réglage tui (Overrides the tui setting).",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation n'indique plus que CLAUDE_CODE_NO_FLICKER remplace le réglage tui"
+    },
+    {
+     "affirmation": "La documentation indique qu'on peut aussi basculer vers ce mode avec la commande /tui fullscreen.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande /tui fullscreen change de syntaxe ou n'est plus mentionnée dans la documentation"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-nonblocking-stdout",
@@ -15121,7 +15235,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15146,6 +15260,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -15155,7 +15273,39 @@
      "pourquoi": "Services claude-session@<nom> lancés par `claude --resume <id>` ; dev et school démarrés à la demande."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage cleanupPeriodDays fixe le nombre de jours pendant lesquels Claude Code conserve les transcripts de session et d'autres données d'application avant de les supprimer.",
+     "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le réglage cleanupPeriodDays change de rôle ou disparaît de la documentation des settings"
+    },
+    {
+     "affirmation": "La suppression s'exécute en tâche de fond après le démarrage d'une session, sans afficher de message.",
+     "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation indique que la suppression affiche un avertissement ou ne se fait plus au démarrage d'une session"
+    },
+    {
+     "affirmation": "Une session inutilisée depuis plus longtemps que la période de rétention n'apparaît plus dans le sélecteur /resume.",
+     "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne lie plus la suppression des transcripts à la disparition des sessions du sélecteur /resume"
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur claude-session@<nom> qui lance une session tmux exécutant claude --resume <id> --remote-control <nom>.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables comme des services relancés par claude --resume <id>"
+    },
+    {
+     "affirmation": "Seules les sessions peu utilisées dev et school se lancent à la demande, pour économiser environ 300 Mio de RAM chacune.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que dev et school démarrent automatiquement ou ne sont plus des sessions durables"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-cloud",
@@ -15763,7 +15913,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15784,6 +15934,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -15797,7 +15951,45 @@
      "pourquoi": "politique de capacités : aucun connecteur claude.ai sur ce projet"
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage deniedMcpServers bloque des serveurs MCP précis, désignés par exemple par une entrée { \"serverName\": \"filesystem\" }.",
+     "source": "https://code.claude.com/docs/en/settings-reference#deniedmcpservers",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le réglage deniedMcpServers change de syntaxe ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Claude Code refuse de charger un serveur correspondant où qu'il soit défini, y compris les serveurs de plugins, ceux passés avec --mcp-config et les connecteurs claude.ai qu'il récupère lui-même ; seuls les serveurs type \"sdk\" en processus sont exemptés.",
+     "source": "https://code.claude.com/docs/en/settings-reference#deniedmcpservers",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation n'inclut plus les connecteurs claude.ai dans le périmètre de deniedMcpServers"
+    },
+    {
+     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf deny explicite dans le .claude/settings.json du projet concerné.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce comportement des connecteurs de compte"
+    },
+    {
+     "affirmation": "trading-sim reçoit quand même les connecteurs de compte, Delta-IA compris, car son .claude/settings.json ne les liste pas dans son deny, contrairement à sa règle « aucun accès web en Lot 001 ».",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne signale plus cet écart sur trading-sim ou indique qu'il a été corrigé"
+    },
+    {
+     "affirmation": "herbin-mint ne touche pas au dépôt trading-sim, gouverné par Work ; Sylvain a transmis la question du deny à Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme gouverné par Work"
+    },
+    {
+     "affirmation": "La politique de capacités de trading-sim interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai sur ce projet.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus cette politique de capacités pour trading-sim"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-deniedmodels",
@@ -15988,7 +16180,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16005,6 +16197,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -16014,7 +16210,45 @@
      "pourquoi": "Pilotage à distance : l'iPhone est l'interface principale (Remote Control)."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage dialogExpiry fixe le délai des dialogues que Claude Code transmet à un client distant, comme un hôte Remote Control ou SDK, ainsi que celui du dialogue d'approbation d'un message inter-sessions retenu.",
+     "source": "https://code.claude.com/docs/en/settings-reference#dialogexpiry",
+     "releve_le": "2026-10-16",
+     "caduc_si": "dialogExpiry disparaît de la documentation ou ne couvre plus les dialogues transmis à Remote Control."
+    },
+    {
+     "affirmation": "Si aucune réponse n'arrive avant l'échéance, Claude Code annule le dialogue et poursuit avec son comportement par défaut sans action.",
+     "source": "https://code.claude.com/docs/en/settings-reference#dialogexpiry",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation décrit un autre comportement à l'expiration du dialogue."
+    },
+    {
+     "affirmation": "dialogExpiry requiert Claude Code v2.1.224 ou ultérieur.",
+     "source": "https://code.claude.com/docs/en/settings-reference#dialogexpiry",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La version minimale requise indiquée dans la documentation change."
+    },
+    {
+     "affirmation": "À partir de Claude Code v2.1.236, le même délai borne la demande de consentement aux crédits d'usage Fable en cours de session, dans une session où personne n'est peut-être au terminal.",
+     "source": "https://code.claude.com/docs/en/settings-reference#dialogexpiry",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire la demande de consentement Fable du périmètre de dialogExpiry."
+    },
+    {
+     "affirmation": "Pour Sylvain, l'iPhone est l'interface principale de pilotage à distance (Remote Control, notifications push).",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone et Remote Control comme interface principale."
+    },
+    {
+     "affirmation": "Parmi les frictions récurrentes de Sylvain figurent les limites d'usage, hebdomadaire et Fable.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les limites d'usage Fable parmi les frictions."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-difftool",
@@ -17514,7 +17748,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17535,6 +17769,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -17548,7 +17786,51 @@
      "pourquoi": "politique de capacités : aucun connecteur claude.ai sur ce projet"
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "disableClaudeAiConnectors désactive les connecteurs MCP claude.ai que Claude Code récupère lui-même : il ne les récupère plus et ne s'y connecte plus.",
+     "source": "https://code.claude.com/docs/en/settings-reference#disableclaudeaiconnectors",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le réglage change de nom ou d'effet, ou disparaît de la documentation des settings"
+    },
+    {
+     "affirmation": "Un true dans n'importe quel fichier de settings s'applique : un .claude/settings.json de projet versionné peut exclure un dépôt de ces connecteurs, mais un false de projet ne l'emporte pas sur un true utilisateur ou managed.",
+     "source": "https://code.claude.com/docs/en/settings-reference#disableclaudeaiconnectors",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation change la règle de priorité entre niveaux de settings pour ce réglage"
+    },
+    {
+     "affirmation": "trading-sim reçoit quand même les connecteurs de compte claude.ai, Delta-IA compris, car son .claude/settings.json ne les liste pas dans son deny, ce qui contredit sa règle « aucun accès web en Lot 001 ».",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne signale plus cet écart sur trading-sim ou indique qu'il a été corrigé"
+    },
+    {
+     "affirmation": "herbin-mint ne touche pas au dépôt trading-sim, gouverné par Work ; Sylvain a transmis la question du deny à Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'attribue plus la gouvernance du dépôt à Work ou la question est tranchée"
+    },
+    {
+     "affirmation": "Les MCP en portée locale sont rattachés au dossier de travail ; herbin-trading a son propre dossier ~/projets/trading-sim.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md attribue un autre dossier à herbin-trading"
+    },
+    {
+     "affirmation": "claude mcp list du 12/10/2026 montre claude.ai Vercel: https://mcp.vercel.com - ✔ Connected, connecteur de nouveau autorisé après avoir été refermé le 24/09.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que le connecteur claude.ai Vercel est déconnecté ou retiré"
+    },
+    {
+     "affirmation": "La politique de capacités de trading-sim prévoit que .claude/settings.json interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…).",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette politique de capacités pour trading-sim"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-disablecommandpluginsources",
@@ -18250,7 +18532,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18295,6 +18577,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -18312,7 +18598,45 @@
      "pourquoi": "Piste 11 : effort choisi par session pour étaler la charge sur les limites hebdomadaires."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage effortLevel fixe un niveau d'effort par défaut pour les modèles dont aucun niveau n'a été enregistré.",
+     "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage effortLevel change de rôle ou disparaît de la documentation des settings."
+    },
+    {
+     "affirmation": "Selon la documentation, les niveaux bas sont plus rapides et moins coûteux sur les tâches simples, et les niveaux hauts raisonnent plus en profondeur sur les problèmes complexes.",
+     "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus ce compromis entre vitesse, coût et profondeur selon le niveau d'effort."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance claude avec, selon le rôle, un modèle, un effort et des réglages de lancement propres (par exemple --model opus --effort medium pour le chef).",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions avec un effort propre au rôle passé en option."
+    },
+    {
+     "affirmation": "Les sessions peu utilisées dev et school se lancent à la demande plutôt qu'au démarrage automatique.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus dev comme une session lancée à la demande."
+    },
+    {
+     "affirmation": "Piste 11 : la consommation Fable/Opus approche les plafonds hebdomadaires, et le choix du modèle et du niveau d'effort par session pourrait étaler la charge.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 11 est retirée de CONTEXTE.md ou ne mentionne plus le niveau d'effort face aux limites hebdomadaires."
+    },
+    {
+     "affirmation": "Le modèle et l'effort par défaut de Claude Code sont relevés automatiquement dans docs/data/etat.json à chaque passage delta-ia.",
+     "source": "contexte:config.claude-code",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne renvoie plus à etat.json pour l'effort par défaut de Claude Code."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-emojicompletionenabled",
@@ -19000,7 +19324,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19045,6 +19369,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -19058,7 +19386,39 @@
      "pourquoi": "Python 3.12, tests unittest, `.claude/settings.json` propre au projet."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Le réglage `env` définit des variables d'environnement pour chaque session et pour les sous-processus que Claude Code lance depuis cette session.",
+     "source": "https://code.claude.com/docs/en/settings-reference#env",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage `env` disparaît de la documentation ou ne s'applique plus aux sous-processus lancés par Claude Code."
+    },
+    {
+     "affirmation": "La plupart des variables de la référence des variables d'environnement peuvent être posées dans `env`, ce qui permet d'en appliquer une à chaque session ou de la déployer à une équipe ; les réglages de projet et locaux ne peuvent pas en poser certaines.",
+     "source": "https://code.claude.com/docs/en/settings-reference#env",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change la liste des variables acceptées par `env` ou les restrictions des réglages de projet et locaux."
+    },
+    {
+     "affirmation": "Parmi les contrôles encore répétés à la main figure `PYTHONDONTWRITEBYTECODE=1` ; ces contrôles pourraient devenir des hooks.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus `PYTHONDONTWRITEBYTECODE=1` comme contrôle fait à la main dans la piste 3."
+    },
+    {
+     "affirmation": "trading-sim est en Python 3.12, bibliothèque standard, avec des tests `unittest`, sans `pyproject` ni `.venv`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit une autre stack pour trading-sim ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "trading-sim possède son propre `.claude/settings.json`, qui interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai sur ce projet.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de `.claude/settings.json` propre à trading-sim."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-environment-environment-id",
@@ -20087,7 +20447,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20104,6 +20464,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -20112,7 +20476,39 @@
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option --fork-session, lors d'une reprise, crée un nouvel identifiant de session au lieu de réutiliser l'original ; elle s'emploie avec --resume ou --continue.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option --fork-session disparaît de la documentation ou ne crée plus de nouvel ID de session à la reprise."
+    },
+    {
+     "affirmation": "La documentation donne l'exemple d'usage : claude --resume abc123 --fork-session.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La syntaxe de l'exemple change ou l'exemple est retiré de la documentation."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur modèle claude-session@<nom> qui lance une session tmux dédiée exécutant claude --resume <id> --remote-control <nom>.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions par claude --resume <id> via le service claude-session@<nom>."
+    },
+    {
+     "affirmation": "Selon le rôle, chaque session a ses propres réglages de lancement, par exemple --model opus --effort medium pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de session chef ni de réglages de lancement propres par rôle."
+    },
+    {
+     "affirmation": "Ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le pilotage des sessions depuis l'iPhone par Remote Control."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-forward-subagent-text",
@@ -21450,7 +21846,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21495,6 +21891,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -21511,7 +21911,51 @@
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Empreinte SHA-256 des missions dans un fichier `.sha256` séparé."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'événement PreToolUse s'exécute après que Claude a créé les paramètres d'un outil et avant le traitement de l'appel de cet outil.",
+     "source": "https://code.claude.com/docs/en/hooks#pretooluse",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le moment de déclenchement de PreToolUse ou retire cet événement."
+    },
+    {
+     "affirmation": "PreToolUse peut filtrer sur tout nom d'outil sauf EndConversation, dont les outils intégrés Bash, Write, Edit et les outils MCP.",
+     "source": "https://code.claude.com/docs/en/hooks#pretooluse",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire Bash des outils filtrables par PreToolUse ou modifie la liste des correspondances."
+    },
+    {
+     "affirmation": "Sylvain n'a aujourd'hui qu'un seul hook, PermissionDenied dans ~/.claude/settings.json, qui lance operer refus ; aucun autre hook n'existe dans les réglages des projets.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md signale un autre hook installé, notamment dans les réglages d'un projet."
+    },
+    {
+     "affirmation": "Bash est de loin l'outil le plus appelé par Sylvain dans Claude Code, avec environ 2 900 appels relevés le 25/09.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage dans CONTEXTE.md montre que Bash n'est plus l'outil dominant."
+    },
+    {
+     "affirmation": "La piste 3 note que la vérification SHA-256 des missions est un contrôle répété à la main qui pourrait devenir un hook.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire la piste 3 ou indique que la vérification SHA-256 des missions est déjà automatisée."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'empreinte SHA-256 d'une mission est conservée dans un fichier .sha256 séparé, jamais dans le document lui-même.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md change la convention d'empreinte des missions de trading-sim ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "Sur trading-sim, herbin-mint relit les missions lourdes, notamment leur intégrité SHA-256, avant lancement.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus la relecture d'intégrité SHA-256 avant lancement des missions."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-hook-sessionend",
@@ -22547,7 +22991,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-10-14",
@@ -22564,9 +23008,57 @@
     {
      "date": "2026-10-14",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Idle compaction compacte une longue conversation que l'utilisateur a laissée de côté, peu avant l'expiration de son prompt cache.",
+     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus idleCompaction ou change son déclenchement (conversation inactive, avant l'expiration du prompt cache)."
+    },
+    {
+     "affirmation": "Après une idle compaction, le message suivant envoie un résumé au lieu de la conversation entière.",
+     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation indique que le message suivant renvoie de nouveau la conversation complète, ou retire ce comportement."
+    },
+    {
+     "affirmation": "Au retour, la conversation affiche « Compacted while idle, before the prompt cache expired ».",
+     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le libellé affiché après une idle compaction change ou n'est plus mentionné dans la documentation."
+    },
+    {
+     "affirmation": "La clé de réglage s'écrit \"idleCompaction\" ; la valeur false figure dans l'exemple d'usage de la documentation.",
+     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé idleCompaction est renommée, change de type ou disparaît de la référence des settings."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui lance dans tmux `claude --resume <id> --remote-control <nom>`, avec des réglages propres selon le rôle, par exemple pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables sous systemd et tmux, ni la reprise par claude --resume."
+    },
+    {
+     "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le pilotage des sessions depuis l'iPhone par Remote Control."
+    },
+    {
+     "affirmation": "Les limites d'usage, hebdomadaire et Fable, figurent parmi les frictions récurrentes observées chez Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage hebdomadaires des frictions récurrentes."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-include-hook-events",
@@ -22917,7 +23409,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22938,6 +23430,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -22955,7 +23451,39 @@
      "pourquoi": "settings.json : notifications push des agents déjà activées."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage inputNeededNotifEnabled envoie une notification push sur le téléphone quand une demande de permission ou une question attend une réponse.",
+     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage inputNeededNotifEnabled disparaît de la documentation ou ne couvre plus les questions en attente."
+    },
+    {
+     "affirmation": "Claude Code n'envoie ces notifications que lorsque Remote Control est connecté.",
+     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation lève la condition de connexion à Remote Control pour ces notifications."
+    },
+    {
+     "affirmation": "Le réglage apparaît dans /config sous le libellé « Push when actions required ».",
+     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le libellé dans /config change ou le réglage n'y figure plus."
+    },
+    {
+     "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le régime bypassPermissions pour les sessions locales."
+    },
+    {
+     "affirmation": "L'iPhone est l'interface principale de Sylvain, via Remote Control et les notifications push.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale ou l'usage de Remote Control."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-interface-and-terminal-verbose",
@@ -23226,7 +23754,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23267,6 +23795,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -23276,7 +23808,39 @@
      "pourquoi": "Piste 1 : règles transversales (français, tutoiement) dispersées dans les mémoires."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage `language` fait répondre Claude par défaut dans une autre langue que l'anglais : Claude Code transmet la valeur telle quelle à Claude comme consigne de toujours répondre dans cette langue.",
+     "source": "https://code.claude.com/docs/en/settings-reference#language",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage `language` disparaît de la documentation ou cesse d'être transmis à Claude comme consigne de langue de réponse."
+    },
+    {
+     "affirmation": "Il n'y a pas de liste fixe pour les réponses : tout nom de langue lisible par Claude fonctionne. Claude Code ne vérifie pas la valeur, si bien qu'un nom mal orthographié parvient à Claude tel quel, sans produire d'erreur.",
+     "source": "https://code.claude.com/docs/en/settings-reference#language",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation impose une liste fixe de langues ou annonce une validation de la valeur de `language`."
+    },
+    {
+     "affirmation": "La même valeur de `language` fixe aussi la langue de la dictée vocale, qui a une liste fixe de langues prises en charge, et celle des titres de session générés automatiquement.",
+     "source": "https://code.claude.com/docs/en/settings-reference#language",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation dissocie la langue de la dictée vocale ou des titres de session du réglage `language`."
+    },
+    {
+     "affirmation": "Piste 1 : les règles transversales de Sylvain (français, tutoiement, validation pas à pas, factuel/déduit) restent dans les mémoires, dispersées entre projets.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la piste 1 ou indique que ces règles ont été centralisées hors des mémoires."
+    },
+    {
+     "affirmation": "`~/.claude/CLAUDE.md` est limité pour l'instant à la consigne connecteur delta-ia ; la centralisation des règles transversales s'y fait sur proposition et accord explicite de Sylvain, et n'est pas faite.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que les règles transversales ont été centralisées dans `~/.claude/CLAUDE.md` ou que la piste 1 est close."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-leftarrowopensagents",
@@ -29775,7 +30339,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29812,6 +30376,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -29825,7 +30393,39 @@
      "pourquoi": "Usage observé des skills perso : latex-manuscrit et verif-numerique jamais invoqués."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Le réglage skillOverrides permet de masquer ou de réduire un skill sans modifier son fichier SKILL.md.",
+     "source": "https://code.claude.com/docs/en/settings-reference#skilloverrides",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage skillOverrides disparaît de la documentation ou exige désormais de modifier SKILL.md."
+    },
+    {
+     "affirmation": "Claude Code applique la valeur indiquée sous le nom de chaque skill à la liste des skills que voit Claude et à l'autocomplétion /.",
+     "source": "https://code.claude.com/docs/en/settings-reference#skilloverrides",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne mentionne plus l'effet sur la liste des skills vue par Claude ni sur l'autocomplétion /."
+    },
+    {
+     "affirmation": "L'exemple de la documentation associe à des noms de skills les valeurs \"name-only\" (ici legacy-context) et \"off\" (ici deploy) dans un objet skillOverrides.",
+     "source": "https://code.claude.com/docs/en/settings-reference#skilloverrides",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La valeur \"name-only\" ou la syntaxe de l'objet skillOverrides change ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "latex-manuscrit fait partie des skills perso de Sylvain (avec maintenance-mint, deploy-site et verif-numerique) et n'a jamais été invoqué selon l'usage observé.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus latex-manuscrit parmi les skills perso ou relève qu'il a été invoqué."
+    },
+    {
+     "affirmation": "La piste 4 relève comme skills dormants latex-manuscrit et verif-numerique, jamais déclenchés, à revoir, à supprimer ou à rendre déclenchables sur trading-sim.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire la piste 4 sur les skills dormants ou la déclare traitée."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-skipautopermissionprompt",
@@ -32422,7 +33022,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32451,6 +33051,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -32464,7 +33068,45 @@
      "pourquoi": "Limites d'usage parmi les frictions récurrentes."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre workflowSizeGuideline fixe le nombre d'agents que Claude vise dans les workflows dynamiques qu'il écrit ; la valeur est transmise à Claude comme conseil, pas comme plafond imposé.",
+     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le paramètre disparaît de la documentation ou devient une limite imposée."
+    },
+    {
+     "affirmation": "La valeur \"small\" demande moins de 5 agents, \"medium\" moins de 10 et \"large\" moins de 50.",
+     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change les valeurs acceptées ou les seuils d'agents associés."
+    },
+    {
+     "affirmation": "La documentation conseille de choisir \"small\" pour borner ce qu'un workflow dépense.",
+     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire cette recommandation sur \"small\"."
+    },
+    {
+     "affirmation": "Le paramètre exige Claude Code v2.1.219 ou ultérieure.",
+     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation modifie la version minimale requise."
+    },
+    {
+     "affirmation": "Selon la consigne de Sylvain du 04/10, les workflows multi-agents (outil Workflow) ne se lancent que sur son accord.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus cette consigne ou autorise les workflows sans accord."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées dans le travail de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage parmi les frictions récurrentes."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-worktree",
@@ -32855,7 +33497,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32896,6 +33538,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -32908,7 +33554,51 @@
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Sylvain veut exploiter les fonctionnalités utiles de Claude Desktop."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Dans l'app Claude, le menu de modèle situé à côté du bouton d'envoi règle trois paramètres : le modèle Claude de la conversation, l'effort consacré à chaque réponse et l'usage du thinking.",
+     "source": "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne place plus ce menu à côté du bouton d'envoi ou ne permet plus d'y régler modèle, effort et thinking."
+    },
+    {
+     "affirmation": "Le modèle et le niveau d'effort sélectionnés s'affichent à côté du bouton d'envoi ; un clic sur le nom du modèle permet d'en choisir un autre, et « More models » affiche des options supplémentaires.",
+     "source": "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La procédure de changement de modèle change ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "Piste 11 (limite Fable, déduit) : la consommation Fable/Opus approche les plafonds hebdomadaires, et choisir le modèle et l'effort par session (Sonnet pour les tâches machine simples) pourrait étaler la charge.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire la piste 11 ou ne signale plus que la consommation approche les plafonds hebdomadaires."
+    },
+    {
+     "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (déclaré le 30/09/2026).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que Sylvain change de modèle par défaut ou ne veut plus Sonnet."
+    },
+    {
+     "affirmation": "Sylvain déclare vouloir utiliser toutes les fonctionnalités de Claude Desktop utiles au développement de ses projets.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette volonté d'exploiter Claude Desktop."
+    },
+    {
+     "affirmation": "La consigne de veille demande de signaler en priorité ce qui allège la consommation des limites hebdomadaires.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La consigne de veille de CONTEXTE.md ne fait plus de l'allègement des limites hebdomadaires une priorité."
+    },
+    {
+     "affirmation": "Irritant déclaré par Sylvain : la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus cet irritant."
+    }
+   ]
   },
   {
    "id": "claude-parametres-page-8887527-customizing-your-appearance-settings",

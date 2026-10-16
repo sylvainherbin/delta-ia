@@ -391,7 +391,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -408,6 +408,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -421,7 +425,45 @@
      "pourquoi": "politique de capacités : aucun connecteur claude.ai ni accès web sur ce projet"
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le réglage `disableClaudeAiConnectors` mis à `true` désactive les connecteurs claude.ai que Claude Code récupère lui-même, et il peut être posé dans n'importe quelle portée de réglages.",
+     "source": "https://code.claude.com/docs/en/mcp#disable-claudeai-connectors",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage `disableClaudeAiConnectors` change de nom ou de portée, ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "`disableClaudeAiConnectors` ne s'applique pas aux connecteurs livrés par un hôte cloud ou par l'app de bureau.",
+     "source": "https://code.claude.com/docs/en/mcp#disable-claudeai-connectors",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation étend le réglage aux connecteurs fournis par un hôte cloud ou par l'app de bureau."
+    },
+    {
+     "affirmation": "trading-sim reçoit quand même les connecteurs de compte claude.ai, Delta-IA compris, car son `.claude/settings.json` ne les liste pas dans son `deny`, ce qui est contraire à sa règle « aucun accès web en Lot 001 ».",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne signale plus l'écart trading-sim, par exemple parce que le `deny` a été ajouté."
+    },
+    {
+     "affirmation": "Sylvain a transmis la question du `deny` des connecteurs de trading-sim à Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que Work a tranché la question ou qu'elle ne lui est plus confiée."
+    },
+    {
+     "affirmation": "`claude mcp list` du 12/10/2026 montre le connecteur `claude.ai Vercel` connecté, après sa fermeture par Sylvain le 24/09 puis une nouvelle autorisation.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que le connecteur claude.ai Vercel est de nouveau fermé."
+    },
+    {
+     "affirmation": "La politique de capacités de trading-sim prévoit d'interdire WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…) sur ce projet.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette politique de capacités pour trading-sim."
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-dynamic-tool-updates",
@@ -1641,7 +1683,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1666,6 +1708,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -1674,7 +1720,45 @@
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteurs de compte partout, trading-sim compris"
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition de la source la plus prioritaire ; l'entrée entière de cette source est utilisée, sans fusion des champs entre portées.",
+     "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation change la règle de précédence ou permet la fusion des champs entre portées"
+    },
+    {
+     "affirmation": "L'ordre de priorité documenté est : Local scope, Project scope, User scope, Plugin-provided servers, puis claude.ai connectors en dernier.",
+     "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation modifie l'ordre de la hiérarchie ou retire les claude.ai connectors de la liste"
+    },
+    {
+     "affirmation": "Un serveur MCP en portée locale est rattaché au dossier de travail de la session : mint/dev/carnet partagent `~/projets`, delta/delta-ia partagent `~/projets/delta-ia`, herbin-trading a son propre dossier `~/projets/trading-sim`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce rattachement au cwd ou la répartition des dossiers change"
+    },
+    {
+     "affirmation": "Le serveur delta-ia a été ajouté en portée locale (`claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp`) dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`"
+    },
+    {
+     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet concerné.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte"
+    },
+    {
+     "affirmation": "trading-sim reçoit les connecteurs de compte, Delta-IA compris, car son `.claude/settings.json` ne les liste pas dans son `deny`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le `deny` de trading-sim est mis à jour pour exclure les connecteurs de compte, selon CONTEXTE.md"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-tool-search-for-mcp-server-authors",

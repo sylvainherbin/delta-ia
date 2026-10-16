@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-10-14",
+ "maj_le": "2026-10-16",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -335,7 +335,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -360,9 +360,45 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin claude-code-setup analyse des bases de code et recommande des automatisations Claude Code adaptées : hooks, skills, serveurs MCP et subagents.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-code-setup",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La description du plugin ne parle plus d'analyse de code ni de recommandation d'automatisations, ou le plugin disparaît du dépôt claude-plugins-official."
+    },
+    {
+     "affirmation": "Le plugin s'installe avec la commande /plugin install claude-code-setup@claude-plugins-official.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-code-setup",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le plugin change de nom ou de marketplace, ou la commande d'installation change de syntaxe."
+    },
+    {
+     "affirmation": "Sylvain n'a qu'un seul hook (PermissionDenied → operer refus) ; des contrôles répétés à la main, comme la vérification SHA-256 des missions ou PYTHONDONTWRITEBYTECODE=1, pourraient devenir des hooks.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la piste 3, ou ces contrôles sont devenus des hooks."
+    },
+    {
+     "affirmation": "Sylvain n'a aucune commande slash perso : ses gestes répétés sont des scripts de ~/.local/bin (mission-dev, mission-codex, operer, regler-advisor).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la piste 5, ou ces scripts sont remplacés par des commandes slash ou des skills."
+    },
+    {
+     "affirmation": "Le principe associé aux consignes de Sylvain est d'optimiser l'existant ou de créer des outils intégrés à Delta plutôt qu'adopter des outils tiers.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus ce principe ou Sylvain l'abandonne."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-claude-md-management",
@@ -407,7 +443,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -432,9 +468,45 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin claude-md-management fournit des outils pour entretenir et améliorer les fichiers CLAUDE.md : audit de qualité, capture des enseignements de session, mise à jour de la mémoire du projet.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la description du plugin change ou le plugin disparaît du dépôt claude-plugins-official"
+    },
+    {
+     "affirmation": "Le plugin s'installe avec `/plugin install claude-md-management@claude-plugins-official`.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande d'installation change ou le plugin est retiré de la marketplace claude-plugins-official"
+    },
+    {
+     "affirmation": "La mémoire automatique de Claude Code compte environ 70 mémoires dans `~/projets` et 7 dans `~` au 04/10 (préférences de méthode, rôles des sessions, règles machine, décisions de Delta) ; elle est très utilisée.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la mémoire automatique ou le nombre de mémoires change notablement"
+    },
+    {
+     "affirmation": "Le fichier global `~/.claude/CLAUDE.md` se limite à la consigne de consulter le connecteur delta-ia avant de choisir ou d'écrire une commande, un réglage, un hook, une skill ou un modèle.",
+     "source": "contexte:config.claude-code.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "`~/.claude/CLAUDE.md` reçoit d'autres règles que la consigne du connecteur delta-ia"
+    },
+    {
+     "affirmation": "Piste 1 : les règles transversales (français, tutoiement, validation pas à pas, factuel/déduit) restent dispersées dans les mémoires entre projets, à centraliser dans `~/.claude/CLAUDE.md` sur proposition et accord explicite de Sylvain (non fait).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la centralisation est faite ou la piste 1 disparaît de CONTEXTE.md"
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-claude-security",
@@ -475,7 +547,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "security",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -488,9 +560,51 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "claude-security effectue une analyse approfondie des vulnérabilités de son propre code, entièrement dans la session Claude Code, à un niveau d'effort choisi.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-security",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le plugin disparaît de claude-plugins-official ou ne propose plus de choisir le niveau d'effort."
+    },
+    {
+     "affirmation": "Chaque constat est contesté avant d'être rapporté, puis transformé en correctif ciblé, vérifié par un panel d'agents, que l'utilisateur applique quand il le choisit.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-security",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus la contestation des constats ni les correctifs à appliquer au choix."
+    },
+    {
+     "affirmation": "Le plugin s'installe avec /plugin install claude-security@claude-plugins-official.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-security",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande d'installation ou le nom de la marketplace change."
+    },
+    {
+     "affirmation": "Le dépôt de carnet est public et ne doit contenir aucun secret ni donnée personnelle, selon son AGENTS.md.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le dépôt carnet comme public ou lève cette interdiction."
+    },
+    {
+     "affirmation": "carnet se synchronise par l'API GitHub Contents sur carnet-data.json, et des raccourcis iOS lisent Santé et déposent des JSON dans le dépôt (daily/, fc/).",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit une autre synchronisation pour carnet ou ne mentionne plus ces dépôts de JSON."
+    },
+    {
+     "affirmation": "Les limites d'usage hebdomadaires et le coût en jetons des prompts d'audit très longs font partie des frictions récurrentes de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus les limites d'usage hebdomadaires ni le coût en jetons parmi les frictions."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-code-modernization",
@@ -1345,7 +1459,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -1370,9 +1484,51 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "hookify sert à créer des hooks personnalisés qui empêchent des comportements indésirables, à partir des motifs de la conversation ou d'instructions explicites.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/hookify",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation de hookify ne décrit plus la création de hooks personnalisés, ou le plugin disparaît de claude-plugins-official."
+    },
+    {
+     "affirmation": "Avec hookify, les règles se définissent dans de simples fichiers markdown.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/hookify",
+     "releve_le": "2026-10-16",
+     "caduc_si": "hookify abandonne la définition des règles en fichiers markdown."
+    },
+    {
+     "affirmation": "hookify s'installe par la commande `/plugin install hookify@claude-plugins-official`.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/hookify",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande d'installation change de syntaxe, ou le plugin quitte la marketplace claude-plugins-official."
+    },
+    {
+     "affirmation": "La marketplace `claude-plugins-official` est déjà déclarée dans la configuration Claude Code de Sylvain.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'indique plus que la marketplace claude-plugins-official est déclarée."
+    },
+    {
+     "affirmation": "Sylvain n'a aujourd'hui qu'un seul hook : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` pour consigner les refus de permission dans OPÉRER.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md relève un autre hook, ou ne décrit plus PermissionDenied comme unique hook."
+    },
+    {
+     "affirmation": "Piste 3 : des contrôles sont répétés à la main, dont la vérification SHA-256 des missions, et pourraient devenir des hooks.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 3 est retirée de CONTEXTE.md, ou la vérification SHA-256 des missions est automatisée ou abandonnée."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-jdtls-lsp",
@@ -1826,7 +1982,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -1847,9 +2003,51 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin s'installe avec la commande `/plugin install mcp-server-dev@claude-plugins-official`.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande d'installation change ou le plugin disparaît de claude-plugins-official"
+    },
+    {
+     "affirmation": "mcp-server-dev fournit des skills pour concevoir et construire des serveurs MCP adaptés à Claude, couvrant les modes de déploiement remote HTTP, MCPB et local.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne mentionne plus le déploiement remote HTTP ou le plugin est retiré"
+    },
+    {
+     "affirmation": "Les skills guident aussi sur les tool design patterns, l'auth et les MCP apps interactives.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la description du plugin ne couvre plus la conception des outils"
+    },
+    {
+     "affirmation": "Le connecteur delta-ia a été ajouté par `claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp` : transport HTTP, URL sur vercel.app.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce connecteur, ou son transport ou son URL change"
+    },
+    {
+     "affirmation": "Le connecteur delta-ia est configuré en portée locale dans `~/projets` et `~/projets/delta-ia`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus delta-ia dans ces dossiers"
+    },
+    {
+     "affirmation": "Un essai du plugin daté du 2026-10-11 a donné lieu au rapport rapports/2026-10-11_1844-dev-delta-relecture-mcp-server-dev.md.",
+     "source": "essai:claude-code-plugins-mcp-server-dev",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'essai est retiré ou son rapport est supprimé"
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-mcp-tunnels",
@@ -2347,7 +2545,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2376,6 +2574,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -2389,7 +2591,33 @@
      "pourquoi": "Machine modeste : 4 cœurs, 14 Gio de RAM."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin pyright-lsp fournit le serveur de langage Python Pyright pour la vérification des types et l'intelligence de code.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la description du plugin change ou le plugin disparaît du dépôt claude-plugins-official"
+    },
+    {
+     "affirmation": "Le plugin s'installe avec la commande `/plugin install pyright-lsp@claude-plugins-official`.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande d'installation change de syntaxe ou le plugin est retiré de la place de marché officielle"
+    },
+    {
+     "affirmation": "Le projet trading-sim est écrit en Python 3.12 avec la bibliothèque standard et des tests `unittest`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou sa stack ne repose plus sur Python ou unittest"
+    },
+    {
+     "affirmation": "La machine de Sylvain est un portable HP avec un AMD A10-7300 à 4 cœurs et 14 Gio de RAM, décrite comme modeste.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit une autre machine ou ne la qualifie plus de modeste"
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-ralph-loop",
@@ -2639,7 +2867,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "security",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2660,6 +2888,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
@@ -2668,7 +2900,45 @@
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "Dépôt public, aucun secret ni donnée personnelle admis."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le plugin security-guidance s'installe dans Claude Code avec la commande /plugin install security-guidance@claude-plugins-official.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/security-guidance",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande d'installation change ou le plugin disparaît du dépôt claude-plugins-official."
+    },
+    {
+     "affirmation": "Le plugin relit la sécurité du code généré par Claude : avertissements par motifs lors des éditions, relecture du diff par LLM à l'événement Stop et relecteur agentique des commits.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/security-guidance",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus l'un de ces trois mécanismes (alertes sur édition, relecture du diff à Stop, relecteur de commits)."
+    },
+    {
+     "affirmation": "Le relecteur détecte notamment les injections, le XSS, le SSRF, les secrets en dur (hardcoded secrets) et plus de 25 autres classes de vulnérabilités.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/security-guidance",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire la détection des secrets en dur ou la liste des classes de vulnérabilités couvertes."
+    },
+    {
+     "affirmation": "carnet est un dépôt public qui ne doit contenir aucun secret ni donnée personnelle, règle observée dans son AGENTS.md.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme dépôt public ou lève l'interdiction des secrets et données personnelles."
+    },
+    {
+     "affirmation": "Sylvain développe carnet avec Claude Code (développement et session « coach »).",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code sur carnet."
+    },
+    {
+     "affirmation": "carnet est le projet le plus actif de Sylvain, avec 403 commits en 60 jours, et n'a pas de CI GitHub Actions.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus carnet comme le projet le plus actif ou signale l'ajout d'une CI GitHub Actions."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-sentry",
@@ -2776,7 +3046,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2801,9 +3071,51 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin session-report génère un rapport HTML explorable de l'usage des sessions Claude Code : tokens, cache efficiency, subagents, skills et les prompts les plus coûteux (most expensive prompts).",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La description du plugin ne mentionne plus ces métriques ou le plugin disparaît du dépôt claude-plugins-official."
+    },
+    {
+     "affirmation": "Le rapport est construit à partir des transcripts locaux situés dans ~/.claude/projects.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le plugin change de source de données ou ne lit plus les transcripts de ~/.claude/projects."
+    },
+    {
+     "affirmation": "Le plugin s'installe avec la commande /plugin install session-report@claude-plugins-official.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le plugin est renommé, retiré de la marketplace claude-plugins-official ou la syntaxe d'installation change."
+    },
+    {
+     "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois, renouvellement le 07/11, avec un bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'essai du Max (20x) ou le bilan d'usage a été fait ou abandonné."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) et le coût en jetons des prompts d'audit très longs figurent parmi les frictions récurrentes de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage ni le coût en jetons des prompts d'audit parmi les frictions."
+    },
+    {
+     "affirmation": "La consommation Fable/Opus approche les plafonds hebdomadaires ; le choix du modèle et du niveau d'effort par session (Sonnet pour les tâches machine simples) pourrait étaler la charge.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 11 sur la limite Fable est retirée ou la consommation n'approche plus les plafonds."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-skill-creator",
@@ -2840,7 +3152,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2865,9 +3177,45 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le plugin skill-creator sert à créer de nouveaux skills, à améliorer des skills existants et à mesurer leurs performances.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation du plugin ne décrit plus la création ou l'amélioration de skills, ou le plugin disparaît du dépôt claude-plugins-official."
+    },
+    {
+     "affirmation": "skill-creator permet de lancer des evals pour tester un skill et de comparer ses performances par un benchmark avec analyse de variance.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire les evals ou le benchmark avec analyse de variance des fonctions du plugin."
+    },
+    {
+     "affirmation": "Le plugin s'installe avec la commande /plugin install skill-creator@claude-plugins-official.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande d'installation change de syntaxe ou le plugin quitte la marketplace claude-plugins-official."
+    },
+    {
+     "affirmation": "Selon la piste 5, la revue machine d'une campagne reste faite à la main.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que la revue machine d'une campagne est automatisée ou retire la piste 5."
+    },
+    {
+     "affirmation": "Sylvain n'a aucune commande slash perso : ses gestes répétés sont des scripts de ~/.local/bin (mission-dev, mission-codex, operer, regler-advisor).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md mentionne une commande slash perso ou ne décrit plus ces scripts comme le mode d'automatisation des gestes répétés."
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-slack",
@@ -3086,7 +3434,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3107,6 +3455,10 @@
     {
      "date": "2026-09-26",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "b16da5843eaa37fcbbe79cb3541ba4f3477c5064",
@@ -3115,7 +3467,39 @@
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "React 19, Vite, lint oxlint."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le plugin typescript-lsp s'installe par la commande `/plugin install typescript-lsp@claude-plugins-official`.",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/typescript-lsp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande d'installation change ou le plugin disparaît du dépôt claude-plugins-official"
+    },
+    {
+     "affirmation": "typescript-lsp est décrit comme un « TypeScript/JavaScript language server for enhanced code intelligence ».",
+     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/typescript-lsp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la description du plugin ne mentionne plus un serveur de langage TypeScript/JavaScript"
+    },
+    {
+     "affirmation": "carnet est une PWA dont la stack est React 19, Vite, Tailwind v4 et Recharts, sans backend.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus carnet ou sa stack ne repose plus sur React et Vite"
+    },
+    {
+     "affirmation": "Le lint de carnet se fait avec `oxlint` ; les tests passent par `node --test` et il n'y a pas de CI GitHub Actions.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que carnet n'utilise plus oxlint ou qu'une autre vérification remplace ce lint"
+    },
+    {
+     "affirmation": "carnet est le projet le plus actif de Sylvain et il y utilise Claude Code pour le développement.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus carnet comme actif ou n'y mentionne plus l'usage de Claude Code"
+    }
+   ]
   },
   {
    "id": "claude-code-plugins-vercel",
@@ -3267,7 +3651,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3284,6 +3668,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3296,7 +3684,45 @@
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Claude Design utilisé intensivement pour la Console de pilotage (React)."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le répertoire unifié réunit skills, connectors et plugins en un seul endroit pour trouver et installer tout ce qui personnalise Claude, sans passer d'un menu séparé à l'autre.",
+     "source": "https://support.claude.com/en/articles/14328846-browse-skills-connectors-and-plugins-in-one-directory",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus de répertoire unifié réunissant skills, connectors et plugins."
+    },
+    {
+     "affirmation": "Dans Claude ou Claude Desktop, on clique sur « Customize » dans la barre latérale gauche, on choisit l'onglet Skills, Connectors ou Plugins, puis on ouvre l'onglet Discover.",
+     "source": "https://support.claude.com/en/articles/14328846-browse-skills-connectors-and-plugins-in-one-directory",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le chemin Customize > onglet > Discover change ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "Sylvain veut utiliser toutes les fonctionnalités de l'app Claude Desktop utiles au développement de ses projets.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus ce souhait concernant Claude Desktop."
+    },
+    {
+     "affirmation": "Dans Claude, Sylvain utilise les artefacts, les connecteurs et les skills.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cet usage des connecteurs et des skills dans Claude."
+    },
+    {
+     "affirmation": "Sylvain utilise intensivement Claude Design depuis une session Claude Desktop ; c'est le constructeur de la Console de pilotage (carnet-console, en React avec Vite).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Claude Design comme constructeur de la Console de pilotage."
+    },
+    {
+     "affirmation": "Sylvain veut découvrir toutes les possibilités de Claude Design.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus ce souhait de découvrir Claude Design."
+    }
+   ]
   }
  ]
 }
