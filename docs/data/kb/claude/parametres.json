@@ -15408,7 +15408,7 @@
    "categorie": "parametres",
    "nom": "--dangerously-load-development-channels",
    "gabarit": "court",
-   "description": "Option qui active des canaux hors liste approuvée, pour le développement local.",
+   "description": "Option CLI qui active, en session interactive seulement, des canaux hors liste approuvée (`plugin:<name>@<marketplace>`, `server:<name>`) pour le développement local ; ignorée avec `-p`.",
    "description_source": "Enable channels that are not on the approved allowlist, for local development. Accepts plugin:<name>@<marketplace> and server:<name> entries. Prompts for confirmation, so it takes effect in interactive sessions. With -p, Claude Code ignores the flag — claude --dangerously-load-development-channels server:webhook",
    "usage": "--dangerously-load-development-channels",
    "usage_nature": "syntaxe",
@@ -15417,7 +15417,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun de tes serveurs ne publie de canal."
+    "pourquoi": "CONTEXTE.md ne décrit aucun plugin ni serveur MCP que tu développes et qui publierait un canal (delta-ia, connecteurs de compte et Vercel seulement)."
    },
    "sources": [
     {
@@ -15430,7 +15430,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15447,13 +15447,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteurs MCP : delta-ia local, connecteurs de compte."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP : delta-ia en portée locale, connecteurs de compte, Vercel ; aucun canal en développement."
     }
    }
   },
@@ -17670,7 +17674,7 @@
    "categorie": "parametres",
    "nom": "disabledMcpjsonServers",
    "gabarit": "court",
-   "description": "Réglage qui refuse certains serveurs déclarés dans le `.mcp.json` d'un projet, sans connexion ni demande d'approbation.",
+   "description": "Réglage qui refuse des serveurs déclarés dans le `.mcp.json` d'un projet : Claude Code ne s'y connecte pas et ne demande pas leur approbation, quel que soit le fichier de réglage qui porte le refus.",
    "description_source": "Reject specific servers defined in a project's .mcp.json file so Claude Code never connects them or asks you to approve them. A rejection in any settings file applies, including a project .claude/settings.json checked into the repository.",
    "usage": "{\n  \"disabledMcpjsonServers\": [\"filesystem\"]\n}",
    "usage_nature": "syntaxe",
@@ -17679,7 +17683,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes serveurs MCP sont en portée locale ou de compte, pas dans des `.mcp.json` de projet."
+    "pourquoi": "Tes serveurs MCP sont en portée locale (delta-ia) ou de compte claude.ai (Vercel compris), aucun ne vient d'un `.mcp.json` de projet."
    },
    "sources": [
     {
@@ -17692,7 +17696,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17705,13 +17709,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia en portée locale ; connecteurs de compte claude.ai"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia en portée locale, connecteurs de compte claude.ai et Vercel ; aucun `.mcp.json` de projet décrit."
     }
    }
   },
@@ -18394,7 +18402,7 @@
    "categorie": "parametres",
    "nom": "ENABLE_CLAUDEAI_MCP_SERVERS",
    "gabarit": "court",
-   "description": "Variable qui, à `false`, empêche Claude Code de récupérer les serveurs MCP de claude.ai ; pour un seul projet, la documentation renvoie à `disableClaudeAiConnectors`.",
+   "description": "Variable qui, à `false`, empêche Claude Code de récupérer les serveurs MCP de claude.ai ; pour un projet seul, la documentation renvoie à `disableClaudeAiConnectors` dans les réglages.",
    "description_source": "Set to false to stop Claude Code from fetching claude.ai MCP servers. Enabled by default for logged-in users. To disable per-project or per-org, set disableClaudeAiConnectors in settings instead",
    "usage": "ENABLE_CLAUDEAI_MCP_SERVERS",
    "usage_nature": "syntaxe",
@@ -18403,7 +18411,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Elle couperait les connecteurs pour toutes tes sessions ; pour trading-sim seul, c'est `disableClaudeAiConnectors` dans son `.claude/settings.json`."
+    "pourquoi": "Elle couperait les connecteurs de compte (Vercel compris) dans toutes tes sessions ; pour l'écart de trading-sim, la voie est `disableClaudeAiConnectors` dans son `.claude/settings.json`, que gouverne Work."
    },
    "sources": [
     {
@@ -18416,7 +18424,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18429,13 +18437,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "écart trading-sim : connecteurs de compte reçus faute de `deny`"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Écart trading-sim : connecteurs de compte reçus faute de `deny` ; Vercel de nouveau connecté le 12/10."
     }
    }
   },
@@ -18660,7 +18672,7 @@
    "categorie": "parametres",
    "nom": "enabledMcpjsonServers",
    "gabarit": "court",
-   "description": "Réglage qui approuve certains serveurs des `.mcp.json` de projet ; écrit dans `.claude/settings.local.json` à l'approbation.",
+   "description": "Réglage qui approuve des serveurs des `.mcp.json` de projet pour s'y connecter sans demande ; Claude Code l'écrit dans `.claude/settings.local.json` quand tu approuves un serveur dans le dialogue.",
    "description_source": "Approve specific servers defined in project .mcp.json files so Claude Code connects them without asking. Claude Code writes this key to .claude/settings.local.json when you approve a server in the approval dialog.",
    "usage": "{\n  \"enabledMcpjsonServers\": [\"memory\", \"github\"]\n}",
    "usage_nature": "syntaxe",
@@ -18669,7 +18681,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes serveurs MCP ne viennent pas de `.mcp.json` de projet."
+    "pourquoi": "Aucun de tes serveurs MCP ne vient d'un `.mcp.json` de projet : delta-ia est en portée locale, les autres sont des connecteurs de compte."
    },
    "sources": [
     {
@@ -18682,7 +18694,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "MCP",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18695,13 +18707,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia en portée locale ; connecteurs de compte"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia en portée locale, connecteurs de compte claude.ai et Vercel ; aucun `.mcp.json` de projet."
     }
    }
   },
@@ -20405,7 +20421,7 @@
    "categorie": "parametres",
    "nom": "Hook Elicitation",
    "gabarit": "court",
-   "description": "Événement de hook déclenché quand un serveur MCP demande une saisie en cours de tâche ; le hook peut répondre à la place du dialogue.",
+   "description": "Événement de hook déclenché quand un serveur MCP demande une saisie en cours de tâche ; le hook peut répondre à la place du dialogue interactif.",
    "description_source": "Runs when an MCP server requests user input mid-task. By default, Claude Code shows an interactive dialog for the user to respond. Hooks can intercept this request and respond programmatically, skipping the dialog entirely.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Elicitation\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"message\": \"Please provide your credentials\",\n  \"mode\": \"form\",\n  \"requested_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"username\": { \"type\": \"string\", \"title\": \"Username\" }\n…",
    "usage_nature": "syntaxe",
@@ -20414,7 +20430,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui demande une saisie en cours de tâche."
+    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui demande une saisie en cours de tâche, ni hook autre que `PermissionDenied`."
    },
    "sources": [
     {
@@ -20427,7 +20443,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20444,13 +20460,17 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "101f739b47a70776e63f9431134f59b06f64a451",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Serveurs MCP : connecteur delta-ia et connecteurs de compte, sans demande de saisie décrite."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP : delta-ia, connecteurs de compte et Vercel, sans demande de saisie décrite."
     }
    }
   },
@@ -20460,7 +20480,7 @@
    "categorie": "parametres",
    "nom": "Hook ElicitationResult",
    "gabarit": "court",
-   "description": "Événement de hook déclenché après la réponse à une demande de saisie MCP, pour l'observer, la modifier ou la bloquer.",
+   "description": "Événement de hook déclenché après ta réponse à une demande de saisie MCP, pour l'observer, la modifier ou la bloquer avant son envoi au serveur.",
    "description_source": "Runs after a user responds to an MCP elicitation. Hooks can observe, modify, or block the response before it is sent back to the MCP server.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"ElicitationResult\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"action\": \"accept\",\n  \"content\": { \"username\": \"alice\" },\n  \"mode\": \"form\"\n}",
    "usage_nature": "syntaxe",
@@ -20469,7 +20489,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucune demande de saisie MCP n'apparaît dans ton usage."
+    "pourquoi": "CONTEXTE.md ne décrit aucune demande de saisie MCP dans ton usage."
    },
    "sources": [
     {
@@ -20482,7 +20502,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20507,13 +20527,17 @@
     {
      "date": "2026-10-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Serveurs MCP : connecteur delta-ia et connecteurs de compte, sans demande de saisie décrite."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP : delta-ia, connecteurs de compte et Vercel, sans demande de saisie décrite."
     }
    }
   },
@@ -23307,7 +23331,7 @@
    "categorie": "parametres",
    "nom": "MAX_MCP_OUTPUT_TOKENS",
    "gabarit": "court",
-   "description": "Variable du nombre maximal de jetons d'une réponse d'outil MCP ; avertissement au-delà de 10 000.",
+   "description": "Variable du nombre maximal de jetons d'une réponse d'outil MCP (25 000 par défaut), avec un avertissement au-delà de 10 000 jetons.",
    "description_source": "Maximum number of tokens allowed in MCP tool responses (default: 25000). Claude Code displays a warning when output exceeds 10,000 tokens. Tools that declare anthropic/maxResultSizeChars use that character limit for text content instead, but image content from those tools is still subject to this variable. A successful text result longer than 50,000 characters from a tool without that annotation is saved to a file regardless of this variable",
    "usage": "MAX_MCP_OUTPUT_TOKENS",
    "usage_nature": "syntaxe",
@@ -23316,7 +23340,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les réponses de delta-ia sont courtes ; aucun dépassement rapporté."
+    "pourquoi": "CONTEXTE.md ne signale aucune réponse MCP tronquée ou trop longue avec delta-ia ou Vercel."
    },
    "sources": [
     {
@@ -23329,7 +23353,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23346,13 +23370,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia, aux réponses courtes."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs delta-ia et Vercel décrits, sans dépassement de réponse signalé."
     }
    }
   },
@@ -23619,7 +23647,7 @@
    "categorie": "parametres",
    "nom": "MCP_CLIENT_SECRET",
    "gabarit": "court",
-   "description": "Variable du secret client OAuth pour les serveurs MCP à identifiants préconfigurés, pour éviter la saisie interactive.",
+   "description": "Variable du secret client OAuth des serveurs MCP à identifiants préconfigurés, qui évite la saisie interactive lors d'un ajout avec `--client-secret`.",
    "description_source": "OAuth client secret for MCP servers that require pre-configured credentials. Avoids the interactive prompt when adding a server with --client-secret",
    "usage": "MCP_CLIENT_SECRET",
    "usage_nature": "syntaxe",
@@ -23628,7 +23656,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "delta-ia ne demande aucune authentification."
+    "pourquoi": "delta-ia a été ajouté en HTTP sans identifiant et Vercel passe par ton compte claude.ai : aucun serveur ne demande ce secret."
    },
    "sources": [
     {
@@ -23641,7 +23669,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-27",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23654,13 +23682,17 @@
     {
      "date": "2026-09-27",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia ajouté en HTTP, sans en-tête"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia ajouté par `claude mcp add --transport http` sans identifiant ; Vercel en connecteur de compte."
     }
    }
   },
@@ -23670,7 +23702,7 @@
    "categorie": "parametres",
    "nom": "--mcp-config",
    "gabarit": "court",
-   "description": "Option CLI qui charge des serveurs MCP depuis des fichiers ou chaînes JSON ; avec `-p`, attend leur connexion jusqu'à `MCP_TIMEOUT`.",
+   "description": "Option CLI qui charge des serveurs MCP depuis des fichiers ou des chaînes JSON ; avec `-p`, elle attend leur connexion jusqu'au délai `MCP_TIMEOUT` (30 s par défaut).",
    "description_source": "Load MCP servers from JSON files or strings (space-separated). When you pass this flag with -p, Claude Code waits for still-pending servers to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default; a server with a cached tool list skips the wait and connects on first use. In a self-hosted environment, a shorter wait applies instead. The wait requires Claude Code v2.1.221 or later — claude --mcp-config ./mcp.json",
    "usage": "--mcp-config",
    "usage_nature": "syntaxe",
@@ -23679,7 +23711,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes serveurs sont déclarés par `claude mcp add` et par ton compte."
+    "pourquoi": "Tes serveurs sont déclarés par `claude mcp add` (delta-ia) et par ton compte claude.ai, sans fichier JSON à charger."
    },
    "sources": [
     {
@@ -23692,7 +23724,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23713,13 +23745,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Serveurs MCP ajoutés par `claude mcp add` et connecteurs de compte."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP ajoutés par `claude mcp add` et connecteurs de compte, dont Vercel."
     }
    }
   },
@@ -23780,7 +23816,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le défaut non bloquant convient : tes sessions démarrent sans attendre le connecteur distant delta-ia."
+    "pourquoi": "Le défaut non bloquant convient à tes sessions interactives ; en `-p` (chaîne D70), la documentation dit que Claude Code attend déjà les serveurs, quelle que soit la variable."
    },
    "sources": [
     {
@@ -23793,7 +23829,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23806,13 +23842,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur MCP delta-ia en HTTP, ajouté en portée locale."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs delta-ia en HTTP et de compte, distants."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 lancées en non interactif."
     }
    }
   },
