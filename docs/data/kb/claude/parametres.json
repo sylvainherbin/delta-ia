@@ -92,7 +92,7 @@
    "categorie": "parametres",
    "nom": "--advisor <model>",
    "gabarit": "court",
-   "description": "Option de lancement qui active pour la session l'outil advisor avec le modèle choisi (fable, opus, sonnet ou identifiant complet), prioritaire sur le réglage `advisorModel`.",
+   "description": "Option de lancement de Claude Code qui active l'outil advisor côté serveur pour la session, avec un alias de modèle (fable, opus, sonnet) ou un identifiant complet. Elle prime sur le réglage `advisorModel` pour cette session ; fable exige un accès Fable. Exemple : `claude --advisor opus`.",
    "description_source": "Enable the server-side advisor tool for this session with a model alias, fable, opus, or sonnet, or a full model ID. Takes precedence over the advisorModel setting for the session. fable requires Fable access — claude --advisor opus",
    "usage": "--advisor <model>",
    "usage_nature": "syntaxe",
@@ -101,7 +101,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, `claude --advisor opus` ne vaudrait que pour la session lancée, sans enregistrer le conseiller pour toutes les autres, pour mesurer avec `/usage` s'il ménage la limite Fable."
+    "pourquoi": "Le conseiller Opus est aujourd'hui réactivé avant chaque mission, puis `advisorModel` est retiré des réglages globaux. Placé dans la ligne de lancement d'une session (`claude --resume … --remote-control`), `--advisor opus` le limiterait à cette session. Reste à vérifier s'il tient après un `/clear`."
    },
    "sources": [
     {
@@ -114,7 +114,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -123,10 +123,68 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur herbin-trading, `claude --advisor opus` ne vaudrait que pour la session lancée, sans enregistrer le conseiller pour toutes les autres, pour mesurer avec `/usage` s'il ménage la limite Fable."
+     },
+     "raison": "recommentaire D128 : L'ancien pourquoi invoquait herbin-trading et la limite Fable sans section citée ; le verdict tester s'appuie maintenant sur la gestion documentée du conseiller (optimisation.pist"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Option de lancement qui active pour la session l'outil advisor avec le modèle choisi (fable, opus, sonnet ou identifiant complet), prioritaire sur le réglage `advisorModel`.",
+     "raison": "recommentaire D128 : L'ancien pourquoi invoquait herbin-trading et la limite Fable sans section citée ; le verdict tester s'appuie maintenant sur la gestion documentée du conseiller (optimisation.pist"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Formule Sonnet + conseiller Opus validée ; le conseiller est réactivé avant chaque mission, puis advisorModel est retiré des réglages globaux."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "mission-dev --advisor et regler-advisor règlent le conseiller avant chaque mission, car il ne survit pas à /clear."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions durables sont lancées par une ligne claude --resume … --remote-control avec des réglages propres à chaque rôle."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "--advisor active l'outil advisor côté serveur pour la session et prime sur le réglage advisorModel pour cette session ; fable exige un accès Fable.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La référence CLI retire l'option ou change sa priorité sur advisorModel."
+    },
+    {
+     "affirmation": "La formule validée pour les missions de construction de trading-sim est Sonnet avec Opus en conseiller ; herbin-mint réactive le conseiller avant chaque mission puis retire advisorModel des réglages globaux.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La formule Sonnet + conseiller Opus est abandonnée ou la gestion de advisorModel change."
+    },
+    {
+     "affirmation": "Le conseiller ne survit pas à un /clear : mission-dev --advisor et regler-advisor le règlent avant chaque mission.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le conseiller persiste après /clear ou mission-dev ne règle plus le conseiller."
+    },
+    {
+     "affirmation": "Chaque session durable exécute claude --resume <id> --remote-control <nom> avec un modèle, un effort et des réglages de lancement propres à son rôle.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions ne sont plus lancées par le service claude-session@<nom> avec une ligne de commande propre."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-advisormodel",
@@ -134,7 +192,7 @@
    "categorie": "parametres",
    "nom": "advisorModel",
    "gabarit": "court",
-   "description": "Réglage qui choisit le modèle consulté par l'outil advisor ; le retirer coupe l'advisor, et le conseiller doit être au moins aussi capable que le modèle principal.",
+   "description": "Réglage de Claude Code qui choisit le modèle qui répond quand Claude appelle l'outil advisor côté serveur, par exemple `\"advisorModel\": \"opus\"`. Le retirer coupe l'advisor ; le conseiller doit être au moins aussi capable que le modèle principal.",
    "description_source": "Pick which model answers when Claude calls the server-side advisor tool. Unset it to turn the advisor off. The advisor must be at least as capable as your main model. See Choose an advisor model for the accepted pairings and what happens when you pick one that isn't accepted.",
    "usage": "{\n  \"advisorModel\": \"opus\"\n}",
    "usage_nature": "syntaxe",
@@ -142,8 +200,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Enregistré dans les réglages, il vaudrait pour toutes tes sessions ; mieux vaut d'abord essayer `claude --advisor` sur la seule session herbin-trading."
+    "verdict": "utiliser",
+    "pourquoi": "C'est le réglage derrière ta formule Sonnet avec Opus en conseiller, validée pour les missions de construction de trading-sim et posée par `regler-advisor` ou `mission-dev --advisor`. Garde `opus`, plus capable que Sonnet, et retire-le des réglages globaux après la mission."
    },
    "sources": [
     {
@@ -156,7 +214,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -169,11 +227,65 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Enregistré dans les réglages, il vaudrait pour toutes tes sessions ; mieux vaut d'abord essayer `claude --advisor` sur la seule session herbin-trading."
+     },
+     "raison": "recommentaire D128 : L'ancien commentaire citait une session herbin-trading et une option `claude --advisor` non fondées. Le nouveau s'appuie sur l'usage réel du conseiller Opus que décrivent les sect"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réglage qui choisit le modèle consulté par l'outil advisor ; le retirer coupe l'advisor, et le conseiller doit être au moins aussi capable que le modèle principal.",
+     "raison": "recommentaire D128 : L'ancien commentaire citait une session herbin-trading et une option `claude --advisor` non fondées. Le nouveau s'appuie sur l'usage réel du conseiller Opus que décrivent les sect"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Formule Sonnet + Opus conseiller validée pour trading-sim ; herbin-mint retire `advisorModel` des réglages globaux après la mission."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Le conseiller Opus est réglé avant chaque mission par `regler-advisor` et `mission-dev --advisor`, car il ne survit pas à un `/clear`."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`advisorModel` choisit le modèle qui répond quand Claude appelle l'outil advisor côté serveur ; le retirer désactive l'advisor.",
+     "source": "https://code.claude.com/docs/en/settings-reference#advisormodel",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation renomme ou retire le réglage `advisorModel`, ou change son effet."
+    },
+    {
+     "affirmation": "Le modèle conseiller doit être au moins aussi capable que le modèle principal.",
+     "source": "https://code.claude.com/docs/en/settings-reference#advisormodel",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation lève cette contrainte sur la capacité du conseiller."
+    },
+    {
+     "affirmation": "La formule validée pour les missions de construction de trading-sim est Sonnet avec Opus en conseiller ; herbin-mint réactive le conseiller avant chaque mission puis retire `advisorModel` des réglages globaux.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain abandonne la formule Sonnet + Opus conseiller ou cesse de retirer `advisorModel` des réglages globaux."
+    },
+    {
+     "affirmation": "Le conseiller (Opus) est réglé par `regler-advisor` ou `mission-dev --advisor` avant chaque mission, car il ne survit pas à un `/clear`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "`mission-dev` ou `regler-advisor` ne règlent plus le conseiller, ou le conseiller survit désormais à un `/clear`."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-agent",
@@ -1595,7 +1707,7 @@
    "categorie": "parametres",
    "nom": "ANTHROPIC_DEFAULT_MODEL",
    "gabarit": "court",
-   "description": "Variable qui fixe le modèle de départ des nouvelles sessions (v2.1.236 ou plus).",
+   "description": "Variable d'environnement de Claude Code qui fixe le modèle sur lequel démarrent par défaut les nouvelles sessions. Elle exige Claude Code v2.1.236 ou plus récent.",
    "description_source": "Model that new sessions start on by default. Requires Claude Code v2.1.236 or later. See Set a default model for new sessions",
    "usage": "ANTHROPIC_DEFAULT_MODEL",
    "usage_nature": "syntaxe",
@@ -1603,8 +1715,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Posée dans l'environnement d'un seul service `claude-session@`, elle fixerait le modèle de départ de cette session, par exemple Opus 5.5 pour herbin-trading, sans changer le défaut des autres ; utile pour épargner la limite Fable."
+    "verdict": "ignorer",
+    "pourquoi": "Le besoin est déjà couvert : le modèle par défaut Sonnet, voulu par Sylvain, est fixé dans settings.json, et chaque session durable reçoit son modèle par `--model` dans son service `claude-session@<nom>`. La variable ferait doublon."
    },
    "sources": [
     {
@@ -1617,7 +1729,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1626,10 +1738,42 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Posée dans l'environnement d'un seul service `claude-session@`, elle fixerait le modèle de départ de cette session, par exemple Opus 5.5 pour herbin-trading, sans changer le défaut des autres ; utile pour épargner la limite Fable."
+     },
+     "raison": "recommentaire D128 : Le verdict passe de tester à ignorer : relu contre CONTEXTE.md, le modèle par défaut et le modèle par session sont déjà réglés par settings.json et par `--model` dans les services"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Variable qui fixe le modèle de départ des nouvelles sessions (v2.1.236 ou plus).",
+     "raison": "recommentaire D128 : Le verdict passe de tester à ignorer : relu contre CONTEXTE.md, le modèle par défaut et le modèle par session sont déjà réglés par settings.json et par `--model` dans les services"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "settings.json fixe déjà Sonnet comme modèle par défaut."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque service claude-session@<nom> passe déjà son modèle par --model selon le rôle."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Le défaut Sonnet est voulu par Sylvain (piste 11)."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-anthropic-default-opus-model",
@@ -2909,7 +3053,7 @@
    "categorie": "parametres",
    "nom": "--autocompact <auto|tokens>",
    "gabarit": "court",
-   "description": "Option de lancement qui fixe la fenêtre d'auto-compaction pour la seule session, sans toucher aux réglages enregistrés.",
+   "description": "Option de lancement de Claude Code qui fixe la fenêtre d'auto-compaction pour la seule session lancée, sans modifier les réglages enregistrés. Elle accepte les mêmes valeurs que `/autocompact` (par exemple `claude --autocompact 500k`) et demande Claude Code v2.1.221 ou plus récent.",
    "description_source": "Set the auto-compact window for this session without changing your saved settings. Accepts the same values as /autocompact; that section covers the value forms and what overrides the flag. Requires Claude Code v2.1.221 or later — claude --autocompact 500k",
    "usage": "--autocompact <auto|tokens>",
    "usage_nature": "syntaxe",
@@ -2918,7 +3062,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Variante sans effet de bord de `/autocompact` : à passer au lancement d'une seule session, par exemple herbin-trading, pour essayer une fenêtre plus basse."
+    "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des réglages de lancement propres à chaque rôle : `--autocompact` peut s'y ajouter pour une seule session, sans toucher aux réglages globaux. Tu tapes aussi `/compact` à la main : à essayer sur une session pour comparer."
    },
    "sources": [
     {
@@ -2931,7 +3075,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2940,10 +3084,58 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Variante sans effet de bord de `/autocompact` : à passer au lancement d'une seule session, par exemple herbin-trading, pour essayer une fenêtre plus basse."
+     },
+     "raison": "recommentaire D128 : Le pourquoi ne cite plus herbin-trading ni l'idée non fondée d'une fenêtre plus basse : il s'appuie désormais sur les lanceurs de session par rôle et l'usage de `/compact`, décrit"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Option de lancement qui fixe la fenêtre d'auto-compaction pour la seule session, sans toucher aux réglages enregistrés.",
+     "raison": "recommentaire D128 : Le pourquoi ne cite plus herbin-trading ni l'idée non fondée d'une fenêtre plus basse : il s'appuie désormais sur les lanceurs de session par rôle et l'usage de `/compact`, décrit"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions durables sont lancées par un service avec des options de lancement propres à chaque rôle, là où l'option s'insère."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre que `/compact` est tapé à la main, donc que la compaction du contexte fait partie des gestes courants."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--autocompact` fixe la fenêtre d'auto-compaction pour la session sans changer les réglages enregistrés, accepte les valeurs de `/autocompact` et demande Claude Code v2.1.221 ou plus récent.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option est retirée ou renommée dans la référence CLI, ou son comportement par session change."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables ne sont plus lancées par ce service modèle ou n'ont plus de réglages de lancement par rôle."
+    },
+    {
+     "affirmation": "Parmi les commandes tapées relevées le 25/09 figurent `/btw`, `/remote-control` et `/compact`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-autocompactenabled",
@@ -2993,7 +3185,7 @@
    "categorie": "parametres",
    "nom": "autoCompactWindow",
    "gabarit": "court",
-   "description": "Réglage qui fixe le remplissage du contexte à partir duquel Claude Code compacte automatiquement.",
+   "description": "Réglage de Claude Code qui fixe jusqu'où la fenêtre de contexte se remplit avant que Claude Code ne compacte automatiquement la conversation. L'exemple de la documentation lui donne la valeur 500000.",
    "description_source": "Set how full the context window gets before Claude Code compacts automatically.",
    "usage": "{\n  \"autoCompactWindow\": 500000\n}",
    "usage_nature": "syntaxe",
@@ -3002,7 +3194,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une fenêtre plus basse limiterait le coût en jetons de chaque tour dans tes sessions longues ; enregistrée dans les réglages, elle vaudrait pour toutes les sessions."
+    "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` sous systemd et tmux, et tu tapes `/compact` à la main. Essaie une valeur sur une session pour choisir toi-même quand la compaction automatique se déclenche."
    },
    "sources": [
     {
@@ -3015,7 +3207,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3028,11 +3220,59 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Une fenêtre plus basse limiterait le coût en jetons de chaque tour dans tes sessions longues ; enregistrée dans les réglages, elle vaudrait pour toutes les sessions."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais le gain en jetons, absent de la documentation, est retiré : le pourquoi s'appuie désormais sur les sessions reprises par `claude --resume` et"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réglage qui fixe le remplissage du contexte à partir duquel Claude Code compacte automatiquement.",
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais le gain en jetons, absent de la documentation, est retiré : le pourquoi s'appuie désormais sur les sessions reprises par `claude --resume` et"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code durables, services systemd qui relancent `claude --resume`, où le contexte s'accumule."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées : la compaction est déjà gérée à la main."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "autoCompactWindow fixe le niveau de remplissage de la fenêtre de contexte avant que Claude Code ne compacte automatiquement.",
+     "source": "https://code.claude.com/docs/en/settings-reference#autocompactwindow",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le réglage est retiré ou renommé dans la référence des settings de Claude Code."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables cessent d'être reprises par `claude --resume` ou sont abandonnées."
+    },
+    {
+     "affirmation": "Les commandes tapées relevées le 25/09 comprennent `/btw`, `/remote-control` et `/compact`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-autoconnectide",
@@ -3082,7 +3322,7 @@
    "categorie": "parametres",
    "nom": "autoContinueAtUsageLimit",
    "gabarit": "court",
-   "description": "Réglage qui fait attendre la session ouverte après une limite d'usage claude.ai, puis reprendre la tâche seule à la réinitialisation (v2.1.234 ou plus).",
+   "description": "Réglage de Claude Code : quand une limite d'usage claude.ai arrête la session, celle-ci reste ouverte, attend la réinitialisation puis reprend la tâche automatiquement. L'exemple de la documentation le met à false pour désactiver cette reprise. Il demande Claude Code v2.1.234 ou plus récent.",
    "description_source": "After a claude.ai usage limit stops your session, wait in the open session and continue the task automatically after the reset. See Turn automatic continue off. Requires Claude Code v2.1.234 or later.",
    "usage": "{\n  \"autoContinueAtUsageLimit\": false\n}",
    "usage_nature": "syntaxe",
@@ -3091,7 +3331,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu atteins tes limites d'usage : une mission herbin-trading reprendrait seule à la réinitialisation au lieu d'attendre ton retour sur l'iPhone ; à vérifier qu'elle est active."
+    "pourquoi": "Les limites d'usage reviennent souvent dans tes frictions. Tes sessions Claude Code durables tournent sous tmux et tu les pilotes depuis l'iPhone : une session arrêtée par la limite reprendrait seule à la réinitialisation. Vérifie si le réglage est actif sur ta version."
    },
    "sources": [
     {
@@ -3104,7 +3344,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3117,11 +3357,59 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tu atteins tes limites d'usage : une mission herbin-trading reprendrait seule à la réinitialisation au lieu d'attendre ton retour sur l'iPhone ; à vérifier qu'elle est active."
+     },
+     "raison": "recommentaire D128 : L'ancien pourquoi s'appuyait sur des faits non sourcés (herbin-trading, usage sur l'iPhone sans section citée) ; le verdict tester repose désormais sur les sections methode.travai"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réglage qui fait attendre la session ouverte après une limite d'usage claude.ai, puis reprendre la tâche seule à la réinitialisation (v2.1.234 ou plus).",
+     "raison": "recommentaire D128 : L'ancien pourquoi s'appuyait sur des faits non sourcés (herbin-trading, usage sur l'iPhone sans section citée) ; le verdict tester repose désormais sur les sections methode.travai"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Claude Code durables tournent sous tmux comme services systemd et sont pilotées depuis l'iPhone."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Après l'arrêt d'une session par une limite d'usage claude.ai, le réglage fait attendre la session ouverte et reprend la tâche automatiquement après la réinitialisation ; il demande Claude Code v2.1.234 ou plus récent.",
+     "source": "https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire ce réglage ou change son comportement ou la version requise."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) font partie des frictions récurrentes observées.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage de la liste des frictions récurrentes."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance tmux et claude --resume avec Remote Control, piloté depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus pilotées à distance."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-autoinstallideextension",
@@ -3456,7 +3744,7 @@
    "categorie": "parametres",
    "nom": "autoUpdatesChannel",
    "gabarit": "court",
-   "description": "Réglage qui choisit le canal des mises à jour : `stable`, en général une semaine de retard sans les régressions majeures, ou `latest`.",
+   "description": "Réglage de settings.json qui choisit le canal suivi par les mises à jour automatiques en arrière-plan et par `claude update` : `stable`, une version en général vieille d'environ une semaine qui écarte les versions à régressions majeures, ou `latest`, la plus récente.",
    "description_source": "Choose which release channel background auto-updates and claude update follow. Set \"stable\" for a version that is typically about one week old and skips releases with major regressions, or \"latest\" for the most recent release.",
    "usage": "{\n  \"autoUpdatesChannel\": \"stable\"\n}",
    "usage_nature": "syntaxe",
@@ -3465,7 +3753,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "`autoUpdates` est à `false` chez toi et le mécanisme de mise à jour reste inconnu d'après CONTEXTE.md ; `stable` éviterait d'installer une version à régression sur des sessions qui tournent en permanence."
+    "pourquoi": "Tu mets Claude Code à jour avec `claude update` alors que `autoUpdates` est à `false`. Le réglage s'applique aussi à cette commande : `stable` éviterait d'installer une version à régression sur tes sessions durables `claude-session@<nom>`."
    },
    "sources": [
     {
@@ -3478,7 +3766,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Updates and versioning",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3491,11 +3779,59 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "`autoUpdates` est à `false` chez toi et le mécanisme de mise à jour reste inconnu d'après CONTEXTE.md ; `stable` éviterait d'installer une version à régression sur des sessions qui tournent en permanence."
+     },
+     "raison": "recommentaire D128 : Le motif disait qu'aucune section de CONTEXTE.md n'était fournie ; la recommandation `tester` est maintenant fondée sur les sections config.claude-code.interface et env.multi-sess"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réglage qui choisit le canal des mises à jour : `stable`, en général une semaine de retard sans les régressions majeures, ou `latest`.",
+     "raison": "recommentaire D128 : Le motif disait qu'aucune section de CONTEXTE.md n'était fournie ; la recommandation `tester` est maintenant fondée sur les sections config.claude-code.interface et env.multi-sess"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Mises à jour par `claude update` malgré `autoUpdates: false`, mécanisme exact inconnu : le canal suivi par cette commande compte."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code durables en services systemd, pilotées depuis l'iPhone : une régression les toucherait toutes."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "autoUpdatesChannel choisit le canal suivi par les mises à jour automatiques en arrière-plan et par `claude update` : `stable` (version d'environ une semaine, sans régressions majeures) ou `latest`.",
+     "source": "https://code.claude.com/docs/en/settings-reference#autoupdateschannel",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire ce réglage ou change les canaux proposés."
+    },
+    {
+     "affirmation": "`~/.claude.json` contient `autoUpdates: false`, mais les mises à jour natives se font depuis le 22/09 par `claude update` ; le mécanisme exact est inconnu.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain change de méthode de mise à jour ou le relevé de `~/.claude.json` change."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance `claude --resume` sous tmux, avec démarrage automatique.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables cessent de tourner en services systemd."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-availablemodels",
@@ -5603,7 +5939,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "gabarit": "court",
-   "description": "Variable qui fixe la fenêtre d'auto-compaction en jetons, de 100 000 à 1 000 000, en nombre entier seulement.",
+   "description": "Variable d'environnement de Claude Code qui fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, en entier simple uniquement (« 500k » est lu comme 500, puis ramené au minimum). Elle prime sur `/autocompact`, `--autocompact` et le réglage `autoCompactWindow`, et reste plafonnée par la fenêtre de contexte du modèle.",
    "description_source": "Set the auto-compact window in tokens, from 100000 to 1000000. Accepts a plain integer such as 500000 only: a value like 500k reads as 500 and clamps to the 100K minimum. The effective window is also capped at the model's context window. Takes precedence over the /autocompact command, the --autocompact flag, and the autoCompactWindow setting. The status line's used_percentage always measures against the model's full context window, so once this variable is set, that percentage no longer indicates when compaction will run",
    "usage": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "usage_nature": "syntaxe",
@@ -5612,7 +5948,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Posée dans l'environnement d'un seul service `claude-session@`, elle essaierait une fenêtre plus basse sur cette seule session, sans toucher aux autres."
+    "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des réglages de lancement propres à chaque rôle : cette variable posée dans un seul service y règlerait le moment de la compaction, que tu déclenches aujourd'hui à la main par `/compact`. Essaie-la d'abord sur une seule session."
    },
    "sources": [
     {
@@ -5625,7 +5961,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5634,10 +5970,64 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Posée dans l'environnement d'un seul service `claude-session@`, elle essaierait une fenêtre plus basse sur cette seule session, sans toucher aux autres."
+     },
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées : `env.multi-sessions` pour les services `claude-session@<nom>`, ce qui répond au motif D128, et `config.claude-code.skills`"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Variable qui fixe la fenêtre d'auto-compaction en jetons, de 100 000 à 1 000 000, en nombre entier seulement.",
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées : `env.multi-sessions` pour les services `claude-session@<nom>`, ce qui répond au motif D128, et `config.claude-code.skills`"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Décrit les services systemd `claude-session@<nom>` aux réglages de lancement propres à chaque rôle, où la variable peut se poser."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées : la compaction est déjà gérée à la main."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "CLAUDE_CODE_AUTO_COMPACT_WINDOW fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, et n'accepte qu'un entier simple (une valeur comme 500k est lue comme 500).",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change la plage ou accepte les suffixes comme « k »."
+    },
+    {
+     "affirmation": "La variable prime sur la commande /autocompact, l'option --autocompact et le réglage autoCompactWindow ; une fois posée, used_percentage de la ligne d'état n'indique plus quand la compaction aura lieu.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation modifie l'ordre de priorité ou le calcul de used_percentage."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur `claude-session@<nom>`, lancé avec un modèle, un effort et des réglages de lancement propres à son rôle.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables ne passent plus par le service modèle `claude-session@<nom>`."
+    },
+    {
+     "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-auto-connect-ide",
@@ -6533,7 +6923,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN",
    "gabarit": "court",
-   "description": "Variable qui coupe le rendu plein écran au profit du rendu classique, pour garder le défilement natif du terminal et le mode copie de tmux.",
+   "description": "Variable d'environnement qui, réglée à 1, coupe le rendu plein écran de Claude Code au profit du rendu classique : la conversation reste dans le défilement natif du terminal, où Cmd+f et le mode copie de tmux fonctionnent normalement. Elle l'emporte sur CLAUDE_CODE_NO_FLICKER et le réglage tui ; `/tui default` fait la même bascule.",
    "description_source": "Set to 1 to disable fullscreen rendering and use the classic main-screen renderer. The conversation stays in your terminal's native scrollback so Cmd+f and tmux copy mode work as usual. Takes precedence over CLAUDE_CODE_NO_FLICKER and the tui setting. You can also switch with /tui default. Does not apply to background sessions opened from agent view, which always use fullscreen rendering",
    "usage": "CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN",
    "usage_nature": "syntaxe",
@@ -6542,7 +6932,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions tournent sous tmux : le rendu classique garderait le mode copie de tmux si le plein écran le gênait."
+    "pourquoi": "Tes sessions Claude Code durables tournent chacune dans une session tmux dédiée. Si le rendu plein écran te gêne pour remonter ou copier une conversation, essaie cette variable sur une session pour retrouver le mode copie de tmux."
    },
    "sources": [
     {
@@ -6555,7 +6945,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6564,10 +6954,54 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions tournent sous tmux : le rendu classique garderait le mode copie de tmux si le plein écran le gênait."
+     },
+     "raison": "recommentaire D128 : La recommandation tester est maintenue, mais elle s'appuie désormais sur la section env.multi-sessions de CONTEXTE.md, qui atteste que les sessions Claude Code tournent sous tmux,"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Variable qui coupe le rendu plein écran au profit du rendu classique, pour garder le défilement natif du terminal et le mode copie de tmux.",
+     "raison": "recommentaire D128 : La recommandation tester est maintenue, mais elle s'appuie désormais sur la section env.multi-sessions de CONTEXTE.md, qui atteste que les sessions Claude Code tournent sous tmux,"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Chaque session Claude Code durable s'exécute dans une session tmux dédiée (`tmux -L <nom>`) lancée par `claude-session@<nom>`."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Réglée à 1, CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN désactive le rendu plein écran et garde la conversation dans le défilement natif du terminal, où le mode copie de tmux fonctionne.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire cette variable ou change son effet sur le défilement natif."
+    },
+    {
+     "affirmation": "La variable ne s'applique pas aux sessions d'arrière-plan ouvertes depuis agent view, qui restent en plein écran.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation étend la variable aux sessions d'arrière-plan d'agent view."
+    },
+    {
+     "affirmation": "Les sessions Claude Code durables sont des services `claude-session@<nom>` qui lancent une session tmux dédiée exécutant `claude --resume <id> --remote-control <nom>`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions Claude Code cessent de tourner sous tmux."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-artifact",
@@ -15553,7 +15987,7 @@
    "categorie": "parametres",
    "nom": "crossSessionInbound",
    "gabarit": "court",
-   "description": "Réglage qui décide ce que fait une session des messages venant de tes autres sessions Claude Code (par exemple les retenir avec `hold`).",
+   "description": "Paramètre de settings qui choisit ce que fait une session des messages arrivant de tes autres sessions Claude Code, par exemple `hold` pour les retenir. Sans valeur applicable, Claude Code décide message par message selon les classes de mode de permission des deux sessions.",
    "description_source": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later.",
    "usage": "{\n  \"crossSessionInbound\": \"hold\"\n}",
    "usage_nature": "syntaxe",
@@ -15562,7 +15996,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions se parlent par `SendMessage` ; retenir les messages entrants sur herbin-trading imposerait ton accord avant qu'une autre session ne lui confie quelque chose."
+    "pourquoi": "Tes sessions se parlent par `SendMessage`, et toutes tournent en bypassPermissions sauf trading, qui reste en validations à chaque jalon. Essaie `hold` sur la session de trading-sim pour retenir les messages venus des autres sessions au lieu de laisser le défaut en décider."
    },
    "sources": [
     {
@@ -15575,7 +16009,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15588,11 +16022,69 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions se parlent par `SendMessage` ; retenir les messages entrants sur herbin-trading imposerait ton accord avant qu'une autre session ne lui confie quelque chose."
+     },
+     "raison": "recommentaire D128 : Le jugement est désormais fondé sur les sections citées (SendMessage entre sessions, régime de permissions à part pour trading-sim) au lieu d'affirmations non sourcées, et la prom"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réglage qui décide ce que fait une session des messages venant de tes autres sessions Claude Code (par exemple les retenir avec `hold`).",
+     "raison": "recommentaire D128 : Le jugement est désormais fondé sur les sections citées (SendMessage entre sessions, régime de permissions à part pour trading-sim) au lieu d'affirmations non sourcées, et la prom"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Atteste que les sessions Claude Code durables se parlent via SendMessage / ListAgents."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales sont en bypassPermissions sauf trading : les classes de mode diffèrent, ce qui pèse sur le défaut."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "trading-sim est le seul projet en VALIDATIONS_CHOISIES, où Sylvain seul donne le go."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "crossSessionInbound choisit ce que fait la session des messages venant des autres sessions Claude Code ; sans valeur applicable, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
+     "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire le paramètre ou change le comportement par défaut."
+    },
+    {
+     "affirmation": "Les sessions Claude Code de Sylvain se parlent via SendMessage / ListAgents.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions cessent d'échanger par SendMessage."
+    },
+    {
+     "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La session trading passe elle aussi en bypassPermissions, ou le régime global change."
+    },
+    {
+     "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim passe en FULL_AUTO."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-dangerously-load-development-channels",

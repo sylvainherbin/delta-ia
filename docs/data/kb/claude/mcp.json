@@ -322,7 +322,7 @@
    "categorie": "mcp",
    "nom": "Disable a server without removing it",
    "gabarit": "complet",
-   "description": "Dans le panneau `/mcp`, un serveur peut être désactivé sans perdre sa configuration : Claude Code cesse de s'y connecter mais le garde dans la liste, marqué désactivé.",
+   "description": "Dans le panneau `/mcp`, on peut désactiver un serveur pour que Claude Code cesse de s'y connecter, sans perdre sa configuration. Le serveur reste listé dans `/mcp`, marqué comme désactivé.",
    "description_source": "Toggle a server off in the /mcp panel to stop Claude Code from connecting to it without losing its configuration. Claude Code still lists the server in /mcp, marked as disabled.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
@@ -331,7 +331,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans servir dans Claude Code (piste 9) ; les désactiver dans les sessions qui n'en ont pas besoin allégerait la liste sans rien supprimer."
+    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code, et le connecteur Vercel, utilisé ponctuellement, a déjà été refermé puis réautorisé. Les couper dans `/mcp` les mettrait hors circuit sans perdre leur configuration. Il faut d'abord vérifier que ces connecteurs de compte claude.ai se désactivent bien depuis ce panneau."
    },
    "sources": [
     {
@@ -344,7 +344,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -357,11 +357,59 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans servir dans Claude Code (piste 9) ; les désactiver dans les sessions qui n'en ont pas besoin allégerait la liste sans rien supprimer."
+     },
+     "raison": "recommentaire D128 : Les sections optimisation.pistes (piste 9) et config.claude-code.mcp, désormais citées, fondent le verdict tester ; une réserve s'ajoute sur la prise en charge des connecteurs de"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Dans le panneau `/mcp`, un serveur peut être désactivé sans perdre sa configuration : Claude Code cesse de s'y connecter mais le garde dans la liste, marqué désactivé.",
+     "raison": "recommentaire D128 : Les sections optimisation.pistes (piste 9) et config.claude-code.mcp, désormais citées, fondent le verdict tester ; une réserve s'ajoute sur la prise en charge des connecteurs de"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 9 : Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Le connecteur Vercel a été refermé après un usage ponctuel puis de nouveau autorisé : ce cas correspond à une désactivation sans suppression."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Désactiver un serveur dans le panneau /mcp empêche Claude Code de s'y connecter sans perdre sa configuration ; le serveur reste listé, marqué désactivé.",
+     "source": "https://code.claude.com/docs/en/mcp#disable-a-server-without-removing-it",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire cette bascule du panneau /mcp ou change son effet sur la configuration."
+    },
+    {
+     "affirmation": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un de ces connecteurs est utilisé dans Claude Code ou retiré du compte."
+    },
+    {
+     "affirmation": "Le connecteur claude.ai Vercel a été refermé par Sylvain le 24/09 après un usage ponctuel, puis de nouveau autorisé ; il apparaît Connected dans claude mcp list.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le connecteur Vercel est supprimé du compte ou n'apparaît plus dans claude mcp list."
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-disable-claude-ai-connectors",

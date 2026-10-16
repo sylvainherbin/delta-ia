@@ -3693,7 +3693,7 @@
    "categorie": "commandes",
    "nom": "/context",
    "gabarit": "complet",
-   "description": "Affiche l'occupation du contexte sous forme de grille colorée, avec des suggestions pour les outils gourmands, les fichiers de mémoire trop lourds et les dépassements. `all` détaille chaque élément.",
+   "description": "`/context` affiche l'occupation actuelle du contexte sous forme de grille colorée. Il suggère des optimisations pour les outils qui chargent beaucoup le contexte et pour les mémoires trop lourdes, et avertit quand la capacité est proche ou dépassée : il indique alors l'ampleur du dépassement et la commande qui libère de la place. En mode plein écran, le détail par élément est replié ; l'argument `all` le déplie.",
    "description_source": "Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings. When the conversation exceeds the context window, the output includes a warning showing how far over the limit you are and which command frees space. In fullscreen mode, /context collapses the per-item breakdown to keep the grid visible. Pass all to expand it",
    "usage": "/context [all]",
    "usage_nature": "syntaxe",
@@ -3702,7 +3702,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu as 23 mémoires, des skills claude.ai synchronisés et plusieurs connecteurs chargés ; la grille montre ce qu'ils coûtent à chaque tour dans une session comme herbin-trading."
+    "pourquoi": "Tes sessions chargent beaucoup de mémoires automatiques (environ 70 dans `~/projets`). Les connecteurs de compte claude.ai s'appliquent aussi à trading-sim. Lance `/context all` dans une session de `~/projets` et dans celle de trading-sim : tu verras ce que mémoires et connecteurs prennent au contexte, alors que les limites d'usage et le coût en jetons sont des frictions récurrentes.\n\n(Les apostrophes droites du texte sont conservées.)"
    },
    "sources": [
     {
@@ -3715,7 +3715,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3732,11 +3732,69 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tu as 23 mémoires, des skills claude.ai synchronisés et plusieurs connecteurs chargés ; la grille montre ce qu'ils coûtent à chaque tour dans une session comme herbin-trading."
+     },
+     "raison": "recommentaire D128 : L'ancien pourquoi citait des faits non fondés (23 mémoires, session herbin-trading) : le verdict tester est maintenu, mais il s'appuie désormais sur les sections citées (environ 7"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Affiche l'occupation du contexte sous forme de grille colorée, avec des suggestions pour les outils gourmands, les fichiers de mémoire trop lourds et les dépassements. `all` détaille chaque élément.",
+     "raison": "recommentaire D128 : L'ancien pourquoi citait des faits non fondés (23 mémoires, session herbin-trading) : le verdict tester est maintenu, mais il s'appuie désormais sur les sections citées (environ 7"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Mémoire automatique très utilisée (environ 70 mémoires dans ~/projets, 7 dans ~) : c'est ce que /context signale comme surcharge."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Les connecteurs de compte claude.ai s'appliquent à tous les projets, trading-sim compris, faute de deny : leur poids en contexte est à mesurer."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage et le coût en jetons figurent parmi les frictions récurrentes observées."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/context affiche l'usage du contexte en grille colorée, avec des suggestions pour les outils gourmands, les mémoires trop lourdes et les avertissements de capacité ; `all` déplie le détail par élément en plein écran.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation des commandes retire /context ou change son affichage ou l'argument all."
+    },
+    {
+     "affirmation": "Environ 70 mémoires automatiques dans le dossier ~/projets et 7 dans ~ au 04/10 ; mémoire décrite comme très utilisée.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un relevé ultérieur montre une forte réduction des mémoires automatiques."
+    },
+    {
+     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut ; trading-sim les reçoit car son .claude/settings.json ne les liste pas en deny.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le deny des connecteurs est ajouté dans le settings.json de trading-sim ou les connecteurs de compte sont retirés."
+    },
+    {
+     "affirmation": "Parmi les frictions récurrentes : limites d'usage (hebdomadaire et Fable) et coût en jetons des prompts d'audit très longs.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire ces frictions de la liste des frictions récurrentes."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-copy",
@@ -4711,7 +4769,7 @@
    "categorie": "commandes",
    "nom": "/goal",
    "gabarit": "complet",
-   "description": "Fixe un objectif : Claude continue de travailler d'un tour à l'autre jusqu'à ce que la condition soit remplie ou que l'objectif soit levé. Sans argument, affiche l'objectif en cours ou le dernier atteint ; `clear`, `stop`, `off` et équivalents l'annulent.",
+   "description": "`/goal` fixe un objectif : Claude continue de travailler d'un tour à l'autre jusqu'à ce que la condition soit remplie ou que l'objectif soit levé pour une autre raison. Sans argument, la commande affiche l'objectif en cours ou le dernier atteint. `clear`, `stop`, `off`, `reset`, `none` ou `cancel` retire un objectif actif avant son terme.",
    "description_source": "Set a goal: Claude keeps working across turns until the condition is met or the goal clears for another reason. With no argument, shows the current or most recently achieved goal. clear, stop, off, reset, none, or cancel removes an active goal early",
    "usage": "/goal [condition|clear]",
    "usage_nature": "syntaxe",
@@ -4720,7 +4778,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, pour une tâche bornée déjà validée (faire passer les tests `unittest`), elle évite de relancer à chaque tour ; à écarter pour toute étape qui demande ton accord."
+    "pourquoi": "Essaie-la dans une session dev sur carnet, avec une condition vérifiable comme « `node --test` passe ». Tes devs commitent seulement après les tests, et `/goal` leur éviterait d'attendre une relance à chaque tour. Ne l'emploie pas sur trading-sim : chaque jalon y attend ton go."
    },
    "sources": [
     {
@@ -4733,7 +4791,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4750,11 +4808,69 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur herbin-trading, pour une tâche bornée déjà validée (faire passer les tests `unittest`), elle évite de relancer à chaque tour ; à écarter pour toute étape qui demande ton accord."
+     },
+     "raison": "recommentaire D128 : L'ancien commentaire visait herbin-trading et ses tests `unittest` sans section citée ; le verdict reste `tester`, désormais fondé sur les tests de carnet et le cycle des devs, et"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Fixe un objectif : Claude continue de travailler d'un tour à l'autre jusqu'à ce que la condition soit remplie ou que l'objectif soit levé. Sans argument, affiche l'objectif en cours ou le dernier atteint ; `clear`, `stop`, `off` et équivalents l'annulent.",
+     "raison": "recommentaire D128 : L'ancien commentaire visait herbin-trading et ses tests `unittest` sans section citée ; le verdict reste `tester`, désormais fondé sur les tests de carnet et le cycle des devs, et"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.carnet": {
+     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+     "pourquoi": "Carnet a des tests `node --test` : ils donnent une condition d'arrêt vérifiable pour `/goal`."
+    },
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Les devs commitent après tests et validation : `/goal` peut tenir la boucle jusqu'aux tests verts."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "trading-sim est en VALIDATIONS_CHOISIES, où Sylvain seul donne le go : une boucle autonome n'y convient pas."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/goal [condition|clear]` fait continuer Claude d'un tour à l'autre jusqu'à ce que la condition soit remplie ; `clear`, `stop`, `off`, `reset`, `none` ou `cancel` retire l'objectif.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande `/goal` est retirée de la documentation ou son comportement change."
+    },
+    {
+     "affirmation": "Carnet a des tests `node --test` sur 13 fichiers de test.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Carnet change de lanceur de tests ou abandonne ses tests."
+    },
+    {
+     "affirmation": "Les devs commitent et poussent après l'OK du chef, après tests et validation.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'organisation chefs/devs ou l'exigence de tests avant commit change."
+    },
+    {
+     "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim passe en FULL_AUTO."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-heapdump",
@@ -5116,7 +5232,7 @@
    "categorie": "commandes",
    "nom": "/insights",
    "gabarit": "complet",
-   "description": "Génère un rapport HTML sur tes sessions récentes sur cette machine : projets, façon d'utiliser Claude Code, points de friction et fonctionnalités à essayer. Indisponible dans les sessions cloud ; la documentation précise l'emplacement, la conservation et le coût du rapport.",
+   "description": "`/insights` génère un rapport HTML qui analyse les sessions récentes sur cette machine : projets travaillés, façon d'utiliser Claude Code, endroits où ça coince et fonctionnalités à essayer. Il n'est pas disponible dans les sessions cloud ; la documentation renvoie à « Analyze your usage patterns » pour l'emplacement du rapport, sa conservation et son coût.",
    "description_source": "Generate an HTML report analyzing your recent sessions on this machine: which projects you work in, how you use Claude Code, where things go wrong, and features to try. Not available in cloud sessions. See Analyze your usage patterns for the report location, retention, and cost",
    "usage": "/insights",
    "usage_nature": "syntaxe",
@@ -5125,7 +5241,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Il répond directement à ton irritant principal (méconnaître les fonctionnalités) à partir de tes vraies sessions ; vérifier d'abord son coût, vu tes limites hebdomadaires."
+    "pourquoi": "Ton irritant principal est de ne pas assez connaître les fonctionnalités de Claude Code : ce rapport en suggère à partir de tes propres sessions, qui tournent en local sur la machine. Lance-le une fois et vérifie d'abord son coût dans la documentation, car les limites d'usage hebdomadaires sont une friction récurrente.“"
    },
    "sources": [
     {
@@ -5138,7 +5254,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5155,11 +5271,75 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Il répond directement à ton irritant principal (méconnaître les fonctionnalités) à partir de tes vraies sessions ; vérifier d'abord son coût, vu tes limites hebdomadaires."
+     },
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais l'irritant, l'usage local des sessions et les limites hebdomadaires sont désormais fondés sur les sections citées (profil, env.multi-session"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Génère un rapport HTML sur tes sessions récentes sur cette machine : projets, façon d'utiliser Claude Code, points de friction et fonctionnalités à essayer. Indisponible dans les sessions cloud ; la documentation précise l'emplacement, la conservation et le coût du rapport.",
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais l'irritant, l'usage local des sessions et les limites hebdomadaires sont désormais fondés sur les sections citées (profil, env.multi-session"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Irritant principal déclaré : méconnaître les commandes et fonctionnalités de Claude Code ; la veille doit signaler les fonctionnalités à essayer."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Claude Code durables tournent en local (services systemd, tmux), donc dans le périmètre de /insights, indisponible en cloud."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes, d'où la vérification préalable du coût."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/insights génère un rapport HTML sur les sessions récentes de la machine (projets, usage de Claude Code, problèmes, fonctionnalités à essayer) et n'est pas disponible dans les sessions cloud.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire /insights, change son contenu ou le rend disponible en cloud."
+    },
+    {
+     "affirmation": "La documentation renvoie à « Analyze your usage patterns » pour l'emplacement, la conservation et le coût du rapport.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page des commandes ne mentionne plus de coût ni ce renvoi."
+    },
+    {
+     "affirmation": "Irritant principal déclaré : ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain déclare un autre irritant principal dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Les sessions Claude Code durables sont des services systemd utilisateur `claude-session@<nom>` lancés dans tmux sur la machine.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables passent en sessions cloud."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) sont listées parmi les frictions récurrentes.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-install-github-app",
@@ -6210,7 +6390,7 @@
    "categorie": "commandes",
    "nom": "/powerup",
    "gabarit": "complet",
-   "description": "Fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
+   "description": "/powerup est une commande de Claude Code qui fait découvrir ses fonctionnalités par de courtes leçons interactives, accompagnées de démonstrations animées.",
    "description_source": "Discover Claude Code features through quick interactive lessons with animated demos",
    "usage": "/powerup",
    "usage_nature": "syntaxe",
@@ -6219,7 +6399,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Répond à ton irritant principal (méconnaître les fonctionnalités) ; à lancer dans une session locale plutôt que depuis l'iPhone, les démonstrations étant animées dans le terminal."
+    "pourquoi": "Ton irritant principal est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code pour en tirer le maximum. Ces leçons interactives visent justement à les faire découvrir : lance-la une fois pour repérer ce que tu n'utilises pas encore."
    },
    "sources": [
     {
@@ -6232,7 +6412,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6249,11 +6429,49 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Répond à ton irritant principal (méconnaître les fonctionnalités) ; à lancer dans une session locale plutôt que depuis l'iPhone, les démonstrations étant animées dans le terminal."
+     },
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur l'irritant déclaré dans la section profil, citée, et abandonne la consigne sur l'iPhone et les animations dans le terminal, qu'aucune source fou"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur l'irritant déclaré dans la section profil, citée, et abandonne la consigne sur l'iPhone et les animations dans le terminal, qu'aucune source fou"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Déclare l'irritant principal : méconnaissance des commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/powerup fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande /powerup est retirée de la documentation ou change de fonction."
+    },
+    {
+     "affirmation": "L'irritant principal déclaré de Sylvain est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain déclare un autre irritant principal ou retire celui-ci de CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-pr-comments",
@@ -6726,7 +6944,7 @@
    "categorie": "commandes",
    "nom": "/reload-skills",
    "gabarit": "complet",
-   "description": "Réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session, et indique combien ont été ajoutés ou retirés.",
+   "description": "`/reload-skills` réanalyse les dossiers de skills et de commandes pour que les skills ajoutés ou modifiés sur le disque pendant la session deviennent disponibles sans redémarrer. La commande indique combien de skills sont disponibles et combien ont été ajoutés ou retirés.",
    "description_source": "Re-scan skill and command directories so skills added or changed on disk during the session become available without restarting. Reports how many skills are available and how many were added or removed",
    "usage": "/reload-skills",
    "usage_nature": "syntaxe",
@@ -6735,7 +6953,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après avoir modifié un skill (`delta`, `delta-kb`, `maintenance-mint`), la recharge éviterait de redémarrer le service systemd de la session concernée."
+    "pourquoi": "Tes sessions Claude Code durables tournent en continu comme services systemd (`claude --resume`), et tu as des skills perso dont `latex-manuscrit` et `verif-numerique`, jamais invoqués et à revoir. Après une retouche d'un skill, `/reload-skills` permettrait de l'essayer tout de suite dans la session ouverte, sans la relancer."
    },
    "sources": [
     {
@@ -6748,7 +6966,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6765,11 +6983,69 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Après avoir modifié un skill (`delta`, `delta-kb`, `maintenance-mint`), la recharge éviterait de redémarrer le service systemd de la session concernée."
+     },
+     "raison": "recommentaire D128 : L'ancien pourquoi citait des skills `delta`/`delta-kb` modifiés et un redémarrage de service sans section fondatrice ; le verdict `tester` est désormais fondé sur les sessions sys"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session, et indique combien ont été ajoutés ou retirés.",
+     "raison": "recommentaire D128 : L'ancien pourquoi citait des skills `delta`/`delta-kb` modifiés et un redémarrage de service sans section fondatrice ; le verdict `tester` est désormais fondé sur les sessions sys"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions durables sont des services systemd `claude-session@<nom>` relancés par `claude --resume` : un redémarrage interrompt la session."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Liste les skills perso de Sylvain, dont deux jamais invoqués."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "La piste 4 propose de revoir ou de rendre déclenchables les skills dormants : une retouche de skill est donc prévue."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/reload-skills` réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande est retirée ou son comportement change dans la documentation officielle."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables cessent d'être des services systemd persistants."
+    },
+    {
+     "affirmation": "Les skills perso sont `maintenance-mint`, `deploy-site`, `latex-manuscrit` et `verif-numerique` ; `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Ces skills sont supprimés ou ne sont plus maintenus sur le disque."
+    },
+    {
+     "affirmation": "Les skills dormants `latex-manuscrit` et `verif-numerique` sont à revoir, à supprimer ou à rendre déclenchables sur trading-sim.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Cette piste est close, les skills ayant été supprimés ou déjà révisés."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-remote-control",
@@ -7624,7 +7900,7 @@
    "categorie": "commandes",
    "nom": "/skill-doctor",
    "gabarit": "complet",
-   "description": "Montre ce que chaque skill coûte en contexte et à quelle fréquence il sert, pour repérer ceux à désactiver. Nécessite la récupération des feature flags.",
+   "description": "`/skill-doctor` affiche, pour chacun de tes skills, ce qu'il coûte en contexte et à quelle fréquence il est utilisé, afin de repérer ceux à désactiver. La documentation indique qu'il faut Claude Code v2.1.252 ou plus récent et la récupération des feature flags.",
    "description_source": "Show what each of your skills costs in context and how often it gets used, so you can find skills to turn off. Requires Claude Code v2.1.252 or later and feature-flag fetching",
    "usage": "/skill-doctor",
    "usage_nature": "syntaxe",
@@ -7633,7 +7909,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "`latex-manuscrit` et `verif-numerique` ne sont jamais invoqués et de nombreux skills claude.ai sont synchronisés (piste 4) : le rapport chiffrerait ce qu'ils coûtent en contexte dans chaque session."
+    "pourquoi": "Tes skills perso `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués, et plusieurs skills claude.ai synchronisés ne servent pas dans Claude Code. La piste 4 prévoit de les revoir, de les supprimer ou de les rendre déclenchables : `/skill-doctor` chiffrerait leur coût en contexte avant de trancher."
    },
    "sources": [
     {
@@ -7646,7 +7922,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7663,11 +7939,59 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "`latex-manuscrit` et `verif-numerique` ne sont jamais invoqués et de nombreux skills claude.ai sont synchronisés (piste 4) : le rapport chiffrerait ce qu'ils coûtent en contexte dans chaque session."
+     },
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il est désormais fondé explicitement sur les sections config.claude-code.skills et optimisation.pistes de CONTEXTE.md, fournies cette fois,"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Montre ce que chaque skill coûte en contexte et à quelle fréquence il sert, pour repérer ceux à désactiver. Nécessite la récupération des feature flags.",
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il est désormais fondé explicitement sur les sections config.claude-code.skills et optimisation.pistes de CONTEXTE.md, fournies cette fois,"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Liste les skills perso et claude.ai synchronisés, avec leur usage observé : plusieurs ne sont jamais invoqués."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "La piste 4 demande de revoir, supprimer ou rendre déclenchables les skills dormants."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/skill-doctor` montre le coût en contexte et la fréquence d'usage de chaque skill, pour trouver ceux à désactiver ; il requiert Claude Code v2.1.252 ou plus récent et la récupération des feature flags.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande est retirée, renommée ou change de fonction dans la documentation officielle."
+    },
+    {
+     "affirmation": "Les skills perso `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués ; les skills claude.ai synchronisés autres qu'ask-the-council ne sont pas invoqués dans Claude Code.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé montre que ces skills sont invoqués, ou qu'ils ont été supprimés ou désactivés."
+    },
+    {
+     "affirmation": "La piste 4 propose de revoir, supprimer ou rendre déclenchables sur trading-sim les skills dormants `latex-manuscrit` et `verif-numerique`.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 4 est close, c'est-à-dire que les skills ont été supprimés ou rendus déclenchables."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-skills",
@@ -8147,7 +8471,7 @@
    "categorie": "commandes",
    "nom": "/tasks",
    "gabarit": "complet",
-   "description": "Affiche et gère le travail d'arrière-plan de la session courante, y compris les subagents terminés. Alias : `/bashes`.",
+   "description": "`/tasks` affiche et gère le travail d'arrière-plan de la session Claude Code en cours, y compris les subagents déjà terminés. La commande existe aussi sous le nom `/bashes`.",
    "description_source": "View and manage background work in the current session, including subagents that have finished. Also available as /bashes",
    "usage": "/tasks",
    "usage_nature": "syntaxe",
@@ -8156,7 +8480,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu suis beaucoup de tâches avec Monitor (151 appels) ; la liste montrerait d'un coup ce qui tourne encore en arrière-plan dans une session comme herbin-trading."
+    "pourquoi": "Tes sessions lancent des sous-agents (`Explore`, `general-purpose`, vérifications indépendantes en parallèle) et suivent beaucoup de travail par Monitor (151 appels relevés). `/tasks` montrerait dans une même vue ce qui tourne encore et les sous-agents finis. Essaie-la dans une session de dev pendant une mission qui lance plusieurs vérifications en parallèle.```"
    },
    "sources": [
     {
@@ -8169,7 +8493,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8186,11 +8510,59 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tu suis beaucoup de tâches avec Monitor (151 appels) ; la liste montrerait d'un coup ce qui tourne encore en arrière-plan dans une session comme herbin-trading."
+     },
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il est maintenant fondé sur deux sections citées (usage des sous-agents et de Monitor), et la mention non étayée de la session herbin-tradin"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Affiche et gère le travail d'arrière-plan de la session courante, y compris les subagents terminés. Alias : `/bashes`.",
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il est maintenant fondé sur deux sections citées (usage des sous-agents et de Monitor), et la mention non étayée de la session herbin-tradin"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents réellement utilisés (Explore, general-purpose) et vérifications indépendantes en parallèle demandées dans les briefs."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage des outils montre un usage fréquent de Monitor, signe de travail suivi en arrière-plan."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/tasks` permet de voir et gérer le travail d'arrière-plan de la session courante, y compris les subagents terminés, et existe aussi sous le nom `/bashes`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire `/tasks`, change son rôle ou supprime l'alias `/bashes`."
+    },
+    {
+     "affirmation": "Le 04/10, 31 appels `Agent` en cinq jours sur 12 sessions, dont 17 `general-purpose` et 11 `Explore` ; consigne de Sylvain : vérifications indépendantes en parallèle.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain abandonne les sous-agents dans ses briefs de développement, ou un nouveau relevé montre qu'ils ne sont plus appelés."
+    },
+    {
+     "affirmation": "Le relevé du 25/09 compte 151 appels à Monitor dans les transcripts Claude Code.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage montre que Monitor n'est plus utilisé."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-team-onboarding",
@@ -8940,7 +9312,7 @@
    "categorie": "commandes",
    "nom": "/workflows",
    "gabarit": "complet",
-   "description": "Ouvre la vue de progression des workflows pour suivre, mettre en pause, reprendre ou enregistrer ceux en cours ou terminés.",
+   "description": "La commande /workflows ouvre la vue de progression des workflows de Claude Code : on y suit les workflows en cours ou terminés, on peut les mettre en pause, les reprendre ou les enregistrer.",
    "description_source": "Open the workflow progress view to watch, pause, resume, or save running and completed workflows",
    "usage": "/workflows",
    "usage_nature": "syntaxe",
@@ -8949,7 +9321,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu as lancé 13 workflows ; les suivre et les mettre en pause ici permet d'arrêter un workflow gourmand avant qu'il n'entame ta limite hebdomadaire."
+    "pourquoi": "L'outil Workflow a été appelé 13 fois au relevé du 25/09, et la session Delta est celle des Workflows. /workflows te permet de suivre un workflow lancé et de le mettre en pause, ce qui est utile face aux limites d'usage hebdomadaires, une friction récurrente. Tu dois donner ton accord à chaque workflow multi-agents : cette vue sert à surveiller ceux que tu as autorisés."
    },
    "sources": [
     {
@@ -8962,7 +9334,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8979,11 +9351,79 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tu as lancé 13 workflows ; les suivre et les mettre en pause ici permet d'arrêter un workflow gourmand avant qu'il n'entame ta limite hebdomadaire."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est maintenu, mais il s'appuie désormais sur des sections citées de CONTEXTE.md : les 13 appels Workflow, les limites hebdomadaires, l'accord requis pour les wor"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Ouvre la vue de progression des workflows pour suivre, mettre en pause, reprendre ou enregistrer ceux en cours ou terminés.",
+     "raison": "recommentaire D128 : Le verdict tester est maintenu, mais il s'appuie désormais sur des sections citées de CONTEXTE.md : les 13 appels Workflow, les limites hebdomadaires, l'accord requis pour les wor"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage réel des outils compte 13 appels Workflow : la commande sert un outil déjà employé."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes : pouvoir mettre en pause un workflow gourmand y répond."
+    },
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Les workflows multi-agents (outil Workflow) ne se lancent que sur accord de Sylvain : il a intérêt à suivre ceux qu'il a autorisés."
+    },
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "La session pilote Delta est associée aux Workflows : c'est là que la vue de progression servirait."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/workflows ouvre la vue de progression des workflows pour suivre, mettre en pause, reprendre ou enregistrer les workflows en cours et terminés.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire /workflows ou supprime la pause et la reprise de cette vue."
+    },
+    {
+     "affirmation": "Le relevé d'usage réel des outils du 25/09 (14 transcripts) compte 13 appels à l'outil Workflow.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage montre que l'outil Workflow n'est plus appelé."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) font partie des frictions récurrentes observées.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
+    },
+    {
+     "affirmation": "Les workflows multi-agents (outil Workflow) ne sont lancés que sur accord de Sylvain.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain lève ou durcit sa consigne sur les workflows multi-agents, par exemple en les interdisant."
+    },
+    {
+     "affirmation": "Delta, la session pilote, est désignée comme la session des Workflows.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La session Delta cesse de porter les Workflows dans l'organisation décrite."
+    }
+   ]
   }
  ]
 }

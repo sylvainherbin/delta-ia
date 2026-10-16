@@ -968,7 +968,7 @@
    "categorie": "skills",
    "nom": "/loop",
    "gabarit": "complet",
-   "description": "Skill qui relance un prompt à intervalle régulier tant que la session reste ouverte ; sans intervalle, Claude choisit lui-même le rythme, et sans prompt il lance la maintenance intégrée ou `loop.md`. Alias : `/proactive`.",
+   "description": "Skill de Claude Code qui relance un prompt de façon répétée tant que la session reste ouverte. Sans intervalle, Claude règle lui-même le rythme entre les itérations ; sans prompt, il lance le prompt de maintenance intégré ou votre `loop.md`. Exemple : `/loop 5m check if the deploy finished` ; alias : `/proactive`.",
    "description_source": "Skill. Run a prompt repeatedly while the session stays open. Omit the interval and Claude self-paces between iterations. Omit the prompt and Claude runs the built-in maintenance prompt or your loop.md. Example: /loop 5m check if the deploy finished. See Run prompts on a schedule. Alias: /proactive",
    "usage": "/loop [interval] [prompt]",
    "usage_nature": "syntaxe",
@@ -977,7 +977,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, il pourrait surveiller une campagne longue ; chaque itération consomme des jetons, alors que Monitor, déjà très utilisé, prévient seulement à la fin d'un script."
+    "pourquoi": "Sur trading-sim, ta priorité, les campagnes exhaustives sont longues sur une machine lente : `/loop 10m` pourrait faire le point sur leur avancement pendant que la session reste ouverte, en complément de Monitor que tu utilises déjà beaucoup. Garde un intervalle large, car chaque itération relance un prompt et les limites d'usage sont déjà une friction récurrente."
    },
    "sources": [
     {
@@ -990,7 +990,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -999,10 +999,68 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur herbin-trading, il pourrait surveiller une campagne longue ; chaque itération consomme des jetons, alors que Monitor, déjà très utilisé, prévient seulement à la fin d'un script."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il s'appuie désormais sur les sections citées (trading-sim et ses campagnes longues, usage de Monitor, friction des limites) et ne prétend plu"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Skill qui relance un prompt à intervalle régulier tant que la session reste ouverte ; sans intervalle, Claude choisit lui-même le rythme, et sans prompt il lance la maintenance intégrée ou `loop.md`. Alias : `/proactive`.",
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il s'appuie désormais sur les sections citées (trading-sim et ses campagnes longues, usage de Monitor, friction des limites) et ne prétend plu"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Projet prioritaire dont les campagnes exhaustives sont longues sur une machine lente : un suivi périodique y a un usage concret."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre Monitor très employé : /loop est une autre façon de surveiller une tâche longue."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage sont une friction récurrente, d'où la prudence sur l'intervalle."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "/loop exécute un prompt de façon répétée tant que la session reste ouverte ; sans intervalle, Claude règle lui-même le rythme ; sans prompt, il lance la maintenance intégrée ou loop.md.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire /loop ou change son fonctionnement (fin à la fermeture de session, rôle de l'intervalle ou de loop.md)."
+    },
+    {
+     "affirmation": "trading-sim connaît des difficultés liées à une machine lente pour les campagnes exhaustives.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les campagnes de trading-sim passent sur une machine plus puissante ou cessent d'être longues."
+    },
+    {
+     "affirmation": "Le relevé d'usage réel compte environ 151 appels Monitor.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé montre que Monitor n'est plus utilisé."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) font partie des frictions récurrentes observées.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les limites d'usage cessent d'être une friction (forfait sans plafond ou consommation nettement sous les seuils)."
+    }
+   ]
   },
   {
    "id": "claude-code-skills-page-skills",

@@ -576,7 +576,7 @@
    "categorie": "raccourcis",
    "nom": "Ctrl+B",
    "gabarit": "court",
-   "description": "Passe en arrière-plan les commandes Bash et les agents en cours ; sous tmux, il faut appuyer deux fois.",
+   "description": "Ctrl+B passe en arrière-plan les commandes Bash et les agents en cours d'exécution dans Claude Code. Sous tmux, il faut appuyer deux fois.",
    "description_source": "Background running tasks — Backgrounds Bash commands and agents. Tmux users press twice",
    "usage": "Ctrl+B",
    "usage_nature": "syntaxe",
@@ -585,7 +585,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions tournent dans tmux : il faut appuyer deux fois pour mettre en arrière-plan une commande longue lancée par herbin-trading sans bloquer la session."
+    "pourquoi": "Tes sessions Claude Code tournent chacune dans une session tmux dédiée : il faut donc presser Ctrl+B deux fois. Bash domine ton usage, et ce raccourci libère la session pendant une commande longue. Essaie-le au clavier de la machine, pas seulement par Remote Control."
    },
    "sources": [
     {
@@ -598,7 +598,7 @@
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -607,10 +607,58 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions tournent dans tmux : il faut appuyer deux fois pour mettre en arrière-plan une commande longue lancée par herbin-trading sans bloquer la session."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il repose désormais sur les sections citées (sessions sous tmux, usage dominant de Bash) ; la mention non fondée d'herbin-trading est retirée."
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Passe en arrière-plan les commandes Bash et les agents en cours ; sous tmux, il faut appuyer deux fois.",
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il repose désormais sur les sections citées (sessions sous tmux, usage dominant de Bash) ; la mention non fondée d'herbin-trading est retirée."
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Claude Code durables tournent dans tmux (tmux -L <nom>), d'où la double frappe ; elles sont pilotées par Remote Control."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre Bash très dominant (≈2 900 appels), donc beaucoup de commandes susceptibles d'être passées en arrière-plan."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Ctrl+B passe en arrière-plan les commandes Bash et les agents en cours ; les utilisateurs de tmux appuient deux fois.",
+     "source": "https://code.claude.com/docs/en/interactive-mode",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le raccourci ou retire la double frappe sous tmux."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable lance une session tmux dédiée (tmux -L <nom>) qui exécute claude --resume avec --remote-control, pilotée depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions Claude Code cessent de tourner sous tmux."
+    },
+    {
+     "affirmation": "Le relevé d'usage des outils compte environ 2 900 appels Bash, très dominant devant les autres outils.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé montre que Bash n'est plus l'outil dominant."
+    }
+   ]
   },
   {
    "id": "claude-code-raccourcis-ctrl-c",
@@ -945,7 +993,7 @@
    "categorie": "raccourcis",
    "nom": "Ctrl+O",
    "gabarit": "court",
-   "description": "Ouvre ou ferme la vue détaillée du transcript : appels d'outils, horodatage et modèle de chaque réponse.",
+   "description": "Ctrl+O ouvre ou ferme la vue détaillée du transcript dans Claude Code : appels d'outils et exécution, avec l'horodatage et le modèle de chaque réponse. Il déplie aussi les lignes repliées par défaut, comme les appels MCP regroupés ou les messages venus d'autres sessions, affichés en aperçu « Message from @<sender> ».",
    "description_source": "Toggle transcript viewer — Shows detailed tool usage and execution, with a timestamp and the model used on each assistant message. Also expands lines that collapse by default, such as MCP calls, shown as a single Called slack 3 times line, and messages from your other sessions, shown as a one-line Message from @<sender> preview",
    "usage": "Ctrl+O",
    "usage_nature": "syntaxe",
@@ -954,7 +1002,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La vue détaillée indique le modèle de chaque réponse, utile pour vérifier qu'une session tourne bien sur Opus 5.5 plutôt que sur Fable, dont la limite est plus serrée."
+    "pourquoi": "Tes sessions durables tournent chacune avec un modèle propre (par exemple --model opus pour le chef) et reçoivent des messages d'autres sessions via SendMessage. Ctrl+O montre le modèle de chaque réponse et déplie ces messages en entier."
    },
    "sources": [
     {
@@ -967,7 +1015,7 @@
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -976,10 +1024,60 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "La vue détaillée indique le modèle de chaque réponse, utile pour vérifier qu'une session tourne bien sur Opus 5.5 plutôt que sur Fable, dont la limite est plus serrée."
+     },
+     "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus sur une alternance Opus/Fable non établie, mais sur les sessions à modèle par rôle et les messages inter-sessions décrits dans env.multi-sessions, que"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Ouvre ou ferme la vue détaillée du transcript : appels d'outils, horodatage et modèle de chaque réponse.",
+     "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus sur une alternance Opus/Fable non établie, mais sur les sessions à modèle par rôle et les messages inter-sessions décrits dans env.multi-sessions, que"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code avec modèle et effort par rôle, qui échangent par SendMessage : Ctrl+O affiche le modèle par réponse et déplie ces messages."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Ctrl+O bascule la vue du transcript, qui montre l'usage détaillé des outils, avec l'horodatage et le modèle utilisé sur chaque message de l'assistant.",
+     "source": "https://code.claude.com/docs/en/interactive-mode",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire l'affichage du modèle ou de l'horodatage, ou réaffecte Ctrl+O à une autre action."
+    },
+    {
+     "affirmation": "La vue déplie les lignes repliées par défaut, dont les messages des autres sessions affichés en aperçu d'une ligne « Message from @<sender> ».",
+     "source": "https://code.claude.com/docs/en/interactive-mode",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation cesse de replier ou de déplier les messages des autres sessions par Ctrl+O."
+    },
+    {
+     "affirmation": "Chaque session durable lance claude --resume avec, selon le rôle, un modèle et un effort propres, par exemple --model opus --effort medium pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables passent toutes sur un même modèle sans réglage par rôle."
+    },
+    {
+     "affirmation": "Les sessions se parlent via SendMessage / ListAgents et OPÉRER leur remet les missions et les relances.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions cessent d'échanger des messages entre elles."
+    }
+   ]
   },
   {
    "id": "claude-code-raccourcis-ctrl-r",

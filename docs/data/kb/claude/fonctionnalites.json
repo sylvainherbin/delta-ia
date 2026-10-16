@@ -50,7 +50,7 @@
    "categorie": "fonctionnalites",
    "nom": "Escalate hard decisions with the advisor tool",
    "gabarit": "complet",
-   "description": "Adjoint au modèle principal un modèle conseiller plus puissant, que Claude consulte aux moments clés d'une tâche longue : avant de choisir une approche, sur une erreur qui revient, avant de déclarer la tâche finie. Expérimental, exécuté côté serveur, il consomme davantage de jetons ; il s'active par `/advisor`, par le réglage `advisorModel` ou par l'option `--advisor`.",
+   "description": "Associe au modèle principal un modèle conseiller plus puissant, que Claude consulte aux moments clés d'une tâche. On le règle avec `/advisor`, par exemple `/advisor opus`.",
    "description_source": "Pair your main model with a stronger advisor model that Claude consults at key moments during a task.",
    "usage": "/advisor opus",
    "usage_nature": "syntaxe",
@@ -58,8 +58,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur une mission longue de herbin-trading, un modèle principal moins coûteux conseillé par Opus pourrait ménager la limite Fable, au prix de jetons supplémentaires à mesurer. `/advisor` enregistre le conseiller dans `advisorModel` pour toutes les sessions ; `claude --advisor opus` ne vaut que pour la session lancée."
+    "verdict": "utiliser",
+    "pourquoi": "C'est déjà la formule validée pour les missions de construction de trading-sim : Sonnet avec Opus en conseiller, réglé par `regler-advisor` ou `mission-dev --advisor`. Le conseiller ne survit pas à un `/clear` ni à une reprise de session : il faut le réactiver avant chaque mission qui l'utilise."
    },
    "sources": [
     {
@@ -72,7 +72,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -85,10 +85,58 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur une mission longue de herbin-trading, un modèle principal moins coûteux conseillé par Opus pourrait ménager la limite Fable, au prix de jetons supplémentaires à mesurer. `/advisor` enregistre le conseiller dans `advisorModel` pour toutes les sessions ; `claude --advisor opus` ne vaut que pour la session lancée."
+     },
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections methode.missions et optimisation.pistes, qui montrent que l'advisor est déjà adopté, d'où le passage de `tester` à `utiliser` sans"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Adjoint au modèle principal un modèle conseiller plus puissant, que Claude consulte aux moments clés d'une tâche longue : avant de choisir une approche, sur une erreur qui revient, avant de déclarer la tâche finie. Expérimental, exécuté côté serveur, il consomme davantage de jetons ; il s'active par `/advisor`, par le réglage `advisorModel` ou par l'option `--advisor`.",
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections methode.missions et optimisation.pistes, qui montrent que l'advisor est déjà adopté, d'où le passage de `tester` à `utiliser` sans"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions dev règlent déjà Opus en conseiller via `mission-dev --advisor` et `regler-advisor`, réglage perdu au `/clear`."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Formule validée Sonnet + `/advisor opus` pour trading-sim, dans le but d'étaler la charge face à la limite Fable."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le conseiller est un modèle plus puissant que Claude consulte aux moments clés d'une tâche, en complément du modèle principal.",
+     "source": "https://code.claude.com/docs/en/advisor",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire ou redéfinit la fonctionnalité advisor."
+    },
+    {
+     "affirmation": "`mission-dev --advisor` règle Opus comme conseiller ; le conseiller ne survit pas à un `/clear`, d'où le réglage avant chaque mission.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "`mission-dev` cesse de régler le conseiller, ou le conseiller survit désormais à `/clear`."
+    },
+    {
+     "affirmation": "Pour les missions de construction de trading-sim, la formule validée est Sonnet avec Opus en conseiller (`/advisor opus`), réactivée avant chaque mission.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain abandonne cette formule pour trading-sim ou change de modèle conseiller."
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-agent-teams",
@@ -1524,7 +1572,7 @@
    "categorie": "fonctionnalites",
    "nom": "Explore the context window",
    "gabarit": "complet",
-   "description": "Simulation interactive du remplissage de la fenêtre de contexte au cours d'une session : invite système, mémoire automatique (`MEMORY.md`, 200 premières lignes ou 25 Ko), CLAUDE.md, lectures de fichiers, déclenchement des règles et des hooks. Elle montre ce que coûte chaque élément chargé automatiquement.",
+   "description": "Simulation interactive qui montre comment la fenêtre de contexte de Claude Code se remplit au cours d'une session : ce qui se charge automatiquement, ce que coûte chaque lecture de fichier, et à quel moment les règles et les hooks se déclenchent.",
    "description_source": "An interactive simulation of how Claude Code's context window fills during a session. See what loads automatically, what each file read costs, and when rules and hooks fire.",
    "usage": "ENABLE_TOOL_SEARCH=auto",
    "usage_nature": "syntaxe",
@@ -1533,7 +1581,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Avec 23 mémoires sur le projet racine et des sessions longues, voir ce qui se charge à chaque tour aiderait à alléger le contexte et donc la consommation des limites hebdomadaires."
+    "pourquoi": "Tes sessions chargent beaucoup de mémoires automatiques (environ 70 dans ~/projets) et les limites d'usage hebdomadaires reviennent comme friction. Parcourir cette simulation te montrerait ce qui pèse à chaque session, pour savoir quoi alléger."
    },
    "sources": [
     {
@@ -1546,7 +1594,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1563,11 +1611,59 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Avec 23 mémoires sur le projet racine et des sessions longues, voir ce qui se charge à chaque tour aiderait à alléger le contexte et donc la consommation des limites hebdomadaires."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est maintenu mais désormais fondé sur les sections citées (mémoires automatiques nombreuses, limites hebdomadaires), en retirant le chiffre non sourcé de 23 mémo"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Simulation interactive du remplissage de la fenêtre de contexte au cours d'une session : invite système, mémoire automatique (`MEMORY.md`, 200 premières lignes ou 25 Ko), CLAUDE.md, lectures de fichiers, déclenchement des règles et des hooks. Elle montre ce que coûte chaque élément chargé automatiquement.",
+     "raison": "recommentaire D128 : Le verdict tester est maintenu mais désormais fondé sur les sections citées (mémoires automatiques nombreuses, limites hebdomadaires), en retirant le chiffre non sourcé de 23 mémo"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "source"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Mémoire automatique très utilisée (environ 70 mémoires dans ~/projets), donc beaucoup de contenu chargé d'office."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes observées."
+    }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La page propose une simulation interactive du remplissage de la fenêtre de contexte de Claude Code, montrant ce qui se charge automatiquement, le coût des lectures de fichiers et le déclenchement des règles et des hooks.",
+     "source": "https://code.claude.com/docs/en/context-window",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page est retirée ou ne présente plus de simulation du contexte."
+    },
+    {
+     "affirmation": "Au 04/10, environ 70 mémoires automatiques existent dans le dossier ~/projets et 7 dans ~, et la mémoire automatique est jugée très utilisée.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les mémoires automatiques sont fortement réduites ou la mémoire automatique est désactivée."
+    },
+    {
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) sont listées parmi les frictions récurrentes.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les limites d'usage cessent d'être une friction signalée dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-cross-session-messaging",
@@ -1862,7 +1958,7 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Desktop on Linux (beta)",
    "gabarit": "complet",
-   "description": "Installation de Claude Desktop sous Linux (bêta) depuis le dépôt apt d'Anthropic, pour recevoir les mises à jour avec celles du système ; Ubuntu 22.04+ ou Debian 12+. L'onglet Cowork y tourne dans une machine virtuelle QEMU/KVM, ce qui exige la virtualisation matérielle, des paquets QEMU et l'accès à `/dev/kvm`.",
+   "description": "Page de documentation qui explique comment installer et mettre à jour l'app de bureau Claude (Claude Desktop, en bêta sous Linux) sur Ubuntu et Debian. La procédure commence par l'installation des prérequis `curl` et `gnupg` avec `apt`.",
    "description_source": "Install and update the Claude desktop app on Ubuntu and Debian",
    "usage": "    sudo apt install curl gnupg",
    "usage_nature": "syntaxe",
@@ -1871,7 +1967,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Claude Desktop est installé en paquet Debian `claude-desktop` d'après `versions.json`, sur Mint 22.1 (base Ubuntu 24.04) ; la page dit comment le tenir à jour par le dépôt apt. Cowork en machine virtuelle pèserait sur 14 Gio de RAM et un A10-7300."
+    "pourquoi": "Claude Desktop est déjà installé en paquet Debian sur Linux Mint 22.1 (base Ubuntu 24.04), et tu veux en utiliser toutes les fonctionnalités utiles au développement. Vérifie que ton installation suit bien la procédure officielle de mise à jour décrite ici."
    },
    "sources": [
     {
@@ -1884,7 +1980,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1897,10 +1993,58 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Claude Desktop est installé en paquet Debian `claude-desktop` d'après `versions.json`, sur Mint 22.1 (base Ubuntu 24.04) ; la page dit comment le tenir à jour par le dépôt apt. Cowork en machine virtuelle pèserait sur 14 Gio de RAM et un A10-7300."
+     },
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il est désormais fondé sur les sections env.machine et usage.hors-machine, citées explicitement ; la mention de Cowork en machine virtuelle et"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Installation de Claude Desktop sous Linux (bêta) depuis le dépôt apt d'Anthropic, pour recevoir les mises à jour avec celles du système ; Ubuntu 22.04+ ou Debian 12+. L'onglet Cowork y tourne dans une machine virtuelle QEMU/KVM, ce qui exige la virtualisation matérielle, des paquets QEMU et l'accès à `/dev/kvm`.",
+     "raison": "recommentaire D128 : Le verdict tester est conservé, mais il est désormais fondé sur les sections env.machine et usage.hors-machine, citées explicitement ; la mention de Cowork en machine virtuelle et"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Claude Desktop y figure comme installé en paquet Debian sur Linux Mint 22.1, base Ubuntu 24.04 : la page concerne directement cette installation."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Sylvain déclare vouloir utiliser toutes les fonctionnalités utiles de Claude Desktop pour ses projets."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "La page documente l'installation et la mise à jour de l'app de bureau Claude sur Ubuntu et Debian.",
+     "source": "https://code.claude.com/docs/en/desktop-linux",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page est retirée ou ne couvre plus Ubuntu et Debian."
+    },
+    {
+     "affirmation": "Claude Desktop est installé en paquet Debian sur une machine Linux Mint 22.1 à base Ubuntu 24.04.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Claude Desktop est désinstallé ou la machine change de système."
+    },
+    {
+     "affirmation": "Sylvain veut utiliser toutes les fonctionnalités de Claude Desktop utiles au développement de ses projets.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain déclare abandonner Claude Desktop."
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-desktop-scheduled-tasks",
@@ -2062,7 +2206,7 @@
    "categorie": "fonctionnalites",
    "nom": "Fullscreen rendering",
    "gabarit": "complet",
-   "description": "Autre moteur de rendu du CLI qui dessine l'interface sur tout le terminal, comme `vim` : plus de scintillement, mémoire stable dans les longues conversations et prise en charge de la souris. Le gain est le plus net dans les terminaux lents à rafraîchir, dont tmux. Aperçu de recherche.",
+   "description": "Mode de rendu de Claude Code plus fluide et sans scintillement, avec prise en charge de la souris et une consommation mémoire stable dans les longues conversations. Il s'active au lancement avec la variable d'environnement `CLAUDE_CODE_NO_FLICKER=1 claude`.",
    "description_source": "Enable a smoother, flicker-free rendering mode with mouse support and stable memory usage in long conversations.",
    "usage": "CLAUDE_CODE_NO_FLICKER=1 claude",
    "usage_nature": "syntaxe",
@@ -2071,7 +2215,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions tournent sous tmux et peuvent durer longtemps, deux cas cités par la page. `/tui fullscreen` enregistre le réglage `tui` pour les sessions suivantes ; `CLAUDE_CODE_NO_FLICKER=1 claude` l'essaie sur un seul lancement."
+    "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` dans des sessions tmux, et la machine est assez limitée en RAM pour que des sessions soient lancées à la demande. Essaie `CLAUDE_CODE_NO_FLICKER=1` sur une seule session et compare sa mémoire au fil d'une longue conversation avant de l'ajouter au lanceur."
    },
    "sources": [
     {
@@ -2084,7 +2228,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2097,10 +2241,64 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions tournent sous tmux et peuvent durer longtemps, deux cas cités par la page. `/tui fullscreen` enregistre le réglage `tui` pour les sessions suivantes ; `CLAUDE_CODE_NO_FLICKER=1 claude` l'essaie sur un seul lancement."
+     },
+     "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus que sur ce que dit la source (rendu sans scintillement, mémoire stable) et sur les sections env.multi-sessions et env.machine citées ; tmux, `/tui ful"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Autre moteur de rendu du CLI qui dessine l'interface sur tout le terminal, comme `vim` : plus de scintillement, mémoire stable dans les longues conversations et prise en charge de la souris. Le gain est le plus net dans les terminaux lents à rafraîchir, dont tmux. Aperçu de recherche.",
+     "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus que sur ce que dit la source (rendu sans scintillement, mémoire stable) et sur les sections env.multi-sessions et env.machine citées ; tmux, `/tui ful"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Sessions Claude Code durables reprises sous tmux, et sessions peu utilisées lancées à la demande pour économiser de la RAM."
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Machine modeste (14 Gio de RAM), donc une mémoire stable dans les longues conversations a un intérêt concret."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le mode fullscreen offre un rendu sans scintillement, la prise en charge de la souris et une mémoire stable dans les longues conversations ; il s'active par `CLAUDE_CODE_NO_FLICKER=1 claude`.",
+     "source": "https://code.claude.com/docs/en/fullscreen",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page retire ce mode, change la variable d'activation ou ne promet plus une mémoire stable."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus reprises par `claude --resume`."
+    },
+    {
+     "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande pour économiser environ 300 Mio de RAM chacune.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Toutes les sessions redémarrent automatiquement, sans contrainte de mémoire."
+    },
+    {
+     "affirmation": "La machine est un portable HP avec 14 Gio de RAM, jugée modeste.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Changement de machine ou ajout important de mémoire."
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-github-actions",
@@ -3748,7 +3946,7 @@
    "categorie": "fonctionnalites",
    "nom": "Run prompts on a schedule",
    "gabarit": "complet",
-   "description": "`/loop` relance un prompt à intervalle fixe dans la session courante (surveiller un build, une PR, un déploiement) et les outils cron programment des rappels ponctuels. Les tâches appartiennent à la conversation : elles s'arrêtent avec elle et reviennent au `--resume` si elles n'ont pas expiré.",
+   "description": "Dans une session Claude Code, `/loop` et les outils de planification cron relancent un prompt à intervalle régulier, interrogent l'état d'une tâche (un déploiement, par exemple) ou programment un rappel ponctuel. Exemple d'usage : `/loop 5m check if the deployment finished and tell me what happened`.",
    "description_source": "Use /loop and the cron scheduling tools to run prompts repeatedly, poll for status, or set one-time reminders within a Claude Code session.",
    "usage": "/loop 5m check if the deployment finished and tell me what happened",
    "usage_nature": "syntaxe",
@@ -3757,7 +3955,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, un `/loop` pourrait surveiller une campagne longue et prévenir à la fin ; la session doit rester ouverte, ce que les services systemd assurent déjà."
+    "pourquoi": "Les campagnes exhaustives de trading-sim sont lentes, car elles sont bridées dans `calculs.slice` : un `/loop` lancé dans la session qui exécute le calcul peut en vérifier l'avancement et signaler la fin. Les sessions durables tournent déjà en continu comme services systemd sous tmux, ce qui se prête à ce suivi. À essayer sur une campagne, pour voir ce que cela ajoute au suivi actuel."
    },
    "sources": [
     {
@@ -3770,7 +3968,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3783,10 +3981,68 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur herbin-trading, un `/loop` pourrait surveiller une campagne longue et prévenir à la fin ; la session doit rester ouverte, ce que les services systemd assurent déjà."
+     },
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées (trading-sim, `calculs.slice`, sessions systemd durables) au lieu du nom herbin-trading, qu'aucune source fournie ne fondait"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "`/loop` relance un prompt à intervalle fixe dans la session courante (surveiller un build, une PR, un déploiement) et les outils cron programment des rappels ponctuels. Les tâches appartiennent à la conversation : elles s'arrêtent avec elle et reviennent au `--resume` si elles n'ont pas expiré.",
+     "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées (trading-sim, `calculs.slice`, sessions systemd durables) au lieu du nom herbin-trading, qu'aucune source fournie ne fondait"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Projet prioritaire dont les campagnes exhaustives sont longues sur une machine lente : un suivi périodique de leur état y sert."
+    },
+    "env.machine": {
+     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "pourquoi": "Les calculs lourds sont bridés dans `calculs.slice`, ce qui allonge les campagnes à surveiller."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Claude Code durables sont des services systemd sous tmux qui restent ouverts, condition pour qu'une boucle de session tourne."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "`/loop` et les outils de planification cron relancent un prompt de façon répétée, interrogent un état ou posent un rappel ponctuel, à l'intérieur d'une session Claude Code.",
+     "source": "https://code.claude.com/docs/en/scheduled-tasks",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire `/loop` ou limite la planification à l'extérieur d'une session."
+    },
+    {
+     "affirmation": "Parmi les difficultés de trading-sim figure une machine lente pour les campagnes exhaustives.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les campagnes de trading-sim deviennent rapides ou passent sur une autre machine."
+    },
+    {
+     "affirmation": "Les calculs lourds (campagnes de simulation) sont bridés dans la tranche systemd `calculs.slice` (CPUWeight 20, MemoryMax 9G).",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La tranche `calculs.slice` est supprimée ou ne bride plus les campagnes."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions Claude Code cessent de tourner comme services systemd durables sous tmux."
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-security-guidance",
@@ -7773,7 +8029,7 @@
    "categorie": "fonctionnalites",
    "nom": "How large is the context window on paid Claude plans?",
    "gabarit": "complet",
-   "description": "Donne la taille de la fenêtre de contexte par modèle sur les plans payants, pour le chat, Claude Code et Cowork : 1M de jetons pour Fable 5.1, Opus 5.5 et Opus 5, 500K pour Fable 5, Opus 4.8 et Opus 4.7.",
+   "description": "Article d'aide qui indique la taille de la fenêtre de contexte sur les plans payants de Claude (Pro, Max, Team, Enterprise), pour le chat, Claude Code et Claude Cowork. La fiche cite l'identifiant de modèle `claude-opus-4-6[1m]` comme exemple d'usage ; l'extrait fourni ne donne pas les tailles elles-mêmes.",
    "description_source": "This article explains how large the context window is on paid Claude plans (Pro, Max, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
    "usage": "claude-opus-4-6[1m]",
    "usage_nature": "syntaxe",
@@ -7782,7 +8038,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Opus 5, Fable 5.1 et Opus 5.5, les trois modèles les plus utilisés, ont tous 1M ; plus la fenêtre se remplit, plus chaque tour coûte, d'où l'intérêt du `/compact` déjà tapé par Sylvain avant qu'une session grossisse."
+    "pourquoi": "Sylvain a un abonnement Max et fait tourner des sessions Claude Code durables où il tape déjà `/compact`. Lire cet article lui permet de connaître la fenêtre réelle des modèles qu'il emploie, et donc de savoir quand compacter ou repartir d'une session vidée."
    },
    "sources": [
     {
@@ -7795,7 +8051,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7808,11 +8064,59 @@
     {
      "date": "2026-10-11",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Opus 5, Fable 5.1 et Opus 5.5, les trois modèles les plus utilisés, ont tous 1M ; plus la fenêtre se remplit, plus chaque tour coûte, d'où l'intérêt du `/compact` déjà tapé par Sylvain avant qu'une session grossisse."
+     },
+     "raison": "recommentaire D128 : Les tailles par modèle et le classement des modèles les plus utilisés, absents des sources, sont retirés ; le verdict tester repose désormais sur le plan Max et l'usage de `/compa"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Donne la taille de la fenêtre de contexte par modèle sur les plans payants, pour le chat, Claude Code et Cowork : 1M de jetons pour Fable 5.1, Opus 5.5 et Opus 5, 500K pour Fable 5, Opus 4.8 et Opus 4.7.",
+     "raison": "recommentaire D128 : Les tailles par modèle et le classement des modèles les plus utilisés, absents des sources, sont retirés ; le verdict tester repose désormais sur le plan Max et l'usage de `/compa"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
-   "exemple_impossible": "Usage = identifiant de modèle cité par l'article ; la source ne donne ni commande ni réglage où l'employer"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "pourquoi": "Abonnement Claude Max en cours : c'est l'un des plans payants couverts par l'article."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Le relevé d'usage montre que Sylvain tape `/compact`, donc il gère déjà le remplissage du contexte."
+    }
+   },
+   "exemple_impossible": "Usage = identifiant de modèle cité par l'article ; la source ne donne ni commande ni réglage où l'employer",
+   "provenance": [
+    {
+     "affirmation": "L'article explique la taille de la fenêtre de contexte sur les plans payants Pro, Max, Team et Enterprise, pour le chat, Claude Code et Claude Cowork.",
+     "source": "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'article est retiré ou ne couvre plus Claude Code ou le plan Max."
+    },
+    {
+     "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain ne renouvelle pas le Max et passe à un plan gratuit."
+    },
+    {
+     "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
+    }
+   ]
   },
   {
    "id": "claude-fonctionnalites-page-9487310-what-are-artifacts-and-how-do-i-use-them",
