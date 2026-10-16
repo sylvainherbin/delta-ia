@@ -1,0 +1,18 @@
+# Delta — classement préalable de la veille quotidienne sur la clé « delta » (A1), lu par scripts/classement.py.
+# Décision du 15/10/2026 (plan d'usage des crédits API, priorité 4). Aucun secret ici : la clé reste au trousseau, lue par A1.
+#
+# Réglage réversible : `mode = "aucun"` rend le passage identique à celui d'avant (aucun appel, aucun fichier écrit).
+#   "batch"  : un lot par périmètre (Message Batches, tarif × 0,5) soumis par A1 juste après fetch.py, relevé avant la synthèse ;
+#              lot non terminé à temps : l'agent classe seul, comme avant, et le lot est relevé (donc compté) au passage suivant.
+#   "direct" : un appel `claude-cle --usage <usage>` par périmètre (tarif plein, réponse immédiate).
+# Contrat commun A1 : la première dépense mesurée est présentée à Sylvain par Delta-pilote avant d'aller au-delà d'un essai ;
+# passer à "batch" pour la chaîne de nuit vient après cette présentation.
+mode = "aucun"
+usage = "veille-delta-ia"            # nom d'usage dans le registre A1 (relevé : `operer credits releve`)
+modele = "claude-sonnet-5-5"
+max_tokens = 8000
+contenu_max = 1500                   # caractères de `contenu` repris par nouveauté
+attente_s = 300                      # `relever` : attente maximale d'un lot (sous la limite de 10 min d'une commande Bash)
+intervalle_s = 30
+claude_cle = "~/.local/bin/claude-cle"
+a1_src = "../discipline/src"         # paquet `delta.operer.credits_api` (A1), relatif à la racine du dépôt
