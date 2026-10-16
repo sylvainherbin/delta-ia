@@ -7675,7 +7675,7 @@
    "categorie": "commandes",
    "nom": "/skills",
    "gabarit": "complet",
-   "description": "Liste les skills disponibles, filtrables par nom, description ou source. `t` trie par nombre de jetons, Espace ou Entrée fait tourner la visibilité d'un skill pour Claude et le menu `/`, Échap enregistre. Les skills de plugin et ceux marqués `disable-model-invocation: true` ne se modifient pas ici.",
+   "description": "`/skills` liste les skills disponibles, filtrables en tapant un nom, une description ou une source. `t` trie la liste par nombre de jetons, Espace ou Entrée fait tourner la visibilité d'un skill pour Claude et pour le menu `/`, et Échap enregistre puis ferme. On ne peut pas changer ainsi les skills de plugin, ceux dont le frontmatter fixe `disable-model-invocation: true`, ni ceux visés par une entrée `skillOverrides` dans les réglages gérés ou via `--settings`.",
    "description_source": "List available skills. Type to filter the list by name, description, or source. Press t to sort by token count, Space or Enter to cycle a skill's visibility to Claude and the / menu, and Esc to save and close. You can't cycle plugin skills, skills whose frontmatter sets disable-model-invocation: true, or skills with a skillOverrides entry in managed settings or the --settings flag",
    "usage": "/skills",
    "usage_nature": "syntaxe",
@@ -7684,7 +7684,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Après `/skill-doctor`, masquer à Claude les skills dormants (`latex-manuscrit`, `verif-numerique`, skills claude.ai jamais invoqués) allège le contexte sans les supprimer."
+    "pourquoi": "Les skills perso `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués, et la plupart des skills claude.ai synchronisés non plus. CONTEXTE.md les classe comme dormants, à revoir ou à supprimer. `/skills` permet de trier ces skills par coût en jetons et de les masquer à Claude sans les supprimer : à essayer une fois pour voir ce qu'ils pèsent."
    },
    "sources": [
     {
@@ -7697,7 +7697,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7714,11 +7714,65 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Après `/skill-doctor`, masquer à Claude les skills dormants (`latex-manuscrit`, `verif-numerique`, skills claude.ai jamais invoqués) allège le contexte sans les supprimer."
+     },
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il s'appuie désormais sur les sections de CONTEXTE.md qui établissent les skills dormants (config.claude-code.skills, optimisation.pistes),"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Liste les skills disponibles, filtrables par nom, description ou source. `t` trie par nombre de jetons, Espace ou Entrée fait tourner la visibilité d'un skill pour Claude et le menu `/`, Échap enregistre. Les skills de plugin et ceux marqués `disable-model-invocation: true` ne se modifient pas ici.",
+     "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais il s'appuie désormais sur les sections de CONTEXTE.md qui établissent les skills dormants (config.claude-code.skills, optimisation.pistes),"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Inventaire des skills perso et claude.ai synchronisés, avec leur usage observé : plusieurs ne sont jamais invoqués."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "La piste 4 demande de revoir, supprimer ou rendre déclenchables les skills dormants."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/skills` liste les skills disponibles ; `t` trie par nombre de jetons, et Espace ou Entrée fait tourner la visibilité d'un skill pour Claude et pour le menu `/`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire le tri par jetons ou le réglage de visibilité de `/skills`."
+    },
+    {
+     "affirmation": "Les skills de plugin et ceux dont le frontmatter fixe `disable-model-invocation: true` ne peuvent pas changer de visibilité depuis `/skills`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation lève ces exceptions."
+    },
+    {
+     "affirmation": "Les skills perso `latex-manuscrit` et `verif-numerique` ne sont jamais invoqués ; parmi les skills claude.ai synchronisés, seul ask-the-council l'a été (une fois).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé montre ces skills invoqués, ou ils sont supprimés."
+    },
+    {
+     "affirmation": "Les skills dormants `latex-manuscrit` et `verif-numerique` sont à revoir, à supprimer, ou à rendre déclenchables sur trading-sim.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 4 est traitée ou retirée de CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-stats",
@@ -7978,7 +8032,7 @@
    "categorie": "commandes",
    "nom": "/subtask",
    "gabarit": "complet",
-   "description": "Lance un subagent forké : il hérite de toute la conversation, travaille en arrière-plan pendant que tu continues, et son résultat revient dans la conversation. `/fork` crée plutôt une session séparée.",
+   "description": "`/subtask <task>` lance un subagent forké : il hérite de toute la conversation, travaille en arrière-plan sur la tâche pendant que tu continues, et son résultat revient dans la conversation à la fin. `/fork` copie plutôt la conversation dans une session d'arrière-plan séparée. La commande demande Claude Code v2.1.212 ou plus récent ; si l'agent view est désactivée, elle n'est pas disponible et `/fork` garde ce comportement.",
    "description_source": "Spawn a forked subagent: a background subagent that inherits the full conversation and works on the task while you keep working. Its result returns to this conversation when it finishes. To copy the conversation into a separate background session instead, use /fork. Requires Claude Code v2.1.212 or later; on v2.1.161 through v2.1.211 this command is /fork. When agent view is turned off, /subtask isn't available and /fork keeps the forked-subagent behavior",
    "usage": "/subtask <task>",
    "usage_nature": "syntaxe",
@@ -7987,7 +8041,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur herbin-trading, confier une vérification annexe (relire un rapport d'audit, contrôler une empreinte SHA-256) sans interrompre la mission ; le coût en jetons s'ajoute à ta limite hebdomadaire."
+    "pourquoi": "Tu utilises déjà les sous-agents et ta consigne prévoit des vérifications indépendantes en parallèle. `/subtask` en lance une sans rebriefer, puisqu'il hérite de la conversation. Comme les limites d'usage sont une friction récurrente, essaie-le sur une vraie vérification et compare son coût avec un `Explore` ; vérifie d'abord avec `--help` que ta version l'offre."
    },
    "sources": [
     {
@@ -8000,7 +8054,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8017,11 +8071,75 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur herbin-trading, confier une vérification annexe (relire un rapport d'audit, contrôler une empreinte SHA-256) sans interrompre la mission ; le coût en jetons s'ajoute à ta limite hebdomadaire."
+     },
+     "raison": "recommentaire D128 : L'ancien commentaire visait herbin-trading et un coût que rien ne fondait ; le verdict tester repose maintenant sur la consigne de Sylvain sur les sous-agents et sur la friction d"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Lance un subagent forké : il hérite de toute la conversation, travaille en arrière-plan pendant que tu continues, et son résultat revient dans la conversation. `/fork` crée plutôt une session séparée.",
+     "raison": "recommentaire D128 : L'ancien commentaire visait herbin-trading et un coût que rien ne fondait ; le verdict tester repose maintenant sur la consigne de Sylvain sur les sous-agents et sur la friction d"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "exemple_origine": "compose"
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés et consigne de Sylvain : vérifications indépendantes en parallèle, pas de sous-agent pour un petit correctif."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les limites d'usage hebdomadaires sont une friction récurrente : le coût d'un fork qui hérite du contexte est à mesurer."
+    },
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "Règle globale : vérifier une commande sur la version installée (--help) avant de l'exécuter."
+    }
+   },
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/subtask lance un subagent en arrière-plan qui hérite de toute la conversation ; son résultat revient dans cette conversation quand il a fini.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le comportement de /subtask ou retire la commande."
+    },
+    {
+     "affirmation": "/subtask demande Claude Code v2.1.212 ou plus récent ; de v2.1.161 à v2.1.211 la commande s'appelle /fork, et sans agent view /subtask n'est pas disponible.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Anthropic modifie les conditions de version ou la dépendance à l'agent view."
+    },
+    {
+     "affirmation": "Consigne de Sylvain du 04/10 : vérifications indépendantes en parallèle, et aucun sous-agent pour un petit correctif.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain retire ou modifie sa consigne sur les sous-agents."
+    },
+    {
+     "affirmation": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes observées.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les limites d'usage ne sont plus une friction relevée dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Avant d'exécuter une commande de Claude Code, la règle globale demande de la vérifier sur la version installée avec --help.",
+     "source": "contexte:config.claude-code.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La règle est retirée de ~/.claude/CLAUDE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-tasks",
