@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 129,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -5056,7 +5056,7 @@
    "categorie": "commandes",
    "nom": "/mcp",
    "gabarit": "complet",
-   "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect <server>` reconnecte un serveur (`reconnect all` relance tous ceux en échec ou à authentifier), `enable` ou `disable` suivi d'un nom ou de `all` change l'état sans dialogue. En mode `-p` sans argument, affiche un résumé texte de l'état des serveurs (v2.1.205 ou plus).",
+   "description": "Gère les connexions aux serveurs MCP et leur authentification OAuth. Sans argument, ouvre la liste interactive ; `reconnect`, `enable` ou `disable` suivis d'un nom de serveur ou de `all` changent l'état sans l'ouvrir, et `reconnect all` relance tous les serveurs en échec ou à authentifier. En mode `-p` sans argument, la commande affiche un résumé texte de l'état des serveurs.",
    "description_source": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. In non-interactive mode (-p), running it with no argument prints a text summary of server status instead of opening the list",
    "usage": "/mcp [reconnect (<server>|all)|enable|disable [<server>|all]]",
    "usage_nature": "syntaxe",
@@ -5065,7 +5065,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés sans jamais servir dans Claude Code (piste 9) : `/mcp disable <server>` dans une session de dev les retirerait sans dialogue, et `/mcp reconnect delta-ia` relancerait le connecteur local s'il décroche. Sur trading-sim, couper un connecteur de compte reste une décision de Work."
+    "pourquoi": "Essai : dans une session de `~/projets/delta-ia`, `/mcp` sans argument doit montrer l'état de delta-ia et des connecteurs de compte, puis `/mcp reconnect delta-ia` le relancer s'il décroche, sans dialogue. Les connecteurs jamais appelés de la piste 9 (Gmail, Drive, Calendar, Canva, GoDaddy) pourraient s'y couper par `/mcp disable` ; sur trading-sim, c'est une décision de Work."
    },
    "sources": [
     {
@@ -5074,11 +5074,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5125,20 +5125,44 @@
      "changement": "description d'origine modifiée dans la documentation",
      "avant": "Manage MCP server connections and OAuth authentication. Run with no argument to open the interactive list, or pass reconnect, enable, or disable with a server name or all to change connection state without opening it. reconnect all retries every server that failed or needs authentication. In non-interactive mode (-p), running it with no argument prints a text summary of server status instead of opening the list; requires Claude Code v2.1.205 or later",
      "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "optimisation.pistes": {
-     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Piste 9 : connecteurs connectés mais jamais appelés dans Claude Code."
-    },
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "Connecteur MCP local `delta-ia` ; écart trading-sim sur les connecteurs de compte, question transmise à Work."
+     "pourquoi": "Connecteur local delta-ia dans ~/projets/delta-ia ; connecteurs de compte ; écart trading-sim transmis à Work."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 9 : Gmail, Drive, Calendar, Canva et GoDaddy connectés mais jamais appelés dans Claude Code."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/mcp` sans argument ouvre la liste interactive ; `reconnect`, `enable` ou `disable` avec un nom de serveur ou `all` changent l'état sans l'ouvrir ; en `-p`, un résumé texte s'affiche.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande `/mcp` change de sous-commandes ou de comportement."
+    },
+    {
+     "affirmation": "delta-ia est un serveur MCP ajouté en portée locale dans `~/projets` et `~/projets/delta-ia` ; trading-sim reçoit les connecteurs de compte, question transmise à Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le connecteur delta-ia ou l'écart trading-sim change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code (piste 9).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 9 est close ou ces connecteurs sont retirés."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-memory",
@@ -6189,16 +6213,16 @@
    "categorie": "commandes",
    "nom": "/remote-control",
    "gabarit": "complet",
-   "description": "Rend la session courante pilotable par Remote Control depuis claude.ai. Nécessite un abonnement claude.ai. Alias : `/rc`.",
+   "description": "Rend la session courante pilotable par Remote Control depuis claude.ai. Sans connexion au compte, la commande indique qu'il faut un abonnement claude.ai et comment se connecter. Alias : `/rc`.",
    "description_source": "Make this session available for Remote Control from claude.ai. Running it while signed out prints that Remote Control requires a claude.ai subscription and tells you how to sign in. Alias: /rc",
    "usage": "/remote-control",
    "usage_nature": "syntaxe",
    "exemple": "/remote-control",
-   "disponibilite": "Abonnement claude.ai",
+   "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu la tapes déjà ; c'est le lien entre l'iPhone et une session lancée sans l'option `--remote-control`, par exemple une session `dev` ou `school` démarrée à la demande."
+    "pourquoi": "Tu la tapes déjà ; elle relie à l'iPhone une session lancée sans l'option `--remote-control`, comme une session `dev` ou `school` démarrée à la demande."
    },
    "sources": [
     {
@@ -6207,11 +6231,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6270,9 +6294,13 @@
      "changement": "description d'origine modifiée dans la documentation",
      "avant": "Make this session available for Remote Control from claude.ai. Running it while signed out prints that Remote Control requires a claude.ai subscription and tells you how to sign in; before v2.1.206 it reported Unknown command: /remote-control. Alias: /rc",
      "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -6280,10 +6308,30 @@
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande ; pilotage depuis l'iPhone par Remote Control."
+     "pourquoi": "Sessions `dev` et `school` lancées à la demande ; pilotage depuis l'iPhone par Remote Control."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/remote-control` (alias `/rc`) rend la session courante pilotable par Remote Control depuis claude.ai ; sans connexion, elle indique qu'un abonnement claude.ai est requis.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande change de nom, d'alias ou de condition."
+    },
+    {
+     "affirmation": "`/remote-control` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé des commandes tapées ne la cite plus."
+    },
+    {
+     "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande ; les sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'architecture des sessions change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-remote-env",
@@ -6338,7 +6386,7 @@
    "categorie": "commandes",
    "nom": "/rename",
    "gabarit": "complet",
-   "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique. Utilisable aussi avec `-p`. Depuis la v2.1.221, les caractères de contrôle ou invisibles sont remplacés par des espaces, le nom est limité à 200 caractères et un nom vide après ce nettoyage est refusé ; une autre session active portant le même nom reçoit une variante.",
+   "description": "Renomme la session courante et affiche le nom dans la barre de prompt ; sans argument, génère un nom à partir de l'historique, et fonctionne aussi avec `-p`. Depuis la v2.1.221, les caractères de contrôle ou invisibles deviennent des espaces, le nom est limité à 200 caractères et un nom vide après ce nettoyage est refusé.",
    "description_source": "Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history. Also available in non-interactive mode (-p). From every rename surface, including claude.ai and the desktop app, Claude Code replaces control and invisible characters in the new name with spaces and caps the name at 200 characters. If the name is empty once invisible characters are removed, Claude Code rejects it and shows That name is empty once invisible characters are removed. Usage: /rename <name>. The character replacement and length cap require Claude Code v2.1.221 or later",
    "usage": "/rename [name]",
    "usage_nature": "syntaxe",
@@ -6347,7 +6395,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions durables sont déjà nommées par `--remote-control <nom>` dans leur service systemd ; renommer en cours de route n'apporte rien à ce flux."
+    "pourquoi": "Tes sessions durables sont déjà nommées par `--remote-control <nom>` dans leur service systemd ; les renommer en cours de route n'apporte rien à ce flux."
    },
    "sources": [
     {
@@ -6356,11 +6404,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6385,9 +6433,13 @@
     {
      "date": "2026-10-15",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
@@ -6474,7 +6526,7 @@
    "categorie": "commandes",
    "nom": "/review",
    "gabarit": "complet",
-   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument, avec les mêmes niveaux d'effort et options, dont `--max-findings n|all|default`. Sans niveau, reprend le dernier niveau de `low` à `max` que tu as tapé ; `/code-review ultra` lance la revue approfondie dans le cloud.",
+   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument (`/review 1234`), avec les mêmes niveaux d'effort et options. Sans niveau, reprend le dernier niveau de `low` à `max` tapé ; `/code-review ultra` lance la revue approfondie dans le cloud. Avant la v2.1.223, `/review` était une revue distincte, en un passage et en lecture seule, d'une PR GitHub.",
    "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review locally with /code-review for the exact rules. For a deep cloud review, use /code-review ultra. Before v2.1.223, /review was a separate command that ran a single-pass, read-only review of a GitHub pull request by number, listing open PRs to pick from when run with no argument; from v2.1.186 through v2.1.201, it ran the same multi-agent engine as /code-review medium",
    "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [--max-findings n|all|default] [pr#|branch|path]",
    "usage_nature": "syntaxe",
@@ -6483,7 +6535,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Alias ; la recommandation porte sur `/code-review`, traitée dans le lot skills."
+    "pourquoi": "Simple alias : la recommandation porte sur la fiche `/code-review` du lot skills."
    },
    "sources": [
     {
@@ -6492,7 +6544,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -6517,10 +6569,15 @@
     {
      "date": "2026-10-16",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "498f4e02ed7294b7eb451db1df6c96dd55252066",
-   "contexte_sections": {}
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {},
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-rewind",
