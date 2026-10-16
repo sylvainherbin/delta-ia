@@ -1288,7 +1288,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1337,6 +1337,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -1346,7 +1350,21 @@
      "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La commande codex ouvre une interface terminal interactive.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-agents",
@@ -2062,7 +2080,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2115,6 +2133,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -2128,7 +2150,27 @@
      "pourquoi": "D70 exécute codex exec avec --ignore-user-config."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "codex exec exécute une tâche sans interface interactive ; --worktree est incompatible avec --ignore-user-config.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "OPÉRER prépare les worktrees et mission-codex fixe explicitement le modèle et l’effort.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    },
+    {
+     "affirmation": "La chaîne D70 exécute les passages Codex avec codex exec et des permissions explicites.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-execpolicy",
@@ -3032,7 +3074,7 @@
    "categorie": "commandes",
    "nom": "codex remote-control",
    "gabarit": "complet",
-   "description": "La commande expérimentale `codex remote-control` gère le pilotage distant du serveur applicatif local ; sans sous-commande, elle le lance au premier plan. `start` lance le daemon, `stop` l'arrête et `pair` génère un code d'appairage temporaire.",
+   "description": "La commande expérimentale `codex remote-control` démarre le pilotage distant via le serveur géré en arrière-plan lorsqu’il est disponible, avec repli au premier plan. `start` lance le daemon, `stop` l’arrête et `pair` produit un code temporaire.",
    "description_source": "Run or manage remote control for the local app-server, or create a short-lived pairing code. (maturité : Experimental)",
    "usage": "codex remote-control",
    "usage_nature": "syntaxe",
@@ -3054,7 +3096,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3099,16 +3141,34 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone utilisés ; conflit 409 observé avec l’app ouverte."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "codex remote-control start lance le daemon local avec le pilotage distant activé.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-resume",
@@ -3138,7 +3198,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3179,6 +3239,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3188,7 +3252,21 @@
      "pourquoi": "La CLI sous tmux est utilisée et pilotée depuis l’iPhone."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "codex resume reprend une session interactive antérieure.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-review",
@@ -3218,7 +3296,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3247,6 +3325,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3260,7 +3342,27 @@
      "pourquoi": "La CLI sous tmux est utilisée et pilotée depuis l’iPhone."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "codex review lance une revue non interactive des changements.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-sandbox",
@@ -5872,7 +5974,7 @@
    "categorie": "commandes",
    "nom": "/reasoning",
    "gabarit": "complet",
-   "description": "Choisit le niveau d'effort de raisonnement pour la conversation courante. Le choix agit sur la profondeur et la consommation sans changer de modèle.",
+   "description": "Choisit l’effort de raisonnement pour la conversation courante dans le tableau des commandes de la surface IDE. La section CLI documente le choix de l’effort via `/model`.",
    "description_source": "Choose the reasoning effort for the current chat.",
    "usage": "/reasoning",
    "usage_nature": "syntaxe",
@@ -5880,8 +5982,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "Tes profils `audit` et `rapide` distinguent xhigh et low sur Sol ; cette commande permet d'ajuster ponctuellement l'effort sans réécrire les profils."
+    "verdict": "ignorer",
+    "pourquoi": "Le contexte décrit Codex en CLI sous tmux, sans usage de l’IDE ; aucun essai de `/reasoning` sur une surface documentée n’est établi."
    },
    "sources": [
     {
@@ -5894,7 +5996,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5915,13 +6017,26 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tes profils `audit` et `rapide` distinguent xhigh et low sur Sol ; cette commande permet d'ajuster ponctuellement l'effort sans réécrire les profils."
+     },
+     "raison": "Relecture D127 : justification alignée sur les sources et le contexte actuel."
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "config.codex.profils": {
-     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Les profils audit et rapide différencient l'effort de raisonnement."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé en CLI sous tmux ; aucun usage de l’IDE n’est décrit."
     }
    },
    "exemple_origine": "source"
@@ -6158,7 +6273,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6179,6 +6294,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6188,7 +6307,21 @@
      "pourquoi": "La revue locale complète l'audit croisé avant PR."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "/review demande une revue de l’arbre de travail.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-sandbox-add-read-dir",
@@ -6442,7 +6575,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6471,6 +6604,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -6484,7 +6621,27 @@
      "pourquoi": "La CLI sous tmux et remote control depuis l'iPhone sont utilisés ; les fonctionnalités restent à mieux connaître."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "/status affiche notamment modèle, permissions, racines inscriptibles et usage de la session.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    },
+    {
+     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-statusline",
@@ -6844,7 +7001,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6873,6 +7030,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -6890,7 +7051,33 @@
      "pourquoi": "Sylvain demande de signaler les limites d'usage, offres et remises à zéro disponibles."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "/usage propose l’activité du compte et les remises à zéro disponibles.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change ou retire le comportement décrit."
+    },
+    {
+     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    },
+    {
+     "affirmation": "Trading-sim exige une validation par jalon ; les autres projets sont en FULL_AUTO.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    },
+    {
+     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+    }
+   ]
   },
   {
    "id": "codex-commandes-vim",
