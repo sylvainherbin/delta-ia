@@ -43,27 +43,29 @@ def sortie(racine: Path, perimetre: str = "claude", jour: str = JOUR) -> dict:
 
 
 class FauxA1:
-    """Faux `credits_api` : soumettre_lot(requetes, usage=…) -> id ; relever_lot(id, usage=…) -> None puis résultats."""
+    """Faux `credits_api` à la signature réelle d'A1 : soumettre_lot(usage, requetes) -> {id, usage, statut} ;
+    relever_lot(usage, id) -> {statut: in_progress, …} puis {statut: ended, comptes, resultats}."""
 
     def __init__(self, pret_apres: int = 0, cout: float | None = 0.0123, texte: str | None = None):
         self.requetes, self.releves, self.pret_apres, self.cout = [], 0, pret_apres, cout
         self.texte = json.dumps(REPONSE) if texte is None else texte
 
-    def soumettre_lot(self, requetes, usage=None):
+    def soumettre_lot(self, usage, requetes, *, base_url=None, maintenant=None):
         assert usage == "veille-delta-ia"
         self.requetes.append(requetes)
-        return {"id": f"lot-{len(self.requetes)}"}
+        return {"id": f"lot-{len(self.requetes)}", "usage": usage, "statut": "in_progress"}
 
-    def relever_lot(self, lot, usage=None):
+    def relever_lot(self, usage, lot_id, *, base_url=None, maintenant=None):
+        assert usage == "veille-delta-ia"
         self.releves += 1
         if self.releves <= self.pret_apres:
-            return None
+            return {"statut": "in_progress", "comptes": 0, "resultats": []}
         res = [{"custom_id": r["custom_id"], "result": {"type": "succeeded", "message": {
             "content": [{"type": "text", "text": f"```json\n{self.texte}\n```"}]}}} for r in self.requetes[-1]]
         if self.cout is not None:
             for r in res:
                 r["cout_usd"] = self.cout
-        return res
+        return {"statut": "ended", "comptes": len(res), "resultats": res}
 
 
 def test_config_livree_desactivee():
@@ -132,7 +134,7 @@ def test_batch_cout_non_mesure_jamais_zero(racine):
 
 
 def test_batch_signature_inattendue(racine):
-    module = SimpleNamespace(soumettre_lot=lambda a, b, c: "x", relever_lot=lambda lot: None)
+    module = SimpleNamespace(soumettre_lot=lambda a: "x", relever_lot=lambda lot: None)
     fab = lambda: cl.LotA1(cfg("batch"), racine, module=module)
     assert cl.soumettre(racine, cfg("batch"), "claude", JOUR, lot_a1_fabrique=fab) == 1
     assert "signature inattendue" in sortie(racine)["raison"]

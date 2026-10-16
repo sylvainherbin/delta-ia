@@ -25,7 +25,6 @@ Clé jamais lue ni transmise ici : A1 la lit au trousseau (`apiKeyHelper` de `cl
 from __future__ import annotations
 
 import argparse
-import inspect
 import json
 import os
 import re
@@ -204,14 +203,10 @@ def charger_a1(cfg: dict, racine: Path):
     return credits_api
 
 
-def _appel(fonction, premier, usage: str):
-    """Appelle une fonction d'A1 avec `usage` nommé quand sa signature le prend. Signature inattendue : ErreurA1."""
+def _appel(fonction, usage: str, argument):
+    """Appelle une fonction d'A1 sous sa signature réelle `f(usage, argument)`. Signature inattendue : ErreurA1."""
     try:
-        params = inspect.signature(fonction).parameters
-    except (TypeError, ValueError):
-        params = {}
-    try:
-        return fonction(premier, usage=usage) if "usage" in params else fonction(premier)
+        return fonction(usage, argument)
     except TypeError as exc:
         raise ErreurA1(f"A1 : signature inattendue de {getattr(fonction, '__name__', fonction)} : {exc}") from None
     except Exception as exc:
@@ -220,28 +215,28 @@ def _appel(fonction, premier, usage: str):
 
 
 class LotA1:
-    """Interface attendue d'A1 : `soumettre_lot(requetes, usage=…)` rend l'id du lot (chaîne ou dict avec `id`) ;
-    `relever_lot(id)` rend None tant que le lot n'est pas terminé, puis ses résultats au format Message Batches
-    (`[{custom_id, result: {type, message}}]`, ou dict qui les porte sous `resultats` ou `results`), avec `cout_usd`
-    par résultat quand A1 le donne (coût compté au registre à 50 %)."""
+    """Interface d'A1 (`delta.operer.credits_api`) : `soumettre_lot(usage, requetes)` rend `{id, usage, statut}` ;
+    `relever_lot(usage, id)` rend `{statut, comptes, resultats}`, `statut` différent de `ended` tant que le lot n'est pas
+    terminé, puis les résultats au format Message Batches (`[{custom_id, result: {type, message}}]`). A1 compte la
+    dépense au registre (50 % du tarif public) au relevé ; `cout_usd` par résultat seulement quand A1 le donne."""
 
     def __init__(self, cfg: dict, racine: Path, module=None):
         self.usage = cfg["usage"]
         self.api = module or charger_a1(cfg, racine)
 
     def soumettre(self, requetes: list[dict]) -> str:
-        r = _appel(self.api.soumettre_lot, requetes, self.usage)
+        r = _appel(self.api.soumettre_lot, self.usage, requetes)
         lot = r.get("id") if isinstance(r, dict) else r
         if not isinstance(lot, str) or not lot:
             raise ErreurA1(f"A1 : soumettre_lot sans id de lot ({type(r).__name__})")
         return lot
 
     def relever(self, lot: str) -> list[dict] | None:
-        r = _appel(self.api.relever_lot, lot, self.usage)
+        r = _appel(self.api.relever_lot, self.usage, lot)
         if r is None:
             return None
         if isinstance(r, dict):
-            if r.get("processing_status") == "in_progress" or r.get("statut") == "en_cours":
+            if r.get("statut", "ended") != "ended" or r.get("processing_status") == "in_progress":
                 return None
             r = r.get("resultats", r.get("results"))
         if not isinstance(r, list):
