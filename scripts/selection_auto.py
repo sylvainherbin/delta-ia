@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import fcntl
 import os
+import re
 import subprocess
 import sys
 from datetime import date, datetime
@@ -42,34 +43,62 @@ def valider(racine: Path) -> None:
         commande(racine, sys.executable, "-B", "scripts/valider.py", "--perimetre", perimetre)
 
 
+def est_selection(chemin: str) -> bool:
+    """Domaine public : les deux sorties de toute semaine, jamais les retours privés."""
+    return re.fullmatch(r"rapports/selection/[0-9]{4}-W[0-9]{2}\.(json|md)", chemin) is not None
+
+
+def chemins_git(racine: Path, *args: str) -> set[str]:
+    return set(filter(None, git(racine, *args, "-z").split("\0")))
+
+
+def changements_selection(racine: Path) -> set[str]:
+    modifies = chemins_git(racine, "diff", "--name-only")
+    modifies.update(chemins_git(racine, "diff", "--cached", "--name-only"))
+    modifies.update(chemins_git(racine, "ls-files", "--others", "--exclude-standard"))
+    if any(not est_selection(c) for c in modifies):
+        raise RuntimeError("arbre ou index modifié hors sélection ; aucune publication")
+    return modifies
+
+
+def verifier_sorties(dossier: Path, semaines: set[str], *, completer: bool = False) -> list[str]:
+    """Vérifie toutes les semaines embarquées ; répare un bref interrompu avant commit seulement."""
+    chemins = []
+    for semaine in sorted(semaines):
+        doc = sel.lire_figee(dossier, semaine)
+        if doc is None:
+            raise RuntimeError(f"sélection {semaine} incomplète : JSON absent")
+        if completer:
+            sel.ecrire_markdown(dossier, doc)
+        bref = dossier / f"{semaine}.md"
+        if not bref.is_file() or bref.read_text(encoding="utf-8") != sel.rendre_markdown(doc):
+            raise RuntimeError(f"sélection {semaine} incomplète ou bref incohérent")
+        chemins.extend(str(sel.DOSSIER / f"{semaine}.{ext}") for ext in ("json", "md"))
+    return chemins
+
+
 def publier(racine: Path, jour: date) -> None:
     semaine = sem.semaine_de(jour)
-    chemins = [str(sel.DOSSIER / f"{semaine}.{ext}") for ext in ("json", "md")]
     message = f"delta(selection): {semaine} — sélection hebdomadaire"
     dossier = racine / sel.DOSSIER
     if git(racine, "branch", "--show-current") != "main":
         raise RuntimeError("publication réservée à main après fusion")
-    # Autorise seulement les sorties de cette semaine restées après un échec avant commit.
-    modifies = set(git(racine, "diff", "--name-only").splitlines())
-    modifies.update(git(racine, "diff", "--cached", "--name-only").splitlines())
-    modifies.update(git(racine, "ls-files", "--others", "--exclude-standard").splitlines())
-    if modifies - set(chemins):
-        raise RuntimeError("arbre ou index modifié hors sélection ; aucune publication")
+    # selection.py produit les fichiers ; ce service publie toutes les semaines en attente.
+    modifies = changements_selection(racine)
     distant = bool(git(racine, "remote"))
     if distant:
         if "origin" not in git(racine, "remote").splitlines():
             raise RuntimeError("distant origin absent")
         git(racine, "fetch", "origin", "main")
         if git(racine, "rev-list", "--count", "origin/main..HEAD") != "0":
+            publies = chemins_git(racine, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD")
             # Reprise après échec du push : jamais de commit étranger dans la publication.
             if (git(racine, "rev-parse", "HEAD^") != git(racine, "rev-parse", "origin/main")
                     or git(racine, "log", "-1", "--format=%s") != message
-                    or set(git(racine, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines()) != set(chemins)
+                    or not publies or any(not est_selection(c) for c in publies)
                     or modifies):
                 raise RuntimeError("commit local non publié ou divergence ; intervention requise")
-            doc = sel.lire_figee(dossier, semaine)
-            if doc is None or (dossier / f"{semaine}.md").read_text(encoding="utf-8") != sel.rendre_markdown(doc):
-                raise RuntimeError("commit de sélection incomplet ou bref incohérent")
+            verifier_sorties(dossier, {semaine} | {Path(c).stem for c in publies})
             valider(racine)
             git(racine, "push", "origin", f"{git(racine, 'rev-parse', 'HEAD')}:refs/heads/main")
             return
@@ -79,9 +108,11 @@ def publier(racine: Path, jour: date) -> None:
     doc, _ = sel.obtenir(racine, dossier, jour, sel.TAILLE_DEFAUT, sel.REVOIR_APRES_DEFAUT)
     if doc["semaine"] != semaine:
         raise RuntimeError("semaine produite incohérente")
+    chemins = verifier_sorties(dossier, {semaine} | {Path(c).stem for c in changements_selection(racine)}, completer=True)
     valider(racine)
+    changements_selection(racine)
     git(racine, "add", "--", *chemins)
-    stages = set(git(racine, "diff", "--cached", "--name-only").splitlines())
+    stages = chemins_git(racine, "diff", "--cached", "--name-only")
     if stages - set(chemins):
         raise RuntimeError("index modifié hors sélection ; aucun commit")
     if stages:

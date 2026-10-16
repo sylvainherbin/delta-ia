@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 import selection_auto as auto
+import retour as retour_cli
 from deltalib import selection as sel
 from test_selection import depot, douze, lancer
 
@@ -65,6 +66,45 @@ def test_production_publication_et_relance_sans_nouveau_commit(publication):
     assert not git(racine, "status", "--porcelain")
 
 
+@pytest.mark.parametrize("etat", ["non-suivi", "index", "modifie", "bref-manquant"])
+def test_publication_prend_en_charge_la_semaine_anterieure(publication, etat):
+    racine, distant = publication
+    assert lancer(racine, "--json") == 0  # même appel que la Console, semaine W42
+    dossier = racine / sel.DOSSIER
+    anciens = [f"rapports/selection/2026-W42.{ext}" for ext in ("json", "md")]
+    if etat in ("index", "modifie"):
+        git(racine, "add", "--", *anciens)
+    if etat == "modifie":
+        git(racine, "commit", "-m", "Ancienne sélection publiée")
+        git(racine, "push", "origin", "main")
+        assert lancer(racine, "--json", "--refaire", "--taille", "3") == 0
+    if etat == "bref-manquant":
+        (dossier / "2026-W42.md").unlink()
+    figee = (dossier / "2026-W42.json").read_bytes()
+
+    auto.executer(racine, LUNDI)
+
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD")
+    assert set(git(racine, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines()) == {
+        *anciens, *(f"rapports/selection/{SEMAINE}.{ext}" for ext in ("json", "md"))}
+    assert (dossier / "2026-W42.json").read_bytes() == figee
+    assert git(distant, "show", "main:rapports/selection/2026-W42.json") == figee.decode().strip()
+    assert git(distant, "show", "main:rapports/selection/2026-W42.md") == sel.rendre_markdown(
+        json.loads(figee)).strip()
+    assert not git(racine, "status", "--porcelain")
+
+
+def test_semaine_courante_deja_publiee_et_ancienne_encore_locale(publication):
+    racine, distant = publication
+    auto.executer(racine, LUNDI)
+    assert lancer(racine, "--json") == 0
+    auto.executer(racine, LUNDI)
+    assert git(racine, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines() == [
+        "rapports/selection/2026-W42.json", "rapports/selection/2026-W42.md"]
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD")
+    assert not git(racine, "status", "--porcelain")
+
+
 def test_aucune_production_avant_le_19(publication):
     racine, distant = publication
     avant = git(distant, "rev-parse", "main")
@@ -86,12 +126,14 @@ def test_horloge_de_paris_meme_si_le_jour_utc_est_encore_dimanche(monkeypatch):
     assert appels == [LUNDI]
 
 
-@pytest.mark.parametrize("etat", ["non-suivi", "index", "commit", "branche"])
+@pytest.mark.parametrize("etat", ["non-suivi", "modifie", "index", "commit", "branche"])
 def test_refus_de_publier_du_travail_etranger(publication, etat):
     racine, distant = publication
     avant = git(distant, "rev-parse", "main")
     if etat == "branche":
         git(racine, "checkout", "-b", "mission")
+    elif etat == "modifie":
+        (racine / "profil.yaml").write_text("priorites: []\n")
     else:
         (racine / "autre.txt").write_text("travail étranger")
         if etat in ("index", "commit"):
@@ -102,6 +144,33 @@ def test_refus_de_publier_du_travail_etranger(publication, etat):
         auto.executer(racine, LUNDI)
     assert not (racine / sel.DOSSIER).exists()
     assert git(distant, "rev-parse", "main") == avant
+
+
+def test_ancienne_selection_ne_permet_pas_de_publier_un_fichier_etranger(publication):
+    racine, distant = publication
+    assert lancer(racine, "--json") == 0
+    (racine / "profil.yaml").write_text("priorites: []\n")
+    avant = git(distant, "rev-parse", "main")
+    with pytest.raises(RuntimeError, match="hors sélection"):
+        auto.executer(racine, LUNDI)
+    assert git(racine, "rev-parse", "HEAD") == avant
+    assert git(distant, "rev-parse", "main") == avant
+    assert not fichiers(racine)[0].exists()
+
+
+@pytest.mark.parametrize("nom", ["2026-W42.json.bak", "2026-W42.txt", "notes.md", "retours.yaml", "retours.yaml.lock"])
+def test_domaine_ne_couvre_pas_tout_le_dossier(publication, nom):
+    racine, distant = publication
+    dossier = racine / sel.DOSSIER
+    dossier.mkdir(parents=True)
+    chemin = dossier / nom
+    chemin.write_text("[]\n")
+    # Même un fichier privé indexé par erreur ne doit pas être publié.
+    git(racine, "add", "-f", "--", str(chemin.relative_to(racine)))
+    avant = git(distant, "rev-parse", "main")
+    with pytest.raises(RuntimeError, match="hors sélection"):
+        auto.executer(racine, LUNDI)
+    assert git(racine, "rev-parse", "HEAD") == git(distant, "rev-parse", "main") == avant
 
 
 def test_validation_en_echec_ne_commite_ni_ne_pousse(publication):
@@ -116,8 +185,11 @@ def test_validation_en_echec_ne_commite_ni_ne_pousse(publication):
     assert git(racine, "rev-parse", "HEAD") == git(distant, "rev-parse", "main") == avant
 
 
-def test_reprise_du_seul_commit_apres_echec_push(publication):
+@pytest.mark.parametrize("ancienne", [False, True])
+def test_reprise_du_seul_commit_apres_echec_push(publication, ancienne):
     racine, distant = publication
+    if ancienne:
+        assert lancer(racine, "--json") == 0
     hook = distant / "hooks/pre-receive"
     hook.write_text("#!/bin/sh\nexit 1\n")
     hook.chmod(0o755)
@@ -128,6 +200,31 @@ def test_reprise_du_seul_commit_apres_echec_push(publication):
     hook.unlink()
     auto.executer(racine, LUNDI)
     assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD") == commit
+
+
+def test_reprise_refuse_un_commit_au_bon_titre_avec_fichier_etranger(publication):
+    racine, distant = publication
+    assert lancer(racine, "--json", jour=LUNDI.isoformat()) == 0
+    (racine / "profil.yaml").write_text("priorites: []\n")
+    git(racine, "add", "--", "profil.yaml", *(str(f.relative_to(racine)) for f in fichiers(racine)))
+    git(racine, "commit", "-m", f"delta(selection): {SEMAINE} — sélection hebdomadaire")
+    avant = git(distant, "rev-parse", "main")
+    with pytest.raises(RuntimeError, match="commit local non publié"):
+        auto.executer(racine, LUNDI)
+    assert git(distant, "rev-parse", "main") == avant
+
+
+def test_reprise_verifie_aussi_le_bref_ancien(publication):
+    racine, distant = publication
+    assert lancer(racine, "--json") == 0
+    assert lancer(racine, "--json", jour=LUNDI.isoformat()) == 0
+    (racine / sel.DOSSIER / "2026-W42.md").write_text("bref incohérent\n")
+    git(racine, "add", "--", str(sel.DOSSIER))
+    git(racine, "commit", "-m", f"delta(selection): {SEMAINE} — sélection hebdomadaire")
+    avant = git(distant, "rev-parse", "main")
+    with pytest.raises(RuntimeError, match="bref incohérent"):
+        auto.executer(racine, LUNDI)
+    assert git(distant, "rev-parse", "main") == avant
 
 
 def test_divergence_apres_commit_refusee(publication, tmp_path):
@@ -165,14 +262,22 @@ def test_avance_rapide_et_sans_distant(publication):
     assert (racine / sel.DOSSIER / "2026-W44.json").exists()
 
 
-def test_retours_restent_ignores(publication):
+def test_retour_console_ne_bloque_pas_et_reste_prive(publication):
     racine, distant = publication
+    assert lancer(racine, "--json") == 0
     dossier = racine / sel.DOSSIER
-    dossier.mkdir(parents=True)
-    (dossier / "retours.yaml").write_text("[]\n")
-    assert git(racine, "check-ignore", "rapports/selection/retours.yaml")
+    ident = json.loads((dossier / "2026-W42.json").read_text())["entrees"][0]["id"]
+    assert retour_cli.main(["--racine", str(racine), "--jour", "2026-10-16", ident, "utile", "--json"]) == 0
+    prive = {nom: (dossier / nom).read_bytes() for nom in ("retours.yaml", "retours.yaml.lock")}
+    for nom in prive:
+        assert git(racine, "check-ignore", str(sel.DOSSIER / nom))
     auto.executer(racine, LUNDI)
-    assert "retours.yaml" not in git(distant, "ls-tree", "-r", "--name-only", "main")
+    assert git(distant, "rev-parse", "main") == git(racine, "rev-parse", "HEAD")
+    assert not git(racine, "status", "--porcelain")
+    for nom, contenu in prive.items():
+        assert (dossier / nom).read_bytes() == contenu
+        assert nom not in git(distant, "ls-tree", "-r", "--name-only", "main")
+    assert ident not in {e["id"] for e in json.loads(fichiers(racine)[0].read_text())["entrees"]}
 
 
 def test_verrou_attend_la_chaine_avant_publication(publication):

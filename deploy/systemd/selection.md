@@ -23,7 +23,12 @@ Il attend la fin de la chaîne nocturne ; le délai total du service est borné 
 Il exige main, l'absence de changements étrangers et aucun commit local étranger non publié, récupère origin/main
 en avance rapide, appelle le sélecteur, puis `valider.py` sur les trois périmètres avant tout commit/push.
 Sans distant, il commite localement. Avec origin, il pousse le SHA produit vers main, sans force.
-Seuls `rapports/selection/AAAA-Www.json` et `.md` sont versionnés ; `retours.yaml` reste ignoré.
+`selection.py` écrit les sélections sans faire de commit ; le service est responsable de publier
+tous les `rapports/selection/AAAA-Www.json` et `.md` en attente, quelle que soit leur semaine.
+Une semaine ancienne lue ou refaite depuis la Console est donc embarquée avec la semaine publiée.
+Chaque JSON est relu et son bref reconstitué avant validation et ajout explicite des seuls chemins concernés.
+Tout changement dans l'arbre ou l'index hors de ce domaine continue de bloquer la publication.
+`retours.yaml` et `retours.yaml.lock` restent ignorés : ils ne bloquent pas et ne sont jamais ajoutés.
 Le Markdown compte au plus cinq lignes (titres et raisons courtes) ; `selection.py --bref` garde son contrat actuel.
 
 Précontrôles machine après fusion : `loginctl show-user "$USER" -p Linger`, `git config --get commit.gpgsign`,
@@ -35,7 +40,9 @@ En cas d'échec : `journalctl --user -u delta-ia-selection.service -n 50 --no-pa
 `Persistent=true` rattrape un calendrier manqué, mais ne réessaie pas un service en échec.
 Après correction : `systemctl --user start delta-ia-selection.service`.
 Un JSON déjà produit est relu à l'identique ; un Markdown manquant est reconstitué.
-Un unique commit de cette semaine est repoussé seulement si son titre, son parent distant,
-ses deux chemins et son bref correspondent exactement à la production attendue, après validation.
+Un unique commit au titre de cette semaine est repoussé seulement si son parent est le distant,
+ses chemins appartiennent tous au domaine des sélections, l'arbre et l'index n'ont aucun changement
+public en attente, et chaque paire JSON/bref embarquée est cohérente (ainsi que la semaine courante),
+après validation. La reprise ne crée aucun nouveau commit.
 Si origin avance après ce commit (push rejeté), le service refuse la divergence : résolution manuelle,
 sans rebase/reset automatique. Aucun commit de sélection anticipée ne fait partie de la livraison.
