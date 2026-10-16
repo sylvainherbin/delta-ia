@@ -3268,7 +3268,7 @@
    "categorie": "commandes",
    "nom": "codex queue",
    "gabarit": "complet",
-   "description": "Met en attente un message texte pour une session existante, désignée par UUID ou nom exact. Un UUID évite les ambiguïtés entre noms identiques ; les pièces jointes image ne sont pas prises en charge.",
+   "description": "`codex queue` met en attente un message texte destiné à une session Codex existante, désignée par son UUID ou son nom exact avec `--thread`, le texte étant passé par `--message`. La documentation la classe comme stable.",
    "description_source": "Queue a text message for an existing session by UUID or exact name. (maturité : Stable)",
    "usage": "codex queue --thread <SESSION_ID> --message \"Run the remaining checks\"",
    "usage_nature": "syntaxe",
@@ -3277,7 +3277,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour le flux d’audit trading-sim, préparer `codex queue --thread <SESSION_ID> --message \"Accuse réception du rapport\"` avec l’UUID réel du destinataire ; résultat attendu : un message texte en attente dans le fil désigné."
+    "pourquoi": "OPÉRER remet aujourd'hui les messages aux sessions en les collant dans leur volet tmux, puis en renvoyant Entrée par un appel distinct. Or les sessions Codex durables tournent sous `codex-session@<nom>`. Il vaut donc la peine d'essayer `codex queue --thread <UUID> --message \"…\"` sur une de ces sessions, comme canal de remise plus propre que le collage tmux, et de vérifier que le message est bien pris en compte."
    },
    "sources": [
     {
@@ -3289,15 +3289,23 @@
    "commentee": true,
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Flux de transmission des audits à l’arbitre."
+    "methode.operer": {
+     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "pourquoi": "OPÉRER assure la remise directe des messages aux sessions par collage dans tmux : c'est le geste que codex queue pourrait remplacer pour Codex."
+    },
+    "env.multi-sessions": {
+     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "pourquoi": "Les sessions Codex durables existent comme services `codex-session@<nom>` sous tmux : ce sont des destinataires possibles de codex queue."
+    },
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Les deux binaires Codex partagent `~/.codex`, où vivent sessions et `queue` : le choix du binaire pour l'essai est sans effet sur les données."
     }
    },
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-10-14",
@@ -3310,9 +3318,54 @@
     {
      "date": "2026-10-14",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour le flux d’audit trading-sim, préparer `codex queue --thread <SESSION_ID> --message \"Accuse réception du rapport\"` avec l’UUID réel du destinataire ; résultat attendu : un message texte en attente dans le fil désigné."
+     },
+     "raison": "recommentaire D128 : L'ancien commentaire visait l'arbitre ChatGPT « Work », que codex queue ne peut pas atteindre : la recommandation porte désormais sur la remise des messages d'OPÉRER aux sessions"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Met en attente un message texte pour une session existante, désignée par UUID ou nom exact. Un UUID évite les ambiguïtés entre noms identiques ; les pièces jointes image ne sont pas prises en charge.",
+     "raison": "recommentaire D128 : L'ancien commentaire visait l'arbitre ChatGPT « Work », que codex queue ne peut pas atteindre : la recommandation porte désormais sur la remise des messages d'OPÉRER aux sessions"
     }
    ],
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`codex queue` met en attente un message texte pour une session existante, désignée par UUID ou par nom exact ; maturité Stable.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande est retirée, renommée ou ne cible plus que des sessions de l'app."
+    },
+    {
+     "affirmation": "Le moteur OPÉRER colle le message dans le volet tmux de la session, puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-10-16",
+     "caduc_si": "OPÉRER change de mécanisme de remise, par exemple en adoptant déjà codex queue."
+    },
+    {
+     "affirmation": "Les sessions Codex suivent le modèle de service `codex-session@<nom>`, sous tmux `-L codex-<nom>`, avec `codex remote-control`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les sessions Codex durables sont abandonnées ou ne tournent plus sous tmux."
+    },
+    {
+     "affirmation": "Le binaire du PATH et celui de l'app de bureau partagent le même `$CODEX_HOME` (`~/.codex`), si bien que les sessions et la `queue` restent cohérentes entre les deux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les deux binaires reçoivent des `CODEX_HOME` distincts."
+    }
+   ]
   },
   {
    "id": "codex-commandes-codex-remote-control",
@@ -6561,7 +6614,7 @@
    "categorie": "commandes",
    "nom": "/ps",
    "gabarit": "complet",
-   "description": "Affiche les terminaux d'arrière-plan de la session et leurs sorties récentes. La liste peut être vide si l'exécution de terminaux en arrière-plan n'est pas utilisée.",
+   "description": "La commande `/ps` de la CLI Codex affiche les terminaux d'arrière-plan de la session et leur sortie récente. Elle permet de suivre des commandes longues sans quitter le fil principal de la conversation.",
    "description_source": "Show background terminals and their recent output. — Check long-running commands without leaving the main transcript.",
    "usage": "/ps",
    "usage_nature": "syntaxe",
@@ -6569,8 +6622,8 @@
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sur une mission Codex de discipline qui lance des tests longs en arrière-plan, essayer `/ps` et vérifier que leurs sorties récentes restent consultables dans le fil."
+    "verdict": "ignorer",
+    "pourquoi": "Aucune section du contexte ne décrit une session Codex interactive qui lance des commandes longues en terminal d'arrière-plan. Les missions de développement Codex passent par `codex exec`, en mode non interactif, où cette commande slash ne s'emploie pas."
    },
    "sources": [
     {
@@ -6583,7 +6636,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6608,19 +6661,29 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur une mission Codex de discipline qui lance des tests longs en arrière-plan, essayer `/ps` et vérifier que leurs sorties récentes restent consultables dans le fil."
+     },
+     "raison": "recommentaire D128 : L'ancien verdict `tester` supposait des tests longs lancés en arrière-plan dans un fil Codex interactif sur discipline ; le contexte n'en décrit aucun, et ces missions passent par"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Affiche les terminaux d'arrière-plan de la session et leurs sorties récentes. La liste peut être vide si l'exécution de terminaux en arrière-plan n'est pas utilisée.",
+     "raison": "recommentaire D128 : L'ancien verdict `tester` supposait des tests longs lancés en arrière-plan dans un fil Codex interactif sur discipline ; le contexte n'en décrit aucun, et ces missions passent par"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
-   "contexte_sections": {
-    "config.codex.interface": {
-     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
-    },
-    "projet.discipline": {
-     "sha1": "94f7999d4a666931335a8f8526affbd6ca45ac97",
-     "pourquoi": "Des missions de développement et leurs tests sont conduits sur discipline."
-    }
-   },
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {},
    "exemple_origine": "source"
   },
   {

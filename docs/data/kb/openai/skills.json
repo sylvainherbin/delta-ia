@@ -211,7 +211,7 @@
    "categorie": "skills",
    "nom": "Skills & Plugins",
    "gabarit": "complet",
-   "description": "Une skill regroupe des instructions et ressources pour une tâche répétée ; ChatGPT ou Codex peut la sélectionner selon la demande ou par mention explicite. Un plugin est un paquet installable qui peut réunir des skills, des serveurs MCP et des hooks du runtime Codex.",
+   "description": "Les skills et plugins aident ChatGPT et Codex à accomplir un travail répétable avec les bonnes instructions, ressources et outils, sans recoller à chaque conversation le même prompt, modèle ou processus. Une skill se crée avec `$skill-creator` dans Codex (`@skill-creator` dans ChatGPT) à partir d'une description du workflow, se teste puis, une fois activée, est utilisée pour les demandes pertinentes ou sélectionnée explicitement.",
    "description_source": "Skills and plugins help ChatGPT and Codex complete repeatable work with the right instructions, resources, and tools. They reduce the need to paste the same prompt, template, requirements, or process into every chat.",
    "usage": "1. **Choose one focused task.** Note what you normally start with, such as files, links, or notes, and what a finished result should look like.\n2. **Describe the workflow.** In ChatGPT, start with `@skill-creator`; in Codex, use `$skill-creator`. Explain the goal, the steps to follow, the expected format, and anything the skill should always include or avoid. Add a template or a good example when you have one.\n3. **Review and try the draft.** Check the instructions, test the skill with a realistic request, and refine it if the result misses a step or drifts from the format you want.\n4. **Install and reuse it.** Once the skill is enabled, ChatGPT or Codex can use it for relevant requests, or you can select it explicitly. You can also share it with teammates when your workspace settings allow it.",
    "usage_nature": "etapes",
@@ -219,8 +219,8 @@
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
-    "verdict": "utiliser",
-    "pourquoi": "Les skills Delta et Delta-KB sont déjà utilisées ; conserver ce mécanisme pour leurs procédures répétables et versionnées."
+    "verdict": "tester",
+    "pourquoi": "Codex sert surtout à auditer le travail de Claude, et les prompts d'audit très longs sont une friction récurrente. Or seules des skills système, dont `skill-creator`, sont installées côté Codex : essayer `$skill-creator` pour transformer une procédure d'audit répétée en skill réutilisable plutôt que de la recoller."
    },
    "sources": [
     {
@@ -233,7 +233,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-09-30",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -261,15 +261,74 @@
      "avant": {
       "exemple": "`$skill-creator`"
      }
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Les skills Delta et Delta-KB sont déjà utilisées ; conserver ce mécanisme pour leurs procédures répétables et versionnées."
+     },
+     "raison": "recommentaire D128 : L'ancien verdict « utiliser » reposait sur des skills Delta et Delta-KB que config.codex.skills ne mentionne pas ; le nouveau verdict « tester » s'appuie sur l'absence de skill pe"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Une skill regroupe des instructions et ressources pour une tâche répétée ; ChatGPT ou Codex peut la sélectionner selon la demande ou par mention explicite. Un plugin est un paquet installable qui peut réunir des skills, des serveurs MCP et des hooks du runtime Codex.",
+     "raison": "recommentaire D128 : L'ancien verdict « utiliser » reposait sur des skills Delta et Delta-KB que config.codex.skills ne mentionne pas ; le nouveau verdict « tester » s'appuie sur l'absence de skill pe"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.skills": {
      "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
-     "pourquoi": "Les skills Delta et Delta-KB sont installées et utilisées."
+     "pourquoi": "Codex n'a que des skills système, dont skill-creator : aucune skill perso, l'outil de création est déjà présent."
+    },
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Rôle déclaré de Codex : auditer ce que fait Claude, sur trading-sim et ailleurs, tâche répétée."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Friction observée : coût en jetons des prompts d'audit très longs, recollés d'une mission à l'autre."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les skills et plugins réduisent le besoin de coller le même prompt, modèle, exigences ou processus dans chaque conversation.",
+     "source": "https://learn.chatgpt.com/docs/skills-and-plugins",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire cette finalité ou renomme le mécanisme."
+    },
+    {
+     "affirmation": "Dans Codex, une skill se crée en commençant par `$skill-creator`, puis se teste sur une demande réaliste avant d'être activée et réutilisée.",
+     "source": "https://learn.chatgpt.com/docs/skills-and-plugins",
+     "releve_le": "2026-10-16",
+     "caduc_si": "skill-creator est retiré ou la procédure de création change dans Codex."
+    },
+    {
+     "affirmation": "Côté Codex, seules les skills système sont présentes : imagegen, openai-docs, review-agent, skill-creator, plugin-creator, skill-installer.",
+     "source": "contexte:config.codex.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Une skill personnelle d'audit est ajoutée à Codex."
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs, par exemple la console de pilotage.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain confie un autre rôle principal à Codex ou arrête les audits par Codex."
+    },
+    {
+     "affirmation": "Parmi les frictions récurrentes figure le coût en jetons des prompts d'audit très longs.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les audits passent par un prompt court ou une skill qui supprime cette friction."
+    }
+   ]
   }
  ]
 }
