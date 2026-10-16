@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-15",
+ "maj_le": "2026-10-16",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -856,7 +856,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -881,6 +881,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -890,7 +894,21 @@
      "pourquoi": "delta-ia ajouté en `--scope local` dans ~/projets et ~/projets/delta-ia ; portée liée au cwd, absent de trading-sim."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "La portée locale est le défaut : le serveur ne se charge que dans le projet où on l'a ajouté, reste privé et s'enregistre dans `~/.claude.json` sous le chemin de ce projet.",
+     "source": "https://code.claude.com/docs/en/mcp#local-scope",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page change le défaut de portée ou l'emplacement d'enregistrement."
+    },
+    {
+     "affirmation": "delta-ia a été ajouté le 24/09 en `--scope local` dans `~/projets` et `~/projets/delta-ia`, et reste absent de `~/projets/trading-sim`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le connecteur delta-ia change de portée ou de dossiers dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-managing-your-servers",
@@ -920,7 +938,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -945,6 +963,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -954,7 +976,21 @@
      "pourquoi": "`claude mcp list` du 12/10 (Vercel « Connected ») ; portée locale rattachée au cwd ; delta-ia absent de trading-sim."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`claude mcp list` affiche l'état de chaque serveur (`✔ Connected`, `! Needs authentication`, `✘ Failed to connect`) ; `claude mcp get <name>` donne le détail d'un serveur.",
+     "source": "https://code.claude.com/docs/en/mcp#managing-your-servers",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les commandes `claude mcp list` ou `get` changent de syntaxe ou de sortie."
+    },
+    {
+     "affirmation": "`claude mcp list` du 12/10 a montré le connecteur Vercel « Connected » ; la portée locale des MCP suit le dossier de travail de la session.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md change l'état des connecteurs ou la règle de portée locale."
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-mcp-client-runtimes",
@@ -1031,7 +1067,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1056,6 +1092,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -1065,7 +1105,21 @@
      "pourquoi": "Commande exacte d'ajout de delta-ia le 24/09 ; trading-sim gouverné par Work."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "HTTP est le transport recommandé pour les serveurs MCP distants ; syntaxe `claude mcp add --transport http <name> <url>`.",
+     "source": "https://code.claude.com/docs/en/mcp#option-1-add-a-remote-http-server",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page recommande un autre transport ou change la syntaxe d'ajout."
+    },
+    {
+     "affirmation": "delta-ia a été ajouté le 24/09 par `claude mcp add --transport http --scope local` ; trading-sim est gouverné par Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La commande d'ajout de delta-ia ou la gouvernance de trading-sim change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-option-2-add-a-remote-sse-server",
@@ -2030,7 +2084,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2055,6 +2109,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -2063,7 +2121,21 @@
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans deny."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les connecteurs personnalisés par MCP distant existent sur Claude, Cowork et Claude Desktop pour les forfaits Free, Pro, Max, Team et Enterprise ; Free est limité à un connecteur.",
+     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page change les forfaits ou produits concernés."
+    },
+    {
+     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets sauf `deny` explicite ; trading-sim les reçoit faute de `deny`.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le `deny` de trading-sim couvre les connecteurs de compte, ou la règle change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-mcp-page-11176164-use-connectors-to-extend-claude-s-capabilities",
@@ -2093,7 +2165,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2142,6 +2214,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -2154,7 +2230,27 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 9 : Gmail, Drive, Calendar, Canva et GoDaddy connectés mais jamais appelés dans Claude Code."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Depuis « Manage connectors », chaque service peut être déconnecté, reparamétré ou revu dans ses accès ; la page conseille de déconnecter ceux qu'on n'utilise plus.",
+     "source": "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le chemin de gestion des connecteurs change sur la page."
+    },
+    {
+     "affirmation": "Sylvain utilise les connecteurs de Claude.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus les connecteurs parmi les fonctions utilisées."
+    },
+    {
+     "affirmation": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code (piste 9).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 9 est close ou ces connecteurs sont retirés."
+    }
+   ]
   },
   {
    "id": "claude-mcp-page-11725091-when-to-use-desktop-and-web-connectors",

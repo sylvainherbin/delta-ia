@@ -254,7 +254,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -279,6 +279,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -292,7 +296,27 @@
      "pourquoi": "Pilotage depuis l'iPhone, notifications push."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`agentPushNotifEnabled` laisse Claude envoyer une notification push au téléphone quand il le juge utile ; les push arrivent tant que Remote Control est connecté ; défaut `false`.",
+     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé change de nom, de défaut ou de condition d'envoi."
+    },
+    {
+     "affirmation": "Le `settings.json` de Sylvain active les notifications push des agents (relevé du 07/10).",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé de settings.json ne mentionne plus les notifications push."
+    },
+    {
+     "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push).",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit une autre interface principale."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-agents",
@@ -3178,7 +3202,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3203,6 +3227,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -3212,7 +3240,21 @@
      "pourquoi": "Mémoire automatique : environ 70 + 7 mémoires au 04/10, très utilisée."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "À `false`, Claude ne lit ni n'écrit le dossier de mémoire automatique ; `/memory` en session écrit cette clé dans les réglages utilisateur.",
+     "source": "https://code.claude.com/docs/en/settings-reference#automemoryenabled",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé change de nom ou d'effet."
+    },
+    {
+     "affirmation": "La mémoire automatique est très utilisée : environ 70 mémoires dans `~/projets` et 7 dans `~` au 04/10.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé de la mémoire automatique change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-automode",
@@ -18097,7 +18139,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18142,6 +18184,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -18154,7 +18200,27 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge sur les limites hebdomadaires."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--effort` fixe l'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), prime sur `modelSettings` et `effortLevel` et ne persiste pas.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change de valeurs, de priorité ou devient persistante."
+    },
+    {
+     "affirmation": "Chaque service de session est lancé avec un modèle et un effort propres au rôle, par exemple `--model opus --effort medium` pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge sur les limites hebdomadaires.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 11 est close ou retirée."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-effortlevel",
@@ -20801,7 +20867,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20822,6 +20888,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -20834,7 +20904,27 @@
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`PermissionDenied` ne se déclenche qu'en mode auto : ni sur un refus manuel, ni sur un blocage par un hook `PreToolUse`, ni sur une règle `deny`.",
+     "source": "https://code.claude.com/docs/en/hooks#permissiondenied",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page élargit le déclenchement à d'autres modes ou refus."
+    },
+    {
+     "affirmation": "Seul hook de Sylvain : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé des hooks change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-hook-permissionrequest",
@@ -22237,7 +22327,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22278,6 +22368,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -22291,7 +22385,27 @@
      "pourquoi": "Piste 3 : SHA-256 des missions et PYTHONDONTWRITEBYTECODE contrôlés à la main, candidats à des hooks."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La clé `hooks` associe chaque événement à des groupes de filtres, chacun listant des gestionnaires : commandes, prompts, agents, requêtes HTTP ou outils MCP.",
+     "source": "https://code.claude.com/docs/en/settings-reference#hooks",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La structure de la clé `hooks` change."
+    },
+    {
+     "affirmation": "Un seul hook déclaré, `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé des hooks change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Piste 3 : la vérification SHA-256 des missions et `PYTHONDONTWRITEBYTECODE=1`, faits à la main, pourraient devenir des hooks.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 3 est close ou retirée."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-httphookallowedenvvars",
@@ -24430,7 +24544,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24467,6 +24581,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -24479,7 +24597,27 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : Sonnet pour les tâches machine simples ; Sonnet par défaut voulu par Sylvain."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--model` fixe le modèle de la session par alias (`sonnet`, `opus`, `haiku`, `fable`) ou nom complet, et prime sur le réglage `model` et `ANTHROPIC_MODEL`.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change d'alias ou de priorité."
+    },
+    {
+     "affirmation": "Les services de session passent un modèle propre au rôle, par exemple `--model opus` pour le chef.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Piste 11 : Sonnet pour les tâches machine simples ; le défaut Sonnet est voulu par Sylvain (30/09).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La piste 11 ou le choix du défaut change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-model-and-responses-model",
@@ -24509,7 +24647,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24522,6 +24660,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -24531,7 +24673,21 @@
      "pourquoi": "modèle par défaut relevé dans etat.json"
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La clé `model` fixe le modèle de toutes les nouvelles sessions sans empêcher d'en changer en cours de session ; un défaut d'organisation l'emporte.",
+     "source": "https://code.claude.com/docs/en/settings-reference#model",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé change d'effet ou de priorité."
+    },
+    {
+     "affirmation": "Le modèle par défaut de Claude Code se lit dans `docs/data/etat.json`, relevé à chaque passage delta-ia.",
+     "source": "contexte:config.claude-code",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md renvoie ailleurs pour le modèle par défaut."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-modeloverrides",
@@ -25059,7 +25215,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25080,6 +25236,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -25092,7 +25252,27 @@
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--permission-mode` accepte `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` ou `manual`, et prime sur `defaultMode` des réglages.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change de valeurs ou de priorité."
+    },
+    {
+     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions` (D83).",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La chaîne D70 change de mode de permission dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-permission-prompt-tool",
@@ -25248,7 +25428,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25269,6 +25449,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -25282,7 +25466,33 @@
      "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et les connecteurs."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "L'objet `permissions` fixe les outils approuvés sans demande, ceux qui demandent toujours, ceux qui sont bloqués, et le mode de départ.",
+     "source": "https://code.claude.com/docs/en/settings-reference#permissions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La structure de l'objet `permissions` change."
+    },
+    {
+     "affirmation": "Les règles `deny` bloquent dans tous les modes, `bypassPermissions` compris.",
+     "source": "https://code.claude.com/docs/en/permission-modes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page dit que `bypassPermissions` ignore les règles `deny`."
+    },
+    {
+     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai listés.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La politique de capacités de trading-sim change."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-permissions-additionaldirectories",
@@ -25607,7 +25817,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25628,6 +25838,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -25641,7 +25855,27 @@
      "pourquoi": "Connecteurs de compte absents du `deny` de trading-sim ; Vercel « Connected » au 12/10."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Les fichiers visés par `permissions.deny` sont exclus de la découverte et de la recherche, leur lecture est refusée et Edit et Write sont bloqués sur ces chemins.",
+     "source": "https://code.claude.com/docs/en/settings-reference#permissionsdeny",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé change d'effet."
+    },
+    {
+     "affirmation": "Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai listés.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La politique de capacités de trading-sim change."
+    },
+    {
+     "affirmation": "Les connecteurs de compte, Delta-IA compris, ne figurent pas dans le `deny` de trading-sim ; la question a été transmise à Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le `deny` de trading-sim couvre les connecteurs de compte."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-permissions-disablebypasspermissionsmode",
@@ -26161,7 +26395,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26182,6 +26416,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -26194,7 +26432,27 @@
      "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
      "pourquoi": "Rôles LLM de JUGER appelés par `claude -p`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--print` (`-p`) répond sans mode interactif ; c'est la base de l'usage programmatique décrit par l'Agent SDK.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change de nom ou de rôle."
+    },
+    {
+     "affirmation": "Les rôles LLM de JUGER sont appelés par `claude -p`, Opus par défaut.",
+     "source": "contexte:methode.juger-design",
+     "releve_le": "2026-10-16",
+     "caduc_si": "JUGER appelle ses rôles autrement que par `claude -p`."
+    },
+    {
+     "affirmation": "La chaîne D70 lance chaque nuit à 04:00, par un orchestrateur, les étapes `/delta` et `/delta-kb` de Claude Code.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La chaîne D70 change d'étapes ou de lanceur."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-processwrapper",
@@ -26582,7 +26840,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26607,6 +26865,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -26615,7 +26877,21 @@
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "`claude --resume <id> --remote-control <nom>` dans chaque service `claude-session@<nom>`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--remote-control` (`--rc`) démarre une session interactive pilotable depuis claude.ai ou l'app Claude, avec un nom facultatif.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change de nom ou de rôle."
+    },
+    {
+     "affirmation": "Chaque service `claude-session@<nom>` exécute `claude --resume <id> --remote-control <nom>`, piloté depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-remote-control-session-name-prefix-prefix",
@@ -27066,7 +27342,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27087,6 +27363,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -27095,7 +27375,21 @@
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
      "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`--resume` reprend une session par ID, nom ou chemin de transcript `.jsonl` ; avec un ID, la recherche couvre le projet, ses worktrees puis les autres projets de la machine.",
+     "source": "https://code.claude.com/docs/en/cli-reference",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option change de syntaxe ou de portée de recherche."
+    },
+    {
+     "affirmation": "Les services de session relancent chaque session par `claude --resume <id> --remote-control <nom>`.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-safe-mode",
@@ -31240,7 +31534,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31261,6 +31555,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -31270,7 +31568,21 @@
      "pourquoi": "settings.json : thème sombre."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La clé `theme` choisit le thème de couleurs de l'interface ; elle apparaît dans `/config` sous Theme.",
+     "source": "https://code.claude.com/docs/en/settings-reference#theme",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La clé change de nom ou d'effet."
+    },
+    {
+     "affirmation": "Le `settings.json` de Sylvain règle un thème sombre (relevé du 07/10).",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé de settings.json ne mentionne plus le thème sombre."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-timeformat",

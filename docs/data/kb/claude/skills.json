@@ -834,7 +834,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -887,6 +887,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -899,7 +903,27 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Pistes 4 et 5 : skills dormants ; restent à la main la revue machine d'une campagne et la synchronisation git."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les commandes perso sont fusionnées dans les skills : `.claude/commands/deploy.md` et `.claude/skills/deploy/SKILL.md` créent tous deux `/deploy` ; un skill ajoute un dossier de fichiers et un en-tête qui règle qui l'invoque.",
+     "source": "https://code.claude.com/docs/en/skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page sépare de nouveau commandes et skills ou change l'emplacement des skills."
+    },
+    {
+     "affirmation": "Sylvain a quatre skills perso, dont `latex-manuscrit` et `verif-numerique` jamais invoqués, et ses gestes répétés passent par des scripts de `~/.local/bin`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La liste des skills perso ou leur usage relevé change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Restent à la main la revue machine d'une campagne et la synchronisation git (piste 5) ; deux skills sont dormants (piste 4).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les pistes 4 et 5 sont closes ou retirées de CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-skills-run",
@@ -1316,7 +1340,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1349,6 +1373,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -1357,7 +1385,21 @@
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Skills claude.ai utilisés, surtout red-team ; Claude : skills cités parmi les fonctions utilisées."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les skills sont des dossiers d'instructions, de scripts et de ressources que Claude charge dynamiquement quand une tâche le demande, partout dans Claude, alors qu'un Projet charge toujours son contexte.",
+     "source": "https://support.claude.com/en/articles/12512176-what-are-skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page change la définition ou le mode de chargement des skills."
+    },
+    {
+     "affirmation": "Sylvain utilise les skills de claude.ai, surtout red-team, les autres peu ou pas.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus d'usage des skills claude.ai."
+    }
+   ]
   },
   {
    "id": "claude-skills-page-12512180-use-skills-in-claude",
@@ -1387,7 +1429,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1428,6 +1470,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -1440,7 +1486,27 @@
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Skills claude.ai synchronisés, non invoqués sauf ask-the-council ×1."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Sur les forfaits Free, Pro et Max : activer « Code execution and file creation » dans Settings > Capabilities, puis activer ou couper chaque skill dans Customize > Skills.",
+     "source": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le chemin d'activation des skills change sur la page."
+    },
+    {
+     "affirmation": "Sylvain utilise surtout le skill red-team de claude.ai ; les autres peu ou pas.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'usage déclaré des skills claude.ai change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Les skills claude.ai synchronisés (orchestrator, scientific-adversary…) ne sont pas invoqués dans Claude Code, sauf ask-the-council une fois.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le relevé d'usage des skills synchronisés change dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-skills-page-12512198-how-to-create-custom-skills",
