@@ -16612,7 +16612,7 @@
    "categorie": "parametres",
    "nom": "model",
    "gabarit": "court",
-   "description": "Le paramètre `model` fixe le modèle Codex utilisé par défaut.",
+   "description": "Clé de type string du fichier config.toml de Codex qui désigne le modèle à utiliser, par exemple gpt-6.1-sol.",
    "description_source": "Type : string. Model to use (e.g., gpt-6.1-sol).",
    "usage": "model",
    "usage_nature": "syntaxe",
@@ -16621,7 +16621,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Le défaut `gpt-6-sol` est déjà configuré pour les audits ; employer `--model` pour un essai ponctuel évite de modifier ce choix persistant."
+    "pourquoi": "Ton config.toml fixe déjà le modèle par défaut, et le profil securite garde volontairement un modèle différent : c'est cette clé que tu ajustes, globalement ou par profil. Les missions mission-codex n'en dépendent pas, car elles passent le modèle explicitement."
    },
    "sources": [
     {
@@ -16634,7 +16634,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16659,16 +16659,69 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Le défaut `gpt-6-sol` est déjà configuré pour les audits ; employer `--model` pour un essai ponctuel évite de modifier ce choix persistant."
+     },
+     "raison": "recommentaire D128 : L'ancien pourquoi invoquait un défaut gpt-6-sol réservé aux audits et l'option --model, absents des sources ; le nouveau s'appuie sur les profils, la piste 7 et mission-codex, tou"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "description corrigée",
+     "avant": "Le paramètre `model` fixe le modèle Codex utilisé par défaut.",
+     "raison": "recommentaire D128 : L'ancien pourquoi invoquait un défaut gpt-6-sol réservé aux audits et l'option --model, absents des sources ; le nouveau s'appuie sur les profils, la piste 7 et mission-codex, tou"
     }
    ],
-   "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Le modèle par défaut est GPT-6 Sol et les profils explicites séparent audit, rapide et sécurité."
+     "pourquoi": "Trois profils utilisés au quotidien, dont securite qui reste volontairement sur un modèle différent du défaut."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 7 : le modèle par défaut de config.toml a été changé (gpt-6-astra puis gpt-6-sol), ce qui montre l'usage réel de la clé."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "mission-codex passe toujours modèle et effort explicitement, jamais hérités de ~/.codex/config.toml."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "La clé model de config.toml est de type string et désigne le modèle à utiliser, par exemple gpt-6.1-sol.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La référence de configuration renomme ou retire la clé model."
+    },
+    {
+     "affirmation": "Le profil securite reste volontairement sur un modèle différent du défaut, par choix de Sylvain.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain aligne le profil securite sur le modèle par défaut ou supprime ce profil."
+    },
+    {
+     "affirmation": "Le 27/09, Sylvain est passé au modèle gpt-6-sol à la place de gpt-6-astra, relevé dans le défaut de config.toml.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le modèle par défaut de config.toml change à nouveau."
+    },
+    {
+     "affirmation": "mission-codex passe toujours modèle et effort explicitement, jamais hérités de ~/.codex/config.toml.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "mission-codex se met à hériter du modèle défini dans config.toml."
+    }
+   ]
   },
   {
    "id": "codex-parametres-model-auto-compact-token-limit",
