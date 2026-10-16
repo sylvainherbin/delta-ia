@@ -180,10 +180,22 @@ def test_fiche_modifiee_entre_preparation_et_application_est_sautee(depot):
 
 @pytest.fixture
 def faux_a1(monkeypatch):
-    soumis, etat = [], {"resultats": None}
+    """Faux A1 à sa signature et son format réels : soumettre_lot(usage, requetes) -> {id, usage, statut} ;
+    relever_lot(usage, lot_id) -> {statut: in_progress, …} tant que le lot tourne, puis {statut: ended, comptes, resultats}."""
+    soumis, etat = [], {"resultats": None, "releves": []}
     mod = types.ModuleType("delta.operer.credits_api")
-    mod.soumettre_lot = lambda usage, requetes: soumis.append((usage, requetes)) or {"id": "msgbatch_test"}
-    mod.relever_lot = lambda ident: etat["resultats"]
+
+    def soumettre_lot(usage, requetes, *, base_url=None, maintenant=None):
+        soumis.append((usage, requetes))
+        return {"id": "msgbatch_test", "usage": usage, "statut": "in_progress"}
+
+    def relever_lot(usage, lot_id, *, base_url=None, maintenant=None):
+        etat["releves"].append((usage, lot_id))
+        res = etat["resultats"]
+        if res is None:
+            return {"statut": "in_progress", "comptes": 0, "resultats": []}
+        return {"statut": "ended", "comptes": len(res), "resultats": res}
+    mod.soumettre_lot, mod.relever_lot = soumettre_lot, relever_lot
     for nom, m in (("delta", types.ModuleType("delta")), ("delta.operer", types.ModuleType("delta.operer")),
                    ("delta.operer.credits_api", mod)):
         monkeypatch.setitem(sys.modules, nom, m)
@@ -201,6 +213,7 @@ def test_cli_chaine_complete_avec_cout_par_lot(depot, faux_a1, monkeypatch, caps
     assert cli.main(["soumettre", *args]) == 0
     assert soumis[0][0] == "delta-ia-provenance" and len(soumis[0][1]) == 10
     assert cli.main(["relever", *args]) == cli.CODE_EN_COURS
+    assert etat["releves"][0] == ("delta-ia-provenance", "msgbatch_test")
     etat["resultats"] = [reponse(f"f{i:04d}", bonne()) for i in range(1, 11)]
     assert cli.main(["relever", *args]) == 0
     capsys.readouterr()
@@ -224,6 +237,35 @@ def test_cli_credits_epuises_rend_le_code_5(depot, faux_a1, monkeypatch, capsys)
     assert cli.main(["preparer", "--perimetre", "claude", "--racine", str(racine)]) == 0
     assert cli.main(["soumettre", "--racine", str(racine)]) == cli.CODE_CREDITS
     assert pl.lot_courant(racine)["statut"] == "prepare"
+
+
+def test_cli_releve_au_format_inattendu_refuse(depot, faux_a1, monkeypatch, capsys):
+    racine, ents = depot
+    monkeypatch.setattr(pl, "extraction_courante", lambda r, p: extraites_de(ents.values()))
+    args = ["--racine", str(racine)]
+    assert cli.main(["preparer", "--perimetre", "claude", *args]) == 0
+    assert cli.main(["soumettre", *args]) == 0
+    monkeypatch.setattr(sys.modules["delta.operer.credits_api"], "relever_lot", lambda usage, lot_id: [])
+    assert cli.main(["relever", *args]) == 1
+    assert "format inattendu" in capsys.readouterr().err
+    assert pl.lot_courant(racine)["statut"] == "soumis"
+
+
+def test_premier_lot_soumis_puis_abandonne_reste_le_premier(depot, faux_a1, monkeypatch, capsys):
+    racine, ents = depot
+    monkeypatch.setattr(pl, "extraction_courante", lambda r, p: extraites_de(ents.values()))
+    args = ["--racine", str(racine)]
+    assert cli.main(["preparer", "--perimetre", "claude", *args]) == 0
+    assert cli.main(["abandonner", *args]) == 0
+    m = preparer(racine, ents, horodatage="20261016-110000")
+    assert m["premier"], "abandonné avant soumission : rien de payé, le lot suivant reste le premier"
+    assert cli.main(["soumettre", *args]) == 0
+    assert cli.main(["abandonner", *args]) == 0
+    with pytest.raises(pl.LotRefuse, match="présenté à Sylvain"):
+        preparer(racine, ents, horodatage="20261016-120000")
+    a = pl.autoriser(racine, "Sylvain via Delta-pilote", jour="2026-10-17")
+    assert a["premier_lot"] == m["lot"]
+    assert not preparer(racine, ents, horodatage="20261016-130000")["premier"]
 
 
 def test_cli_appliquer_refuse_pendant_la_chaine(depot, monkeypatch, capsys):

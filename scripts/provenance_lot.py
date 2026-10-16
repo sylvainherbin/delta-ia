@@ -42,12 +42,11 @@ CODE_EN_COURS, CODE_CREDITS = 3, 5
 
 
 # ----------------------------------------------------------------------------------------------- pont vers A1
-# Contrat supposé de A1 (m-2e53852c7060, fonctions `soumettre_lot` et `relever_lot` de `delta.operer.credits_api`) :
-#   soumettre_lot(usage, requetes) -> identifiant du lot (str, ou objet/dict portant `id`) ;
-#   relever_lot(identifiant) -> None tant que le lot tourne, sinon les résultats au format Message Batches
-#   ({custom_id, result: {type, message}}), comptés par A1 au relevé ;
+# Contrat de A1 (m-2e53852c7060, `delta.operer.credits_api`, même lecture que scripts/classement.py depuis eda5c92) :
+#   soumettre_lot(usage, requetes) -> {id, usage, statut} ;
+#   relever_lot(usage, lot_id) -> {statut, comptes, resultats} : `statut` différent de `ended` tant que le lot tourne,
+#   puis `resultats` au format Message Batches ({custom_id, result: {type, message}}), comptés par A1 au relevé (50 %) ;
 #   solde nul ou cycle échu : SystemExit(5) ou exception portant `code == 5`.
-# Le dépôt discipline n'était pas lisible pendant la mission : à vérifier contre A1 à la fusion (rapport m-21ed065f3dc5).
 
 def module_a1(racine: Path):
     src = Path(os.environ.get("DELTA_DISCIPLINE_SRC") or racine.parent / "discipline" / "src")
@@ -63,6 +62,18 @@ def _identifiant(r) -> str:
     if not isinstance(v, str) or not v:
         raise pl.LotRefuse(f"A1 n'a pas rendu d'identifiant de lot ({type(r).__name__})")
     return v
+
+
+def _resultats(r) -> list[dict] | None:
+    """Résultats d'un relevé A1 ; None tant que le lot tourne. Format inattendu : LotRefuse."""
+    if not isinstance(r, dict) or "statut" not in r:
+        raise pl.LotRefuse(f"A1 : relevé de lot au format inattendu ({type(r).__name__})")
+    if r["statut"] != "ended":
+        return None
+    res = r.get("resultats")
+    if not isinstance(res, list):
+        raise pl.LotRefuse(f"A1 : lot terminé sans liste de résultats ({type(res).__name__})")
+    return res
 
 
 def cout_usage(usage: str = pl.USAGE_A1) -> float | None:
@@ -154,17 +165,19 @@ def main(argv=None) -> int:
             if m["statut"] != "soumis":
                 raise pl.LotRefuse(f"lot {m['lot']} : {m['statut']}, pas soumis")
             try:
-                res = module_a1(r).relever_lot(m["id_lot_api"])
+                res = _resultats(module_a1(r).relever_lot(pl.USAGE_A1, m["id_lot_api"]))
             except (SystemExit, Exception) as err:  # noqa: BLE001
                 if _credits_epuises(err):
                     print("crédits API épuisés (A1, code 5)", file=sys.stderr)
                     return CODE_CREDITS
+                if isinstance(err, pl.LotRefuse):
+                    raise
                 print(f"A1 : relevé impossible ({type(err).__name__}: {err})", file=sys.stderr)
                 return 1
             if res is None:
                 print(f"lot {m['lot']} encore en traitement")
                 return CODE_EN_COURS
-            pl.ecrire_resultats(r, m, list(res))
+            pl.ecrire_resultats(r, m, res)
             apres = cout_usage()
             avant = m.get("cout_avant")
             m["cout"] = ({"usd": round(apres - avant, 8), "source": "relevé par usage avant soumission et après relevé"}

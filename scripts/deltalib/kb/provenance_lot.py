@@ -110,15 +110,22 @@ def autorisation(racine: Path) -> dict | None:
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 
+def engage(manifeste: dict) -> bool:
+    """Lot payé ou appliqué : soumis à A1 (même abandonné ensuite) ou appliqué. Seul un lot jamais engagé laisse
+    le suivant passer pour « premier lot »."""
+    return manifeste["statut"] == "applique" or bool(manifeste.get("id_lot_api"))
+
+
 def autoriser(racine: Path, par: str, jour: str | None = None) -> dict:
     """Suite autorisée après présentation du coût du premier lot (Delta-pilote, accord de Sylvain)."""
-    appliques = [m for m in lots(racine) if m["statut"] == "applique"]
-    if not appliques:
-        raise LotRefuse("aucun lot appliqué : le coût du premier lot n'a pas encore été mesuré")
+    engages = [m for m in lots(racine) if engage(m)]
+    if not engages:
+        raise LotRefuse("aucun lot soumis : le coût du premier lot n'a pas encore été mesuré")
     if not par.strip():
         raise LotRefuse("`--par` : qui autorise (ex. « Sylvain via Delta-pilote, 17/10 »)")
-    a = {"date": jour or date.today().isoformat(), "par": par.strip(), "premier_lot": appliques[0]["lot"],
-         "cout_premier_lot": appliques[0].get("bilan", {}).get("cout")}
+    premier = engages[0]
+    a = {"date": jour or date.today().isoformat(), "par": par.strip(), "premier_lot": premier["lot"],
+         "cout_premier_lot": (premier.get("bilan") or {}).get("cout", premier.get("cout"))}
     p = dossier(racine) / AUTORISATION
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(a, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -210,11 +217,11 @@ def preparer(racine: Path, perimetre: str, maximum: int | None = None, modele: s
     en_cours = [m["lot"] for m in tous if m["statut"] in EN_COURS]
     if en_cours:
         raise LotRefuse(f"lot en cours : {', '.join(en_cours)} (le relever et l'appliquer d'abord, ou `abandonner`)")
-    premier = not any(m["statut"] == "applique" for m in tous)
+    premier = not any(engage(m) for m in tous)
     if premier:
         maximum = min(maximum or PREMIER_LOT_MAX, PREMIER_LOT_MAX)
     elif autorisation(racine) is None:
-        raise LotRefuse("premier lot appliqué : son coût est présenté à Sylvain par Delta-pilote avant la suite "
+        raise LotRefuse("premier lot soumis : son coût est présenté à Sylvain par Delta-pilote avant la suite "
                         "(`provenance_lot.py autoriser --par …` une fois l'accord donné)")
     if maximum is not None and maximum < 1:
         raise LotRefuse("`--max` doit valoir au moins 1")
