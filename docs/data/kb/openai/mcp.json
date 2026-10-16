@@ -755,7 +755,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex mcp",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -776,6 +776,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -789,7 +793,45 @@
      "pourquoi": "Delta-IA est déclaré comme connecteur du compte OpenAI ; son accès effectif doit être distingué des MCP locaux."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`codex mcp list` liste les serveurs MCP configurés ; l'option `--json` donne une sortie lisible par une machine.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande `codex mcp list` ou l'option `--json` change de syntaxe ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "La CLI autonome `codex` du PATH, installée par npm, est utilisée sous tmux ; sa version diffère de celle livrée avec l'app de bureau.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la CLI du PATH comme distincte du binaire de l'app de bureau ou utilisée sous tmux"
+    },
+    {
+     "affirmation": "Toute vérification de syntaxe Codex par un agent se fait sur le binaire qu'utilise la session concernée : celui du PATH pour la session tmux `codex`.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire cette règle de choix du binaire pour les vérifications"
+    },
+    {
+     "affirmation": "Les deux binaires partagent le même `$CODEX_HOME` (`~/.codex`).",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que les binaires n'utilisent plus le même `$CODEX_HOME`"
+    },
+    {
+     "affirmation": "Delta-IA est déclaré comme connecteur du compte OpenAI, utilisé par Codex et par ChatGPT Work.",
+     "source": "contexte:config.codex.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne déclare plus Delta-IA comme connecteur du compte OpenAI"
+    },
+    {
+     "affirmation": "Codex a écrit « si Delta-IA devient accessible à Codex » : écart entre disponibilité déclarée et perception de Codex, à vérifier avant de compter sur cette consultation.",
+     "source": "contexte:config.codex.mcp",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md signale l'écart comme résolu ou retire ce point à recouper"
+    }
+   ]
   },
   {
    "id": "codex-mcp-codex-mcp-login-name",

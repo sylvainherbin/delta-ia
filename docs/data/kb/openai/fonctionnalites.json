@@ -1729,7 +1729,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1750,6 +1750,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -1767,7 +1771,45 @@
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La documentation Agent approvals & security donne une configuration avec sandbox_mode = \"read-only\" et approval_policy = \"on-request\".",
+     "source": "https://learn.chatgpt.com/docs/agent-approvals-security",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page ne présente plus les clés sandbox_mode et approval_policy ou ne propose plus la valeur \"read-only\" pour le sandbox."
+    },
+    {
+     "affirmation": "La documentation présente ces mécanismes comme une aide de Codex pour protéger le code et les données et réduire le risque de mauvais usage.",
+     "source": "https://learn.chatgpt.com/docs/agent-approvals-security",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page ne décrit plus le sandbox et les approbations comme des mécanismes de protection du code et des données."
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs ; trading-sim figure parmi les projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne donne plus l'audit comme rôle principal de Codex ou retire trading-sim des projets approuvés."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration est à trois IA : ChatGPT conçoit et arbitre, Claude Code exécute, Codex audite.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette orchestration à trois IA sur trading-sim."
+    },
+    {
+     "affirmation": "trading-sim est le seul projet hors FULL_AUTO : il est en VALIDATIONS_CHOISIES, avec un tour de revue par jalon et Sylvain seul donnant le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim passe en FULL_AUTO ou le régime de validation par jalon change."
+    },
+    {
+     "affirmation": "trading-sim a une spécification d'architecture versionnée et gelée, un registre de protocole scellé (protocol/ledger.jsonl) et 17 rapports d'audit Codex dans docs/audits/.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces audits Codex ni la spécification gelée de trading-sim."
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-agent-configuration-agents-md",
@@ -2072,7 +2114,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2093,6 +2135,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -2110,7 +2156,45 @@
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "ChatGPT Work et Codex peuvent exécuter des workflows de subagents : ils lancent des agents spécialisés en parallèle puis rassemblent leurs résultats en une seule réponse.",
+     "source": "https://learn.chatgpt.com/docs/agent-configuration/subagents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus les subagents dans Codex ou retire le lancement en parallèle avec collecte des résultats."
+    },
+    {
+     "affirmation": "L'exemple de la documentation demande explicitement de lancer un subagent pour les security risks, un pour les test gaps et un pour la maintainability, puis de résumer les constats par catégorie avec références de fichiers.",
+     "source": "https://learn.chatgpt.com/docs/agent-configuration/subagents",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'exemple de prompt de revue avec subagents parallèles est retiré ou modifié dans la documentation."
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus Codex comme outil d'audit du travail de Claude sur trading-sim."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration répartit les rôles : ChatGPT conçoit et arbitre, Claude Code exécute, Codex audite ; le coût en jetons des prompts d'audit très longs est une friction récurrente.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette orchestration ou ne mentionne plus le coût en jetons des audits comme friction."
+    },
+    {
+     "affirmation": "Les tests de trading-sim sont réels (unittest, tests de causalité et de nullité).",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus de tests unittest réels sur trading-sim."
+    },
+    {
+     "affirmation": "trading-sim compte 17 rapports d'audit Codex dans docs/audits/ et présente un coût élevé en jetons des audits contradictoires.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces audits Codex ni leur coût en jetons pour trading-sim."
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-cli-customization",
@@ -2948,7 +3032,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2977,6 +3061,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -2990,7 +3078,45 @@
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Les worktrees permettent à Codex de mener plusieurs conversations indépendantes dans le même projet sans qu'elles interfèrent entre elles.",
+     "source": "https://learn.chatgpt.com/docs/environments/git-worktrees",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne présente plus les worktrees comme des conversations indépendantes dans un même projet, ou la page disparaît."
+    },
+    {
+     "affirmation": "Le dépôt, le worktree et les commandes restent sur l'ordinateur ou l'environnement de développement distant qui contient le projet.",
+     "source": "https://learn.chatgpt.com/docs/environments/git-worktrees",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation indique que le worktree ou les commandes s'exécutent ailleurs que sur la machine qui contient le projet."
+    },
+    {
+     "affirmation": "Codex dans l'app mobile ChatGPT permet de démarrer, guider, approuver et relire des conversations worktree sur un ordinateur connecté.",
+     "source": "https://learn.chatgpt.com/docs/environments/git-worktrees",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire le pilotage des conversations worktree depuis l'app mobile ChatGPT."
+    },
+    {
+     "affirmation": "Dans discipline, chaque mission a sa branche et son worktree (~/projets/discipline-<nom> pour les anciens, ~/projets/.worktrees/discipline/<mission> pour les nouveaux).",
+     "source": "contexte:projet.discipline",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus une branche et un worktree par mission pour discipline, ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "Avec le remote control connecté, Sylvain écrit depuis l'app ChatGPT sur iPhone dans les conversations Codex de la machine, dont celle d'une session CLI sous tmux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage du remote control depuis l'iPhone, ou Sylvain abandonne ce pilotage mobile."
+    },
+    {
+     "affirmation": "Un seul appareil tient une conversation Codex à la fois.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus cette limite ou constate qu'une conversation peut être tenue par plusieurs appareils simultanément."
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-environments-local-environment",
@@ -3369,7 +3495,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3390,6 +3516,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3407,7 +3537,51 @@
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Pour un travail qui peut demander de nombreuses étapes, la documentation recommande de donner un résultat clair, des contraintes et une définition de fin (definition of done).",
+     "source": "https://learn.chatgpt.com/docs/long-running-work",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La page ne recommande plus de fixer résultat, contraintes et définition de fin, ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "La documentation conseille de garder le travail lié dans le même chat, pour que le même contexte serve à choisir l'étape suivante et à décider quand le travail est terminé.",
+     "source": "https://learn.chatgpt.com/docs/long-running-work",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne conseille plus de garder le travail lié dans un même chat."
+    },
+    {
+     "affirmation": "trading-sim est en régime VALIDATIONS_CHOISIES : un tour de revue par jalon, et Sylvain seul donne le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md passe trading-sim en FULL_AUTO ou retire la validation par jalon réservée à Sylvain."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration répartit les rôles : ChatGPT conçoit et arbitre, Claude Code exécute, Codex audite ; les missions sont des fichiers .md horodatés et hachés en SHA-256.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme auditeur dans l'orchestration de trading-sim."
+    },
+    {
+     "affirmation": "Le rôle de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md attribue à Codex un autre rôle principal que l'audit."
+    },
+    {
+     "affirmation": "Depuis le 02/10, l'essentiel de l'usage de Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Sylvain abandonne la CLI sous tmux ou ne tient plus de conversation d'audit dédiée."
+    },
+    {
+     "affirmation": "trading-sim compte 17 rapports d'audit Codex dans docs/audits/ et des tests unittest ; la phase 0 est en cours.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les audits Codex de trading-sim ou le projet est abandonné."
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-mcp-server",
@@ -4151,7 +4325,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4172,6 +4346,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -4189,7 +4367,51 @@
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Le sandbox est la limite qui permet à l'agent d'agir en autonomie sans accès illimité à la machine : les commandes lancées par Codex CLI, l'app de bureau ou l'extension IDE s'exécutent dans un environnement contraint plutôt qu'avec un accès complet par défaut.",
+     "source": "https://learn.chatgpt.com/docs/sandboxing",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne décrit plus le sandbox comme appliqué par défaut aux commandes locales de Codex CLI"
+    },
+    {
+     "affirmation": "La documentation du sandbox donne la commande `sudo apt install bubblewrap` pour l'installation sur Linux.",
+     "source": "https://learn.chatgpt.com/docs/sandboxing",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande d'installation de bubblewrap change ou disparaît de la documentation du sandbox"
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex surtout via la CLI autonome (`codex` du PATH) sous tmux, avec remote control depuis l'iPhone.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus la CLI sous tmux comme interface principale de Codex"
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs ; trading-sim figure parmi les projets approuvés de Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne donne plus à Codex un rôle d'audit ou retire trading-sim des projets approuvés"
+    },
+    {
+     "affirmation": "`mission-codex` lance `codex exec -C <worktree> -s danger-full-access` pour les missions de développement, hors trading-sim.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce lancement de `mission-codex` ni son mode de sandbox"
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration à trois IA fait concevoir ChatGPT, exécuter Claude Code et auditer Codex ; le projet reste en VALIDATIONS_CHOISIES, Sylvain seul donnant le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md change l'orchestration de trading-sim ou son régime de validation"
+    },
+    {
+     "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans `docs/audits/` et un registre de protocole scellé `protocol/ledger.jsonl`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces audits Codex ou ce registre dans trading-sim"
+    }
+   ]
   },
   {
    "id": "codex-fonctionnalites-page-sandboxing-auto-review",
@@ -4339,7 +4561,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4360,6 +4582,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -4369,7 +4595,45 @@
      "pourquoi": "Le travail passe par PR et une revue Codex serait vérifiable sur une PR précise."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Codex code review examine le diff d'une pull request GitHub, suit les consignes du dépôt et publie une revue de code GitHub standard centrée sur les problèmes sérieux.",
+     "source": "https://learn.chatgpt.com/docs/third-party/github",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus la revue de pull requests GitHub par Codex ou ne mentionne plus la publication d'une revue GitHub standard."
+    },
+    {
+     "affirmation": "Security Review, disponible en research preview, fournit une revue plus approfondie des problèmes de sécurité potentiels d'une pull request.",
+     "source": "https://learn.chatgpt.com/docs/third-party/github",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Security Review quitte la research preview ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "La documentation montre des consignes de revue rédigées dans une section « Code Review Rules », par exemple ne pas filtrer les comparaisons de traitement sur un comportement post-exposition.",
+     "source": "https://learn.chatgpt.com/docs/third-party/github",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne présente plus d'exemple de section « Code Review Rules » pour guider la revue."
+    },
+    {
+     "affirmation": "trading-sim est un dépôt privé, avec 20 commits en 60 jours ; la phase 0 est en cours.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme dépôt privé actif ou ne mentionne plus cet état."
+    },
+    {
+     "affirmation": "trading-sim compte 17 rapports d'audit Codex dans docs/audits/ ; les audits contradictoires y ont un coût élevé en jetons.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les audits Codex de trading-sim ni leur coût."
+    },
+    {
+     "affirmation": "Dans trading-sim, une modification locale de la spécification (passage à r3.5) reste non commitée, car l'audit correspondant l'a rejetée.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette modification non commitée ou le rejet de l'audit correspondant."
+    }
+   ]
   }
  ]
 }

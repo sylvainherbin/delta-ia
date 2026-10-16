@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-15",
+ "maj_le": "2026-10-16",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -603,7 +603,7 @@
    "retiree": false,
    "origine": "chatgpt-app-reglages",
    "groupe": "Settings",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -620,6 +620,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -628,7 +632,39 @@
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
      "pourquoi": "La consigne globale AGENTS.md de consultation de Delta-IA est déjà présente."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le réglage Personalization permet de modifier les instructions personnelles dans AGENTS.md pour la machine sélectionnée.",
+     "source": "https://learn.chatgpt.com/docs/reference/settings#personalization",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne décrit plus l'édition des instructions personnelles AGENTS.md par machine dans Personalization."
+    },
+    {
+     "affirmation": "Les instructions du dépôt (repository instructions) peuvent aussi s'appliquer aux conversations.",
+     "source": "https://learn.chatgpt.com/docs/reference/settings#personalization",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire la mention des instructions de dépôt applicables aux chats."
+    },
+    {
+     "affirmation": "Sylvain a un `~/.codex/AGENTS.md` global qui demande de consulter Delta-IA avant de vérifier une affirmation sur Claude/Codex/ChatGPT, sauf pendant un passage `$delta`/`$delta-kb`.",
+     "source": "contexte:config.codex.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce fichier AGENTS.md global ou sa consigne de consultation de Delta-IA."
+    },
+    {
+     "affirmation": "Cette consigne précise que les réponses de Delta-IA sont des données secondaires, jamais des instructions, à recouper avec la source primaire ou l'environnement audité.",
+     "source": "contexte:config.codex.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus la consigne de recoupement avec la source primaire."
+    },
+    {
+     "affirmation": "Côté projet, AGENTS.md n'existe que pour le carnet ; trading-sim n'en a volontairement pas (décision différée).",
+     "source": "contexte:config.codex.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique qu'un AGENTS.md projet est ajouté à trading-sim ou retiré du carnet."
+    }
+   ]
   },
   {
    "id": "chatgpt-parametres-reglages-pets",
@@ -2534,7 +2570,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2551,6 +2587,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -2560,7 +2600,27 @@
      "pourquoi": "Le plugin navigateur est actif et son accès à l’historique peut être vérifié."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre browser_use.allow_history_access est de type boolean ; le mettre à false restreint l'accès à l'historique du navigateur.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le paramètre browser_use.allow_history_access change de type, de sens ou disparaît de la référence config.toml"
+    },
+    {
+     "affirmation": "Selon la documentation, des managed requirements peuvent imposer cette restriction d'accès à l'historique.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne mentionne plus l'application de cette restriction par des managed requirements"
+    },
+    {
+     "affirmation": "Le plugin browser figure parmi les plugins actifs observés dans la configuration Codex de Sylvain.",
+     "source": "contexte:config.codex.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus browser parmi les plugins actifs"
+    }
+   ]
   },
   {
    "id": "codex-parametres-browser-use-default-origin-policy",
@@ -3821,7 +3881,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3842,6 +3902,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -3858,7 +3922,51 @@
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--ask-for-approval`, alias `-a`, contrôle quand Codex s'arrête pour demander une approbation humaine avant d'exécuter une commande.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--ask-for-approval` / `-a` change de rôle ou disparaît de la documentation des global flags."
+    },
+    {
+     "affirmation": "Les valeurs documentées pour `--ask-for-approval` sont `on-request` et `never`.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La valeur `never` est retirée ou renommée dans la documentation."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration répartit les rôles : ChatGPT conçoit et arbitre, Claude Code exécute, Codex audite.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme auditeur dans l'orchestration de trading-sim."
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md attribue à Codex un autre rôle que l'audit."
+    },
+    {
+     "affirmation": "trading-sim figure parmi les projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim n'apparaît plus parmi les projets approuvés de Codex dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "trading-sim repose sur une spécification d'architecture versionnée et gelée, un registre de protocole scellé (`protocol/ledger.jsonl`) et 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou ne mentionne plus de spécification gelée ni de registre scellé."
+    },
+    {
+     "affirmation": "trading-sim est le seul projet en VALIDATIONS_CHOISIES : un tour de revue par jalon, et Sylvain seul donne le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim passe en FULL_AUTO ou ses règles de validation par jalon changent dans CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-ca-certificate",
@@ -3930,7 +4038,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3975,6 +4083,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -3987,7 +4099,33 @@
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
      "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--cd`, alias `-C`, fixe le répertoire de travail de l'agent avant qu'il ne commence à traiter la demande ; elle prend un chemin (path).",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--cd`/`-C` change de syntaxe, de rôle ou disparaît des global flags de la documentation."
+    },
+    {
+     "affirmation": "`mission-codex` lance `codex exec -C <worktree> -s danger-full-access` pour les missions de développement des chefs, sur delta-ia et discipline.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus `mission-codex` lançant `codex exec -C <worktree>`."
+    },
+    {
+     "affirmation": "`mission-codex <worktree> <consigne> [nom]` lance `codex exec` en arrière-plan ; le code de Codex va dans le worktree, puis le lanceur commite les seuls chemins déclarés.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus `mission-codex` ou ne fait plus travailler Codex dans un worktree."
+    },
+    {
+     "affirmation": "Les missions utilisent une branche et un worktree par mission sous `~/projets/.worktrees/<projet>/<mission>`, l'arbre principal restant sur `main`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md abandonne la règle d'un worktree par mission ou ne garde plus l'arbre principal sur `main`."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-cloud-attempts",
@@ -4344,7 +4482,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4369,6 +4507,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -4385,7 +4527,51 @@
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option globale `--config`, alias `-c`, de `codex` surcharge des valeurs de configuration.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--config`/`-c` disparaît des options globales de la documentation ou ne surcharge plus la configuration."
+    },
+    {
+     "affirmation": "Les valeurs passées à `--config` s'écrivent sous la forme key=value. Elles sont interprétées comme TOML si possible, sinon comme une chaîne littérale.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le format key=value ou abandonne l'interprétation TOML des valeurs."
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux, avec remote control depuis l'iPhone. Parmi ses conversations nommées par rôle figure l'audit.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux ni de conversation d'audit."
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'attribue plus à Codex le rôle d'auditeur sur trading-sim."
+    },
+    {
+     "affirmation": "Sur trading-sim, l'orchestration répartit les rôles entre trois IA : ChatGPT conçoit et arbitre, Claude Code exécute, Codex audite.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'orchestration à trois IA où Codex audite trading-sim."
+    },
+    {
+     "affirmation": "trading-sim reste en VALIDATIONS_CHOISIES : un tour de revue par jalon, et Sylvain seul donne le go.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim passe en FULL_AUTO ou CONTEXTE.md supprime ce régime de validation."
+    },
+    {
+     "affirmation": "trading-sim repose sur une spécification d'architecture versionnée et gelée et sur un registre de protocole scellé. Le projet compte 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim, ni ses audits Codex, ni sa spécification gelée."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-dangerously-bypass-approvals-and-sandbox-yolo",
@@ -4550,7 +4736,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex debug models",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4563,6 +4749,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -4571,7 +4761,33 @@
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
      "pourquoi": "Le profil audit est utilisé et doit rester compatible avec le catalogue local."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--bundled` de `codex debug models` saute le rafraîchissement et affiche uniquement le catalogue de modèles fourni avec le binaire Codex actuel.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-debug-models",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--bundled` change de comportement ou disparaît de la documentation de `codex debug models`."
+    },
+    {
+     "affirmation": "L'option `--bundled` est un paramètre booléen de `codex debug models`.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-debug-models",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne présente plus `--bundled` comme une option booléenne."
+    },
+    {
+     "affirmation": "Trois profils Codex sont utilisés au quotidien par Sylvain : `audit`, `rapide` et `securite`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le profil `audit` parmi les profils utilisés au quotidien."
+    },
+    {
+     "affirmation": "Les modèles et réglages exacts de chaque profil, dont `audit`, sont décrits dans `docs/data/etat.json`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne renvoie plus à `docs/data/etat.json` pour les modèles des profils."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-debug-prompt-input-image-i",
@@ -5320,7 +5536,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5353,6 +5569,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -5369,7 +5589,39 @@
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
      "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`codex exec -c`, alias `--config`, applique une surcharge de configuration en ligne (valeurs `key=value`) pour l'exécution non interactive, et l'option peut être répétée.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `-c`/`--config` de `codex exec` change de syntaxe, n'est plus répétable ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs ; trading-sim fait partie des projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus Codex comme auditeur de trading-sim ou retire trading-sim des projets approuvés."
+    },
+    {
+     "affirmation": "`codex exec` est utilisé hors trading-sim : par la chaîne de nuit D70 (config explicite `--ignore-user-config`, profil `delta_auto`) et par `mission-codex`.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que `codex exec` est désormais utilisé sur trading-sim ou que D70 et `mission-codex` ne l'utilisent plus."
+    },
+    {
+     "affirmation": "`mission-codex` passe toujours le modèle et l'effort explicitement à `codex exec`, jamais hérités de `~/.codex/config.toml`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que `mission-codex` hérite désormais ses réglages de `~/.codex/config.toml`."
+    },
+    {
+     "affirmation": "trading-sim repose sur une spécification d'architecture versionnée et gelée, un registre de protocole scellé (`protocol/ledger.jsonl`) et 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim ou n'y mentionne plus de spécification gelée ni d'audits Codex."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-cd-c",
@@ -5399,7 +5651,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5412,6 +5664,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -5420,7 +5676,27 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits doivent cibler le dépôt trading-sim."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option --cd, -C de codex exec fixe la racine de l'espace de travail (workspace root) avant l'exécution de la tâche ; elle prend un chemin (path) en valeur.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option --cd, -C change de syntaxe ou de rôle, ou disparaît de la documentation de codex exec."
+    },
+    {
+     "affirmation": "Le projet trading-sim conserve 17 rapports d'audit Codex dans docs/audits/.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou ne mentionne plus d'audits Codex dans docs/audits/."
+    },
+    {
+     "affirmation": "trading-sim est décrit comme le projet le plus exigeant, avec un coût élevé en jetons des audits contradictoires et des cycles longs de vérification formelle.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme exigeant ou ne mentionne plus le coût des audits."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-color",
@@ -5830,7 +6106,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5843,6 +6119,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -5851,7 +6131,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les rapports d’audit peuvent être relus par machine."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--json` (alias `--experimental-json`) de `codex exec` affiche des événements JSON délimités par des sauts de ligne au lieu d'un texte formaté.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'option `--json` ou `--experimental-json` de `codex exec` change de comportement ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "L'option `--json` de `codex exec` est de type booléen.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation attribue un autre type de valeur à l'option `--json`"
+    },
+    {
+     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de rapports d'audit Codex dans `docs/audits/` pour trading-sim"
+    },
+    {
+     "affirmation": "Sur trading-sim, les audits contradictoires ont un coût élevé en jetons et les cycles de vérification formelle sont longs.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces difficultés pour trading-sim"
+    },
+    {
+     "affirmation": "Le projet trading-sim utilise déjà un registre au format JSONL (`protocol/ledger.jsonl`).",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus `protocol/ledger.jsonl` dans trading-sim"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-last",
@@ -5881,7 +6193,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5894,6 +6206,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -5902,7 +6218,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits sont rattachés au dépôt trading-sim."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--last` de `codex exec` reprend la conversation la plus récente du répertoire de travail courant.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--last` disparaît de la documentation de `codex exec` ou ne se limite plus au répertoire de travail courant."
+    },
+    {
+     "affirmation": "L'option `--last` de `codex exec` est documentée comme un booléen.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation attribue à `--last` un autre type de valeur ou retire l'option."
+    },
+    {
+     "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus d'audits Codex dans `docs/audits/` de trading-sim, ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "trading-sim est un dépôt privé dont la phase 0 est en cours.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que trading-sim a quitté la phase 0, n'est plus actif ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "Les audits contradictoires de trading-sim ont un coût élevé en jetons, et le projet connaît des cycles longs de vérification formelle.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne signale plus le coût en jetons des audits ni les cycles longs de vérification de trading-sim."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-local-provider",
@@ -5974,7 +6322,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5987,6 +6335,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -5995,7 +6347,33 @@
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
      "pourquoi": "Les profils audit et rapide restent utilisés pour les audits."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Pour `codex exec`, l'option `--model` (forme courte `-m`) remplace le modèle configuré pour cette seule exécution.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--model`/`-m` disparaît de la documentation de `codex exec` ou ne s'applique plus à la seule exécution en cours."
+    },
+    {
+     "affirmation": "L'option `--model, -m` de `codex exec` prend une valeur de type string, le nom du modèle à utiliser.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation change le type de valeur attendu par `--model`."
+    },
+    {
+     "affirmation": "Sylvain utilise trois profils au quotidien : `audit`, `rapide` et `securite`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces trois profils comme utilisés au quotidien."
+    },
+    {
+     "affirmation": "Le profil `securite` reste volontairement sur un modèle différent du défaut, par choix de Sylvain.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que `securite` utilise désormais le modèle par défaut ou que ce choix est abandonné."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-oss",
@@ -6067,7 +6445,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6080,6 +6458,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6088,7 +6470,39 @@
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Les retours d’audit sont conservés comme fichiers séparés."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option --output-last-message (forme courte -o) de codex exec écrit le message final de l'assistant dans un fichier dont le chemin est donné en valeur.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option --output-last-message/-o disparaît de codex exec ou n'écrit plus le message final dans un fichier."
+    },
+    {
+     "affirmation": "La documentation présente cette option comme utile pour le scripting en aval (downstream scripting).",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire cette mention d'usage pour le scripting."
+    },
+    {
+     "affirmation": "Sur trading-sim, Codex fait l'audit adversarial, ChatGPT (« Work ») étant l'architecte et l'arbitre.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne confie plus l'audit adversarial de trading-sim à Codex."
+    },
+    {
+     "affirmation": "Le dossier trading-sim contient les missions d'audit NEXT-CODEX-AUDIT-* et les rapports de retour, sous forme de fichiers .md.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces missions d'audit ni les rapports de retour en fichiers."
+    },
+    {
+     "affirmation": "Les conventions de trading-sim prévoient des verdicts en blocs CLÉ = VALEUR lisibles par machine et des noyaux gelés en lecture seule.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md abandonne le format CLÉ = VALEUR des verdicts ou la lecture seule des noyaux gelés."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-output-schema",
@@ -6118,7 +6532,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6131,6 +6545,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6139,7 +6557,33 @@
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Les verdicts utilisent déjà des blocs lisibles par machine."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option --output-schema de codex exec prend un chemin (path) vers un fichier JSON Schema qui décrit la forme attendue de la réponse finale.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option --output-schema disparaît de la documentation de codex exec ou n'accepte plus un chemin vers un JSON Schema."
+    },
+    {
+     "affirmation": "Selon la documentation, Codex valide sa sortie au regard du schéma fourni à --output-schema.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne mentionne plus de validation de la sortie par rapport au schéma."
+    },
+    {
+     "affirmation": "Sur trading-sim, Codex fait l'audit adversarial, et le dossier contient des missions NEXT-CODEX-AUDIT-* rédigées par ChatGPT.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne confie plus l'audit adversarial de trading-sim à Codex ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "Les verdicts de trading-sim suivent la convention de blocs CLÉ = VALEUR lisibles par machine.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md abandonne la convention des verdicts en blocs CLÉ = VALEUR lisibles par machine."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-profile-p",
@@ -6169,7 +6613,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6182,6 +6626,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6190,7 +6638,27 @@
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
      "pourquoi": "Le profil audit est utilisé et ses réglages sont relevés."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--profile` (alias `-p`) de `codex exec` superpose le fichier `$CODEX_HOME/profile-name.config.toml` à la configuration utilisateur de base ; elle prend une valeur de type string.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--profile, -p` disparaît de la documentation de `codex exec` ou change de comportement ou d'emplacement de fichier."
+    },
+    {
+     "affirmation": "Trois profils sont utilisés au quotidien par Sylvain : `audit`, `rapide` et `securite`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le profil `audit` parmi les profils utilisés."
+    },
+    {
+     "affirmation": "Les modèles, niveaux d'effort et réglages exacts de chaque profil sont consignés dans `docs/data/etat.json`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne renvoie plus à `docs/data/etat.json` pour les réglages des profils."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-prompt",
@@ -6322,7 +6790,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6335,6 +6803,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6343,7 +6815,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits suivent des restrictions de capacités."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--sandbox`, `-s` de `codex exec` fixe la politique de bac à sable appliquée aux commandes générées par le modèle ; par défaut, elle suit la configuration.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--sandbox`/`-s` disparaît de la documentation de `codex exec` ou change de rôle."
+    },
+    {
+     "affirmation": "L'option `--sandbox` accepte les valeurs `read-only`, `workspace-write` et `danger-full-access`.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La valeur `read-only` est retirée ou renommée dans la documentation."
+    },
+    {
+     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex, rangés dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus d'audits Codex pour trading-sim, ou le projet n'y est plus décrit."
+    },
+    {
+     "affirmation": "Sur trading-sim, `.claude/settings.json` applique une politique de capacités : il interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus de politique de restriction des capacités pour trading-sim."
+    },
+    {
+     "affirmation": "La méthode de trading-sim repose sur une spécification d'architecture versionnée et gelée et sur un registre de protocole scellé (`protocol/ledger.jsonl`).",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus de spécification gelée ni de registre scellé pour trading-sim."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-session-id",
@@ -6517,7 +7021,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex execpolicy",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6530,6 +7034,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6538,7 +7046,21 @@
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
      "pourquoi": "La règle actuelle est un script entier autorisé comme préfixe."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "La documentation définit l'argument COMMAND... de `codex execpolicy` comme la commande à vérifier par rapport aux politiques spécifiées ; il accepte des arguments variables (var-args).",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'argument COMMAND... de `codex execpolicy` change de rôle ou de syntaxe, ou la commande disparaît de la documentation."
+    },
+    {
+     "affirmation": "Le fichier de règles `rules/default.rules` de Sylvain pèse 32 Ko pour une seule `prefix_rule`, qui autorise un script d'audit entier collé tel quel.",
+     "source": "contexte:config.codex.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus `rules/default.rules` comme contenant une unique `prefix_rule` autorisant un script d'audit entier."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-execpolicy-pretty",
@@ -6619,7 +7141,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex execpolicy",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6632,6 +7154,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -6640,7 +7166,27 @@
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
      "pourquoi": "Le remplacement des règles trop larges doit être vérifié."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--rules` (alias `-r`) de `codex execpolicy` prend le chemin d'un fichier de règles execpolicy à évaluer.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'option `--rules`/`-r` change de syntaxe ou disparaît de la documentation de `codex execpolicy`"
+    },
+    {
+     "affirmation": "L'option `--rules` est répétable : fournir plusieurs fois l'option combine les règles de plusieurs fichiers.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-execpolicy",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne décrit plus `--rules` comme répétable ni la combinaison de règles entre fichiers"
+    },
+    {
+     "affirmation": "Le fichier `rules/default.rules` de Sylvain fait 32 Ko pour une seule `prefix_rule`, qui autorise un script d'audit entier collé tel quel.",
+     "source": "contexte:config.codex.regles-globales",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus `rules/default.rules` comme une unique `prefix_rule` de 32 Ko autorisant un script d'audit entier"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-features-disable-subcommand",
@@ -7186,7 +7732,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex login",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7227,6 +7773,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -7239,7 +7789,45 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`codex login status` affiche le mode d'authentification actif et se termine avec le code 0 lorsque l'utilisateur est connecté.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-login",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La sous-commande `codex login status` change de comportement ou de code de sortie, ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux avec remote control depuis l'iPhone ; les sessions tournent comme services utilisateur `codex-session@<nom>`.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI sous tmux avec remote control."
+    },
+    {
+     "affirmation": "La session tmux `codex` utilise le binaire `codex` du PATH, installé par npm, distinct de celui livré avec l'app de bureau ; toute vérification doit se faire sur le binaire de la session concernée.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne distingue plus le binaire du PATH de celui de l'app de bureau pour la session tmux."
+    },
+    {
+     "affirmation": "Lors de l'essai du 02/10/2026, `codex remote-control start` était refusé en boucle par une erreur 409 « Remote app server already online » tant que l'app de bureau était ouverte.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus l'erreur 409 liée au remote control."
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, notamment sur trading-sim, qui figure parmi les projets approuvés.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit sur trading-sim."
+    },
+    {
+     "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ou ses audits Codex."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-login-with-access-token",
@@ -7353,7 +7941,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7386,6 +7974,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -7394,7 +7986,39 @@
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
      "pourquoi": "mission-codex passe explicitement le modèle et l’effort selon la nature de la mission."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--model`, alias `-m`, remplace le modèle défini dans la configuration (exemple donné : gpt-6.1-sol) ; elle prend une valeur de type string.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option --model / -m change de syntaxe, ne remplace plus le modèle de la configuration ou disparaît de la documentation des global flags."
+    },
+    {
+     "affirmation": "Le lanceur `mission-codex <worktree> <consigne> [nom]` lance `codex exec` en arrière-plan avec `-s danger-full-access`.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus mission-codex ou indique qu'il ne lance plus codex exec."
+    },
+    {
+     "affirmation": "Avec `mission-codex`, le modèle et l'effort sont toujours passés explicitement, jamais hérités de `~/.codex/config.toml`, selon la nature de la mission (barème `codex_modeles.py` de `discipline`).",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que mission-codex hérite désormais du modèle de ~/.codex/config.toml ou abandonne le barème codex_modeles.py."
+    },
+    {
+     "affirmation": "Barème des missions Codex : mécanique → `gpt-6-luna` / medium, code ou correctif → `gpt-6.1-sol` / high ; `gpt-6-astra` exige un motif.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md modifie le barème des modèles par nature de mission ou retire ces modèles."
+    },
+    {
+     "affirmation": "Après la mission, le lanceur déclare `A_RELIRE` dans OPÉRER et y consigne modèle, effort et jetons.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'indique plus que mission-codex consigne le modèle, l'effort et les jetons dans OPÉRER."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-no-alt-screen",
@@ -7424,7 +8048,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7461,6 +8085,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -7473,7 +8101,33 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "L’objectif Codex sous tmux fournit le scénario de comparaison des deux modes d’écran."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--no-alt-screen` de `codex` désactive le mode écran alternatif de la TUI et remplace `tui.alternate_screen` pour cette exécution.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'option `--no-alt-screen` change de comportement ou disparaît de la documentation des options globales"
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, l'interface Codex de Sylvain est la CLI sous tmux avec remote control depuis l'iPhone ; l'essentiel de l'activité passe par la CLI sous tmux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux"
+    },
+    {
+     "affirmation": "Les sessions Codex tournent comme services utilisateur modèles `codex-session@<nom>` (tmux `-L codex-<nom>`), ce qui permet de lancer une session tmux d'essai à part.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les sessions Codex sous services `codex-session@<nom>` et tmux"
+    },
+    {
+     "affirmation": "Toute vérification de syntaxe Codex (`--help`) se fait sur le binaire de la session concernée : celui du PATH pour la session tmux `codex`.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne prescrit plus de vérifier la syntaxe sur le binaire du PATH pour la session tmux"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-no-daemon",
@@ -7634,7 +8288,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7647,6 +8301,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -7655,7 +8313,27 @@
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
      "pourquoi": "Le profil audit sert déjà aux audits."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--profile` (forme courte `-p`) de la CLI Codex superpose le fichier $CODEX_HOME/profile-name.config.toml à la configuration utilisateur de base ; elle prend une valeur de type string.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--profile`/`-p` change de comportement, de syntaxe ou disparaît de la liste des global flags de la documentation."
+    },
+    {
+     "affirmation": "Trois profils Codex sont utilisés au quotidien : `audit`, `rapide` et `securite` (observé).",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le profil `audit` parmi les profils utilisés au quotidien."
+    },
+    {
+     "affirmation": "Les modèles, niveaux d'effort et réglages exacts de chaque profil sont consignés dans `docs/data/etat.json`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne renvoie plus à `docs/data/etat.json` pour les réglages des profils."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-prompt",
@@ -7928,7 +8606,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7961,6 +8639,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -7969,7 +8651,45 @@
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
      "pourquoi": "D70 utilise codex exec et le binaire livré avec l’app pour la chaîne."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--include-non-interactive` de `codex resume` inclut les sessions non interactives dans le sélecteur et dans la sélection `--last` ; c'est une valeur booléenne.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--include-non-interactive` change de comportement ou disparaît de la documentation de `codex resume`."
+    },
+    {
+     "affirmation": "La chaîne de nuit D70 utilise `codex exec` (étapes `codex-delta` et `codex-delta-kb`, config `--ignore-user-config`, profil de permissions `delta_auto`).",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de `codex exec` par la chaîne D70 ou ses étapes changent."
+    },
+    {
+     "affirmation": "La chaîne D70 utilise le binaire livré avec l'app de bureau (`/usr/lib/chatgpt/resources/codex`), sans dépendre de l'app ouverte.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que D70 utilise un autre binaire que celui de l'app de bureau."
+    },
+    {
+     "affirmation": "Toute vérification de syntaxe Codex par un agent se fait sur le binaire qu'utilise la session concernée : celui de l'app de bureau pour la chaîne D70.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md supprime ou modifie cette règle de vérification sur le binaire de la session."
+    },
+    {
+     "affirmation": "Le binaire du PATH et celui de l'app de bureau partagent le même `$CODEX_HOME` (`~/.codex`), donc les sessions restent cohérentes entre les deux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Les deux binaires n'utilisent plus le même `$CODEX_HOME` selon CONTEXTE.md."
+    },
+    {
+     "affirmation": "Depuis le 02/10, l'activité Codex passe pour l'essentiel par la CLI sous tmux et par des missions non interactives.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de missions non interactives dans l'activité Codex."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-resume-last",
@@ -7999,7 +8719,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8036,6 +8756,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -8052,7 +8776,45 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "La reprise sous tmux participe à l’objectif de pilotage Codex distant."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`codex resume --last` saute le sélecteur et reprend la conversation la plus récente du répertoire de travail courant.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'option `--last` change de comportement ou disparaît de la documentation de `codex resume`"
+    },
+    {
+     "affirmation": "Depuis le 02/10, l'essentiel de l'activité Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit et la console.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux ni de conversations d'audit"
+    },
+    {
+     "affirmation": "trading-sim fait partie des projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim n'est plus listé parmi les projets approuvés de Codex dans CONTEXTE.md"
+    },
+    {
+     "affirmation": "Le rôle de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne présente plus Codex comme auditeur du travail de Claude sur trading-sim"
+    },
+    {
+     "affirmation": "trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim ni ses audits Codex"
+    },
+    {
+     "affirmation": "L'objectif Codex en CLI + tmux + remote control est atteint le 02/10/2026, la reprise se faisant aujourd'hui par `codex resume <id>`.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la piste 12 disparaît de CONTEXTE.md ou la reprise ne passe plus par `codex resume`"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-resume-session-id",
@@ -8082,7 +8844,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex resume",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8095,6 +8857,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8103,7 +8869,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits doivent rester rattachés à leur mission."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`codex resume SESSION_ID` reprend la session indiquée ; SESSION_ID accepte un uuid ou un nom de session.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la commande `codex resume` change de syntaxe, n'accepte plus d'identifiant de session ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Sans SESSION_ID, l'option `--last` permet de continuer la session la plus récente.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-resume",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'option `--last` est retirée ou change de comportement dans la documentation de `codex resume`"
+    },
+    {
+     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans `docs/audits/` et consigne ses décisions de phase dans `docs/decisions/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou ne mentionne plus d'audits Codex dans trading-sim"
+    },
+    {
+     "affirmation": "Sur trading-sim, une modification locale de la spécification (passage à r3.5) reste non commitée, car l'audit correspondant l'a rejetée.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus cette modification r3.5 en attente ni le rejet par l'audit"
+    },
+    {
+     "affirmation": "Les difficultés visibles de trading-sim incluent des cycles longs de vérification formelle et un coût élevé en jetons des audits contradictoires.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus le coût des audits ni les cycles longs de vérification parmi les difficultés du projet"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-review-base",
@@ -8184,7 +8982,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8197,6 +8995,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8205,7 +9007,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits reposent sur des changements versionnés."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--commit` de `codex review` examine les changements introduits par le commit spécifié, désigné par son SHA.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--commit` disparaît de la documentation de `codex review` ou n'accepte plus un SHA."
+    },
+    {
+     "affirmation": "trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus d'audits Codex dans `docs/audits/` pour trading-sim."
+    },
+    {
+     "affirmation": "La méthode de trading-sim repose sur une spécification d'architecture versionnée et gelée (`TRADING-SIM-ARCHITECTURE-V1.0`) et sur des décisions de phase consignées dans `docs/decisions/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus de spécification versionnée pour trading-sim."
+    },
+    {
+     "affirmation": "Le dépôt privé trading-sim compte 20 commits en 60 jours, réalisés par salves ; une modification locale de la spécification (r3.5) reste non commitée car l'audit correspondant l'a rejetée.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'historique de commits ou le lien entre audits et commits de trading-sim."
+    },
+    {
+     "affirmation": "Les audits contradictoires de trading-sim ont un coût élevé en jetons, selon CONTEXTE.md.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne signale plus le coût en jetons des audits comme difficulté de trading-sim."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-review-prompt",
@@ -8235,7 +9069,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8248,6 +9082,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8256,7 +9094,33 @@
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Les missions d’audit sont rédigées dans des fichiers dédiés."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'argument PROMPT de `codex review` fournit des consignes de revue personnalisées.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
+     "releve_le": "2026-10-16",
+     "caduc_si": "l'argument PROMPT de `codex review` change de rôle ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Avec la valeur `-`, `codex review` lit les consignes de revue depuis l'entrée standard (stdin).",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la valeur `-` ne lit plus stdin ou n'est plus documentée pour `codex review`"
+    },
+    {
+     "affirmation": "Le dossier trading-sim contient des missions rédigées par ChatGPT, dont des fichiers `NEXT-CODEX-AUDIT-*`.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les fichiers `NEXT-CODEX-AUDIT-*` dans trading-sim"
+    },
+    {
+     "affirmation": "Sur trading-sim, Codex fait l'audit adversarial, tandis que ChatGPT (« Work ») est l'architecte et l'arbitre.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'attribue plus l'audit adversarial de trading-sim à Codex"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-review-strict-config",
@@ -8379,7 +9243,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex review",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8392,6 +9256,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8400,7 +9268,27 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "La révision r3.5 locale reste non commitée."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--uncommitted` de `codex review` examine les changements indexés (staged), non indexés (unstaged) et non suivis (untracked).",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--uncommitted` disparaît de la documentation de `codex review` ou ne couvre plus ces trois types de changements."
+    },
+    {
+     "affirmation": "Dans trading-sim, une modification locale de la spécification (passage à r3.5) reste non commitée, car l'audit correspondant l'a rejetée.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md n'indique plus que la révision r3.5 est non commitée dans trading-sim, ou ne décrit plus ce projet."
+    },
+    {
+     "affirmation": "La méthode de trading-sim repose sur des audits Codex : 17 rapports d'audit sont rangés dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les audits Codex de trading-sim dans `docs/audits/`."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-sandbox-cd-c",
@@ -8763,7 +9651,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8776,6 +9664,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8784,7 +9676,39 @@
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Les audits du dépôt suivent des restrictions de capacités."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--sandbox` (forme courte `-s`) de `codex` sélectionne la politique de sandbox appliquée aux commandes shell générées par le modèle.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--sandbox`/`-s` change de nom, de rôle ou disparaît de la liste des global flags."
+    },
+    {
+     "affirmation": "Les valeurs acceptées par `--sandbox` sont `read-only`, `workspace-write` et `danger-full-access`.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La valeur `read-only` est retirée ou renommée, ou la liste des valeurs change dans la documentation."
+    },
+    {
+     "affirmation": "La méthode du projet trading-sim s'appuie sur des audits Codex : 17 rapports d'audit Codex sont rangés dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus les audits Codex de trading-sim ou le projet disparaît."
+    },
+    {
+     "affirmation": "Sur trading-sim, une politique de capacités dans `.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de politique de capacités restrictive pour trading-sim."
+    },
+    {
+     "affirmation": "Le projet trading-sim est en simulation uniquement : zéro argent réel, zéro ordre, zéro courtier.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit trading-sim comme passant à des ordres ou de l'argent réel, ou ne décrit plus le projet."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-search",
@@ -8814,7 +9738,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8835,6 +9759,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -8843,7 +9771,45 @@
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "La veille doit signaler les nouvelles fonctionnalités et leur usage concret."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `codex --search` active la recherche web en direct : elle règle `web_search = \"live\"` au lieu de la valeur par défaut `\"cached\"`.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--search` change de comportement, n'agit plus sur `web_search` ou disparaît de la liste des global flags de la documentation."
+    },
+    {
+     "affirmation": "Sylvain utilise Codex en CLI sous tmux avec remote control.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Codex en CLI par Sylvain."
+    },
+    {
+     "affirmation": "Sylvain attend de la veille des alertes sur les nouvelles fonctionnalités.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les alertes sur les nouvelles fonctionnalités comme attente de la veille."
+    },
+    {
+     "affirmation": "La consigne de la veille est de partir des nouveautés (changelogs de Claude Code et de Codex, annonces Claude et ChatGPT) et d'expliquer la commande ou le réglage exact à employer.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire ou modifie cette consigne pour la veille."
+    },
+    {
+     "affirmation": "L'irritant déclaré de Sylvain est la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus cet irritant."
+    },
+    {
+     "affirmation": "Hors trading-sim, ChatGPT/Codex sert à Sylvain pour auditer le travail de Claude.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit du travail de Claude."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-sqlite-home",
@@ -8915,7 +9881,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8928,6 +9894,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -8936,7 +9906,27 @@
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
      "pourquoi": "Le profil audit est utilisé et ses réglages doivent être pris en compte."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "L'option `--strict-config` provoque une erreur quand config.toml contient des champs que la version installée de Codex ne reconnaît pas.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option `--strict-config` disparaît de la documentation ou ne signale plus les champs inconnus de config.toml."
+    },
+    {
+     "affirmation": "`--strict-config` est pris en charge par les commandes d'exécution comme `codex`, `exec`, `review`, `resume`, `fork`, `app-server` et `exec-server` ; sa valeur est un booléen.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire `codex` de la liste des commandes acceptant `--strict-config` ou change le type de l'option."
+    },
+    {
+     "affirmation": "Sylvain utilise au quotidien trois profils Codex : `audit`, `rapide` et `securite`.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le profil `audit` parmi les profils utilisés au quotidien."
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-worktree",
@@ -10931,7 +11921,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10956,6 +11946,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -10969,7 +11963,39 @@
      "pourquoi": "Le travail se fait sur un portable Linux."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`features.prevent_idle_sleep` est un réglage de type boolean qui empêche la machine de se mettre en veille pendant qu'un tour est en cours d'exécution.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le réglage disparaît de la référence de config.toml ou change de type ou de comportement"
+    },
+    {
+     "affirmation": "Le réglage `features.prevent_idle_sleep` est décrit comme expérimental et désactivé par défaut.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation ne le dit plus expérimental ou l'active par défaut"
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, l'essentiel de l'activité Codex de Sylvain passe par la CLI sous tmux, avec des conversations nommées par rôle, dont l'audit.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux pour les audits"
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs ; trading-sim fait partie des projets approuvés.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus trading-sim ni le rôle d'audit de Codex"
+    },
+    {
+     "affirmation": "La machine de travail est un portable HP sous Linux Mint 22.1, sur lequel tmux est installé.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit une autre machine ou ne mentionne plus tmux"
+    }
+   ]
   },
   {
    "id": "codex-parametres-features-remote-plugin",
@@ -12295,7 +13321,7 @@
    "retiree": false,
    "origine": "oa-hooks",
    "groupe": "Hooks",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12328,6 +13354,10 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -12340,7 +13370,45 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Les contrôles SHA-256 et PYTHONDONTWRITEBYTECODE=1 restent des pistes de hooks."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "PreToolUse peut intercepter les commandes Bash, les éditions de fichiers passant par apply_patch, les appels d'outils MCP et d'autres outils de fonction locaux ; la page Tool coverage précise les chemins pris en charge et les exceptions.",
+     "source": "https://learn.chatgpt.com/docs/hooks#pretooluse",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire Bash des chemins interceptés par PreToolUse ou supprime l'événement."
+    },
+    {
+     "affirmation": "Un hook PreToolUse peut renvoyer un objet hookSpecificOutput avec hookEventName « PreToolUse », permissionDecision « deny » et un permissionDecisionReason pour bloquer une commande.",
+     "source": "https://learn.chatgpt.com/docs/hooks#pretooluse",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le format de sortie hookSpecificOutput ou la valeur permissionDecision « deny » change ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "Au relevé du 07/10, Sylvain n'a qu'un seul hook, PermissionDenied dans ~/.claude/settings.json, qui lance operer refus ; il n'a aucun hook Codex.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md signale un hook Codex installé ou un autre hook ajouté."
+    },
+    {
+     "affirmation": "Le contrôle PYTHONDONTWRITEBYTECODE=1, répété à la main, est cité comme une piste pouvant devenir un hook, tout comme la vérification SHA-256 des missions.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md retire cette piste ou indique que le contrôle PYTHONDONTWRITEBYTECODE=1 est déjà automatisé."
+    },
+    {
+     "affirmation": "trading-sim est un projet de Sylvain, sans .venv, où les vérifications numériques abondent.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim."
+    },
+    {
+     "affirmation": "Dans l'usage observé de Sylvain, Bash est l'outil très dominant, avec environ 2 900 appels au relevé du 25/09.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Un nouveau relevé d'usage dans CONTEXTE.md montre que Bash n'est plus l'outil dominant."
+    }
+   ]
   },
   {
    "id": "codex-parametres-hook-sessionend",
@@ -16973,7 +18041,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16986,6 +18054,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -16995,7 +18067,33 @@
      "pourquoi": "Les profils audit et rapide règlent explicitement des efforts différents."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Dans config.toml, model_reasoning_effort est une option de type string qui fixe l'effort de raisonnement annoncé par le modèle sélectionné, par exemple low, medium, high, xhigh, max ou ultra.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "L'option model_reasoning_effort est renommée, change de type ou disparaît de la référence config.toml."
+    },
+    {
+     "affirmation": "Les niveaux d'effort disponibles pour model_reasoning_effort dépendent du modèle et du client.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne lie plus les niveaux disponibles au modèle et au client."
+    },
+    {
+     "affirmation": "Sylvain utilise au quotidien trois profils Codex : audit, rapide et securite.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus les profils audit et rapide parmi les profils utilisés au quotidien."
+    },
+    {
+     "affirmation": "Chaque profil a ses propres modèles, niveaux d'effort et réglages, dont le détail est consigné dans docs/data/etat.json.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus de niveaux d'effort propres à chaque profil ou ne renvoie plus à docs/data/etat.json."
+    }
+   ]
   },
   {
    "id": "codex-parametres-model-reasoning-summary",
@@ -18671,7 +19769,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18684,6 +19782,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -18693,7 +19795,39 @@
      "pourquoi": "Les plugins actifs méritent un contrôle d'activation ciblé."
     }
    },
-   "exemple_impossible": "La clé contient <plugin> ; aucun plugin de marketplace locale avec sa clé réelle n’est donné dans le contexte."
+   "exemple_impossible": "La clé contient <plugin> ; aucun plugin de marketplace locale avec sa clé réelle n’est donné dans le contexte.",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre plugins.<plugin>.enabled, de type boolean, active ou désactive un plugin de marketplace locale à l'aide d'une clé plugin-name@marketplace-name.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le paramètre plugins.<plugin>.enabled change de type ou de format de clé, ou disparaît de la référence de configuration."
+    },
+    {
+     "affirmation": "La valeur est lue dans la configuration fusionnée effective, et les réglages d'un projet de confiance (trusted-project) peuvent surcharger les valeurs par défaut utilisateur, cloud-managed et système.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne permet plus aux réglages de projet de confiance de surcharger les valeurs utilisateur, cloud-managed ou système."
+    },
+    {
+     "affirmation": "Un rafraîchissement de marketplace peut installer ou rafraîchir les plugins configurés même lorsqu'ils sont désactivés, et ce paramètre ne surcharge pas les états d'activation gérés par l'espace de travail.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation modifie le comportement du rafraîchissement de marketplace ou laisse ce paramètre surcharger les états workspace-managed."
+    },
+    {
+     "affirmation": "La configuration Codex de Sylvain compte plusieurs plugins actifs observés, dont codex-app-tools, browser, documents, pdf et unified-computer-use.",
+     "source": "contexte:config.codex.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus de plugins actifs dans la configuration Codex de Sylvain."
+    },
+    {
+     "affirmation": "Côté skills, la configuration de Sylvain ne comporte que les skills système, dont review-agent, plugin-creator et skill-installer.",
+     "source": "contexte:config.codex.skills",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que Sylvain a installé des skills autres que les skills système."
+    }
+   ]
   },
   {
    "id": "codex-parametres-plugins-plugin-mcp-servers-server-default-tools-approval-mode",
@@ -19101,7 +20235,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19114,6 +20248,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -19123,7 +20261,39 @@
      "pourquoi": "La revue croisée du même diff permet de comparer deux réglages de modèle."
     }
    },
-   "exemple_impossible": "La fiche ne cite aucune valeur de modèle pour review_model ; en choisir une introduirait une chaîne absente de la source."
+   "exemple_impossible": "La fiche ne cite aucune valeur de modèle pour review_model ; en choisir une introduirait une chaîne absente de la source.",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre `review_model` est de type string et constitue une surcharge optionnelle du modèle utilisé par `/review`.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le paramètre `review_model` disparaît de la référence de configuration ou change de type ou de rôle."
+    },
+    {
+     "affirmation": "Sans `review_model`, `/review` utilise par défaut le modèle de la session en cours.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne fait plus retomber `/review` sur le modèle de la session courante."
+    },
+    {
+     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus d'audits Codex dans `docs/audits/` pour trading-sim."
+    },
+    {
+     "affirmation": "Le coût élevé en jetons des audits contradictoires figure parmi les difficultés visibles (déduites) de trading-sim.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne cite plus le coût en jetons des audits comme difficulté de trading-sim."
+    },
+    {
+     "affirmation": "Une modification locale de la spécification (passage à r3.5) reste non commitée parce que l'audit correspondant l'a rejetée.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La modification r3.5 est commitée ou abandonnée, ou CONTEXTE.md ne décrit plus ce projet."
+    }
+   ]
   },
   {
    "id": "codex-parametres-rust-log",
@@ -19195,7 +20365,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19216,6 +20386,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -19229,7 +20403,51 @@
      "pourquoi": "La CLI sous tmux est utilisée avec contrôle mobile ; D70 utilise le binaire distinct de l’app."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Le paramètre `sandbox_mode` accepte les valeurs `read-only`, `workspace-write` et `danger-full-access`.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation retire `sandbox_mode` ou change la liste de ses valeurs."
+    },
+    {
+     "affirmation": "`sandbox_mode` définit la politique de sandbox pour l'accès au système de fichiers et au réseau pendant l'exécution des commandes.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation redéfinit la portée de `sandbox_mode` ou le supprime."
+    },
+    {
+     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit de trading-sim."
+    },
+    {
+     "affirmation": "trading-sim fait partie des projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus trading-sim parmi les projets approuvés de Codex."
+    },
+    {
+     "affirmation": "Depuis le 02/10, l'essentiel de l'activité Codex passe par la CLI sous tmux, avec des conversations nommées par rôle, dont l'audit.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que Codex n'est plus utilisé via la CLI sous tmux ou sans conversation d'audit."
+    },
+    {
+     "affirmation": "`codex exec` est utilisé hors trading-sim ; `mission-codex` le lance avec `-s danger-full-access` pour des missions sur delta-ia et discipline.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md décrit un usage de `codex exec` sur trading-sim ou un autre mode de sandbox pour `mission-codex`."
+    },
+    {
+     "affirmation": "trading-sim est un dépôt privé qui contient 17 rapports d'audit Codex dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim ou ses audits Codex."
+    }
+   ]
   },
   {
    "id": "codex-parametres-sandbox-workspace-write-exclude-slash-tmp",
@@ -20129,7 +21347,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20142,6 +21360,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -20151,7 +21373,27 @@
      "pourquoi": "Les audits longs peuvent nécessiter de conserver une sortie d'outil détaillée."
     }
    },
-   "exemple_impossible": "La source donne le type number, mais aucune valeur numérique ni valeur par défaut à recopier."
+   "exemple_impossible": "La source donne le type number, mais aucune valeur numérique ni valeur par défaut à recopier.",
+   "provenance": [
+    {
+     "affirmation": "tool_output_token_limit est un paramètre de type number qui fixe le budget de jetons pour conserver chaque sortie d'outil ou de fonction dans l'historique.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le paramètre tool_output_token_limit change de type ou de rôle, ou disparaît de la référence de configuration"
+    },
+    {
+     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans docs/audits/.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne mentionne plus d'audits Codex dans docs/audits/ pour trading-sim"
+    },
+    {
+     "affirmation": "Les difficultés visibles de trading-sim incluent des cycles longs de vérification formelle et un coût élevé en jetons des audits contradictoires.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus ces difficultés de cycles longs ou de coût en jetons des audits pour trading-sim"
+    }
+   ]
   },
   {
    "id": "codex-parametres-tool-suggest-disabled-tools",
@@ -20496,7 +21738,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-10-14",
@@ -20509,9 +21751,45 @@
     {
      "date": "2026-10-14",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "tui.auto_recap est un paramètre de type boolean qui génère des résumés automatiques de la conversation lorsque le terminal est hors focus ; sa valeur par défaut est true.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "Le paramètre tui.auto_recap change de type, de valeur par défaut ou disparaît de la référence de configuration."
+    },
+    {
+     "affirmation": "Avec tui.auto_recap à false, les résumés automatiques sont désactivés, mais la commande /recap reste disponible.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "La documentation ne garantit plus que /recap reste disponible quand auto_recap vaut false, ou /recap disparaît."
+    },
+    {
+     "affirmation": "L'interface Codex de Sylvain est la CLI sous tmux, avec remote control depuis l'iPhone, depuis le 02/10/2026 ; l'app de bureau n'est plus lancée au démarrage.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Codex en CLI sous tmux."
+    },
+    {
+     "affirmation": "trading-sim figure parmi les projets approuvés dans Codex.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne liste plus trading-sim parmi les projets approuvés de Codex."
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md attribue un autre rôle à Codex ou ne mentionne plus trading-sim dans ce rôle."
+    }
+   ]
   },
   {
    "id": "codex-parametres-tui-disable-paste-burst",
@@ -20919,7 +22197,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-16",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20956,6 +22234,10 @@
     {
      "date": "2026-10-12",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-16",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -20965,7 +22247,45 @@
      "pourquoi": "Les sessions CLI sous tmux reprennent des conversations et partagent les données avec le binaire D70."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Le réglage `tui.resume_cwd` accepte les valeurs `current` ou `session` et fixe le répertoire de travail utilisé lors de la reprise (resume) ou du fork d'une session.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "le réglage `tui.resume_cwd` disparaît de la référence de configuration ou change de valeurs admises"
+    },
+    {
+     "affirmation": "Si `tui.resume_cwd` n'est pas défini, Codex demande de choisir lorsque le répertoire courant diffère du répertoire enregistré par la session.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-10-16",
+     "caduc_si": "la documentation décrit un autre comportement par défaut lorsque le réglage est absent"
+    },
+    {
+     "affirmation": "Depuis le 02/10/2026, l'essentiel de l'activité Codex de Sylvain passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit et la console.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI sous tmux ni de conversation d'audit"
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit de Claude sur trading-sim"
+    },
+    {
+     "affirmation": "Les projets approuvés dans Codex sont trading-sim et un dossier de travail Codex daté.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "trading-sim ne figure plus parmi les projets approuvés dans CONTEXTE.md"
+    },
+    {
+     "affirmation": "La CLI du PATH et l'app de bureau partagent le même `$CODEX_HOME` (`~/.codex`), donc les sessions restent cohérentes entre les deux.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-16",
+     "caduc_si": "CONTEXTE.md indique que les deux binaires n'utilisent plus le même `$CODEX_HOME`"
+    }
+   ]
   },
   {
    "id": "codex-parametres-tui-show-server-version-notice",
