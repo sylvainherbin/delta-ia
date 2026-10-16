@@ -274,3 +274,146 @@ def test_cli_appliquer_refuse_pendant_la_chaine(depot, monkeypatch, capsys):
     monkeypatch.setattr(cli.garde, "verrou_chaine", lambda r: (True, 4242))
     assert cli.main(["appliquer", "--racine", str(racine)]) == 1
     assert "chaîne de nuit en cours" in capsys.readouterr().err
+
+
+# ----------------------------------------------------------------------------------------------- jour de lecture (m-b0809e258011)
+
+def test_jour_de_lecture_sous_le_produit_de_l_origine(tmp_path):
+    """Fiche chatgpt d'oa-fonctionnalites : la page est relevée sous raw/kb/codex/ (produit de l'origine dans sources.yaml)."""
+    (tmp_path / "sources.yaml").write_text(
+        "documentation:\n  - id: oa-fonctionnalites\n    perimetre: openai\n    produit: codex\n    extracteur: pages\n"
+        "    base: https://learn.chatgpt.com/docs/\n    statut: ok\n    options:\n      pages: {projects: projects.md}\n",
+        encoding="utf-8")
+    kb = tmp_path / "raw" / "kb" / "codex"
+    kb.mkdir(parents=True)
+    (kb / "empreintes.json").write_text(json.dumps({
+        "oa-fonctionnalites/page:projects": {"url": "https://learn.chatgpt.com/docs/projects.md", "empreinte": "0",
+                                             "recupere_le": "2026-10-16T02:10:24Z"},
+        "oa-fonctionnalites/page:browser": {"url": "https://learn.chatgpt.com/docs/browser.md", "empreinte": "0",
+                                            "recupere_le": "2026-10-14T02:10:24Z"}}), encoding="utf-8")
+    e = {"produit": "chatgpt", "origine": "oa-fonctionnalites",
+         "sources": [{"url": "https://learn.chatgpt.com/docs/projects", "libelle": "Projects and chats"}]}
+    assert pl.jour_de_lecture(tmp_path, e) == "2026-10-16", "page de la fiche, sous le produit de l'origine"
+    assert pl.jour_de_lecture(tmp_path, e, produits={}) is None, "sans sources.yaml : dossier du produit de la fiche, absent"
+    autre = {**e, "sources": [{"url": "https://learn.chatgpt.com/docs/voice"}]}
+    assert pl.jour_de_lecture(tmp_path, autre) == "2026-10-14", "page non relevée : la plus ancienne de l'origine"
+
+
+# ----------------------------------------------------------------------------------------------- recommentaire (m-b0809e258011)
+
+from deltalib.kb import recommentaire_lot as rl  # noqa: E402
+
+
+@pytest.fixture
+def a_revoir(depot):
+    """Lot de provenance appliqué dont 5 fiches sont restées « à revoir »."""
+    racine, ents = depot
+    m = preparer(racine, ents)
+    res = [reponse(f"f{i:04d}", {"recommandation_tient": False, "motif": "Aucune section de CONTEXTE.md n'est fournie.",
+                                 "provenance": []}) for i in range(1, 6)]
+    res += [reponse(f"f{i:04d}", bonne()) for i in range(6, 11)]
+    b = pl.appliquer(racine, m, res, jour="2026-10-16")
+    assert len(b["a_revoir"]) == 5 and len(b["posees"]) == 5
+    return racine, ents, sorted(b["a_revoir"])
+
+
+def recommentaire(verdict="tester", sections=(("projets", "Delta-IA est le projet de veille."),), provenance=None, pourquoi=None):
+    if provenance is None:
+        provenance = [{"affirmation": "La commande existe.", "source": URL, "caduc_si": "La commande disparaît."}]
+        provenance += [{"affirmation": "Delta-IA fait une veille quotidienne.", "source": f"contexte:{c}",
+                        "caduc_si": "CONTEXTE.md ne décrit plus Delta-IA."} for c, _ in sections]
+    return {"description": "Reprend la dernière session de travail ouverte dans le projet.", "recommandation": {"verdict": verdict, "pourquoi": pourquoi or "Sert la veille Delta-IA."},
+            "contexte_sections": [{"ctx_id": c, "pourquoi": p} for c, p in sections], "provenance": provenance,
+            "raison": "Pourquoi rattaché à la section projets."}
+
+
+def test_recommentaire_prepare_les_fiches_a_revoir_avec_contexte_en_cache(a_revoir):
+    racine, ents, ids = a_revoir
+    assert set(rl.a_revoir(racine, "claude")) == set(ids)
+    m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
+    assert sorted(m["fiches"]) == ids and m["usage"] == "delta-ia-recommentaire" and m["dossier"] == str(rl.DOSSIER)
+    assert (racine / rl.DOSSIER / m["lot"] / "manifeste.json").exists()
+    f = m["fiches"][ids[0]]
+    assert f["releve_doc"] == LU_LE and "Aucune section" in f["motif_a_revoir"]
+    req = pl.charger_requetes(racine, m)[0]["params"]
+    assert "contexte:projets\nDelta-IA, veille quotidienne." in req["system"][0]["text"], "CONTEXTE.md dans la consigne commune"
+    assert req["system"][0]["cache_control"] == {"type": "ephemeral"}
+    contenu = json.loads(req["messages"][0]["content"])
+    assert contenu["urls"] == [URL] and "releve_le" not in json.dumps(contenu)
+    with pytest.raises(pl.LotRefuse, match="lot de recommentaire en cours"):
+        rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140001")
+    assert pl.lots(racine)[0]["statut"] == "applique", "le lot de provenance n'est pas touché"
+
+
+def test_recommentaire_applique_fiche_par_fiche(a_revoir):
+    racine, ents, ids = a_revoir
+    m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
+    par = {f["custom_id"]: k for k, f in m["fiches"].items()}
+    res = [reponse("r0001", recommentaire()),
+           reponse("r0002", recommentaire("ignorer", sections=(), provenance=[], pourquoi="Aucun projet ne s'en sert.")),
+           reponse("r0003", recommentaire(provenance=[{"affirmation": "La commande existe.", "source": URL, "caduc_si": "x"}])),
+           reponse("r0004", recommentaire(sections=(("projets", "x" * 200),))),
+           reponse("r0005", recommentaire(sections=(("inconnue", "x"),)))]
+    b = rl.appliquer(racine, m, res, jour="2026-10-17", controle=cli.controle_fiche)
+    k1, k2, k3, k4, k5 = (par[f"r{i:04d}"] for i in range(1, 6))
+    assert b["appliquees"] == sorted([k1, k2]) and b["provenance_posee"] == [k1] and b["ignorees"] == [k2]
+    assert b["verdicts_changes"] == {k: [ents[k]["recommandation"]["verdict"], v] for k, v in ((k1, "tester"), (k2, "ignorer"))
+                                     if ents[k]["recommandation"]["verdict"] != v}
+    assert "sans affirmation" in b["rejets"][k3] and "pourquoi" in b["rejets"][k4] and "inconnue" in b["rejets"][k5]
+    entrees = cat.charger(racine, "claude")
+    e1 = entrees[k1]
+    assert set(e1["contexte_sections"]) == {"projets"} and e1["contexte_sections"]["projets"]["sha1"]
+    assert {a["source"]: a["releve_le"] for a in e1["provenance"]} == {URL: LU_LE, "contexte:projets": "2026-10-16"}
+    corr = [h for h in e1["historique"] if h["changement"] in ("recommandation corrigée", "description corrigée")]
+    assert {h["changement"] for h in corr} == {"recommandation corrigée", "description corrigée"}
+    assert all(h["raison"].startswith("recommentaire D128") for h in corr), "ancienne valeur et raison gardées"
+    assert entrees[k2]["recommandation"]["verdict"] == "ignorer" and not entrees[k2].get("provenance")
+    assert entrees[k3]["recommandation"] == ents[k3]["recommandation"] and not entrees[k3].get("provenance"), "fiche rejetée intacte"
+    journal = (cat.dossier(racine, "claude") / "reevaluations.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(journal) == 2 and json.loads(journal[0])["motif"] == rl.MOTIF_JOURNAL
+    assert set(rl.a_revoir(racine, "claude")) == {k3, k4, k5}, "encore à revoir : les seules fiches rejetées"
+    assert valider.main(["--perimetre", "claude", "--racine", str(racine), "--kb"]) == 0
+
+
+def test_recommentaire_section_modifiee_depuis_l_envoi_sautee(a_revoir):
+    racine, ents, ids = a_revoir
+    m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
+    (racine / "CONTEXTE.md").write_text(CONTEXTE.replace("veille quotidienne", "veille"), encoding="utf-8")
+    b = rl.appliquer(racine, m, [reponse("r0001", recommentaire())], jour="2026-10-17")
+    assert b["appliquees"] == [] and "modifiée depuis l'envoi" in next(iter(b["sautees"].values()))
+
+
+def test_cli_recommentaire_chaine_complete(a_revoir, faux_a1, monkeypatch, capsys):
+    racine, ents, ids = a_revoir
+    soumis, etat = faux_a1
+    monkeypatch.setattr(pl, "extraction_courante", lambda r, p: extraites_de(ents.values()))
+    args = ["--recommentaire", "--racine", str(racine)]
+    assert cli.main(["preparer", "--perimetre", "claude", *args]) == 0
+    assert cli.main(["soumettre", *args]) == 0
+    assert soumis[0][0] == "delta-ia-recommentaire" and len(soumis[0][1]) == 5
+    etat["resultats"] = [reponse(f"r{i:04d}", recommentaire()) for i in range(1, 6)]
+    assert cli.main(["relever", *args]) == 0
+    assert etat["releves"][0] == ("delta-ia-recommentaire", "msgbatch_test")
+    capsys.readouterr()
+    assert cli.main(["appliquer", *args]) == 0
+    sortie = capsys.readouterr().out
+    assert "5/5 recommentées (5 avec provenance" in sortie and "0.0612 $ (A1" in sortie
+    assert "delta-kb(claude): recommentaire — 5 entrées" in sortie
+    assert cli.main(["etat", *args]) == 0
+    assert "0 fiches à revoir encore dues" in capsys.readouterr().out
+    assert cli.main(["autoriser", "--par", "x", *args]) == 1
+
+
+def test_recommentaire_fiche_qui_ferait_echouer_valider_refusee_seule(a_revoir):
+    racine, ents, ids = a_revoir
+    m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
+    par = {f["custom_id"]: k for k, f in m["fiches"].items()}
+    anglais = {**recommentaire(), "description": "Resumes the last session that was opened in the project."}
+    b = rl.appliquer(racine, m, [reponse("r0001", anglais), reponse("r0002", recommentaire())], jour="2026-10-17",
+                     controle=cli.controle_fiche)
+    assert b["appliquees"] == [par["r0002"]] and "français" in b["rejets"][par["r0001"]]
+    e = cat.charger(racine, "claude")[par["r0001"]]
+    assert e["description"] == ents[par["r0001"]]["description"] and e["recommandation"] == ents[par["r0001"]]["recommandation"]
+    journal = (cat.dossier(racine, "claude") / "reevaluations.jsonl").read_text(encoding="utf-8").splitlines()
+    assert [json.loads(l)["id"] for l in journal] == [par["r0002"]]
+    assert valider.main(["--perimetre", "claude", "--racine", str(racine), "--kb"]) == 0

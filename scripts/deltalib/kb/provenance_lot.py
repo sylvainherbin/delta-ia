@@ -7,7 +7,7 @@ Un lot = un dossier `raw/provenance-lots/<lot>/` (ignoré par git) :
 - `soumission.json` puis `resultats.jsonl` (format des résultats Batch) ; `bilan.json` après application.
 
 Aucune date devinée : `releve_le` est posé par ce module, jamais par le modèle, au jour où la page de documentation a été
-récupérée (`raw/kb/<produit>/empreintes.json`, `recupere_le`) ; une fiche dont la page n'a pas de jour de lecture, dont la
+récupérée (`raw/kb/<produit de l'origine>/empreintes.json`, `recupere_le`) ; une fiche dont la page n'a pas de jour de lecture, dont la
 documentation en cache ne correspond plus à la fiche, ou dont une section citée a changé, n'est pas envoyée.
 Une affirmation ne peut citer que ce qui a été envoyé : l'URL de la fiche (ancre permise), une section citée par la fiche,
 un essai déclaré pour elle. Le modèle peut dire que la recommandation ne tient pas : la fiche n'est pas touchée, elle est
@@ -28,7 +28,7 @@ from pathlib import Path
 
 from ..contexte import ContexteInvalide, analyser
 from . import catalogue as cat
-from .documentation import charger_documentation
+from .documentation import ErreurDocumentation, charger_documentation
 
 PREMIER_LOT_MAX = 10
 MODELE_DEFAUT = "claude-opus-5-5"
@@ -84,13 +84,18 @@ def _sha(texte) -> str:
     return hashlib.sha1(str(texte or "").encode("utf-8")).hexdigest()
 
 
-def dossier(racine: Path) -> Path:
-    return racine / DOSSIER
+def dossier(racine: Path, base: Path = DOSSIER) -> Path:
+    return racine / base
 
 
-def lots(racine: Path) -> list[dict]:
+def _dossier_du(racine: Path, manifeste: dict) -> Path:
+    """Dossier des lots du manifeste (`dossier` : lots de recommentaire, raw/recommentaire-lots/) ; DOSSIER par défaut."""
+    return dossier(racine, Path(manifeste.get("dossier") or DOSSIER))
+
+
+def lots(racine: Path, base: Path = DOSSIER) -> list[dict]:
     """Manifestes des lots, du plus ancien au plus récent (le nom du lot commence par son horodatage)."""
-    d = dossier(racine)
+    d = dossier(racine, base)
     res = []
     for m in sorted(d.glob("*/manifeste.json")) if d.exists() else []:
         res.append(json.loads(m.read_text(encoding="utf-8")))
@@ -98,7 +103,7 @@ def lots(racine: Path) -> list[dict]:
 
 
 def ecrire_manifeste(racine: Path, manifeste: dict) -> None:
-    p = dossier(racine) / manifeste["lot"] / "manifeste.json"
+    p = _dossier_du(racine, manifeste) / manifeste["lot"] / "manifeste.json"
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(".tmp")
     tmp.write_text(json.dumps(manifeste, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -154,11 +159,24 @@ def _url_sans_ancre(u: str) -> str:
     return u[:-3] if u.endswith(".md") else u
 
 
-def jour_de_lecture(racine: Path, e: dict) -> str | None:
-    """Jour où la page de la fiche a été récupérée (`recupere_le` de raw/kb/<produit>/empreintes.json) ; None si inconnu.
-    Plusieurs fichiers pour la même documentation : celui de la page de la fiche, sinon le plus ancien (prudent)."""
+def produits_des_origines(racine: Path) -> dict[str, str]:
+    """{id de documentation: produit sous lequel ses pages sont relevées} (sources.yaml). Une documentation peut couvrir
+    plusieurs produits (oa-fonctionnalites : pages ChatGPT et Codex, relevées sous raw/kb/codex/) ; vide si illisible."""
     try:
-        index = json.loads((racine / "raw" / "kb" / e["produit"] / "empreintes.json").read_text(encoding="utf-8"))
+        return {d.id: d.produit for d in charger_documentation(racine / "sources.yaml")}
+    except (OSError, ValueError, ErreurDocumentation):
+        return {}
+
+
+def jour_de_lecture(racine: Path, e: dict, produits: dict[str, str] | None = None) -> str | None:
+    """Jour où la page de la fiche a été récupérée (`recupere_le` de raw/kb/<produit>/empreintes.json) ; None si inconnu.
+    `<produit>` est celui de l'origine dans sources.yaml (`produits`, lu ici s'il n'est pas fourni), pas celui de la fiche :
+    une fiche chatgpt d'oa-fonctionnalites a sa page relevée sous raw/kb/codex/. Plusieurs fichiers pour la même
+    documentation : celui de la page de la fiche, sinon le plus ancien (prudent)."""
+    produits = produits_des_origines(racine) if produits is None else produits
+    dossier_kb = produits.get(str(e.get("origine"))) or e["produit"]
+    try:
+        index = json.loads((racine / "raw" / "kb" / dossier_kb / "empreintes.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
     cles = {k: v for k, v in index.items() if k.startswith(f"{e.get('origine')}/") and isinstance(v, dict) and v.get("recupere_le")}
@@ -186,7 +204,7 @@ def _motif_ecart(e: dict, x, jour_lu: str | None, sections: dict[str, str], sha_
     if x.usage != e.get("usage") or x.description_source != e.get("description_source"):
         return "documentation en cache différente de la fiche (`catalogue.py maj` d'abord)"
     if jour_lu is None:
-        return "jour de lecture de la page inconnu (raw/kb/<produit>/empreintes.json)"
+        return "jour de lecture de la page inconnu (raw/kb/<produit de l'origine>/empreintes.json)"
     for ctx, v in (e.get("contexte_sections") or {}).items():
         if ctx not in sections or sha_courants.get(ctx) != (v or {}).get("sha1"):
             return f"section {ctx} modifiée ou dépréciée (lot `perimees` d'abord)"
@@ -241,11 +259,12 @@ def preparer(racine: Path, perimetre: str, maximum: int | None = None, modele: s
     horodatage = horodatage or time.strftime("%Y%m%d-%H%M%S")
     lot = f"{horodatage}-{perimetre}"
     fiches, ecartees, requetes = {}, {}, []
+    produits = produits_des_origines(racine)
     for k in cat.provenance_detail(entrees, maximum=None):
         if maximum is not None and len(fiches) >= maximum:
             break
         e = entrees[k]
-        jour_lu = jour_de_lecture(racine, e)
+        jour_lu = jour_de_lecture(racine, e, produits)
         motif = _motif_ecart(e, extraites.get(k), jour_lu, sections, sha_courants)
         if motif:
             ecartees[k] = motif
@@ -272,12 +291,12 @@ def preparer(racine: Path, perimetre: str, maximum: int | None = None, modele: s
 
 
 def charger_requetes(racine: Path, manifeste: dict) -> list[dict]:
-    p = dossier(racine) / manifeste["lot"] / "requetes.jsonl"
+    p = _dossier_du(racine, manifeste) / manifeste["lot"] / "requetes.jsonl"
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def lot_courant(racine: Path) -> dict:
-    en_cours = [m for m in lots(racine) if m["statut"] in EN_COURS]
+def lot_courant(racine: Path, base: Path = DOSSIER) -> dict:
+    en_cours = [m for m in lots(racine, base) if m["statut"] in EN_COURS]
     if not en_cours:
         raise LotRefuse("aucun lot en cours (`provenance_lot.py preparer` d'abord)")
     return en_cours[-1]
@@ -293,7 +312,7 @@ def _en_dict(r) -> dict:
 
 
 def ecrire_resultats(racine: Path, manifeste: dict, resultats) -> Path:
-    p = dossier(racine) / manifeste["lot"] / "resultats.jsonl"
+    p = _dossier_du(racine, manifeste) / manifeste["lot"] / "resultats.jsonl"
     p.write_text("".join(json.dumps(_en_dict(r), ensure_ascii=False) + "\n" for r in resultats), encoding="utf-8")
     return p
 
