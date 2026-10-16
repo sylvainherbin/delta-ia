@@ -2,7 +2,7 @@
   "semaine": "2026-W42",
   "du": "2026-10-12",
   "au": "2026-10-18",
-  "genere_le": "2026-10-15T02:07:07+00:00",
+  "genere_le": "2026-10-16T02:08:40+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -13,7 +13,8 @@
         "2026-10-12",
         "2026-10-13",
         "2026-10-14",
-        "2026-10-15"
+        "2026-10-15",
+        "2026-10-16"
       ]
     },
     "actu": {
@@ -23,7 +24,8 @@
         "2026-10-12",
         "2026-10-13",
         "2026-10-14",
-        "2026-10-15"
+        "2026-10-15",
+        "2026-10-16"
       ]
     },
     "openai": {
@@ -32,7 +34,8 @@
       "jours": [
         "2026-10-12",
         "2026-10-13",
-        "2026-10-14"
+        "2026-10-14",
+        "2026-10-15"
       ]
     },
     "kb-claude": {
@@ -76,6 +79,18 @@
       "action": "Aucune action à faire maintenant : revérifier le 22/10, aucune échéance publiée (la page annonce un déploiement progressif)."
     },
     {
+      "perimetre": "openai",
+      "id": "openai-tarifs-plans-credits",
+      "produit": "codex",
+      "titre": "GPT-5.5 : périmètre du retrait Codex précisé, ligne de crédits retirée",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-15",
+      "action": "Revérifier le 16/10/2026 la section GPT-5.5 retirement de Models ; aucune échéance publiée pour une action de compte. ChatGPT semaine : 4 % au relevé du 15/10 à 15:01:48 UTC ; aucun changement de forfait à effectuer sur la seule base de cette clarification."
+    },
+    {
       "perimetre": "claude",
       "id": "claude-aide-limites-article",
       "produit": "claude",
@@ -98,6 +113,18 @@
       "date_publication": "2026-10-07",
       "jour": "2026-10-12",
       "action": "Réclamer le crédit de 200 $ à partir du 2026-10-14 (aucune date limite publiée) et laisser le rechargement automatique désactivé dans la Console."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-2.1.301",
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.301",
+      "version": "2.1.301",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-15",
+      "jour": "2026-10-16",
+      "action": "Lance `grep -n 'RETRY_WATCHDOG' scripts/passage-auto.sh scripts/orchestrateur.toml` : sans résultat, la chaîne D70 n'utilise pas le mode de relance sans surveillance et la variable ne change rien ; avec un résultat, ajoute `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS=<millisecondes>` à côté (valeur à choisir par Dev-delta, la page n'en donne pas d'exemple)."
     },
     {
       "perimetre": "claude",
@@ -148,6 +175,30 @@
       "date_publication": null,
       "jour": "2026-10-15",
       "action": "Regarder si tes Projets sont déjà passés à la nouvelle version."
+    },
+    {
+      "perimetre": "openai",
+      "id": "openai-status-01M4WKPE1EY48ZB4RZJ80YH7ES",
+      "produit": "codex",
+      "titre": "Codex et Work : erreurs du 14 octobre résolues",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-14",
+      "jour": "2026-10-15",
+      "action": null
+    },
+    {
+      "perimetre": "openai",
+      "id": "releasebot-59873",
+      "produit": "chatgpt",
+      "titre": "ChatGPT Plus et Pro : sélection manuelle du raisonnement",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "rapporte",
+      "date_publication": "2026-09-14",
+      "jour": "2026-10-15",
+      "action": "Essai : pour un audit du travail de Claude dans ChatGPT, ouvre le `sélecteur de modèle` et choisis une option de raisonnement disponible ; résultat attendu : le raisonnement est choisi explicitement avant l’envoi."
     },
     {
       "perimetre": "openai",
@@ -369,6 +420,18 @@
     },
     {
       "perimetre": "claude",
+      "id": "claude-code-raccourcis-editing-normal-mode-d",
+      "produit": "claude-code",
+      "categorie": "raccourcis",
+      "nom": "d%",
+      "usage": "d%/c%/y%",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "claude",
       "id": "claude-code-parametres-claude-code-artifact-publish-edits",
       "produit": "claude-code",
       "categorie": "parametres",
@@ -585,6 +648,51 @@
     }
   ],
   "base_verdicts": [
+    {
+      "perimetre": "openai",
+      "id": "codex-raccourcis-interactive-shortcuts",
+      "produit": "codex",
+      "categorie": "raccourcis",
+      "nom": "!",
+      "usage": "Prefix a line with ! to run a local shell command under the current approval and sandbox settings.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date": "2026-10-15",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "Dans trading-sim sous tmux, essayer !python3 -m unittest discover pour vérifier que les tests locaux sont lancés depuis la CLI avec ses permissions courantes."
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-raccourcis-enter",
+      "produit": "codex",
+      "categorie": "raccourcis",
+      "nom": "Enter",
+      "usage": "Press Enter while Codex is working to inject new instructions into the current turn.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date": "2026-10-15",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "Sur un audit trading-sim sous tmux, essayer Enter pendant le travail pour préciser le fichier à examiner et vérifier que la consigne infléchit le tour courant."
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-raccourcis-tab",
+      "produit": "codex",
+      "categorie": "raccourcis",
+      "nom": "Tab",
+      "usage": "Press Tab while Codex is working to queue a follow-up prompt, slash command, or shell command for the next turn.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date": "2026-10-15",
+      "verdict_avant": "ignorer",
+      "verdict_apres": "tester",
+      "pourquoi": "Sur un audit trading-sim sous tmux, essayer Tab pour mettre la demande de synthèse en attente et vérifier qu'elle démarre après le tour courant."
+    },
     {
       "perimetre": "openai",
       "id": "codex-parametres-codex-search",
