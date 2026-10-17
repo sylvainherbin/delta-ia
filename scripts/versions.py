@@ -6,7 +6,7 @@ Détection sur la machine, sans chemin supposé :
 - Codex de l'app ChatGPT (celui qu'utilise Sylvain) : l'exécutable `codex` livré par le paquet `chatgpt` (liste des
   fichiers donnée par `dpkg -L`). Il suit le canal de l'app (pré-versions propres, ex. 0.155.0-alpha.16.4 avec l'app
   26.917) : statut `embarque`, jamais comparé aux releases stables ;
-- Codex CLI autonome (terminal) : `codex` du PATH, sinon des installations globales npm de nvm
+- Codex CLI autonome (terminal) : `codex` du PATH, sinon ~/.nvm/current/bin/codex, puis les installations globales npm de nvm
   (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable de l'app. Utilisée par
   Sylvain depuis le 02/10/2026 (session tmux en remote control) [déclaré], D75 : suivi normal, comparée à la dernière
   stable de codex-cli-releases (à jour ou en retard). Elle se met à jour par npm, sans l'app : un retard ne se rattrape
@@ -93,6 +93,7 @@ def _version_codex(exe: str, origine: str) -> tuple[str | None, str, str | None]
 
 
 def codex_app() -> tuple[str | None, str, str | None]:
+    # Inventaire du paquet de bureau, indépendant du binaire retenu par l'orchestrateur.
     exe = _exe_codex_app()
     if not exe:
         return None, "dpkg -L chatgpt", "exécutable `codex` introuvable dans le paquet chatgpt"
@@ -102,11 +103,11 @@ def codex_app() -> tuple[str | None, str, str | None]:
 def codex_terminal() -> tuple[str | None, str, str | None]:
     app = _exe_codex_app()
     du_path = shutil.which("codex")
-    candidats = [du_path] + sorted(glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/codex")), reverse=True)
+    candidats = [du_path, os.path.expanduser("~/.nvm/current/bin/codex")] + sorted(glob.glob(os.path.expanduser("~/.nvm/versions/node/*/bin/codex")), reverse=True)
     for exe in candidats:
         if exe and os.access(exe, os.X_OK) and (not app or os.path.realpath(exe) != os.path.realpath(app)):
             return _version_codex(exe, "PATH" if exe == du_path else "npm global, nvm")
-    return None, "codex --version", "CLI `codex` autonome introuvable (PATH, ~/.nvm/versions/node/*/bin)"
+    return None, "codex --version", "CLI `codex` autonome introuvable (PATH, ~/.nvm/current/bin, ~/.nvm/versions/node/*/bin)"
 
 
 # ----------------------------------------------------------------------------------------------- dernière version publiée

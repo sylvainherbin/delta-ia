@@ -323,10 +323,10 @@ def lancer(etape: Etape, racine: Path, env: dict, delai_arret_s: float = 10.0) -
                     (datetime.now() - debut).total_seconds())
 
 
-def version_codex(binaire: str, delai_s: float = 10.0) -> str | None:
+def version_codex(binaire: str, delai_s: float = 10.0, env: dict | None = None) -> str | None:
     """Version lue au lancement de l'étape (`<binaire> --version`) ; `None` si la lecture échoue : l'étape se lance quand même."""
     try:
-        r = subprocess.run([binaire, "--version"], capture_output=True, text=True, timeout=delai_s, stdin=subprocess.DEVNULL)
+        r = subprocess.run([binaire, "--version"], capture_output=True, text=True, timeout=delai_s, stdin=subprocess.DEVNULL, env=env)
     except (OSError, subprocess.SubprocessError):
         return None
     sortie = r.stdout.strip()
@@ -634,7 +634,7 @@ class Chaine:
             return self._fin(etape, CODE_SANS_LOT, True, False, "aucun lot dû")
         avant = tete_courte(racine)
         git_avant = empreinte_git(racine)
-        version = version_codex(etape.commande[0]) if etape.agent == "codex" else None
+        version = version_codex(etape.commande[0], env=env) if etape.agent == "codex" else None
         debut = datetime.now().timestamp()
         res, code, detail = self.lancer_avec_relances(etape, env, git_avant)
         refus = refus_permission(res) if etape.agent == "claude" else []

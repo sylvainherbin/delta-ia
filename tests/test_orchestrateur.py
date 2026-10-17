@@ -316,9 +316,13 @@ def test_enfant_en_arriere_plan_apres_une_etape_reussie_est_tue(depot, cfg, tmp_
     assert not survivant.exists()
 
 
-def test_binaire_introuvable_est_une_erreur_explicite(depot, cfg):
-    e = orc.Etape(nom="delta", agent="claude", commande=["/nulle/part/claude", "-p", "x"], delai_s=5, garde="delta")
-    assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)["delta"] == orc.CODE_BINAIRE
+@pytest.mark.parametrize("agent, nom", [("claude", "delta"), ("codex", "codex-delta")])
+def test_binaire_introuvable_est_une_erreur_explicite(depot, cfg, agent, nom):
+    binaire = f"/nulle/part/{agent}"
+    e = orc.Etape(nom=nom, agent=agent, commande=[binaire], delai_s=5, garde=nom)
+    assert chaine(depot, cfg, [e]).executer() == 1 and codes(depot)[nom] == orc.CODE_BINAIRE
+    sortie = (depot / "rapports" / "auto" / f"{JOUR}-{nom}.log").read_text()
+    assert "binaire introuvable" in sortie and binaire in sortie
 
 
 # --- intégrité de git : hooks et config (Codex a .git en écriture) ----------------------------------------------
@@ -715,7 +719,7 @@ def test_commandes_reelles_syntaxe_et_interdits():
     assert sup[2] == (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
     for nom in ("codex-delta", "codex-delta-kb"):
         c = etapes[nom].commande
-        assert c[1:3] == ["exec", "--ignore-user-config"] and c[0] == "/usr/lib/chatgpt/resources/codex"
+        assert c[1:3] == ["exec", "--ignore-user-config"] and c[0] == os.path.expanduser("~/.nvm/current/bin/codex")
         assert 'default_permissions="delta_auto"' in c and 'approval_policy="never"' in c
         assert 'permissions.delta_auto.network.enabled=true' in c and 'permissions.delta_auto.extends=":workspace"' in c
         assert 'permissions.delta_auto.filesystem={":workspace_roots"={".git"="write"}}' in c
@@ -794,7 +798,7 @@ def depot_sh(depot, tmp_path):
     (depot / "prompts").mkdir(exist_ok=True)
     (depot / "prompts" / "supervision.md").write_text("supervision")
     toml = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
-    toml = toml.replace('bin = "~/.local/bin/claude"', f'bin = "{faux}"').replace('bin = "/usr/lib/chatgpt/resources/codex"', f'bin = "{faux}"')
+    toml = re.sub(r'^bin = .*$', f'bin = "{faux}"', toml, flags=re.MULTILINE)
     toml = toml.replace("delai_min = 45", "delai_min = 1")
     toml = re.sub(r"^valider = .*$", "valider = []", toml, flags=re.MULTILINE).replace("valider_kb = true", "valider_kb = false")  # dépôt de test : données vides
     toml = re.sub(r"^commits_attendus = .*$", "commits_attendus = []", toml, flags=re.MULTILINE)  # le faux binaire ne commite rien (133 sinon)
@@ -997,6 +1001,29 @@ def test_version_codex_lue_par_le_binaire(tmp_path):
     assert orc.version_codex(faux_codex(tmp_path)) == "codex-cli 9.9.9"
 
 
+def test_codex_nvm_fonctionne_avec_l_environnement_de_la_chaine(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(orc, "maison", lambda: str(tmp_path))
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")  # shell non interactif, sans nvm
+    nvm = tmp_path / ".nvm" / "current" / "bin"
+    nvm.mkdir(parents=True)
+    codex = nvm / "codex"
+    codex.write_text("#!/usr/bin/env node\n")
+    codex.chmod(0o755)
+    node = nvm / "node"
+    node.write_text('#!/bin/sh\n[ "$2" = "--version" ] && echo "codex-cli 9.9.9"\n')
+    node.chmod(0o755)
+    cfg = orc.charger_config()
+    env = orc.environnement(cfg)
+    for nom in ("codex-delta", "codex-delta-kb"):
+        cmd = orc.commande_codex(cfg, cfg["etapes"][nom], tmp_path, "test")
+        assert cmd[0] == str(codex)
+        assert orc.version_codex(cmd[0], env=env) == "codex-cli 9.9.9"
+        e = orc.Etape(nom=nom, agent="codex", commande=[cmd[0], "--version"], delai_s=5)
+        res = orc.lancer(e, tmp_path, env)
+        assert res.code == 0 and res.stdout.strip() == "codex-cli 9.9.9"
+
+
 @pytest.mark.parametrize("binaire", ["/introuvable/codex", "false"])
 def test_version_codex_illisible_donne_none(binaire):
     assert orc.version_codex(binaire) is None
@@ -1033,12 +1060,12 @@ def test_version_codex_illisible_null_et_l_etape_se_lance_quand_meme(depot, cfg,
 
 def test_la_version_est_lue_sur_le_binaire_de_l_etape_codex_seulement(depot, cfg, monkeypatch):
     lus = []
-    monkeypatch.setattr(orc, "version_codex", lambda b, *a, **k: lus.append(b))
+    monkeypatch.setattr(orc, "version_codex", lambda b, *a, **k: lus.append((b, k["env"])))
     etapes = [etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde=None),
               etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
               etape(depot, "supervision", "supervision", supervision=True)]
     chaine(depot, cfg, etapes).executer()
-    assert lus == [sys.executable]
+    assert lus == [(sys.executable, orc.environnement(cfg))]
     assert "version codex" not in (depot / "rapports" / "auto" / "2026-10-02-delta-kb.log").read_text(encoding="utf-8")
 
 
