@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +13,27 @@ import verifier
 
 ENV_GIT = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@exemple.test", "GIT_COMMITTER_NAME": "t",
            "GIT_COMMITTER_EMAIL": "t@exemple.test", "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_SYSTEM": "/dev/null"}
+
+
+@pytest.mark.parametrize("args, transmis, code", [([], ["--cible"], 0), (["--fusion"], ["--sans-cache"], 7)])
+def test_entree_lanceur_partage_le_venv_en_worktree(depot, tmp_path, args, transmis, code):
+    import shutil
+
+    venv = depot / ".venv/bin"
+    venv.mkdir(parents=True)
+    (venv / "python").symlink_to(sys.executable)
+    worktree = tmp_path / "mission"
+    git(depot, "worktree", "add", "-qb", "mission", str(worktree))
+    entree = worktree / "outils/tests/verifier.py"
+    entree.parent.mkdir(parents=True)
+    shutil.copyfile(Path(verifier.__file__).parents[1] / "outils/tests/verifier.py", entree)
+    natif = worktree / "scripts/verifier.py"
+    natif.parent.mkdir()
+    natif.write_text("import json, os, sys\nprint(json.dumps([sys.executable, sys.argv[1:], os.getcwd()]))\n"
+                     f"raise SystemExit({code})\n")
+    r = subprocess.run([sys.executable, "-B", str(entree), *args], cwd=tmp_path, text=True, capture_output=True)
+    assert r.returncode == code, r.stderr
+    assert json.loads(r.stdout) == [str(venv / "python"), transmis, str(worktree)]
 
 
 def git(racine, *args, env=None):
