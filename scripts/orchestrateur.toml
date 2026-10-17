@@ -18,7 +18,14 @@ reseau_hotes = { claude = "api.anthropic.com", codex = "chatgpt.com" }
 path = ["~/.local/bin", "~/.nvm/current/bin", "/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"]
 
 [claude]
+mode = "cle"                       # réversible : "abonnement" restaure les commandes précédentes
 bin = "~/.local/bin/claude"
+bin_cle = "~/.local/bin/claude-cle"
+# Sur clé : --bare imposé par le lanceur, CLAUDE.md et REGLES.md fournis explicitement ; skills lues par leur chemin.
+# --setting-sources project conservé ; listes allow/deny fournies aussi en --allowedTools/--disallowedTools
+# (project ignore allow dans une copie non approuvée). Supervision : mêmes listes CLI, aucune source project,
+# sans --settings (réservé à apiKeyHelper). Code 5 : repli unique sur abonnement après nouvelle garde complète,
+# journal <étape>-repli-abonnement, code 5 ; les quotas abonnement redeviennent applicables.
 # Chaque étape Claude : -p ... --permission-mode bypassPermissions (D83, décision de Sylvain du 06/10/2026) --strict-mcp-config --output-format json,
 # stdin fermé. Les étapes /delta et /delta-kb ne chargent que les réglages du projet (.claude/settings.json, dont la liste
 # `allow`) ; la supervision n'en charge aucun et reçoit sa propre liste (.claude/supervision.settings.json).
@@ -47,6 +54,7 @@ config = [
 
 [etapes.delta]
 agent = "claude"
+usage = "delta-passage"
 garde = "delta"
 modele = "sonnet"
 effort = "high"
@@ -74,6 +82,7 @@ clean = ["docs/data/openai", "docs/data/kb/recent.json", "docs/data/kb/a-tester.
 
 [etapes.delta-kb]
 agent = "claude"
+usage = "delta-kb-passage"
 garde = "delta-kb"
 kb = "claude"                        # étape sautée (ligne à 0, code 129) quand aucun lot n'est dû
 valider_kb = true                    # après l'étape : `valider.py --perimetre claude --kb` (code 131 s'il échoue)
@@ -99,6 +108,7 @@ clean = ["docs/data/kb/openai", "docs/data/kb/recent.json", "docs/data/kb/a-test
 # Supervision : toujours lancée en dernier, même si une étape a échoué ; lecture seule stricte.
 [etapes.supervision]
 agent = "claude"
+usage = "delta-supervision"
 supervision = true
 modele = "sonnet"
 effort = "medium"

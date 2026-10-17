@@ -43,6 +43,11 @@ Pour chaque étape, sans aucun LLM :
 7. une ligne `orchestrateur` dans `rapports/passages.log` (scripts/passages.py) et la sortie de l'étape dans
    `rapports/auto/AAAA-MM-JJ-<étape>.log` (jamais l'environnement).
 
+Mode Claude : `[claude].mode = "cle"` passe par `claude-cle --usage <nom>` (clé lue uniquement par delta-cle-api).
+Le code 5 déclenche un repli unique sur la commande abonnement, seulement si le dépôt est resté intact ; une nouvelle garde
+réactive les quotas abonnement. L'événement `<étape>-repli-abonnement`, code 5, est ajouté au journal, avec le détail dans
+la sortie d'étape. `mode = "abonnement"` restaure les commandes antérieures. Les skills restent lues par leur chemin explicite.
+
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
 fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 125 est un avertissement (refus non
 fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
@@ -74,7 +79,7 @@ import socket
 import subprocess
 import sys
 import tomllib
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime, time as heure, timedelta
 from pathlib import Path
 from time import sleep
@@ -118,6 +123,7 @@ class Etape:
     checkout: list[str] = field(default_factory=list)
     clean: list[str] = field(default_factory=list)
     env_extra: dict[str, str] = field(default_factory=dict)
+    commande_abonnement: list[str] = field(default_factory=list)  # repli unique, uniquement sur code 5 de claude-cle
 
 
 @dataclass
@@ -127,6 +133,7 @@ class Resultat:
     stderr: str
     delai_depasse: bool
     duree_s: float
+    garde_abonnement: bool = False
 
 
 @dataclass
@@ -177,20 +184,48 @@ def environnement(cfg: dict, supervision: bool = False, extra: dict | None = Non
     return env
 
 
-def commande_claude(cfg: dict, e: dict, racine: Path, prompt: str) -> list[str]:
-    """Syntaxe du `claude --help` de la version installée (2.1.286) : -p, --permission-mode bypassPermissions (étapes Claude
+def commande_claude(cfg: dict, e: dict, racine: Path, prompt: str, *, mode: str | None = None) -> list[str]:
+    """Syntaxe du `claude --help` de la version installée (2.1.302) : -p, --permission-mode bypassPermissions (étapes Claude
     depuis le 06/10/2026, décision de Sylvain, D83), --strict-mcp-config (aucun serveur MCP), --output-format json (le résultat
     porte `permission_denials`, traité comme avant). Jamais --dangerously-skip-permissions."""
-    c = [_chemin(cfg["claude"]["bin"]), "-p", prompt, "--permission-mode", "bypassPermissions",
+    mode = mode or cfg["claude"].get("mode", "abonnement")
+    if mode not in ("cle", "abonnement"):
+        raise ValueError(f"claude.mode inconnu : {mode!r} (cle ou abonnement attendu)")
+    c = ([_chemin(cfg["claude"]["bin_cle"]), "--usage", e["usage"]] if mode == "cle"
+         else [_chemin(cfg["claude"]["bin"])])
+    c += ["-p", prompt, "--permission-mode", "bypassPermissions",
          "--strict-mcp-config", "--output-format", "json"]
     if e.get("modele"):
         c += ["--model", e["modele"]]
     if e.get("effort"):
         c += ["--effort", e["effort"]]
     if e.get("supervision"):
-        c += ["--setting-sources", "", "--settings", str(racine / e["settings"])]
+        c += ["--setting-sources", ""]
+        if mode == "abonnement":
+            c += ["--settings", str(racine / e["settings"])]
     else:
         c += ["--setting-sources", cfg["claude"]["sources_etapes"]]
+    if mode == "cle":
+        # --settings est réservé au apiKeyHelper. Fournir les listes par CLI conserve aussi allow dans une copie
+        # non approuvée (le CLI ignore alors les allow de project). Les deny restent applicables en bypassPermissions.
+        source = e["settings"] if e.get("supervision") else ".claude/settings.json"
+        reglages = json.loads((racine / source).read_text(encoding="utf-8"))
+        if not isinstance(reglages, dict) or not isinstance(reglages.get("permissions"), dict):
+            raise ValueError("Claude sur clé : objet permissions attendu")
+        permissions = reglages["permissions"]
+        if (e.get("supervision") and set(reglages) != {"permissions"}) or set(permissions) - {"allow", "deny"}:
+            raise ValueError("Claude sur clé : seuls permissions.allow et permissions.deny sont traduisibles")
+        for liste, option in (("allow", "--allowedTools"), ("deny", "--disallowedTools")):
+            regles = permissions.get(liste, [])
+            if not isinstance(regles, list) or any(not isinstance(r, str) or not r for r in regles):
+                raise ValueError(f"Claude : permissions.{liste} doit être une liste de règles")
+            if regles:
+                c += [option, *regles]
+        # --bare saute la découverte de CLAUDE.md ; une inclusion @ n'est pas développée dans un prompt ajouté.
+        # Le seul import du CLAUDE.md du dépôt est REGLES.md : fournir les deux contenus explicitement.
+        contexte = "\n\n".join(f"# {nom}\n{(racine / nom).read_text(encoding='utf-8')}"
+                                for nom in ("CLAUDE.md", "REGLES.md"))
+        c += ["--append-system-prompt", contexte]
     return c
 
 
@@ -206,9 +241,12 @@ def construire_etapes(cfg: dict, racine: Path = RACINE) -> list[Etape]:
     for nom, e in cfg["etapes"].items():
         prompt = (racine / e["prompt_fichier"]).read_text(encoding="utf-8") if e.get("prompt_fichier") else e["prompt"]
         cmd = commande_claude(cfg, e, racine, prompt) if e["agent"] == "claude" else commande_codex(cfg, e, racine, prompt)
+        sur_cle = e["agent"] == "claude" and cfg["claude"].get("mode", "abonnement") == "cle"
         etapes.append(Etape(nom=nom, agent=e["agent"], commande=cmd, delai_s=e["delai_min"] * 60, garde=e.get("garde"),
                             kb=e.get("kb"), valider=list(e.get("valider", [])), valider_kb=bool(e.get("valider_kb")), supervision=bool(e.get("supervision")), checkout=list(e.get("checkout", [])),
                             commits_attendus=list(e.get("commits_attendus", [])),
+                            env_extra={"DELTA_CLAUDE_MODE": "cle"} if sur_cle else {},
+                            commande_abonnement=commande_claude(cfg, e, racine, prompt, mode="abonnement") if sur_cle else [],
                             clean=list(e.get("clean", []))))
     return etapes
 
@@ -597,9 +635,31 @@ class Chaine:
         delais = ch["relances_reseau_s"]
         hote = ch["reseau_hotes"][etape.agent]
         tentative = 1
+        tete_avant = tete_courte(self.racine)
+        repli = ""
         while True:
             res = lancer(etape, self.racine, env, ch["arret_delai_s"])
             code, detail = evaluer(etape, res)
+            if code == 5 and etape.agent == "claude" and etape.commande_abonnement:
+                # Le lanceur peut aussi rendre 5 après une réponse API sans crédit : ne jamais rejouer un passage
+                # ayant déjà écrit/commité. Un refus de permission ou un délai ne déclenche pas de repli.
+                etat = etat_depot(self.racine, self.distant)
+                if (refus_permission(res) or etat["index_lock"] or etat["sales"] or etat["en_avance"]
+                        or tete_courte(self.racine) != tete_avant
+                        or differences_git(git_avant, empreinte_git(self.racine))):
+                    return res, code, "code 5 : repli abonnement refusé, résultat ou dépôt déjà modifié"
+                repli = "repli abonnement après code 5 de claude-cle"
+                ecrire_sortie(self.racine, self.cfg, self.jour, etape, res, 5, repli, [])
+                journaliser(self.racine, f"{etape.nom}-repli-abonnement", "aucun", 5)
+                etape = replace(etape, commande=etape.commande_abonnement, commande_abonnement=[])
+                env["DELTA_CLAUDE_MODE"] = "abonnement"
+                if etape.garde:
+                    garde_code, motif = garde(self.racine, etape, self.jour, env)
+                    if garde_code:
+                        return replace(res, garde_abonnement=True), garde_code, f"{repli} ; garde abonnement (code {garde_code}) : {motif}"
+                continue
+            if repli:
+                detail = f"{repli} ; {detail}"
             motif = motif_reseau(etape, res) if code != 0 else None
             if not motif:
                 return res, code, detail
@@ -637,6 +697,9 @@ class Chaine:
         version = version_codex(etape.commande[0], env=env) if etape.agent == "codex" else None
         debut = datetime.now().timestamp()
         res, code, detail = self.lancer_avec_relances(etape, env, git_avant)
+        if res.garde_abonnement and code in CODES_GARDE_SAUTEE:  # garde abonnement, sans lancement de l'agent
+            ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, [], version)
+            return self._fin(etape, code, True, False, detail)
         refus = refus_permission(res) if etape.agent == "claude" else []
         if refus and code != 0:  # étape déjà en échec : le refus s'ajoute à la cause, il reste fatal
             detail = f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(refus[:5]) + f" ; {detail}"

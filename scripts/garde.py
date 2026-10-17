@@ -32,6 +32,8 @@ Contrôles, dans l'ordre :
 `--etape {delta,codex-delta,delta-kb,codex-delta-kb}` (D70) adapte les contrôles 2 et 3 à l'étape de la chaîne : le quota
 Claude (code 11) ne vaut que pour les étapes Claude ; le code 12 regarde le fichier du jour de l'étape (`delta` : claude,
 `codex-delta` : openai) et n'existe pas pour les étapes kb. Sans `--etape`, comportement D68 (quota Claude, fichier claude).
+`DELTA_CLAUDE_MODE=cle`, fourni par l'orchestrateur, rend le quota abonnement sans objet (y compris dans la garde du skill).
+Tous les autres contrôles et les alertes D71 restent applicables ; le repli abonnement retire cet effet.
 
 Code 0 : le passage peut tourner (éventuels avertissements affichés). Code 2 : argument invalide.
 Sortie : une ligne par contrôle, puis `GARDE: OK` ou `GARDE: ARRÊT (<motif>)` ; `--json` pour un bilan structuré.
@@ -162,6 +164,11 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
     res = {"jour": jour.isoformat(), "etape": etape, "code": 0, "motif": None, "controles": [], "avertissements": [],
            "fichiers_modifies": []}
     quota_claude, dossier_jour = ETAPES[etape] if etape else (True, "claude")
+    # L'orchestrateur construit cette variable pour les étapes sur clé ; elle est aussi héritée par la garde du skill.
+    # Seul le quota abonnement devient sans objet ; les verrous, le jour déjà fait et l'état git restent contrôlés.
+    if quota_claude and os.environ.get("DELTA_CLAUDE_MODE") == "cle":
+        quota_claude = False
+        res["controles"].append("financement : clé delta — quota abonnement Claude sans objet")
 
     def arret(code, motif):
         if not res["code"]:

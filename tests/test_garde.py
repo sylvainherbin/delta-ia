@@ -83,6 +83,28 @@ def test_seuils_quotas(racine, capsys, s5, sem, attendu):
     assert lancer(racine, capsys)[0] == attendu
 
 
+@pytest.mark.parametrize("etape", [None, "delta", "delta-kb"])
+def test_cle_ignore_uniquement_le_quota_abonnement(racine, capsys, monkeypatch, etape):
+    usage(racine, s5=100, sem=100)
+    monkeypatch.setenv("DELTA_CLAUDE_MODE", "cle")
+    args = ["--etape", etape] if etape else []
+    code, out = lancer(racine, capsys, *args)
+    assert code == 0 and "clé delta" in out
+    assert "vérifie tes remises à zéro disponibles" in out  # alerte D71 conservée
+    (racine / ".git/index.lock").touch()
+    assert lancer(racine, capsys, *args)[0] == 10
+
+
+def test_cle_ne_masque_pas_arbre_sale_ou_jour_deja_fait(racine, capsys, monkeypatch):
+    usage(racine, s5=100, sem=100)
+    monkeypatch.setenv("DELTA_CLAUDE_MODE", "cle")
+    (racine / "docs/data/claude/index.json").write_text("modifié")
+    assert lancer(racine, capsys, "--etape", "delta")[0] == 13
+    git(racine, "checkout", "--", "docs/data/claude/index.json")
+    quotidien(racine, "2026-09-25T07:00:00+02:00")
+    assert lancer(racine, capsys, "--etape", "delta")[0] == 12
+
+
 # --- D71 : alerte à 80 % du quota hebdomadaire, sans arrêt ------------------------------------------------
 
 def alertes_hebdo(out):

@@ -48,6 +48,20 @@ elif mode == "ok-codex":
     passage(sys.argv[2], sys.argv[3])
 elif mode == "ok-sans-commit":
     claude_ok()
+elif mode.startswith("cle-"):
+    ecrire("rapports/cle-vue.txt", os.environ.get("DELTA_CLAUDE_MODE", ""))
+    if mode == "cle-sale":
+        ecrire("docs/data/claude/index.json", "modifié avant crédit épuisé\n")
+    elif mode == "cle-commit":
+        passage("docs/data/claude", "cle.json")
+    elif mode == "cle-refus":
+        claude_ok([REFUS])
+    sys.exit(int(sys.argv[2]))
+elif mode == "abonnement":
+    ecrire("rapports/abonnement-vu.txt", os.environ.get("DELTA_CLAUDE_MODE", ""))
+    if sys.argv[2] != "0":
+        sys.exit(int(sys.argv[2]))
+    claude_ok()
 elif mode == "arret-sur-erreur":   # 15/10 04:09 : fetch --kb a modifié la base, puis une commande échoue ; `codex exec` sort en 0
     ecrire(f"{sys.argv[2]}/{sys.argv[3]}", "modifié avant l'arrêt\n")
     print("ctx-id inconnus ou dépréciés : ['config.chatgpt']", file=sys.stderr)
@@ -703,6 +717,7 @@ def test_l_orchestrateur_ne_touche_jamais_a_raw(depot, cfg):
 
 def test_commandes_reelles_syntaxe_et_interdits():
     cfg = orc.charger_config()
+    cfg["claude"]["mode"] = "abonnement"
     etapes = {e.nom: e for e in orc.construire_etapes(cfg, RACINE)}
     assert list(etapes) == ["delta", "codex-delta", "delta-kb", "codex-delta-kb", "supervision"]
     tout = " ".join(" ".join(e.commande) for e in etapes.values())
@@ -740,6 +755,121 @@ def test_arret_propre_declare_comme_en_d68():
     assert e["supervision"].checkout == [] and e["supervision"].clean == []
     for n in ("delta", "codex-delta", "delta-kb", "codex-delta-kb"):  # jamais raw/, rapports/, PROGRESSION, CONTEXTE, SPEC, REGLES, scripts
         assert all(c.startswith(("docs/data/", "state/")) for c in e[n].checkout + e[n].clean)
+
+
+@pytest.mark.parametrize("nom,usage", [("delta", "delta-passage"), ("delta-kb", "delta-kb-passage"),
+                                      ("supervision", "delta-supervision")])
+def test_commande_cle_exacte_et_repli_abonnement(nom, usage):
+    cfg = orc.charger_config()
+    assert cfg["claude"]["mode"] == "cle"
+    e = cfg["etapes"][nom]
+    prompt = (RACINE / e["prompt_fichier"]).read_text() if "prompt_fichier" in e else e["prompt"]
+    permissions = json.loads((RACINE / (e["settings"] if nom == "supervision" else ".claude/settings.json")).read_text())["permissions"]
+    contexte = "\n\n".join(f"# {f}\n{(RACINE / f).read_text()}" for f in ("CLAUDE.md", "REGLES.md"))
+    attendu = [os.path.expanduser("~/.local/bin/claude-cle"), "--usage", usage, "-p", prompt,
+               "--permission-mode", "bypassPermissions", "--strict-mcp-config", "--output-format", "json",
+               "--model", e["modele"], "--effort", e["effort"],
+               "--setting-sources", "" if nom == "supervision" else "project",
+               "--allowedTools", *permissions["allow"], "--disallowedTools", *permissions["deny"],
+               "--append-system-prompt", contexte]
+    etape_cle = next(x for x in orc.construire_etapes(cfg, RACINE) if x.nom == nom)
+    assert etape_cle.commande == attendu
+    assert "--settings" not in attendu and "--bare" not in attendu  # ajoutés uniquement par claude-cle
+    assert etape_cle.env_extra == {"DELTA_CLAUDE_MODE": "cle"}
+    cfg["claude"]["mode"] = "abonnement"
+    abonnement = next(x for x in orc.construire_etapes(cfg, RACINE) if x.nom == nom)
+    assert etape_cle.commande_abonnement == abonnement.commande
+    assert not abonnement.commande_abonnement and not abonnement.env_extra
+
+
+def test_mode_claude_invalide_refuse():
+    cfg = orc.charger_config()
+    cfg["claude"]["mode"] = "clè"
+    with pytest.raises(ValueError, match="claude.mode"):
+        orc.construire_etapes(cfg, RACINE)
+
+
+@pytest.mark.parametrize("extra", [{"env": {"VARIABLE": "valeur"}}, {"permissions": {"ask": ["Bash(*)"]}},
+                                  {"permissions": {"allow": "Bash(*)"}}, {"permissions": None}, []])
+def test_supervision_cle_refuse_de_perdre_un_reglage(tmp_path, extra):
+    cfg = orc.charger_config()
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude/supervision.settings.json").write_text(json.dumps(extra))
+    with pytest.raises(ValueError, match="permissions"):
+        orc.commande_claude(cfg, cfg["etapes"]["supervision"], tmp_path, "diagnostic")
+
+
+def etape_cle_fausse(depot, code=5, mode="cle-solde"):
+    e = etape(depot, "delta", mode, str(code), checkout=DELTA_CLAUDE)
+    e.env_extra = {"DELTA_CLAUDE_MODE": "cle"}
+    e.commande_abonnement = [sys.executable, str(depot.faux), "abonnement", "0"]
+    return e
+
+
+def test_cle_utilisable_malgre_quota_abonnement(depot, cfg):
+    (depot / "rapports/usage.json").write_text(json.dumps({"claude": {"session_5h": {"pct": 100}, "semaine": {"pct": 100}}}))
+    e = etape(depot, "delta", "ok-sans-commit")
+    e.env_extra = {"DELTA_CLAUDE_MODE": "cle"}
+    assert chaine(depot, cfg, [e]).executer() == 0
+    assert codes(depot)["delta"] == 0
+
+
+def test_code_5_repli_unique_journal_et_environnement(depot, cfg):
+    e = etape_cle_fausse(depot)
+    c = chaine(depot, cfg, [e])
+    assert c.executer() == 0
+    assert codes(depot) == {"delta-repli-abonnement": 5, "delta": 0, "chaine": 0}
+    assert (depot / "rapports/cle-vue.txt").read_text() == "cle"
+    assert (depot / "rapports/abonnement-vu.txt").read_text() == "abonnement"
+    assert "repli abonnement après code 5" in c.issues[0].detail
+    log = (depot / "rapports/auto/2026-10-02-delta.log").read_text()
+    assert "code 5" in log and "code 0" in log
+    assert e.env_extra == {"DELTA_CLAUDE_MODE": "cle"}  # configuration inchangée pour le jour suivant
+
+
+def test_repli_code_5_recontrole_quota_abonnement(depot, cfg):
+    (depot / "rapports/usage.json").write_text(json.dumps({"claude": {"session_5h": {"pct": 100}, "semaine": {"pct": 100}}}))
+    c = chaine(depot, cfg, [etape_cle_fausse(depot)])
+    assert c.executer() == 0
+    assert codes(depot) == {"delta-repli-abonnement": 5, "delta": 11, "chaine": 0}
+    assert not (depot / "rapports/abonnement-vu.txt").exists()
+
+
+@pytest.mark.parametrize("code", [1, 2, 11, 12, 127])
+def test_aucun_repli_sur_autre_code(depot, cfg, code):
+    assert chaine(depot, cfg, [etape_cle_fausse(depot, code)]).executer() == 1
+    assert "delta-repli-abonnement" not in codes(depot)
+    assert not (depot / "rapports/abonnement-vu.txt").exists()
+
+
+def test_code_5_abonnement_ne_reboucle_pas(depot, cfg):
+    e = etape_cle_fausse(depot)
+    e.commande_abonnement[-1] = "5"
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot)["delta"] == 5
+    assert [l[2] for l in journal(depot)].count("delta-repli-abonnement") == 1
+
+
+@pytest.mark.parametrize("mode", ["cle-sale", "cle-commit", "cle-refus"])
+def test_code_5_ne_rejoue_pas_un_passage_commence(depot, cfg, mode):
+    assert chaine(depot, cfg, [etape_cle_fausse(depot, mode=mode)]).executer() == 1
+    assert "delta-repli-abonnement" not in codes(depot)
+    assert not (depot / "rapports/abonnement-vu.txt").exists()
+
+
+def test_supervision_repli_code_5_sans_garde(depot, cfg):
+    e = etape_cle_fausse(depot)
+    e.nom, e.supervision, e.garde = "supervision", True, None
+    e.commande_abonnement = [sys.executable, str(depot.faux), "supervision"]
+    assert chaine(depot, cfg, [e]).executer() == 0
+    assert codes(depot) == {"supervision-repli-abonnement": 5, "supervision": 0, "chaine": 0}
+
+
+def test_mode_et_identifiants_api_du_parent_ne_sont_pas_herites(cfg, monkeypatch):
+    for cle in ("DELTA_CLAUDE_MODE", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN"):
+        monkeypatch.setenv(cle, "sentinelle-de-test")
+    env = orc.environnement(cfg)
+    assert not any(k in env for k in ("DELTA_CLAUDE_MODE", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN"))
 
 
 def test_supervision_settings_lecture_seule():
@@ -798,6 +928,7 @@ def depot_sh(depot, tmp_path):
     (depot / "prompts").mkdir(exist_ok=True)
     (depot / "prompts" / "supervision.md").write_text("supervision")
     toml = (RACINE / "scripts" / "orchestrateur.toml").read_text(encoding="utf-8")
+    toml = toml.replace('mode = "cle"', 'mode = "abonnement"')  # ces essais testent le verrou, pas le vrai lanceur sur clé
     toml = re.sub(r'^bin = .*$', f'bin = "{faux}"', toml, flags=re.MULTILINE)
     toml = toml.replace("delai_min = 45", "delai_min = 1")
     toml = re.sub(r"^valider = .*$", "valider = []", toml, flags=re.MULTILINE).replace("valider_kb = true", "valider_kb = false")  # dépôt de test : données vides
@@ -1243,6 +1374,18 @@ def test_echec_reseau_relance_puis_succes(depot, cfg):
     log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
     assert "tentative 1/4 échouée, réseau (ENOTFOUND)" in log and "arrêt propre : git checkout -- docs/data/claude" in log
     assert "étape delta : code 0" in log, "la tentative réussie est journalisée aussi"
+
+
+def test_reseau_apres_repli_reste_sur_abonnement(depot, cfg):
+    c, compteur, _ = reseau(depot, cfg, "reseau-claude", echecs=1)
+    e = c.etapes[0]
+    e.commande_abonnement = e.commande
+    e.commande = [sys.executable, str(depot.faux), "cle-solde", "5"]
+    e.env_extra = {"DELTA_CLAUDE_MODE": "cle"}
+    assert c.executer() == 0
+    assert tentatives(compteur) == 2
+    assert [l[2] for l in journal(depot)].count("delta-repli-abonnement") == 1
+    assert "repli abonnement après code 5" in c.issues[0].detail
 
 
 def test_echec_reseau_arret_propre_avant_chaque_relance(depot, cfg):
