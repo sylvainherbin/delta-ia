@@ -2,7 +2,7 @@
   "semaine": "2026-W42",
   "du": "2026-10-12",
   "au": "2026-10-18",
-  "genere_le": "2026-10-16T02:08:40+00:00",
+  "genere_le": "2026-10-17T02:07:03+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -14,7 +14,8 @@
         "2026-10-13",
         "2026-10-14",
         "2026-10-15",
-        "2026-10-16"
+        "2026-10-16",
+        "2026-10-17"
       ]
     },
     "actu": {
@@ -25,7 +26,8 @@
         "2026-10-13",
         "2026-10-14",
         "2026-10-15",
-        "2026-10-16"
+        "2026-10-16",
+        "2026-10-17"
       ]
     },
     "openai": {
@@ -35,7 +37,8 @@
         "2026-10-12",
         "2026-10-13",
         "2026-10-14",
-        "2026-10-15"
+        "2026-10-15",
+        "2026-10-16"
       ]
     },
     "kb-claude": {
@@ -66,6 +69,18 @@
     }
   },
   "d71": [
+    {
+      "perimetre": "openai",
+      "id": "openai-aide-index-docs-enterprise-sites",
+      "produit": "codex",
+      "titre": "Sites : administration documentée, conditions renvoyées au centre d’aide",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-16",
+      "action": "Revérifier le 17/10/2026 les conditions Sites dans le centre d’aide ; aucune échéance publiée pour une action de compte. ChatGPT semaine : 11 % relevés le 16/10/2026 à 02:09:28 UTC ; aucun nouveau plafond Pro 100 établi par ces extraits."
+    },
     {
       "perimetre": "claude",
       "id": "claude-aide-claude-code-pro-max-article",
@@ -116,6 +131,18 @@
     },
     {
       "perimetre": "claude",
+      "id": "claude-code-2.1.302",
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.302",
+      "version": "2.1.302",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-16",
+      "jour": "2026-10-17",
+      "action": "Après la remise à zéro hebdomadaire du 18/10 à 16 h 00 UTC (quota à 96 % au relevé de 02 h 00 UTC), ouvre `/config` dans la session du chef delta-ia, repère la ligne `Idle compaction` et laisse la session inactive environ une heure avec un contexte long avant de la reprendre ; lance aussi `grep -n 'CLAUDE_CODE_FORK_SUBAGENT' scripts/passage-auto.sh scripts/orchestrateur.toml` pour voir si la chaîne D70 règle déjà les sous-agents « fork »."
+    },
+    {
+      "perimetre": "claude",
       "id": "claude-code-2.1.301",
       "produit": "claude-code",
       "titre": "Claude Code 2.1.301",
@@ -140,6 +167,30 @@
     }
   ],
   "elements": [
+    {
+      "perimetre": "openai",
+      "id": "openai-status-01M506BA4XRSWH7THR53HQGN3Z",
+      "produit": "chatgpt",
+      "titre": "ChatGPT mobile : dégradation du 15 octobre résolue",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-15",
+      "jour": "2026-10-16",
+      "action": null
+    },
+    {
+      "perimetre": "openai",
+      "id": "rust-v0.163.0",
+      "produit": "codex",
+      "titre": "Codex CLI 0.163.0 : réglages recherchables, pilotage immédiat et Daybreak par défaut",
+      "version": "0.163.0",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-10-15",
+      "jour": "2026-10-16",
+      "action": "Après mise à jour de la CLI npm, essayer `/config` dans le flux d’audit trading-sim sous tmux ; résultat attendu : recherche de réglages et distinction des changements qui nécessitent un redémarrage."
+    },
     {
       "perimetre": "claude",
       "id": "claude-code-2.1.299",
@@ -431,6 +482,150 @@
       "date_ajout": "2026-10-16"
     },
     {
+      "perimetre": "openai",
+      "id": "codex-mcp-1-ask-the-original-gpt-for-a-rebuild-prompt",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "1. Ask the original GPT for a rebuild prompt",
+      "usage": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+      "exemple": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-1-create-your-plugin",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "1. Create your plugin",
+      "usage": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+      "exemple": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-2-check-the-prompt-against-the-action-settings",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "2. Check the prompt against the action settings",
+      "usage": "Before migrating, save the action schema, authentication method, and non-secret connection settings from the GPT editor's [Actions section](https://help.openai.com/en/articles/9442513-configuring-actions-in-gpts). Use these to fill gaps in the prompt, or ask the GPT owner for help.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-2-connect-your-system",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "2. Connect your system",
+      "usage": "In the same conversation, ask Plugin Creator to connect the server to your system's API and walk you through sign-in. Use your organization's approved authentication method, and keep passwords, API keys, and other secrets out of chat.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-3-create-a-new-sites-plugin",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "3. Create a new Sites plugin",
+      "usage": "$plugin-creator",
+      "exemple": "$plugin-creator",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-3-publish-and-install",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "3. Publish and install",
+      "usage": "1. Open the plugin card, or find it under **Plugins → Personal → Created by you**.\n2. Follow **Install** and **Connect**, and complete any required sign-in.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-4-use-your-plugin",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "4. Use your plugin",
+      "usage": "Start a new Work task, choose your plugin with **@**, and ask **“What's the status of ticket 123?”** using a ticket number from your system. You can use its tools alongside other plugins in the same conversation.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-before-you-start",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "Before you start",
+      "usage": "Check the [Plugins directory](https://chatgpt.com/plugins) first. If you need a new connection, gather your system's API documentation and an approved way to connect. Ask the system owner if you need help.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-build-an-mcp-plugin-with-plugin-creator-and-sites",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "Build an MCP plugin with Plugin Creator and Sites",
+      "usage": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+      "exemple": "Create a Support Ticket Lookup plugin with an MCP server hosted on Sites, using the attached [ticketing system] API docs. Let me look up a ticket's status, owner, and latest update by ticket number. Make it read-only and tell me what's needed to connect it.",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-connect-an-existing-mcp-server",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "Connect an existing MCP server",
+      "usage": "ChatGPT web uses remote MCP tools through plugins. If you already have a server, follow [Connect and test your plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt). Local Codex clients can also connect directly to MCP servers and share their configuration.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-replacing-a-gpt-custom-action",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "Replacing a GPT custom action",
+      "usage": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+      "exemple": "Write a prompt for ChatGPT Work or Codex to rebuild this workflow as MCP tools. Identify which operations read information and which make changes.\n\nInclude the API operation, inputs, returned fields, and answer format. Mark anything you don't know. Leave out credentials, secrets, and hidden instructions.\n\nAsk the builder to reuse the API and explain the connection setup.",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-mcp-troubleshooting",
+      "produit": "codex",
+      "categorie": "mcp",
+      "nom": "Troubleshooting",
+      "usage": "For a connection error or missing tools, check that the Site owner published the latest version and that the plugin is installed and connected. Share any error with Plugin Creator or the server owner.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-16"
+    },
+    {
       "perimetre": "claude",
       "id": "claude-code-parametres-claude-code-artifact-publish-edits",
       "produit": "claude-code",
@@ -649,6 +844,51 @@
   ],
   "base_verdicts": [
     {
+      "perimetre": "claude",
+      "id": "claude-code-fonctionnalites-page-advisor",
+      "produit": "claude-code",
+      "categorie": "fonctionnalites",
+      "nom": "Escalate hard decisions with the advisor tool",
+      "usage": "/advisor opus",
+      "exemple": "claude --advisor opus",
+      "exemple_origine": null,
+      "verdict": "utiliser",
+      "date": "2026-10-16",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "C'est déjà la formule validée pour les missions de construction de trading-sim : Sonnet avec Opus en conseiller, réglé par `regler-advisor` ou `mission-dev --advisor`. Le conseiller ne survit pas à un `/clear` ni à une reprise de session : il faut le réactiver avant chaque mission qui l'utilise."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-advisormodel",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "advisorModel",
+      "usage": "{\n  \"advisorModel\": \"opus\"\n}",
+      "exemple": "{\n  \"advisorModel\": \"opus\"\n}",
+      "exemple_origine": "source",
+      "verdict": "utiliser",
+      "date": "2026-10-16",
+      "verdict_avant": "tester",
+      "verdict_apres": "utiliser",
+      "pourquoi": "C'est le réglage derrière ta formule Sonnet avec Opus en conseiller, validée pour les missions de construction de trading-sim et posée par `regler-advisor` ou `mission-dev --advisor`. Garde `opus`, plus capable que Sonnet, et retire-le des réglages globaux après la mission."
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-skills-page-skills-and-plugins",
+      "produit": "codex",
+      "categorie": "skills",
+      "nom": "Skills & Plugins",
+      "usage": "1. **Choose one focused task.** Note what you normally start with, such as files, links, or notes, and what a finished result should look like.\n2. **Describe the workflow.** In ChatGPT, start with `@skill-creator`; in Codex, use `$skill-creator`. Explain the goal, the steps to follow, the expected format, and anything the skill should always include or avoid. Add a template or a good example when you have one.\n3. **Review and try the draft.** Check the instructions, test the skill with a realistic request, and refine it if the result misses a step or drifts from the format you want.\n4. **Install and reuse it.** Once the skill is enabled, ChatGPT or Codex can use it for relevant requests, or you can select it explicitly. You can also share it with teammates when your workspace settings allow it.",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "tester",
+      "date": "2026-10-16",
+      "verdict_avant": "utiliser",
+      "verdict_apres": "tester",
+      "pourquoi": "Codex sert surtout à auditer le travail de Claude, et les prompts d'audit très longs sont une friction récurrente. Or seules des skills système, dont `skill-creator`, sont installées côté Codex : essayer `$skill-creator` pour transformer une procédure d'audit répétée en skill réutilisable plutôt que de la recoller."
+    },
+    {
       "perimetre": "openai",
       "id": "codex-raccourcis-interactive-shortcuts",
       "produit": "codex",
@@ -752,21 +992,6 @@
       "verdict_avant": "ignorer",
       "verdict_apres": "tester",
       "pourquoi": "Pour un audit indépendant de la console de pilotage dans sa session Codex, essayer `/new` et vérifier que le contexte repart de zéro dans le même dépôt avant la nouvelle revue."
-    },
-    {
-      "perimetre": "openai",
-      "id": "codex-commandes-ps",
-      "produit": "codex",
-      "categorie": "commandes",
-      "nom": "/ps",
-      "usage": "/ps",
-      "exemple": "/ps",
-      "exemple_origine": "source",
-      "verdict": "tester",
-      "date": "2026-10-12",
-      "verdict_avant": "ignorer",
-      "verdict_apres": "tester",
-      "pourquoi": "Sur une mission Codex de discipline qui lance des tests longs en arrière-plan, essayer `/ps` et vérifier que leurs sorties récentes restent consultables dans le fil."
     }
   ]
 }
