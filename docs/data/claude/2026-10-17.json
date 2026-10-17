@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-17",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-17T02:03:16+00:00",
+  "synthese": "Compte et quotas : aucune information nouvelle sur les offres ou tarifs, mais le quota hebdomadaire Claude est à 96 % (relevé à 02 h 00 UTC, remise à zéro le 18/10 à 16 h 00 UTC), au-dessus du seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Session 5 h à 0 %, semaine Fable à 3 % (même remise à zéro), ChatGPT semaine à 71 % (remise à zéro le 22/10 à 07 h 07 UTC). Claude Code 2.1.302 est publiée et déjà installée : elle passe les sous-agents « fork » en défaut dans `claude -p` (chaîne de nuit D70, rôles JUGER), ajoute une ligne `Idle compaction` à `/config` et corrige un défaut de cache de prompt ; l'avis de fermeture de Claude Design autonome au 14/12/2026, déjà annoncé le 09/10, est maintenant affiché dans `/design-sync` et `/design-login`.",
+  "sources_en_echec": [],
+  "ecartes": [
+    {
+      "id": "https://claude.com/blog/how-an-anthropic-japan-business-development-representative-runs-his-day",
+      "raison": "témoignage d'un commercial d'Anthropic au Japon sur ses agents de prospection et de courriels (Claude Managed Agents, Claude Tag), cas d'usage sectoriel sans commande ni réglage applicable aux projets"
+    }
+  ],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+  "elements": [
+    {
+      "id": "claude-code-2.1.302",
+      "ids_bruts": ["claude-code-2.1.302"],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.302",
+      "version": "2.1.302",
+      "date_publication": "2026-10-16",
+      "type": "nouveaute",
+      "resume": "Ajouts : variable `CLAUDE_CODE_AUTO_MODE_MODEL`, qui choisit le modèle du classifieur du mode auto côté client (sans effet sur le mode auto côté serveur) ; ligne `Idle compaction` dans `/config` pour couper ou rétablir la compaction à l'inactivité, dont les notices disent désormais comment la couper ; avis dans `/design-sync` et `/design-login` que Claude Design autonome (claude.ai/design) ferme au plus tard le 14/12/2026. Changements : les sous-agents « fork » (`subagent_type: \"fork\"`) sont actifs par défaut dans `claude -p`, le SDK Agent, l'app de bureau et VS Code, comme dans le terminal (`CLAUDE_CODE_FORK_SUBAGENT=0` les coupe) ; l'app de bureau et VS Code exécutent toujours en arrière-plan les sous-agents de la conversation principale, et les appels `Agent` d'un sous-agent tournent au premier plan par défaut dans `claude -p`, le SDK, l'app de bureau et VS Code ; au plus 12 hooks `prompt` ou `agent` du même événement tournent en même temps ; `claude -p` sans mode de permission démarre en `default` chez les fournisseurs tiers, télémétrie coupée ou installation neuve. Correctifs : défaut de cache de prompt quand un outil ajouté en cours de session est rechargé par ToolSearch ou après compaction ; erreur « Prompt is too long » à l'arrêt d'un tour pendant la compaction ; suggestions de prompt qui dépensaient des crédits d'usage sur des modèles que le forfait ne couvre qu'avec des crédits (elles sont sautées après une réponse facturée en crédits) ; volet d'un sous-agent qui tournait sans fin dans une session Remote Control après la perte de connexion de l'ordinateur ; `claude remote-control --help` qui n'affichait rien hors connexion ; lecture d'un fichier image de toute taille entièrement en mémoire par l'outil Read (les sources de plus de 128 Mo sont refusées) ; écritures de réglages perdues par `claude plugin` et d'autres sous-commandes quittant trop tôt ; requêtes en échec après un passage à Vertex ou Bedrock en cours de session ; serveurs MCP sans outils quand ils annoncent la version de protocole 2026-07-28 sans `resultType`, `ttlMs` ou `cacheScope` ; création de worktrees refusée sous git 2.56 ou plus avec un fichier `.git` orphelin ; coût et usage d'une session cloud repartant de zéro à la reprise. Le journal contient aussi des correctifs Windows, PowerShell, VS Code, Claude Tag (Slack) et sessions cloud.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21302",
+          "libelle": "Claude Code 2.1.302",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.302 est déjà installée (`docs/data/versions.json`, à jour). CONTEXTE.md décrit la chaîne de nuit D70 (`/delta` et `/delta-kb` en `claude -p`) et les rôles JUGER appelés par `claude -p` : les sous-agents « fork » y sont désormais actifs par défaut, alors que la fiche de la base notait `claude -p` comme sans fork ; rien dans CONTEXTE.md ne dit que ces étapes appellent l'outil `Agent`, donc l'effet ne se voit que si l'une d'elles le fait, et `CLAUDE_CODE_FORK_SUBAGENT=0` rétablit l'ancien comportement. La ligne `Idle compaction` de `/config` rend réglable, depuis l'interface, la compaction à l'inactivité de tes sessions durables `claude-session@<nom>` reprises par `claude --resume` : la fiche `idleCompaction` la classait déjà à essayer, et la notice dit maintenant comment la couper. Le correctif de cache de prompt (outil rechargé par ToolSearch ou après compaction) vise une consommation inutile, sans que la page en chiffre l'effet sur ton quota hebdomadaire de 96 % ; celui des suggestions de prompt évite des crédits dépensés sur les modèles couverts seulement par des crédits. Le correctif du volet de sous-agent en Remote Control touche l'usage depuis l'iPhone décrit dans CONTEXTE.md. Le correctif de worktrees sous git 2.56 ou plus ne te concerne que si ta version de git y arrive : CONTEXTE.md décrit des worktrees créés par `git worktree add` ou par OPÉRER, et non par l'option `--worktree` de Claude Code. Fermeture de Claude Design autonome au 14/12/2026 : déjà traitée dans l'élément du 09/10 (`https://claude.com/blog/dashboards-and-motion`), seul l'affichage de l'avis dans `/design-sync` est nouveau. Sans effet pour toi : `CLAUDE_CODE_AUTO_MODE_MODEL` (toutes tes sessions locales tournent en `bypassPermissions`, hors mode auto), correctifs Windows, PowerShell, VS Code et Claude Tag.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Après la remise à zéro hebdomadaire du 18/10 à 16 h 00 UTC (quota à 96 % au relevé de 02 h 00 UTC), ouvre `/config` dans la session du chef delta-ia, repère la ligne `Idle compaction` et laisse la session inactive environ une heure avec un contexte long avant de la reprendre ; lance aussi `grep -n 'CLAUDE_CODE_FORK_SUBAGENT' scripts/passage-auto.sh scripts/orchestrateur.toml` pour voir si la chaîne D70 règle déjà les sous-agents « fork ».",
+        "etapes": [
+          "Dans la session du chef delta-ia, tape `/config` et repère la ligne `Idle compaction` (clé `idleCompaction`, fiche `claude-code-parametres-idlecompaction`).",
+          "Laisse cette session inactive environ une heure avec un contexte long, puis reprends-la : une notice « Compacted while idle, before the prompt cache expired » dit si la reprise a été résumée et comment couper la compaction.",
+          "Dans `~/projets/delta-ia`, lance `grep -n 'CLAUDE_CODE_FORK_SUBAGENT' scripts/passage-auto.sh scripts/orchestrateur.toml` : sans résultat, la chaîne de nuit tourne avec les sous-agents « fork » actifs ; ajoute `CLAUDE_CODE_FORK_SUBAGENT=0` à l'environnement des étapes Claude seulement si un passage en montre l'effet (mission pour Dev-delta, hors passage).",
+          "Résultat attendu : `/config` affiche la ligne `Idle compaction` avec son état, et la notice de reprise de la session du chef delta-ia nomme la façon de couper la compaction."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-idlecompaction",
+        "claude-code-parametres-claude-code-fork-subagent",
+        "claude-code-skills-design-sync",
+        "claude-code-commandes-design-login"
+      ],
+      "contexte_sections": {
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes /delta et /delta-kb lancées en claude -p ; concernées par les sous-agents fork en défaut."
+        },
+        "methode.juger-design": {
+          "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+          "pourquoi": "Rôles JUGER appelés par claude -p ; Claude Design cité."
+        },
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables reprises par --resume, pilotées par Remote Control depuis l'iPhone."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Usage de Claude Design et /design-sync ; décrit aucun usage du mode auto."
+        }
+      }
+    }
+  ]
+}

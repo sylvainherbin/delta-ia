@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-16",
+ "maj_le": "2026-10-17",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 659,
- "commentees": 657,
+ "commentees": 659,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -2424,8 +2424,8 @@
    "categorie": "parametres",
    "nom": "API_TIMEOUT_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe le délai d'expiration des requêtes à l'API, 10 minutes par défaut.",
-   "description_source": "Timeout for API requests in milliseconds (default: 600000, or 10 minutes; maximum: 2147483647). Increase this when requests time out on slow networks or when routing through a proxy. Values above the maximum overflow the underlying timer and cause requests to fail immediately",
+   "description": "Variable qui fixe le délai d'expiration des requêtes à l'API, 10 minutes par défaut (maximum 2 147 483 647 ms) ; une requête en flux doit recevoir ses en-têtes de réponse dans ce délai.",
+   "description_source": "Timeout for API requests in milliseconds (default: 600000, or 10 minutes; maximum: 2147483647). A streaming request has to receive its response headers within it. Increase this when requests time out on slow networks or when routing through a proxy",
    "usage": "API_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2446,7 +2446,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2459,9 +2459,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
@@ -10455,11 +10463,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10484,6 +10492,10 @@
     {
      "date": "2026-10-16",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -12562,7 +12574,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul avec `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` ; au-delà, la session démarre à l'arrêt.",
+   "description": "Variable qui fixe l'âge maximal du dernier message pour qu'un tour interrompu reprenne seul avec `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` ; au-delà, la session démarre à l'arrêt. Sans valeur ou à 0, aucune borne, sauf certains tours (fin sur erreur d'API) qui ne reprennent que dans les six heures.",
    "description_source": "Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 sets no bound, except that some turns resume only within six hours of their last message, such as one that ended with an API error. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS",
    "usage_nature": "syntaxe",
@@ -12571,7 +12583,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé à la reprise automatique en mode SDK, que CONTEXTE.md ne mentionne pas."
+    "pourquoi": "Réservé à la reprise automatique d'un tour interrompu (scripts de lancement d'agents de longue durée) ; CONTEXTE.md ne dit pas que tes sessions `claude-session@<nom>` l'activent."
    },
    "sources": [
     {
@@ -12580,11 +12592,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12605,9 +12617,13 @@
     {
      "date": "2026-10-15",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {}
   },
   {
@@ -16206,8 +16222,8 @@
    "categorie": "parametres",
    "nom": "--debug",
    "gabarit": "court",
-   "description": "Option de lancement qui active le mode débogage, avec un filtre de catégories facultatif.",
-   "description_source": "Enable debug mode with optional category filtering, such as --debug='mcp,startup' or --debug='!1p'. The filter binds only in the = form; a space-separated filter enables debug mode without filtering — claude --debug='mcp,startup'",
+   "description": "Option de lancement qui active le mode débogage, avec un filtre de catégories facultatif ; le filtre ne s'applique qu'avec la forme `--debug='mcp,startup'` (avec un espace, le mode s'active sans filtre).",
+   "description_source": "Enable debug mode with optional category filtering, such as --debug='mcp,startup' or --debug='!mcp'. The filter binds only in the = form; a space-separated filter enables debug mode without filtering — claude --debug='mcp,startup'",
    "usage": "--debug",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -16228,7 +16244,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16237,10 +16253,18 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-debug-file-path",
