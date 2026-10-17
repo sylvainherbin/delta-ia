@@ -5,6 +5,7 @@ A1 est remplacé par un faux module (`delta.operer.credits_api`) : aucun appel r
 import json
 import sys
 import types
+from datetime import date
 
 import pytest
 
@@ -345,7 +346,9 @@ def test_recommentaire_prepare_les_fiches_a_revoir_avec_contexte_en_cache(a_revo
     assert pl.lots(racine)[0]["statut"] == "applique", "le lot de provenance n'est pas touché"
 
 
-def test_recommentaire_applique_fiche_par_fiche(a_revoir):
+def test_recommentaire_applique_fiche_par_fiche(a_revoir, monkeypatch):
+    # Le lot est préparé le 16 puis appliqué le 17, indépendamment de la date d'exécution du test.
+    monkeypatch.setattr(rl, "date", types.SimpleNamespace(today=lambda: date(2026, 10, 16)))
     racine, ents, ids = a_revoir
     m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
     par = {f["custom_id"]: k for k, f in m["fiches"].items()}

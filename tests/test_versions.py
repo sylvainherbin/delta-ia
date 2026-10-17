@@ -158,6 +158,7 @@ def test_deux_codex_embarque_et_cli_suivie_normalement(tmp_path, monkeypatch):
 
 
 def test_codex_terminal_exclut_l_exe_de_l_app(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
     app = tmp_path / "app" / "codex"; app.parent.mkdir(); app.write_text("#!/bin/sh\necho codex-cli 0.155.0-alpha.16.4\n"); app.chmod(0o755)
     npm = tmp_path / "nvm" / "codex"; npm.parent.mkdir(); npm.write_text("#!/bin/sh\necho codex-cli 0.155.1\n"); npm.chmod(0o755)
     monkeypatch.setattr(v, "_exe_codex_app", lambda: str(app))
@@ -165,6 +166,20 @@ def test_codex_terminal_exclut_l_exe_de_l_app(tmp_path, monkeypatch):
     monkeypatch.setattr(v.glob, "glob", lambda motif: [str(npm)])
     assert v.codex_app()[0] == "0.155.0-alpha.16.4"
     assert v.codex_terminal()[0] == "0.155.1", "le codex de l'app, même dans le PATH, n'est pas la CLI autonome"
+
+
+def test_codex_terminal_nvm_current_sans_app_ni_path(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(v.shutil, "which", lambda n: None)
+    monkeypatch.setattr(v.glob, "glob", lambda motif: [])
+    nvm = tmp_path / ".nvm" / "current" / "bin"
+    nvm.mkdir(parents=True)
+    codex = nvm / "codex"
+    codex.write_text("#!/bin/sh\necho codex-cli 9.9.9\n")
+    codex.chmod(0o755)
+    assert v.codex_app()[0] is None, "l'absence du paquet reste visible, sans repli vers la CLI"
+    version, methode, erreur = v.codex_terminal()
+    assert version == "9.9.9" and str(codex) in methode and erreur is None
 
 
 @pytest.mark.parametrize("modif, attendu", [
