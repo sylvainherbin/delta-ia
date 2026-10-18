@@ -12704,7 +12704,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12713,10 +12713,28 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-18",
+     "changement": "provenance ajoutée"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_sections": null,
+   "provenance": [
+    {
+     "affirmation": "Avec CLAUDE_CODE_RETRY_WATCHDOG=1, Claude Code retente indéfiniment les erreurs de capacité 429 et 529 au lieu d'échouer après CLAUDE_CODE_MAX_RETRIES, en attendant jusqu'à 5 minutes entre deux essais, ou jusqu'à la remise à zéro annoncée par la réponse.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-18",
+     "caduc_si": "La variable disparaît de la documentation ou cesse de retenter indéfiniment les erreurs 429 et 529."
+    },
+    {
+     "affirmation": "Depuis v2.1.239, une requête à vitesse standard qui reçoit un 429 signalant une limite de dépense ou des crédits d'usage épuisés échoue tout de suite, même avec le watchdog ; CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS (v2.1.295) plafonne l'attente par requête.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-10-18",
+     "caduc_si": "La documentation change le traitement des 429 de limite de dépense ou retire CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS."
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-retry-watchdog-max-wait-ms",
