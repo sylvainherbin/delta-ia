@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-10-16",
+ "maj_le": "2026-10-18",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -2055,7 +2055,7 @@
    "categorie": "plugins",
    "nom": "mcp-tunnels",
    "gabarit": "complet",
-   "description": "Plugin qui relie Claude à un serveur MCP privé par un tunnel MCP Anthropic, avec un démarrage rapide Docker Compose (`/create-docker-mcp-tunnel`).",
+   "description": "Plugin qui relie Claude à un serveur MCP privé par un tunnel MCP Anthropic. Sa commande `/create-docker-mcp-tunnel` conduit le démarrage rapide Docker Compose de bout en bout : certificats, configuration du proxy, cloudflared et serveur d'exemple vérifiable.",
    "description_source": "Connect Claude to a private MCP server through an Anthropic MCP tunnel. The /create-docker-mcp-tunnel command drives the Docker Compose quickstart end to end: certificates, proxy config, cloudflared, and a verifiable sample server.",
    "usage": "/plugin install mcp-tunnels@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -2064,7 +2064,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton seul serveur MCP maison, delta-ia, est public et en lecture seule ; aucun serveur privé à exposer."
+    "pourquoi": "Ton serveur MCP maison, delta-ia, est joint par une URL publique hébergée sur Vercel ; CONTEXTE.md ne cite aucun serveur MCP privé à exposer."
    },
    "sources": [
     {
@@ -2074,17 +2074,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia est un serveur public, sans tunnel nécessaire."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia joint en HTTP par une URL publique, sans tunnel nécessaire."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2096,6 +2096,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-18",
      "changement": "commentaire révisé"
     }
    ]
@@ -3566,7 +3570,7 @@
    "categorie": "plugins",
    "nom": "vercel",
    "gabarit": "complet",
-   "description": "Plugin d'intégration Vercel : déploiements, état des builds, journaux, domaines.",
+   "description": "Plugin d'intégration de la plateforme de déploiement Vercel. Il gère depuis Claude Code les déploiements, l'état des builds, les journaux, les domaines et l'infrastructure frontend.",
    "description_source": "Vercel deployment platform integration. Manage deployments, check build status, access logs, configure domains, and control your frontend infrastructure directly from Claude Code.",
    "usage": "/plugin install vercel@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -3575,7 +3579,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu as refermé volontairement l'accès Vercel de Claude après un usage ponctuel ; le plugin rouvrirait ce même accès."
+    "pourquoi": "Le connecteur claude.ai Vercel est de nouveau connecté (`claude mcp list` du 12/10) et donne déjà cet accès à tes sessions ; CONTEXTE.md ne décrit aucun déploiement Vercel piloté depuis Claude Code qui justifierait d'ajouter le plugin."
    },
    "sources": [
     {
@@ -3588,7 +3592,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "deployment",
-   "maj_le": "2026-09-26",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3613,13 +3617,17 @@
     {
      "date": "2026-09-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-18",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c038d2cd21b6ecd592d0717c021354e8e74c340c",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur claude.ai Vercel refermé volontairement le 24/09, à ne pas réautoriser."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur claude.ai Vercel refermé le 24/09 puis de nouveau autorisé, connecté au 12/10."
     }
    }
   },
@@ -3629,16 +3637,16 @@
    "categorie": "plugins",
    "nom": "Use plugins in Claude",
    "gabarit": "complet",
-   "description": "Un plugin de l'app Claude regroupe skills, connecteurs et sous-agents ; il s'installe dans Customize > Plugins > « Browse plugins » et sert dans le chat, Claude Desktop et Cowork. Les plugins du compte se synchronisent aussi dans Claude Code (v2.1.273 ou plus) et s'y exécutent entièrement, serveurs MCP locaux compris ; `syncClaudeAiPlugins: false` bloque cette synchronisation.",
+   "description": "Un plugin de l'app Claude apporte skills, commandes, connecteurs, hooks et sous-agents ; il s'ajoute par Customize > Plugins > Discover puis « Add », et sert dans le chat, Claude Desktop et Cowork. Enregistré sur le compte, il se synchronise aussi dans Claude Code (v2.1.273 ou plus) au démarrage et s'y exécute entièrement, serveurs MCP locaux compris ; `syncClaudeAiPlugins: false` arrête cette synchronisation.",
    "description_source": "Plugins are available to all paid plans (Pro, Max, Team, Enterprise).",
    "usage": "1. In Claude, open the **Customize** menu in the left sidebar. Customize brings your plugins, skills, and connectors together in one place.\n2. Open the **Plugins** tab.\n3. Open the **Discover** tab to see the available options.\n4. Select the plugin you want, then click \"Add.\"",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team, Enterprise",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun plugin à installer n'est identifié dans CONTEXTE.md ; si tu en ajoutes un dans l'app, il se synchroniserait dans tes sessions Claude Code, trading-sim compris : pose alors `syncClaudeAiPlugins: false` dans le `.claude/settings.json` de ce projet, dont les capacités sont restreintes."
+    "pourquoi": "Aucun plugin de l'app n'est identifié dans CONTEXTE.md ; si tu en ajoutes un, il se chargerait aussi dans tes sessions Claude Code, trading-sim compris : `syncClaudeAiPlugins: false` n'est pas accepté dans le `.claude/settings.json` d'un dépôt, pose-le dans `~/projets/trading-sim/.claude/settings.local.json`."
    },
    "sources": [
     {
@@ -3651,7 +3659,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3668,17 +3676,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-18",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Politique de capacités restreinte : connecteurs de compte déjà reçus malgré le deny."
+     "pourquoi": "Politique de capacités restreinte dans .claude/settings.json du projet."
     },
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Les connecteurs de compte s'appliquent à tous les projets sauf deny explicite."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Les éléments du compte claude.ai atteignent tous les projets, trading-sim compris, sauf deny explicite."
     }
    }
   },

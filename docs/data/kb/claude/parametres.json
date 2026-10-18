@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-17",
+ "maj_le": "2026-10-18",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -25295,7 +25295,7 @@
    "categorie": "parametres",
    "nom": "MCP_PROTOCOL_NEGOTIATION",
    "gabarit": "court",
-   "description": "Variable qui, sur le runtime MCP v2, sonde les serveurs pour la révision de protocole 2026-07-28.",
+   "description": "Variable qui, sur le runtime client MCP v2 seulement, décide si Claude Code sonde les serveurs pour la révision de protocole MCP 2026-07-28 : `auto` sonde les serveurs HTTP, stdio et connecteurs claude.ai, `legacy` n'en sonde aucun (v2.1.221 ou plus).",
    "description_source": "On the v2 MCP client runtime only, whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set auto to probe HTTP, claude.ai connector, and stdio servers, or legacy to probe none. With the variable unset, Claude Code probes the servers described under MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
    "usage": "MCP_PROTOCOL_NEGOTIATION",
    "usage_nature": "syntaxe",
@@ -25304,7 +25304,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage interne ; aucun problème de connexion rapporté."
+    "pourquoi": "Réglage de diagnostic du protocole ; CONTEXTE.md ne décrit aucun échec de connexion de delta-ia ni des connecteurs claude.ai."
    },
    "sources": [
     {
@@ -25317,7 +25317,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25334,13 +25334,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-18",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "Connecteur local delta-ia, sans problème de connexion décrit."
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur delta-ia et connecteur Vercel connectés, sans problème de protocole décrit."
     }
    }
   },
@@ -31709,7 +31713,7 @@
    "categorie": "parametres",
    "nom": "strictPluginOnlyCustomization.mcp",
    "gabarit": "court",
-   "description": "Réglage qui verrouille les MCP : plus de chargement depuis `~/.claude.json` et `.mcp.json`.",
+   "description": "Valeur `mcp` de `strictPluginOnlyCustomization` : Claude Code ne charge plus les serveurs MCP de `~/.claude.json` ni de `.mcp.json`, et garde seulement ceux des plugins, de `managed-mcp.json` et de `managedMcpServers`.",
    "description_source": "Lock the mcp surface. Claude Code stops loading MCP servers from ~/.claude.json and .mcp.json, and keeps loading plugin MCP servers, managed-mcp.json servers, and servers from managedMcpServers.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"mcp\"]\n}",
    "usage_nature": "syntaxe",
@@ -31718,7 +31722,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Il couperait ton connecteur delta-ia, enregistré dans `~/.claude.json`."
+    "pourquoi": "Il couperait ton connecteur delta-ia, ajouté par `claude mcp add --scope local`, donc enregistré dans `~/.claude.json`."
    },
    "sources": [
     {
@@ -31731,7 +31735,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31744,13 +31748,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-18",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mcp": {
-     "sha1": "908b0ea8ab61b67d503be365a561c0d9dbf093f0",
-     "pourquoi": "delta-ia en portée locale"
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "delta-ia ajouté en portée locale dans ~/projets et ~/projets/delta-ia, que ce verrou ne chargerait plus."
     }
    }
   },
