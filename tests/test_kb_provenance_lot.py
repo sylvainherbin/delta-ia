@@ -306,8 +306,10 @@ from deltalib.kb import recommentaire_lot as rl  # noqa: E402
 
 
 @pytest.fixture
-def a_revoir(depot):
+def a_revoir(depot, monkeypatch):
     """Lot de provenance appliqué dont 5 fiches sont restées « à revoir »."""
+    # Le lot est préparé le 16 puis appliqué le 17, indépendamment de la date d'exécution du test.
+    monkeypatch.setattr(rl, "date", types.SimpleNamespace(today=lambda: date(2026, 10, 16)))
     racine, ents = depot
     m = preparer(racine, ents)
     res = [reponse(f"f{i:04d}", {"recommandation_tient": False, "motif": "Aucune section de CONTEXTE.md n'est fournie.",
@@ -346,9 +348,7 @@ def test_recommentaire_prepare_les_fiches_a_revoir_avec_contexte_en_cache(a_revo
     assert pl.lots(racine)[0]["statut"] == "applique", "le lot de provenance n'est pas touché"
 
 
-def test_recommentaire_applique_fiche_par_fiche(a_revoir, monkeypatch):
-    # Le lot est préparé le 16 puis appliqué le 17, indépendamment de la date d'exécution du test.
-    monkeypatch.setattr(rl, "date", types.SimpleNamespace(today=lambda: date(2026, 10, 16)))
+def test_recommentaire_applique_fiche_par_fiche(a_revoir):
     racine, ents, ids = a_revoir
     m = rl.preparer(racine, "claude", extraites=extraites_de(ents.values()), horodatage="20261016-140000")
     par = {f["custom_id"]: k for k, f in m["fiches"].items()}
