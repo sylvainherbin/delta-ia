@@ -1,0 +1,109 @@
+{
+ "semaine": "2026-W43",
+ "jour": "2026-10-19",
+ "taille": 5,
+ "revoir_apres_jours": 28,
+ "priorites": [
+  "trading-sim d'abord",
+  "ce qui débloque Codex en CLI + tmux + remote control",
+  "ce qui allège les limites hebdomadaires",
+  "ce qui renforce les audits croisés Claude ↔ Codex"
+ ],
+ "candidats": 237,
+ "ecartees": {
+  "retour": 0,
+  "a_revoir_attente": 0,
+  "trop_proposee": 0
+ },
+ "avertissements": [],
+ "entrees": [
+  {
+   "rang": 1,
+   "id": "kb-codex-parametres-codex-approve-for-me-not-so-yolo",
+   "origine": "veille",
+   "produit": "codex",
+   "categorie": "veille",
+   "nom": "Base : 13 paramètres pour exec, le serveur et la TUI",
+   "quoi": "Essai : dans une session Codex sous tmux de trading-sim, ajoute à `~/.codex/config.toml`, dans la table `[tui]`, `auto_recap = false`, puis au prochain lancement tape `/recap` au repos ; résultat attendu : résumé manuel…",
+   "pourquoi": "Tu reprends tes audits trading-sim dans la CLI sous tmux : `tui.auto_recap` distingue le résumé automatique hors focus du résumé manuel `/recap`, et les deux autres clés TUI règlent collage et avis de versions. D70 utilise `--ignore-user-config` : `codex exec --worktree` y est incompatible ; tes wo…",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 31,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux, control (+15)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)",
+    "nouveauté de la veille, impact moyen (+5)"
+   ]
+  },
+  {
+   "rang": 2,
+   "id": "rust-v0.161.0",
+   "origine": "veille",
+   "produit": "codex",
+   "categorie": "veille",
+   "nom": "Réévaluation Codex 0.161 : essai Daybreak sans mise à jour de la CLI",
+   "quoi": "Essayer `codex -p securite --enable cli_daybreak -C /home/herbin/projets/trading-sim` sur une lecture d’audit trading-sim ; résultat attendu : contrôles Daybreak visibles si le compte et le modèle sont éligibles.",
+   "pourquoi": "Tu utilises les profils audit, rapide et securite dans Codex sous tmux. La CLI npm est désormais en 0.162.1 ; le défaut relevé reste gpt-6.1-sol et le profil securite reste gpt-daybreak-blue-latest. L’essai de Daybreak peut donc porter directement sur le profil securite, sans mise à jour ; son acti…",
+   "caduque_si": "caduque si change : version citée v0.161.0, v0.162.1",
+   "score": 31,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux, control (+15)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)",
+    "nouveauté de la veille, impact moyen (+5)"
+   ]
+  },
+  {
+   "rang": 3,
+   "id": "codex-parametres-codex-login-status-subcommand",
+   "origine": "a-tester",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex login status subcommand",
+   "quoi": "Essayer codex login status subcommand",
+   "pourquoi": "Si une session CLI sous tmux refuse un audit trading-sim pour défaut de connexion, essaie `codex login status` avec le binaire du PATH pour distinguer l'authentification d'un problème de remote control.",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 29,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux, remote, control (+18)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)"
+   ]
+  },
+  {
+   "rang": 4,
+   "id": "codex-commandes-codex-queue",
+   "origine": "a-tester",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "codex queue",
+   "quoi": "Essayer codex queue : codex queue --thread \"Arbitrage\" --message \"trading-sim : accuse réception du rapport d’audit.\"",
+   "pourquoi": "OPÉRER remet aujourd'hui les messages aux sessions en les collant dans leur volet tmux, puis en renvoyant Entrée par un appel distinct. Or les sessions Codex durables tournent sous `codex-session@<nom>`. Il vaut donc la peine d'essayer `codex queue --thread <UUID> --message \"…\"` sur une de ces sess…",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 23,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, tmux (+9)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)",
+    "fiche ajoutée le 2026-10-14 (+3)"
+   ]
+  },
+  {
+   "rang": 5,
+   "id": "chatgpt-fonctionnalites-page-projects",
+   "origine": "a-tester",
+   "produit": "chatgpt",
+   "categorie": "fonctionnalites",
+   "nom": "Projects and chats",
+   "quoi": "Essayer Projects and chats : cd /home/herbin/projets/trading-sim codex",
+   "pourquoi": "Pour un audit trading-sim dans ta session CLI sous tmux, essaie `codex --cd /home/herbin/projets/trading-sim` et demande d'identifier le dépôt sans le modifier : le résultat attendu est le bon dépôt identifié comme dossier de travail. Le contexte ne confirme pas l'usage de la vue ChatGPT Projects.",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 23,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux (+12)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)"
+   ]
+  }
+ ]
+}
