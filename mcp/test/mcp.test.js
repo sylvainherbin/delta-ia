@@ -378,11 +378,12 @@ test("méthodes locales (D121) : la consultation croisée se trouve, se lit en e
   assert.equal(JSON.stringify(f).includes("/home/"), false);
 });
 
-test("méthodes locales (D121) : fichier absent ou retirée = ignoré, le reste de la base répond", async () => {
+test("méthodes locales (D121) : fichier absent signalé ou retirée ignorée, le reste de la base répond", async () => {
   const m = lireDonnee("kb/methodes.json");
   await avecDonnees({ "kb/methodes.json": null }, async (outil) => {
     const r = (await outil("chercher_reference", { requete: "consultation croisée" })).result.structuredContent;
     assert.equal(r.resultats.some((x) => x.id === "methode-consultation-croisee"), false);
+    assert.deepEqual(r.categories_non_lues, [{ categorie: "methodes", raison: "HTTP 404" }]);
     assert.equal((await outil("chercher_reference", { requete: "/model", produit: "claude-code" })).result.structuredContent.resultats[0].id, "claude-code-commandes-model");
   });
   await avecDonnees({ "kb/methodes.json": { ...m, entrees: m.entrees.map((e) => ({ ...e, retiree: true })) } }, async (outil) => {
@@ -427,7 +428,7 @@ const REQUETES_REELLES = [
   ["permissions allow Bash settings.json", "claude-code", undefined, "claude-code-parametres-permissions"],
   ["permissions.allow Bash wildcard", "claude-code", undefined, "claude-code-parametres-permissions-allow"],
   ["Stop SessionEnd SubagentStop", "claude-code", undefined, "claude-code-parametres-hook-subagentstop"],
-  ["remote control connecter session", "claude-code", undefined, null],
+  ["remote control connecter session", "claude-code", undefined, "claude-code-commandes-remote-control"],
   ["subagents agents personnalisés", "claude-code", undefined, null],
   ["claude -p headless output-format json json-schema automatisation", "claude-code", undefined, null],
   ["codex exec non interactif JSON schema automatisation", "codex", undefined, "codex-fonctionnalites-page-non-interactive-mode"],
@@ -435,12 +436,17 @@ const REQUETES_REELLES = [
 ];
 
 test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes réelles à zéro, avis dit", async () => {
+  let replis = 0;
   for (const [requete, produit, categorie, premier] of REQUETES_REELLES) {
     const r = (await appel("chercher_reference", { requete, produit, ...(categorie ? { categorie } : {}) })).corps.result.structuredContent;
     assert.ok(r.total > 0 && r.resultats.length > 0, `« ${requete} » rend au moins une fiche`);
-    assert.match(r.avis, /aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés/, requete);
+    if (r.avis !== undefined) {
+      assert.match(r.avis, /aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés/, requete);
+      replis += 1;
+    }
     if (premier) assert.equal(r.resultats[0].id, premier, requete);
   }
+  assert.ok(replis >= 8, `au moins 8 requêtes passent par le repli (reçu : ${replis})`);
   // une requête hors base reste à zéro, sans avis de résultats partiels
   const hors = (await appel("chercher_reference", { requete: "Groq gpt-oss" })).corps.result.structuredContent;
   assert.deepEqual([hors.total, hors.resultats.length, hors.avis], [0, 0, undefined]);
@@ -448,8 +454,8 @@ test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes r
 
 function base(entrees, noms = {}) {
   const vide = ["fonctionnalites", "skills", "plugins", "mcp", "parametres", "raccourcis"];
-  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": null, "kb/methodes.json": null };
-  for (const c of vide) { r[`kb/claude/${c}.json`] = null; r[`kb/openai/${c}.json`] = null; }
+  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": { entrees: [] }, "kb/methodes.json": { entrees: [] } };
+  for (const c of vide) { r[`kb/claude/${c}.json`] = { entrees: [] }; r[`kb/openai/${c}.json`] = { entrees: [] }; }
   return r;
 }
 const fiche3 = (id, nom, usage) => ({ id, nom, produit: "claude-code", categorie: "commandes", usage, description: null, commentee: false });
@@ -508,6 +514,38 @@ test("chercher_reference : repli et index des noms indisponible, deux avis dits"
     const r = (await outil("chercher_reference", { requete: "alpha zzz" })).result.structuredContent;
     assert.deepEqual(r.resultats.map((x) => x.id), ["a"]);
     assert.match(r.avis, /^index des noms indisponible \(.+\) : recherche plein texte seule ; aucune fiche ne contient tous les mots : résultats partiels/);
+  });
+});
+
+test("chercher_reference et fiche_reference : catégories non lues signalées explicitement avec leur raison", async () => {
+  const donnees = {
+    ...base(BASE3),
+    "kb/claude/skills.json": null,  // HTTP 404
+    "kb/openai/mcp.json": "{tronque",  // JSON illisible
+    "kb/methodes.json": { entrees: "pas-un-tableau" },  // format inattendu
+  };
+  await avecDonnees(donnees, async (outil) => {
+    const attendu = [
+      { categorie: "claude/skills", raison: "HTTP 404" },
+      { categorie: "openai/mcp", raison: "JSON illisible" },
+      { categorie: "methodes", raison: "format inattendu" },
+    ];
+    const r = (await outil("chercher_reference", { requete: "beta gamma" })).result.structuredContent;
+    assert.deepEqual(r.resultats.map((x) => x.id), ["a"]);
+    assert.deepEqual(r.categories_non_lues, attendu);
+    assert.equal(r.avis, "recherche incomplète — catégories non lues : claude/skills (HTTP 404), openai/mcp (JSON illisible), methodes (format inattendu)");
+    // Même quand la recherche ne trouve aucun résultat, l'incomplétude est signalée
+    const vide = (await outil("chercher_reference", { requete: "introuvable" })).result.structuredContent;
+    assert.equal(vide.total, 0);
+    assert.deepEqual(vide.categories_non_lues, attendu);
+    assert.match(vide.avis, /^recherche incomplète — catégories non lues : claude\/skills \(HTTP 404\)/);
+    // fiche_reference : une fiche présente dans une catégorie lue reste servie ; une fiche absente renvoie une erreur d'indisponibilité
+    const ok = await outil("fiche_reference", { id: "a" });
+    assert.equal(ok.result.isError, false);
+    assert.equal(ok.result.structuredContent.fiche.id, "a");
+    const ko = await outil("fiche_reference", { id: "absente" });
+    assert.equal(ko.result.isError, true);
+    assert.match(ko.result.content[0].text, /^Données Delta indisponibles : catégories non lues \(claude\/skills \(HTTP 404\), openai\/mcp \(JSON illisible\), methodes \(format inattendu\)\)/);
   });
 });
 

@@ -66,13 +66,20 @@ async function resumeDuJour({ date, inclure_faibles = false } = {}) {
   return { avertissement: AVERTISSEMENT, perimetres };
 }
 
+const FICHIERS_KB = [...Object.entries(KB).flatMap(([p, cats]) => cats.map((c) => [`${p}/${c}`, `kb/${p}/${c}.json`])),
+                     ["methodes", "kb/methodes.json"]];
+
 async function toutesEntrees() {
-  const out = [];
-  await Promise.all(Object.entries(KB).flatMap(([p, cats]) => cats.map(async (c) => {
-    try { const d = await lire(`kb/${p}/${c}.json`); for (const e of d.entrees || []) if (!e.retiree) out.push(e); } catch (e) { /* fichier absent : ignoré */ }
-  })));
-  try { const d = await lire("kb/methodes.json"); for (const e of d.entrees || []) if (!e.retiree) out.push(e); } catch (e) { /* fichier absent : ignoré */ }
-  return out;
+  const out = [], categories_non_lues = [];
+  const lots = await Promise.all(FICHIERS_KB.map(async ([categorie, chemin]) => {
+    try { return [categorie, await fichierLeger(chemin), null]; }
+    catch (e) { return [categorie, null, String(e.message || e).replace(`${chemin} : `, "")]; }
+  }));
+  for (const [categorie, d, raison] of lots) {
+    if (raison !== null) { categories_non_lues.push({ categorie, raison }); continue; }
+    for (const e of d.entrees) if (!e.retiree) out.push(e);
+  }
+  return { entrees: out, categories_non_lues };
 }
 
 // D121 : une méthode concerne plusieurs produits (`produits`) ; les autres entrées n'en ont qu'un
@@ -99,6 +106,8 @@ function fiche(e, complete = false) {
   return f;
 }
 
+const resumeNonLues = (liste) => liste.map((x) => `${x.categorie} (${x.raison})`).join(", ");
+
 async function chercherReference({ requete, produit, categorie, limite = 8 } = {}) {
   if (typeof requete !== "string" || !requete.trim()) throw new ErreurParametre("`requete` est obligatoire");
   if (produit !== undefined && !PRODUITS.includes(produit)) throw new ErreurParametre(`\`produit\` parmi ${PRODUITS.join(", ")}`);
@@ -118,8 +127,9 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
     exacts = new Set(ids(normaliserNom(requete)));
     if (mots.length > 1) for (const m of retenus) for (const i of ids(normaliserNom(m))) parMot.set(i, (parMot.get(i) || 0) + 1);  // un nom exact par mot, utile au repli seulement
   } catch (e) { avis = `index des noms indisponible (${e.message}) : recherche plein texte seule`; }
+  const { entrees, categories_non_lues } = await toutesEntrees();
   const candidates = [];
-  for (const e of await toutesEntrees()) {
+  for (const e of entrees) {
     if (produit && !duProduit(e, produit)) continue;
     if (categorie && e.categorie !== categorie) continue;
     // D121 : le slug d'une méthode (« consultation-croisee ») compte comme une partie de son nom, pour le classement comme pour le texte
@@ -149,15 +159,23 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
     }
     if (scores.length) avis = [avis, "aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés"].filter(Boolean).join(" ; ");
   }
+  if (categories_non_lues.length) {
+    avis = [avis, `recherche incomplète — catégories non lues : ${resumeNonLues(categories_non_lues)}`].filter(Boolean).join(" ; ");
+  }
   classer(scores);
   const r = { avertissement: AVERTISSEMENT, total: scores.length, resultats: scores.slice(0, n).map(([, e]) => fiche(e)) };
+  if (categories_non_lues.length) r.categories_non_lues = categories_non_lues;
   if (avis) r.avis = avis;
   return r;
 }
 
 async function ficheReference({ id } = {}) {
   if (typeof id !== "string" || !/^[a-z0-9-]+$/.test(id)) throw new ErreurParametre("`id` invalide (ex. claude-code-commandes-model)");
-  const e = (await toutesEntrees()).find((x) => x.id === id);
+  const { entrees, categories_non_lues } = await toutesEntrees();
+  const e = entrees.find((x) => x.id === id);
+  if (!e && categories_non_lues.length) {
+    throw new Error(`catégories non lues (${resumeNonLues(categories_non_lues)}) : impossible de vérifier l'entrée ${id}`);
+  }
   if (!e) throw new ErreurParametre(`aucune entrée ${id} : chercher l'identifiant avec chercher_reference`);
   return { avertissement: AVERTISSEMENT, fiche: fiche(e, true) };
 }
