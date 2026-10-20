@@ -1,0 +1,467 @@
+date_releve: '2026-10-20'
+famille: locaux
+fournisseur: local-llama-cpp
+executant: local
+executants_operer:
+- local
+produit: claude-code
+produits:
+- claude-code
+- codex
+forfaits_cibles:
+- local_k8
+modeles:
+- modele: Qwen3.5-4B
+  modele_operer: Qwen3.5-4B
+  aliases_modele:
+  - qwen3.5-4b
+  - qwen3-5-4b
+  - Qwen3.5-4B-UD-Q4_K_XL.gguf
+  nom: Local (K8) — Qwen3.5-4B (Q4_K_XL)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: 262144
+  sortie_max_jetons: null
+  effort_defaut: sans-reflexion
+  effort_defaut_detail: Configuration locale retenue, distincte d’un défaut garanti par le fournisseur.
+  statut_usage: utilise
+  forfait:
+    id: local_k8
+    nom: Exécution locale
+    groupe_quota: local_igpu_ram
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer: []
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Exécution locale sans allocation fournisseur ; intérêt à évaluer sur une tâche bornée.
+    source: Configuration locale OPÉRER
+    url: https://huggingface.co/Qwen/Qwen3.5-4B
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: Les essais internes privilégient un seul appel ; exploration multi-tours à réévaluer avant adoption.
+    source: Brief de mission — bilan des modèles locaux
+    url: https://huggingface.co/Qwen/Qwen3.5-4B
+    date: '2026-10-20'
+    verifie: false
+  benchmarks:
+  - nom: MMLU-Pro
+    domaine: Évaluation publique
+    valeur: 79.1
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://huggingface.co/Qwen/Qwen3.5-4B
+    url: https://huggingface.co/Qwen/Qwen3.5-4B
+    date: '2026-10-20'
+    verifie: true
+    extrait: MMLU-Pro 80.8 74.8 82.7 80.9 82.5 79.1
+  - nom: LiveCodeBench v6
+    domaine: Évaluation publique
+    valeur: 55.8
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://huggingface.co/Qwen/Qwen3.5-4B
+    url: https://huggingface.co/Qwen/Qwen3.5-4B
+    date: '2026-10-20'
+    verifie: true
+    extrait: LiveCodeBench v6 82.7 74.6 68.7 66.0 65.6 55.8
+  constats_internes:
+  - date: '2026-10-19'
+    titre: Essais locaux
+    constat: Modèles locaux lents et faibles en exploration multi-tours ; utiles en un seul appel. Bilan cité
+      dans le brief ; aucune mesure chiffrée non recoupée n’est reprise.
+    source: Brief de mission — bilan interne des essais locaux
+  sources:
+  - url: https://huggingface.co/Qwen/Qwen3.5-4B
+    libelle: https://huggingface.co/Qwen/Qwen3.5-4B
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: sans-reflexion
+    defaut: true
+    usage: 'chat_template_kwargs: {"enable_thinking": false} (démon llama-server local)'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale sans-reflexion ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - tri local en un seul appel (classement de message OPÉRER)
+      - extraction ou étiquetage court hors quota
+      natures_deconseillees:
+      - exploration multi-tours
+      - code
+      - relecture
+      - classement fin de la veille
+      pourquoi: 'Conseil local : extraction en un seul appel, sortie bornée.'
+  - effort: reflexion
+    defaut: false
+    usage: 'chat_template_kwargs: {"enable_thinking": true} (défaut du gabarit Qwen3.5 hors démon OPÉRER)'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale reflexion ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune en routine sur le K8
+      natures_deconseillees:
+      - appels en série (risque d'arrêt par garde thermique Tctl >= 85 °C)
+      - toute mission interactive ou multi-tours
+      pourquoi: 'Conseil local : essai ponctuel si la latence reste acceptable.'
+  sources_internes: []
+  effort_defaut_portee: configuration-locale
+  sources_champs:
+    specifications:
+      url: https://huggingface.co/Qwen/Qwen3.5-4B
+      date_lecture: '2026-10-20'
+      extrait: 'Context Length: 262,144 natively and extensible up to 1,010,000 tokens.'
+- modele: Qwen3.5-9B
+  modele_operer: Qwen3.5-9B
+  aliases_modele:
+  - qwen3.5-9b
+  - qwen3-5-9b
+  - Qwen3.5-9B-UD-Q4_K_XL.gguf
+  nom: Local (K8) — Qwen3.5-9B (Q4_K_XL)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: 262144
+  sortie_max_jetons: null
+  effort_defaut: sans-reflexion
+  effort_defaut_detail: Configuration locale retenue, distincte d’un défaut garanti par le fournisseur.
+  statut_usage: non_utilise
+  forfait:
+    id: local_k8
+    nom: Exécution locale
+    groupe_quota: local_igpu_ram
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer: []
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Exécution locale sans allocation fournisseur ; intérêt à évaluer sur une tâche bornée.
+    source: Configuration locale OPÉRER
+    url: https://huggingface.co/Qwen/Qwen3.5-9B
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: Les essais internes privilégient un seul appel ; exploration multi-tours à réévaluer avant adoption.
+    source: Brief de mission — bilan des modèles locaux
+    url: https://huggingface.co/Qwen/Qwen3.5-9B
+    date: '2026-10-20'
+    verifie: false
+  benchmarks:
+  - nom: MMLU-Pro
+    domaine: Évaluation publique
+    valeur: 82.5
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://huggingface.co/Qwen/Qwen3.5-9B
+    url: https://huggingface.co/Qwen/Qwen3.5-9B
+    date: '2026-10-20'
+    verifie: true
+    extrait: MMLU-Pro 80.8 74.8 82.7 80.9 82.5 79.1
+  - nom: LiveCodeBench v6
+    domaine: Évaluation publique
+    valeur: 65.6
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://huggingface.co/Qwen/Qwen3.5-9B
+    url: https://huggingface.co/Qwen/Qwen3.5-9B
+    date: '2026-10-20'
+    verifie: true
+    extrait: LiveCodeBench v6 82.7 74.6 68.7 66.0 65.6 55.8
+  constats_internes:
+  - date: '2026-10-19'
+    titre: Essais locaux
+    constat: Modèles locaux lents et faibles en exploration multi-tours ; utiles en un seul appel. Bilan cité
+      dans le brief ; aucune mesure chiffrée non recoupée n’est reprise.
+    source: Brief de mission — bilan interne des essais locaux
+  sources:
+  - url: https://huggingface.co/Qwen/Qwen3.5-9B
+    libelle: https://huggingface.co/Qwen/Qwen3.5-9B
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: sans-reflexion
+    defaut: true
+    usage: 'chat_template_kwargs: {"enable_thinking": false}'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale sans-reflexion ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune (préférer Qwen3.5-4B sans-reflexion pour un appel unique ou Haiku 5.5 + sens pour l'exploration)
+      natures_deconseillees:
+      - exploration multi-tours
+      - tri rapide en un seul appel
+      - code
+      pourquoi: 'Conseil local : extraction en un seul appel, sortie bornée.'
+  - effort: reflexion
+    defaut: false
+    usage: 'chat_template_kwargs: {"enable_thinking": true}'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale reflexion ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune
+      natures_deconseillees:
+      - toutes sur le K8
+      pourquoi: 'Conseil local : essai ponctuel si la latence reste acceptable.'
+  sources_internes: []
+  effort_defaut_portee: configuration-locale
+  sources_champs:
+    specifications:
+      url: https://huggingface.co/Qwen/Qwen3.5-9B
+      date_lecture: '2026-10-20'
+      extrait: 'Context Length: 262,144 natively and extensible up to 1,010,000 tokens.'
+- modele: gpt-oss-20b
+  modele_operer: gpt-oss-20b
+  aliases_modele:
+  - gpt-oss-20b-mxfp4
+  - gpt-oss-20b.gguf
+  - openai-gpt-oss-20b
+  nom: Local (K8) — OpenAI gpt-oss-20b (MXFP4)
+  date_sortie: null
+  cutoff_connaissances: '2024-06-01'
+  fenetre_contexte_jetons: 131072
+  sortie_max_jetons: 131072
+  effort_defaut: low
+  effort_defaut_detail: Configuration locale retenue, distincte d’un défaut garanti par le fournisseur.
+  statut_usage: non_utilise
+  forfait:
+    id: local_k8
+    nom: Exécution locale
+    groupe_quota: local_igpu_ram
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer: []
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Exécution locale sans allocation fournisseur ; intérêt à évaluer sur une tâche bornée.
+    source: Configuration locale OPÉRER
+    url: https://developers.openai.com/api/docs/models/gpt-oss-20b
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: Les essais internes privilégient un seul appel ; exploration multi-tours à réévaluer avant adoption.
+    source: Brief de mission — bilan des modèles locaux
+    url: https://developers.openai.com/api/docs/models/gpt-oss-20b
+    date: '2026-10-20'
+    verifie: false
+  benchmarks: []
+  constats_internes:
+  - date: '2026-10-19'
+    titre: Essais locaux
+    constat: Modèles locaux lents et faibles en exploration multi-tours ; utiles en un seul appel. Bilan cité
+      dans le brief ; aucune mesure chiffrée non recoupée n’est reprise.
+    source: Brief de mission — bilan interne des essais locaux
+  sources:
+  - url: https://developers.openai.com/api/docs/models/gpt-oss-20b
+    libelle: https://developers.openai.com/api/docs/models/gpt-oss-20b
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: true
+    usage: 'Reasoning: low (dans le prompt système Harmony sur llama-server local)'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale low ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune (préférer Qwen3.5-4B sans-reflexion qui prend 4,3 Gio au lieu de 11,6 Gio)
+      natures_deconseillees:
+      - exploration multi-tours
+      - classement de la veille
+      - code
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: 'Reasoning: medium (dans le prompt système Harmony sur llama-server local)'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale medium ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune
+      natures_deconseillees:
+      - toutes sur le K8
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: 'Reasoning: high (dans le prompt système Harmony sur llama-server local)'
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale high ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - aucune
+      natures_deconseillees:
+      - toutes sur le K8
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  sources_internes: []
+  effort_defaut_portee: configuration-locale
+  sources_champs:
+    specifications:
+      url: https://developers.openai.com/api/docs/models/gpt-oss-20b
+      date_lecture: '2026-10-20'
+      extrait: 131,072 context window 131,072 max output tokens Jun 01, 2024 knowledge cutoff
+- modele: Qwen3-Embedding-0.6B
+  modele_operer: Qwen3-Embedding-0.6B
+  aliases_modele:
+  - qwen3-embedding-0.6b
+  - qwen3-embedding
+  - sens
+  - Qwen3-Embedding-0.6B-Q8_0.gguf
+  nom: Local (K8) — Qwen3-Embedding-0.6B (Q8_0, outil sens)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: embedding
+  effort_defaut_detail: Configuration locale retenue, distincte d’un défaut garanti par le fournisseur.
+  statut_usage: utilise
+  forfait:
+    id: local_k8
+    nom: Exécution locale
+    groupe_quota: local_igpu_ram
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer: []
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Exécution locale sans allocation fournisseur ; intérêt à évaluer sur une tâche bornée.
+    source: Configuration locale OPÉRER
+    url: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: Les essais internes privilégient un seul appel ; exploration multi-tours à réévaluer avant adoption.
+    source: Brief de mission — bilan des modèles locaux
+    url: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    date: '2026-10-20'
+    verifie: false
+  benchmarks:
+  - nom: Dimensions de sortie paramétrables
+    domaine: Évaluation publique
+    valeur: 1024
+    unite: dimensions
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    url: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    date: '2026-10-20'
+    verifie: true
+    extrait: output dimensions ranging from 32 to 1024
+  constats_internes:
+  - date: '2026-10-19'
+    titre: Essais locaux
+    constat: Modèles locaux lents et faibles en exploration multi-tours ; utiles en un seul appel. Bilan cité
+      dans le brief ; aucune mesure chiffrée non recoupée n’est reprise.
+    source: Brief de mission — bilan interne des essais locaux
+  sources:
+  - url: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    libelle: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: embedding
+    defaut: true
+    usage: Encodage vectoriel avec Qwen3-Embedding-0.6B ; aucune génération de texte.
+    cout_quota:
+      niveau: local
+      poids_relatif: null
+      resume: Pas de quota fournisseur ; temps machine et mémoire à mesurer.
+    effet_effort: Configuration locale embedding ; mesurer qualité, latence et mémoire sur la tâche visée.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - pré-filtrage de fichiers et de mémoire avant lecture par `explorateur` (Haiku 5.5)
+      - recherche sémantique locale hors quota
+      natures_deconseillees:
+      - génération de texte ou de code (utiliser un modèle génératif après `sens`)
+      pourquoi: 'Conseil local : recherche sémantique, sans génération de texte.'
+  sources_internes: []
+  effort_defaut_portee: configuration-locale
+  sources_champs: {}

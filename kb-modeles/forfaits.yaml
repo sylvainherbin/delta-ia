@@ -1,0 +1,165 @@
+date_releve: '2026-10-20'
+forfaits:
+  claude_max_20x:
+    id: claude_max_20x
+    nom: Claude Max 20x (poste principal K8)
+    fournisseur: anthropic
+    abonnement_mensuel_usd: 200
+    credits_api_mensuels_inclus_usd: 200
+    jauges_operer:
+    - cle: claude_session_5h
+      fenetre: 5 h glissantes
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: claude_semaine
+      fenetre: 7 jours
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: claude_semaine_fable
+      fenetre: 7 jours (sous-plafond Fable)
+      plafond_relatif_pct: 50
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    regles_quota:
+    - Le coût par modèle et effort dans l’allocation incluse est inconnu ; ne pas le déduire des tarifs API.
+    - 'Crédits API mensuels : Max 5x $100 ; Max 20x $200. Source : https://www.anthropic.com/claude-haiku-5-5'
+    - 'Fable est inclus sur Max dans la limite de 50% de l’allocation hebdomadaire ; le reste peut utiliser
+      des crédits. Source : https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan'
+    sources:
+    - url: https://www.anthropic.com/claude-haiku-5-5
+      libelle: Crédits API Max annoncés ; distincts du quota Claude Code
+      date: '2026-10-20'
+      officielle: true
+    - url: https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan
+      libelle: https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan
+      date: '2026-10-20'
+      officielle: true
+    - url: https://support.claude.com/en/articles/11049741-what-is-the-max-plan
+      libelle: Tarifs web Max, distincts des taxes et du quota par tâche
+      date: '2026-10-20'
+      officielle: true
+    source_tarif:
+      url: https://support.claude.com/en/articles/11049741-what-is-the-max-plan
+      date_lecture: '2026-10-20'
+      extrait: 'Max 5x : $100 per month Max 20x : $200 per month'
+  claude_max_5x:
+    id: claude_max_5x
+    nom: Claude Max 5x (poste secondaire HP)
+    fournisseur: anthropic
+    abonnement_mensuel_usd: 100
+    credits_api_mensuels_inclus_usd: 100
+    jauges_operer:
+    - cle: claude_session_5h
+      fenetre: 5 h glissantes
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: claude_semaine
+      fenetre: 7 jours
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: claude_semaine_fable
+      fenetre: 7 jours (sous-plafond Fable)
+      plafond_relatif_pct: 50
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    regles_quota:
+    - Le coût par modèle et effort dans l’allocation incluse est inconnu ; ne pas le déduire des tarifs API.
+    - 'Crédits API mensuels : Max 5x $100 ; Max 20x $200. Source : https://www.anthropic.com/claude-haiku-5-5'
+    - 'Fable est inclus sur Max dans la limite de 50% de l’allocation hebdomadaire ; le reste peut utiliser
+      des crédits. Source : https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan'
+    sources:
+    - url: https://www.anthropic.com/claude-haiku-5-5
+      libelle: Crédits API Max annoncés ; distincts du quota Claude Code
+      date: '2026-10-20'
+      officielle: true
+    - url: https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan
+      libelle: https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan
+      date: '2026-10-20'
+      officielle: true
+    - url: https://support.claude.com/en/articles/11049741-what-is-the-max-plan
+      libelle: Tarifs web Max, distincts des taxes et du quota par tâche
+      date: '2026-10-20'
+      officielle: true
+    source_tarif:
+      url: https://support.claude.com/en/articles/11049741-what-is-the-max-plan
+      date_lecture: '2026-10-20'
+      extrait: 'Max 5x : $100 per month Max 20x : $200 per month'
+  chatgpt_pro:
+    id: chatgpt_pro
+    nom: ChatGPT Pro
+    fournisseur: openai
+    abonnement_mensuel_usd: 100
+    credits_api_mensuels_inclus_usd: null
+    jauges_operer:
+    - cle: chatgpt_semaine
+      fenetre: 7 jours
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    regles_quota:
+    - Le coût par modèle et effort dans l’allocation incluse est inconnu ; ne pas le déduire des tarifs API.
+    - Les barèmes de crédits ne déterminent pas seuls la consommation de l’abonnement. Vérifier les limites
+      et remises à zéro du compte.
+    sources:
+    - url: https://developers.openai.com/codex/pricing
+      libelle: https://developers.openai.com/codex/pricing
+      date: '2026-10-20'
+      officielle: true
+    source_tarif:
+      url: https://developers.openai.com/codex/pricing
+      date_lecture: '2026-10-20'
+      extrait: Plans at $100, $200, or $500 USD per month
+  google_ai_pro:
+    id: google_ai_pro
+    nom: Google AI Pro — compte observé
+    fournisseur: google-antigravity
+    abonnement_mensuel_usd: null
+    credits_api_mensuels_inclus_usd: null
+    jauges_operer:
+    - cle: antigravity.argon.semaine
+      groupe: argon
+      libelle: Gemini 4 Argon
+      fenetre: 7 jours (sans fenêtre 5 h)
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: antigravity.gemini.cinq_heures
+      groupe: gemini
+      libelle: Gemini Models (5 h)
+      fenetre: 5 h glissantes
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: antigravity.gemini.semaine
+      groupe: gemini
+      libelle: Gemini Models (semaine)
+      fenetre: 7 jours
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: antigravity.tiers.cinq_heures
+      groupe: tiers
+      libelle: Claude and GPT Models (5 h)
+      fenetre: 5 h glissantes
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    - cle: antigravity.tiers.semaine
+      groupe: tiers
+      libelle: Claude and GPT Models (semaine)
+      fenetre: 7 jours
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    regles_quota:
+    - Le coût par modèle et effort dans l’allocation incluse est inconnu ; ne pas le déduire des tarifs API.
+    - Disponibilité Pro observée localement ; ne pas la généraliser depuis l’annonce Ultra.
+    sources:
+    - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+      libelle: 'Annonce : accès Antigravity Ultra ; ne prouve pas la disponibilité Pro'
+      date: '2026-10-20'
+      officielle: true
+    source_interne:
+      document: rapports/usage-antigravity.json
+      releve_le: '2026-10-20T11:20:52+02:00'
+      constat: Groupes Argon semaine seule, Gemini et Claude/GPT avec fenêtres 5 h et semaine, observés sur
+        ce compte.
+  local_k8:
+    id: local_k8
+    nom: Exécution locale
+    fournisseur: local-llama-cpp
+    abonnement_mensuel_usd: null
+    credits_api_mensuels_inclus_usd: null
+    jauges_operer:
+    - cle: local.materiel_k8
+      fenetre: Instantanée (RAM / GTT / thermique)
+      description: Jauge interne du compte ; valeurs et remise à zéro à lire dans le relevé courant.
+    regles_quota:
+    - Aucune allocation fournisseur ; coût en temps machine, mémoire et énergie.
+    sources:
+    - url: https://github.com/ggml-org/llama.cpp
+      libelle: llama.cpp — serveur d'inférence GGUF local (Vulkan)
+      date: '2026-10-20'
+      officielle: true

@@ -793,8 +793,9 @@ def verifier_kb(racine: Path, perimetre: str, r: Rapport) -> set[str]:
     verifier_recent(racine, perimetre, ids, r)
     verifier_a_tester(racine, perimetre, ids, r)
     verifier_noms(racine, perimetre, ids, r)
-    if perimetre == "claude":  # fichier commun aux deux périmètres : un seul contrôle
+    if perimetre == "claude":  # fichiers communs aux deux périmètres : un seul contrôle
         verifier_methodes(racine, r)
+        verifier_modeles(racine, r)
     return ids
 
 
@@ -1003,6 +1004,50 @@ def verifier_methodes(racine: Path, r: Rapport) -> None:
         return
     if attendu != doc:
         r.erreur(ou, f"différent de ce que tirent les fichiers {m.DOSSIER_SOURCE}/*.md : lancer `catalogue.py methodes`")
+
+
+def verifier_modeles(racine: Path, r: Rapport) -> None:
+    """Fiches de modèles et d'efforts (kb-modeles/*.yaml → docs/data/kb/modeles.json)."""
+    from deltalib.kb import fiches_modeles as fm
+    chemin_kb, ou = fm.chemin_kb_modeles(racine), "kb/modeles.json"
+    a_sources = (racine / fm.DOSSIER_SOURCE).is_dir() and any((racine / fm.DOSSIER_SOURCE).glob("*.yaml"))
+    if not chemin_kb.exists():
+        if a_sources:
+            r.erreur(ou, f"absent alors que {fm.DOSSIER_SOURCE}/ contient des fichiers : lancer `catalogue.py modeles`")
+        return
+    texte = chemin_kb.read_text(encoding="utf-8")
+    verifier_secrets(texte, ou, r)
+    if "/home/" in texte:
+        r.erreur(ou, "chemin personnel `/home/` interdit")
+    try:
+        doc = json.loads(texte)
+    except json.JSONDecodeError as e:
+        r.erreur(ou, f"JSON invalide : {e}")
+        return
+    if not isinstance(doc, dict) or doc.get("categorie") != fm.CATEGORIE or not isinstance(doc.get("entrees"), list):
+        r.erreur(ou, "en-tête attendu : categorie `modeles`, origine, date_releve, forfaits, total_modeles, total, entrees")
+        return
+    if doc.get("total") != len(doc["entrees"]):
+        r.erreur(ou, "compteur `total` incohérent")
+    vus: set[str] = set()
+    modeles = doc.get("modeles", {})
+    if doc.get("schema_version") != 2 or not isinstance(modeles, dict):
+        r.erreur(ou, "schema_version 2 et dictionnaire modeles attendus")
+        return
+    for e in doc["entrees"]:
+        if not isinstance(e, dict) or e.get("modele") not in modeles or not re.fullmatch(r"modele-[a-z0-9-]+", str(e.get("id", ""))):
+            r.erreur(ou, "couple invalide ou modèle absent")
+            continue
+        if e["id"] in vus:
+            r.erreur(ou, "identifiant en double")
+        vus.add(e["id"])
+    try:
+        attendu = fm.construire_modeles(racine)
+    except fm.FicheModeleInvalide as err:
+        r.erreur("kb-modeles", str(err))
+        return
+    if attendu != doc:
+        r.erreur(ou, f"différent de ce que tirent les fichiers {fm.DOSSIER_SOURCE}/*.yaml : lancer `catalogue.py modeles`")
 
 
 def verifier_noms(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:

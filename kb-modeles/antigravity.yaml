@@ -1,0 +1,656 @@
+date_releve: '2026-10-20'
+famille: antigravity
+fournisseur: google-antigravity
+executant: antigravity
+executants_operer:
+- antigravity
+produit: claude-code
+produits:
+- claude-code
+- codex
+forfaits_cibles:
+- google_ai_pro
+modeles:
+- modele: gemini-4-argon
+  modele_operer: gemini-4-argon
+  aliases_modele:
+  - gemini-4-argon
+  - argon
+  - antigravity-gemini-4-argon
+  nom: Antigravity — Gemini 4 Argon
+  date_sortie: '2026-10-13'
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: high
+  effort_defaut_detail: Convention OPÉRER du catalogue, pas un défaut garanti du modèle ou de son API.
+  statut_usage: utilise
+  forfait:
+    id: google_ai_pro
+    nom: Google AI Pro — accès observé sur le compte, sans garantie générale
+    groupe_quota: argon
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - antigravity.argon.semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 2
+    sortie_usd: 10
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: 'Tarif introductif ; la source annonce ensuite $4 entrée et $20 sortie après November 30, 2026. Cache
+      lu : prix absolu non recopié, donc inconnu.'
+    source_url: https://deepmind.google/blog/introducing-gemini-4-argon/
+  points_forts:
+  - texte: Configuration disponible dans le catalogue local OPÉRER ; l’accès effectif dépend du compte.
+    source: Observation locale OPÉRER
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: L’annonce officielle réserve l’accès Antigravity à Ultra ; le relevé local Pro ne garantit pas une
+      disponibilité générale.
+    source: https://deepmind.google/blog/introducing-gemini-4-argon/
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: true
+    extrait: for Google AI Ultra subscribers in Google Antigravity
+  benchmarks: []
+  constats_internes: []
+  sources:
+  - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    libelle: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: agy --model gemini-4-argon-low --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau low exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - vérification rapide sur Argon
+      natures_deconseillees:
+      - mecanique (préférer gemini-3.8-flash medium)
+      - code complexe (préférer high)
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: agy --model gemini-4-argon-medium --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau medium exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour
+      ce compte.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - synthese
+      - releve
+      - correctif simple
+      natures_deconseillees:
+      - mecanique
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: true
+    usage: agy --model gemini-4-argon-high --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau high exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - code
+      - correctif
+      - relecture
+      - documentation et données structurées
+      natures_deconseillees:
+      - mecanique (utiliser gemini-3.8-flash medium)
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  sources_internes:
+  - document: rapports/usage-antigravity.json
+    date: '2026-10-20'
+    constat: Groupes et fenêtres observés sur ce compte Google AI Pro ; ne pas généraliser la disponibilité.
+  - document: OPÉRER — module antigravity.py
+    date: '2026-10-20'
+    constat: Niveaux exposés par l’exécutant, distincts des niveaux de l’API du fournisseur.
+  effort_defaut_portee: convention-operer
+  sources_champs:
+    date_sortie:
+      url: https://deepmind.google/blog/introducing-gemini-4-argon/
+      date_lecture: '2026-10-20'
+      extrait: Oct 13, 2026
+    prix_api:
+      url: https://deepmind.google/blog/introducing-gemini-4-argon/
+      date_lecture: '2026-10-20'
+      extrait: $2 per million input tokens and $10 per million output tokens
+- modele: gemini-3.8-flash
+  modele_operer: gemini-3.8-flash
+  aliases_modele:
+  - gemini-3.8-flash
+  - gemini-3-8-flash
+  - flash
+  - antigravity-gemini-3-8-flash
+  nom: Antigravity — Gemini 3.8 Flash
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: medium
+  effort_defaut_detail: Convention OPÉRER du catalogue, pas un défaut garanti du modèle ou de son API.
+  statut_usage: utilise
+  forfait:
+    id: google_ai_pro
+    nom: Google AI Pro — accès observé sur le compte, sans garantie générale
+    groupe_quota: gemini
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - antigravity.gemini.cinq_heures
+    - antigravity.gemini.semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Configuration disponible dans le catalogue local OPÉRER ; l’accès effectif dépend du compte.
+    source: Observation locale OPÉRER
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: L’annonce officielle réserve l’accès Antigravity à Ultra ; le relevé local Pro ne garantit pas une
+      disponibilité générale.
+    source: https://deepmind.google/blog/introducing-gemini-4-argon/
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: true
+    extrait: for Google AI Ultra subscribers in Google Antigravity
+  benchmarks: []
+  constats_internes: []
+  sources:
+  - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    libelle: 'Annonce Argon : ne documente ni le prix ni les limites de Flash'
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: agy --model gemini-3.8-flash-low --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau low exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - sonde rapide
+      - formatage simple
+      natures_deconseillees:
+      - code
+      - relecture
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: agy --model gemini-3.8-flash-medium --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau medium exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour
+      ce compte.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - mecanique
+      - extraction
+      - petite maintenance
+      natures_deconseillees:
+      - architecture
+      - code complexe
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: agy --model gemini-3.8-flash-high --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau high exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - mecanique complexe
+      - correctif simple quand Argon est sous tension
+      natures_deconseillees:
+      - architecture lourde
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  sources_internes:
+  - document: rapports/usage-antigravity.json
+    date: '2026-10-20'
+    constat: Groupes et fenêtres observés sur ce compte Google AI Pro ; ne pas généraliser la disponibilité.
+  - document: OPÉRER — module antigravity.py
+    date: '2026-10-20'
+    constat: Niveaux exposés par l’exécutant, distincts des niveaux de l’API du fournisseur.
+  effort_defaut_portee: convention-operer
+  sources_champs: {}
+- modele: antigravity-claude-sonnet-5-5
+  modele_operer: claude-sonnet-5-5
+  aliases_modele:
+  - antigravity-claude-sonnet-5-5
+  - agy-claude-sonnet-5-5
+  - agy-sonnet
+  nom: Antigravity — Claude Sonnet 5.5 (groupe Claude/GPT)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: medium
+  effort_defaut_detail: Convention OPÉRER du catalogue, pas un défaut garanti du modèle ou de son API.
+  statut_usage: utilise
+  forfait:
+    id: google_ai_pro
+    nom: Google AI Pro — accès observé sur le compte, sans garantie générale
+    groupe_quota: tiers
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - antigravity.tiers.cinq_heures
+    - antigravity.tiers.semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 2
+    sortie_usd: 10
+    cache_lu_usd: 0.1
+    cache_ecrit_5m_usd: 2.5
+    cache_ecrit_1h_usd: 4
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarif Anthropic direct du modèle sous-jacent ; ne décrit ni une API agy ni le quota Google.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+    portee: api-anthropic-directe-modele-sous-jacent
+  points_forts:
+  - texte: Configuration disponible dans le catalogue local OPÉRER ; l’accès effectif dépend du compte.
+    source: Observation locale OPÉRER
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: L’annonce officielle réserve l’accès Antigravity à Ultra ; le relevé local Pro ne garantit pas une
+      disponibilité générale.
+    source: https://deepmind.google/blog/introducing-gemini-4-argon/
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: true
+    extrait: for Google AI Ultra subscribers in Google Antigravity
+  benchmarks:
+  - nom: Terminal-Bench 4.0 — modèle Anthropic, pas une mesure agy
+    domaine: Évaluation publique
+    valeur: 70.6
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 70.6%
+  constats_internes: []
+  sources:
+  - url: https://www.anthropic.com/claude-sonnet-5-5
+    libelle: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    officielle: true
+  - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    libelle: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: Tarifs API Anthropic directs, distincts du forfait Google
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: agy --model claude-sonnet-5-5-low --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau low exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - sonde courte
+      - recette rapide de quelques minutes
+      natures_deconseillees:
+      - mission de code longue
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: agy --model claude-sonnet-5-5-medium --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau medium exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour
+      ce compte.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - petit correctif ciblé en réserve
+      natures_deconseillees:
+      - mission de plus de 15 minutes (utiliser gemini-4-argon high)
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: agy --model claude-sonnet-5-5-high --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau high exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions de plus de 10 minutes sur Antigravity
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  sources_internes:
+  - document: rapports/usage-antigravity.json
+    date: '2026-10-20'
+    constat: Groupes et fenêtres observés sur ce compte Google AI Pro ; ne pas généraliser la disponibilité.
+  - document: OPÉRER — module antigravity.py
+    date: '2026-10-20'
+    constat: Niveaux exposés par l’exécutant, distincts des niveaux de l’API du fournisseur.
+  - document: Brief de mission, observation du 19/10/2026
+    date: '2026-10-19'
+    constat: Une mission Sonnet high a épuisé son groupe en environ 21 min ; observation ponctuelle, pas un
+      barème par tâche.
+  effort_defaut_portee: convention-operer
+  sources_champs:
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Sonnet 5.5 The best combination of speed and intelligence $2 / MTok $10 / MTok $2.50
+        / MTok $4 / MTok $0.10 / MTok
+- modele: antigravity-claude-opus-5-5
+  modele_operer: claude-opus-5-5
+  aliases_modele:
+  - antigravity-claude-opus-5-5
+  - agy-claude-opus-5-5
+  - agy-opus
+  nom: Antigravity — Claude Opus 5.5 (groupe Claude/GPT)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: medium
+  effort_defaut_detail: Convention OPÉRER du catalogue, pas un défaut garanti du modèle ou de son API.
+  statut_usage: non_utilise
+  forfait:
+    id: google_ai_pro
+    nom: Google AI Pro — accès observé sur le compte, sans garantie générale
+    groupe_quota: tiers
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - antigravity.tiers.cinq_heures
+    - antigravity.tiers.semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 4
+    sortie_usd: 20
+    cache_lu_usd: 0.2
+    cache_ecrit_5m_usd: 5
+    cache_ecrit_1h_usd: 8
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarif Anthropic direct du modèle sous-jacent ; ne décrit ni une API agy ni le quota Google.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+    portee: api-anthropic-directe-modele-sous-jacent
+  points_forts:
+  - texte: Configuration disponible dans le catalogue local OPÉRER ; l’accès effectif dépend du compte.
+    source: Observation locale OPÉRER
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: L’annonce officielle réserve l’accès Antigravity à Ultra ; le relevé local Pro ne garantit pas une
+      disponibilité générale.
+    source: https://deepmind.google/blog/introducing-gemini-4-argon/
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: true
+    extrait: for Google AI Ultra subscribers in Google Antigravity
+  benchmarks:
+  - nom: Terminal-Bench 4.0 — modèle Anthropic, pas une mesure agy
+    domaine: Évaluation publique
+    valeur: 66.4
+    unite: '%'
+    effort_mesure: xhigh
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 66.4% 55.8% 52.3% 57.9% 37.3%
+  - nom: GDPval-AA v2.1 — modèle Anthropic, pas une mesure agy
+    domaine: Évaluation publique
+    valeur: 1846
+    unite: Elo
+    effort_mesure: max
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1846 1735 1708 1542 1588
+  constats_internes: []
+  sources:
+  - url: https://www.anthropic.com/claude-opus-5-5
+    libelle: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    officielle: true
+  - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    libelle: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: Tarifs API Anthropic directs, distincts du forfait Google
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: agy --model claude-opus-5-5-low --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau low exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - missions OPÉRER
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: agy --model claude-opus-5-5-medium --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau medium exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour
+      ce compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - question ponctuelle en un tour en cas d'indisponibilité de Claude Max
+      natures_deconseillees:
+      - toutes missions multi-tours sur Antigravity
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: agy --model claude-opus-5-5-high --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau high exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour ce
+      compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  sources_internes:
+  - document: rapports/usage-antigravity.json
+    date: '2026-10-20'
+    constat: Groupes et fenêtres observés sur ce compte Google AI Pro ; ne pas généraliser la disponibilité.
+  - document: OPÉRER — module antigravity.py
+    date: '2026-10-20'
+    constat: Niveaux exposés par l’exécutant, distincts des niveaux de l’API du fournisseur.
+  effort_defaut_portee: convention-operer
+  sources_champs:
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Opus 5.5 For long-running agentic coding and knowledge work $4 / MTok $20 / MTok $5 /
+        MTok $8 / MTok $0.20 / MTok
+- modele: gpt-oss-120b
+  modele_operer: gpt-oss-120b
+  aliases_modele:
+  - gpt-oss-120b
+  - antigravity-gpt-oss-120b
+  nom: Antigravity — GPT-OSS 120B (groupe Claude/GPT)
+  date_sortie: null
+  cutoff_connaissances: '2024-06-01'
+  fenetre_contexte_jetons: 131072
+  sortie_max_jetons: 131072
+  effort_defaut: medium
+  effort_defaut_detail: Convention OPÉRER du catalogue, pas un défaut garanti du modèle ou de son API.
+  statut_usage: non_utilise
+  forfait:
+    id: google_ai_pro
+    nom: Google AI Pro — accès observé sur le compte, sans garantie générale
+    groupe_quota: tiers
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - antigravity.tiers.cinq_heures
+    - antigravity.tiers.semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: null
+    sortie_usd: null
+    cache_lu_usd: null
+    cache_ecrit_5m_usd: null
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: null
+  points_forts:
+  - texte: Configuration disponible dans le catalogue local OPÉRER ; l’accès effectif dépend du compte.
+    source: Observation locale OPÉRER
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: false
+  points_faibles:
+  - texte: L’annonce officielle réserve l’accès Antigravity à Ultra ; le relevé local Pro ne garantit pas une
+      disponibilité générale.
+    source: https://deepmind.google/blog/introducing-gemini-4-argon/
+    url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    verifie: true
+    extrait: for Google AI Ultra subscribers in Google Antigravity
+  benchmarks: []
+  constats_internes: []
+  sources:
+  - url: https://developers.openai.com/api/docs/models/gpt-oss-120b
+    libelle: https://developers.openai.com/api/docs/models/gpt-oss-120b
+    date: '2026-10-20'
+    officielle: true
+  - url: https://deepmind.google/blog/introducing-gemini-4-argon/
+    libelle: https://deepmind.google/blog/introducing-gemini-4-argon/
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: medium
+    defaut: true
+    usage: agy --model gpt-oss-120b-medium --output-format json < consigne.txt
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau medium exposé par agy et OPÉRER ; effet exact et coût en quota non documentés pour
+      ce compte.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (utiliser gemini-3.8-flash medium ou gemini-4-argon high)
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  sources_internes:
+  - document: rapports/usage-antigravity.json
+    date: '2026-10-20'
+    constat: Groupes et fenêtres observés sur ce compte Google AI Pro ; ne pas généraliser la disponibilité.
+  - document: OPÉRER — module antigravity.py
+    date: '2026-10-20'
+    constat: Niveaux exposés par l’exécutant, distincts des niveaux de l’API du fournisseur.
+  effort_defaut_portee: convention-operer
+  sources_champs:
+    specifications:
+      url: https://developers.openai.com/api/docs/models/gpt-oss-120b
+      date_lecture: '2026-10-20'
+      extrait: 131,072 context window 131,072 max output tokens Jun 01, 2024 knowledge cutoff

@@ -1,0 +1,1174 @@
+date_releve: '2026-10-20'
+famille: claude
+fournisseur: anthropic
+executant: claude
+executants_operer:
+- claude
+- claude:<role>
+- claude-cloud
+produit: claude-code
+produits:
+- claude-code
+- claude
+forfaits_cibles:
+- claude_max_20x
+- claude_max_5x
+modeles:
+- modele: claude-opus-5-5
+  modele_operer: opus
+  aliases_modele:
+  - opus
+  - claude-opus-5-5
+  - opus-5-5
+  nom: Claude Opus 5.5
+  date_sortie: '2026-09-22'
+  cutoff_connaissances: 2026-06
+  fenetre_contexte_jetons: 1000000
+  sortie_max_jetons: 128000
+  effort_defaut: medium
+  effort_defaut_detail: 'Défaut Claude Code sans surcharge. API : medium. Les réglages de la mission restent
+    explicites.'
+  statut_usage: utilise
+  forfait:
+    id: claude_max_20x
+    nom: Claude Max 20x / Max 5x
+    groupe_quota: claude_global
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - claude_session_5h
+    - claude_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 4
+    sortie_usd: 20
+    cache_lu_usd: 0.2
+    cache_ecrit_5m_usd: 5
+    cache_ecrit_1h_usd: 8
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+  points_forts:
+  - texte: Pour le code agentique de longue durée et le travail de connaissance.
+    source: Anthropic — Models overview
+    url: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    verifie: true
+    extrait: For long-running agentic coding and knowledge work
+  - texte: Effort réglable pour adapter capacité, latence et consommation.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: The effort parameter lets you control how many tokens Claude spends when responding to requests.
+  points_faibles:
+  - texte: Les niveaux élevés peuvent consommer davantage de jetons ; valider le gain sur ses propres tâches.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: Effort is a behavioral signal, not a strict token budget.
+  benchmarks:
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 66.4
+    unite: '%'
+    effort_mesure: xhigh
+    comparaisons: 'Opus 5 : 52.3%'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 66.4% 55.8% 52.3% 57.9% 37.3%
+  - nom: FrontierCode v1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 54.4
+    unite: '%'
+    effort_mesure: max
+    comparaisons: 'Opus 5 : 48.0%'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 54.4% 50.3% 48.0% 53.3% 47.5%
+  - nom: CursorBench 4.0
+    domaine: Évaluation publique
+    valeur: 57.8
+    unite: '%'
+    effort_mesure: max
+    comparaisons: 'Opus 5 : 46.6%'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 57.8% 51.8% 46.6%
+  - nom: GDPval-AA v2.1
+    domaine: Évaluation publique
+    valeur: 1846
+    unite: Elo
+    effort_mesure: max
+    comparaisons: 'Opus 5 : 1708'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1846 1735 1708 1542 1588
+  - nom: AutomationBench
+    domaine: Évaluation publique
+    valeur: 40.0
+    unite: '%'
+    effort_mesure: max
+    comparaisons: 'Opus 5 : 26.9%'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 40.0% 31.4% 26.9% 41.4% 28.8%
+  - nom: Humanity’s Last Exam (with tools)
+    domaine: Évaluation publique
+    valeur: 67.7
+    unite: '%'
+    effort_mesure: max
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 67.7% with tools 65.6% with tools 63.6% with tools
+  - nom: OSWorld 2.1 (partial)
+    domaine: Évaluation publique
+    valeur: 81.8
+    unite: '%'
+    effort_mesure: max
+    comparaisons: 'Opus 5 : 74.0%'
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 81.8% partial 80.7% partial 74.0% partial
+  - nom: Chartography (with tools)
+    domaine: Évaluation publique
+    valeur: 89.0
+    unite: '%'
+    effort_mesure: max
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 89.0% with tools 88.4% with tools 83.4% with tools
+  - nom: AA-Briefcase v1.1
+    domaine: Évaluation publique
+    valeur: 1822
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1811 1359 1822 1483
+  constats_internes: []
+  sources:
+  - url: https://platform.claude.com/docs/en/build-with-claude/effort
+    libelle: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    officielle: true
+  - url: https://code.claude.com/docs/en/model-config
+    libelle: https://code.claude.com/docs/en/model-config
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: https://platform.claude.com/docs/en/about-claude/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/models/overview
+    libelle: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-opus-5-5
+    libelle: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-sonnet-5-5
+    libelle: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: claude --model claude-opus-5-5 --effort low
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau le plus économe ; privilégie la vitesse avec une réduction possible de capacité.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - question ponctuelle exigeant la plume d'Opus sans longue exploration
+      natures_deconseillees:
+      - mecanique
+      - exploration
+      - code multi-fichiers
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: claude --model claude-opus-5-5 --effort medium
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Compromis entre capacité, vitesse et consommation de jetons.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - session interactive de rôle (chef, pilote)
+      - cadrage
+      - conception
+      - diagnostic
+      natures_deconseillees:
+      - mecanique
+      - extraction factuelle
+      - inventaire
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: claude --model claude-opus-5-5 --effort high
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Consacre les jetons nécessaires aux tâches complexes ; la consommation dépend de la tâche.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - architecture complexe
+      - audit transversal
+      - design
+      - droits et secrets
+      natures_deconseillees:
+      - mecanique
+      - correctif simple
+      - relecture bornée
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: claude --model claude-opus-5-5 --effort xhigh
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité étendue pour les tâches agentiques et de code à long horizon ; comparer sur ses
+      propres évaluations.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - recherche ou débogage profond ayant échoué à high
+      natures_deconseillees:
+      - missions courantes
+      - toute mission sous tension de quota (< 30 % restants)
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: claude --model claude-opus-5-5 --effort max
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité maximale sans contrainte de dépense de jetons liée au niveau ; à réserver aux gains
+      mesurés.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions OPÉRER standard
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: claude-code
+  sources_champs:
+    specifications:
+      url: https://platform.claude.com/docs/en/about-claude/models/overview
+      date_lecture: '2026-10-20'
+      extrait: Context window 1M tokens 1M tokens 1M tokens 1M tokens Max output 128K tokens 128K tokens 128K
+        tokens 128K tokens Reliable knowledge cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+    efforts:
+      url: https://platform.claude.com/docs/en/build-with-claude/effort
+      date_lecture: '2026-10-20'
+      extrait: Most Claude models default to high effort, spending as many tokens as needed for excellent results;
+        Claude Opus 5.5 and Claude Haiku 5.5 default to medium.
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Opus 5.5 For long-running agentic coding and knowledge work $4 / MTok $20 / MTok $5 /
+        MTok $8 / MTok $0.20 / MTok
+- modele: claude-sonnet-5-5
+  modele_operer: sonnet
+  aliases_modele:
+  - sonnet
+  - claude-sonnet-5-5
+  - sonnet-5-5
+  nom: Claude Sonnet 5.5
+  date_sortie: '2026-09-28'
+  cutoff_connaissances: 2026-06
+  fenetre_contexte_jetons: 1000000
+  sortie_max_jetons: 128000
+  effort_defaut: medium
+  effort_defaut_detail: 'Défaut Claude Code sans surcharge. API : high. Les réglages de la mission restent
+    explicites.'
+  statut_usage: utilise
+  forfait:
+    id: claude_max_20x
+    nom: Claude Max 20x / Max 5x
+    groupe_quota: claude_global
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - claude_session_5h
+    - claude_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 2
+    sortie_usd: 10
+    cache_lu_usd: 0.1
+    cache_ecrit_5m_usd: 2.5
+    cache_ecrit_1h_usd: 4
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+  points_forts:
+  - texte: Compromis annoncé entre vitesse et capacité ; comparer sur les tâches visées.
+    source: Anthropic — Models overview
+    url: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    verifie: true
+    extrait: The best combination of speed and intelligence
+  - texte: Effort réglable pour adapter capacité, latence et consommation.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: The effort parameter lets you control how many tokens Claude spends when responding to requests.
+  points_faibles:
+  - texte: Les niveaux élevés peuvent consommer davantage de jetons ; valider le gain sur ses propres tâches.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: Effort is a behavioral signal, not a strict token budget.
+  benchmarks:
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 70.6
+    unite: '%'
+    effort_mesure: null
+    comparaisons: 'Sonnet 5 : 10.3%'
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 70.6%
+  - nom: FrontierCode 1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 52.1
+    unite: '%'
+    effort_mesure: xhigh
+    comparaisons: 'Sonnet 5 : 42.4% ; Sonnet 5.5 max : 46.2%'
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 46.2% Max² 42.4% 54.4% 49.3% 52.1% Xhigh
+  - nom: CursorBench 4.0
+    domaine: Évaluation publique
+    valeur: 55.5
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 55.5% 34.1% 57.8%
+  - nom: GDPval-AA v2.1
+    domaine: Évaluation publique
+    valeur: 1844
+    unite: Elo
+    effort_mesure: null
+    comparaisons: 'Sonnet 5 : 1449'
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1844 1449 1846 1487
+  - nom: AA-Briefcase v1.1
+    domaine: Évaluation publique
+    valeur: 1811
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-sonnet-5-5
+    url: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1811 1359 1822 1483
+  constats_internes: []
+  sources:
+  - url: https://platform.claude.com/docs/en/build-with-claude/effort
+    libelle: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    officielle: true
+  - url: https://code.claude.com/docs/en/model-config
+    libelle: https://code.claude.com/docs/en/model-config
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: https://platform.claude.com/docs/en/about-claude/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/models/overview
+    libelle: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-sonnet-5-5
+    libelle: https://www.anthropic.com/claude-sonnet-5-5
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-haiku-5-5
+    libelle: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: claude --model claude-sonnet-5-5 --effort low
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau économe pour les échanges et tâches sensibles à la latence ; qualité à mesurer.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - classification courte sans édition de code
+      natures_deconseillees:
+      - code
+      - correctif
+      - relecture
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: claude --model claude-sonnet-5-5 --effort medium
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Défaut Claude Code et point de départ conseillé pour le code agentique bien spécifié.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - code
+      - correctif
+      - synthese
+      natures_deconseillees:
+      - audit transversal lourd
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: claude --model claude-sonnet-5-5 --effort high
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Défaut API ; conseillé pour les tâches plus difficiles ou longues.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - relecture bornée (agent relecteur)
+      - code complexe
+      - correctif délicat
+      natures_deconseillees:
+      - mecanique
+      - extraction factuelle simple
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: claude --model claude-sonnet-5-5 --effort xhigh
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité étendue pour les tâches agentiques et de code à long horizon ; comparer sur ses
+      propres évaluations.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - code agentique difficile
+      - débogage multi-fichiers
+      natures_deconseillees:
+      - relecture courte
+      - mecanique
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: claude --model claude-sonnet-5-5 --effort max
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: À retenir si les évaluations montrent un gain ; FrontierCode peut pénaliser les modifications
+      hors périmètre dues à la revue par sous-agents.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (utiliser xhigh ou high à la place)
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: claude-code
+  sources_champs:
+    specifications:
+      url: https://platform.claude.com/docs/en/about-claude/models/overview
+      date_lecture: '2026-10-20'
+      extrait: Context window 1M tokens 1M tokens 1M tokens 1M tokens Max output 128K tokens 128K tokens 128K
+        tokens 128K tokens Reliable knowledge cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+    efforts:
+      url: https://platform.claude.com/docs/en/build-with-claude/effort
+      date_lecture: '2026-10-20'
+      extrait: Most Claude models default to high effort, spending as many tokens as needed for excellent results;
+        Claude Opus 5.5 and Claude Haiku 5.5 default to medium.
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Sonnet 5.5 The best combination of speed and intelligence $2 / MTok $10 / MTok $2.50
+        / MTok $4 / MTok $0.10 / MTok
+- modele: claude-haiku-5-5
+  modele_operer: haiku
+  aliases_modele:
+  - haiku
+  - claude-haiku-5-5
+  - haiku-5-5
+  nom: Claude Haiku 5.5
+  date_sortie: '2026-10-07'
+  cutoff_connaissances: 2026-06
+  fenetre_contexte_jetons: 1000000
+  sortie_max_jetons: 128000
+  effort_defaut: medium
+  effort_defaut_detail: 'Défaut Claude Code sans surcharge. API : medium. Les réglages de la mission restent
+    explicites.'
+  statut_usage: utilise
+  forfait:
+    id: claude_max_20x
+    nom: Claude Max 20x / Max 5x
+    groupe_quota: claude_global
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - claude_session_5h
+    - claude_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 0.1
+    sortie_usd: 0.5
+    cache_lu_usd: 0.01
+    cache_ecrit_5m_usd: 0.125
+    cache_ecrit_1h_usd: 0.2
+    seuil_long_contexte: 'Prompts up to / over 100k : entrée $0.10 / $0.50 ; sortie $0.50 / $2.50 ; cache lu
+      $0.01 / $0.05. Source : https://www.anthropic.com/claude-haiku-5-5'
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+  points_forts:
+  - texte: 'Pour les tâches fréquentes sensibles à la latence : classification, extraction et routage.'
+    source: Anthropic — Models overview
+    url: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    verifie: true
+    extrait: For high-volume, latency-sensitive tasks such as classification, extraction, and routing
+  - texte: Effort réglable pour adapter capacité, latence et consommation.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: The effort parameter lets you control how many tokens Claude spends when responding to requests.
+  points_faibles:
+  - texte: Les niveaux élevés peuvent consommer davantage de jetons ; valider le gain sur ses propres tâches.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: Effort is a behavioral signal, not a strict token budget.
+  benchmarks:
+  - nom: GDPval-AA v2.1
+    domaine: Évaluation publique
+    valeur: 1620
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1620 735 1437 1840
+  - nom: AA-Briefcase v1.1
+    domaine: Évaluation publique
+    valeur: 1578
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1578 614 1336 1824
+  - nom: OSWorld 2.1 (Offline subset)
+    domaine: Évaluation publique
+    valeur: 72.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 72.4% Offline subset
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 39.2
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 39.2% 0.0% 16.4% 70.6%
+  - nom: FrontierCode 1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 46.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 46.4% — 42.4% 52.1% Xhigh
+  - nom: Chartography (no tools)
+    domaine: Évaluation publique
+    valeur: 46.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 46.4% no tools 6.4% no tools 29.1% no tools 61.6% no tools
+  constats_internes: []
+  sources:
+  - url: https://platform.claude.com/docs/en/build-with-claude/effort
+    libelle: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    officielle: true
+  - url: https://code.claude.com/docs/en/model-config
+    libelle: https://code.claude.com/docs/en/model-config
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: https://platform.claude.com/docs/en/about-claude/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/models/overview
+    libelle: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-haiku-5-5
+    libelle: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: claude --model claude-haiku-5-5 --effort low
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau le plus rapide et économe ; risque accru de sauter une recherche ou un contrôle sur
+      les longs prompts.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - classification ou extraction en un seul tour sans boucle d'outils
+      natures_deconseillees:
+      - exploration multi-fichiers
+      - code
+      - relecture
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: claude --model claude-haiku-5-5 --effort medium
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Défaut API ; point de départ recommandé pour la plupart des travaux, dont le code agentique.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - exploration de code (agent explorateur avec sens)
+      - mecanique
+      - extraction factuelle
+      - inventaire
+      natures_deconseillees:
+      - architecture
+      - code complexe
+      - audit transversal
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: claude --model claude-haiku-5-5 --effort high
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Recommandé pour le travail de connaissance, les tâches longues et le respect strict des consignes.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - extraction factuelle à format contraint
+      - vérification mécanique multi-étapes
+      - exploration exigeante
+      natures_deconseillees:
+      - conception
+      - refactoring lourd
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: claude --model claude-haiku-5-5 --effort xhigh
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: À utiliser si les évaluations montrent un gain ; thinking disabled est refusé à ce niveau.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - sessions multi-tours
+      - missions OPÉRER
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: claude --model claude-haiku-5-5 --effort max
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: À utiliser si les évaluations montrent un gain ; thinking disabled est refusé à ce niveau.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: claude-code
+  sources_champs:
+    specifications:
+      url: https://platform.claude.com/docs/en/about-claude/models/overview
+      date_lecture: '2026-10-20'
+      extrait: Context window 1M tokens 1M tokens 1M tokens 1M tokens Max output 128K tokens 128K tokens 128K
+        tokens 128K tokens Reliable knowledge cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+    efforts:
+      url: https://platform.claude.com/docs/en/build-with-claude/effort
+      date_lecture: '2026-10-20'
+      extrait: Most Claude models default to high effort, spending as many tokens as needed for excellent results;
+        Claude Opus 5.5 and Claude Haiku 5.5 default to medium.
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: $0.10 / MTok for prompts up to 100,000 tokens $0.50 / MTok $0.125 / MTok $0.20 / MTok $0.01
+        / MTok
+- modele: claude-fable-5-1
+  modele_operer: fable
+  aliases_modele:
+  - fable
+  - claude-fable-5-1
+  - fable-5-1
+  nom: Claude Fable 5.1
+  date_sortie: null
+  cutoff_connaissances: 2026-06
+  fenetre_contexte_jetons: 1000000
+  sortie_max_jetons: 128000
+  effort_defaut: high
+  effort_defaut_detail: 'Défaut Claude Code sans surcharge. API : high. Les réglages de la mission restent
+    explicites.'
+  statut_usage: non_utilise
+  forfait:
+    id: claude_max_20x
+    nom: Claude Max 20x / Max 5x
+    groupe_quota: claude_fable
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - claude_session_5h
+    - claude_semaine
+    - claude_semaine_fable
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 10
+    sortie_usd: 50
+    cache_lu_usd: 0.25
+    cache_ecrit_5m_usd: 12.5
+    cache_ecrit_1h_usd: 20
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+  points_forts:
+  - texte: Pour le raisonnement exigeant et les tâches agentiques à long horizon.
+    source: Anthropic — Models overview
+    url: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    verifie: true
+    extrait: For demanding reasoning and long-horizon agentic work
+  - texte: Effort réglable pour adapter capacité, latence et consommation.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: The effort parameter lets you control how many tokens Claude spends when responding to requests.
+  points_faibles:
+  - texte: Les niveaux élevés peuvent consommer davantage de jetons ; valider le gain sur ses propres tâches.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: Effort is a behavioral signal, not a strict token budget.
+  benchmarks:
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 55.8
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 66.4% 55.8% 52.3% 57.9% 37.3%
+  - nom: FrontierCode v1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 50.3
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 54.4% 50.3% 48.0% 53.3% 47.5%
+  - nom: GDPval-AA v2.1
+    domaine: Évaluation publique
+    valeur: 1735
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1846 1735 1708 1542 1588
+  constats_internes: []
+  sources:
+  - url: https://platform.claude.com/docs/en/build-with-claude/effort
+    libelle: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    officielle: true
+  - url: https://code.claude.com/docs/en/model-config
+    libelle: https://code.claude.com/docs/en/model-config
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: https://platform.claude.com/docs/en/about-claude/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/models/overview
+    libelle: https://platform.claude.com/docs/en/about-claude/models/overview
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-opus-5-5
+    libelle: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: claude --model claude-fable-5-1 --effort low
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau le plus économe ; privilégie la vitesse avec une réduction possible de capacité.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - code
+      - mecanique
+      - exploration
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: claude --model claude-fable-5-1 --effort medium
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Compromis entre capacité, vitesse et consommation de jetons.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - audit de sécurité binaire ponctuel
+      natures_deconseillees:
+      - missions courantes OPÉRER
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: true
+    usage: claude --model claude-fable-5-1 --effort high
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Consacre les jetons nécessaires aux tâches complexes ; la consommation dépend de la tâche.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - audit de vulnérabilité complexe si le quota Fable dédié est inutilisé
+      natures_deconseillees:
+      - code
+      - correctif
+      - relecture
+      - synthese
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: claude --model claude-fable-5-1 --effort xhigh
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité étendue pour les tâches agentiques et de code à long horizon ; comparer sur ses
+      propres évaluations.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions OPÉRER standard
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: claude --model claude-fable-5-1 --effort max
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité maximale sans contrainte de dépense de jetons liée au niveau ; à réserver aux gains
+      mesurés.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: claude-code
+  sources_champs:
+    specifications:
+      url: https://platform.claude.com/docs/en/about-claude/models/overview
+      date_lecture: '2026-10-20'
+      extrait: Context window 1M tokens 1M tokens 1M tokens 1M tokens Max output 128K tokens 128K tokens 128K
+        tokens 128K tokens Reliable knowledge cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+    efforts:
+      url: https://platform.claude.com/docs/en/build-with-claude/effort
+      date_lecture: '2026-10-20'
+      extrait: Most Claude models default to high effort, spending as many tokens as needed for excellent results;
+        Claude Opus 5.5 and Claude Haiku 5.5 default to medium.
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Fable 5.1 For demanding reasoning and long-horizon agentic work $10 / MTok $50 / MTok
+        $12.50 / MTok $20 / MTok $0.25 / MTok
+- modele: claude-fable-5
+  modele_operer: claude-fable-5
+  aliases_modele:
+  - claude-fable-5
+  - fable-5
+  nom: Claude Fable 5 (legacy)
+  date_sortie: null
+  cutoff_connaissances: null
+  fenetre_contexte_jetons: null
+  sortie_max_jetons: null
+  effort_defaut: high
+  effort_defaut_detail: 'Défaut Claude Code sans surcharge. API : high. Les réglages de la mission restent
+    explicites.'
+  statut_usage: non_utilise
+  forfait:
+    id: claude_max_20x
+    nom: Claude Max 20x / Max 5x
+    groupe_quota: claude_fable
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - claude_session_5h
+    - claude_semaine
+    - claude_semaine_fable
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 10
+    sortie_usd: 50
+    cache_lu_usd: 1
+    cache_ecrit_5m_usd: 12.5
+    cache_ecrit_1h_usd: 20
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://platform.claude.com/docs/en/about-claude/pricing
+  points_forts:
+  - texte: Effort réglable pour adapter capacité, latence et consommation.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: The effort parameter lets you control how many tokens Claude spends when responding to requests.
+  points_faibles:
+  - texte: Les niveaux élevés peuvent consommer davantage de jetons ; valider le gain sur ses propres tâches.
+    source: https://platform.claude.com/docs/en/build-with-claude/effort
+    url: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    verifie: true
+    extrait: Effort is a behavioral signal, not a strict token budget.
+  benchmarks: []
+  constats_internes: []
+  sources:
+  - url: https://platform.claude.com/docs/en/build-with-claude/effort
+    libelle: https://platform.claude.com/docs/en/build-with-claude/effort
+    date: '2026-10-20'
+    officielle: true
+  - url: https://code.claude.com/docs/en/model-config
+    libelle: https://code.claude.com/docs/en/model-config
+    date: '2026-10-20'
+    officielle: true
+  - url: https://platform.claude.com/docs/en/about-claude/pricing
+    libelle: https://platform.claude.com/docs/en/about-claude/pricing
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: claude --model claude-fable-5 --effort low
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Niveau le plus économe ; privilégie la vitesse avec une réduction possible de capacité.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (modèle legacy)
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: claude --model claude-fable-5 --effort medium
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Compromis entre capacité, vitesse et consommation de jetons.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (modèle legacy)
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: true
+    usage: claude --model claude-fable-5 --effort high
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Consacre les jetons nécessaires aux tâches complexes ; la consommation dépend de la tâche.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (modèle legacy)
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: claude --model claude-fable-5 --effort xhigh
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité étendue pour les tâches agentiques et de code à long horizon ; comparer sur ses
+      propres évaluations.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (modèle legacy)
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: claude --model claude-fable-5 --effort max
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Capacité maximale sans contrainte de dépense de jetons liée au niveau ; à réserver aux gains
+      mesurés.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (modèle legacy)
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: claude-code
+  sources_champs:
+    efforts:
+      url: https://platform.claude.com/docs/en/build-with-claude/effort
+      date_lecture: '2026-10-20'
+      extrait: Most Claude models default to high effort, spending as many tokens as needed for excellent results;
+        Claude Opus 5.5 and Claude Haiku 5.5 default to medium.
+    prix_api:
+      url: https://platform.claude.com/docs/en/about-claude/pricing
+      date_lecture: '2026-10-20'
+      extrait: Claude Fable 5 $10 / MTok $50 / MTok $12.50 / MTok $20 / MTok $1 / MTok

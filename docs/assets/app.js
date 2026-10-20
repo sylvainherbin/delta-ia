@@ -538,12 +538,12 @@
   }
   /* ---------- Référence (phase 4) : base extraite de la documentation, commentée par les agents ---------- */
   const KB_PERIMETRES = ["claude", "openai"];
-  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis", methodes: "Méthodes" };
+  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis", methodes: "Méthodes", modeles: "Modèles" };
   const VERDICTS = { utiliser: "à utiliser", tester: "à tester", ignorer: "à ignorer" };
   const STATUTS = { utilise: "utilisé", non_utilise: "non utilisé", inconnu: "usage inconnu" };
   const KB_PAGE = 50;
   const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE };
-  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"], methodes: ["méthode", "méthodes"] };
+  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"], methodes: ["méthode", "méthodes"], modeles: ["modèle", "modèles"] };
   const KB_JOURS_RECENTS = ["7", "30"];
   const LIGNE_AJOUT = "ajoutée à l'inventaire";
   const ISO_JOUR = /^\d{4}-\d{2}-\d{2}$/;
@@ -609,7 +609,8 @@
     console.log(`delta:kb premiers fichiers ${kb.entrees.length} entrées en ${Math.round(performance.now() - kb.debut)} ms`);
     if (kb.entrees.length) chargerResteKb();
     else { chargerResteKb(); await kb.reste; }  // rien de lisible dans les premiers fichiers : conclure sur toute la base
-    await chargerFichierKb(KB_LOCALE, "methodes");  // D121 : les méthodes locales, un petit fichier, après les tests de lisibilité ci-dessus
+    await chargerFichierKb(KB_LOCALE, "methodes");  // D121 : les méthodes et modèles locaux, après les tests de lisibilité ci-dessus
+    await chargerFichierKb(KB_LOCALE, "modeles");
   }
   /* Chargement par morceaux (m-b6207baf75ca) : la base tient en 14 fichiers (périmètre × catégorie, environ 3 Mo). Les commandes et
      les fonctionnalités des deux périmètres suffisent à la première page ; le reste se charge en arrière-plan, deux fichiers à la fois,
@@ -619,12 +620,14 @@
   const KB_ARRIERE_PLAN = ["skills", "plugins", "mcp", "raccourcis", "parametres"]; // les petits fichiers d'abord, le plus lourd à la fin
   const KB_PARALLELE = 2;
   const KB_PRODUIT_PERIMETRE = { claude: "claude", "claude-code": "claude", codex: "openai", chatgpt: "openai" };
-  /* D121 : les fiches de méthode (rédigées à la main, kb-methodes/) tiennent dans un seul fichier hors périmètre, docs/data/kb/methodes.json ;
-     son « périmètre » est LOCALE. Petit, il part avec les premiers fichiers. */
+  /* D121 : les fiches de méthode (kb-methodes/) et de modèles/efforts (kb-modeles/) tiennent dans des fichiers hors périmètre ;
+     leur « périmètre » est LOCALE. */
   const KB_LOCALE = "locale";
-  const KB_FICHIERS = [...KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes").map((c) => [p, c])), [KB_LOCALE, "methodes"]];
-  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes").join("|")})-`);
+  const KB_LOCALES = ["methodes", "modeles"];
+  const KB_FICHIERS = [...KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes" && c !== "modeles").map((c) => [p, c])), [KB_LOCALE, "methodes"], [KB_LOCALE, "modeles"]];
+  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes" && c !== "modeles").join("|")})-`);
   const RE_ID_METHODE = /^methode-/;
+  const RE_ID_MODELE = /^modele-/;
   const cheminKb = (p, c) => p === KB_LOCALE ? `data/kb/${c}.json` : `data/kb/${p}/${c}.json`;
   function etatKb() {
     if (!etat.kb) etat.kb = { entrees: [], erreurs: [], charges: new Set(), promesses: new Map(), debut: performance.now(), reste: null, ms: null };
@@ -651,7 +654,8 @@
         try {
           const d = await lireJson(cheminKb(p, c));
           if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
-          for (const e of d.entrees) if (e && typeof e === "object" && e.id) {
+          const entrees = c === "modeles" ? (await import("./kb-modeles.mjs")).developperModeles(d) : d.entrees;
+          for (const e of entrees) if (e && typeof e === "object" && e.id) {
             e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
             e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
             e._ajout = dateAjout(e);
@@ -673,6 +677,7 @@
   // fichier d'une entrée d'après son id (`<produit>-<catégorie>-…`), null si l'id n'a pas cette forme
   function fichierDeIdKb(id) {
     if (RE_ID_METHODE.test(String(id || ""))) return [KB_LOCALE, "methodes"];
+    if (RE_ID_MODELE.test(String(id || ""))) return [KB_LOCALE, "modeles"];
     const m = RE_ID_KB.exec(String(id || ""));
     return m ? [KB_PRODUIT_PERIMETRE[m[1]], m[2]] : null;
   }
@@ -699,7 +704,7 @@
       zone.append(el("span", { text: `Chargement de la base en arrière-plan : ${kb.charges.size}/${KB_FICHIERS.length} fichiers. Compteurs et résultats provisoires.` }));
     }
     zone.setAttribute("aria-busy", kbComplet() ? "false" : "true");
-    const extraites = kb.entrees.filter((e) => e.categorie !== "methodes");  // D121 : une méthode est rédigée, pas à commenter
+    const extraites = kb.entrees.filter((e) => e.categorie !== "methodes" && e.categorie !== "modeles");  // D121 : une méthode ou fiche modèle est rédigée, pas à commenter
     const faites = extraites.filter((e) => e.commentee).length;
     const av = document.getElementById("kb-avancement");
     if (av) {
@@ -798,8 +803,34 @@
     }
     return c;
   }
+  function carteModele(e) {
+    const c = el("li", { class: "carte kb methode modele" });
+    const produits = Array.isArray(e.produits) && e.produits.length ? e.produits : [e.produit];
+    const verdict = e.recommandation ? e.recommandation.verdict : null;
+    c.append(el("div", { class: "badges" },
+      ...produits.map((p) => badge("produit", PRODUITS[p] || String(p || "?"))),
+      badge("type", KB_CATEGORIES.modeles),
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : null,
+      e.statut_usage ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage)) : null,
+      e.cout_quota && e.cout_quota.niveau ? badge("statut", `quota : ${e.cout_quota.niveau}`) : null));
+    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
+    c.append(el("div", { class: "meta", text: [
+      e.fournisseur ? `fournisseur : ${e.fournisseur}` : null,
+      e.executant ? `exécutant : ${e.executant}` : null,
+      e.date_releve ? `relevé le ${dateFr(e.date_releve)}` : null,
+    ].filter(Boolean).join(" · ") }));
+    c.append(el("div", { class: "etiquette", text: "Syntaxe" }));
+    c.append(el("pre", { class: "usage" }, el("code", { text: String(e.usage || "") })));
+    c.append(rendreMarkdownMethode(e.description));
+    if (Array.isArray(e.sources) && e.sources.length) {
+      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
+        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
+    }
+    return c;
+  }
   function carteKb(e) {
     if (e.categorie === "methodes") return carteMethode(e);
+    if (e.categorie === "modeles") return carteModele(e);
     const c = el("li", { class: "carte kb" + (e.commentee ? "" : " attente") });
     const verdict = e.commentee && e.recommandation ? e.recommandation.verdict : null;
     c.append(el("div", { class: "badges" },
@@ -1081,10 +1112,11 @@
       return frag;
     }
     const extraites = kb.entrees.filter((e) => e.categorie !== "methodes");  // D121
-    const total = extraites.length, faites = extraites.filter((e) => e.commentee).length;
+    const commentables = extraites.filter((e) => e.categorie !== "modeles");
+    const total = commentables.length, faites = commentables.filter((e) => e.commentee).length;
     const barre = el("div", { class: "avancement", id: "kb-avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
       el("progress", { max: String(total), value: String(faites), "aria-label": "Avancement des commentaires" }));
-    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle ; méthodes locales, rédigées à la main. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
+    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle ; méthodes et fiches de modèles × efforts locales. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
     frag.append(el("div", { id: "kb-chargement", class: "avancement kb-chargement", role: "status", "aria-live": "polite" }),
       el("p", { id: "kb-erreurs", class: "erreur", hidden: true }));
     const recherche = el("input", { type: "search", placeholder: "Rechercher (nom, usage, description…)", "aria-label": "Recherche plein texte", value: kbFiltre.q });

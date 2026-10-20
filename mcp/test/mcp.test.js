@@ -421,6 +421,56 @@ test("chercher_reference : sans kb/noms.json, plein texte seul et avis (jamais m
   }
 });
 
+test("modèles × efforts : chercher_reference et fiche_reference couvrent les 17 modèles et résolvent les alias", async () => {
+  const enum_ = OUTILS.chercher_reference.inputSchema.properties.categorie.enum;
+  assert.ok(enum_.includes("modeles"));
+  const trouve = async (args) => (await appel("chercher_reference", args)).corps.result.structuredContent;
+  for (const [requete, idAttendu] of [
+    ["claude-haiku-5-5", "modele-claude-haiku-5-5-medium"],
+    ["gpt-6.1-sol", "modele-gpt-6-1-sol-low"],
+    ["gemini-4-argon", "modele-gemini-4-argon-high"],
+    ["Qwen3.5-4B", "modele-qwen3-5-4b-sans-reflexion"],
+  ]) {
+    const r = await trouve({ requete, categorie: "modeles" });
+    assert.ok(r.total >= 1, requete);
+    assert.equal(r.resultats[0].id, idAttendu, requete);
+    assert.equal(r.resultats[0].categorie, "modeles");
+    assert.ok(r.resultats[0].cout_quota && r.resultats[0].forfait, requete);
+  }
+  // résolution directe par id canonique ou par alias (modèle seul → effort par défaut, modèle:effort → couple exact)
+  const haikuDefaut = (await appel("fiche_reference", { id: "claude:claude-haiku-5-5" })).corps.result.structuredContent.fiche;
+  assert.equal(haikuDefaut.id, "modele-claude-haiku-5-5-medium");
+  assert.equal(haikuDefaut.effort, "medium");
+  assert.equal(haikuDefaut.effort_defaut, true);
+  assert.equal(haikuDefaut.date_releve, "2026-10-20");
+  assert.ok(haikuDefaut.niveaux_effort_disponibles.length === 5);
+  assert.ok(haikuDefaut.benchmarks.some((b) => b.nom.includes("GDPval-AA") && b.verifie === true));
+  assert.ok(haikuDefaut.benchmarks.every((b) => b.verifie === true && b.extrait));
+
+  const sonnetAgyHigh = (await appel("fiche_reference", { id: "antigravity:claude-sonnet-5-5:high" })).corps.result.structuredContent.fiche;
+  assert.equal(sonnetAgyHigh.id, "modele-antigravity-claude-sonnet-5-5-high");
+  assert.ok(sonnetAgyHigh.sources_internes.some((c) => c.date === "2026-10-19" && c.constat.includes("21 min")));
+
+  const qwenLocal = (await appel("fiche_reference", { id: "Qwen3.5-4B" })).corps.result.structuredContent.fiche;
+  assert.equal(qwenLocal.id, "modele-qwen3-5-4b-sans-reflexion");
+  assert.ok(qwenLocal.constats_internes.some((c) => c.date === "2026-10-19" && c.constat.includes("un seul appel")));
+  assert.equal(JSON.stringify(qwenLocal).includes("/home/"), false);
+});
+
+test("modèles × efforts : fichier absent signalé ou retirée ignorée, le reste de la base répond", async () => {
+  const m = lireDonnee("kb/modeles.json");
+  await avecDonnees({ "kb/modeles.json": null }, async (outil) => {
+    const r = (await outil("chercher_reference", { requete: "claude-haiku-5-5", categorie: "modeles" })).result.structuredContent;
+    assert.equal(r.total, 0);
+    assert.deepEqual(r.categories_non_lues, [{ categorie: "modeles", raison: "HTTP 404" }]);
+    assert.match(r.avis, /recherche incomplète.*modeles/);
+    assert.equal((await outil("chercher_reference", { requete: "/model", produit: "claude-code" })).result.structuredContent.resultats[0].id, "claude-code-commandes-model");
+  });
+  await avecDonnees({ "kb/modeles.json": { ...m, entrees: m.entrees.map((e) => ({ ...e, retiree: true })) } }, async (outil) => {
+    assert.equal((await outil("fiche_reference", { id: "modele-claude-haiku-5-5-medium" })).result.isError, true);
+  });
+});
+
 // Requêtes réelles d'agents (transcripts du 12/10/2026) qui rendaient zéro avec le ET strict : produit, catégorie, début attendu.
 const REQUETES_REELLES = [
   ["commande /model", "claude-code", "commandes", "claude-code-commandes-model"],
@@ -448,13 +498,13 @@ test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes r
   }
   assert.ok(replis >= 8, `au moins 8 requêtes passent par le repli (reçu : ${replis})`);
   // une requête hors base reste à zéro, sans avis de résultats partiels
-  const hors = (await appel("chercher_reference", { requete: "Groq gpt-oss" })).corps.result.structuredContent;
+  const hors = (await appel("chercher_reference", { requete: "Groq Cerebras" })).corps.result.structuredContent;
   assert.deepEqual([hors.total, hors.resultats.length, hors.avis], [0, 0, undefined]);
 });
 
 function base(entrees, noms = {}) {
   const vide = ["fonctionnalites", "skills", "plugins", "mcp", "parametres", "raccourcis"];
-  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": { entrees: [] }, "kb/methodes.json": { entrees: [] } };
+  const r = { "kb/noms.json": noms, "kb/claude/commandes.json": { entrees }, "kb/openai/commandes.json": { entrees: [] }, "kb/methodes.json": { entrees: [] }, "kb/modeles.json": { schema_version: 2, modeles: {}, entrees: [] } };
   for (const c of vide) { r[`kb/claude/${c}.json`] = { entrees: [] }; r[`kb/openai/${c}.json`] = { entrees: [] }; }
   return r;
 }
@@ -766,4 +816,31 @@ test("vercel.json : /stats réécrit vers /api/stats, cache no-store ailleurs se
   assert.deepEqual(v.rewrites.map((r) => [r.source, r.destination]), [["/mcp", "/api/mcp"], ["/stats", "/api/stats"]]);
   const re = new RegExp("^" + v.headers[0].source.replace("/(", "/(") + "$");
   assert.ok(re.test("/mcp") && !re.test("/stats"));
+});
+
+test("modèles : alias partagé signale les candidats, identifiant canonique prioritaire", async () => {
+  for (const id of ["claude-sonnet-5-5", "claude-sonnet-5-5:high", "claude-opus-5-5:medium"]) {
+    const r = (await appel("fiche_reference", { id })).corps.result;
+    assert.equal(r.isError, false);
+    assert.equal(r.structuredContent.ambigu, true);
+    const candidats = r.structuredContent.candidats;
+    assert.equal(candidats.length, 2);
+    assert.deepEqual(new Set(candidats.map((c) => c.executant)), new Set(["claude", "antigravity"]));
+    assert.match(r.structuredContent.avis, /identifiant canonique/);
+    for (const c of candidats) assert.equal((await appel("fiche_reference", { id: c.id })).corps.result.structuredContent.fiche.id, c.id);
+  }
+  const s = (await appel("chercher_reference", { requete: "claude-sonnet-5-5:high" })).corps.result.structuredContent;
+  assert.match(s.avis, /alias ambigu/);
+  assert.equal(s.resultats.filter((e) => e.effort === "high").length, 2);
+});
+
+test("recherche mixte : effort, quota et model effort gardent les fiches de documentation", async () => {
+  for (const requete of ["effort", "quota", "model effort"]) {
+    const r = (await appel("chercher_reference", { requete, produit: "claude-code", limite: 20 })).corps.result.structuredContent;
+    assert.ok(r.resultats.some((e) => e.categorie !== "modeles"), requete);
+    if (requete !== "quota") assert.ok(r.resultats.some((e) => e.id === "claude-code-commandes-effort"), requete);
+    else assert.ok(r.resultats.some((e) => e.id === "claude-code-fonctionnalites-page-agent-view"), requete);
+  }
+  const r = (await appel("chercher_reference", { requete: "effort", limite: 20 })).corps.result.structuredContent;
+  assert.ok(r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort") < 5);
 });

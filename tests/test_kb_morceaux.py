@@ -17,7 +17,7 @@ def morceau(texte, debut, fin):
 
 
 def test_les_quatorze_fichiers_du_disque_sont_ceux_du_site():
-    cats = set(re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};"))) - {"methodes"}  # D121 : fichier local, hors périmètres
+    cats = set(re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};"))) - {"methodes", "modeles"}  # D121 : fichiers locaux, hors périmètres
     perimetres = set(json.loads(re.search(r"const KB_PERIMETRES = (\[[^\]]*\]);", APP).group(1)))
     sur_disque = {(f.parent.name, f.stem) for f in KB.glob("*/*.json")}
     assert perimetres == set(PERIMETRES)
@@ -40,7 +40,7 @@ def test_chaque_id_donne_son_fichier():
     assert json.loads(re.search(r"const KB_PRODUIT_PERIMETRE = (\{[^}]*\});", APP).group(1).replace("claude:", '"claude":').replace("codex:", '"codex":').replace("chatgpt:", '"chatgpt":')) == perim
     cats = re.findall(r"(\w+): \"[^\"]+\"", morceau(APP, "const KB_CATEGORIES = {", "};"))
     motif = re.compile(rf"^(claude-code|claude|codex|chatgpt)-({'|'.join(cats)})-")
-    assert "(claude-code|claude|codex|chatgpt)" in APP and "const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== \"methodes\").join(\"|\")})-`);" in APP
+    assert "(claude-code|claude|codex|chatgpt)" in APP and "const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== \"methodes\" && c !== \"modeles\").join(\"|\")})-`);" in APP
     for f in KB.glob("*/*.json"):
         for e in json.loads(f.read_text(encoding="utf-8"))["entrees"]:
             m = motif.match(e["id"])

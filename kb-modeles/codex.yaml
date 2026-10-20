@@ -1,0 +1,719 @@
+date_releve: '2026-10-20'
+famille: codex
+fournisseur: openai
+executant: codex
+executants_operer:
+- codex
+- codex:<role>
+produit: codex
+produits:
+- codex
+- chatgpt
+forfaits_cibles:
+- chatgpt_pro
+modeles:
+- modele: gpt-6.1-sol
+  modele_operer: gpt-6.1-sol
+  aliases_modele:
+  - gpt-6.1-sol
+  - gpt-6-1-sol
+  - sol
+  nom: Codex GPT-6.1 Sol
+  date_sortie: null
+  cutoff_connaissances: '2026-04-30'
+  fenetre_contexte_jetons: 1050000
+  sortie_max_jetons: 128000
+  effort_defaut: low
+  effort_defaut_detail: 'Défaut du catalogue Codex officiel consulté ; les réglages enregistrés peuvent le
+    remplacer. API : medium. OPÉRER choisit le couple explicitement.'
+  statut_usage: utilise
+  forfait:
+    id: chatgpt_pro
+    nom: ChatGPT Pro
+    groupe_quota: chatgpt_hebdo
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - chatgpt_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 2
+    sortie_usd: 10
+    cache_lu_usd: 0.1
+    cache_ecrit_5m_usd: 2.5
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+  points_forts:
+  - texte: Niveaux de raisonnement réglables ; vérifier la surface API ou Codex avant de réutiliser un niveau.
+    source: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+    url: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+    date: '2026-10-20'
+    verifie: true
+    extrait: reasoning.effort supports
+  points_faibles:
+  - texte: Les tarifs de crédits ne déterminent pas à eux seuls la consommation de l’abonnement.
+    source: https://developers.openai.com/codex/pricing
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    verifie: true
+    extrait: Credit prices alone don’t determine included subscription usage; check your usage dashboard for
+      current limits.
+  benchmarks: []
+  constats_internes: []
+  sources:
+  - url: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+    libelle: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/models
+    libelle: https://developers.openai.com/codex/models
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/pricing
+    libelle: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    libelle: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: true
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="low"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Réponses rapides avec un raisonnement léger.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - vérification rapide
+      - petite retouche ciblée
+      natures_deconseillees:
+      - code multi-fichiers
+      - architecture
+      - mecanique pure (préférer gpt-6-luna medium)
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="medium"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Équilibre vitesse et profondeur de raisonnement.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - releve factuel
+      - synthese
+      - passage quotidien ($delta, $delta-kb)
+      - code simple
+      natures_deconseillees:
+      - conception complexe
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="high"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Raisonnement plus approfondi pour les problèmes complexes.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - code
+      - correctif
+      - relecture
+      - conception
+      natures_deconseillees:
+      - mecanique (utiliser gpt-6-luna medium)
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="xhigh"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur de raisonnement accrue pour les problèmes complexes.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - refactoring complexe
+      - débogage difficile
+      - audit de code
+      natures_deconseillees:
+      - mecanique
+      - correctif mineur
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="max"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur maximale pour les problèmes les plus difficiles.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - problème algorithmique ou diagnostic bloquant
+      natures_deconseillees:
+      - missions courantes
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  - effort: ultra
+    defaut: false
+    usage: codex exec -m gpt-6.1-sol -c model_reasoning_effort="ultra"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Raisonnement maximal avec délégation automatique de tâches ; option Codex du catalogue officiel,
+      distincte du paramètre API.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - missions OPÉRER standard (OPÉRER orchestre déjà lui-même le découpage)
+      pourquoi: 'Conseil local : tâches divisibles, en surveillant la consommation.'
+  sources_internes: []
+  effort_defaut_portee: catalogue-codex
+  sources_champs:
+    specifications:
+      url: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+      date_lecture: '2026-10-20'
+      extrait: 1,050,000 context window 128,000 max output tokens Apr 30, 2026 knowledge cutoff
+    prix_api:
+      url: https://developers.openai.com/api/docs/models/gpt-6.1-sol
+      date_lecture: '2026-10-20'
+      extrait: Input $2.00 Cached input $0.10 Cache writes $2.50 Output $10.00
+    efforts:
+      url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+      date_lecture: '2026-10-20'
+      modele: gpt-6.1-sol
+      efforts:
+      - low
+      - medium
+      - high
+      - xhigh
+      - max
+      - ultra
+      defaut: low
+  tarifs_credits:
+    unite: crédits par million de jetons, vitesse Standard
+    entree: 50
+    cache_lu: 2.5
+    sortie: 250
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    extrait: GPT-6.1 Sol 50 credits 2.5 credits 250 credits
+    note: Barème de crédits ; il ne détermine pas seul la consommation du quota inclus.
+- modele: gpt-6-luna
+  modele_operer: gpt-6-luna
+  aliases_modele:
+  - gpt-6-luna
+  - luna
+  nom: Codex GPT-6 Luna
+  date_sortie: null
+  cutoff_connaissances: '2026-05-18'
+  fenetre_contexte_jetons: 1050000
+  sortie_max_jetons: 128000
+  effort_defaut: medium
+  effort_defaut_detail: 'Défaut du catalogue Codex officiel consulté ; les réglages enregistrés peuvent le
+    remplacer. API : medium. OPÉRER choisit le couple explicitement.'
+  statut_usage: utilise
+  forfait:
+    id: chatgpt_pro
+    nom: ChatGPT Pro
+    groupe_quota: chatgpt_hebdo
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - chatgpt_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 0.1
+    sortie_usd: 0.5
+    cache_lu_usd: 0.01
+    cache_ecrit_5m_usd: 0.125
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://developers.openai.com/api/docs/models/gpt-6-luna
+  points_forts:
+  - texte: Niveaux de raisonnement réglables ; vérifier la surface API ou Codex avant de réutiliser un niveau.
+    source: https://developers.openai.com/api/docs/models/gpt-6-luna
+    url: https://developers.openai.com/api/docs/models/gpt-6-luna
+    date: '2026-10-20'
+    verifie: true
+    extrait: reasoning.effort supports
+  points_faibles:
+  - texte: Les tarifs de crédits ne déterminent pas à eux seuls la consommation de l’abonnement.
+    source: https://developers.openai.com/codex/pricing
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    verifie: true
+    extrait: Credit prices alone don’t determine included subscription usage; check your usage dashboard for
+      current limits.
+  benchmarks:
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 16.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 39.2% 0.0% 16.4% 70.6%
+  - nom: FrontierCode 1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 42.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 46.4% — 42.4% 52.1% Xhigh
+  - nom: GDPval-AA v2.1
+    domaine: Évaluation publique
+    valeur: 1437
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1620 735 1437 1840
+  - nom: AA-Briefcase v1.1
+    domaine: Évaluation publique
+    valeur: 1336
+    unite: Elo
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 1578 614 1336 1824
+  - nom: OSWorld 2.1 (Offline subset)
+    domaine: Évaluation publique
+    valeur: 48.9
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 48.9% Offline subset
+  - nom: Chartography (no tools)
+    domaine: Évaluation publique
+    valeur: 29.1
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-haiku-5-5
+    url: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 29.1% no tools
+  constats_internes: []
+  sources:
+  - url: https://developers.openai.com/api/docs/models/gpt-6-luna
+    libelle: https://developers.openai.com/api/docs/models/gpt-6-luna
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/models
+    libelle: https://developers.openai.com/codex/models
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/pricing
+    libelle: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    libelle: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-haiku-5-5
+    libelle: https://www.anthropic.com/claude-haiku-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: false
+    usage: codex exec -m gpt-6-luna -c model_reasoning_effort="low"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Réponses rapides avec un raisonnement léger.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - transformation de texte triviale
+      - formatage
+      natures_deconseillees:
+      - code
+      - correctif
+      - exploration
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: true
+    usage: codex exec -m gpt-6-luna -c model_reasoning_effort="medium"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Équilibre vitesse et profondeur de raisonnement.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - mecanique
+      - renommage
+      - extraction simple sur quota Codex
+      natures_deconseillees:
+      - code complexe
+      - correctif non trivial
+      - conception
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: codex exec -m gpt-6-luna -c model_reasoning_effort="high"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Raisonnement plus approfondi pour les problèmes complexes.
+    recommandation_operer:
+      verdict: utiliser
+      natures_adaptees:
+      - mecanique multi-étapes
+      - vérification de format ou de schéma
+      natures_deconseillees:
+      - conception
+      - code complexe
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: codex exec -m gpt-6-luna -c model_reasoning_effort="xhigh"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur de raisonnement accrue pour les problèmes complexes.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - code
+      - architecture
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: codex exec -m gpt-6-luna -c model_reasoning_effort="max"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur maximale pour les problèmes les plus difficiles.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  sources_internes: []
+  effort_defaut_portee: catalogue-codex
+  sources_champs:
+    specifications:
+      url: https://developers.openai.com/api/docs/models/gpt-6-luna
+      date_lecture: '2026-10-20'
+      extrait: 1,050,000 context window 128,000 max output tokens May 18, 2026 knowledge cutoff
+    prix_api:
+      url: https://developers.openai.com/api/docs/models/gpt-6-luna
+      date_lecture: '2026-10-20'
+      extrait: Input $0.10 Cached input $0.01 Cache writes $0.125 Output $0.50
+    efforts:
+      url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+      date_lecture: '2026-10-20'
+      modele: gpt-6-luna
+      efforts:
+      - low
+      - medium
+      - high
+      - xhigh
+      - max
+      defaut: medium
+  tarifs_credits:
+    unite: crédits par million de jetons, vitesse Standard
+    entree: 2.5
+    cache_lu: 0.25
+    sortie: 12.5
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    extrait: GPT-6 Luna 2.5 credits 0.25 credits 12.5 credits
+    note: Barème de crédits ; il ne détermine pas seul la consommation du quota inclus.
+- modele: gpt-6-astra
+  modele_operer: gpt-6-astra
+  aliases_modele:
+  - gpt-6-astra
+  - astra
+  nom: Codex GPT-6 Astra
+  date_sortie: null
+  cutoff_connaissances: '2026-04-30'
+  fenetre_contexte_jetons: 1050000
+  sortie_max_jetons: 128000
+  effort_defaut: low
+  effort_defaut_detail: 'Défaut du catalogue Codex officiel consulté ; les réglages enregistrés peuvent le
+    remplacer. API : non établi. OPÉRER choisit le couple explicitement.'
+  statut_usage: non_utilise
+  forfait:
+    id: chatgpt_pro
+    nom: ChatGPT Pro
+    groupe_quota: chatgpt_hebdo
+    fenetre_5h: Voir les jauges du compte ; aucun coût par effort publié.
+    fenetre_semaine: Voir les jauges du compte et leur remise à zéro.
+    jauges_operer:
+    - chatgpt_semaine
+    plafonds_et_regles: Le coût en allocation par couple est inconnu ; aucun ratio API → quota.
+  prix_api:
+    devise: USD
+    unite: 1M jetons
+    entree_usd: 10
+    sortie_usd: 50
+    cache_lu_usd: 1
+    cache_ecrit_5m_usd: 12.5
+    cache_ecrit_1h_usd: null
+    seuil_long_contexte: Voir le barème source et ses seuils ; aucune conversion en quota inclus.
+    batch: Voir la source ; tarif distinct du quota inclus.
+    fast: Disponibilité et facturation à vérifier pour cet exécutant ; ne pas extrapoler depuis les tarifs
+      API.
+    note: Tarifs API publics, distincts du coût en allocation du forfait.
+    source_url: https://developers.openai.com/api/docs/models/gpt-6-astra
+  points_forts:
+  - texte: Niveaux de raisonnement réglables ; vérifier la surface API ou Codex avant de réutiliser un niveau.
+    source: https://developers.openai.com/api/docs/models/gpt-6-astra
+    url: https://developers.openai.com/api/docs/models/gpt-6-astra
+    date: '2026-10-20'
+    verifie: true
+    extrait: reasoning.effort supports
+  points_faibles:
+  - texte: Les tarifs de crédits ne déterminent pas à eux seuls la consommation de l’abonnement.
+    source: https://developers.openai.com/codex/pricing
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    verifie: true
+    extrait: Credit prices alone don’t determine included subscription usage; check your usage dashboard for
+      current limits.
+  benchmarks:
+  - nom: Terminal-Bench 4.0
+    domaine: Évaluation publique
+    valeur: 57.9
+    unite: '%'
+    effort_mesure: high
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 66.4% 55.8% 52.3% 57.9% 37.3%
+  - nom: FrontierCode v1.1 (Main)
+    domaine: Évaluation publique
+    valeur: 53.3
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 54.4% 50.3% 48.0% 53.3% 47.5%
+  - nom: AutomationBench
+    domaine: Évaluation publique
+    valeur: 41.4
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 40.0% 31.4% 26.9% 41.4% 28.8%
+  - nom: Terminal-Bench-Science 0.1
+    domaine: Évaluation publique
+    valeur: 64.6
+    unite: '%'
+    effort_mesure: null
+    comparaisons: Aucune comparaison ajoutée.
+    source: https://www.anthropic.com/claude-opus-5-5
+    url: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    verifie: true
+    extrait: 58.7% 52.6% 29.0% 64.6% 22.4%
+  constats_internes: []
+  sources:
+  - url: https://developers.openai.com/api/docs/models/gpt-6-astra
+    libelle: https://developers.openai.com/api/docs/models/gpt-6-astra
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/models
+    libelle: https://developers.openai.com/codex/models
+    date: '2026-10-20'
+    officielle: true
+  - url: https://developers.openai.com/codex/pricing
+    libelle: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    officielle: true
+  - url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    libelle: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+    date: '2026-10-20'
+    officielle: true
+  - url: https://www.anthropic.com/claude-opus-5-5
+    libelle: https://www.anthropic.com/claude-opus-5-5
+    date: '2026-10-20'
+    officielle: true
+  efforts:
+  - effort: low
+    defaut: true
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="low"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Réponses rapides avec un raisonnement léger.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions (utiliser gpt-6.1-sol medium ou high)
+      pourquoi: 'Conseil local : tâches brèves et bornées ; vérifier la complétude.'
+  - effort: medium
+    defaut: false
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="medium"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Équilibre vitesse et profondeur de raisonnement.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees:
+      - second regard ponctuel via consulter sur un problème scientifique
+      natures_deconseillees:
+      - missions de code ou de synthèse courantes
+      pourquoi: 'Conseil local : travail courant avec contrôles explicites.'
+  - effort: high
+    defaut: false
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="high"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Raisonnement plus approfondi pour les problèmes complexes.
+    recommandation_operer:
+      verdict: tester
+      natures_adaptees:
+      - problème scientifique ou algorithmique ayant mis en échec gpt-6.1-sol xhigh et Opus 5.5 high
+      natures_deconseillees:
+      - code courant
+      - correctif
+      - relecture
+      - mecanique
+      pourquoi: 'Conseil local : tâches complexes ou longues avec vérifications.'
+  - effort: xhigh
+    defaut: false
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="xhigh"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur de raisonnement accrue pour les problèmes complexes.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - missions OPÉRER standard
+      pourquoi: 'Conseil local : augmenter seulement si les évaluations montrent un gain.'
+  - effort: max
+    defaut: false
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="max"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Profondeur maximale pour les problèmes les plus difficiles.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : réserver aux tâches dont la qualité justifie le surcroît de temps.'
+  - effort: ultra
+    defaut: false
+    usage: codex exec -m gpt-6-astra -c model_reasoning_effort="ultra"
+    cout_quota:
+      niveau: inconnu
+      poids_relatif: null
+      resume: Coût par effort non publié ; dépend de la tâche, du contexte, des outils et du compte.
+    effet_effort: Raisonnement maximal avec délégation automatique de tâches ; option Codex du catalogue officiel,
+      distincte du paramètre API.
+    recommandation_operer:
+      verdict: ignorer
+      natures_adaptees: []
+      natures_deconseillees:
+      - toutes missions
+      pourquoi: 'Conseil local : tâches divisibles, en surveillant la consommation.'
+  sources_internes: []
+  effort_defaut_portee: catalogue-codex
+  sources_champs:
+    specifications:
+      url: https://developers.openai.com/api/docs/models/gpt-6-astra
+      date_lecture: '2026-10-20'
+      extrait: 1,050,000 context window 128,000 max output tokens Apr 30, 2026 knowledge cutoff
+    prix_api:
+      url: https://developers.openai.com/api/docs/models/gpt-6-astra
+      date_lecture: '2026-10-20'
+      extrait: Input $10.00 Cached input $1.00 Cache writes $12.50 Output $50.00
+    efforts:
+      url: https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/models-manager/models.json
+      date_lecture: '2026-10-20'
+      modele: gpt-6-astra
+      efforts:
+      - low
+      - medium
+      - high
+      - xhigh
+      - max
+      - ultra
+      defaut: low
+  tarifs_credits:
+    unite: crédits par million de jetons, vitesse Standard
+    entree: 250
+    cache_lu: 25
+    sortie: 1250
+    url: https://developers.openai.com/codex/pricing
+    date: '2026-10-20'
+    extrait: GPT-6 Astra 250 credits 25 credits 1,250 credits
+    note: Barème de crédits ; il ne détermine pas seul la consommation du quota inclus.

@@ -18,6 +18,8 @@ Usage :
                                                                raison_correction?}} sans refaire le commentaire
   catalogue.py methodes [--dry-run]                            D121 : fiches de méthode locales (kb-methodes/*.md) → docs/data/kb/methodes.json,
                                                                sans réseau ni modèle ; hors lots, hors périmètres, jamais lancé par un passage
+  catalogue.py modeles [--dry-run]                             fiches de modèles et d'efforts (kb-modeles/*.yaml) → docs/data/kb/modeles.json
+                                                               sans réseau ni modèle ; hors lots, hors périmètres
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py rejugements [--perimetre P] [--json]            D78 : suivi du rattrapage, lecture seule, sans réseau ;
                                                                par demande et par périmètre : ids listés, dus, recommentés,
@@ -51,6 +53,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.kb import catalogue as cat  # noqa: E402
 from deltalib.kb.documentation import charger_documentation  # noqa: E402
+from deltalib.kb import fiches_modeles  # noqa: E402
 from deltalib.kb import methodes as fiches_methodes  # noqa: E402
 from deltalib.kb.modeles import CATEGORIES, gabarit_de  # noqa: E402
 from deltalib.contexte import deprecies as deprecies_contexte, empreintes as empreintes_sections, resoudre as resoudre_sections  # noqa: E402
@@ -70,7 +73,7 @@ def ids_essais(racine: Path) -> set[str] | None:
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="catalogue.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations", "adoptions", "rejugements", "methodes"])
+    p.add_argument("commande", choices=["maj", "inventaire", "lots", "a-commenter", "appliquer", "reevaluations", "adoptions", "rejugements", "methodes", "modeles"])
     p.add_argument("--depuis", help="avec reevaluations : AAAA-MM-JJ (défaut : aujourd'hui)")
     p.add_argument("--perimetre", choices=["claude", "openai"])
     p.add_argument("--lot")
@@ -100,6 +103,15 @@ def main(argv=None) -> int:
             print(f"! {err}", file=sys.stderr)
             return 1
         print(f"méthodes : {doc['total']} fiche(s)" + (" (rien d'écrit)" if a.dry_run else ""))
+        return 0
+    if a.commande == "modeles":
+        try:
+            doc = fiches_modeles.construire_modeles(a.racine) if a.dry_run else fiches_modeles.ecrire_modeles(a.racine)
+        except fiches_modeles.FicheModeleInvalide as err:
+            print(f"! {err}", file=sys.stderr)
+            return 1
+        print(f"modèles : {doc['total_modeles']} modèle(s), {doc['total']} couple(s) modèle × effort"
+              + (" (rien d'écrit)" if a.dry_run else ""))
         return 0
     if a.commande == "inventaire":
         for per in perimetres:
