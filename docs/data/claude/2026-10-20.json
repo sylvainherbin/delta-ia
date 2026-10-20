@@ -1,0 +1,205 @@
+{
+  "date": "2026-10-20",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-20T02:06:00+00:00",
+  "synthese": "Compte et quotas : Claude Code 2.1.304, déjà installée, prévient sur Pro et Max avant la reprise d'une conversation inactive qui consommerait une part notable de la limite de 5 h, ce qui peut toucher tes sessions durables relancées par `claude --resume` ; la fiche de la variable `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` dit que les suggestions se mettent en pause près de la limite, sans rien à régler pour toi. Relevé du 20/10 à 02 h UTC : Claude session 5 h à 6 % (remise à zéro à 03 h 50 UTC), semaine à 44 % et semaine Fable à 0 % (remise à zéro le 25/10 vers 16 h UTC), ChatGPT semaine à 18 % (remise à zéro le 26/10 à 17 h 15 UTC), tous sous le seuil D71 de 80 %. Le reste est sans effet sur toi : la variable `CLAUDE_CODE_AUTO_MODE_MODEL` (mode auto, que tes sessions locales n'utilisent pas) et trois révisions des notes de la plateforme Claude. Fiche « Choose a permission mode » : usage modifié dans la documentation, recommandation `utiliser` conservée.",
+  "sources_en_echec": [],
+  "ecartes": [],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+  "elements": [
+    {
+      "id": "claude-code-2.1.304",
+      "ids_bruts": [
+        "claude-code-2.1.304"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.304 : avertissement avant la reprise d'une conversation inactive qui consommerait la limite de 5 h",
+      "version": "2.1.304",
+      "date_publication": "2026-10-19",
+      "type": "nouveaute",
+      "resume": "Sur les forfaits Pro et Max, Claude Code affiche un avertissement quand la reprise d'une conversation inactive utiliserait une part notable de la limite de 5 h : reprendre quand même, ou ouvrir une nouvelle conversation que Claude peut relire si tu la cites. `/usage` dit aussi quand une limite sur les données d'usage prend fin, au lieu de « try again in a moment ». Parmi les correctifs : des sous-agents oubliaient leur travail le plus récent quand on les relançait ou leur écrivait juste après la fin, et `claude --worktree` supprimait le worktree et sa branche sans demander à la sortie quand HEAD était détachée ou sur une autre branche.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21304",
+          "libelle": "Claude Code 2.1.304",
+          "officielle": true
+        }
+      ],
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : la version prévient seulement, sur Pro et Max, avant une reprise coûteuse en limite de 5 h. Tes sessions durables repartent par `claude --resume <id> --remote-control <nom>` et tu es sur Max 20x à l'essai : l'avertissement peut donc s'afficher à la reprise d'une session au contexte volumineux, et la note ne dit pas s'il attend un choix dans une session sous tmux ; l'`action` tranche ce point. Le correctif des sous-agents touche tes sessions Dev, qui lancent des sous-agents `Explore` et se parlent par `SendMessage`. Les autres ajouts (`/auto-mode-setup`, `/claude-api managed-agents-secure`, mods, Code Review, VSCode) et le correctif de `claude --worktree` concernent des fonctions que CONTEXTE.md ne décrit pas comme utilisées (mode auto, `--worktree`).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-27 (aucune échéance publiée) ce que fait l'avertissement de reprise de la 2.1.304 sur une session durable restée inactive.",
+        "etapes": [
+          "Après la prochaine reprise d'une session `claude-session@<nom>` restée inactive (le nom se lit avec `operer qui`), lis son volet : `tmux -L <nom> capture-pane -p` ; résultat attendu : soit la session repart sans question, soit le texte de l'avertissement (reprendre quand même, ou nouvelle conversation) est visible et attend ton choix.",
+          "Si elle attend ce choix, réponds depuis l'iPhone par Remote Control ; pour repartir à neuf, cite l'ancienne conversation et Claude peut la retrouver, d'après la note.",
+          "Aucun réglage n'est cité par la note pour cet avertissement : rien à changer dans `~/.claude/settings.json`. Relevé D124 du 20/10 à 02 h UTC : session 5 h à 6 % (remise à zéro à 03 h 50 UTC)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Abonnement Max 20x à l'essai : l'avertissement vise les forfaits Pro et Max."
+        },
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables relancées par `claude --resume <id> --remote-control <nom>` sous tmux."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-enable-prompt-suggestion",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-enable-prompt-suggestion"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`, suggestions de prompt en pause près de la limite d'usage",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La description d'origine de la variable, modifiée dans la documentation, dit que Claude Code met les suggestions de prompt grisées en pause quand le compte est proche de sa limite d'usage ou l'a atteinte, et que `true` retarde cette pause jusqu'à la limite. Elle reste prioritaire sur le réglage `promptSuggestionEnabled` (bouton Prompt suggestions de `/config`) et exige Claude Code 2.1.238 ou plus.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Environment variables",
+          "officielle": true
+        }
+      ],
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : la page décrit une pause d'affichage des suggestions, sans chiffrer ce qu'elles consomment. Tu es sur Max 20x à l'essai ; CONTEXTE.md ne dit pas que tu utilises les suggestions de prompt, et la fiche reste `ignorer`.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-27 (aucune échéance publiée) la fiche `claude-code-parametres-claude-code-enable-prompt-suggestion` ; aucun geste de compte d'ici là.",
+        "etapes": [
+          "Ne définis pas `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=true` : la page ne donne aucun chiffre qui justifie de repousser la pause près de la limite. Résultat attendu : la pause des suggestions près de la limite reste celle du défaut, sans changement de ta part."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-enable-prompt-suggestion"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Abonnement Max 20x à l'essai ; aucun usage des suggestions de prompt décrit."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-auto-mode-model",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-auto-mode-model"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable `CLAUDE_CODE_AUTO_MODE_MODEL` (modèle du classifieur du mode auto)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche ajoutée à la base (catégorie paramètres) : `CLAUDE_CODE_AUTO_MODE_MODEL` fixe le modèle des requêtes du classifieur que Claude Code envoie en mode auto, par un identifiant complet comme `claude-sonnet-4-6` ; elle exige Claude Code 2.1.302 ou plus.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Environment variables",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "projets_concernes": [],
+      "kb_refs": [
+        "claude-code-parametres-claude-code-auto-mode-model"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-15",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-15"
+      ],
+      "produit": "claude",
+      "revision": true,
+      "titre": "Claude Platform — 15/10 (révision) : `capabilities.thinking.types.between_tools` dans l'API Models",
+      "version": null,
+      "date_publication": "2026-10-15",
+      "type": "nouveaute",
+      "resume": "Note ajoutée : `GET /v1/models` et `GET /v1/models/{model_id}` indiquent désormais, par modèle, s'il accepte `thinking: {type: \"between_tools\"}`, qui désactive la réflexion initiale, dans `capabilities.thinking.types.between_tools`. Les points déjà publiés le 16/10 (mode rapide d'Opus 5.5, API Compliance, Microsoft Foundry) ne changent pas.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "projets_concernes": [],
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-07"
+      ],
+      "produit": "claude",
+      "revision": true,
+      "titre": "Claude Platform — 07/10 (révision) : le point sur les sorties structurées de Haiku 5.5 sur Amazon Bedrock a disparu de la page",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "correction",
+      "resume": "Retirée de la note du 07/10 : la phrase « On Amazon Bedrock, structured outputs aren't available for Claude Haiku 5.5 », que la révision du 10/10 avait signalée comme ajoutée. Le reste (prix de lecture du cache de Sonnet 5.5, lancement de Haiku 5.5, ruptures depuis Haiku 4.5, crédits mensuels Max et Team, Managed Agents) est inchangé.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "projets_concernes": [],
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-07-17",
+      "ids_bruts": [
+        "claude-platform-notes-2026-07-17",
+        "claude-platform-notes-2025-06-23",
+        "claude-platform-notes-2024-11-20"
+      ],
+      "produit": "claude",
+      "revision": true,
+      "titre": "Claude Platform — révisions de forme des notes du 20/11/2024, du 23/06/2025 et du 17/07/2026",
+      "version": null,
+      "date_publication": "2026-07-17",
+      "type": "correction",
+      "resume": "Trois anciennes notes sont reformulées, sans changement de fond. Note du 17/07/2026, modifiée : les prompts, variables et évaluations enregistrés ne sont pas repris par le Workbench mis à jour « in the Console » (la fermeture de l'ancien Workbench était fixée au 17/08/2026). Note du 23/06/2025, modifiée : la phrase sur l'accès du rôle Developer à la page Cost de la Console est reformulée. Note du 20/11/2024, modifiée : la prise en charge de l'usage d'outils est située dans le Workbench « de la Console ».",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "projets_concernes": [],
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ]
+}

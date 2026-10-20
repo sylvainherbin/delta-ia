@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-17",
+ "maj_le": "2026-10-20",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -3295,16 +3295,16 @@
    "categorie": "fonctionnalites",
    "nom": "Choose a permission mode",
    "gabarit": "complet",
-   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default`, `acceptEdits`, `plan`, `auto` (avec contrôles de sécurité en arrière-plan), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande ni contrôle. On passe de l'un à l'autre par `Maj+Tab` ; `bypassPermissions` ne s'active qu'au lancement (`--permission-mode bypassPermissions` ou `permissions.defaultMode`).",
+   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default`, `acceptEdits`, `plan`, `auto` (un classifieur contrôle les actions à ta place), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande. On passe de l'un à l'autre par `Maj+Tab` ; `bypassPermissions` n'entre dans le cycle qu'avec `--permission-mode bypassPermissions` au lancement ou `permissions.defaultMode` dans les réglages utilisateur.",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
-   "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
+   "usage": "    claude -p \"Run the test suite and fix any failures\" --permission-mode auto",
    "usage_nature": "syntaxe",
    "exemple": "claude --permission-mode bypassPermissions",
    "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` depuis le 06/10 (D83) : les règles `allow` n'y ont plus d'effet, les règles `deny` bloquent toujours. Une session cloud (exécutant `claude-cloud`) ignore en silence un `defaultMode: \"bypassPermissions\"` venu des fichiers de réglages et démarre dans le mode du menu déroulant."
+    "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` depuis le 06/10 (D83) : les règles `allow` n'y ont plus d'effet, les règles `deny` bloquent toujours. Une session cloud (exécutant `claude-cloud`) n'offre pas ce mode, et un `bypassPermissions` dans `.claude/settings.json` de projet est sans effet."
    },
    "sources": [
     {
@@ -3317,7 +3317,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3346,9 +3346,69 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "usage modifié dans la documentation",
+     "avant": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les règles deny bloquent dans tous les modes, `bypassPermissions` compris ; les règles allow n'y ont pas d'effet.",
+       "source": "https://code.claude.com/docs/en/permission-modes",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le rôle des règles allow ou deny en bypass change"
+      },
+      {
+       "affirmation": "Les sessions cloud ignorent le mode `bypassPermissions` venu des fichiers de réglages.",
+       "source": "https://code.claude.com/docs/en/permission-modes",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les sessions cloud acceptent ce mode depuis les réglages"
+      },
+      {
+       "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le régime des permissions change"
+      },
+      {
+       "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions` (D83).",
+       "source": "contexte:methode.chaine-nuit",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la chaîne change de mode de permission"
+      },
+      {
+       "affirmation": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-15",
+       "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` depuis le 06/10 (D83) : les règles `allow` n'y ont plus d'effet, les règles `deny` bloquent toujours. Une session cloud (exécutant `claude-cloud`) n'offre pas ce mode : la page dit que « Bypass permissions isn't available » dans les sessions cloud, et un `bypassPermissions` placé dans `.claude/settings.json` de projet n'a aucun effet."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
@@ -3363,36 +3423,31 @@
      "pourquoi": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`."
     }
    },
+   "exemple_origine": "compose",
    "provenance": [
     {
      "affirmation": "Les règles deny bloquent dans tous les modes, `bypassPermissions` compris ; les règles allow n'y ont pas d'effet.",
      "source": "https://code.claude.com/docs/en/permission-modes",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-20",
      "caduc_si": "le rôle des règles allow ou deny en bypass change"
     },
     {
-     "affirmation": "Les sessions cloud ignorent le mode `bypassPermissions` venu des fichiers de réglages.",
+     "affirmation": "Les sessions cloud n'offrent pas Bypass permissions (liste : Accept edits, Plan, Auto).",
      "source": "https://code.claude.com/docs/en/permission-modes",
-     "releve_le": "2026-10-15",
-     "caduc_si": "les sessions cloud acceptent ce mode depuis les réglages"
+     "releve_le": "2026-10-20",
+     "caduc_si": "les sessions cloud proposent le mode bypassPermissions"
     },
     {
      "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
      "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-20",
      "caduc_si": "le régime des permissions change"
     },
     {
-     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions` (D83).",
+     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions`.",
      "source": "contexte:methode.chaine-nuit",
-     "releve_le": "2026-10-15",
-     "caduc_si": "la chaîne change de mode de permission"
-    },
-    {
-     "affirmation": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`.",
-     "source": "contexte:methode.operer",
-     "releve_le": "2026-10-15",
-     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+     "releve_le": "2026-10-20",
+     "caduc_si": "le mode de permission de la chaîne de nuit change"
     }
    ]
   },

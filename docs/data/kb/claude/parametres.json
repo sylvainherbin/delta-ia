@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-18",
+ "maj_le": "2026-10-20",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 659,
- "commentees": 659,
+ "total": 660,
+ "commentees": 652,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -2425,7 +2425,7 @@
    "nom": "API_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai d'expiration des requêtes à l'API, 10 minutes par défaut (maximum 2 147 483 647 ms) ; une requête en flux doit recevoir ses en-têtes de réponse dans ce délai.",
-   "description_source": "Timeout for API requests in milliseconds (default: 600000, or 10 minutes; maximum: 2147483647). A streaming request has to receive its response headers within it. Increase this when requests time out on slow networks or when routing through a proxy",
+   "description_source": "Time in milliseconds that each API request attempt has to receive its response headers (default: 600000, or 10 minutes; maximum: 2147483647). It doesn't limit how long a streaming response runs after that. When you set a positive value, each attempt at a non-streaming request has to finish within it. Increase this when requests time out on slow networks or when routing through a proxy",
    "usage": "API_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2442,11 +2442,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2467,6 +2467,10 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -6080,6 +6084,57 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-auto-mode-model",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_AUTO_MODE_MODEL",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui fixe le modèle des requêtes du classifieur du mode auto, par un identifiant complet comme `claude-sonnet-4-6` ; elle exige Claude Code 2.1.302 ou plus.",
+   "description_source": "Sets the model for the classifier requests Claude Code sends in auto mode. Use a full model ID such as claude-sonnet-4-6. For the cases where Claude Code ignores it, see Choose the classifier model. Requires Claude Code v2.1.302 or later",
+   "usage": "CLAUDE_CODE_AUTO_MODE_MODEL",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Elle ne joue que dans le mode auto ; tes sessions locales, sauf trading, tournent en `bypassPermissions` depuis le 06/10, sans classifieur à régler."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions sauf trading depuis le 06/10 : pas de classifieur du mode auto."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-20",
+   "historique": [
+    {
+     "date": "2026-10-20",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-auto-mode-server",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -6545,7 +6600,7 @@
    "nom": "CLAUDE_CODE_CONNECT_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable retirée en v2.1.186 et désormais sans effet ; `API_TIMEOUT_MS` la remplace.",
-   "description_source": "Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS for the per-request timeout. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS",
+   "description_source": "Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS instead. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS",
    "usage": "CLAUDE_CODE_CONNECT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6562,11 +6617,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6575,6 +6630,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9224,8 +9283,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION",
    "gabarit": "court",
-   "description": "Variable qui coupe, à `false`, les suggestions de prompt grisées dans la zone de saisie.",
-   "description_source": "Set to false to turn off prompt suggestions, the grayed-out predictions that appear in your prompt input. Takes precedence over the promptSuggestionEnabled setting, which is what the Prompt suggestions toggle in /config writes. Claude Code also pauses suggestions while your account is close to or at its usage limit. Set to true to keep them on until you reach the limit. Requires Claude Code v2.1.238 or later. See Prompt suggestions",
+   "description": "Variable qui coupe, à `false`, les suggestions de prompt grisées dans la zone de saisie ; la page ajoute que Claude Code les met en pause quand le compte approche de sa limite d'usage ou l'atteint, et que `true` retarde cette pause jusqu'à la limite.",
+   "description_source": "Set to false to turn off prompt suggestions, the grayed-out predictions that appear in your prompt input. Takes precedence over the promptSuggestionEnabled setting, which is what the Prompt suggestions toggle in /config writes. Claude Code also pauses suggestions while your account is close to or at its usage limit. Set to true to keep that pause from applying until you reach the limit. Requires Claude Code v2.1.238 or later. See Prompt suggestions",
    "usage": "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9233,7 +9292,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun lien avec un projet ou une habitude décrits dans CONTEXTE.md ; le comportement par défaut convient."
+    "pourquoi": "Sujet limites (D71) : la page ne donne ni date ni geste de compte, et ne chiffre pas ce que coûtent les suggestions ; le défaut (pause près de la limite) convient et ne demande rien de ta part."
    },
    "sources": [
     {
@@ -9246,7 +9305,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9255,10 +9314,22 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-enable-tasks",
@@ -9763,7 +9834,7 @@
    "nom": "CLAUDE_CODE_FORK_SUBAGENT",
    "gabarit": "court",
    "description": "Variable qui règle le mode fork, qui laisse Claude lancer lui-même des sous-agents forkés ; actif par défaut en session interactive.",
-   "description_source": "Controls fork mode, which lets Claude spawn forked subagents itself and is on by default in interactive sessions only. Set to 1 to turn it on in claude -p and the Agent SDK as well, or 0 to turn it off in every kind of session. You can run /subtask whether or not fork mode is on. The interactive default requires Claude Code v2.1.232 or later; on earlier versions, set the variable to 1 to turn fork mode on",
+   "description_source": "Controls fork mode, which is on by default and lets Claude start forks on its own. While fork mode is on, Claude also can't wait for a subagent in interactive terminal, VS Code, or desktop sessions on your machine. Set to 0 to turn fork mode off. For versions, see Turn fork mode off",
    "usage": "CLAUDE_CODE_FORK_SUBAGENT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9780,11 +9851,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9797,6 +9868,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -10795,7 +10870,7 @@
    "nom": "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION",
    "gabarit": "court",
    "description": "Variable qui plafonne le nombre d'appels WebSearch d'une session, 200 par défaut.",
-   "description_source": "Cap on WebSearch calls (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later",
+   "description_source": "Cap on WebSearch calls (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered and say so in its answer. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later",
    "usage": "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10812,11 +10887,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10833,6 +10908,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -18478,7 +18557,7 @@
    "nom": "disableDesktopLocalSessions",
    "gabarit": "court",
    "description": "Réglage de l'app de bureau qui interdit les sessions Code locales, pour imposer des machines distantes par SSH.",
-   "description_source": "Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH. In the Code tab, the Local environment stays in the environment dropdown but is grayed out and can't be selected, with a tooltip saying your organization turned it off; on Windows the WSL entry is grayed out the same way, though whether WSL sessions run on a managed device at all is governed separately. New sessions default to the first SSH connection if one is configured, and the app refuses to start or resume a session on the device, including an SSH connection back to the same machine. SSH sessions to other hosts and cloud sessions are unaffected. The desktop app reads this key; the terminal CLI ignores it. Requires Claude Desktop v1.37937.0 or later.",
+   "description_source": "Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH. With the key set to true, users see this in the Code tab:",
    "usage": "{\n  \"disableDesktopLocalSessions\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18495,11 +18574,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18516,6 +18595,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -26383,7 +26466,7 @@
    "nom": "--permission-prompt-tool",
    "gabarit": "court",
    "description": "Option CLI qui confie les demandes de permission du mode non interactif à un outil MCP.",
-   "description_source": "Specify an MCP tool to handle permission prompts in non-interactive mode. Claude Code waits for that tool's MCP server to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default. The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an allow result for one to a deny. This restriction requires Claude Code v2.1.199 or later — claude -p --permission-prompt-tool mcp_auth_tool \"query\"",
+   "description_source": "Specify an MCP tool to handle permission prompts in non-interactive mode. Pass the full name, such as mcp__<server>__<tool>, of a tool on an MCP server that the run loads. Claude Code waits for that tool's MCP server to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default. The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an allow result for one to a deny. This restriction requires Claude Code v2.1.199 or later — claude -p --mcp-config ./mcp.json --permission-prompt-tool mcp__permissions__approve \"query\"",
    "usage": "--permission-prompt-tool",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26400,11 +26483,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26413,6 +26496,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -31352,7 +31439,7 @@
    "nom": "sshConfigs",
    "gabarit": "court",
    "description": "Réglage de connexions SSH ajoutées au menu d'environnement de l'app de bureau, surtout pour distribuer des connexions partagées à une équipe ; en réglages gérés, elles s'affichent comme gérées, l'utilisateur ne peut qu'en choisir le dossier de worktree.",
-   "description_source": "Add SSH connections to the Desktop environment dropdown. Administrators use it to distribute shared connections to a team. Connections you define in managed settings show as managed. Users can select them and set their own Worktree folder for them, but can't edit anything else or delete them in the app.",
+   "description_source": "Add SSH connections to the Desktop environment selector. Administrators use sshConfigs to distribute shared connections to a team. Users can select a managed connection and set their own Worktree folder for it. They can't edit its other fields or delete it in the app.",
    "usage": "{\n  \"sshConfigs\": [\n    {\n      \"id\": \"dev-vm\",\n      \"name\": \"Dev VM\",\n      \"sshHost\": \"user@dev.example.com\"\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -31369,11 +31456,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31390,6 +31477,10 @@
     {
      "date": "2026-10-12",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
@@ -33324,7 +33415,7 @@
    "nom": "vimInsertModeRemaps",
    "gabarit": "court",
    "description": "Réglage de séquences de deux touches en mode insertion vim qui équivalent à Échap.",
-   "description_source": "Map two-key INSERT-mode sequences to Escape in vim editor mode. Each key is exactly two printable characters typed in sequence, and \"<Esc>\" is the only supported target; Claude Code ignores other entries. Requires Claude Code v2.1.208 or later.",
+   "description_source": "Map two-key INSERT-mode sequences to Escape in vim editor mode. Each key is exactly two printable characters typed in sequence, and \"<Esc>\" is the only supported target; Claude Code ignores other entries.",
    "usage": "{\n  \"vimInsertModeRemaps\": {\n    \"jj\": \"<Esc>\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -33341,11 +33432,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -33354,6 +33445,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
