@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 133,
- "commentees": 128,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -918,7 +918,7 @@
    "categorie": "commandes",
    "nom": "/btw",
    "gabarit": "complet",
-   "description": "Pose une question annexe sur la session en cours sans l'ajouter à la conversation. Sans question, affiche la dernière question annexe pour parcourir les réponses précédentes (avant la v2.1.212, la question était obligatoire).",
+   "description": "Pose une question annexe sur la session en cours sans l'ajouter à la conversation. Lancée sans question, elle affiche la dernière question annexe pour parcourir les réponses précédentes ; si aucune n'a encore été posée, Claude Code affiche une ligne d'usage.",
    "description_source": "Ask a side question about the current session without adding to the conversation. If you run /btw without a question, Claude Code shows your most recent side question so you can browse earlier answers; if you haven't asked one yet, Claude Code prints a usage line",
    "usage": "/btw [question]",
    "usage_nature": "syntaxe",
@@ -936,7 +936,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -1032,9 +1032,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-20",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -1045,7 +1049,27 @@
      "pourquoi": "Missions remises au dev par OPÉRER, relues par le chef avant l'OK de fusion ; un dev est vidé avant chaque mission."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/btw [question]` pose une question annexe sur la session sans l'ajouter à la conversation ; sans question, elle affiche la dernière question annexe.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-20",
+     "caduc_si": "la commande change de comportement ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "`/btw` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-20",
+     "caduc_si": "un nouveau relevé ne la montre plus parmi les commandes tapées"
+    },
+    {
+     "affirmation": "Les missions sont remises au dev par OPÉRER et relues par le chef avant l'OK de fusion.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-20",
+     "caduc_si": "l'organisation par chefs et devs change"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-bug",
