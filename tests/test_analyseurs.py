@@ -130,6 +130,14 @@ def test_newsroom_anthropic(sources, client):
     assert e.id == e.url  # D1 : la newsroom est identifiée par l'URL de l'article
 
 
+def test_newsroom_gabarit_article_avec_date_dans_entete(sources, fixture_texte):
+    elements = html_notes.parser_html_time_liens(fixture_texte("anthropic_news_current.html"), sources["anthropic-newsroom"])
+    assert [(e.titre, e.date_publication, e.url) for e in elements] == [
+        ("Introducing Claude Opus 5.5", "2026-09-22", "https://www.anthropic.com/claude-opus-5-5"),
+        ("Investing in the public benefit", "2026-10-18", "https://www.anthropic.com/news/public-benefit-fund"),
+    ]
+
+
 @pytest.mark.parametrize("fmt, texte", [
     ("markdown_date", "# Notes\n\nPas de titre daté.\n"),
     ("markdown_date", "### Titre sans date\n\ncontenu\n"),

@@ -4,7 +4,7 @@ Formats (option `format`) :
 - `markdown_date` : titres `### September 22, 2026` ; une entrée par date, identifiée `<source>-<date>`,
   titrée par ses intertitres en gras `**Titre**` s'il y en a.
 - `html_date`     : même logique sur une page HTML (<h3> datés, <p><b>Titre</b></p>).
-- `html_time_liens` : chaque <time> dans un <a> : le lien est l'URL et l'identifiant, le titre est l'intertitre.
+- `html_time_liens` : entrée datée dans un lien ou une carte <article> : le lien est l'URL et l'identifiant, le titre est l'intertitre.
 - `html_resources_liste` : liste d'articles de claude.com/resources/articles (ex-blog, 07/10/2026) : un élément par carte de la première page.
 - `annonces_datees` : pages de dépréciations des modèles (étape 2c) : une annonce par titre `### AAAA-MM-JJ: titre` sous les
   sections parentes déclarées, plus, si déclarées, des sections suivies en entier (tableau d'état des modèles, préavis).
@@ -111,13 +111,30 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
     elements: list[Element] = []
     vus: set[str] = set()
     for t in times:
+        # Ancien gabarit : date, titre et lien partageaient le même <a>.
         a = t.find_parent("a")
-        if a is None or not a.get("href"):
-            continue
+        titre_el = None
+        if a is not None and a.get("href"):
+            titre_el = a.find(["h1", "h2", "h3", "h4", "h5"])
+            titre_el = titre_el or a.find(class_=lambda c: c and "title" in c.lower())
+        else:
+            # Gabarit actuel : date et lien de titre sont frères dans une carte,
+            # soit la grille FeaturedGrid, la ligne TableView, soit le carrousel.
+            carte = next((p for p in t.parents if any(
+                isinstance(c, str) and ("__summary" in c or "__carousel-info-body" in c or
+                                        ("FeaturedGrid" in c and ("__featured" in c or "__tile" in c)))
+                for c in (p.get("class") or []))), None)
+            if carte is None:
+                continue
+            titre_el = carte.find(["h1", "h2", "h3", "h4", "h5"])
+            if titre_el is None:
+                titre_el = carte.find(class_=lambda c: c and "title" in c.lower())
+            a = titre_el.find_parent("a") if titre_el is not None else None
+            if a is None or not a.get("href"):
+                raise FormatInattendu("carte avec <time> sans lien de titre : gabarit changé ?")
         url = urljoin(source.url, a["href"])
         if url in vus:
             continue
-        titre_el = a.find(["h1", "h2", "h3", "h4", "h5"]) or a.find(class_=lambda c: c and "title" in c.lower())
         titre = titre_el.get_text(" ", strip=True) if titre_el else None
         if not titre:
             continue
