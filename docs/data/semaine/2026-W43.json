@@ -2,7 +2,7 @@
   "semaine": "2026-W43",
   "du": "2026-10-19",
   "au": "2026-10-25",
-  "genere_le": "2026-10-20T02:07:56+00:00",
+  "genere_le": "2026-10-21T02:08:02+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -11,7 +11,8 @@
       "raison": null,
       "jours": [
         "2026-10-19",
-        "2026-10-20"
+        "2026-10-20",
+        "2026-10-21"
       ]
     },
     "actu": {
@@ -19,14 +20,16 @@
       "raison": null,
       "jours": [
         "2026-10-19",
-        "2026-10-20"
+        "2026-10-20",
+        "2026-10-21"
       ]
     },
     "openai": {
       "statut": "ok",
       "raison": null,
       "jours": [
-        "2026-10-19"
+        "2026-10-19",
+        "2026-10-20"
       ]
     },
     "kb-claude": {
@@ -56,7 +59,32 @@
       ]
     }
   },
-  "d71": [],
+  "d71": [
+    {
+      "perimetre": "claude",
+      "id": "claude-code-2.1.305",
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.305 : `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS`, reprise d'une requête dès qu'une limite d'abonnement est levée avant sa remise à zéro",
+      "version": "2.1.305",
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": "2026-10-20",
+      "jour": "2026-10-21",
+      "action": "Revérifier le 2026-10-28 (aucune échéance publiée) si la variable te sert ; relevé D124 du 21/10 à 02 h UTC : semaine Claude à 57 % (remise à zéro le 25/10 vers 16 h UTC), sous le seuil D71 de 80 %, donc aucun geste de compte."
+    },
+    {
+      "perimetre": "claude",
+      "id": "kb-claude-code-parametres-enable-prompt-caching-1h",
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : `ENABLE_PROMPT_CACHING_1H`, description d'origine reformulée",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-21",
+      "action": "Revérifier le 2026-10-28 (aucune échéance publiée) la fiche `claude-code-parametres-enable-prompt-caching-1h` ; aucun geste de compte d'ici là."
+    }
+  ],
   "elements": [
     {
       "perimetre": "claude",
@@ -81,9 +109,69 @@
       "date_publication": null,
       "jour": "2026-10-20",
       "action": "Revérifier le 2026-10-27 (aucune échéance publiée) la fiche `claude-code-parametres-claude-code-enable-prompt-suggestion` ; aucun geste de compte d'ici là."
+    },
+    {
+      "perimetre": "claude",
+      "id": "kb-claude-code-commandes-design",
+      "produit": "claude-code",
+      "titre": "Base de référence : `/design consent` et `/design revoke`, accès de Claude à Claude Design",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-10-21",
+      "action": "Quand une session Claude Code te demande `/design consent`, tape-le toi-même ; `/design revoke` retire l'accès."
     }
   ],
   "base_ajoutees": [
+    {
+      "perimetre": "claude",
+      "id": "claude-code-commandes-design",
+      "produit": "claude-code",
+      "categorie": "commandes",
+      "nom": "/design",
+      "usage": "/design consent, /design revoke",
+      "exemple": "/design consent",
+      "exemple_origine": "source",
+      "verdict": "tester",
+      "date_ajout": "2026-10-21"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-defer-a-server-s-tools",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "Defer a server's tools",
+      "usage": "\"alwaysLoad\": false",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-21"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-disable-mounted-drive-rm-prompt",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT",
+      "usage": "CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-21"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-retry-watchdog-usage-limit-recheck-ms",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS",
+      "usage": "CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-10-21"
+    },
     {
       "perimetre": "claude",
       "id": "claude-code-parametres-claude-code-auto-mode-model",
