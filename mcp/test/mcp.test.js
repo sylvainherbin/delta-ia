@@ -835,12 +835,19 @@ test("modèles : alias partagé signale les candidats, identifiant canonique pri
 });
 
 test("recherche mixte : effort, quota et model effort gardent les fiches de documentation", async () => {
-  for (const requete of ["effort", "quota", "model effort"]) {
-    const r = (await appel("chercher_reference", { requete, produit: "claude-code", limite: 20 })).corps.result.structuredContent;
-    assert.ok(r.resultats.some((e) => e.categorie !== "modeles"), requete);
-    if (requete !== "quota") assert.ok(r.resultats.some((e) => e.id === "claude-code-commandes-effort"), requete);
-    else assert.ok(r.resultats.some((e) => e.id === "claude-code-fonctionnalites-page-agent-view"), requete);
-  }
+  const docs = [
+    { id: "doc-effort", nom: "/effort", produit: "claude-code", categorie: "commandes", usage: "effort", description: "Réglage du model effort et quota", commentee: false },
+  ];
+  const modele = (id, effort) => ({ id, nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", effort, aliases: [], description: "model effort quota" });
+  const donnees = base(docs);
+  donnees["kb/modeles.json"] = { schema_version: 2, modeles: {}, entrees: [modele("model-high", "high"), modele("model-medium", "medium")] };
+  // Toutes les catégories non concernées sont vides : le test ne dépend pas des fiches vivantes.
+  await avecDonnees(donnees, async (outil) => {
+    for (const requete of ["effort", "quota", "model effort"]) {
+      const r = (await outil("chercher_reference", { requete, produit: "claude-code", limite: 20 })).result.structuredContent;
+      assert.ok(r.resultats.some((e) => e.categorie !== "modeles"), requete);
+    }
+  });
   const r = (await appel("chercher_reference", { requete: "effort", limite: 20 })).corps.result.structuredContent;
   assert.ok(r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort") < 5);
 });
