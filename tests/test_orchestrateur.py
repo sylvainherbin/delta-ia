@@ -782,6 +782,40 @@ def test_commande_cle_exacte_et_repli_abonnement(nom, usage):
     assert not abonnement.commande_abonnement and not abonnement.env_extra
 
 
+@pytest.mark.parametrize("mode", ["cle", "abonnement"])
+def test_supervision_commande_demande_la_creation_par_edit(mode):
+    """Régression 133 : le prompt utilise Edit, disponible sur le banc --bare.
+
+    La règle allow est conservée et transmise ; elle ne borne pas les chemins
+    sous bypassPermissions. La disponibilité réelle relève du banc CLI.
+    """
+    cfg = orc.charger_config()
+    cfg["claude"]["mode"] = mode
+    supervision = next(e for e in orc.construire_etapes(cfg, RACINE) if e.nom == "supervision")
+    commande = supervision.commande
+    prompt = commande[commande.index("-p") + 1]
+    assert prompt == (RACINE / "prompts/supervision.md").read_text(encoding="utf-8")
+    assert "avec l'outil Edit" in prompt and "Write" not in prompt
+    assert '`old_string` vaut `""`' in prompt
+    assert "`file_path` est le chemin absolu de ce rapport" in prompt
+    assert "`new_string` contient ce même texte" in prompt
+    assert "rapports/AAAA-MM-JJ_HHMM-supervision.md" in prompt and "ce fichier seul" in prompt
+    assert "outil d'écriture" not in prompt
+    assert commande[commande.index("--permission-mode") + 1] == "bypassPermissions"
+    assert commande[commande.index("--setting-sources") + 1] == ""
+    settings = RACINE / ".claude/supervision.settings.json"
+    permissions = json.loads(settings.read_text(encoding="utf-8"))["permissions"]
+    assert "Edit(rapports/*-supervision.md)" in permissions["allow"]
+    assert [r for r in permissions["allow"] if r.startswith(("Edit", "Write"))] == [
+        "Edit(rapports/*-supervision.md)"
+    ]
+    if mode == "cle":
+        assert commande[commande.index("--allowedTools") + 1:commande.index("--disallowedTools")] == permissions["allow"]
+        assert commande[commande.index("--disallowedTools") + 1:commande.index("--append-system-prompt")] == permissions["deny"]
+    else:
+        assert Path(commande[commande.index("--settings") + 1]) == settings
+
+
 def test_mode_claude_invalide_refuse():
     cfg = orc.charger_config()
     cfg["claude"]["mode"] = "clè"
