@@ -2,11 +2,12 @@
 
 import json
 from datetime import date
+from pathlib import Path
 
 import pytest
 
 from deltalib.analyseurs import ANALYSEURS, github_changelog, github_releases, html_notes, json_changelog, rss
-from deltalib.modeles import ErreurReseau, FormatInattendu
+from deltalib.modeles import Element, ErreurReseau, FormatInattendu
 from deltalib.etat import detecter
 
 CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle",
@@ -159,6 +160,35 @@ def test_newsroom_carrousel_ancien_est_filtre_par_fenetre(sources, fixture_texte
     assert "https://www.anthropic.com/features/claude-on-mars" in ignores
 
 
+def test_newsroom_elements_anciens_deja_vus_et_nouvel_element_detecte(sources, fixture_texte):
+    chemin_etat = Path(__file__).resolve().parents[1] / "state/claude.json"
+    etat = json.loads(chemin_etat.read_text(encoding="utf-8"))
+    anciens = {
+        "https://www.anthropic.com/features/claude-on-mars",
+        "https://www.anthropic.com/features/making-of-claude-code",
+        "https://www.anthropic.com/features/project-deal",
+        "https://www.anthropic.com/institute/econ-scenarios",
+    }
+    assert anciens <= etat["vus"].keys()
+    elements = html_notes.parser_html_time_liens(
+        fixture_texte("anthropic_news_current.html"), sources["anthropic-newsroom"]
+    )
+    mars = "https://www.anthropic.com/features/claude-on-mars"
+    for url in anciens - {mars}:
+        elements.append(Element(id=url, produit="claude", titre="Ancien article", version=None,
+                                date_publication="2026-10-10", url=url, contenu="",
+                                source_id="anthropic-newsroom", officielle=True))
+    nouvelle = "https://www.anthropic.com/news/nouvelle-carte"
+    elements.append(Element(id=nouvelle, produit="claude", titre="Nouvelle carte", version=None,
+                            date_publication="2026-10-21", url=nouvelle, contenu="",
+                            source_id="anthropic-newsroom", officielle=True))
+    assert anciens <= {e.id for e in elements}
+    nouveautes, _ = detecter(elements, etat, fenetre_depuis=None)
+    ids_nouveautes = {e.id for e in nouveautes}
+    assert not (anciens & ids_nouveautes)
+    assert nouvelle in ids_nouveautes
+
+
 def test_newsroom_carte_time_sans_lien_de_titre_est_inattendue(sources):
     html = "<div class='__carousel-info-body'><time>Oct 1, 2026</time><h2>Carte</h2></div>"
     with pytest.raises(FormatInattendu, match="sans lien de titre"):
@@ -169,6 +199,24 @@ def test_newsroom_time_hors_conteneur_est_journalisee_sans_echec_pied_de_page(so
     html = "<footer><time>Oct 1, 2026</time></footer>"
     assert html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"]) == []
     assert "1 balise(s) <time> hors conteneur reconnu ignorée(s)" in caplog.text
+
+
+def test_newsroom_entree_valide_et_time_hors_conteneur(sources, caplog):
+    html = """<div class="__summary"><time datetime="2026-10-18">Oct 18, 2026</time>
+    <a href="/news/valide"><h2>Entrée valide</h2><p>Résumé.</p></a></div>
+    <main><time>Oct 17, 2026</time></main>"""
+    elements = html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"])
+    assert [(e.titre, e.url) for e in elements] == [
+        ("Entrée valide", "https://www.anthropic.com/news/valide")
+    ]
+    assert "1 balise(s) <time> hors conteneur reconnu ignorée(s)" in caplog.text
+
+
+def test_newsroom_time_hors_conteneur_sans_entree_est_inattendue(sources):
+    with pytest.raises(FormatInattendu, match="hors footer/header"):
+        html_notes.parser_html_time_liens(
+            "<main><time>Oct 1, 2026</time></main>", sources["anthropic-newsroom"]
+        )
 
 
 def test_html_markdown_attendu_mais_html_recu(sources):

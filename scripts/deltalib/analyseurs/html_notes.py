@@ -113,6 +113,7 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
     elements: list[Element] = []
     vus: set[str] = set()
     ignores = 0
+    ignores_hors_chrome = 0
     for t in times:
         # Ancien gabarit : date, titre et lien partageaient le même <a>.
         a = t.find_parent("a")
@@ -129,6 +130,8 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
                 for c in (p.get("class") or []))), None)
             if carte is None:
                 ignores += 1
+                if not any(p.name in ("footer", "header") for p in t.parents):
+                    ignores_hors_chrome += 1
                 continue
             titre_el = carte.find(["h1", "h2", "h3", "h4", "h5"])
             if titre_el is None:
@@ -148,6 +151,8 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
         elements.append(Element(id=url, produit=source.produit, titre=titre, version=None, date_publication=date_iso,
                                 url=url, contenu=resume.get_text(" ", strip=True) if resume else "",
                                 source_id=source.id, officielle=source.officielle))
+    if not elements and ignores_hors_chrome:
+        raise FormatInattendu("balises <time> hors footer/header sans entrée reconnue : gabarit changé ?")
     if not elements and not ignores:
         raise FormatInattendu("balises <time> présentes mais aucun lien avec intertitre : gabarit changé ?")
     if ignores:
