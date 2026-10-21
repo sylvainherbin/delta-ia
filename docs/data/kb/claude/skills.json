@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-10-17",
+ "maj_le": "2026-10-21",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 24,
- "commentees": 24,
+ "commentees": 22,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -228,7 +228,7 @@
    "gabarit": "complet",
    "description": "Skill de référence sur l'API Claude et les Managed Agents, dans le langage du projet ; il s'active aussi de lui-même quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`, `preserved-thinking-migration`), changent de version du SDK (`upgrade`), lancent les Managed Agents (`managed-agents-onboard`), auditent les prompts (`prompt-audit`), analysent les coûts (`cost-optimize`) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
    "description_source": "Skill. Load Claude API and Managed Agents reference material for your project's language. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. For what each subcommand does and the version it requires, see Work on Claude API projects",
-   "usage": "/claude-api [migrate|upgrade|managed-agents-onboard|prompt-audit|cost-optimize|build-eval|hillclimb|preserved-thinking-migration]",
+   "usage": "/claude-api [migrate|upgrade|managed-agents-onboard|managed-agents-secure|prompt-audit|cost-optimize|build-eval|hillclimb|preserved-thinking-migration]",
    "usage_nature": "syntaxe",
    "exemple": "/claude-api",
    "disponibilite": null,
@@ -244,11 +244,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -273,6 +273,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation"
     }
    ],
    "contexte_empreinte": "df250b3d3c064b6460c8ab3e61e9b54966f76546",
@@ -1088,7 +1092,7 @@
    "gabarit": "complet",
    "description": "Page de référence des skills de Claude Code : un dossier avec un `SKILL.md` (en-tête YAML et instructions), rangé dans `~/.claude/skills/` pour tous les projets ou dans `.claude/skills/` pour un seul. Le nom du dossier devient la commande, et la `description` permet à Claude de le charger automatiquement.",
    "description_source": "Create, manage, and share skills to extend Claude's capabilities in Claude Code. Includes custom commands and bundled skills.",
-   "usage": "    mkdir -p ~/.claude/skills/summarize-changes",
+   "usage": "mkdir -p ~/.claude/skills/summarize-changes",
    "usage_nature": "syntaxe",
    "exemple": "/summarize-changes",
    "disponibilite": null,
@@ -1104,11 +1108,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1165,6 +1169,37 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation",
+     "avant": "    mkdir -p ~/.claude/skills/summarize-changes",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les commandes perso sont fusionnées dans les skills : `.claude/commands/deploy.md` et `.claude/skills/deploy/SKILL.md` créent tous deux `/deploy` ; un skill ajoute un dossier de fichiers et un en-tête qui règle qui l'invoque.",
+       "source": "https://code.claude.com/docs/en/skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page sépare de nouveau commandes et skills ou change l'emplacement des skills."
+      },
+      {
+       "affirmation": "Sylvain a quatre skills perso, dont `latex-manuscrit` et `verif-numerique` jamais invoqués, et ses gestes répétés passent par des scripts de `~/.local/bin`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La liste des skills perso ou leur usage relevé change dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Restent à la main la revue machine d'une campagne et la synchronisation git (piste 5) ; deux skills sont dormants (piste 4).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les pistes 4 et 5 sont closes ou retirées de CONTEXTE.md."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -1177,27 +1212,7 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Pistes 4 et 5 : skills dormants ; restent à la main la revue machine d'une campagne et la synchronisation git."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "Les commandes perso sont fusionnées dans les skills : `.claude/commands/deploy.md` et `.claude/skills/deploy/SKILL.md` créent tous deux `/deploy` ; un skill ajoute un dossier de fichiers et un en-tête qui règle qui l'invoque.",
-     "source": "https://code.claude.com/docs/en/skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page sépare de nouveau commandes et skills ou change l'emplacement des skills."
-    },
-    {
-     "affirmation": "Sylvain a quatre skills perso, dont `latex-manuscrit` et `verif-numerique` jamais invoqués, et ses gestes répétés passent par des scripts de `~/.local/bin`.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La liste des skills perso ou leur usage relevé change dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Restent à la main la revue machine d'une campagne et la synchronisation git (piste 5) ; deux skills sont dormants (piste 4).",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les pistes 4 et 5 sont closes ou retirées de CONTEXTE.md."
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-skills-run",

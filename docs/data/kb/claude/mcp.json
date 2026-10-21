@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-20",
+ "maj_le": "2026-10-21",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 42,
- "commentees": 40,
+ "total": 43,
+ "commentees": 35,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -285,7 +285,7 @@
    "nom": "Configure tool search",
    "gabarit": "complet",
    "description": "La recherche d'outils MCP est active par défaut : les outils sont différés et découverts à la demande au lieu d'être chargés d'emblée. `ENABLE_TOOL_SEARCH` règle le seuil (`auto:5`) ou la coupe (`false`) ; elle est coupée d'office derrière un `ANTHROPIC_BASE_URL` tiers.",
-   "description_source": "Tool search is enabled by default: MCP tools are deferred and discovered on demand. Claude Code disables it when ANTHROPIC_BASE_URL points to a non-first-party host, since most proxies don't forward tool_reference blocks. Set ENABLE_TOOL_SEARCH explicitly to override that fallback.",
+   "description_source": "Tool search is enabled by default: MCP tools are deferred and discovered on demand.",
    "usage": "# Use a custom 5% threshold\nENABLE_TOOL_SEARCH=auto:5 claude\n\n# Disable tool search entirely\nENABLE_TOOL_SEARCH=false claude",
    "usage_nature": "syntaxe",
    "exemple": "ENABLE_TOOL_SEARCH=false claude",
@@ -302,11 +302,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -315,10 +315,61 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-mcp-defer-a-server-s-tools",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Defer a server's tools",
+   "gabarit": "complet",
+   "description": "`\"alwaysLoad\": false` dans l'entrée d'un serveur MCP garde tous ses outils derrière la recherche d'outils, y compris ceux que l'auteur du serveur a marqués pour un chargement d'avance ; sans la clé, ces outils marqués se chargent d'avance. Demande Claude Code v2.1.287 ou plus.",
+   "description_source": "To keep all of a server's tools behind tool search, set \"alwaysLoad\": false in that server's entry in your MCP configuration. That includes tools that the server's author has marked to load upfront. If you leave alwaysLoad out, those marked tools load upfront. Requires Claude Code v2.1.287 or later.",
+   "usage": "\"alwaysLoad\": false",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ne change quelque chose que pour des outils marqués à charger d'avance, et CONTEXTE.md ne dit pas que les serveurs MCP de Sylvain (delta-ia, Vercel) en marquent : aucun essai concret à nommer."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#defer-a-servers-tools",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur MCP delta-ia (local) et connecteur Vercel : seuls serveurs MCP décrits."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Scale with MCP tool search",
+   "maj_le": "2026-10-21",
+   "historique": [
+    {
+     "date": "2026-10-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-disable-a-server-without-removing-it",
@@ -635,8 +686,8 @@
    "nom": "Execute MCP prompts",
    "gabarit": "complet",
    "description": "Les prompts exposés par un serveur MCP apparaissent comme commandes dans le menu `/`, sous la forme `/serveur:prompt (MCP)` ; `/mcp__serveur__prompt` les lance aussi.",
-   "description_source": "Type / to see the commands available to you, including those from MCP servers. Claude Code lists each MCP prompt as /servername:promptname (MCP). Typing /mcp__servername__promptname also runs it.",
-   "usage": "    /mcp__github__list_prs",
+   "description_source": "1. Discover available prompts",
+   "usage": "/mcp__github__list_prs",
    "usage_nature": "syntaxe",
    "exemple": "/mcp__github__list_prs",
    "disponibilite": null,
@@ -652,11 +703,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP prompts as commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -669,6 +720,14 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -1226,7 +1285,7 @@
    "nom": "Option 2: Add a remote SSE server",
    "gabarit": "complet",
    "description": "Ajout d'un serveur distant en SSE (Server-Sent Events), transport déprécié au profit de HTTP.",
-   "description_source": "The SSE (Server-Sent Events) transport is deprecated. Use HTTP servers instead, where available.",
+   "description_source": "Some services still expose only an SSE endpoint. Add these with the same claude mcp add --transport http <name> <url> command as an HTTP server. Claude Code tries the HTTP transport first and switches to SSE when the server doesn't accept it. The automatic switch requires Claude Code v2.1.265 or later.",
    "usage": "# Basic syntax\nclaude mcp add --transport sse <name> <url>\n\n# Real example: Connect to Asana\nclaude mcp add --transport sse asana https://mcp.asana.com/sse\n\n# Example with authentication header\nclaude mcp add --transport sse private-api https://api.company.com/sse \\\n  --header \"X-API-Key: your-key-here\"",
    "usage_nature": "syntaxe",
    "exemple": "claude mcp add --transport sse asana https://mcp.asana.com/sse",
@@ -1243,11 +1302,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1260,6 +1319,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -1624,8 +1687,8 @@
    "nom": "Reference MCP resources",
    "gabarit": "complet",
    "description": "Taper `@` dans le prompt liste les ressources de tous les serveurs MCP connectés, à côté des fichiers ; on les cite sous la forme `@serveur:protocole://chemin`.",
-   "description_source": "Type @ in your prompt to see available resources from all connected MCP servers. Resources appear alongside files in the autocomplete menu.",
-   "usage": "    Can you analyze @github:issue://123 and suggest a fix?",
+   "description_source": "1. List available resources",
+   "usage": "Can you analyze @github:issue://123 and suggest a fix?",
    "usage_nature": "syntaxe",
    "exemple": "Can you analyze @github:issue://123 and suggest a fix?",
    "disponibilite": null,
@@ -1641,11 +1704,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP resources",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1658,6 +1721,14 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -1974,7 +2045,7 @@
    "gabarit": "complet",
    "description": "Pour un serveur sans enregistrement dynamique de client OAuth (erreur « does not support dynamic client registration »), on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe (`--callback-port`).",
    "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide the credentials when adding the server.",
-   "usage": "        claude mcp add --transport http \\\n          --client-id your-client-id --client-secret --callback-port 8080 \\\n          my-server https://mcp.example.com/mcp",
+   "usage": "claude mcp add --transport http \\\n  --client-id your-client-id --client-secret --callback-port 8080 \\\n  my-server https://mcp.example.com/mcp",
    "usage_nature": "syntaxe",
    "exemple": "claude mcp add --transport http \\\n  --client-id your-client-id --client-secret --callback-port 8080 \\\n  my-server https://mcp.example.com/mcp",
    "disponibilite": null,
@@ -1990,11 +2061,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2015,6 +2086,10 @@
     {
      "date": "2026-10-15",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -2093,7 +2168,7 @@
    "nom": "Use the GitHub integration",
    "gabarit": "complet",
    "description": "Intégration GitHub de l'app Claude : par le bouton « + », on ajoute des fichiers et dossiers d'un dépôt au contexte d'une conversation, ou à la base de connaissances d'un Projet, où l'icône « Sync » les remet à jour. Le connecteur GitHub doit être activé sur le compte, et un dépôt privé demande l'accès par l'app GitHub de Claude.",
-   "description_source": "For more information on enabling GitHub within your account, see Use connectors to extend Claude's capabilities.",
+   "description_source": "Connect your GitHub repositories directly to Claude to provide comprehensive context for your software development tasks. You can easily add repositories by selecting them from a list, helping Claude better understand and assist with your codebase.",
    "usage": "1. Click the \"+\" button on the lower left corner of the chat interface.\n2. Select \"Add from GitHub\" from the drop-down.\n3. Use the file browser to select specific files and folders.\n4. When you send your message, Claude will access and process the content to inform its response.",
    "usage_nature": "etapes",
    "exemple": null,
@@ -2110,11 +2185,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-18",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2135,6 +2210,10 @@
     {
      "date": "2026-10-18",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",

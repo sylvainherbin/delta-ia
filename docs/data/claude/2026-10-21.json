@@ -1,0 +1,236 @@
+{
+  "date": "2026-10-21",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-21T02:04:29+00:00",
+  "synthese": "Compte et quotas : Claude Code 2.1.305 ajoute `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS`, qui ne joue que dans le mode de relance sans surveillance `CLAUDE_CODE_RETRY_WATCHDOG`, dont CONTEXTE.md ne décrit aucun usage chez toi ; la fiche reste `ignorer`, revérification le 28/10. Relevé du 21/10 à 02 h UTC : Claude session 5 h à 4 % (remise à zéro à 05 h UTC), semaine à 57 % et semaine Fable à 0 % (remise à zéro le 25/10 vers 16 h UTC), ChatGPT semaine à 61 % (remise à zéro le 27/10 vers 07 h UTC), tous sous le seuil D71 de 80 %. La fiche `ENABLE_PROMPT_CACHING_1H` (D71) n'a que sa formulation modifiée : ton abonnement a déjà le cache d'une heure. À retenir côté fonctionnalités : `/design consent` (entrée ajoutée à la base) est le geste d'accès à Claude Design que tu dois taper toi-même, utile pour la Console `carnet-console`.",
+  "sources_en_echec": [
+    {
+      "id": "anthropic-newsroom",
+      "url": "https://www.anthropic.com/news",
+      "erreur": "FormatInattendu: balises <time> présentes mais aucun lien avec intertitre : gabarit changé ?",
+      "partiel": false
+    }
+  ],
+  "elements": [
+    {
+      "id": "claude-code-2.1.305",
+      "ids_bruts": [
+        "claude-code-2.1.305"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.305 : `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS`, reprise d'une requête dès qu'une limite d'abonnement est levée avant sa remise à zéro",
+      "version": "2.1.305",
+      "date_publication": "2026-10-20",
+      "type": "nouveaute",
+      "resume": "Nouvelle variable `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` : en mode de relance sans surveillance (`CLAUDE_CODE_RETRY_WATCHDOG`), une requête qui attend la remise à zéro d'une limite de session ou hebdomadaire d'un abonnement claude.ai contrôle à intervalle régulier (de 1 min à 3 h) si la limite a été levée avant l'heure prévue, et repart aussitôt ; sans la variable, aucun contrôle. Ajout aussi de `sandbox.allowNestedUserNamespaces` (Linux : les commandes du bac à sable peuvent créer des espaces de noms utilisateur, ce qui contourne les protections de fichiers du bac à sable). `/usage` : chaque avertissement devient une ligne de correction qui nomme sa source, `f` applique les corrections (aussi dans VS Code et `/doctor`). `/artifacts` : la confirmation de suppression prend 1 ou Entrée pour garder, 2 pour supprimer, Échap pour annuler ; `y` et `n` n'y répondent plus. Correctifs : régression 2.1.304 où chaque requête échouait derrière une passerelle qui refuse la recherche d'outils ; `/effort` et `/autocompact` ignorés quand le nom du modèle différait d'une valeur de `modelOverrides` par la casse ou un `[1m]` ; reprise d'un Workflow qui rejouait des agents `pipeline()` et `parallel()` déjà terminés ; entrées « (session) » vides laissées par Remote Control dans `/resume` ; sessions Cowork cloud planifiées qui attendaient cinq minutes par sous-agent dont le WebFetch demandait une approbation d'URL.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21305",
+          "libelle": "Claude Code 2.1.305",
+          "officielle": true
+        }
+      ],
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : la variable ne joue que si une session sans surveillance attend une limite d'abonnement avec `CLAUDE_CODE_RETRY_WATCHDOG`, et CONTEXTE.md ne décrit aucun usage de ce mode ; tu es sur Max 20x à l'essai, donc la limite hebdomadaire et celle de 5 h te concernent, mais seulement par ce mode. Le correctif des entrées « (session) » vides de `/resume` touche tes sessions durables relancées par `claude --resume <id> --remote-control <nom>`. La reprise de Workflow corrigée touche l'outil `Workflow`, que tu n'emploies que sur accord (13 appels au relevé du 25/09). Le correctif des sessions Cowork cloud planifiées touche tes tâches Cowork, désormais dans le cloud. Le reste (`sandbox.allowNestedUserNamespaces`, `modelOverrides`, passerelles, `/artifacts` en terminal, Claude Tag, Code Review, VS Code) porte sur des fonctions que CONTEXTE.md ne décrit pas comme utilisées.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-28 (aucune échéance publiée) si la variable te sert ; relevé D124 du 21/10 à 02 h UTC : semaine Claude à 57 % (remise à zéro le 25/10 vers 16 h UTC), sous le seuil D71 de 80 %, donc aucun geste de compte.",
+        "etapes": [
+          "Cherche si un lanceur active déjà le mode de relance : `grep -rn CLAUDE_CODE_RETRY_WATCHDOG ~/.config/systemd/user ~/.local/bin ~/.claude/settings.json` ; résultat attendu : aucune ligne, donc `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` est sans effet sur tes sessions `claude-session@<nom>` et il n'y a rien à régler.",
+          "Si une ligne sort, ajoute `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS=600000` (entier en chiffres, de 60000 à 10800000) au même endroit que `CLAUDE_CODE_RETRY_WATCHDOG` ; résultat attendu : une requête en attente de sa limite repart au plus 10 min après qu'elle a été levée, hors crédits d'usage."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-retry-watchdog-usage-limit-recheck-ms"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Abonnement Max 20x à l'essai : limites de session et hebdomadaire concernées par la variable."
+        },
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables relancées par `claude --resume <id> --remote-control <nom>` sous tmux."
+        },
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Outil `Workflow` seulement sur accord de Sylvain."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Cowork s'exécute désormais dans le cloud sur Pro et Max."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-enable-prompt-caching-1h",
+      "ids_bruts": [
+        "kb-claude-code-parametres-enable-prompt-caching-1h"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : `ENABLE_PROMPT_CACHING_1H`, description d'origine reformulée",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La description d'origine de la variable, modifiée dans la documentation, dit désormais que pour les abonnés dans leur usage inclus Claude Code demande lui-même le cache d'une heure sur la conversation principale (avant : ils le « reçoivent » automatiquement) et que `CLAUDE_CODE_PROMPT_CACHE_TTL` et `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` règlent le TTL séparément pour la conversation principale et pour les requêtes hors d'elle. Les écritures de cache d'une heure restent facturées à un tarif plus élevé que celles de 5 min.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Environment variables",
+          "officielle": true
+        }
+      ],
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : seule la formulation change, le fond reste que ton abonnement Max 20x à l'essai a déjà le cache d'une heure sur la conversation principale. La fiche reste `ignorer`.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-28 (aucune échéance publiée) la fiche `claude-code-parametres-enable-prompt-caching-1h` ; aucun geste de compte d'ici là.",
+        "etapes": [
+          "Ne définis pas `ENABLE_PROMPT_CACHING_1H=1` : l'usage inclus de ton abonnement a déjà le TTL d'une heure sur la conversation principale. Résultat attendu : aucun changement de ta part."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-enable-prompt-caching-1h"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Abonnement Max 20x à l'essai : usage inclus, donc TTL d'une heure automatique."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-commandes-design",
+      "ids_bruts": [
+        "kb-claude-code-commandes-design"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `/design consent` et `/design revoke`, accès de Claude à Claude Design",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (commandes) : `/design consent` donne à Claude l'accès à Claude Design, `/design revoke` le retire. Quand une réponse de Claude demande `/design consent`, il faut le taper soi-même à l'invite de Claude Code.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Commands",
+          "officielle": true
+        }
+      ],
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Claude Design intensivement et CONTEXTE.md veut que `/design` soit recommandé : cette commande est le geste d'accès côté Claude Code, que la page réserve à toi (Claude ne peut pas la taper à ta place). Elle touche la Console `carnet-console` (React avec Vite), construite avec Claude Design.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Quand une session Claude Code te demande `/design consent`, tape-le toi-même ; `/design revoke` retire l'accès.",
+        "etapes": [
+          "Dans une session Claude Code qui travaille sur la Console (`carnet-console`), tape `/design consent` à l'invite dès que Claude te le demande ; résultat attendu : Claude ne redemande plus la commande et peut travailler avec Claude Design sur la Console.",
+          "Pour retirer l'accès : `/design revoke`."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-design"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design : usage intensif, `/design` à recommander et à expliquer."
+        },
+        "projet.delta-desktop": {
+          "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+          "pourquoi": "Console `carnet-console` en React avec Vite, construite avec Claude Design."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-mcp-defer-a-server-s-tools",
+      "ids_bruts": [
+        "kb-claude-code-mcp-defer-a-server-s-tools"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `\"alwaysLoad\": false`, garder tous les outils d'un serveur MCP derrière la recherche d'outils",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (mcp) : `\"alwaysLoad\": false` dans l'entrée d'un serveur MCP garde tous ses outils derrière la recherche d'outils, y compris ceux que l'auteur du serveur a marqués pour un chargement d'avance ; sans la clé, ces outils marqués se chargent d'avance. Demande Claude Code 2.1.287 ou plus.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#defer-a-servers-tools",
+          "libelle": "MCP : Defer a server's tools",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-defer-a-server-s-tools"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-mounted-drive-rm-prompt",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-disable-mounted-drive-rm-prompt"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT`, désactiver la demande pour les lecteurs montés",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (paramètres) : la variable à `1` désactive la demande de confirmation pour des chemins de lecteurs montés comme `/Volumes/USB` ; elle se règle dans l'environnement qui lance Claude Code, car le bloc `env` de settings.json l'ignore. Demande Claude Code 2.1.304 ou plus.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Environment variables",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-mounted-drive-rm-prompt"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-20",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-20"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform : les inference hooks sortent de bêta pour les organisations Claude Enterprise",
+      "version": null,
+      "date_publication": "2026-10-20",
+      "type": "amelioration",
+      "resume": "Les inference hooks (page `manage-claude/inference-hooks`) ne sont plus en bêta pour les organisations Claude Enterprise.",
+      "certitude": "officiel",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be"
+}

@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-20",
+ "maj_le": "2026-10-21",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 660,
- "commentees": 652,
+ "total": 662,
+ "commentees": 635,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -1078,7 +1078,7 @@
    "nom": "ANTHROPIC_BASE_URL",
    "gabarit": "court",
    "description": "Variable qui remplace l'adresse de l'API pour passer par un proxy ou une passerelle, ce qui coupe par défaut la recherche d'outils MCP.",
-   "description_source": "Override the API endpoint to route requests through a proxy or gateway. When set to a non-first-party host, MCP tool search is disabled by default. Set ENABLE_TOOL_SEARCH=true if your proxy forwards tool_reference blocks. As of v2.1.196, Remote Control is disabled when this points at a host other than api.anthropic.com, matching its behavior on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry",
+   "description_source": "Override the API endpoint to route requests through a proxy or gateway. For what happens when that gateway rejects MCP tool search, see Tool search through an LLM gateway. As of v2.1.196, Remote Control is disabled when this points at a host other than api.anthropic.com, matching its behavior on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry",
    "usage": "ANTHROPIC_BASE_URL",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1095,11 +1095,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1108,6 +1108,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -2425,7 +2429,7 @@
    "nom": "API_TIMEOUT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai d'expiration des requêtes à l'API, 10 minutes par défaut (maximum 2 147 483 647 ms) ; une requête en flux doit recevoir ses en-têtes de réponse dans ce délai.",
-   "description_source": "Time in milliseconds that each API request attempt has to receive its response headers (default: 600000, or 10 minutes; maximum: 2147483647). It doesn't limit how long a streaming response runs after that. When you set a positive value, each attempt at a non-streaming request has to finish within it. Increase this when requests time out on slow networks or when routing through a proxy",
+   "description_source": "Time in milliseconds that each API request attempt has to receive its response headers. It doesn't limit how long a streaming response runs after that. The default is 600000, or 10 minutes, and the maximum is 2147483647. When you set a positive value, each attempt at a non-streaming request has to finish within it. Increase this when requests time out on slow networks or when routing through a proxy. Set to 0 to remove this limit, which requires Claude Code v2.1.305 or later. With 0, a non-streaming attempt still times out after 300 seconds in a local session",
    "usage": "API_TIMEOUT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2446,7 +2450,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2470,6 +2474,10 @@
     },
     {
      "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -4846,10 +4854,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4866,6 +4874,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -4905,10 +4917,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4925,6 +4937,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -5952,7 +5968,7 @@
    "nom": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "gabarit": "court",
    "description": "Variable d'environnement de Claude Code qui fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, en entier simple uniquement (« 500k » est lu comme 500, puis ramené au minimum). Elle prime sur `/autocompact`, `--autocompact` et le réglage `autoCompactWindow`, et reste plafonnée par la fenêtre de contexte du modèle.",
-   "description_source": "Set the auto-compact window in tokens, from 100000 to 1000000. Accepts a plain integer such as 500000 only: a value like 500k reads as 500 and clamps to the 100K minimum. The effective window is also capped at the model's context window. Takes precedence over the /autocompact command, the --autocompact flag, and the autoCompactWindow setting. The status line's used_percentage always measures against the model's full context window, so once this variable is set, that percentage no longer indicates when compaction will run",
+   "description_source": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
    "usage": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -5969,11 +5985,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6001,6 +6017,43 @@
      "changement": "description corrigée",
      "avant": "Variable qui fixe la fenêtre d'auto-compaction en jetons, de 100 000 à 1 000 000, en nombre entier seulement.",
      "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées : `env.multi-sessions` pour les services `claude-session@<nom>`, ce qui répond au motif D128, et `config.claude-code.skills`"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set the auto-compact window in tokens, from 100000 to 1000000. Accepts a plain integer such as 500000 only: a value like 500k reads as 500 and clamps to the 100K minimum. The effective window is also capped at the model's context window. Takes precedence over the /autocompact command, the --autocompact flag, and the autoCompactWindow setting. The status line's used_percentage always measures against the model's full context window, so once this variable is set, that percentage no longer indicates when compaction will run",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "CLAUDE_CODE_AUTO_COMPACT_WINDOW fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, et n'accepte qu'un entier simple (une valeur comme 500k est lue comme 500).",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change la plage ou accepte les suffixes comme « k »."
+      },
+      {
+       "affirmation": "La variable prime sur la commande /autocompact, l'option --autocompact et le réglage autoCompactWindow ; une fois posée, used_percentage de la ligne d'état n'indique plus quand la compaction aura lieu.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation modifie l'ordre de priorité ou le calcul de used_percentage."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur `claude-session@<nom>`, lancé avec un modèle, un effort et des réglages de lancement propres à son rôle.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables ne passent plus par le service modèle `claude-session@<nom>`."
+      },
+      {
+       "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -6013,33 +6066,7 @@
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées : la compaction est déjà gérée à la main."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "CLAUDE_CODE_AUTO_COMPACT_WINDOW fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, et n'accepte qu'un entier simple (une valeur comme 500k est lue comme 500).",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change la plage ou accepte les suffixes comme « k »."
-    },
-    {
-     "affirmation": "La variable prime sur la commande /autocompact, l'option --autocompact et le réglage autoCompactWindow ; une fois posée, used_percentage de la ligne d'état n'indique plus quand la compaction aura lieu.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation modifie l'ordre de priorité ou le calcul de used_percentage."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur `claude-session@<nom>`, lancé avec un modèle, un effort et des réglages de lancement propres à son rôle.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables ne passent plus par le service modèle `claude-session@<nom>`."
-    },
-    {
-     "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-auto-connect-ide",
@@ -6874,10 +6901,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6886,6 +6913,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -7304,7 +7335,7 @@
    "nom": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "gabarit": "court",
    "description": "Variable qui arrête les commandes shell, workflows dynamiques et (depuis la v2.1.198) sous-agents d'arrière-plan d'une session de fond quand son superviseur l'arrête, la redémarre ou la met à jour, au lieu de les transmettre au processus suivant ; `← ` ou `/background` transmettent toujours le travail en cours.",
-   "description_source": "Set to 1 to stop a background session's running background shell commands, dynamic workflows, and, as of v2.1.198, background subagents when the supervisor stops, restarts, or updates that session's process, instead of handing them to the session's next process. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over, and CLAUDE_DISABLE_ADOPT turns off both. Requires Claude Code v2.1.196 or later",
+   "description_source": "Set to 1 to stop a background session's in-flight work when the supervisor stops, restarts, or updates that session's process, instead of handing it to the session's next process. That work is the session's running background shell commands and dynamic workflows, plus background subagents as of v2.1.198. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over. Requires Claude Code v2.1.196 or later",
    "usage": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7321,11 +7352,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7342,6 +7373,10 @@
     {
      "date": "2026-10-12",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
@@ -7526,7 +7561,7 @@
    "nom": "CLAUDE_CODE_DISABLE_CRON",
    "gabarit": "court",
    "description": "Variable qui désactive les tâches planifiées, `/loop` compris.",
-   "description_source": "Set to 1 to disable scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
+   "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
    "usage": "CLAUDE_CODE_DISABLE_CRON",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7543,11 +7578,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7556,6 +7591,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -8076,6 +8115,53 @@
     },
     {
      "date": "2026-10-01",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-mounted-drive-rm-prompt",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT",
+   "gabarit": "court",
+   "description": "Variable d'environnement à `1` qui désactive la demande de confirmation pour les chemins de lecteurs montés comme `/Volumes/USB` ; elle se règle dans l'environnement qui lance Claude Code, pas dans le bloc `env` de settings.json.",
+   "description_source": "Set to 1 to turn off the mounted drive prompt for paths such as /Volumes/USB. Set it in the environment that launches Claude Code, because Claude Code ignores it in a settings env block. Requires Claude Code v2.1.304 or later",
+   "usage": "CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Toutes les sessions locales sauf trading tournent en bypassPermissions et CONTEXTE.md ne signale aucune demande de ce type, donc aucun usage à en tirer."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-21",
+   "historique": [
+    {
+     "date": "2026-10-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-21",
      "changement": "commentée"
     }
    ]
@@ -9787,7 +9873,7 @@
    "nom": "CLAUDE_CODE_FORCE_TERMINAL_IMAGES",
    "gabarit": "court",
    "description": "Mise à 1, force l'affichage des éléments Image des mods comme images quand le terminal gère le protocole graphique kitty avec placeholders Unicode sans être détecté automatiquement.",
-   "description_source": "Set to 1 to draw mod Image elements as pictures when your terminal draws kitty graphics protocol images with Unicode placeholders but is not auto-detected. See which terminals Claude Code detects and why it doesn't help inside tmux or screen",
+   "description_source": "Set to 1 to draw mod Image elements as pictures when your terminal draws kitty graphics protocol images with Unicode placeholders and you still see an Image's dimmed alt text. See which terminals draw an Image and why this variable doesn't help inside tmux or screen",
    "usage": "CLAUDE_CODE_FORCE_TERMINAL_IMAGES",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9804,7 +9890,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "env.multi-sessions": {
@@ -9815,7 +9901,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-10-08",
@@ -9824,6 +9910,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -10638,7 +10728,7 @@
    "nom": "CLAUDE_CODE_MAX_RETRIES",
    "gabarit": "court",
    "description": "Variable qui fixe le nombre de nouvelles tentatives après une requête à l'API en échec, 10 par défaut.",
-   "description_source": "Override the number of times to retry failed API requests (default: 10). Capped at 15 as of v2.1.186; as of v2.1.199, CLAUDE_CODE_RETRY_WATCHDOG raises the default and removes the cap. For unattended sessions that need to wait through longer outages, set CLAUDE_CODE_RETRY_WATCHDOG instead",
+   "description_source": "Override the number of times to retry failed API requests (default: 10). Retrying can stop earlier on 529 overloaded errors. For example, with an API key on an Opus model, it stops at the third 529 and shows Repeated 529 Overloaded errors. If you set a fallback model, Claude Code switches to that model rather than showing the error. Capped at 15 as of v2.1.186; as of v2.1.199, CLAUDE_CODE_RETRY_WATCHDOG raises the default and removes the cap. For unattended sessions that need to wait through longer outages, set CLAUDE_CODE_RETRY_WATCHDOG instead",
    "usage": "CLAUDE_CODE_MAX_RETRIES",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10655,11 +10745,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10668,6 +10758,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -10795,10 +10889,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10807,6 +10901,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -11013,7 +11111,7 @@
    "nom": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "gabarit": "court",
    "description": "Variable qui fixe en millisecondes combien de temps le premier tour d'une session non interactive attend les serveurs MCP encore en connexion (0 supprime l'attente).",
-   "description_source": "How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. When set, the wait covers every pending server; in a self-hosted environment, it changes only how long the wait lasts. Set to 0 to skip the wait. A --permission-prompt-tool server keeps its own MCP_TIMEOUT wait regardless of the value. Requires Claude Code v2.1.274 or later",
+   "description_source": "How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. In a self-hosted environment, it changes only how long the wait lasts. Some servers keep a wait of their own regardless of the value; Connection timing lists them. Set to 0 to skip the wait for every other server. Requires Claude Code v2.1.274 or later",
    "usage": "CLAUDE_CODE_MCP_STARTUP_WAIT_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11030,11 +11128,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11055,6 +11153,10 @@
     {
      "date": "2026-10-15",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -12863,6 +12965,53 @@
    ]
   },
   {
+   "id": "claude-code-parametres-claude-code-retry-watchdog-usage-limit-recheck-ms",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS",
+   "gabarit": "court",
+   "description": "Intervalle minimal (60000 à 10800000 ms) entre deux contrôles d'une limite d'usage déjà levée, pendant qu'une requête attend sa remise à zéro avec `CLAUDE_CODE_RETRY_WATCHDOG`. Les contrôles ne portent que sur la limite de session ou hebdomadaire d'un abonnement claude.ai, hors crédits d'usage ; sans cette variable, aucun contrôle.",
+   "description_source": "Minimum interval in milliseconds between checks of whether a usage limit was already lifted, while a request waits for that limit to reset with CLAUDE_CODE_RETRY_WATCHDOG set. When a check finds the limit lifted, the request goes out at once. Give a whole number in plain digits from 60000, one minute, to 10800000, three hours. Checks are made only for a claude.ai subscription's session or weekly limit while usage credits aren't in use, and not while CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set. When this variable is unset or its value is outside that range, no checks are made. Requires Claude Code v2.1.305 or later",
+   "usage": "CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Rien à activer ni à vérifier avant une date : elle ne joue que pour une session sans surveillance qui attend une limite d'abonnement avec `CLAUDE_CODE_RETRY_WATCHDOG`, et CONTEXTE.md ne décrit aucun usage de cette variable."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "La chaîne D70 lance des étapes Claude non interactives, mais CONTEXTE.md n'y décrit pas `CLAUDE_CODE_RETRY_WATCHDOG`."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-21",
+   "historique": [
+    {
+     "date": "2026-10-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-safe-mode",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -14247,10 +14396,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14263,6 +14412,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -14571,10 +14724,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14583,6 +14736,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -15082,10 +15239,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15094,6 +15251,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -18142,7 +18303,7 @@
    "nom": "disableArtifact",
    "gabarit": "court",
    "description": "Réglage déprécié, remplacé par `enableArtifact` ; `true` équivaut encore à `enableArtifact: false`.",
-   "description_source": "Deprecated, and replaced by enableArtifact. Claude Code still honors disableArtifact: true as equivalent to enableArtifact: false, and ignores disableArtifact: false.",
+   "description_source": "Use enableArtifact instead to turn off the Artifact tool, which publishes session output as a private web page on claude.ai. When you turn the Artifacts row off in /config, Claude Code writes enableArtifact to your user settings and clears this key.",
    "usage": "{\n  \"disableArtifact\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18159,11 +18320,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18172,6 +18333,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -19465,7 +19630,7 @@
    "nom": "ENABLE_PROMPT_CACHING_1H",
    "gabarit": "court",
    "description": "Variable qui demande un TTL de cache d'une heure au lieu de cinq minutes, pour les utilisateurs d'API et de fournisseurs cloud ; les abonnés dans leur usage inclus l'ont déjà automatiquement.",
-   "description_source": "Set to 1 to request a 1-hour prompt cache TTL instead of the default 5 minutes. Intended for API key, Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS users. Subscription users within included usage receive the 1-hour TTL automatically on the main conversation. Subscription users drawing on usage credits can set it to keep the 1-hour TTL. 1-hour cache writes are billed at a higher rate. To choose the TTL per request bucket instead, use CLAUDE_CODE_PROMPT_CACHE_TTL and CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, which take precedence over this variable",
+   "description_source": "Set to 1 to request a 1-hour prompt cache TTL instead of the default 5 minutes. Intended for API key, Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS users. For subscription users within included usage, Claude Code requests the 1-hour TTL automatically on the main conversation. Subscription users drawing on usage credits can set it to keep the 1-hour TTL. 1-hour cache writes are billed at a higher rate. To choose the TTL separately for the main conversation and for requests outside it, use CLAUDE_CODE_PROMPT_CACHE_TTL and CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, which take precedence over this variable",
    "usage": "ENABLE_PROMPT_CACHING_1H",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -19482,11 +19647,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19499,6 +19664,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -19516,7 +19685,7 @@
    "nom": "ENABLE_TOOL_SEARCH",
    "gabarit": "court",
    "description": "Variable qui contrôle la recherche d'outils MCP : sans valeur, Claude Code diffère le chargement de tous les outils MCP, sauf si `ANTHROPIC_BASE_URL` pointe vers un hôte tiers ; `true` les diffère aussi sur un hôte tiers, `auto` ou `auto:N` charge d'avance quand les définitions tiennent dans 10 % (ou N %) du contexte, `false` charge tout d'avance.",
-   "description_source": "Controls MCP tool search. Unset, Claude Code defers all MCP tools by default, and loads them upfront instead when ANTHROPIC_BASE_URL points to a non-first-party host. true keeps them deferred on such a host too. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. For the models and deployments that load every tool upfront whatever this value is, see Configure tool search",
+   "description_source": "Controls MCP tool search. Unset or true defers MCP tools, except in the cases that keep tool search off. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. If a gateway rejects tool search, see Tool search through an LLM gateway",
    "usage": "ENABLE_TOOL_SEARCH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -19533,11 +19702,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19558,6 +19727,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -20324,10 +20497,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20336,6 +20509,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22384,7 +22561,7 @@
    "gabarit": "court",
    "description": "Événement de hook déclenché avant l'application d'un changement de modèle, pour le bloquer, demander confirmation ou afficher son coût.",
    "description_source": "Runs before Claude Code applies a model switch that you or a client requested. Use it to block a switch, require confirmation, or show what the switch will cost before it happens.",
-   "usage": "    {\n      \"hooks\": {\n        \"PreModelSwitch\": [\n          {\n            \"matcher\": \"claude-opus-4-6\",\n            \"hooks\": [\n              {\n                \"type\": \"command\",\n                \"command\": \"jq -e '.to_model | test(\\\"opus-4-6\\\")' > /dev/null && { echo 'Opus 4.6 is retired for this project. Use a newer model.' >&2; exit 2; }; exit 0\"\n              }\n            ]\n          }\n…",
+   "usage": "{\n  \"hooks\": {\n    \"PreModelSwitch\": [\n      {\n        \"matcher\": \"claude-opus-4-6\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"jq -e '.to_model | test(\\\"opus-4-6\\\")' > /dev/null && { echo 'Opus 4.6 is retired for this project. Use a newer model.' >&2; exit 2; }; exit 0\"\n          }\n        ]\n      }\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -22400,11 +22577,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22425,6 +22602,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "usage modifié dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -23576,7 +23757,7 @@
    "nom": "idleCompaction",
    "gabarit": "court",
    "description": "Clé qui règle la compaction d'une conversation longue laissée inactive : environ 54 minutes après la dernière requête, avant l'expiration du cache de prompt, elle est résumée et le message suivant envoie le résumé. Active par défaut (v2.1.290 ou plus) à partir de 200 000 jetons ; `false` la désactive.",
-   "description_source": "Idle compaction compacts a long conversation that you've stepped away from, shortly before its prompt cache expires. Your next message then sends a summary instead of the whole conversation. When you come back, the conversation shows Compacted while idle, before the prompt cache expired.",
+   "description_source": "Idle compaction compacts a long conversation that you've stepped away from, shortly before its prompt cache expires. Your next message then sends a summary instead of the whole conversation. When you come back, the conversation shows a line that starts with Compacted while idle, before the prompt cache expired.",
    "usage": "{\n  \"idleCompaction\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"idleCompaction\": false\n}",
@@ -23593,7 +23774,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "env.multi-sessions": {
@@ -23608,7 +23789,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-10-14",
@@ -23629,53 +23810,64 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Idle compaction compacts a long conversation that you've stepped away from, shortly before its prompt cache expires. Your next message then sends a summary instead of the whole conversation. When you come back, the conversation shows Compacted while idle, before the prompt cache expired.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Idle compaction compacte une longue conversation que l'utilisateur a laissée de côté, peu avant l'expiration de son prompt cache.",
+       "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus idleCompaction ou change son déclenchement (conversation inactive, avant l'expiration du prompt cache)."
+      },
+      {
+       "affirmation": "Après une idle compaction, le message suivant envoie un résumé au lieu de la conversation entière.",
+       "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation indique que le message suivant renvoie de nouveau la conversation complète, ou retire ce comportement."
+      },
+      {
+       "affirmation": "Au retour, la conversation affiche « Compacted while idle, before the prompt cache expired ».",
+       "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le libellé affiché après une idle compaction change ou n'est plus mentionné dans la documentation."
+      },
+      {
+       "affirmation": "La clé de réglage s'écrit \"idleCompaction\" ; la valeur false figure dans l'exemple d'usage de la documentation.",
+       "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La clé idleCompaction est renommée, change de type ou disparaît de la référence des settings."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui lance dans tmux `claude --resume <id> --remote-control <nom>`, avec des réglages propres selon le rôle, par exemple pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables sous systemd et tmux, ni la reprise par claude --resume."
+      },
+      {
+       "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus le pilotage des sessions depuis l'iPhone par Remote Control."
+      },
+      {
+       "affirmation": "Les limites d'usage, hebdomadaire et Fable, figurent parmi les frictions récurrentes observées chez Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire les limites d'usage hebdomadaires des frictions récurrentes."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "Idle compaction compacte une longue conversation que l'utilisateur a laissée de côté, peu avant l'expiration de son prompt cache.",
-     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus idleCompaction ou change son déclenchement (conversation inactive, avant l'expiration du prompt cache)."
-    },
-    {
-     "affirmation": "Après une idle compaction, le message suivant envoie un résumé au lieu de la conversation entière.",
-     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation indique que le message suivant renvoie de nouveau la conversation complète, ou retire ce comportement."
-    },
-    {
-     "affirmation": "Au retour, la conversation affiche « Compacted while idle, before the prompt cache expired ».",
-     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le libellé affiché après une idle compaction change ou n'est plus mentionné dans la documentation."
-    },
-    {
-     "affirmation": "La clé de réglage s'écrit \"idleCompaction\" ; la valeur false figure dans l'exemple d'usage de la documentation.",
-     "source": "https://code.claude.com/docs/en/settings-reference#idlecompaction",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La clé idleCompaction est renommée, change de type ou disparaît de la référence des settings."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui lance dans tmux `claude --resume <id> --remote-control <nom>`, avec des réglages propres selon le rôle, par exemple pour le chef.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables sous systemd et tmux, ni la reprise par claude --resume."
-    },
-    {
-     "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus le pilotage des sessions depuis l'iPhone par Remote Control."
-    },
-    {
-     "affirmation": "Les limites d'usage, hebdomadaire et Fable, figurent parmi les frictions récurrentes observées chez Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire les limites d'usage hebdomadaires des frictions récurrentes."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-include-hook-events",
@@ -23777,7 +23969,7 @@
    "nom": "includeCoAuthoredBy",
    "gabarit": "court",
    "description": "Réglage déprécié depuis v2.0.62, remplacé par `attribution`.",
-   "description_source": "Deprecated since v2.0.62, when attribution replaced it. Claude Code still reads it, but new configurations should set attribution.",
+   "description_source": "Use attribution instead, which replaces this key and lets you change or hide the commit trailer, the pull request text, and the session link separately. Claude Code still honors includeCoAuthoredBy: false from settings files that predate attribution, but ignores it once you set attribution.commit or attribution.pr.",
    "usage": "{\n  \"includeCoAuthoredBy\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23794,11 +23986,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Git and attribution",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23807,6 +23999,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -24308,7 +24504,7 @@
    "nom": "keybindingFlavor",
    "gabarit": "court",
    "description": "Réglage déprécié depuis v2.1.261, sans effet : l'édition de mots suit toujours les conventions readline.",
-   "description_source": "Deprecated since v2.1.261 and has no effect. The prompt's word-editing keys always follow readline conventions, as in Bash. Claude Code still accepts keybindingFlavor, so a settings file that sets it stays valid.",
+   "description_source": "In v2.1.238 through v2.1.260, setting it to \"readline\" made Ctrl+W delete back to the previous whitespace instead of only the previous word.",
    "usage": "keybindingFlavor",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24325,11 +24521,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24338,6 +24534,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26554,7 +26754,7 @@
    "nom": "permissionExplainerEnabled",
    "gabarit": "court",
    "description": "Réglage retiré en v2.1.257 avec l'explication `Ctrl+E` des commandes dans les demandes de permission ; il n'a plus d'effet.",
-   "description_source": "Removed in v2.1.257, together with the Ctrl+E command explanation on Bash and PowerShell permission prompts. Setting it has no effect on current versions.",
+   "description_source": "Through v2.1.256, you could press Ctrl+E on a Bash or PowerShell permission prompt to see a model-generated explanation of the command, and set this key to false to turn that shortcut off.",
    "usage": "Ctrl+E",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26571,11 +26771,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26584,6 +26784,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -31772,7 +31976,7 @@
    "nom": "strictPluginOnlyCustomization.hooks",
    "gabarit": "court",
    "description": "Réglage qui verrouille les hooks : plus d'exécution de ceux des `settings.json` utilisateur, projet et locaux.",
-   "description_source": "Lock the hooks surface. Claude Code stops running hooks from user, project, and local settings.json, and keeps running plugin hooks and hooks in managed settings.",
+   "description_source": "Lock the hooks surface:",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"hooks\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -31789,11 +31993,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31806,6 +32010,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -32413,7 +32621,7 @@
    "nom": "taskOutputMaxChars",
    "gabarit": "court",
    "description": "Réglage retiré en v2.1.277 avec l'outil TaskOutput ; il n'a plus d'effet.",
-   "description_source": "Removed in v2.1.277, together with the TaskOutput tool it sized. Setting it has no effect on current versions. Claude reads a background task's output file with Read instead.",
+   "description_source": "Through v2.1.276, you set this key to the number of characters of a background task's output that Claude received inline when it read the task with the TaskOutput tool.",
    "usage": "TaskOutput",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -32430,11 +32638,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32443,6 +32651,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -32514,7 +32726,7 @@
    "nom": "teammateDefaultModel",
    "gabarit": "court",
    "description": "Réglage retiré en v2.1.234 avec sa ligne de `/config` ; il n'a plus d'effet.",
-   "description_source": "Removed in v2.1.234, together with its /config row Default teammate model. Setting it has no effect on current versions.",
+   "description_source": "Through v2.1.233, you set this key to the model for agent team teammates your prompt didn't name a model for: an alias such as \"sonnet\", or null to follow the lead's model. For the model Claude Code picks for such teammates now, see specify teammates and models.",
    "usage": "/config",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -32531,11 +32743,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32544,6 +32756,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -33512,7 +33728,7 @@
    "nom": "voiceEnabled",
    "gabarit": "court",
    "description": "Réglage déprécié depuis v2.1.92, remplacé par l'objet `voice`.",
-   "description_source": "Deprecated since v2.1.92, when the voice object replaced it. Claude Code still reads it so older settings files keep working, but new configurations should set voice.enabled.",
+   "description_source": "Turn voice dictation on with the single Boolean form that predates the voice object. When both are set, voice.enabled applies.",
    "usage": "{\n  \"voiceEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -33529,11 +33745,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -33542,6 +33758,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

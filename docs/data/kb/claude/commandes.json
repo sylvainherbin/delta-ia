@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-20",
+ "maj_le": "2026-10-21",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 133,
- "commentees": 129,
+ "total": 134,
+ "commentees": 127,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -495,7 +495,7 @@
    "nom": "/auto-mode-setup",
    "gabarit": "complet",
    "description": "Rédige des entrées `autoMode.environment` à partir du projet et des sessions récentes, te laisse relire le brouillon puis l'enregistre dans les réglages utilisateur. Réservée aux plans Pro, Max et Team.",
-   "description_source": "Draft autoMode.environment entries from your project and recent sessions, then review the draft and save it to your user settings. Requires a Pro, Max, or Team plan and Claude Code v2.1.228 or later. On native Windows, requires v2.1.233 or later",
+   "description_source": "Draft autoMode.environment entries from your project and recent sessions, then review the draft and save it to your user settings. On a Pro, Max, or Team plan, requires Claude Code v2.1.228 or later, or v2.1.233 or later on native Windows. On an Enterprise plan or with a Claude Console API key, requires v2.1.283 or later. If the command is missing, see /auto-mode-setup returns \"Unknown command\"",
    "usage": "/auto-mode-setup",
    "usage_nature": "syntaxe",
    "exemple": "/auto-mode-setup",
@@ -512,11 +512,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -545,6 +545,10 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
@@ -3999,13 +4003,85 @@
    "exemple_origine": "compose"
   },
   {
+   "id": "claude-code-commandes-design",
+   "produit": "claude-code",
+   "categorie": "commandes",
+   "nom": "/design",
+   "gabarit": "complet",
+   "description": "`/design consent` donne à Claude l'accès à Claude Design, `/design revoke` le retire. Quand une réponse de Claude demande `/design consent`, c'est à toi de le taper à l'invite de Claude Code.",
+   "description_source": "Grant Claude access to Claude Design, or withdraw it. When a reply from Claude asks you to run /design consent, type it at the Claude Code prompt yourself",
+   "usage": "/design consent, /design revoke",
+   "usage_nature": "syntaxe",
+   "exemple": "/design consent",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu construis la Console (`carnet-console`, React avec Vite) avec Claude Design et veux en découvrir toutes les possibilités : la prochaine fois qu'une session Claude Code demande `/design consent`, tape-le toi-même ; résultat attendu : Claude ne devrait plus le redemander, et `/design revoke` retire l'accès si tu veux revenir en arrière."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design : usage intensif, souhait de découvrir toutes ses possibilités, `/design` à recommander."
+    },
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "La Console de pilotage (`carnet-console`, React avec Vite) est construite avec Claude Design."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-10-21",
+   "historique": [
+    {
+     "date": "2026-10-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/design consent` donne à Claude l'accès à Claude Design et `/design revoke` le retire ; quand une réponse de Claude demande `/design consent`, il faut le taper soi-même à l'invite de Claude Code.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-21",
+     "caduc_si": "La commande `/design consent` change de syntaxe ou disparaît de la documentation des commandes."
+    },
+    {
+     "affirmation": "Sylvain utilise Claude Design intensivement et veut en découvrir toutes les possibilités ; `/design` n'est plus à ignorer mais à recommander.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-21",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Claude Design ou Sylvain déclare l'abandonner."
+    },
+    {
+     "affirmation": "La Console de pilotage `carnet-console` est en React avec Vite et construite par la session Design (Claude Design).",
+     "source": "contexte:projet.delta-desktop",
+     "releve_le": "2026-10-21",
+     "caduc_si": "CONTEXTE.md ne décrit plus la Console comme construite avec Claude Design."
+    }
+   ]
+  },
+  {
    "id": "claude-code-commandes-design-login",
    "produit": "claude-code",
    "categorie": "commandes",
    "nom": "/design-login",
    "gabarit": "complet",
    "description": "Autorise l'accès aux design systems pour `/design-sync` avec ton compte claude.ai.",
-   "description_source": "Authorize design-system access for /design-sync with your claude.ai account",
+   "description_source": "Authorize design-system access for /design-sync with your claude.ai account. Sign in with /design-login whenever /design-sync or /design consent tells you to",
    "usage": "/design-login",
    "usage_nature": "syntaxe",
    "exemple": "/design-login",
@@ -4022,11 +4098,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4047,6 +4123,43 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Authorize design-system access for /design-sync with your claude.ai account",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande /design-login autorise l'accès aux design systems pour /design-sync avec le compte claude.ai (« Authorize design-system access for /design-sync with your claude.ai account »).",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la commande /design-login change de rôle, de syntaxe ou disparaît de la documentation des commandes"
+      },
+      {
+       "affirmation": "Sylvain utilise Claude Design intensivement ; c'est le constructeur de la Console de pilotage (carnet-console), écrite en React avec Vite, et la Console étant en React, /design-sync devient pertinent.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus la Console de pilotage en React ou Sylvain n'utilise plus Claude Design"
+      },
+      {
+       "affirmation": "Sylvain veut découvrir toutes les possibilités de Claude Design ; Claude Design, /design, /design-sync et /design-login sont à recommander et à expliquer concrètement.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire la consigne de recommander /design-login ou les remet « à ignorer »"
+      },
+      {
+       "affirmation": "Restent à Sylvain les seuls gestes de compte, de paiement ou d'identifiants, dont l'autorisation OAuth et la création de compte.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne réserve plus les gestes de compte ou d'autorisation OAuth à Sylvain"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -4060,33 +4173,7 @@
      "pourquoi": "Les gestes de compte et d'identifiants restent à Sylvain."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "La commande /design-login autorise l'accès aux design systems pour /design-sync avec le compte claude.ai (« Authorize design-system access for /design-sync with your claude.ai account »).",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la commande /design-login change de rôle, de syntaxe ou disparaît de la documentation des commandes"
-    },
-    {
-     "affirmation": "Sylvain utilise Claude Design intensivement ; c'est le constructeur de la Console de pilotage (carnet-console), écrite en React avec Vite, et la Console étant en React, /design-sync devient pertinent.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus la Console de pilotage en React ou Sylvain n'utilise plus Claude Design"
-    },
-    {
-     "affirmation": "Sylvain veut découvrir toutes les possibilités de Claude Design ; Claude Design, /design, /design-sync et /design-login sont à recommander et à expliquer concrètement.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire la consigne de recommander /design-login ou les remet « à ignorer »"
-    },
-    {
-     "affirmation": "Restent à Sylvain les seuls gestes de compte, de paiement ou d'identifiants, dont l'autorisation OAuth et la création de compte.",
-     "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne réserve plus les gestes de compte ou d'autorisation OAuth à Sylvain"
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-desktop",
@@ -7681,7 +7768,7 @@
    "nom": "/schedule",
    "gabarit": "complet",
    "description": "Crée, modifie, liste ou lance des routines, qui s'exécutent dans le cloud ; Claude guide la configuration par la conversation et peut rendre compte des exécutions récentes. Alias : `/routines`.",
-   "description_source": "Create, update, list, or run routines, which execute in the cloud. Claude walks you through the setup conversationally. You can also ask about a routine's recent runs. Alias: /routines",
+   "description_source": "Create, update, list, or run cloud scheduled tasks, formerly routines. Claude walks you through the setup conversationally. You can also ask about a scheduled task's recent runs. Alias: /routines",
    "usage": "/schedule [description]",
    "usage_nature": "syntaxe",
    "exemple": "/schedule chaque lundi, résume les commits de la semaine sur carnet",
@@ -7698,11 +7785,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7727,6 +7814,55 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Create, update, list, or run routines, which execute in the cloud. Claude walks you through the setup conversationally. You can also ask about a routine's recent runs. Alias: /routines",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/schedule [description]` crée, modifie, liste ou lance des routines, qui s'exécutent dans le cloud.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la commande /schedule change de syntaxe, cesse d'exécuter les routines dans le cloud ou disparaît de la documentation"
+      },
+      {
+       "affirmation": "Avec `/schedule`, Claude guide la configuration de la routine par la conversation, et l'on peut l'interroger sur les exécutions récentes d'une routine. La commande a pour alias `/routines`.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation ne décrit plus la configuration conversationnelle, le compte rendu des exécutions ou l'alias /routines"
+      },
+      {
+       "affirmation": "Sylvain utilise les artefacts, les connecteurs et les skills de Claude. Les routines planifiées figurent parmi les fonctions encore à explorer, et il veut exploiter tout ce qui sert au développement de ses projets.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne range plus les routines planifiées parmi les fonctions à explorer, ou indique qu'il les utilise déjà"
+      },
+      {
+       "affirmation": "carnet est le projet le plus actif de Sylvain : 403 commits en 60 jours, jusqu'à 47 par jour, dont environ 65 commits de fonctionnalités, le reste étant de la donnée automatique.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus carnet comme le projet le plus actif, ou ne décrit plus ce projet"
+      },
+      {
+       "affirmation": "carnet est un dépôt GitHub synchronisé par l'API GitHub Contents et hébergé sur GitHub Pages. Claude Code y sert au développement et au coach, et le dépôt n'a pas de CI GitHub Actions.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "carnet quitte GitHub, adopte une CI GitHub Actions ou n'est plus développé avec Claude Code selon CONTEXTE.md"
+      },
+      {
+       "affirmation": "Le dépôt carnet est public et ne doit contenir aucun secret ni aucune donnée personnelle.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que le dépôt carnet devient privé ou que cette règle d'AGENTS.md disparaît"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -7740,45 +7876,7 @@
      "pourquoi": "dépôt GitHub sur lequel la routine tournerait"
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "`/schedule [description]` crée, modifie, liste ou lance des routines, qui s'exécutent dans le cloud.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la commande /schedule change de syntaxe, cesse d'exécuter les routines dans le cloud ou disparaît de la documentation"
-    },
-    {
-     "affirmation": "Avec `/schedule`, Claude guide la configuration de la routine par la conversation, et l'on peut l'interroger sur les exécutions récentes d'une routine. La commande a pour alias `/routines`.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation ne décrit plus la configuration conversationnelle, le compte rendu des exécutions ou l'alias /routines"
-    },
-    {
-     "affirmation": "Sylvain utilise les artefacts, les connecteurs et les skills de Claude. Les routines planifiées figurent parmi les fonctions encore à explorer, et il veut exploiter tout ce qui sert au développement de ses projets.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne range plus les routines planifiées parmi les fonctions à explorer, ou indique qu'il les utilise déjà"
-    },
-    {
-     "affirmation": "carnet est le projet le plus actif de Sylvain : 403 commits en 60 jours, jusqu'à 47 par jour, dont environ 65 commits de fonctionnalités, le reste étant de la donnée automatique.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme le projet le plus actif, ou ne décrit plus ce projet"
-    },
-    {
-     "affirmation": "carnet est un dépôt GitHub synchronisé par l'API GitHub Contents et hébergé sur GitHub Pages. Claude Code y sert au développement et au coach, et le dépôt n'a pas de CI GitHub Actions.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "carnet quitte GitHub, adopte une CI GitHub Actions ou n'est plus développé avec Claude Code selon CONTEXTE.md"
-    },
-    {
-     "affirmation": "Le dépôt carnet est public et ne doit contenir aucun secret ni aucune donnée personnelle.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que le dépôt carnet devient privé ou que cette règle d'AGENTS.md disparaît"
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-scroll-speed",
