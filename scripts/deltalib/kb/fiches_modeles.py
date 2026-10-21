@@ -16,6 +16,7 @@ from pathlib import Path
 import yaml
 
 from .modeles import PERIMETRE_DU_PRODUIT, STATUTS_USAGE, slug
+from ..versions_evenements import ajouter_evenements, lire_precedent
 
 DOSSIER_SOURCE = "kb-modeles"
 CATEGORIE = "modeles"
@@ -631,5 +632,16 @@ def _ecrire_json_atomique(chemin: Path, doc: dict) -> None:
 def ecrire_modeles(racine: Path) -> dict:
     """Écrit `docs/data/kb/modeles.json` de manière atomique."""
     doc = construire_modeles(racine)
+    precedent = lire_precedent(chemin_kb_modeles(racine))
+    changements = []
+    if isinstance(precedent, dict) and isinstance(precedent.get("modeles"), dict):
+        anciens = precedent["modeles"]
+        for ident, modele in doc["modeles"].items():
+            if ident not in anciens:
+                changements.append({"modele": ident, "avant": None, "apres": modele.get("version") or ident})
+            elif (anciens[ident].get("version") is not None and modele.get("version") is not None
+                  and anciens[ident]["version"] != modele["version"]):
+                changements.append({"modele": ident, "avant": anciens[ident]["version"], "apres": modele["version"]})
     _ecrire_json_atomique(chemin_kb_modeles(racine), doc)
+    ajouter_evenements(racine, changements)
     return doc

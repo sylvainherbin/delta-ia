@@ -285,6 +285,21 @@ Génération initiale (D46, D50, D51) : par lots (`scripts/catalogue.py lots`), 
 
 Écrit par `scripts/recherche.py` (`deltalib/recherche.py`, sans modèle ni réseau), qui recopie, pour chaque élément de chaque fichier quotidien des trois périmètres, ce que le site cherche : `{genere_le, statut: ok|echec, raison, sources, total, elements}`. `sources` : `{claude, actu, openai: {statut, raison, jours}}` (`jours` : les fichiers quotidiens lus). `elements`, du plus récent au plus ancien (date, puis périmètre et id décroissants), une ligne `{id, date, perimetre, titre, impact, texte}` par élément et par jour, un id repris plusieurs jours y figurant à chacun : `titre` recopié, `impact` recopié (null si absent), `texte` = `resume`, `pour_toi` et `action.description` recopiés (ou `action` en texte simple), espaces réduits à un seul, chacun coupé sur une limite de mot à 600, 400 et 300 caractères (« … » à la coupe), séparés par ` · `, les champs vides omis ; au plus 1 306 caractères (`MAX_TEXTE`). Jamais de phrase rédigée, jamais `etapes`, `sources` ni `kb_refs`. Le fichier est du JSON compact ; à 189 éléments (23/09 au 09/10/2026) il pèse 154 Ko, 49 Ko compressé, soit environ 8 Ko par jour. Un fichier quotidien illisible : `statut: echec`, `raison` et la source dans `sources`, ligne `! AVERTISSEMENT recherche` à l'écran, code de sortie 0 (le fichier est écrit avec les autres jours) ; un contenu identique hors `genere_le` n'est pas réécrit ; code 1 : écriture impossible. `valider.py --perimetre claude` le contrôle (champs exacts, `statut`/`raison`/`sources`, `total`, tri, jours présents dans `sources`, `texte` ≤ `MAX_TEXTE`, secrets) ; absent, il est accepté. Le passage `actu` l'écrit après le bilan de la semaine (D98) et avant son commit : l'élément d'OpenAI du jour n'y entre qu'au passage suivant, `$delta` tournant après.
 
+### 7.6 Journal local des versions — `rapports/versions-evenements.jsonl`
+
+Journal JSONL local, ignoré par Git, consommable par le Bureau. Chaque ligne porte exactement
+`{id, ts, type: "version_changee", outil, avant, apres}`, ou `modele` à la place de `outil`.
+`ts` est ISO 8601 avec fuseau ; `id` est le SHA-256 tronqué à 24 caractères du contenu
+sans `id` (JSON UTF-8, clés triées). Les identifiants enregistrés ne changent jamais.
+`versions.py` compare les versions installées au fichier précédent : uniquement deux valeurs
+non nulles différentes. Le catalogue compare les clés du dictionnaire `modeles` du schéma v2,
+indépendamment des couples modèle × effort : ajout = `avant: null`, `apres: identifiant`
+(ou sa version si le schéma la porte) ; changement de champ `version` = deux versions connues différentes.
+Sans ancien fichier, aucun événement historique. Chaque écriture réelle crée le journal vide
+s'il manque, puis ajoute uniquement les changements constatés, une ligne complète par `write`
+en mode `a`, sans réécriture. `--dry-run` ne crée rien. Un échec du journal avertit sur stderr
+sans faire échouer le relevé ; aucun rattrapage des événements perdus n'est garanti.
+
 ## 8. Site
 
 Pages ou onglets :

@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deltalib.dates import maintenant_iso  # noqa: E402
 from deltalib import profil as profil_mod  # noqa: E402
 from deltalib.modeles import cle_version  # noqa: E402
+from deltalib.versions_evenements import ajouter_evenements, lire_precedent  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 _RE_SEMVER = re.compile(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?")
@@ -238,8 +239,14 @@ def main(argv=None) -> int:
               f"| {l['methode']}" + (f" | {l['raison']}" if l.get("raison") else ""))
     if not a.dry_run:
         chemin = a.racine / "docs" / "data" / "versions.json"
+        precedent = lire_precedent(chemin)
+        anciennes = {l["outil"]: l.get("version") for l in precedent} if isinstance(precedent, list) else {}
+        changements = [{"outil": l["outil"], "avant": anciennes[l["outil"]], "apres": l["version"]}
+                       for l in lignes if anciennes.get(l["outil"]) is not None
+                       and l["version"] is not None and anciennes[l["outil"]] != l["version"]]
         chemin.parent.mkdir(parents=True, exist_ok=True)
         chemin.write_text(json.dumps(lignes, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        ajouter_evenements(a.racine, changements)
         print(f"-> {chemin}")
     return 0
 
