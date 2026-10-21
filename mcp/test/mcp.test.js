@@ -838,16 +838,24 @@ test("recherche mixte : effort, quota et model effort gardent les fiches de docu
   const docs = [
     { id: "doc-effort", nom: "/effort", produit: "claude-code", categorie: "commandes", usage: "effort", description: "Réglage du model effort et quota", commentee: false },
   ];
-  const modele = (id, effort) => ({ id, nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", effort, aliases: [], description: "model effort quota" });
+  const modeles = { m: { nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", aliases_effort: [], description_commune: "model effort quota", commentee: true } };
+  const entrees = Array.from({ length: 24 }, (_, i) => ({ modele: "m", effort: i % 2 ? "medium" : "high", id: `model-${i}`, nom: `Claude Sonnet effort ${i}`, categorie: "modeles", description: "model effort quota" }));
   const donnees = base(docs);
-  donnees["kb/modeles.json"] = { schema_version: 2, modeles: {}, entrees: [modele("model-high", "high"), modele("model-medium", "medium")] };
-  // Toutes les catégories non concernées sont vides : le test ne dépend pas des fiches vivantes.
+  donnees["kb/modeles.json"] = { schema_version: 2, modeles, entrees };
+  // Plus de vingt fiches modèles commentées rivalisent avec une fiche de documentation non commentée.
   await avecDonnees(donnees, async (outil) => {
     for (const requete of ["effort", "quota", "model effort"]) {
       const r = (await outil("chercher_reference", { requete, produit: "claude-code", limite: 20 })).result.structuredContent;
-      assert.ok(r.resultats.some((e) => e.categorie !== "modeles"), requete);
+      assert.equal(r.total, 25, requete);
+      assert.ok(r.resultats.some((e) => e.id === "doc-effort"), requete);
+      assert.ok(r.resultats.filter((e) => e.categorie === "modeles").length <= 10, `${requete}: ${r.resultats.map((e) => `${e.id}/${e.categorie}`).join(", ")}`);
+      assert.match(r.avis, /résultats affichés sur 25 correspondances/, requete);
     }
   });
-  const r = (await appel("chercher_reference", { requete: "effort", limite: 20 })).corps.result.structuredContent;
-  assert.ok(r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort") < 5);
+  for (const requete of ["effort", "model effort"]) {
+    const r = (await appel("chercher_reference", { requete, produit: "claude-code", limite: 20 })).corps.result.structuredContent;
+    assert.ok(r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort") < 5, requete);
+  }
+  const quota = (await appel("chercher_reference", { requete: "quota", produit: "claude-code", limite: 20 })).corps.result.structuredContent;
+  assert.ok(quota.resultats.some((e) => e.categorie !== "modeles"), "les données vivantes rendent une fiche de documentation pour quota");
 });

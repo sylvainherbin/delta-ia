@@ -224,7 +224,15 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
   const aliasAmbigus = scores.filter(([, e]) => e.categorie === "modeles" && (e.aliases || []).some((a) => sansAccents(a) === q));
   if (aliasAmbigus.length > 1) avis = [avis, "alias ambigu : plusieurs couples correspondent ; utiliser leur identifiant canonique"].filter(Boolean).join(" ; ");
   classer(scores);
-  const r = { avertissement: AVERTISSEMENT, total: scores.length, resultats: scores.slice(0, n).map(([, e]) => fiche(e)) };
+  let selection = scores;
+  if (!categorie && scores.some(([, e]) => e.categorie !== "modeles") && scores.some(([, e]) => e.categorie === "modeles")) {
+    const modeles = scores.filter(([, e]) => e.categorie === "modeles");
+    const plafondModeles = Math.ceil(n / 2);
+    selection = scores.filter(([, e]) => e.categorie !== "modeles").slice(0, n - plafondModeles);
+    selection = [...selection, ...modeles.slice(0, plafondModeles)].sort((a, b) => scores.indexOf(a) - scores.indexOf(b));
+    if (selection.length < Math.min(scores.length, n)) avis = [avis, `recherche mixte : ${selection.length} résultats affichés sur ${scores.length} correspondances (plafond de ${plafondModeles} fiches modèles)`].filter(Boolean).join(" ; ");
+  }
+  const r = { avertissement: AVERTISSEMENT, total: scores.length, resultats: selection.slice(0, n).map(([, e]) => fiche(e)) };
   if (categories_non_lues.length) r.categories_non_lues = categories_non_lues;
   if (avis) r.avis = avis;
   return r;
