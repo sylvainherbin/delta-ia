@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 127,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -494,12 +494,12 @@
    "categorie": "commandes",
    "nom": "/auto-mode-setup",
    "gabarit": "complet",
-   "description": "Rédige des entrées `autoMode.environment` à partir du projet et des sessions récentes, te laisse relire le brouillon puis l'enregistre dans les réglages utilisateur. Réservée aux plans Pro, Max et Team.",
+   "description": "Rédige des entrées `autoMode.environment` à partir du projet et des sessions récentes, te laisse relire le brouillon puis l'enregistre dans les réglages utilisateur. Demande Claude Code v2.1.228 ou plus sur les plans Pro, Max et Team, v2.1.283 ou plus avec un plan Enterprise ou une clé API Claude Console.",
    "description_source": "Draft autoMode.environment entries from your project and recent sessions, then review the draft and save it to your user settings. On a Pro, Max, or Team plan, requires Claude Code v2.1.228 or later, or v2.1.233 or later on native Windows. On an Enterprise plan or with a Claude Console API key, requires v2.1.283 or later. If the command is missing, see /auto-mode-setup returns \"Unknown command\"",
    "usage": "/auto-mode-setup",
    "usage_nature": "syntaxe",
    "exemple": "/auto-mode-setup",
-   "disponibilite": "Pro, Max et Team",
+   "disponibilite": "Pro, Max et Team (v2.1.228 ou plus) ; Enterprise ou clé API Claude Console (v2.1.283 ou plus)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -512,7 +512,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -549,9 +549,13 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
@@ -562,7 +566,7 @@
      "pourquoi": "Refus du classifieur du mode auto : friction levée le 06/10 par le régime bypassPermissions."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-autocompact",
@@ -4080,7 +4084,7 @@
    "categorie": "commandes",
    "nom": "/design-login",
    "gabarit": "complet",
-   "description": "Autorise l'accès aux design systems pour `/design-sync` avec ton compte claude.ai.",
+   "description": "Autorise, avec ton compte claude.ai, l'accès aux design systems dont `/design-sync` a besoin. La documentation dit de la relancer chaque fois que `/design-sync` ou `/design consent` le demandent.",
    "description_source": "Authorize design-system access for /design-sync with your claude.ai account. Sign in with /design-login whenever /design-sync or /design consent tells you to",
    "usage": "/design-login",
    "usage_nature": "syntaxe",
@@ -4089,7 +4093,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Prérequis de `/design-sync` sur la Console de pilotage (React) : à lancer une fois avant. L'autorisation du compte claude.ai est un geste de compte, donc le tien."
+    "pourquoi": "Prérequis de `/design-sync` pour envoyer le design system React de la Console (`carnet-console`) dans Claude Design : lance `/design-login` dans une session ouverte sur ce dépôt, puis `/design-sync` ; résultat attendu, la synchronisation ne redemande plus de connexion. L'autorisation du compte claude.ai est un geste de compte, donc le tien."
    },
    "sources": [
     {
@@ -4098,7 +4102,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4160,20 +4164,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-21",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Claude Design utilisé intensivement ; /design-login à recommander et expliquer (consigne du 29/09)."
+     "pourquoi": "Claude Design utilisé intensivement, Console en React ; /design-login à recommander et expliquer (consigne du 29/09)."
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Les gestes de compte et d'identifiants restent à Sylvain."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/design-login` autorise l'accès aux design systems pour `/design-sync` avec le compte claude.ai, et se relance chaque fois que `/design-sync` ou `/design consent` le demandent.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-21",
+     "caduc_si": "La commande `/design-login` change de rôle ou de syntaxe, ou disparaît de la documentation des commandes."
+    },
+    {
+     "affirmation": "Sylvain utilise Claude Design intensivement pour construire la Console de pilotage (`carnet-console`, en React avec Vite) ; `/design-sync` et `/design-login` sont à recommander et à expliquer concrètement.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-21",
+     "caduc_si": "CONTEXTE.md ne décrit plus la Console en React construite avec Claude Design, ou remet `/design-login` à ignorer."
+    },
+    {
+     "affirmation": "Les gestes de compte, de paiement ou d'identifiants, dont l'autorisation OAuth, restent à Sylvain.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-21",
+     "caduc_si": "CONTEXTE.md ne réserve plus les gestes de compte ou d'autorisation à Sylvain."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-desktop",
