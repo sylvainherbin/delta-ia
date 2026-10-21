@@ -227,21 +227,16 @@ async function chercherReference({ requete, produit, categorie, limite = 8 } = {
   let selection = scores;
   if (!categorie && scores.some(([, e]) => e.categorie !== "modeles") && scores.some(([, e]) => e.categorie === "modeles")) {
     const plafondModeles = Math.ceil(n / 2);
-    selection = [];
-    let modelesRetenus = 0;
-    let modelesEcartes = 0;
-    for (let i = 0; i < scores.length && selection.length < n; i++) {
-      const score = scores[i];
-      if (score[1].categorie !== "modeles") selection.push(score);
-      else {
-        const resteDocumentaire = scores.slice(i + 1).some(([, e]) => e.categorie !== "modeles");
-        if (modelesRetenus < plafondModeles || !resteDocumentaire) {
-          selection.push(score);
-          modelesRetenus++;
-        } else modelesEcartes++;
-      }
+    if (n === 1) selection = scores.slice(0, 1);
+    else {
+      const documentation = scores.filter(([, e]) => e.categorie !== "modeles");
+      const modeles = scores.filter(([, e]) => e.categorie === "modeles");
+      const kD = Math.min(documentation.length, n - Math.min(modeles.length, plafondModeles));
+      const kM = Math.min(modeles.length, n - kD);
+      selection = [...documentation.slice(0, kD), ...modeles.slice(0, kM)];
+      classer(selection);
     }
-    if ((scores.length > selection.length && !exacts.size) || modelesEcartes) avis = [avis, `recherche mixte : ${selection.length} résultats affichés sur ${scores.length} correspondances (plafond de ${plafondModeles} fiches modèles)`].filter(Boolean).join(" ; ");
+    if (scores.length > selection.length && !exacts.size) avis = [avis, `recherche mixte : ${selection.length} résultats affichés sur ${scores.length} correspondances (plafond de ${plafondModeles} fiches modèles)`].filter(Boolean).join(" ; ");
   }
   const r = { avertissement: AVERTISSEMENT, total: scores.length, resultats: selection.slice(0, n).map(([, e]) => fiche(e)) };
   if (categories_non_lues.length) r.categories_non_lues = categories_non_lues;

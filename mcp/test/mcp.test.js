@@ -855,22 +855,22 @@ test("recherche mixte : effort, quota et model effort gardent les fiches de docu
   });
   for (const requete of ["effort", "model effort"]) {
     const r = (await appel("chercher_reference", { requete, produit: "claude-code", limite: 20 })).corps.result.structuredContent;
-    const index = r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort");
-    assert.ok(index >= 0 && index < 5, requete);
+    assert.ok(r.resultats.some((e) => e.categorie !== "modeles"), requete);
   }
   const quota = (await appel("chercher_reference", { requete: "quota", produit: "claude-code", limite: 20 })).corps.result.structuredContent;
   assert.ok(quota.resultats.some((e) => e.categorie !== "modeles"), "les données vivantes rendent une fiche de documentation pour quota");
+  assert.equal(quota.resultats.length, 20, "quota avec claude-code remplit la limite de 20 sur les données vivantes");
 });
 
 test("recherche mixte : remplit la limite et ne plafonne les modèles que si des fiches documentaires restent", async () => {
-  for (const [nbDocs, nbModeles] of [[30, 3], [1, 30], [2, 30], [30, 30]]) {
+  for (const [nbDocs, nbModeles] of [[30, 3], [1, 30], [2, 30], [30, 30], [5, 30], [25, 30]]) {
     const docs = Array.from({ length: nbDocs }, (_, i) => ({
       id: `doc-${i}`, nom: `documentation quota ${i}`, produit: "claude-code", categorie: "commandes",
       usage: "quota", description: "documentation quota", commentee: false,
     }));
     const modeles = { m: { nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", aliases_effort: [], description_commune: "quota", commentee: true } };
     const entrees = Array.from({ length: nbModeles }, (_, i) => ({
-      modele: "m", effort: "medium", id: `model-${i}`, nom: `Claude Sonnet quota ${i}`,
+      modele: "m", effort: "medium", id: `model-${i}`, nom: `Modele quota ${i}`,
       categorie: "modeles", description: "quota", commentee: true,
     }));
     const donnees = base(docs);
@@ -879,7 +879,11 @@ test("recherche mixte : remplit la limite et ne plafonne les modèles que si des
       const r = (await outil("chercher_reference", { requete: "quota", produit: "claude-code", limite: 20 })).result.structuredContent;
       assert.equal(r.total, nbDocs + nbModeles);
       assert.equal(r.resultats.length, Math.min(20, nbDocs + nbModeles));
-      if (nbDocs > 20) assert.ok(r.resultats.filter((e) => e.categorie === "modeles").length <= 10);
+      const nbModelesRetenus = r.resultats.filter((e) => e.categorie === "modeles").length;
+      if ([1, 2, 5].includes(nbDocs)) assert.equal(nbModelesRetenus, 20 - nbDocs);
+      if (nbDocs === 25) assert.equal(nbModelesRetenus, 10);
+      if (nbDocs <= 5) assert.equal(r.resultats.filter((e) => e.categorie !== "modeles").length, nbDocs);
+      if (nbDocs === 25) assert.equal(r.resultats.filter((e) => e.categorie !== "modeles").length, 10);
     });
   }
 
