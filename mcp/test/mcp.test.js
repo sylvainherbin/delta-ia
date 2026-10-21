@@ -848,14 +848,48 @@ test("recherche mixte : effort, quota et model effort gardent les fiches de docu
       const r = (await outil("chercher_reference", { requete, produit: "claude-code", limite: 20 })).result.structuredContent;
       assert.equal(r.total, 25, requete);
       assert.ok(r.resultats.some((e) => e.id === "doc-effort"), requete);
-      assert.ok(r.resultats.filter((e) => e.categorie === "modeles").length <= 10, `${requete}: ${r.resultats.map((e) => `${e.id}/${e.categorie}`).join(", ")}`);
       assert.match(r.avis, /résultats affichés sur 25 correspondances/, requete);
     }
+    const effortSansProduit = (await outil("chercher_reference", { requete: "effort", limite: 20 })).result.structuredContent;
+    assert.ok(effortSansProduit.resultats.some((e) => e.id === "doc-effort"), "effort sans filtre produit conserve sa documentation");
   });
   for (const requete of ["effort", "model effort"]) {
     const r = (await appel("chercher_reference", { requete, produit: "claude-code", limite: 20 })).corps.result.structuredContent;
-    assert.ok(r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort") < 5, requete);
+    const index = r.resultats.findIndex((e) => e.id === "claude-code-commandes-effort");
+    assert.ok(index >= 0 && index < 5, requete);
   }
   const quota = (await appel("chercher_reference", { requete: "quota", produit: "claude-code", limite: 20 })).corps.result.structuredContent;
   assert.ok(quota.resultats.some((e) => e.categorie !== "modeles"), "les données vivantes rendent une fiche de documentation pour quota");
+});
+
+test("recherche mixte : remplit la limite et ne plafonne les modèles que si des fiches documentaires restent", async () => {
+  for (const [nbDocs, nbModeles] of [[30, 3], [1, 30], [2, 30], [30, 30]]) {
+    const docs = Array.from({ length: nbDocs }, (_, i) => ({
+      id: `doc-${i}`, nom: `documentation quota ${i}`, produit: "claude-code", categorie: "commandes",
+      usage: "quota", description: "documentation quota", commentee: false,
+    }));
+    const modeles = { m: { nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", aliases_effort: [], description_commune: "quota", commentee: true } };
+    const entrees = Array.from({ length: nbModeles }, (_, i) => ({
+      modele: "m", effort: "medium", id: `model-${i}`, nom: `Claude Sonnet quota ${i}`,
+      categorie: "modeles", description: "quota", commentee: true,
+    }));
+    const donnees = base(docs);
+    donnees["kb/modeles.json"] = { schema_version: 2, modeles, entrees };
+    await avecDonnees(donnees, async (outil) => {
+      const r = (await outil("chercher_reference", { requete: "quota", produit: "claude-code", limite: 20 })).result.structuredContent;
+      assert.equal(r.total, nbDocs + nbModeles);
+      assert.equal(r.resultats.length, Math.min(20, nbDocs + nbModeles));
+      if (nbDocs > 20) assert.ok(r.resultats.filter((e) => e.categorie === "modeles").length <= 10);
+    });
+  }
+
+  const docs = [{ id: "doc-one", nom: "documentation", produit: "claude-code", categorie: "commandes", usage: "quota", description: "quota", commentee: false }];
+  const modeles = { m: { nom_modele: "Claude Sonnet", produit: "claude-code", categorie: "modeles", executant: "claude", aliases_effort: [], description_commune: "quota", commentee: true } };
+  const donnees = base(docs);
+  donnees["kb/modeles.json"] = { schema_version: 2, modeles, entrees: [{ modele: "m", effort: "medium", id: "model-first", nom: "Claude Sonnet quota", categorie: "modeles", description: "quota", commentee: true }] };
+  await avecDonnees(donnees, async (outil) => {
+    const r = (await outil("chercher_reference", { requete: "quota", produit: "claude-code", limite: 1 })).result.structuredContent;
+    assert.equal(r.resultats.length, 1);
+    assert.equal(r.resultats[0].id, "model-first", "la limite 1 garde le modèle classé premier");
+  });
 });
