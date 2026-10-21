@@ -15,6 +15,7 @@ Le format est détecté d'après la réponse si l'option est absente.
 from __future__ import annotations
 
 import re
+import logging
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
@@ -24,6 +25,7 @@ from ..modeles import Element, FormatInattendu, ResultatSource
 
 _RE_H3 = re.compile(r"^###\s+(.+?)\s*$", re.M)
 _RE_GRAS_SEUL = re.compile(r"^\*\*(.+?)\*\*\s*$")
+_journal = logging.getLogger(__name__)
 
 
 def _nom(source) -> str:
@@ -110,6 +112,7 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
         raise FormatInattendu("aucune balise <time> trouvée")
     elements: list[Element] = []
     vus: set[str] = set()
+    ignores = 0
     for t in times:
         # Ancien gabarit : date, titre et lien partageaient le même <a>.
         a = t.find_parent("a")
@@ -125,6 +128,7 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
                                         ("FeaturedGrid" in c and ("__featured" in c or "__tile" in c)))
                 for c in (p.get("class") or []))), None)
             if carte is None:
+                ignores += 1
                 continue
             titre_el = carte.find(["h1", "h2", "h3", "h4", "h5"])
             if titre_el is None:
@@ -144,8 +148,10 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
         elements.append(Element(id=url, produit=source.produit, titre=titre, version=None, date_publication=date_iso,
                                 url=url, contenu=resume.get_text(" ", strip=True) if resume else "",
                                 source_id=source.id, officielle=source.officielle))
-    if not elements:
+    if not elements and not ignores:
         raise FormatInattendu("balises <time> présentes mais aucun lien avec intertitre : gabarit changé ?")
+    if ignores:
+        _journal.warning("%s : %d balise(s) <time> hors conteneur reconnu ignorée(s)", source.id, ignores)
     return elements
 
 

@@ -1,11 +1,13 @@
 """Chaque analyseur sur un échantillon réel enregistré, plus les erreurs de format attendues."""
 
 import json
+from datetime import date
 
 import pytest
 
 from deltalib.analyseurs import ANALYSEURS, github_changelog, github_releases, html_notes, json_changelog, rss
 from deltalib.modeles import ErreurReseau, FormatInattendu
+from deltalib.etat import detecter
 
 CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "contenu", "source_id", "officielle",
           "empreinte", "revision", "changements"}
@@ -135,6 +137,7 @@ def test_newsroom_gabarit_article_avec_date_dans_entete(sources, fixture_texte):
     assert [(e.titre, e.date_publication, e.url) for e in elements] == [
         ("Introducing Claude Opus 5.5", "2026-09-22", "https://www.anthropic.com/claude-opus-5-5"),
         ("Investing in the public benefit", "2026-10-18", "https://www.anthropic.com/news/public-benefit-fund"),
+        ("Claude on Mars", "2026-10-12", "https://www.anthropic.com/features/claude-on-mars"),
     ]
 
 
@@ -143,11 +146,29 @@ def test_newsroom_gabarit_article_avec_date_dans_entete(sources, fixture_texte):
     ("markdown_date", "### Titre sans date\n\ncontenu\n"),
     ("html_date", "<html><body><article><h2>Rien</h2></article></body></html>"),
     ("html_time_liens", "<html><body><a href='/x'><h2>Sans time</h2></a></body></html>"),
-    ("html_time_liens", "<html><body><time>Sep 1, 2026</time><p>time hors lien</p></body></html>"),
 ])
 def test_html_gabarit_change_est_un_format_inattendu(sources, fmt, texte):
     with pytest.raises(FormatInattendu):
         html_notes.PARSEURS[fmt](texte, sources["anthropic-newsroom"])
+
+
+def test_newsroom_carrousel_ancien_est_filtre_par_fenetre(sources, fixture_texte):
+    elements = html_notes.parser_html_time_liens(fixture_texte("anthropic_news_current.html"), sources["anthropic-newsroom"])
+    nouveautes, ignores = detecter(elements, {"vus": {}}, date(2026, 10, 15))
+    assert "https://www.anthropic.com/features/claude-on-mars" not in {e.url for e in nouveautes}
+    assert "https://www.anthropic.com/features/claude-on-mars" in ignores
+
+
+def test_newsroom_carte_time_sans_lien_de_titre_est_inattendue(sources):
+    html = "<div class='__carousel-info-body'><time>Oct 1, 2026</time><h2>Carte</h2></div>"
+    with pytest.raises(FormatInattendu, match="sans lien de titre"):
+        html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"])
+
+
+def test_newsroom_time_hors_conteneur_est_journalisee_sans_echec_pied_de_page(sources, caplog):
+    html = "<footer><time>Oct 1, 2026</time></footer>"
+    assert html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"]) == []
+    assert "1 balise(s) <time> hors conteneur reconnu ignorée(s)" in caplog.text
 
 
 def test_html_markdown_attendu_mais_html_recu(sources):
