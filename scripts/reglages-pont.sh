@@ -8,7 +8,7 @@
 # Fenêtre sans commit 03 h 30 – 08 h 00 : en cas de lancement dans la fenêtre (rattrapage au démarrage), attend 08 h 05.
 # Tient .git/delta-passage.lock sans attendre pendant tout le travail (une chaîne de nuit en cours : rien n'est fait, code 14).
 # Variables d'essai : DELTA_PONT_SANS_MESSAGE=1 (affiche le message au lieu de l'envoyer), DELTA_PONT_HEURE=HHMM (heure simulée),
-# DELTA_PONT_BASE=<branche> (base de la branche de travail, défaut main).
+# DELTA_PONT_BASE=<branche> (base de la branche de travail, défaut main), DELTA_PONT_PYTHON (interpréteur, défaut .venv du dépôt).
 #
 # Codes : 0 fait (constats prêts, ou rien à changer) ; 1 échec (message au chef) ; 3 fait, mais une source du bilan est en échec
 # (dite dans le message) ; 14 chaîne en cours ; 16 environnement illisible.
@@ -19,7 +19,7 @@ HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
 export HOME
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
 export LANG=C.UTF-8 LC_ALL=C.UTF-8 GIT_TERMINAL_PROMPT=0
-PYTHON="$RACINE/.venv/bin/python"
+PYTHON="${DELTA_PONT_PYTHON:-$RACINE/.venv/bin/python}"
 [ -x "$PYTHON" ] || { echo "reglages-pont : $PYTHON introuvable" >&2; exit 16; }
 cd "$RACINE" || exit 16
 
