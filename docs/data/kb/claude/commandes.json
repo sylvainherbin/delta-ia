@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 128,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -4084,7 +4084,7 @@
    "categorie": "commandes",
    "nom": "/design-login",
    "gabarit": "complet",
-   "description": "Autorise, avec ton compte claude.ai, l'accès aux design systems dont `/design-sync` a besoin. La documentation dit de la relancer chaque fois que `/design-sync` ou `/design consent` le demandent.",
+   "description": "Autorise, avec ton compte claude.ai, l'accès aux design systems dont `/design-sync` a besoin ; la documentation dit de la relancer chaque fois que `/design-sync` ou `/design consent` le demandent. Cette connexion vise le site autonome claude.ai/design, qui ferme au plus tard le 14 décembre 2026 (migration vers Claude décrite par un article du support d'Anthropic).",
    "description_source": "Authorize design-system access for /design-sync with your claude.ai account. Sign in with /design-login whenever /design-sync or /design consent tells you to. This sign-in is for the standalone Claude Design site at claude.ai/design, which closes by December 14, 2026; see Migrate from standalone Claude Design to Claude",
    "usage": "/design-login",
    "usage_nature": "syntaxe",
@@ -4093,7 +4093,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Prérequis de `/design-sync` pour envoyer le design system React de la Console (`carnet-console`) dans Claude Design : lance `/design-login` dans une session ouverte sur ce dépôt, puis `/design-sync` ; résultat attendu, la synchronisation ne redemande plus de connexion. L'autorisation du compte claude.ai est un geste de compte, donc le tien."
+    "pourquoi": "Prérequis de `/design-sync` pour le design system React de la Console (`carnet-console`) : lance `/design-login` dans une session sur ce dépôt, puis `/design-sync` ; attendu : plus de demande de connexion (geste de compte, à toi). Limite : elle vise le site autonome claude.ai/design, qui ferme au plus tard le 14/12/2026 ; lis l'article de migration avant."
    },
    "sources": [
     {
@@ -4102,7 +4102,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4199,6 +4199,23 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Prérequis de `/design-sync` pour envoyer le design system React de la Console (`carnet-console`) dans Claude Design : lance `/design-login` dans une session ouverte sur ce dépôt, puis `/design-sync`, et vérifie que la synchronisation ne redemande plus de connexion (autorisation de compte : geste à toi). Limite : cette connexion vise le site autonome claude.ai/design, qui ferme au plus tard le 14/12/2026 ; lis l'article de migration avant cette date."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "commentaire révisé"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -4212,7 +4229,34 @@
      "pourquoi": "Les gestes de compte et d'identifiants restent à Sylvain."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "/design-login autorise l'accès aux design systems pour /design-sync avec le compte claude.ai, et se relance quand /design-sync ou /design consent le demandent.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-22",
+     "caduc_si": "la commande change de rôle ou disparaît de la page des commandes de Claude Code"
+    },
+    {
+     "affirmation": "Cette connexion vise le site autonome claude.ai/design, qui ferme au plus tard le 14 décembre 2026.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-22",
+     "caduc_si": "la date de fermeture change ou la documentation retire la mention du site autonome",
+     "revoir_le": "2026-12-01"
+    },
+    {
+     "affirmation": "Sylvain utilise Claude Design intensivement et la Console de pilotage est en React, ce qui rend /design-sync pertinent.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-22",
+     "caduc_si": "Sylvain cesse d'utiliser Claude Design ou la Console quitte React"
+    },
+    {
+     "affirmation": "Les gestes de compte, de paiement et d'identifiants (autorisation OAuth comprise) restent à Sylvain.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-22",
+     "caduc_si": "Sylvain délègue les autorisations de compte à une session"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-desktop",
