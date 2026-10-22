@@ -6,7 +6,7 @@ pure `parser_*` testable sur un échantillon enregistré.
 
 from __future__ import annotations
 
-from . import github_changelog, github_releases, html_notes, json_changelog, rss
+from . import github_changelog, github_releases, html_notes, json_changelog, rss, x_liste
 
 ANALYSEURS = {
     "github_changelog": github_changelog.analyser,
@@ -14,4 +14,5 @@ ANALYSEURS = {
     "html": html_notes.analyser,
     "rss": rss.analyser,
     "json": json_changelog.analyser,
+    "x_liste": x_liste.analyser,
 }

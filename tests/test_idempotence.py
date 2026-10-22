@@ -72,8 +72,9 @@ def test_premier_passage_ignore_les_anciens_et_les_valide_aussi(racine):
     assert all(e["date_publication"] >= "2026-08-24" for e in brut["nouveautes"] if e["date_publication"])
     assert {e["source_id"] for e in brut["nouveautes"] if not e["date_publication"]} <= SOURCES_AIDE_SUIVIES  # étape 2a
     # les échantillons ne contiennent que des entrées récentes ; seules les pages et l'index d'aide (état initial, étape 2a) et les
-    # annonces anciennes de dépréciation (étape 2c, historique depuis 2024) sont ignorés
-    assert brut["ignores"] and all(i.startswith(("claude-aide-", "anthropic-deprecations-")) for i in brut["ignores"])
+    # annonces anciennes de dépréciation (étape 2c, historique depuis 2024) sont ignorés ; la liste X (capteur, décisions du 22/10/2026)
+    # inscrit aussi ses reposts et réponses à d'autres comptes (`x-<id>`) sans les traiter
+    assert brut["ignores"] and all(i.startswith(("claude-aide-", "anthropic-deprecations-", "x-")) for i in brut["ignores"])
 
 
 def test_depuis_restreint_la_fenetre(racine):

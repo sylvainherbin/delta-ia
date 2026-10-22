@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -145,6 +146,19 @@ def analyses_memoisees():
 @pytest.fixture
 def sources():
     return {s.id: s for s in charger_sources(RACINE / "sources.yaml")}
+
+
+@pytest.fixture(autouse=True)
+def releve_x_frais(tmp_path_factory, monkeypatch):
+    """Les sources `x_liste` lisent le brut du capteur (relevé la nuit par l'API X, purgé en fin de passage) : tous les tests voient un
+    relevé récent tiré de l'échantillon, comme si le capteur avait tourné, et jamais le vrai `raw/` du dépôt."""
+    from deltalib.analyseurs import x_liste
+    brut = json.loads((FIXTURES / "x_liste_brut.json").read_text(encoding="utf-8"))
+    brut["releve_le"] = datetime.now(timezone.utc).isoformat()
+    dossier = tmp_path_factory.mktemp("racine-x")
+    (dossier / "raw").mkdir()
+    (dossier / "raw" / "x-liste.json").write_text(json.dumps(brut), encoding="utf-8")
+    monkeypatch.setattr(x_liste, "RACINE", dossier)
 
 
 @pytest.fixture

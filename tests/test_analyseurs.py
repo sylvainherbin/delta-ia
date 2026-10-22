@@ -15,7 +15,7 @@ CHAMPS = {"id", "produit", "titre", "version", "date_publication", "url", "conte
 
 
 def test_tous_les_types_ont_un_analyseur():
-    assert set(ANALYSEURS) == {"github_changelog", "github_releases", "html", "rss", "json"}
+    assert set(ANALYSEURS) == {"github_changelog", "github_releases", "html", "rss", "json", "x_liste"}
 
 
 def test_format_brut_commun(sources, client):

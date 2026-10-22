@@ -197,6 +197,7 @@ def depot(tmp_path):
 def cfg(tmp_path):
     c = orc.charger_config()
     c["chaine"]["arret_delai_s"] = 1
+    c["chaine"].pop("capteur_x", None)   # le capteur de la liste X a ses propres tests (test_capteur_x.py)
     return c
 
 

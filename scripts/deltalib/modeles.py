@@ -11,7 +11,7 @@ from .textes import normaliser_contenu
 
 PRODUITS = ("claude", "claude-code", "chatgpt", "codex", "actu")
 PERIMETRES = ("claude", "openai", "actu")
-TYPES = ("github_changelog", "github_releases", "html", "rss", "json")
+TYPES = ("github_changelog", "github_releases", "html", "rss", "json", "x_liste")
 STATUTS = ("ok", "bloque", "a_valider", "desactive")
 STATUTS_ACTIFS = ("ok", "a_valider")
 
