@@ -123,3 +123,11 @@ def test_encart_compte_et_quotas():
     css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
     for sel in (".comptes", ".quota.alerte", ".barre span", ".alerte-d71"):
         assert sel in css
+
+
+def test_site_ne_presente_plus_de_credit_cloud():
+    """Le crédit fictif ne doit réapparaître ni dans l'aide ni dans les pages publiques."""
+    for fichier in [DOCS / "assets" / "app.js", *sorted(DOCS.glob("*.html"))]:
+        texte = fichier.read_text(encoding="utf-8").casefold()
+        assert "crédit sessions cloud" not in texte, fichier
+        assert not ("crédit" in texte and "échéance" in texte), fichier

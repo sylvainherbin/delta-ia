@@ -1472,7 +1472,7 @@
       limite: "Éléments sans impact masqués par défaut. Ne montre que le dernier jour de chaque périmètre : les jours précédents sont dans Changelogs et Archives." },
     { id: "quotas", titre: "Compte et quotas (haut d'Aujourd'hui)",
       sert: "Quotas Claude (session 5 h, semaine, semaine Fable) et ChatGPT (semaine) avec leur remise à zéro.",
-      geste: "Rien à cliquer. Au-delà de 80 % d'un quota hebdomadaire : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ». Le crédit passe en alerte à 14 jours de l'échéance.",
+      geste: "Rien à cliquer. Au-delà de 80 % d'un quota hebdomadaire : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ».",
       limite: "Valeur du dernier relevé, pas en direct (sa date est affichée) ; une remise à zéro passée marque la valeur périmée. Bloc absent quand le relevé n'est pas publié." },
     { id: "outils", titre: "Tes outils (Aujourd'hui)",
       sert: "Version installée de Claude Code, du Codex de l'app ChatGPT, de la Codex CLI, de ChatGPT Desktop et de Claude Desktop, face à la dernière version publiée connue de Delta.",
