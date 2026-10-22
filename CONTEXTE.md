@@ -23,9 +23,7 @@ pris sur le web le 07/10/2026 (216 €, renouvellement le 07/11), **à l'essai d
 on verra pour la suite », avec un bilan d'usage à préparer avant le 07/11 (la date du 03/11 vient de Delta) **[déclaré :
 décision de Sylvain du 07/10, `~/projets/DECISIONS.md`]** ; il remplace le Max 5x pris par iOS, échu le 06/10. Abonnement
 ChatGPT **Pro (100)** **[déclaré]** ; Sylvain garde les deux et veut que Delta développe l'usage de Claude ET de
-ChatGPT/Codex **[déclaré, 05/10]**. **Crédits Claude Code cloud** : à utiliser
-avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10, exécutant `claude-cloud`) **[déclaré, 06/10 ; observé :
-`operer qui`]**.
+ChatGPT/Codex **[déclaré, 05/10]**. **Aucun crédit Claude Code cloud** **[déclaré : décision de Sylvain du 21/10, `~/projets/DECISIONS.md`]**.
 
 **Priorité actuelle : trading-sim** [déclaré]. **Irritant principal** [déclaré] : ne pas connaître
 assez bien les commandes et les fonctionnalités de Claude Code, de l'app Claude et de Codex pour
@@ -441,8 +439,8 @@ et clore leurs propres missions (`operer mission avancer`). Commandes utiles : `
   défaut). Une leçon est injectée dans les briefs, peut expirer à la clôture d'un incident ou d'une mission (`--incident`),
   et se retire sans effacer sa version précédente.
 - **Allocation et rythme** [observé : `operer qui`] : OPÉRER répartit les missions entre Claude local, **Claude cloud**
-  (exécutant `claude-cloud`, limité aux natures `code` et `mecanique`, crédits à épuiser avant le 05/11) et Codex ; il suit
-  un rythme de consommation (cible de 14 % par jour pour Claude et ChatGPT, une cible en dollars par jour pour le cloud).
+  (exécutant `claude-cloud`, limité aux natures `code` et `mecanique`) et Codex ; il suit
+  un rythme de consommation (cible de 14 % par jour pour Claude et ChatGPT).
 - **Remise** : le moteur colle le message dans le volet tmux de la session puis renvoie Entrée par un appel distinct, au plus
   un message par session et par tic [observé : FORMAT.md].
 
