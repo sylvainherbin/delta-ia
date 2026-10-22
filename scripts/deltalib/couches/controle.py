@@ -18,6 +18,7 @@ import yaml
 
 from .projection import ESSAIS, REJUGEMENTS, lire_entrees, slug_outil
 from .racines import Racines
+from .schemas import id_brut
 
 
 def _charger(chemin: Path):
@@ -95,7 +96,7 @@ def fidelite(depot: Path, racines: Racines) -> tuple[list[str], dict]:
             ids = [ligne[cle]] if cle == "id" else ligne[cle]
             reste = {k: v for k, v in ligne.items() if k != cle}
             for i in ids:
-                trouve = [o for k, o in overlay.items() if k.rsplit(":", 1)[-1] == i
+                trouve = [o for k, o in overlay.items() if id_brut(k) == i
                           and {**reste, "source": rel} in o[champ]]
                 if not trouve:
                     erreurs.append(f"{i}: ligne de {rel} absente du magasin privé")
@@ -109,7 +110,7 @@ def fidelite(depot: Path, racines: Racines) -> tuple[list[str], dict]:
                 continue
             essais_a_tester += 1
             trouve = any(h["fichier"] == "docs/data/kb/a-tester.json" and h["champs"].get("essai") == e["essai"]
-                         for k, o in overlay.items() if k.rsplit(":", 1)[-1] == e["id"] for h in o["historique_importe"])
+                         for k, o in overlay.items() if id_brut(k) == e["id"] for h in o["historique_importe"])
             if not trouve:
                 erreurs.append(f"{e['id']}: essai de l'onglet À tester absent du magasin privé")
     if (data / "kb" / "noms.json").is_file() and "kb/noms.json" in communs and not retenus:

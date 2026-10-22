@@ -20,6 +20,9 @@ VERSION = 1
 STATUTS_OBJET = ("non_personnalise", "importe", "a_revoir", "reference_retiree", "reference_introuvable")
 RE_GENERATION = re.compile(r"g-[0-9a-f]{16}")
 RE_IDENTITE = re.compile(r"(kb:(claude|openai):|kb:delta:(methodes|modeles):|veille:(claude|openai|actu):|version:)\S+")
+# Préfixes d'identité, du plus long au plus court : l'id brut qui suit peut contenir « : » (veille dont l'id est une URL).
+PREFIXES_IDENTITE = ("kb:delta:methodes:", "kb:delta:modeles:", "kb:delta:forfaits:", "kb:introuvable:", "kb:claude:",
+                     "kb:openai:", "veille:claude:", "veille:openai:", "veille:actu:", "version:", "fichier:")
 RE_SHA256 = re.compile(r"[0-9a-f]{64}")
 TAILLE_MAX = 64 << 20  # par fichier d'une génération
 
@@ -42,6 +45,14 @@ CLES_OBJET = {"objet", "commun_empreinte", "statut", "langue", "observe_le", "ev
 CLES_PERSONNEL = {"overlay": {"schema", "schema_version", "vue", "commun_generation", "profil_empreinte", "objets"},
                   "en_attente": {"schema", "schema_version", "vue", "commun_generation", "objets", "refus"},
                   "import": {"schema", "schema_version", "vue", "commun_generation", "entrees", "comptes"}}
+
+
+def id_brut(identite: str) -> str:
+    """Id d'origine porté par une identité (`veille:actu:https://…` → `https://…`) ; l'identité entière sinon."""
+    for prefixe in PREFIXES_IDENTITE:
+        if identite.startswith(prefixe):
+            return identite[len(prefixe):]
+    return identite
 
 
 def _fermer(doc, permises: set[str], ou: str, erreurs: list[str]) -> bool:

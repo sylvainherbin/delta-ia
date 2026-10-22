@@ -3,7 +3,7 @@
 Un champ C est extrait des sources publiques par le code ; s'il contient malgré tout un secret, une trace OPÉRER, un
 chemin de dossier personnel, un courriel réel ou un terme propre à l'instance, il est mis en attente au lieu d'être
 exporté. Les termes de l'instance sont lus à l'exécution (HOME, courriel git, projets de CONTEXTE.md) et ne sont jamais
-écrits dans un fichier suivi. Seuls les noms de projet composés (`trading-sim`) servent de terme : un nom d'un seul mot
+écrits dans un fichier suivi. Seuls les noms de projet composés (`mon-projet`) servent de terme : un nom d'un seul mot
 courant (« marketing ») apparaît dans la documentation publique et bloquerait des fiches sans raison.
 """
 
@@ -18,9 +18,22 @@ from ..confidentialite import RE_ORGANISATION_PRIVEE, RE_SECRETS
 RE_DOSSIER_PERSONNEL = re.compile(r"(?:/home/|/Users/|[A-Za-z]:\\+Users\\+)([A-Za-z0-9_][\w.-]*)")
 # Noms d'exemple de la documentation publique (`/Users/me/.codex`, `/Users/my-project/src`) : pas le dossier d'une personne.
 RE_NOM_EXEMPLE = re.compile(r"(?:me|you|user|username|name|example|alice|bob|jane|john|runner|(?:my|your)-[\w.-]*)", re.I)
-# Domaines réservés à la documentation (RFC 2606, RFC 6761) : exemples publics, pas des courriels de personnes.
-RE_COURRIEL = re.compile(r"[\w.+-]+@(?!(?:[\w-]+\.)*(?:example\.(?:com|org|net)|example|test|invalid|localhost)\b)"
-                         r"[\w-]+(?:\.[\w-]+)+")
+RE_COURRIEL = re.compile(r"[\w.+-]+@([\w-]+(?:\.[\w-]+)+)")
+# Domaines réservés à la documentation (RFC 2606, RFC 6761), exigés entiers : example.com/org/net et leurs sous-domaines,
+# TLD .test, .invalid, .localhost, .example. `a@example-corp.com` ou `a@test.fr` restent des courriels.
+DOMAINES_EXEMPLE = ("example.com", "example.org", "example.net")
+TLD_RESERVES = ("test", "invalid", "localhost", "example")
+
+
+def courriel_reel(texte: str) -> bool:
+    for m in RE_COURRIEL.finditer(texte):
+        domaine = m.group(1).lower().rstrip(".")
+        if any(domaine == d or domaine.endswith("." + d) for d in DOMAINES_EXEMPLE):
+            continue
+        if domaine.rsplit(".", 1)[-1] in TLD_RESERVES:
+            continue
+        return True
+    return False
 # Comptes système ou d'intégration continue : leur nom est un mot courant de la documentation, pas une personne.
 COMPTES_GENERIQUES = {"root", "admin", "ubuntu", "debian", "runner", "vscode", "codespace", "node", "app", "build", "ci"}
 RE_ORGANISATION = [re.compile(m.pattern.decode("ascii")) for m in RE_ORGANISATION_PRIVEE]
@@ -67,7 +80,7 @@ class Detecteur:
                 return "trace OPÉRER"
             if any(not RE_NOM_EXEMPLE.fullmatch(m.group(1)) for m in RE_DOSSIER_PERSONNEL.finditer(texte)):
                 return "chemin personnel"
-            if RE_COURRIEL.search(texte):
+            if courriel_reel(texte):
                 return "courriel"
             if any(r.search(texte) for r in self.termes):
                 return "terme de l'instance"

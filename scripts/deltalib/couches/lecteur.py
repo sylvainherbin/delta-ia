@@ -83,11 +83,11 @@ class Lecteur:
         """Identités désignées par `ref` : identité exacte, id de fiche, puis nom exact (`/add-dir`, `--model`)."""
         if ref in self.fiches or (self.objets and ref in self.objets):
             return [ref]
-        par_id = sorted(i for i in self.fiches if i.rsplit(":", 1)[-1] == ref)
+        par_id = sorted(i for i in self.fiches if schemas.id_brut(i) == ref)
         if par_id:
             return par_id
         ids = self.noms.get(normaliser_nom(ref), [])
-        return sorted(i for i in self.fiches if i.rsplit(":", 1)[-1] in ids)
+        return sorted(i for i in self.fiches if schemas.id_brut(i) in ids)
 
     def bloc_commun(self, identite: str) -> dict:
         if self.commun_statut != "disponible":

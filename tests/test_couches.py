@@ -15,6 +15,7 @@ from deltalib.couches import racines as mod_racines
 from deltalib.couches import schemas
 from deltalib.couches.controle import fidelite
 from deltalib.couches.lecteur import Lecteur
+from deltalib.couches import projection as mod_projection
 from deltalib.couches.projection import ImportImpossible, importer
 from deltalib.couches.sentinelles import Detecteur, termes_instance
 from deltalib.couches.stockage import MagasinOccupe, verrou
@@ -25,6 +26,7 @@ COURRIEL = "sentinelle" + "@" + "prive-exemple.fr"
 CHEMIN = "/home/" + "sentinelle/projets/secret"
 MISSION = "m-" + "0123456789ab"
 PROJET = "projet-sentinelle"
+ID_URL = "https://exemple.org/2026/oct/billet"  # id de veille actu : une URL, qui contient « : »
 
 
 def _json(chemin: Path, doc) -> None:
@@ -75,13 +77,20 @@ def depot(tmp_path):
                       "certitude": "officiel", "contexte_sections": {}, "kb_refs": ["claude-code-commandes-a"],
                       "sources": [{"url": "https://github.com/anthropics/claude-code/releases", "libelle": "notes",
                                    "officielle": True}]}]})
+    _json(data / "actu" / "2026-10-21.json", {
+        "date": "2026-10-21", "genere_le": "2026-10-21T04:20:00+02:00", "perimetre": "actu", "agent": "claude-code",
+        "elements": [{"id": ID_URL, "produit": "actu", "type": "actu", "date_publication": "2026-10-20",
+                      "titre": "Billet", "resume": "Un billet.", "impact": "nul", "certitude": "rapporte",
+                      "sources": [{"url": ID_URL, "libelle": "billet", "officielle": False}]}]})
     _json(data / "versions.json", [{"outil": "Claude Code", "version": "2.1.399", "detectee_le": "2026-10-21",
                                     "methode": "claude --version", "derniere_publiee": "2.1.400",
                                     "source_derniere": "https://github.com/anthropics/claude-code/releases",
                                     "statut": "en_retard", "pertinent_pour_profil": True, "note": f"poste de {PROJET}"}])
     _json(data / "etat.json", {"releve_le": "2026-10-21", "pertinent_pour_profil": True, "outils": {}, "comptes": {}})
     (d / "kb-essais.yaml").write_text(yaml.safe_dump([{"date": "2026-10-21", "id": "claude-code-commandes-a",
-                                                       "par": MISSION, "rapport": "rapports/x.md"}]), encoding="utf-8")
+                                                       "par": MISSION, "rapport": "rapports/x.md"},
+                                                      {"date": "2026-10-21", "id": ID_URL, "par": MISSION}]),
+                                       encoding="utf-8")
     (d / "kb-rejugements.yaml").write_text(yaml.safe_dump([{"date": "2026-10-04", "plafond": 30, "motif": "contexte",
                                                             "ids": ["claude-code-commandes-b"]}]), encoding="utf-8")
     return d
@@ -192,7 +201,7 @@ def test_import_separe_les_couches(depot, instance):
     assert champs_c["champ_futur"] == "valeur nouvelle" and COURRIEL in champs_c["description_source"]
     assert PROJET in attente["kb:claude:claude-code-commandes-b"][0]["champs"]["description"]
     erreurs, comptes = fidelite(depot, instance)
-    assert erreurs == [] and comptes["essais"] == 1 and comptes["essais_a_tester"] == 1 and comptes["reevaluations"] == 1
+    assert erreurs == [] and comptes["essais"] == 2 and comptes["essais_a_tester"] == 1 and comptes["reevaluations"] == 1
 
 
 def test_import_retrouve_avis_et_essais(depot, instance):
@@ -285,15 +294,22 @@ def test_validation_refuse_champ_p_meme_avec_empreintes_recalculees(depot, insta
     shutil.copytree(instance.commun / actif["generation"], copie)
     cible = copie / "kb" / "claude" / "commandes.json"
     doc = json.loads(cible.read_text(encoding="utf-8"))
-    doc["entrees"][0]["statut_usage"] = "utiliser"
+    fiche = doc["entrees"][0]
+    fiche["statut_usage"] = "utiliser"
+    fiche["empreinte"] = schemas.empreinte_fiche(fiche["identite"], {k: v for k, v in fiche.items()
+                                                                       if k not in ("identite", "empreinte")})
     cible.write_text(json.dumps(doc), encoding="utf-8")
     manifest = json.loads((copie / "manifest.json").read_text(encoding="utf-8"))
     for f in manifest["fichiers"]:
         if f["chemin"] == "kb/claude/commandes.json":
             f["taille"], f["sha256"] = cible.stat().st_size, hashlib.sha256(cible.read_bytes()).hexdigest()
+    manifest["generation"] = schemas.generation_de(manifest["fichiers"])
     (copie / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-    erreurs = schemas.valider_generation(copie, Detecteur())
-    assert any("champs non communs" in e or "génération incohérente" in e for e in erreurs)
+    renomme = copie.with_name(manifest["generation"])
+    copie.rename(renomme)  # génération cohérente de bout en bout : seule la reprojection peut la refuser
+    erreurs = schemas.valider_generation(renomme, Detecteur())
+    assert erreurs and all("champs non communs" in e for e in erreurs), erreurs
+    assert any("statut_usage" in e for e in erreurs)
 
 
 def test_lecteur_public_sans_personnel_et_instance_neuve(depot, instance):
@@ -363,3 +379,109 @@ def test_donnees_reelles_du_depot(tmp_path):
     erreurs, comptes = fidelite(RACINE, racines)
     assert erreurs == [] and comptes["identites_communes"] > 1000
     assert schemas.valider_generation(premier.dossier, Detecteur(termes_instance(RACINE))) == []
+
+
+# --- garde-fous (relecture du 22/10) ---
+
+def _generation(racines) -> Path:
+    return racines.commun / json.loads(racines.commun_actif.read_text(encoding="utf-8"))["generation"]
+
+
+def test_id_url_resolu_et_essai_introuvable_retrouve(depot, instance):
+    importer(depot, instance, _detecteur())
+    lecteur = Lecteur(instance)
+    assert lecteur.resoudre(ID_URL) == [f"veille:actu:{ID_URL}"]
+    assert lecteur.fiche(ID_URL)["commun"]["fiche"]["id"] == ID_URL
+    assert schemas.id_brut(f"kb:introuvable:{ID_URL}") == ID_URL
+    erreurs, _ = fidelite(depot, instance)
+    assert erreurs == []  # l'essai sur un id URL inconnu de la base est retrouvé sous `kb:introuvable:`
+
+
+def test_garde_sha256_du_manifeste(depot, instance):
+    importer(depot, instance, _detecteur())
+    cible = _generation(instance) / "versions.json"
+    octets = cible.read_bytes()
+    cible.write_bytes(octets.replace(b"2.1.400", b"2.1.401"))  # même taille, contenu différent
+    erreurs = schemas.valider_generation(_generation(instance), Detecteur())
+    assert any("versions.json: empreinte SHA-256 différente du manifeste" == e for e in erreurs), erreurs
+
+
+def test_garde_lien_et_sortie_de_generation(depot, instance, tmp_path):
+    importer(depot, instance, _detecteur())
+    dossier = _generation(instance)
+    lien = "fichier absent, lien ou hors de la génération"
+    # 1. lien vers un autre fichier listé de la génération : seul le refus des liens l'arrête
+    cible = dossier / "versions.json"
+    sauvegarde = cible.read_bytes()
+    cible.unlink()
+    cible.symlink_to(dossier / "kb" / "noms.json")
+    assert f"versions.json: {lien}" in schemas.valider_generation(dossier, Detecteur())
+    cible.unlink()
+    cible.write_bytes(sauvegarde)
+    assert schemas.valider_generation(dossier, Detecteur()) == []
+    # 2. dossier parent remplacé par un lien hors de la génération : fichiers réguliers, mais hors du dossier
+    veille = dossier / "veille"
+    ailleurs = tmp_path / "ailleurs"
+    shutil.move(veille, ailleurs)
+    veille.symlink_to(ailleurs, target_is_directory=True)
+    erreurs = schemas.valider_generation(dossier, Detecteur())
+    assert f"veille/claude.json: {lien}" in erreurs, erreurs
+    veille.unlink()
+    shutil.move(ailleurs, veille)
+    # 3. chemin du manifeste qui remonte au-dessus de la génération
+    manifest = json.loads((dossier / "manifest.json").read_text(encoding="utf-8"))
+    manifest["fichiers"][0]["chemin"] = "../" + manifest["fichiers"][0]["chemin"]
+    (dossier / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    erreurs = schemas.valider_generation(dossier, Detecteur())
+    assert any("chemin refusé" in e for e in erreurs), erreurs
+
+
+def test_garde_version_majeure_inconnue(depot, instance):
+    importer(depot, instance, _detecteur())
+    dossier = _generation(instance)
+    manifest = json.loads((dossier / "manifest.json").read_text(encoding="utf-8"))
+    manifest["schema_version"] = 2
+    (dossier / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    assert schemas.valider_generation(dossier, Detecteur()) == [
+        "manifest.json: version 2 non prise en charge (version 1 attendue)"]
+    doc = json.loads((dossier / "versions.json").read_text(encoding="utf-8"))
+    doc["schema_version"] = 2
+    assert schemas.valider_commun(doc, "versions.json", Detecteur(), set()) == [
+        "versions.json: version 2 non prise en charge (version 1 attendue)"]
+    assert schemas.valider_personnel({"schema": schemas.PERSONNEL, "schema_version": 2, "vue": "overlay"}, "overlay",
+                                     "overlay.json") == ["overlay.json: version 2 non prise en charge (version 1 attendue)"]
+
+
+def test_garde_entrees_modifiees_apres_ecriture(depot, instance, monkeypatch):
+    activer = mod_projection._activer
+
+    def activer_puis_modifier(*args):
+        activer(*args)
+        (depot / "kb-essais.yaml").write_text("[]\n", encoding="utf-8")  # un autre écrivain pendant l'import
+
+    monkeypatch.setattr(mod_projection, "_activer", activer_puis_modifier)
+    with pytest.raises(ImportImpossible, match="pendant l'import"):
+        importer(depot, instance, _detecteur())
+
+
+def test_garde_entrees_modifiees_avant_ecriture(depot, instance, monkeypatch):
+    projeter = mod_projection.projeter
+
+    def projeter_puis_modifier(*args):
+        resultat = projeter(*args)
+        (depot / "kb-essais.yaml").write_text("[]\n", encoding="utf-8")
+        return resultat
+
+    monkeypatch.setattr(mod_projection, "projeter", projeter_puis_modifier)
+    with pytest.raises(ImportImpossible, match="pendant la lecture"):
+        importer(depot, instance, _detecteur())
+    assert not instance.commun_actif.exists() and not (instance.personnel / "overlay.json").exists()
+
+
+def test_courriels_domaines_reserves_entiers():
+    d = Detecteur()
+    for exemple in ("ai@example.com", "x@docs.example.org", "y@example.net", "z@hote.test", "w@machine.localhost",
+                    "v@a.invalid", "u@site.example"):
+        assert d.motif(exemple) is None, exemple
+    for reel in ("a@example-corp.com", "a@test.fr", "a@localhost.fr", "a@examples.com", "a@example.com.fr"):
+        assert d.motif(reel) == "courriel", reel
