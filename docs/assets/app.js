@@ -1,5 +1,6 @@
 /* Delta — application du site statique.
- * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens ; aucune dépendance, aucun build.
+ * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens ; aucun build.
+ * Le widget externe X est chargé uniquement à l’ouverture de son bloc.
  * Sécurité : tout texte issu des données passe par textContent ; les liens sont limités à http(s). */
 (function () {
   "use strict";
@@ -443,15 +444,38 @@
   const filtrer = (elements) => etat.filtreProduit === "tous" ? elements : elements.filter((e) => e.produit === etat.filtreProduit);
 
   /* ---------- pages ---------- */
-  // Repli du 23/10/2026 : le widget officiel ne rend aucun post sans compte lors du test (HTTP 429).
+  // Une seule requête de script, même après navigation et reconstruction du bloc.
+  let widgetsX;
+  function chargerWidgetsX() {
+    if (!widgetsX) widgetsX = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://platform.x.com/widgets.js";
+      script.async = true;
+      script.onload = () => resolve(window.twttr);
+      script.onerror = reject;
+      document.head.append(script);
+    });
+    return widgetsX;
+  }
   function blocListeX() {
     const comptes = ["AnthropicAI", "claudeai", "ClaudeDevs", "OpenAI", "ChatGPT", "OpenAIDevs"];
-    return el("details", { class: "liste-x" },
+    const bloc = el("details", { class: "liste-x" },
       el("summary", { text: "Veille sur X / X watch" }),
-      el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", "Ouvrir la liste / Open list — AI Agents & Builders")),
+      el("a", { class: "twitter-timeline", href: "https://x.com/i/lists/2113336377958084762",
+        "data-height": "600", rel: "noopener noreferrer", target: "_blank",
+        text: "Ouvrir la liste / Open list — AI Agents & Builders" }),
       el("p", { text: "Les posts se lisent sur X ; une connexion peut être demandée. / Read posts on X; sign-in may be required." }),
       el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
         ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))));
+    let demande = false;
+    bloc.addEventListener("toggle", () => {
+      if (!bloc.open || demande) return;
+      demande = true;
+      chargerWidgetsX().then((twitter) => twitter.widgets.load(bloc)).catch(() => {
+        // Si X est bloqué ou indisponible, le lien et les six comptes restent utilisables.
+      });
+    });
+    return bloc;
   }
 
   function pageAujourdhui(alertes) {
