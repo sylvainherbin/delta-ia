@@ -5,6 +5,7 @@ Usage :
   valider.py --perimetre {claude,openai,actu} [--date AAAA-MM-JJ] [--brut raw/<p>-nouveautes.json]
              [--contexte CONTEXTE.md] [--racine <dossier>]
   valider.py --perimetre {claude,openai} --kb         base de référence (SPEC §7.4)
+  valider.py --commun <dossier de génération>           génération commune des deux couches (delta.commun v1)
 
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
@@ -32,6 +33,7 @@ from deltalib.contexte import (SHA1_VIDE, ContexteInvalide, analyser as analyser
 from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
 from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
 from deltalib import recherche as index_recherche  # noqa: E402
+from deltalib.confidentialite import RE_ORGANISATION_PRIVEE, RE_SECRETS  # noqa: E402
 from deltalib import semaine as bilan_semaine  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -46,14 +48,6 @@ RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 DATE_D58 = "2026-09-23"
 DATE_ID_WEB = "2026-09-25"  # fichiers datés après ce jour : identifiant `web-` recalculé (D20, audit du 25/09)
 DATE_D64 = "2026-09-24"  # éléments quotidiens datés après ce jour : `contexte_sections` obligatoire, format D64-bis
-RE_SECRETS = [
-    (re.compile(r"ghp_[A-Za-z0-9]{20,}"), "jeton GitHub (ghp_)"),
-    (re.compile(r"github_pat_[A-Za-z0-9_]{20,}"), "jeton GitHub (github_pat_)"),
-    (re.compile(r"\bsk-[A-Za-z0-9_-]{16,}"), "clé API (sk-)"),
-    (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "clé AWS (AKIA)"),
-    (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|-----BEGIN"), "clé privée (-----BEGIN)"),
-    (re.compile(r"https?://[^\s\"'<>]*[?&/;#](?:[A-Za-z_-]*(?:token|key|secret)[A-Za-z_-]*)=[^\s\"'<>&]+", re.I), "URL contenant token, key ou secret"),
-]
 # D85 : avertissements seulement (jamais d'arrêt d'un passage de nuit). R1 : un ajout à un outil porte une commande exacte
 # entre accents graves dans `action` ; R5 : un élément D71 porte une date absolue dans `action`. Aucun champ ne marque D71
 # dans un élément : il se repère aux mots-clés de `deltalib.sujet_d71` dans `titre` et `resume` (pas `pour_toi`, qui cite
@@ -88,7 +82,6 @@ RE_RIEN_NE_S_APPLIQUE = re.compile(r"(?<!\w)(?:" + "|".join(
 RE_ECRAN_USAGE = re.compile(r"Param[eè]tres\s*>\s*Utilisation|settings/usage|`/usage`|(?<![\w/])/usage(?!\w)", re.I)
 RE_RELEVE = re.compile(r"(?<!\w)(?:rel[eè]ve[rsz]?|relevé|compare[rsz]?|jauges?)(?!\w)", re.I)
 MESSAGE_ANCRAGE = "ancrage : `pour_toi` sans projet, outil ni habitude nommés de CONTEXTE.md"
-RE_ORGANISATION_PRIVEE = [re.compile(motif) for motif in (rb"m-[0-9a-f]{12}", rb"cc-socks")]
 
 
 class Rapport:
@@ -1558,13 +1551,28 @@ def valider(perimetre: str, racine: Path, jour: date | None, brut: Path | None, 
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="valider.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--perimetre", required=True, choices=PERIMETRES)
+    p.add_argument("--perimetre", choices=PERIMETRES)
     p.add_argument("--date", type=date.fromisoformat, metavar="AAAA-MM-JJ", help="jour à couvrir avec --brut (défaut : aujourd'hui)")
     p.add_argument("--brut", type=Path, help="fichier raw/<p>-nouveautes.json dont chaque nouveauté doit être comptabilisée")
     p.add_argument("--contexte", type=Path, default=None, help="CONTEXTE.md (défaut : à la racine)")
     p.add_argument("--kb", action="store_true", help="valider la base de référence docs/data/kb/<perimetre>/ (SPEC §7.4)")
+    p.add_argument("--commun", type=Path, metavar="DOSSIER",
+                   help="valider une génération commune (manifeste, empreintes, aucun champ P ni inconnu, aucune donnée personnelle)")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     args = p.parse_args(argv)
+    if args.commun is not None:
+        from deltalib.couches.schemas import valider_generation
+        from deltalib.couches.sentinelles import Detecteur, termes_instance
+        erreurs = valider_generation(args.commun, Detecteur(termes_instance(args.racine)))
+        if not erreurs:
+            print(f"valider.py : génération commune {args.commun.name} valide")
+            return 0
+        print(f"valider.py : {len(erreurs)} erreur(s) dans la génération commune {args.commun.name}", file=sys.stderr)
+        for e in erreurs[:200]:
+            print(f"  - {e}", file=sys.stderr)
+        return 1
+    if args.perimetre is None:
+        p.error("--perimetre est requis (sauf avec --commun)")
     if args.kb:
         rapport = Rapport()
         verifier_organisation_privee(args.racine, rapport)
