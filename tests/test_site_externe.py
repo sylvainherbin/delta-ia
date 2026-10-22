@@ -71,7 +71,14 @@ const window = { twttr: { widgets: { load: bloc => charges.push(bloc) } } };
 '''
     recette += utils + bloc + r'''
 (async () => {
-  const premier = blocListeX();
+  const section = blocListeX();
+  // Liste et comptes visibles sans rien ouvrir, avant le fil intégré.
+  assert.equal(section.tag, "section");
+  assert.equal(section.children[0].tag, "h3");
+  assert.equal(section.children[1].children[0].attrs.href, "https://x.com/i/lists/2113336377958084762");
+  assert.equal(section.children[2].children.length, 6);
+  const premier = section.children[3];
+  assert.equal(premier.tag, "details");
   assert.equal(premier.open, false);
   assert.equal(document.head.children.length, 0);
   premier.toggle(false);
@@ -80,7 +87,6 @@ const window = { twttr: { widgets: { load: bloc => charges.push(bloc) } } };
   assert.equal(ancre.className, "twitter-timeline");
   assert.equal(ancre.attrs.href, "https://x.com/i/lists/2113336377958084762");
   assert.match(ancre.textContent, /Ouvrir la liste \/ Open list/);
-  assert.equal(premier.children[3].children.length, 6);
   premier.toggle(true);
   assert.equal(document.head.children.length, 1);
   const script = document.head.children[0];
@@ -92,7 +98,7 @@ const window = { twttr: { widgets: { load: bloc => charges.push(bloc) } } };
   script.onload();
   await Promise.resolve();
   assert.deepEqual(charges, [premier]);
-  const suivant = blocListeX();
+  const suivant = blocListeX().children[3];
   suivant.toggle(true);
   await Promise.resolve();
   assert.equal(document.head.children.length, 1);
@@ -100,12 +106,12 @@ const window = { twttr: { widgets: { load: bloc => charges.push(bloc) } } };
   // Nouveau chargement de page : erreur réseau X, sans rejet non géré.
   widgetsX = undefined;
   const repli = blocListeX();
-  repli.toggle(true);
+  repli.children[3].toggle(true);
   document.head.children[1].onerror(new Error("X indisponible"));
   await Promise.resolve();
   await Promise.resolve();
-  assert.equal(repli.children[1].attrs.href, ancre.attrs.href);
-  assert.equal(repli.children[3].children.length, 6);
+  assert.equal(repli.children[1].children[0].attrs.href, ancre.attrs.href);
+  assert.equal(repli.children[2].children.length, 6);
 })();
 '''
     subprocess.run([node, "--unhandled-rejections=strict", "-e", recette], check=True, capture_output=True, text=True)

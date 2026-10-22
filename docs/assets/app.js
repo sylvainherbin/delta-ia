@@ -459,23 +459,27 @@
   }
   function blocListeX() {
     const comptes = ["AnthropicAI", "claudeai", "ClaudeDevs", "OpenAI", "ChatGPT", "OpenAIDevs"];
-    const bloc = el("details", { class: "liste-x" },
-      el("summary", { text: "Veille sur X / X watch" }),
+    // X ne rend pas le fil de liste à un visiteur sans compte (relevé du 23/10) : les liens restent visibles sans ouvrir.
+    const fil = el("details", null,
+      el("summary", { text: "Fil intégré de X / X embedded feed" }),
       el("a", { class: "twitter-timeline", href: "https://x.com/i/lists/2113336377958084762",
         "data-height": "600", rel: "noopener noreferrer", target: "_blank",
         text: "Ouvrir la liste / Open list — AI Agents & Builders" }),
-      el("p", { text: "Les posts se lisent sur X ; une connexion peut être demandée. / Read posts on X; sign-in may be required." }),
-      el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
-        ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))));
+      el("p", { text: "X peut n'afficher aucun post ici sans compte X ni cookies tiers : utilisez les liens ci-dessus. / X may show no posts here without an X account or third-party cookies: use the links above." }));
     let demande = false;
-    bloc.addEventListener("toggle", () => {
-      if (!bloc.open || demande) return;
+    fil.addEventListener("toggle", () => {
+      if (!fil.open || demande) return;
       demande = true;
-      chargerWidgetsX().then((twitter) => twitter.widgets.load(bloc)).catch(() => {
-        // Si X est bloqué ou indisponible, le lien et les six comptes restent utilisables.
+      chargerWidgetsX().then((twitter) => twitter.widgets.load(fil)).catch(() => {
+        // Si X est bloqué ou indisponible, la liste et les six comptes restent utilisables.
       });
     });
-    return bloc;
+    return el("section", { class: "liste-x" },
+      el("h3", { text: "Veille sur X / X watch" }),
+      el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", "Liste « AI Agents & Builders » sur X / list on X")),
+      el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
+        ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))),
+      fil);
   }
 
   function pageAujourdhui(alertes) {
