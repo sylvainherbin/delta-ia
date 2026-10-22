@@ -1,0 +1,12 @@
+# Copie de référence : ~/.config/systemd/user/delta-reglages-pont.timer.
+[Unit]
+Description=Delta — constats internes automatiques des fiches de modèles, le lundi à 10:30 (Paris)
+
+[Timer]
+OnCalendar=Mon *-*-* 10:30:00 Europe/Paris
+Persistent=true
+AccuracySec=1min
+Unit=delta-reglages-pont.service
+
+[Install]
+WantedBy=timers.target

@@ -47,3 +47,10 @@ Reprise du 20/10/2026 : comparaisons contradictoires ou absentes retirées ; les
 lisent dans les sources citées. Les dates de sortie et spécifications non retrouvées restent inconnues.
 Les scores Anthropic recopiés dans une fiche Antigravity décrivent le modèle évalué chez Anthropic,
 pas une mesure de l’exécutant `agy`. L’accès Pro observé localement ne généralise pas l’annonce Ultra.
+
+Constats internes automatiques (22/10/2026) : `scripts/reglages_pont.py` écrit, par fiche × effort × nature × source (poste
+principal, instance d'essai), un constat issu de `operer reglages bilan --json`, repéré dans le YAML par `cle_auto` (champ absent du
+catalogue public). Un constat sans `cle_auto` est manuel et n'est jamais lu ni réécrit. Seuil : 5 missions relues par cellule, avec
+réserve d'effectif réduit sous 10 ; les cellules écartées et les couples sans fiche sont listés dans le bilan de l'outil. Les
+exécutants d'une famille sont confondus, les valeurs inconnues restent « inconnu ». Un timer hebdomadaire prépare la mise à jour sur une
+branche dédiée, sans push (`deploy/systemd/reglages-pont.md`).

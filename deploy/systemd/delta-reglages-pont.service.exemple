@@ -1,0 +1,16 @@
+# Copie de référence : ~/.config/systemd/user/delta-reglages-pont.service (installation après la fusion, voir deploy/systemd/reglages-pont.md).
+[Unit]
+Description=Delta — constats internes des fiches de modèles depuis le bilan OPÉRER des réglages (branche dédiée, sans push)
+ConditionPathExists=%h/projets/delta-ia/scripts/reglages-pont.sh
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/projets/delta-ia
+ExecStart=%h/projets/delta-ia/scripts/reglages-pont.sh
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=TZ=Europe/Paris LANG=C.UTF-8 LC_ALL=C.UTF-8 GIT_TERMINAL_PROMPT=0
+# Un lancement dans la fenêtre 03:30–08:00 attend 08:05 (au plus 4 h 35) puis travaille.
+TimeoutStartSec=5h
+KillMode=control-group
+Nice=10
+# Code 3 : une source du bilan en échec (dite au chef) ; l'unité l'affiche « failed » jusqu'au passage suivant.
