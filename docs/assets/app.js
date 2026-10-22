@@ -443,6 +443,17 @@
   const filtrer = (elements) => etat.filtreProduit === "tous" ? elements : elements.filter((e) => e.produit === etat.filtreProduit);
 
   /* ---------- pages ---------- */
+  // Repli du 23/10/2026 : le widget officiel ne rend aucun post sans compte lors du test (HTTP 429).
+  function blocListeX() {
+    const comptes = ["AnthropicAI", "claudeai", "ClaudeDevs", "OpenAI", "ChatGPT", "OpenAIDevs"];
+    return el("details", { class: "liste-x" },
+      el("summary", { text: "Veille sur X / X watch" }),
+      el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", "Ouvrir la liste / Open list — AI Agents & Builders")),
+      el("p", { text: "Les posts se lisent sur X ; une connexion peut être demandée. / Read posts on X; sign-in may be required." }),
+      el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
+        ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))));
+  }
+
   function pageAujourdhui(alertes) {
     const frag = document.createDocumentFragment();
     if (alertes.length) frag.append(el("div", { class: "bandeau-alerte", role: "status", text: alertes.join(" · ") + "." }));
@@ -452,6 +463,7 @@
     const outils = blocOutils();
     if (outils) frag.append(outils);
     frag.append(el("div", { id: "encart-kb" }));
+    frag.append(blocListeX());
     const quotidiens = [];
     let elements = [];
     for (const p of PERIMETRES) {

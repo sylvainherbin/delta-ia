@@ -98,7 +98,7 @@ def test_relevé_partiel_est_signalé_sans_perdre_les_posts(tmp_path, client):
 def test_sources_inscrites_dans_sources_yaml(sources):
     for sid in ("x-liste-anthropic", "x-liste-openai"):
         s = sources[sid]
-        assert s.type == "x_liste" and s.statut == "a_valider" and s.officielle
+        assert s.type == "x_liste" and s.statut == "ok" and s.officielle
         assert s.options["comptes"] and s.url == capteur_x.LISTE_URL
     assert not ({c.lower() for c in sources["x-liste-anthropic"].options["comptes"]}
                 & {c.lower() for c in sources["x-liste-openai"].options["comptes"]})

@@ -757,7 +757,7 @@ sources:
       Testé le 2026-09-23 : 200, 10 items (flux court, haute fréquence). Média spécialisé IA. Écarté pour
       l'instant.
 
-  # ---------------------------------------------------------------- liste X officielle (capteur interne, rien d'affiché)
+  # ---------------------------------------------------------------- liste X officielle (capteur interne, liens sur le site)
   # Décisions de Sylvain du 22/10/2026 : les posts des six comptes officiels sont relevés par l'API X (jeton dans le trousseau), pour
   # analyse interne seulement. Brut écrit avant le passage par scripts/capteur_x.py (raw/x-liste.json) ; texte purgé en fin de passage.
   - id: x-liste-anthropic
@@ -765,13 +765,13 @@ sources:
     produit: claude
     type: x_liste
     url: https://x.com/i/lists/2113336377958084762
-    statut: a_valider
+    statut: ok
     officielle: true
     note: >-
       Testé le 2026-10-22 : `GET https://api.x.com/2/lists/2113336377958084762/tweets` → 200, 50 posts et 6 utilisateurs ; l'URL
       ci-dessus n'est pas lue par fetch.py mais par scripts/capteur_x.py (jeton du trousseau), qui écrit raw/x-liste.json. Comptes
       officiels d'Anthropic ; une annonce de limites, de remise à zéro ou d'offre relève de D71. Éléments internes : pas d'affichage
-      du texte des posts.
+      du texte des posts. Statut ok sur décision de Sylvain du 22/10/2026, sans sept passages d'attente.
     options:
       comptes: ["@AnthropicAI", "@claudeai", "@ClaudeDevs"]
       validite_heures: 30
@@ -781,10 +781,11 @@ sources:
     produit: chatgpt
     type: x_liste
     url: https://x.com/i/lists/2113336377958084762
-    statut: a_valider
+    statut: ok
     officielle: true
     note: >-
       Testé le 2026-10-22 (voir x-liste-anthropic) : même brut, posts des comptes officiels d'OpenAI.
+      Statut ok sur décision de Sylvain du 22/10/2026, sans sept passages d'attente.
     options:
       comptes: ["@OpenAI", "@ChatGPT", "@OpenAIDevs"]
       validite_heures: 30
