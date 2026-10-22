@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-21",
+ "maj_le": "2026-10-22",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 43,
- "commentees": 35,
+ "total": 45,
+ "commentees": 37,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -1686,6 +1686,53 @@
    "exemple_origine": "source"
   },
   {
+   "id": "claude-code-mcp-read-a-background-command-s-output-as-an-mcp-client",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Read a background command's output as an MCP client",
+   "gabarit": "complet",
+   "description": "Quand Claude Code sert de serveur MCP (`claude mcp serve`), un résultat Bash ou PowerShell qui porte le champ `backgroundOutputPath` indique que la commande tourne en arrière-plan. Le client MCP en relit la sortie avec deux appels `Read` : le premier pour lire `totalLines`, le second sur les dix dernières lignes.",
+   "description_source": "A backgroundOutputPath field in a Bash or PowerShell result from claude mcp serve means the call left its command running in the background. A command runs in the background when your client sets run_in_background: true on the call. A foreground command can also move to the background when it reaches its timeout.",
+   "usage": "1. Call `Read` with `offset` and `limit` both set to `1`, and take `totalLines` from the result\n2. Call `Read` again with `offset` set to `totalLines` minus nine and `limit` set to `10`\n3. Look for your `echo` string in the last ten lines, which the second call returns",
+   "usage_nature": "etapes",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage de Claude Code comme serveur MCP (`claude mcp serve`) : le seul connecteur local est delta-ia, en client."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#read-a-background-commands-output-as-an-mcp-client",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Seul le connecteur MCP delta-ia est décrit, en client : aucun usage de `claude mcp serve`."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use Claude Code as an MCP server",
+   "maj_le": "2026-10-22",
+   "historique": [
+    {
+     "date": "2026-10-22",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-mcp-reference-mcp-resources",
    "produit": "claude-code",
    "categorie": "mcp",
@@ -1889,6 +1936,53 @@
      "source": "contexte:config.claude-code.mcp",
      "releve_le": "2026-10-16",
      "caduc_si": "le `deny` de trading-sim est mis à jour pour exclure les connecteurs de compte, selon CONTEXTE.md"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-mcp-sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Sign in to an MCP server behind a gateway that requires a header",
+   "gabarit": "complet",
+   "description": "La connexion OAuth à un serveur MCP échoue quand une passerelle exige un en-tête (par exemple `X-API-Key`) que Claude Code n'envoie pas. Depuis Claude Code 2.1.299, on déclare cet en-tête dans la configuration du serveur pour qu'il l'envoie.",
+   "description_source": "OAuth sign-in to an MCP server fails when a gateway requires a header, such as X-API-Key, and Claude Code doesn't send it. To have Claude Code send that header, add it to the server's configuration and use Claude Code v2.1.299 or later:",
+   "usage": "X-API-Key",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur local delta-ia (HTTP, Vercel) ne passe pas par une passerelle qui exige un en-tête de ce genre d'après CONTEXTE.md ; sans serveur concerné, rien à régler."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur delta-ia ajouté en HTTP en portée locale ; aucune passerelle à en-tête décrite."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Authenticate with remote MCP servers",
+   "maj_le": "2026-10-22",
+   "historique": [
+    {
+     "date": "2026-10-22",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "commentée"
     }
    ]
   },

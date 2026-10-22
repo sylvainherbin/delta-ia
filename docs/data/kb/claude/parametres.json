@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-21",
+ "maj_le": "2026-10-22",
  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
  "contexte_sections": {
   "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
  },
  "contexte_deprecies": [],
- "total": 662,
- "commentees": 635,
+ "total": 663,
+ "commentees": 629,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -345,7 +345,7 @@
    "nom": "agentPushNotifEnabled",
    "gabarit": "court",
    "description": "Réglage qui autorise Claude à envoyer une notification push au téléphone quand il le juge utile, par exemple à la fin d'une longue tâche, tant que Remote Control est connecté.",
-   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude Code syncs this choice to your account, and pushes arrive while Remote Control is connected. Appears in /config as Push when Claude decides.",
+   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
    "usage": "{\n  \"agentPushNotifEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"agentPushNotifEnabled\": true\n}",
@@ -362,11 +362,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -395,6 +395,37 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude Code syncs this choice to your account, and pushes arrive while Remote Control is connected. Appears in /config as Push when Claude decides.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`agentPushNotifEnabled` laisse Claude envoyer une notification push au téléphone quand il le juge utile ; les push arrivent tant que Remote Control est connecté ; défaut `false`.",
+       "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La clé change de nom, de défaut ou de condition d'envoi."
+      },
+      {
+       "affirmation": "Le `settings.json` de Sylvain active les notifications push des agents (relevé du 07/10).",
+       "source": "contexte:config.claude-code.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le relevé de settings.json ne mentionne plus les notifications push."
+      },
+      {
+       "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push).",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md décrit une autre interface principale."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -408,27 +439,7 @@
      "pourquoi": "Pilotage depuis l'iPhone, notifications push."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "`agentPushNotifEnabled` laisse Claude envoyer une notification push au téléphone quand il le juge utile ; les push arrivent tant que Remote Control est connecté ; défaut `false`.",
-     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La clé change de nom, de défaut ou de condition d'envoi."
-    },
-    {
-     "affirmation": "Le `settings.json` de Sylvain active les notifications push des agents (relevé du 07/10).",
-     "source": "contexte:config.claude-code.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le relevé de settings.json ne mentionne plus les notifications push."
-    },
-    {
-     "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push).",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md décrit une autre interface principale."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-agents",
@@ -14613,7 +14624,7 @@
    "nom": "CLAUDE_CODE_TRANSCRIPT_LOCAL_GC",
    "gabarit": "court",
    "description": "Variable d'environnement (=1) qui limite la taille du transcript d'une longue session -p ou Agent SDK : après chaque compactage, au-delà de 5 Mo, l'historique antérieur est retiré ; la reprise restitue la même conversation.",
-   "description_source": "Set to 1 to limit how large the transcript file of a long -p or Agent SDK session grows. After each compaction, once the file is larger than 5 MB, Claude Code removes the history from before that compaction. Resuming the session restores the same conversation whether or not the file was trimmed. Set it in the environment you start Claude Code from, since a settings env block can't turn it on. Requires Claude Code v2.1.287 or later",
+   "description_source": "Set to 1 to limit how large the transcript file of a long -p or Agent SDK session grows. After each compaction, once the file is larger than 5 MB, Claude Code removes the history from before that compaction. On v2.1.296 or later, the file stays as it is when removing that history would shrink it by less than 10%. Resuming the session restores the same conversation whether or not the file was trimmed. Set it in the environment you start Claude Code from, since a settings env block can't turn it on. Requires Claude Code v2.1.287 or later",
    "usage": "CLAUDE_CODE_TRANSCRIPT_LOCAL_GC",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14630,7 +14641,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "methode.chaine-nuit": {
@@ -14641,7 +14652,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-10-05",
@@ -14654,6 +14665,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -19685,7 +19700,7 @@
    "nom": "ENABLE_TOOL_SEARCH",
    "gabarit": "court",
    "description": "Variable qui contrôle la recherche d'outils MCP : sans valeur, Claude Code diffère le chargement de tous les outils MCP, sauf si `ANTHROPIC_BASE_URL` pointe vers un hôte tiers ; `true` les diffère aussi sur un hôte tiers, `auto` ou `auto:N` charge d'avance quand les définitions tiennent dans 10 % (ou N %) du contexte, `false` charge tout d'avance.",
-   "description_source": "Controls MCP tool search. Unset or true defers MCP tools, except in the cases that keep tool search off. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. If a gateway rejects tool search, see Tool search through an LLM gateway",
+   "description_source": "Controls MCP tool search. Unset or true defers MCP tools, except in the cases that keep tool search off. auto turns tool search on once definitions reach 10% of the context window. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. If a gateway rejects tool search, see Tool search through an LLM gateway",
    "usage": "ENABLE_TOOL_SEARCH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -19706,7 +19721,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19730,6 +19745,10 @@
     },
     {
      "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-22",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -27619,7 +27638,7 @@
    "nom": "preferredNotifChannel",
    "gabarit": "court",
    "description": "Réglage du canal de notification locale à la fin d'une tâche ou quand une permission attend (par exemple `terminal_bell`).",
-   "description_source": "Choose how Claude Code notifies you when a task completes or a permission prompt is waiting. Appears in /config as Local notifications.",
+   "description_source": "Choose how Claude Code notifies you when a task completes or a permission prompt is waiting. A mod's notifications use the same setting. Appears in /config as Local notifications.",
    "usage": "{\n  \"preferredNotifChannel\": \"terminal_bell\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27636,11 +27655,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27653,6 +27672,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -28931,6 +28954,53 @@
      "pourquoi": "Linux Mint 22.1"
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-sandbox-allownestedusernamespaces",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "sandbox.allowNestedUserNamespaces",
+   "gabarit": "court",
+   "description": "Clé de `sandbox` (Linux et WSL2) qui laisse les commandes du bac à sable créer des espaces de noms utilisateur (sandbox de Chromium ou d'Electron, bubblewrap imbriqué, `unshare`). La mettre à `true` désactive une frontière de sécurité : du code lancé depuis le bac à sable peut s'exécuter hors de lui. Demande Claude Code 2.1.305 ou plus.",
+   "description_source": "Let sandboxed commands on Linux and WSL2 create user namespaces, which Chromium's and Electron's own sandbox, a nested bubblewrap, and unshare need. If you set this key to true, you turn off a security boundary: code from a sandboxed command can end up running outside the sandbox. For rootless Podman or Buildah, use excludedCommands instead, because the sandbox stops them in other ways too. Requires Claude Code v2.1.305 or later.",
+   "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"allowNestedUserNamespaces\": true\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun bac à sable activé ; toutes les sessions locales sont en `bypassPermissions` depuis le 06/10. Activer cette clé retirerait une protection sans besoin décrit."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#sandboxallownestedusernamespaces",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en `bypassPermissions` depuis le 06/10 ; aucun bac à sable décrit."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Sandbox settings",
+   "maj_le": "2026-10-22",
+   "historique": [
+    {
+     "date": "2026-10-22",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-sandbox-allowunsandboxedcommands",
@@ -30970,7 +31040,7 @@
    "nom": "showThinkingSummaries",
    "gabarit": "court",
    "description": "Réglage qui affiche en entier les résumés de réflexion étendue quand on les déplie avec `Ctrl+O`.",
-   "description_source": "See summaries of Claude's extended thinking in interactive sessions. Set it if you want the full summaries when you expand thinking with Ctrl+O. When unset or false, the Anthropic API redacts thinking blocks and Claude Code shows a collapsed stub; third-party providers don't redact.",
+   "description_source": "See summaries of Claude's extended thinking in interactive sessions. Set it if you want the full summaries when you expand thinking with Ctrl+O. When unset or false, the Anthropic API redacts thinking blocks and Claude Code shows a collapsed stub.",
    "usage": "{\n  \"showThinkingSummaries\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -30987,11 +31057,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31004,6 +31074,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -31921,7 +31995,7 @@
    "nom": "strictPluginOnlyCustomization.agents",
    "gabarit": "court",
    "description": "Réglage qui verrouille les agents : plus de chargement depuis `~/.claude/agents/` et `.claude/agents/`.",
-   "description_source": "Lock the agents surface. Claude Code stops loading agents from ~/.claude/agents/, .claude/agents/, and --add-dir directories. It keeps loading plugin agents, built-in agents, and agents in the managed policy directory.",
+   "description_source": "Lock the agents surface. Claude Code stops loading agents from ~/.claude/agents/, .claude/agents/, and --add-dir directories. It keeps loading built-in agents, agents in the managed policy directory, and agents from plugins other than skills-directory plugins.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"agents\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -31938,11 +32012,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31959,6 +32033,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -32031,7 +32109,7 @@
    "nom": "strictPluginOnlyCustomization.mcp",
    "gabarit": "court",
    "description": "Valeur `mcp` de `strictPluginOnlyCustomization` : Claude Code ne charge plus les serveurs MCP de `~/.claude.json` ni de `.mcp.json`, et garde seulement ceux des plugins, de `managed-mcp.json` et de `managedMcpServers`.",
-   "description_source": "Lock the mcp surface. Claude Code stops loading MCP servers from ~/.claude.json and .mcp.json, and keeps loading plugin MCP servers, managed-mcp.json servers, and servers from managedMcpServers.",
+   "description_source": "Lock the mcp surface. Claude Code stops loading MCP servers from ~/.claude.json and .mcp.json. It keeps loading managed-mcp.json servers, servers from managedMcpServers, and MCP servers from plugins other than skills-directory plugins.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"mcp\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -32048,11 +32126,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-18",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32069,6 +32147,10 @@
     {
      "date": "2026-10-18",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -32086,7 +32168,7 @@
    "nom": "strictPluginOnlyCustomization.skills",
    "gabarit": "court",
    "description": "Réglage qui verrouille les skills : plus de chargement depuis `~/.claude/skills/`, `.claude/skills/` ni des skills synchronisés de claude.ai.",
-   "description_source": "Lock the skills surface. Claude Code stops loading skills from ~/.claude/skills/ and .claude/skills/, custom commands from ~/.claude/commands/ and .claude/commands/, skills and commands under --add-dir directories, and skills synced from your claude.ai account. It keeps loading plugin skills, bundled skills, and skills in the managed policy directory.",
+   "description_source": "Lock the skills surface. Claude Code stops loading skills from ~/.claude/skills/ and .claude/skills/, custom commands from ~/.claude/commands/ and .claude/commands/, skills and commands under --add-dir directories, and skills synced from your claude.ai account. It keeps loading bundled skills, skills in the managed policy directory, and skills from plugins other than skills-directory plugins.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"skills\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -32103,11 +32185,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32124,6 +32206,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-22",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",

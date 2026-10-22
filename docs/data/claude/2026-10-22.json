@@ -1,0 +1,384 @@
+{
+  "date": "2026-10-22",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-22T02:07:00+00:00",
+  "synthese": "Compte et quotas : Claude Duet (aperçu Pro et Max, liste d'attente, d'abord États-Unis) partagera la limite d'usage de ton Max (20x) à l'essai jusqu'au 07/11 ; revérification le 29/10, aucune échéance publiée. Relevé du 22/10 à 02 h UTC : Claude session 5 h à 3 % (remise à zéro à 06 h UTC), semaine à 66 % et semaine Fable à 0 % (remise à zéro le 25/10 vers 16 h UTC), sous le seuil D71 de 80 % ; ChatGPT semaine à 86 % (relevé du 21/10 à 19 h 48 UTC, remise à zéro le 27/10 vers 07 h UTC), au-dessus du seuil : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Claude Code 2.1.306 et 2.1.307 (déjà installée) apportent des correctifs sans commande nouvelle à adopter ; `/context` dit si celui des compactions inutiles avec beaucoup d'outils MCP te concerne. Offre Claude Security (25 000 $ de crédits) : réservée à Enterprise, sans effet sur ton compte.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "version": null,
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": "Ça ne change pas tes limites aujourd'hui : l'accès passe par une liste d'attente, d'abord pour les États-Unis, et l'article ne donne aucune date pour les autres ; mais, une fois ouvert, Duet consommera la même limite que ton Max (20x), en continu à cause des vérifications d'arrière-plan. Ton abonnement est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer avant : l'usage de Duet y entrerait. Tu veux exploiter les fonctions de Claude au-delà de Claude Code (CONTEXTE.md, usage hors machine) : Duet en est une, qui reprend la mémoire, les skills et les applications connectées de ton compte.",
+      "action": {
+        "description": "Revérifier le 2026-10-29 (aucune échéance publiée) si l'accès à Claude Duet s'ouvre à ton compte ; relevé D124 du 22/10 à 02 h UTC : semaine Claude à 66 % (remise à zéro le 25/10 vers 16 h UTC), sous le seuil D71 de 80 %, donc aucun geste de compte aujourd'hui.",
+        "etapes": [
+          "Si tu veux l'essayer : ouvre `https://claude.com/resources/articles/claude-duet` et utilise le lien « join the waitlist » ; résultat attendu : un courriel t'avertit à l'ouverture de ton accès (l'article ne donne pas de date).",
+          "À l'ouverture, dis à Duet de quoi il doit te parler et à quelle fréquence (l'article le prévoit) avant de le laisser tourner : ses vérifications d'arrière-plan comptent dans la limite partagée, et son usage doit figurer dans le bilan d'usage de ton essai Max (20x) d'avant le 07/11 ; résultat attendu : un rythme de vérifications que tu as choisi, pas celui par défaut."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+          "pourquoi": "Max 20x à l'essai jusqu'au 07/11, bilan d'usage à préparer : Duet partage ses limites."
+        },
+        "usage.hors-machine": {
+          "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+          "pourquoi": "Veut exploiter les fonctions de Claude au-delà de Claude Code : Duet en est une."
+        }
+      },
+      "certitude": "officiel",
+      "id": "https://claude.com/blog/claude-duet",
+      "ids_bruts": [
+        "https://claude.com/blog/claude-duet",
+        "claude-apps-notes-2026-10-21"
+      ],
+      "produit": "claude",
+      "titre": "Claude Duet : agent proactif en aperçu pour les forfaits Pro et Max, sur les mêmes limites d'usage que le reste de Claude",
+      "type": "nouveaute",
+      "resume": "Anthropic ouvre l'aperçu de Claude Duet, une app (iOS, Android, claude.ai) où Claude agit en agent proactif : bref du matin, surveillance des applications connectées toutes les quelques heures, tâches confiées par message ou voix, exécution sur une machine virtuelle même appareil éteint, validation demandée avant d'envoyer, payer, signer ou supprimer. Inclus dans Pro et Max, il partage les limites d'usage du forfait ; ses vérifications d'arrière-plan comptent dans ces limites et les grosses tâches (modèle financier, présentation) demandent plus de tours. Accès sur liste d'attente, en commençant par les abonnés Pro et Max des États-Unis ; construit autour d'Opus 5.5. Les notes de version de l'app renvoient à l'article.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/claude-duet",
+          "libelle": "Introducing Claude Duet",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Claude apps — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "fort"
+    },
+    {
+      "version": "2.1.307",
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": "Tes sessions durables sont lancées avec `claude --resume <id> --remote-control <nom>` et tu les pilotes depuis l'iPhone : l'amélioration de la connexion Remote Control vise celles dont la transcription porte de grandes images ou des PDF, et la version installée est déjà la 2.1.307 (relevé `versions.json`). OPÉRER confie des missions à l'exécutant `claude-cloud` (crédits à épuiser avant le 05/11) : les correctifs de `/autocompact` et de `/clear` en session cloud le concernent. Aucun des ajouts ne s'applique à un outil que CONTEXTE.md décrit comme utilisé : aucun projet n'appelle l'API Claude (`/claude-api api-version`), aucune collecte OpenTelemetry n'est décrite, et Code Review relève des forfaits Team et Enterprise.",
+      "action": {
+        "description": "Vérifier qu'une session durable tourne bien sur la 2.1.307 : une session ouverte avant la mise à jour garde l'ancien binaire jusqu'à sa relance.",
+        "etapes": [
+          "Dans une session durable `claude-session@<nom>` (par exemple celle du chef delta-ia), tape `/status` et lis la ligne de version ; résultat attendu : `2.1.307`, sinon cette session ne profite pas encore du correctif Remote Control ni de ceux des sessions cloud avant sa prochaine relance."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-skills-claude-api",
+        "claude-code-commandes-status"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables lancées avec `--remote-control` et pilotées depuis l'iPhone."
+        },
+        "methode.operer": {
+          "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+          "pourquoi": "Missions confiées à `claude-cloud` : sessions cloud touchées par les correctifs."
+        }
+      },
+      "certitude": "officiel",
+      "id": "claude-code-2.1.307",
+      "ids_bruts": [
+        "claude-code-2.1.307"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.307 : `/claude-api api-version`, événement OpenTelemetry `claude_code.safety_event`, correctifs MCP, cloud et Remote Control",
+      "type": "nouveaute",
+      "resume": "Ajouts : `/claude-api api-version` (migre le code d'API Claude vers la version d'API `2026-10-21`), événement OpenTelemetry `claude_code.safety_event` pour chaque appel d'outil arrêté, soumis à approbation ou renvoyé par une règle de permission, le mode auto, un contrôle de sécurité, un hook ou le bac à sable, et `@claude review stop` (aussi `off`, `pause`) pour Code Review. Améliorations : reprise après appel d'outil illisible (deux nouvelles tentatives avant d'arrêter le tour), connexion Remote Control plus rapide pour les sessions dont la transcription contient de grandes images collées ou des PDF lus, lancement groupé de sous-agents « fork » (chacun sait quel lancement est le sien), premier message plus rapide en session cloud quand un serveur MCP de l'app de bureau ne se connecte pas. Correctifs : alias `[1m]` avec `CLAUDE_CODE_DISABLE_1M_CONTEXT`, appels d'outils MCP HTTP envoyés deux fois (seuls les outils en lecture seule ou idempotents sont rejoués), serveurs MCP échoués en mode headless après une mise en veille, erreurs « Autocompact is thrashing » avec beaucoup de pages PDF ou d'images, `/autocompact` perdu au redémarrage d'une session cloud, conversation vidée par `/clear` qui revenait au redémarrage d'une session cloud ou d'un runner auto-hébergé, entrée « Recently denied » de `/permissions`, sous-agents qui enregistraient un usage de jetons factice. Plusieurs changements VS Code et runner auto-hébergé.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21307",
+          "libelle": "Claude Code 2.1.307",
+          "officielle": true
+        }
+      ],
+      "impact": "faible"
+    },
+    {
+      "version": "2.1.306",
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": "Tu veux alléger tes limites hebdomadaires (priorité de profil.yaml) et plusieurs connecteurs de compte sont branchés (Gmail, Drive, Calendar, Canva, GoDaddy, Vercel d'après CONTEXTE.md), mais le nombre d'outils MCP réellement chargés par session n'est pas relevé : si une session en charge beaucoup, le correctif lui évite des compactions inutiles, qui coûtent des jetons. `/context` tranche ce point. Le correctif de `claude -p` en session cloud ne concerne que les lancements dans une session cloud, que CONTEXTE.md ne décrit pas pour JUGER (local).",
+      "action": {
+        "description": "Mesurer la part des outils MCP dans une session durable.",
+        "etapes": [
+          "Dans une session du chef delta-ia, tape `/context` et lis la ligne des outils MCP ; résultat attendu : un nombre de jetons d'outils MCP qui dit si le correctif de 2.1.306 te concerne (peu de jetons : aucun effet à attendre)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-context"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Connecteurs de compte branchés sur tous les projets sauf deny explicite, outils MCP chargés par session."
+        },
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Piste 9 : connecteurs connectés mais jamais appelés dans Claude Code, donc jetons d'outils inutiles."
+        }
+      },
+      "certitude": "officiel",
+      "id": "claude-code-2.1.306",
+      "ids_bruts": [
+        "claude-code-2.1.306"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.306 : moins de compactions inutiles dans les sessions qui chargent beaucoup d'outils MCP, et `claude -p` en session cloud",
+      "type": "correction",
+      "resume": "Correctifs : une erreur d'API n'est plus remplacée par « prompt is too long », et une compaction inutile n'a plus lieu, dans les sessions qui chargent beaucoup d'outils MCP ; `claude -p` lancé dans une session cloud sans les variables d'environnement de la session ne répond plus « Not logged in ».",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21306",
+          "libelle": "Claude Code 2.1.306",
+          "officielle": true
+        }
+      ],
+      "impact": "faible"
+    },
+    {
+      "version": null,
+      "date_publication": null,
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-read-a-background-command-s-output-as-an-mcp-client"
+      ],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "kb-claude-code-mcp-read-a-background-command-s-output-as-an-mcp-client",
+      "ids_bruts": [
+        "kb-claude-code-mcp-read-a-background-command-s-output-as-an-mcp-client"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : relire la sortie d'une commande d'arrière-plan quand Claude Code sert de serveur MCP",
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (mcp) : un résultat Bash ou PowerShell de `claude mcp serve` qui porte `backgroundOutputPath` signale une commande restée en arrière-plan ; le client MCP la relit par deux appels `Read` (`offset` et `limit` à 1 pour lire `totalLines`, puis `offset` à `totalLines` moins 9 et `limit` à 10).",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#read-a-background-commands-output-as-an-mcp-client",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": null,
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header"
+      ],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "kb-claude-code-mcp-sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header",
+      "ids_bruts": [
+        "kb-claude-code-mcp-sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : connexion à un serveur MCP derrière une passerelle qui exige un en-tête",
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (mcp) : si la connexion OAuth à un serveur MCP échoue parce qu'une passerelle exige un en-tête comme `X-API-Key`, on déclare cet en-tête dans la configuration du serveur pour que Claude Code l'envoie. Demande Claude Code 2.1.299 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#sign-in-to-an-mcp-server-behind-a-gateway-that-requires-a-header",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": null,
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-sandbox-allownestedusernamespaces"
+      ],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "kb-claude-code-parametres-sandbox-allownestedusernamespaces",
+      "ids_bruts": [
+        "kb-claude-code-parametres-sandbox-allownestedusernamespaces"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `sandbox.allowNestedUserNamespaces`, espaces de noms utilisateur dans le bac à sable",
+      "type": "nouveaute",
+      "resume": "Entrée ajoutée à la base (paramètres) : `{\"sandbox\": {\"enabled\": true, \"allowNestedUserNamespaces\": true}}` laisse les commandes du bac à sable (Linux, WSL2) créer des espaces de noms utilisateur ; la page précise que cela désactive une frontière de sécurité. Demande Claude Code 2.1.305 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#sandboxallownestedusernamespaces",
+          "libelle": "settings-reference",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "anthropic-status-njk29r81v3wg",
+      "ids_bruts": [
+        "anthropic-status-njk29r81v3wg"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Fable 5 (21/10)",
+      "type": "correction",
+      "resume": "Incident d'impact « minor » sur claude.ai, l'API Claude, Claude Code et Claude Cowork : erreurs élevées sur les requêtes vers Claude Fable 5, du 21/10 à 19 h 49 UTC à 20 h 29 UTC (résolu).",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/njk29r81v3wg",
+          "libelle": "status.claude.com — incident njk29r81v3wg",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "claude-platform-notes-2026-10-21",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-21"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform : version d'API 2026-10-21, SDK et CLI `ant` 2.0 avec changements incompatibles, licence Apache 2.0, champs d'application des restrictions sur les profils utilisateurs",
+      "type": "changement_rupture",
+      "resume": "Nouvelle version d'API `2026-10-21` (page « Migrating to API version 2026-10-21 »). Nouveaux SDK qui l'envoient par défaut : Python 2.0.0, TypeScript 1.0.0, C# 13.0.0, Go 2.0.0, Java 3.0.0, PHP 1.0.0, Ruby 2.0.0, et `ant` CLI 2.0.0, avec des changements incompatibles indépendants de la version d'API et une licence Apache 2.0 à la place de MIT. Les profils utilisateurs gagnent les champs `enforcement_status` et `enforcement_actions` et le filtre `enforcement_status[]` pour voir si Anthropic a restreint ou banni un client final.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": "2026-10-20",
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "claude-platform-notes-2026-10-20",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-20"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 20/10 (révision) : profils utilisateurs, webhooks d'organisation, web fetch désactivable par l'organisation",
+      "type": "nouveaute",
+      "revision": true,
+      "resume": "Révision des notes du 20/10, ajoutées : profils utilisateurs (indiquer à Anthropic le client final de chaque requête, pour qu'une mesure de sécurité vise un client plutôt que l'organisation) avec les endpoints `/v1/user_profiles` ; webhooks d'organisation de l'Admin API, en bêta (en-tête `webhooks-2026-10-07`), pour la restriction ou le bannissement d'un profil et sa levée ; désactivation du web fetch par les administrateurs dans la page Capabilities de la Console (une requête qui l'inclut échoue alors en 400), avec domaines autorisés ou bloqués ; le `web_fetch` de Claude Managed Agents suit ces restrictions, et les sessions suivent les réglages de recherche web de l'organisation (depuis le 06/10 pour l'autorisation, depuis le 14/10 pour les domaines).",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": "2026-10-14",
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "claude-platform-notes-2026-10-14",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-14"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 14/10 (révision) : reformulation de l'annonce de l'export OpenTelemetry",
+      "type": "amelioration",
+      "revision": true,
+      "resume": "Révision de forme : dans l'annonce de l'export OpenTelemetry en bêta, « observability backend » devient « observability platform » ; le fond ne change pas.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    },
+    {
+      "version": null,
+      "date_publication": "2026-02-19",
+      "projets_concernes": [],
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "certitude": "officiel",
+      "id": "anthropic-deprecations-2026-02-19-claude-haiku-3-model",
+      "ids_bruts": [
+        "anthropic-deprecations-2026-02-19-claude-haiku-3-model",
+        "anthropic-deprecations-2025-12-19-claude-haiku-3-5-model",
+        "anthropic-deprecations-2025-10-28-claude-sonnet-3-7-model",
+        "anthropic-deprecations-2025-06-30-claude-opus-3-model"
+      ],
+      "produit": "claude",
+      "titre": "Dépréciations des modèles Claude : le mot « model » retiré de quatre annonces (Haiku 3, Haiku 3.5, Sonnet 3.7, Opus 3)",
+      "type": "depreciation",
+      "revision": true,
+      "resume": "Révision de forme sur la page des dépréciations : « Claude Haiku 3 model », « Claude Haiku 3.5 model », « Claude Sonnet 3.7 model » et « Claude Opus 3 model » deviennent « Claude Haiku 3 », « Claude Haiku 3.5 », « Claude Sonnet 3.7 » et « Claude Opus 3 » dans la phrase d'annonce. Les dates de retrait ne changent pas : Opus 3 le 05/01/2026 (remplacement recommandé `claude-opus-4-8`).",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+          "libelle": "Dépréciations des modèles Claude",
+          "officielle": true
+        }
+      ],
+      "impact": "nul"
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://claude.com/blog/hcltech-joins-claude-partner-network",
+      "raison": "Partenariat commercial entre Anthropic et un intégrateur : aucun effet sur les modèles ni sur les outils (D24)."
+    },
+    {
+      "id": "https://claude.com/blog/claude-security-now-scans-continuously-and-tracks-fixes",
+      "raison": "Bêta publique de Claude Security et 25 000 $ de crédits mensuels pendant deux mois (usage jusqu'au 31/12/2026), réservés aux organisations Claude Enterprise ; l'abonnement de Sylvain est Max (20x), aucune offre pour son compte (D71 : sujet traité, sans pertinence fabriquée, REGLES §4). La fiche de la base `claude-fonctionnalites-page-14661296-use-claude-security` est à jour."
+    },
+    {
+      "id": "https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
+      "raison": "Nomination à la gouvernance d'Anthropic, sans lien avec les modèles ni les outils (D24)."
+    },
+    {
+      "id": "https://www.anthropic.com/news/distillation-defenses",
+      "raison": "Mesures d'Anthropic contre la distillation de ses modèles par des tiers, sans effet sur l'usage de Claude par Sylvain (D24)."
+    }
+  ],
+  "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be"
+}
