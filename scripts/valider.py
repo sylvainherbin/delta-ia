@@ -1164,13 +1164,15 @@ CREDITS_CHAMPS = {"nom", "solde_usd", "releve_le", "expire_le", "jours_restants"
 
 
 def verifier_credits(credits, ou: str, r: Rapport) -> None:
-    """D102 (D71) : `comptes.credits`, crédits datés. Une valeur null porte une `raison` ; jamais de date ou de solde deviné."""
+    """D102 : crédits datés facultatifs ; le crédit cloud fictif est interdit. Une valeur null porte une `raison` ; jamais de date ou de solde deviné."""
     o = f"{ou}.credits"
     if not isinstance(credits, list):
         r.erreur(o, "doit être une liste")
         return
     for i, v in enumerate(credits):
         oc = f"{o}[{i}]"
+        if isinstance(v, dict) and v.get("nom") == "Crédit sessions cloud Claude":
+            r.erreur(oc, "crédit cloud fictif interdit (D102, décision du 21/10/2026)")
         if not isinstance(v, dict) or not CREDITS_CHAMPS <= set(v) or set(v) - CREDITS_CHAMPS - {"raison"}:
             r.erreur(oc, "champs attendus : nom, solde_usd, releve_le, expire_le, jours_restants (+ raison)")
             continue

@@ -874,7 +874,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "OPÉRER confie déjà des missions `code` et `mecanique` à l'exécutant `claude-cloud`, et tes crédits Claude Code cloud (216 $ relevés le 07/10) sont à utiliser avant le 05/11 : vérifie le solde dans `operer qui` chaque semaine d'ici là. L'archivage d'une session cloud ne se fait encore que dans claude.ai/code et l'app, pas par la CLI."
+    "pourquoi": "L'archivage d'une session cloud ne se fait encore que dans claude.ai/code et l'app, pas par la CLI."
    },
    "sources": [
     {
@@ -920,13 +920,9 @@
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
-    "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Crédits Claude Code cloud à utiliser avant le 05/11/2026, solde de 216 $ relevé par OPÉRER le 07/10."
-    },
     "methode.operer": {
      "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "Exécutant `claude-cloud`, limité aux natures `code` et `mecanique`, crédits à épuiser avant le 05/11."
+     "pourquoi": "Exécutant `claude-cloud`, limité aux natures `code` et `mecanique`."
     },
     "usage.hors-machine": {
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
@@ -940,13 +936,6 @@
      "source": "https://code.claude.com/docs/en/claude-code-on-the-web",
      "releve_le": "2026-10-15",
      "caduc_si": "les forfaits éligibles ou la syntaxe `--cloud` changent"
-    },
-    {
-     "affirmation": "Crédits Claude Code cloud à utiliser avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10).",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-15",
-     "caduc_si": "les crédits sont épuisés ou l'échéance change",
-     "revoir_le": "2026-11-05"
     },
     {
      "affirmation": "OPÉRER confie des missions `code` et `mecanique` à l'exécutant `claude-cloud`.",
@@ -1364,7 +1353,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "OPÉRER confie des missions de nature `code` et `mecanique` à l'exécutant `claude-cloud`, dont les crédits sont à épuiser avant le 05/11 : un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait de lancer `.venv/bin/pytest -q` sur delta-ia dans la session ; ne place aucun jeton en clair dans les variables."
+    "pourquoi": "Pour préparer les tests de delta-ia dans une session cloud, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait de lancer `.venv/bin/pytest -q` sur delta-ia dans la session ; ne place aucun jeton en clair dans les variables."
    },
    "sources": [
     {
@@ -1406,10 +1395,6 @@
      "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
      "pourquoi": "allocation vers Claude cloud, natures code et mecanique"
     },
-    "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "crédits Claude Code cloud à utiliser avant le 05/11/2026"
-    },
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
      "pourquoi": "pytest seulement dans delta-ia/.venv"
@@ -1428,18 +1413,6 @@
      "source": "contexte:methode.operer",
      "releve_le": "2026-10-16",
      "caduc_si": "CONTEXTE.md ne décrit plus l'exécutant `claude-cloud` ou change les natures de mission qui lui sont permises."
-    },
-    {
-     "affirmation": "Les crédits de l'exécutant `claude-cloud` sont à épuiser avant le 05/11, et OPÉRER suit une cible de consommation en dollars par jour pour le cloud.",
-     "source": "contexte:methode.operer",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md supprime l'échéance du 05/11 pour les crédits cloud ou la cible de rythme du cloud."
-    },
-    {
-     "affirmation": "Sylvain dispose de crédits Claude Code cloud à utiliser avant le 05/11/2026 (solde de 216 $ relevé par OPÉRER le 07/10).",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus ces crédits cloud ou leur échéance change."
     },
     {
      "affirmation": "Sur la machine de Sylvain, `pytest` est absent du système et présent seulement dans `delta-ia/.venv` ; `python3.12-venv` est installé.",
