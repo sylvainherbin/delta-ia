@@ -1,11 +1,15 @@
 """Le widget X est l'unique script tiers admis, chargé à la première ouverture."""
 
 from html.parser import HTMLParser
+import os
 from pathlib import Path
 import re
-import shutil
 import subprocess
 from urllib.parse import urlsplit
+
+import pytest
+
+from test_relais_reference import trouver_node
 
 
 DOCS = Path(__file__).resolve().parents[1] / "docs"
@@ -44,8 +48,10 @@ def test_widget_differe_reouverture_navigation_et_repli():
     app = (DOCS / "assets/app.js").read_text(encoding="utf-8")
     utils = app[app.index("  function el("):app.index("  function texte(")]
     bloc = app[app.index("  let widgetsX;"):app.index("  function pageAujourdhui(")]
-    node = shutil.which("node")
-    assert node, "Node est nécessaire au contrôle du chargement différé"
+    node = trouver_node()
+    if not node:
+        assert not os.environ.get("CI"), "Node est nécessaire au contrôle du chargement différé"
+        pytest.skip("Node introuvable (PATH, ~/.nvm/current/bin/node) : contrôle lancé par la CI")
     recette = r'''
 const assert = require("node:assert/strict");
 class Element {
