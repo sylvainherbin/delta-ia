@@ -6,7 +6,7 @@ import { developperModeles } from "../lib/modeles.js";
 
 import { compter } from "../lib/compteur.js";
 
-const BASE = (process.env.DELTA_BASE_URL || "https://sylvainherbin.github.io/delta-ia/data").replace(/\/$/, "");
+const BASE = (process.env.DELTA_BASE_URL || "https://ai.orqyra.io/data").replace(/\/$/, "");
 const PROTOCOLE = "2025-06-18";
 const PERIMETRES = ["claude", "openai", "actu"];
 const KB = { claude: ["fonctionnalites", "commandes", "skills", "plugins", "mcp", "parametres", "raccourcis"],
@@ -361,7 +361,7 @@ async function traiter(msg, mesure = {}) {
       return ok(id, { protocolVersion: typeof params.protocolVersion === "string" ? params.protocolVersion : PROTOCOLE,
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "delta", title: "Delta — veille IA de Sylvain", version: "0.2.3" },
-        instructions: "Serveur en lecture seule sur les données publiques de Delta (https://sylvainherbin.github.io/delta-ia/). Il ne peut rien lancer ni modifier." });
+        instructions: "Serveur en lecture seule sur les données publiques de Delta (https://ai.orqyra.io/). Il ne peut rien lancer ni modifier." });
     case "ping":
       return ok(id, {});
     case "tools/list":

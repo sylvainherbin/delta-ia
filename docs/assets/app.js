@@ -898,7 +898,7 @@
       "dans un workflow ou chez un agent de Delta. Juge sa pertinence pour mes projets et, si elle l'est, dis dans quel workflow ou chez quel agent elle entre et ce que ça change.";
   }
   /* Adresse de la console de pilotage (D104) : jamais dans le dépôt ni sur le site (REGLES §5), seulement dans ce navigateur.
-     Elle s'y enregistre en ouvrant une fois https://sylvainherbin.github.io/delta-ia/#console=<adresse> ; le fragment est retiré
+     Elle s'y enregistre en ouvrant une fois https://ai.orqyra.io/#console=<adresse> ; le fragment est retiré
      de l'URL aussitôt. Admis : https, ou http vers une adresse Tailscale (100.64.0.0/10) ou un nom *.ts.net. */
   const CLE_CONSOLE = "delta.console";
   const IDEE_CONSOLE_MAX = 500; // limite de /api/voix
@@ -1534,7 +1534,7 @@
       limite: "Un nom absent de la base reste en texte simple. Sans index des noms, aucun lien et aucun message." },
     { id: "envoi", titre: "Envoyer à Delta (bouton de chaque fiche)",
       sert: "Remet l'idée « intégrer la référence … » à Delta, qui juge si elle entre dans un workflow ou chez un agent. Le relais accepte 10 envois par heure au plus ; après un envoi au relais ou une ouverture de console, une même fiche ne repart pas dans l'heure (« déjà envoyée à HH:MM »).",
-      geste: "Bureau : relais local d'abord (sonde de 3 s), puis console reliée dans un nouvel onglet s'il ne répond pas, sinon copie. iPhone/iPad : console reliée, sinon copie. Pour relier la console, ouvre-la et touche « Relier Delta-IA » une fois par navigateur, sur chaque appareil (le lien ouvre `https://sylvainherbin.github.io/delta-ia/#console=<adresse>` ; fragment vide : oubli). Facultatif — Brave : Paramètres → rechercher localhost (Brave le propose selon la version).",
+      geste: "Bureau : relais local d'abord (sonde de 3 s), puis console reliée dans un nouvel onglet s'il ne répond pas, sinon copie. iPhone/iPad : console reliée, sinon copie. Pour relier la console, ouvre-la et touche « Relier Delta-IA » une fois par navigateur, sur chaque appareil (le lien ouvre `https://ai.orqyra.io/#console=<adresse>` ; fragment vide : oubli). Facultatif — Brave : Paramètres → rechercher localhost (Brave le propose selon la version).",
       limite: "Relais : « Envoyé à Delta, jugement en cours ». Console : idée préremplie (500 caractères au plus), envoi à valider dans son lanceur ; si l'onglet est bloqué, touche « Ouvrir la console ». Sans relais ni console : « Pas envoyé », puis copie de l'idée à coller une fois dans le lanceur (« copiée à HH:MM » pendant une heure)." },
     { id: "a-tester", titre: "À tester",
       sert: "Actions proposées sur 30 jours, ouvertes d'abord, puis « Essais de la base » : entrées au verdict tester, puis à utiliser et pas encore essayées, avec syntaxe, exemple et pourquoi.",

@@ -47,9 +47,9 @@ def test_texte_idee_entree_en_attente_et_longue():
 
 
 def test_origines_admises():
-    assert rr.origine_admise("https://sylvainherbin.github.io")
+    assert rr.origine_admise("https://ai.orqyra.io") and rr.origine_admise("https://sylvainherbin.github.io")
     assert rr.origine_admise("http://localhost:8000") and rr.origine_admise("http://127.0.0.1")
-    for o in (None, "", "null", "https://exemple.com", "https://sylvainherbin.github.io.exemple.com", "http://localhost.exemple.com",
+    for o in (None, "", "null", "https://exemple.com", "https://sylvainherbin.github.io.exemple.com", "https://ai.orqyra.io.exemple.com", "http://ai.orqyra.io", "http://localhost.exemple.com",
               "https://localhost:8000"):
         assert not rr.origine_admise(o), o
 
@@ -84,7 +84,7 @@ def relais(tmp_path):
     srv.shutdown()
 
 
-def appel(url, methode="GET", corps=None, origine="https://sylvainherbin.github.io"):
+def appel(url, methode="GET", corps=None, origine="https://ai.orqyra.io"):
     h = {"Content-Type": "application/json"}
     if origine:
         h["Origin"] = origine
@@ -101,7 +101,7 @@ def appel(url, methode="GET", corps=None, origine="https://sylvainherbin.github.
 def test_envoi_remet_l_idee_et_journalise(relais):
     code, h, r = appel(relais["url"] + "/reference", "POST", {"id": ENTREE["id"], "nom": "texte de la page ignoré"})
     assert code == 200 and r == {"ok": True, "etape": "envoyee", "detail": "Delta réfléchit à l’idée"}
-    assert h["Access-Control-Allow-Origin"] == "https://sylvainherbin.github.io"
+    assert h["Access-Control-Allow-Origin"] == "https://ai.orqyra.io"
     assert relais["recu"].read_text(encoding="utf-8") == rr.texte_idee(ENTREE) + "\n"
     ligne = json.loads((relais["tmp"] / "envois.jsonl").read_text(encoding="utf-8").splitlines()[-1])
     assert ligne["id"] == ENTREE["id"] and ligne["ok"] is True and ligne["etape"] == "envoyee"
@@ -167,7 +167,7 @@ def test_plafond_de_dix_envois_par_heure(relais):
     code, h, r = appel(u, "POST", {"id": entrees[-1]["id"]})
     assert code == 429 and r["ok"] is False and r["etape"] == "plafond"
     assert "10 envois par heure" in r["detail"] and "min" in r["detail"]
-    assert 1 <= int(h["Retry-After"]) <= rr.FENETRE + 1 and h["Access-Control-Allow-Origin"] == "https://sylvainherbin.github.io"
+    assert 1 <= int(h["Retry-After"]) <= rr.FENETRE + 1 and h["Access-Control-Allow-Origin"] == "https://ai.orqyra.io"
     assert not relais["recu"].exists()                      # rien n'est remis à la porte des idées
     assert len((relais["tmp"] / "envois.jsonl").read_text(encoding="utf-8").splitlines()) == rr.PLAFOND
     # les requêtes refusées en amont ne consomment pas le plafond ; la fiche refusée au plafond reste envoyable ensuite
@@ -246,7 +246,7 @@ def test_second_envoi_de_la_meme_fiche_refuse_en_409(relais):
     assert code == 409 and r["ok"] is False and r["etape"] == "deja_envoyee"
     assert re.fullmatch(r"déjà envoyée à \d\d:\d\d", r["detail"]) and r["detail"].endswith(rr.heure(r["envoye_a"]))
     assert avant - 1 <= r["envoye_a"] <= rr.time.time() + 1
-    assert h["Access-Control-Allow-Origin"] == "https://sylvainherbin.github.io"
+    assert h["Access-Control-Allow-Origin"] == "https://ai.orqyra.io"
     assert not relais["recu"].exists()                       # JUGER n'est pas relancé
     assert len((relais["tmp"] / "envois.jsonl").read_text(encoding="utf-8").splitlines()) == 1
     assert len(relais["R"].limiteur.envois) == 1             # le refus ne consomme pas le plafond
