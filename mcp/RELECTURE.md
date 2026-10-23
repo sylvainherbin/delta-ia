@@ -55,3 +55,80 @@ Retenu, vérifié par le test « grille de relecture » :
   défaut observé ; la restreindre risque de couper un client sans gain constaté. À reprendre si un client échoue.
 - Nombre d'outils (6), retours JSON, troncature annoncée (`total`, `affichees`), erreurs d'outil `isError` :
   déjà conformes.
+
+## Lot 1 : validité, pagination et classement
+
+### Validité des résumés et des fiches complètes
+
+`chercher_reference` et `fiche_reference` rendent les mêmes champs :
+
+- `validite` : `actuelle`, `perimee`, `anterieure_d64`, `non_commentee` ou `inconnue` ;
+- `perimee` : booléen quand la comparaison est possible, sinon `null` ;
+- `sections_perimees` : identifiants des sections citées modifiées, disparues ou dépréciées ;
+- `verifie_le` : date explicite de vérification, sinon dernière date d'historique « commentée »,
+  « commentaire révisé » ou « réévaluée », sinon `null`. `maj_le` n'est pas une vérification.
+
+La comparaison reprend `badgeContexte` du site : empreintes de la fiche contre
+`contexte_sections` et `contexte_deprecies` du fichier de catégorie publié. Une référence vide
+`{}` ne cite aucune section ; une référence absente est antérieure à D64. Un fichier sans ces
+métadonnées ne prouve aucune actualité, même si `verifie_le` existe (notamment méthodes et modèles).
+« Actuelle » signifie que les sections citées concordent avec ce fichier publié, sans garantie
+sur une modification locale de CONTEXTE qui n'aurait pas encore été publiée. La péremption
+concerne le commentaire personnalisé, pas nécessairement la syntaxe de l'éditeur ; le verdict
+est conservé avec son état, jamais rendu implicitement actuel.
+
+Test : « validité : mêmes états dans chercher_reference et fiche_reference » ; les tests existants
+sur les méthodes et modèles vérifient aussi leurs dates explicites.
+
+### Pagination de `a_tester`
+
+Appels : `a_tester({})`, puis `a_tester({curseur: curseur_suivant})` ; `limite` entier de 1 à 20,
+défaut 5. La limite s'applique au **total** des résumés de la page : actions d'abord (impact puis
+date décroissante), puis essais de la base dans leur ordre publié. Réponse : `total`, `affichees`,
+`limite`, `curseur_suivant` (`null` à la fin), `actions_total`, `actions` et
+`essais_base: {total, affichees, entrees}`. Les anciens conteneurs restent présents ; leur contenu
+est désormais résumé et paginé. Les textes d'action, usages et exemples complets sont retirés
+de la liste. Titres et noms sont bornés à 160 caractères, sources à 500/160 caractères.
+
+Détail : `a_tester({id})` renvoie `detail` pour une action, sans tronquer ses étapes ; pour un
+essai, il renvoie la même `fiche` que `fiche_reference({id})`. `id` et `curseur` sont exclusifs.
+Chaque action reçoit `action:<périmètre>:<date>:<position dans le fichier>`, avec l'ancien
+identifiant dans `id_element`. Cet identifiant désigne la position dans le catalogue courant ;
+il faut relire la liste après une mise à jour. Une fiche conserve son identifiant canonique.
+
+Le curseur opaque contient une empreinte du contenu et un offset ; il reste utilisable entre
+instances sur le même contenu, et avec une autre limite. Tout curseur mal formé, hors bornes ou
+périmé produit `isError` et demande de recommencer sans curseur. Un index ou fichier indisponible
+reste une erreur explicite, sans réponse partielle présentée comme complète. Le calcul lit
+encore la fenêtre complète côté serveur ; la pagination borne la réponse au client.
+
+Tests : parcours sans omissions/doublons, traversée actions/base, liste vide, D119, 101 actions
+à étapes longues (moins de 6 000 caractères pour la page par défaut, moins de 18 000 à la limite
+maximale), détail intégral, limites et curseurs invalides, curseur invalidé après changement.
+
+### Classement de `chercher_reference`
+
+Les appels existants restent valables (`requete`, `produit`, `categorie`, `limite`) ; `statut`
+est un filtre optionnel supplémentaire (`utilise`, `non_utilise`, `inconnu`). Les filtres
+s'appliquent avant les deux étapes de recherche, y compris aux fiches multi-produits.
+L'index des noms D105 et les alias exacts restent prioritaires. Sinon, couverture des termes,
+poids du titre, proximité et normalisation par la longueur du texte. Les correspondances
+partielles (au moins la moitié des termes utiles) peuvent concurrencer les longues fiches
+complètes et sont signalées dans `avis`. Un nom exact trouvé limite la réponse à ses fiches ;
+un identifiant ou une commande littérale garde son écriture, sans découpage lexical.
+Les mots vides sont retirés avant la recherche. Les familles lexicales limitées
+(contexte/context, mémoire/memory, conversation/chat, compacter/compact, réduire/libérer, reprendre/resume) et
+pluriels permettent de chercher les descriptions françaises et anglaises, sans service externe
+ni règle liée à un identifiant de fiche. Les préfixes d'options restent significatifs.
+
+Tests : titre/proximité/mots vides/filtres combinés, jeu `test/requetes-reelles.json`, noms exacts
+et tests D105 existants. La mesure du classement et ses limites figurent au rapport de mission.
+
+### Relecture de tool-design.md appliquée à ce lot
+
+Retenu : « Truncate huge payloads and say so » et « Include IDs […] for follow-up calls »
+(pagination, compte et détail) ; « Tight schemas prevent bad calls » (limite, curseur, statut,
+identifiant validés) ; « The description is the contract » (résumés, détail et reprise expliqués).
+Chaque remarque est couverte par les tests ci-dessus et la grille existante.
+Les autres points déjà écartés dans la grille restent inchangés ; ce lot ne change ni les
+annotations, ni le protocole, ni le nombre d'outils, ni le déploiement.

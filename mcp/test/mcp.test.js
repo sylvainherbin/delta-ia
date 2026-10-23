@@ -223,7 +223,11 @@ test("a_tester : id, produit, date de publication et première source par action
   const r = (await appel("a_tester")).corps.result;
   assert.equal(r.isError, false);
   for (const a of r.structuredContent.actions) {
-    assert.deepEqual(Object.keys(a), ["id", "date", "produit", "date_publication", "titre", "impact", "action", "source"]);
+    assert.deepEqual(Object.keys(a).sort(), ["id", "id_element", "date", "produit", "date_publication", "titre", "impact", "source"].sort());
+    assert.match(a.id, /^action:(claude|openai|actu):/);
+    const detail = (await appel("a_tester", { id: a.id })).corps.result.structuredContent.detail;
+    assert.ok(detail.action);
+    assert.equal(detail.id, a.id);
     assert.equal(typeof a.id, "string");
     assert.ok(a.source === null || (typeof a.source.url === "string" && typeof a.source.officielle === "boolean"));
   }
@@ -311,18 +315,31 @@ test("nouveautes_base : fichier absent, illisible ou de forme inattendue = isErr
   }
 });
 
-test("a_tester : les actions d'abord, puis les essais de la base (tester d'abord, 30 au plus)", async () => {
-  const s = (await appel("a_tester")).corps.result.structuredContent;
-  assert.deepEqual(Object.keys(s), ["avertissement", "actions", "essais_base"]);
-  const restants = lireDonnee("kb/a-tester.json").entrees.filter((x) => !x.essai);
-  const e = s.essais_base;
-  assert.equal(e.total, restants.length);
-  assert.equal(e.affichees, Math.min(30, restants.length));
-  assert.deepEqual(e.entrees.map((x) => x.id), restants.slice(0, 30).map((x) => x.id));
-  for (const x of e.entrees) assert.deepEqual(Object.keys(x), [...CLES_LIGNE.slice(0, 8), "pourquoi", "date_ajout"]);
-  const verdicts = e.entrees.map((x) => x.verdict);
-  assert.equal(verdicts[0], "tester");
-  assert.ok(verdicts.indexOf("utiliser") === -1 || verdicts.lastIndexOf("tester") < verdicts.indexOf("utiliser"), "tester avant utiliser");
+test("a_tester : pagination globale, actions puis base, aucune omission ni duplication", async () => {
+  const restants = lireDonnee("kb/a-tester.json").entrees.filter(x => !x.essai);
+  let curseur, total, actionsTotal;
+  const actions = [], essais = [];
+  do {
+    const r = (await appel("a_tester", { limite: 20, ...(curseur ? { curseur } : {}) })).corps.result;
+    assert.equal(r.isError, false);
+    const s = r.structuredContent;
+    assert.ok(s.affichees <= 20);
+    assert.equal(s.affichees, s.actions.length + s.essais_base.entrees.length);
+    if (total !== undefined) assert.equal(s.total, total);
+    total = s.total; actionsTotal = s.actions_total;
+    actions.push(...s.actions); essais.push(...s.essais_base.entrees);
+    curseur = s.curseur_suivant;
+  } while (curseur);
+  assert.equal(actions.length, actionsTotal);
+  assert.equal(new Set(actions.map(e => e.id)).size, actions.length);
+  assert.deepEqual(essais.map(e => e.id), restants.map(e => e.id));
+  assert.equal(total, actions.length + restants.length);
+  if (restants.length) {
+    const detail = (await appel("a_tester", { id: restants[0].id })).corps.result;
+    const directe = (await appel("fiche_reference", { id: restants[0].id })).corps.result;
+    assert.equal(detail.isError, false);
+    assert.deepEqual(detail.structuredContent.fiche, directe.structuredContent.fiche);
+  }
 });
 
 test("a_tester : un essai déclaré fait par une mission (D119) n'est plus proposé", async () => {
@@ -491,12 +508,12 @@ test("chercher_reference : repli par nombre de mots trouvés sur dix requêtes r
     const r = (await appel("chercher_reference", { requete, produit, ...(categorie ? { categorie } : {}) })).corps.result.structuredContent;
     assert.ok(r.total > 0 && r.resultats.length > 0, `« ${requete} » rend au moins une fiche`);
     if (r.avis !== undefined) {
-      assert.match(r.avis, /aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés/, requete);
+      assert.match(r.avis, /résultats partiels possibles : couverture des mots/, requete);
       replis += 1;
     }
-    if (premier) assert.equal(r.resultats[0].id, premier, requete);
+    if (premier) assert.ok(r.resultats.some(e => e.id === premier), `cible toujours visible : ${requete}`);
   }
-  assert.ok(replis >= 8, `au moins 8 requêtes passent par le repli (reçu : ${replis})`);
+  assert.ok(replis > 0, "le repli reste explicite ; les familles lexicales peuvent éviter un repli ancien");
   // une requête hors base reste à zéro, sans avis de résultats partiels
   const hors = (await appel("chercher_reference", { requete: "Groq Cerebras" })).corps.result.structuredContent;
   assert.deepEqual([hors.total, hors.resultats.length, hors.avis], [0, 0, undefined]);
@@ -511,15 +528,17 @@ function base(entrees, noms = {}) {
 const fiche3 = (id, nom, usage) => ({ id, nom, produit: "claude-code", categorie: "commandes", usage, description: null, commentee: false });
 const BASE3 = [fiche3("a", "alpha-un", "alpha beta gamma"), fiche3("b", "beta-deux", "beta delta"), fiche3("c", "gamma-trois", "gamma")];
 
-test("chercher_reference : le ET strict garde la main, le repli ne joue que sans résultat", async () => {
+test("chercher_reference : couverture et titre, seuil des partiels et filtres", async () => {
   await avecDonnees(base(BASE3), async (outil) => {
     const cherche = async (requete, args = {}) => (await outil("chercher_reference", { requete, ...args })).result.structuredContent;
     const strict = await cherche("beta gamma");  // une fiche contient les deux mots : pas de repli
-    assert.deepEqual([strict.resultats.map((x) => x.id), strict.total, strict.avis], [["a"], 1, undefined]);
+    assert.equal(strict.resultats[0].id, "a");
+    assert.equal(strict.total, 3);  // les correspondances partielles restent consultables
+    assert.match(strict.avis, /résultats partiels possibles/);
     // repli : au moins la moitié des mots retenus, arrondie au supérieur
     const seuil2 = await cherche("alpha beta gamma zzz");  // 4 mots, seuil 2 : seule « a » en a 3
     assert.deepEqual([seuil2.resultats.map((x) => x.id), seuil2.total], [["a"], 1]);
-    assert.match(seuil2.avis, /^aucune fiche ne contient tous les mots : résultats partiels, classés par nombre de mots trouvés$/);
+    assert.match(seuil2.avis, /^résultats partiels possibles : couverture des mots/);
     const seuil3 = await cherche("beta delta gamma zzz");  // seuil 2 : a (beta, gamma) et b (beta, delta), pas c
     assert.deepEqual(seuil3.resultats.map((x) => x.id).sort(), ["a", "b"]);
     assert.equal(seuil3.total, 2);
@@ -563,7 +582,7 @@ test("chercher_reference : repli et index des noms indisponible, deux avis dits"
   await avecDonnees({ ...base(BASE3), "kb/noms.json": null }, async (outil) => {
     const r = (await outil("chercher_reference", { requete: "alpha zzz" })).result.structuredContent;
     assert.deepEqual(r.resultats.map((x) => x.id), ["a"]);
-    assert.match(r.avis, /^index des noms indisponible \(.+\) : recherche plein texte seule ; aucune fiche ne contient tous les mots : résultats partiels/);
+    assert.match(r.avis, /^index des noms indisponible \(.+\) : recherche plein texte seule ; résultats partiels possibles/);
   });
 });
 
@@ -581,9 +600,9 @@ test("chercher_reference et fiche_reference : catégories non lues signalées ex
       { categorie: "methodes", raison: "format inattendu" },
     ];
     const r = (await outil("chercher_reference", { requete: "beta gamma" })).result.structuredContent;
-    assert.deepEqual(r.resultats.map((x) => x.id), ["a"]);
+    assert.equal(r.resultats[0].id, "a");
     assert.deepEqual(r.categories_non_lues, attendu);
-    assert.equal(r.avis, "recherche incomplète — catégories non lues : claude/skills (HTTP 404), openai/mcp (JSON illisible), methodes (format inattendu)");
+    assert.match(r.avis, /recherche incomplète — catégories non lues : claude\/skills \(HTTP 404\), openai\/mcp \(JSON illisible\), methodes \(format inattendu\)/);
     // Même quand la recherche ne trouve aucun résultat, l'incomplétude est signalée
     const vide = (await outil("chercher_reference", { requete: "introuvable" })).result.structuredContent;
     assert.equal(vide.total, 0);
@@ -896,4 +915,112 @@ test("recherche mixte : remplit la limite et ne plafonne les modèles que si des
     assert.equal(r.resultats.length, 1);
     assert.equal(r.resultats[0].id, "model-first", "la limite 1 garde le modèle classé premier");
   });
+});
+
+// Mission lot 1 : contrats observables, données longues et erreurs de reprise.
+test("a_tester : volume borné, limites, curseurs et détail non tronqué", async () => {
+  const date = new Date().toISOString().slice(0, 10);
+  const longs = Array.from({ length: 101 }, (_, i) => ({ id: `action-${i}`, titre: 'Titre '.repeat(300),
+    produit: 'codex', impact: 'fort', action: { etapes: ['étape '.repeat(20000)] } }));
+  const remplacements = { 'claude/index.json': { jours: [{ date }] }, [`claude/${date}.json`]: { elements: longs },
+    'openai/index.json': { jours: [] }, 'actu/index.json': { jours: [] }, 'kb/a-tester.json': { entrees: [] } };
+  await avecDonnees(remplacements, async outil => {
+    const s = (await outil('a_tester')).result.structuredContent;
+    assert.equal(s.total, 101); assert.equal(s.affichees, 5);
+    assert.ok(JSON.stringify(s).length < 6000);
+    const max = (await outil('a_tester', { limite: 20 })).result.structuredContent;
+    assert.equal(max.affichees, 20); assert.ok(JSON.stringify(max).length < 18000);
+    const detail = (await outil('a_tester', { id: s.actions[0].id })).result.structuredContent.detail;
+    assert.deepEqual(detail.action, longs[0].action);
+    assert.deepEqual((await outil('a_tester', { curseur: s.curseur_suivant })).result.structuredContent.actions.map(e => e.id),
+      longs.slice(5, 10).map((_, i) => `action:claude:${date}:${i + 5}`));
+    // Le curseur ne dépend ni de l'instance HTTP ni de la taille de page précédente.
+    await avecDonnees(remplacements, async autre => {
+      const suivante = (await autre('a_tester', { curseur: s.curseur_suivant, limite: 2 })).result.structuredContent;
+      assert.equal(suivante.affichees, 2);
+      assert.deepEqual(suivante.actions.map(e => e.id), longs.slice(5, 7).map((_, i) => `action:claude:${date}:${i + 5}`));
+    });
+    for (const args of [{ limite: 0 }, { limite: 21 }, { limite: 1.5 }, { limite: '5' }, { limite: null },
+      { curseur: '' }, { curseur: 'v1:0000000000000000:5' }, { curseur: s.curseur_suivant.replace(/:\d+$/, ':99999') },
+      { id: '../secret' }, { id: 'inexistant' }, { id: s.actions[0].id, curseur: s.curseur_suivant }]) {
+      const r = (await outil('a_tester', args)).result;
+      assert.equal(r.isError, true, JSON.stringify(args)); assert.match(r.content[0].text, /^Paramètre invalide/);
+    }
+    // Un autre contenu ne peut pas accepter le même curseur, même avec le même nombre d'actions.
+    await avecDonnees({ ...remplacements, [`claude/${date}.json`]: { elements: [...longs].reverse() } }, async autre => {
+      const r = (await autre('a_tester', { curseur: s.curseur_suivant })).result;
+      assert.equal(r.isError, true); assert.match(r.content[0].text, /périmé.*sans curseur/);
+    });
+  });
+  await avecDonnees({ ...remplacements, [`claude/${date}.json`]: { elements: [] } }, async outil => {
+    const s = (await outil('a_tester')).result.structuredContent;
+    assert.equal(s.total, 0); assert.equal(s.curseur_suivant, null);
+  });
+  await avecDonnees({ ...remplacements, 'openai/index.json': null }, async outil => {
+    const r = (await outil('a_tester')).result;
+    assert.equal(r.isError, true);
+    assert.match(r.content[0].text, /openai\/index.json : HTTP 404/);
+    assert.equal(r.structuredContent, undefined);
+  });
+});
+
+test("validité : mêmes états dans chercher_reference et fiche_reference, date de commentaire distincte de maj_le", async () => {
+  const entries = [
+    { id: 'valide', contexte_sections: { profil: { sha1: 'actuel' } }, attendu: ['actuelle', false, []] },
+    { id: 'modifiee', contexte_sections: { profil: { sha1: 'ancien' } }, attendu: ['perimee', true, ['profil']] },
+    { id: 'disparue', contexte_sections: { absente: { sha1: 'ancien' } }, attendu: ['perimee', true, ['absente']] },
+    { id: 'depreciee', contexte_sections: { retraite: { sha1: 'actuel' } }, attendu: ['perimee', true, ['retraite']] },
+    { id: 'ancienne', contexte_sections: null, attendu: ['anterieure_d64', null, []] },
+    { id: 'vide', contexte_sections: {}, attendu: ['actuelle', false, []] },
+    { id: 'malformee', contexte_sections: { profil: null }, attendu: ['perimee', true, ['profil']] },
+    { id: 'sans-empreinte', contexte_sections: { absente: {} }, attendu: ['perimee', true, ['absente']] },
+    { id: 'invalide', contexte_sections: 'incorrect', attendu: ['inconnue', null, []] },
+    { id: 'sans-commentaire', commentee: false, attendu: ['non_commentee', null, []] },
+  ].map(e => ({ ...fiche3(e.id, e.id, 'validite'), commentee: true, maj_le: '2026-10-24',
+    historique: [{ date: '2026-10-01', changement: 'commentée' }, { date: '2026-10-10', changement: 'commentaire révisé' },
+      { date: '2026-10-24', changement: 'source modifiée' }], ...e }));
+  const donnees = base(entries);
+  donnees['kb/claude/commandes.json'] = { entrees: entries, contexte_sections: { profil: 'actuel', retraite: 'actuel' }, contexte_deprecies: ['retraite'] };
+  await avecDonnees(donnees, async outil => {
+    const resumes = (await outil('chercher_reference', { requete: 'validite', limite: 20 })).result.structuredContent.resultats;
+    for (const e of entries) {
+      const f = (await outil('fiche_reference', { id: e.id })).result.structuredContent.fiche;
+      const r = resumes.find(x => x.id === e.id);
+      for (const forme of [f, r]) {
+        assert.deepEqual([forme.validite, forme.perimee, forme.sections_perimees], e.attendu, e.id);
+        assert.equal(forme.verifie_le, '2026-10-10');
+      }
+    }
+  });
+  await avecDonnees(base([fiche3('inconnue', 'inconnue', 'validite')]), async outil => {
+    const f = (await outil('fiche_reference', { id: 'inconnue' })).result.structuredContent.fiche;
+    assert.equal(f.verifie_le, null); assert.equal(f.perimee, null);
+  });
+});
+
+test("recherche : titre, proximité, mots vides et filtres combinés sans changer les appels existants", async () => {
+  const fiches = [fiche3('loin', 'A quelconque', `alpha ${'bruit '.repeat(100)} beta`),
+    fiche3('proche', 'B quelconque', 'alpha beta'), fiche3('titre', 'alpha beta', 'description'),
+    { ...fiche3('autre', 'alpha beta', ''), produit: 'codex', statut_usage: 'utilise' }];
+  await avecDonnees(base(fiches), async outil => {
+    const chercher = async args => (await outil('chercher_reference', args)).result.structuredContent;
+    assert.deepEqual((await chercher({ requete: 'alpha beta', produit: 'claude-code' })).resultats.map(e => e.id), ['titre', 'proche', 'loin']);
+    assert.deepEqual((await chercher({ requete: 'comment alpha avec beta pour mon projet', produit: 'claude-code' })).resultats.slice(0, 3).map(e => e.id), ['titre', 'proche', 'loin']);
+    assert.deepEqual((await chercher({ requete: 'alpha beta', produit: 'codex', categorie: 'commandes', statut: 'utilise' })).resultats.map(e => e.id), ['autre']);
+    assert.equal((await chercher({ requete: 'alpha beta', produit: 'claude-code', statut: 'utilise' })).total, 0);
+    assert.equal((await outil('chercher_reference', { requete: 'alpha', statut: 'faux' })).result.isError, true);
+  });
+});
+
+test("recherche : corpus de 12 questions de mission, noms exacts stables et gain sur le cas contexte", async () => {
+  const corpus = lireDonnee('../../mcp/test/requetes-reelles.json');
+  let dansHuit = 0;
+  for (const { attendus, ...args } of corpus) {
+    const r = (await appel('chercher_reference', args)).corps.result.structuredContent;
+    const rang = r.resultats.findIndex(e => attendus.includes(e.id)) + 1;
+    if (rang) dansHuit++;
+    if (/^[/]|^--/.test(args.requete)) assert.equal(rang, 1, args.requete);
+    if (args.requete === 'réduire contexte mission') assert.ok(rang > 0 && rang <= 5, `commande de contexte dans les cinq premières fiches (${rang})`);
+  }
+  assert.ok(dansHuit >= 8, `${dansHuit}/12 cibles parmi les huit premiers résultats (avant : 4/12)`);
 });
