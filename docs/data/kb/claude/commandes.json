@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-22",
+ "maj_le": "2026-10-23",
  "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
  "contexte_sections": {
   "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
@@ -5445,7 +5445,7 @@
    "categorie": "commandes",
    "nom": "/insights",
    "gabarit": "complet",
-   "description": "`/insights` génère un rapport HTML qui analyse les sessions récentes sur cette machine : projets travaillés, façon d'utiliser Claude Code, endroits où ça coince et fonctionnalités à essayer. Il n'est pas disponible dans les sessions cloud ; la documentation renvoie à « Analyze your usage patterns » pour l'emplacement du rapport, sa conservation et son coût.",
+   "description": "`/insights` génère un rapport HTML qui analyse les sessions récentes sur cette machine : projets travaillés, façon d'utiliser Claude Code, endroits où ça coince et fonctionnalités à essayer. Il n'est pas disponible dans les sessions cloud ; la page « Analyze your usage patterns » donne l'emplacement du rapport, sa conservation et son coût.",
    "description_source": "Generate an HTML report analyzing your recent sessions on this machine: which projects you work in, how you use Claude Code, where things go wrong, and features to try. Not available in cloud sessions. See Analyze your usage patterns for the report location, retention, and cost",
    "usage": "/insights",
    "usage_nature": "syntaxe",
@@ -5454,7 +5454,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Ton irritant principal est de ne pas assez connaître les fonctionnalités de Claude Code : ce rapport en suggère à partir de tes propres sessions, qui tournent en local sur la machine. Lance-le une fois et vérifie d'abord son coût dans la documentation, car les limites d'usage hebdomadaires sont une friction récurrente.“"
+    "pourquoi": "Ton irritant principal est de méconnaître les fonctionnalités de Claude Code : lance `/insights` une fois dans une session locale (pas en cloud) et compare ses « features to try » à ce que tu utilises déjà. Lis d'abord son coût sur la page indiquée, car il puise dans le quota de ton Max (20x) à l'essai."
    },
    "sources": [
     {
@@ -5467,7 +5467,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5503,54 +5503,82 @@
      "changement": "description corrigée",
      "avant": "Génère un rapport HTML sur tes sessions récentes sur cette machine : projets, façon d'utiliser Claude Code, points de friction et fonctionnalités à essayer. Indisponible dans les sessions cloud ; la documentation précise l'emplacement, la conservation et le coût du rapport.",
      "raison": "recommentaire D128 : Le verdict `tester` est maintenu, mais l'irritant, l'usage local des sessions et les limites hebdomadaires sont désormais fondés sur les sections citées (profil, env.multi-session"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/insights génère un rapport HTML sur les sessions récentes de la machine (projets, usage de Claude Code, problèmes, fonctionnalités à essayer) et n'est pas disponible dans les sessions cloud.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire /insights, change son contenu ou le rend disponible en cloud."
+      },
+      {
+       "affirmation": "La documentation renvoie à « Analyze your usage patterns » pour l'emplacement, la conservation et le coût du rapport.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page des commandes ne mentionne plus de coût ni ce renvoi."
+      },
+      {
+       "affirmation": "Irritant principal déclaré : ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Sylvain déclare un autre irritant principal dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Les sessions Claude Code durables sont des services systemd utilisateur `claude-session@<nom>` lancés dans tmux sur la machine.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables passent en sessions cloud."
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) sont listées parmi les frictions récurrentes.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Ton irritant principal est de ne pas assez connaître les fonctionnalités de Claude Code : ce rapport en suggère à partir de tes propres sessions, qui tournent en local sur la machine. Lance-le une fois et vérifie d'abord son coût dans la documentation, car les limites d'usage hebdomadaires sont une friction récurrente.“"
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Irritant principal déclaré : méconnaître les commandes et fonctionnalités de Claude Code ; la veille doit signaler les fonctionnalités à essayer."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Irritant principal déclaré : méconnaître commandes et fonctionnalités de Claude Code ; Max (20x) à l'essai."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions Claude Code durables tournent en local (services systemd, tmux), donc dans le périmètre de /insights, indisponible en cloud."
-    },
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes, d'où la vérification préalable du coût."
+     "pourquoi": "Sessions Claude Code durables en local (systemd, tmux), dans le périmètre de /insights, indisponible en cloud."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
      "affirmation": "/insights génère un rapport HTML sur les sessions récentes de la machine (projets, usage de Claude Code, problèmes, fonctionnalités à essayer) et n'est pas disponible dans les sessions cloud.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire /insights, change son contenu ou le rend disponible en cloud."
+     "releve_le": "2026-10-23",
+     "caduc_si": "la documentation retire /insights, change son contenu ou le rend disponible en cloud"
     },
     {
-     "affirmation": "La documentation renvoie à « Analyze your usage patterns » pour l'emplacement, la conservation et le coût du rapport.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page des commandes ne mentionne plus de coût ni ce renvoi."
-    },
-    {
-     "affirmation": "Irritant principal déclaré : ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+     "affirmation": "Irritant principal déclaré : ne pas connaître assez bien les commandes et fonctionnalités de Claude Code pour en tirer le maximum.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Sylvain déclare un autre irritant principal dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Les sessions Claude Code durables sont des services systemd utilisateur `claude-session@<nom>` lancés dans tmux sur la machine.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables passent en sessions cloud."
-    },
-    {
-     "affirmation": "Les limites d'usage (hebdomadaire et Fable) sont listées parmi les frictions récurrentes.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
+     "releve_le": "2026-10-23",
+     "caduc_si": "Sylvain déclare un autre irritant principal"
     }
    ]
   },
@@ -6603,7 +6631,7 @@
    "categorie": "commandes",
    "nom": "/powerup",
    "gabarit": "complet",
-   "description": "/powerup est une commande de Claude Code qui fait découvrir ses fonctionnalités par de courtes leçons interactives, accompagnées de démonstrations animées.",
+   "description": "`/powerup` fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives, accompagnées de démonstrations animées.",
    "description_source": "Discover Claude Code features through quick interactive lessons with animated demos",
    "usage": "/powerup",
    "usage_nature": "syntaxe",
@@ -6612,7 +6640,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Ton irritant principal est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code pour en tirer le maximum. Ces leçons interactives visent justement à les faire découvrir : lance-la une fois pour repérer ce que tu n'utilises pas encore."
+    "pourquoi": "Ton irritant principal est de ne pas assez connaître les commandes et fonctionnalités de Claude Code : lance `/powerup` une fois dans une session locale et note les fonctions présentées que tes sessions n'emploient pas encore."
    },
    "sources": [
     {
@@ -6625,7 +6653,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6661,28 +6689,60 @@
      "changement": "description corrigée",
      "avant": "Fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
      "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur l'irritant déclaré dans la section profil, citée, et abandonne la consigne sur l'iPhone et les animations dans le terminal, qu'aucune source fou"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/powerup fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande /powerup est retirée de la documentation ou change de fonction."
+      },
+      {
+       "affirmation": "L'irritant principal déclaré de Sylvain est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Sylvain déclare un autre irritant principal ou retire celui-ci de CONTEXTE.md."
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Ton irritant principal est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code pour en tirer le maximum. Ces leçons interactives visent justement à les faire découvrir : lance-la une fois pour repérer ce que tu n'utilises pas encore."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Déclare l'irritant principal : méconnaissance des commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Irritant principal déclaré : méconnaissance des commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
      "affirmation": "/powerup fait découvrir les fonctionnalités de Claude Code par de courtes leçons interactives avec démonstrations animées.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande /powerup est retirée de la documentation ou change de fonction."
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande est retirée de la documentation ou change de fonction"
     },
     {
-     "affirmation": "L'irritant principal déclaré de Sylvain est de ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex pour en tirer le maximum.",
+     "affirmation": "Irritant principal déclaré : ne pas connaître assez bien les commandes et fonctionnalités de Claude Code, de l'app Claude et de Codex.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Sylvain déclare un autre irritant principal ou retire celui-ci de CONTEXTE.md."
+     "releve_le": "2026-10-23",
+     "caduc_si": "Sylvain déclare un autre irritant principal"
     }
    ]
   },
@@ -6837,16 +6897,16 @@
    "categorie": "commandes",
    "nom": "/rate-limit-options",
    "gabarit": "complet",
-   "description": "Montre les options quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des crédits ou changer de plan. Claude Code peut ouvrir ce menu de lui-même quand la limite est atteinte au terminal. Les lignes d'attente avec reprise demandent la v2.1.234 ou plus ; abonnement claude.ai requis.",
+   "description": "Montre les options quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la remise à zéro, ajouter des crédits d'usage ou changer de forfait ; Claude Code peut ouvrir ce menu de lui-même quand la limite survient au terminal. Abonnement claude.ai requis ; les lignes d'attente avec reprise demandent la v2.1.234 ou plus.",
    "description_source": "Show ways to keep working when a claude.ai usage limit blocks a request: wait and continue automatically when the limit resets, add usage credits, or upgrade your plan. Claude Code can also open this menu on its own when you hit a limit at your own terminal. See Turn automatic continue off. Requires a claude.ai subscription. The wait-and-continue rows require Claude Code v2.1.234 or later",
    "usage": "/rate-limit-options",
    "usage_nature": "syntaxe",
    "exemple": "/rate-limit-options",
-   "disponibilite": "abonnement claude.ai",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À la prochaine limite atteinte dans une session de dev sous tmux, taper `/rate-limit-options` et choisir l'attente avec reprise automatique, puis vérifier que la mission repart seule à la remise à zéro sans relance depuis l'iPhone. Le menu propose aussi des crédits payants : à écarter tant que l'essai Max (20x) n'a pas fait son bilan, avant le 07/11."
+    "pourquoi": "À la prochaine limite atteinte dans une session de dev sous tmux, choisis l'attente avec reprise automatique et vérifie que la mission repart seule à la remise à zéro, sans relance depuis l'iPhone. Les crédits d'usage du même menu sont payants : à trancher dans le bilan de l'essai Max (20x), avant le 03/11."
    },
    "sources": [
     {
@@ -6859,7 +6919,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6888,66 +6948,104 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/rate-limit-options` montre les moyens de continuer quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des usage credits ou changer de plan.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la commande disparaît de la documentation ou ne propose plus l'attente avec reprise automatique"
+      },
+      {
+       "affirmation": "La commande requiert un abonnement claude.ai, et les lignes d'attente avec reprise demandent Claude Code v2.1.234 ou plus.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation change ces prérequis d'abonnement ou de version"
+      },
+      {
+       "affirmation": "Claude Code peut ouvrir ce menu de lui-même quand la limite est atteinte au terminal.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation ne mentionne plus l'ouverture automatique du menu"
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne cite plus les limites d'usage parmi les frictions récurrentes"
+      },
+      {
+       "affirmation": "Les sessions Claude Code durables tournent dans des sessions tmux dédiées et sont pilotées depuis l'iPhone par Remote Control ; la session `dev` se lance à la demande.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions sous tmux pilotées depuis l'iPhone"
+      },
+      {
+       "affirmation": "Sylvain a pris un abonnement Claude Max (20x) à l'essai d'un mois, avec un bilan d'usage à préparer avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "l'essai Max (20x) est tranché ou CONTEXTE.md ne mentionne plus ce bilan"
+      },
+      {
+       "affirmation": "Les gestes de compte, de paiement et d'identifiants restent ceux de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md délègue les gestes de paiement à Delta"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "À la prochaine limite atteinte dans une session de dev sous tmux, taper `/rate-limit-options` et choisir l'attente avec reprise automatique, puis vérifier que la mission repart seule à la remise à zéro sans relance depuis l'iPhone. Le menu propose aussi des crédits payants : à écarter tant que l'essai Max (20x) n'a pas fait son bilan, avant le 07/11."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes ; pilotage depuis l'iPhone."
     },
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11 (03/11 venu de Delta)."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables sous tmux, pilotées depuis l'iPhone."
+     "pourquoi": "Sessions durables sous tmux, pilotées depuis l'iPhone par Remote Control."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "`/rate-limit-options` montre les moyens de continuer quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la réinitialisation, ajouter des usage credits ou changer de plan.",
+     "affirmation": "`/rate-limit-options` montre les moyens de continuer quand une limite d'usage claude.ai bloque une requête : attendre et reprendre automatiquement à la remise à zéro, ajouter des crédits d'usage ou changer de forfait.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la commande disparaît de la documentation ou ne propose plus l'attente avec reprise automatique"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande disparaît ou ne propose plus l'attente avec reprise automatique"
     },
     {
-     "affirmation": "La commande requiert un abonnement claude.ai, et les lignes d'attente avec reprise demandent Claude Code v2.1.234 ou plus.",
+     "affirmation": "La commande requiert un abonnement claude.ai ; les lignes d'attente avec reprise demandent Claude Code v2.1.234 ou plus ; Claude Code peut ouvrir ce menu de lui-même au terminal.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation change ces prérequis d'abonnement ou de version"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la documentation change ces prérequis ou le déclenchement automatique"
     },
     {
-     "affirmation": "Claude Code peut ouvrir ce menu de lui-même quand la limite est atteinte au terminal.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation ne mentionne plus l'ouverture automatique du menu"
-    },
-    {
-     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées de Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne cite plus les limites d'usage parmi les frictions récurrentes"
-    },
-    {
-     "affirmation": "Les sessions Claude Code durables tournent dans des sessions tmux dédiées et sont pilotées depuis l'iPhone par Remote Control ; la session `dev` se lance à la demande.",
+     "affirmation": "Sessions durables sous tmux, pilotées depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions sous tmux pilotées depuis l'iPhone"
-    },
-    {
-     "affirmation": "Sylvain a pris un abonnement Claude Max (20x) à l'essai d'un mois, avec un bilan d'usage à préparer avant le 07/11.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "l'essai Max (20x) est tranché ou CONTEXTE.md ne mentionne plus ce bilan"
-    },
-    {
-     "affirmation": "Les gestes de compte, de paiement et d'identifiants restent ceux de Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md délègue les gestes de paiement à Delta"
+     "releve_le": "2026-10-23",
+     "caduc_si": "les sessions cessent de tourner sous tmux ou d'être pilotées à distance"
     }
    ]
   },
@@ -9095,16 +9193,16 @@
    "categorie": "commandes",
    "nom": "/ultrareview",
    "gabarit": "complet",
-   "description": "Lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une PR en argument la cible, une branche ou un commit change la base de comparaison. La forme recommandée est `/code-review ultra`. Trois exécutions gratuites sur Pro et Max, puis crédits d'usage.",
+   "description": "Lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une PR en argument la cible, une branche ou un commit change la base de comparaison. La forme recommandée est `/code-review ultra`. Trois exécutions gratuites sur Pro et Max, uniques par compte, puis facturation en crédits d'usage.",
    "description_source": "Run a deep, multi-agent code review in a cloud sandbox with ultrareview. Pass a PR reference to review that pull request, or a base branch or commit to change the comparison base. The preferred invocation is /code-review ultra, and /ultrareview is an alias. Includes 3 free runs on Pro and Max, then requires usage credits",
    "usage": "/ultrareview [PR or branch]",
    "usage_nature": "syntaxe",
    "exemple": "/ultrareview main",
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (3 exécutions gratuites), puis crédits d'usage",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur une PR de trading-sim, `/ultrareview` compare une revue cloud multi-agents à l'audit Codex (audits croisés) ; Max inclut 3 exécutions gratuites : lis le compteur dans la boîte de dialogue avant de lancer, car la revue d'une branche envoie le dépôt privé dans le cloud, à valider avec Work."
+    "pourquoi": "Sur une PR de trading-sim, une revue cloud multi-agents se comparerait à l'audit Codex (audits croisés) : la boîte de lancement montre les exécutions gratuites restantes et le coût estimé, puis chaque revue coûte en général 5 à 25 $ de crédits d'usage. En mode PR, le dépôt privé est cloné dans le cloud : à faire valider par Work, qui arbitre trading-sim."
    },
    "sources": [
     {
@@ -9117,7 +9215,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9142,66 +9240,110 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/ultrareview lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une référence de PR en argument cible cette pull request, une branche ou un commit de base change la base de comparaison.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la commande /ultrareview change de comportement ou de syntaxe, ou disparaît de la documentation des commandes"
+      },
+      {
+       "affirmation": "La forme d'invocation recommandée est /code-review ultra ; /ultrareview en est un alias.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "l'alias /ultrareview est retiré ou /code-review ultra cesse d'être la forme recommandée"
+      },
+      {
+       "affirmation": "ultrareview inclut 3 exécutions gratuites sur les offres Pro et Max, puis exige des crédits d'usage.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation modifie le nombre d'exécutions gratuites, les offres concernées ou le mode de facturation"
+      },
+      {
+       "affirmation": "Sylvain a un abonnement Claude Max (20x), à l'essai d'un mois.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que Sylvain n'a plus d'abonnement Max"
+      },
+      {
+       "affirmation": "La priorité actuelle déclarée de Sylvain est trading-sim.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md déclare une autre priorité que trading-sim"
+      },
+      {
+       "affirmation": "trading-sim est un dépôt privé, avec 17 rapports d'audit Codex dans docs/audits/.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme dépôt privé ou ne mentionne plus les audits Codex"
+      },
+      {
+       "affirmation": "Sur trading-sim, ChatGPT (appelé « Work ») est l'architecte et l'arbitre, et Codex fait l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md attribue un autre rôle à Work ou à Codex sur trading-sim"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur une PR de trading-sim, `/ultrareview` compare une revue cloud multi-agents à l'audit Codex (audits croisés) ; Max inclut 3 exécutions gratuites : lis le compteur dans la boîte de dialogue avant de lancer, car la revue d'une branche envoie le dépôt privé dans le cloud, à valider avec Work."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "PR et audits adversariaux, dépôt privé"
+     "pourquoi": "Dépôt privé, PR et 17 audits Codex dans docs/audits/."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Work arbitre, Codex audite"
+     "pourquoi": "Work arbitre trading-sim, Codex fait l'audit adversarial."
     },
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "abonnement Max (20x) : essais gratuits et crédits d'usage"
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Forfait Max (20x) : exécutions gratuites incluses, puis crédits d'usage."
     }
    },
    "exemple_origine": "compose",
    "provenance": [
     {
-     "affirmation": "/ultrareview lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une référence de PR en argument cible cette pull request, une branche ou un commit de base change la base de comparaison.",
+     "affirmation": "/ultrareview lance une revue multi-agents dans un bac à sable cloud ; une PR en argument cible cette PR, une branche ou un commit change la base ; `/code-review ultra` est la forme recommandée.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la commande /ultrareview change de comportement ou de syntaxe, ou disparaît de la documentation des commandes"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande change de syntaxe ou disparaît de la documentation"
     },
     {
-     "affirmation": "La forme d'invocation recommandée est /code-review ultra ; /ultrareview en est un alias.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "l'alias /ultrareview est retiré ou /code-review ultra cesse d'être la forme recommandée"
+     "affirmation": "Ultrareview est facturé en crédits d'usage hors forfait ; 3 exécutions gratuites sur Pro et Max, uniques par compte, puis en général 5 à 25 $ par revue ; la boîte de lancement montre les exécutions gratuites restantes et le coût estimé.",
+     "source": "https://code.claude.com/docs/en/ultrareview",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la tarification, le nombre d'exécutions gratuites ou la boîte de lancement changent"
     },
     {
-     "affirmation": "ultrareview inclut 3 exécutions gratuites sur les offres Pro et Max, puis exige des crédits d'usage.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation modifie le nombre d'exécutions gratuites, les offres concernées ou le mode de facturation"
+     "affirmation": "En mode PR, le bac à sable clone la pull request depuis github.com avec le compte GitHub relié au compte Claude.",
+     "source": "https://code.claude.com/docs/en/ultrareview",
+     "releve_le": "2026-10-23",
+     "caduc_si": "le mode PR cesse de cloner depuis github.com"
     },
     {
-     "affirmation": "Sylvain a un abonnement Claude Max (20x), à l'essai d'un mois.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que Sylvain n'a plus d'abonnement Max"
-    },
-    {
-     "affirmation": "La priorité actuelle déclarée de Sylvain est trading-sim.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md déclare une autre priorité que trading-sim"
-    },
-    {
-     "affirmation": "trading-sim est un dépôt privé, avec 17 rapports d'audit Codex dans docs/audits/.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme dépôt privé ou ne mentionne plus les audits Codex"
-    },
-    {
-     "affirmation": "Sur trading-sim, ChatGPT (appelé « Work ») est l'architecte et l'arbitre, et Codex fait l'audit adversarial.",
+     "affirmation": "Sur trading-sim, Work arbitre et Codex fait l'audit adversarial.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md attribue un autre rôle à Work ou à Codex sur trading-sim"
+     "releve_le": "2026-10-23",
+     "caduc_si": "l'organisation des rôles sur trading-sim change"
     }
    ]
   },
@@ -9258,16 +9400,16 @@
    "categorie": "commandes",
    "nom": "/usage",
    "gabarit": "complet",
-   "description": "Affiche le coût de la session, les limites du plan et les statistiques d'activité ; sur les plans Pro, Max, Team et Enterprise, détaille ce qui compte dans les limites. Alias : `/cost`, `/stats`.",
+   "description": "Affiche le coût de la session, les limites du forfait et les statistiques d'activité ; sur les forfaits Pro, Max, Team et Enterprise, détaille ce qui compte dans les limites du forfait. `/cost` et `/stats` en sont des alias.",
    "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. /cost and /stats are aliases",
    "usage": "/usage",
    "usage_nature": "syntaxe",
    "exemple": "/usage",
-   "disponibilite": "Pro, Max, Team, Enterprise (détail des limites)",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11 avec un bilan d'usage à préparer avant : relève `/usage` chaque semaine d'ici le 03/11, son détail de ce qui compte dans les limites étaye ce bilan. La chaîne de nuit s'arrête au-delà de 98 % de la semaine ou de 80 % de la session 5 h."
+    "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer d'ici le 03/11 : les pourcentages sont déjà relevés par Delta, mais le détail de ce qui compte dans les limites n'est donné que par `/usage`, à joindre au bilan avant le 03/11. Depuis le 21/10, aucun crédit cloud : les sessions cloud puisent dans ce même forfait."
    },
    "sources": [
     {
@@ -9280,7 +9422,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9313,43 +9455,72 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/usage` montre le coût de session, les limites du forfait et, sur Pro et Max, le détail de ce qui compte dans ces limites.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la commande perd le détail des limites ou disparaît"
+      },
+      {
+       "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'essai est tranché ou le forfait change",
+       "revoir_le": "2026-11-03"
+      },
+      {
+       "affirmation": "La garde de la chaîne D70 s'arrête au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h.",
+       "source": "contexte:methode.chaine-nuit",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les seuils de la garde changent"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11 avec un bilan d'usage à préparer avant : relève `/usage` chaque semaine d'ici le 03/11, son détail de ce qui compte dans les limites étaye ce bilan. La chaîne de nuit s'arrête au-delà de 98 % de la semaine ou de 80 % de la session 5 h."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Max (20x) pris le 07/10, à l'essai d'un mois, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta)."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11 (03/11 venu de Delta) ; aucun crédit Claude Code cloud depuis le 21/10."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
-    },
-    "methode.chaine-nuit": {
-     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
-     "pourquoi": "Garde de la chaîne D70 : arrêt au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "`/usage` montre le coût de session, les limites du forfait et, sur Pro et Max, le détail de ce qui compte dans ces limites.",
+     "affirmation": "`/usage` montre le coût de session, les limites du forfait et les statistiques ; sur Pro, Max, Team et Enterprise, il détaille ce qui compte dans les limites. `/cost` et `/stats` sont des alias.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-15",
-     "caduc_si": "la commande perd le détail des limites ou disparaît"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande perd le détail des limites, change de nom ou disparaît de la documentation"
     },
     {
-     "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+     "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta) ; aucun crédit Claude Code cloud (décision du 21/10).",
      "source": "contexte:profil",
-     "releve_le": "2026-10-15",
-     "caduc_si": "l'essai est tranché ou le forfait change",
+     "releve_le": "2026-10-23",
+     "caduc_si": "l'essai est tranché, le forfait change ou un crédit cloud est repris",
      "revoir_le": "2026-11-03"
-    },
-    {
-     "affirmation": "La garde de la chaîne D70 s'arrête au-delà de 98 % du quota hebdomadaire Claude ou de 80 % de la session 5 h.",
-     "source": "contexte:methode.chaine-nuit",
-     "releve_le": "2026-10-15",
-     "caduc_si": "les seuils de la garde changent"
     }
    ]
   },

@@ -900,16 +900,16 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Code in the cloud",
    "gabarit": "complet",
-   "description": "Une session cloud tourne sur l'infrastructure d'Anthropic au lieu de la machine locale, sur un clone du dépôt GitHub ; on la lance depuis claude.ai/code, l'onglet Code de l'app mobile, l'app de bureau ou `claude --cloud`, et `--teleport` la rapatrie dans le terminal. Elle peut aussi corriger automatiquement une PR sur échec de CI ou commentaire de revue.",
+   "description": "Une session cloud tourne sur l'infrastructure d'Anthropic, sur un clone du dépôt GitHub, et continue quand l'ordinateur est fermé ; on la lance depuis claude.ai/code, l'app mobile, l'app de bureau ou `claude --cloud`, et `--teleport` la rapatrie dans le terminal (sens unique depuis la CLI). Elle compte dans les limites d'usage du forfait, sans facturation séparée de la machine virtuelle ; l'archivage se fait depuis la barre latérale de claude.ai/code.",
    "description_source": "Run Claude Code sessions in the cloud from your browser, phone, Desktop app, or terminal, move them with --cloud and --teleport, and auto-fix pull requests.",
    "usage": "claude --cloud \"Fix the authentication bug in src/auth/login.ts\"",
    "usage_nature": "syntaxe",
    "exemple": "claude --cloud \"Execute the migration plan in docs/migration-plan.md\"",
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team ; Enterprise avec sièges premium ou Chat + Claude Code",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'archivage d'une session cloud ne se fait encore que dans claude.ai/code et l'app, pas par la CLI."
+    "pourquoi": "OPÉRER confie des missions `code` et `mecanique` à l'exécutant `claude-cloud` ; comme tu n'as aucun crédit cloud depuis le 21/10, chacune puise dans les limites de ton Max (20x), à compter dans le bilan d'avant le 07/11. L'archivage reste dans la barre latérale de claude.ai/code : la documentation ne décrit toujours aucune commande CLI pour le faire."
    },
    "sources": [
     {
@@ -922,7 +922,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -951,38 +951,87 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les sessions cloud existent sur Pro, Max et Team ; `claude --cloud` crée depuis le terminal une nouvelle session cloud pour le dépôt courant.",
+       "source": "https://code.claude.com/docs/en/claude-code-on-the-web",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les forfaits éligibles ou la syntaxe `--cloud` changent"
+      },
+      {
+       "affirmation": "OPÉRER confie des missions `code` et `mecanique` à l'exécutant `claude-cloud`.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-15",
+       "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+      },
+      {
+       "affirmation": "Au 08/10, aucune commande CLI n'archive une session cloud ; l'archivage se fait dans claude.ai/code et l'app.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-15",
+       "caduc_si": "une commande officielle d'archivage paraît"
+      }
+     ],
+     "raison": "section:methode.operer"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "L'archivage d'une session cloud ne se fait encore que dans claude.ai/code et l'app, pas par la CLI."
+     },
+     "raison": "section:methode.operer"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "Exécutant `claude-cloud`, limité aux natures `code` et `mecanique`."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Exécutant `claude-cloud`, limité aux natures `code` et `mecanique`, dans l'allocation d'OPÉRER."
+    },
+    "profil": {
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11."
     },
     "usage.hors-machine": {
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Pas de commande CLI d'archivage d'une session cloud au 08/10 ; archivage dans claude.ai/code et l'app."
+     "pourquoi": "Demande de signaler une commande CLI officielle d'archivage d'une session cloud ; aucune au 08/10."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Les sessions cloud existent sur Pro, Max et Team ; `claude --cloud` crée depuis le terminal une nouvelle session cloud pour le dépôt courant.",
+     "affirmation": "Une session cloud compte dans les limites d'usage du forfait avec le reste de l'usage Claude et Claude Code, sans facturation séparée de la machine virtuelle.",
      "source": "https://code.claude.com/docs/en/claude-code-on-the-web",
-     "releve_le": "2026-10-15",
-     "caduc_si": "les forfaits éligibles ou la syntaxe `--cloud` changent"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la page annonce une facturation propre aux sessions cloud ou un quota séparé"
     },
     {
-     "affirmation": "OPÉRER confie des missions `code` et `mecanique` à l'exécutant `claude-cloud`.",
+     "affirmation": "`claude --cloud` crée une nouvelle session cloud pour le dépôt courant ; `--teleport` rapatrie une session cloud dans le terminal ; l'archivage se fait depuis la barre latérale de claude.ai/code.",
+     "source": "https://code.claude.com/docs/en/claude-code-on-the-web",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la syntaxe `--cloud` ou `--teleport` change, ou une commande CLI d'archivage apparaît"
+    },
+    {
+     "affirmation": "OPÉRER répartit les missions entre Claude local, Claude cloud (exécutant `claude-cloud`, natures `code` et `mecanique`) et Codex.",
      "source": "contexte:methode.operer",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-23",
      "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
     },
     {
-     "affirmation": "Au 08/10, aucune commande CLI n'archive une session cloud ; l'archivage se fait dans claude.ai/code et l'app.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-15",
-     "caduc_si": "une commande officielle d'archivage paraît"
+     "affirmation": "Aucun crédit Claude Code cloud (décision de Sylvain du 21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-23",
+     "caduc_si": "un crédit cloud est repris ou le forfait change",
+     "revoir_le": "2026-11-03"
     }
    ]
   },
@@ -1096,16 +1145,16 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude coordinate ongoing work with Projects",
    "gabarit": "complet",
-   "description": "Un projet est une conversation au long cours où Claude coordonne un flux de tâches liées : il lance un fil par tâche, en général une session cloud qui part des dépôts GitHub, fichiers, instructions et mémoire du projet, et le volet Overview montre les fils terminés, les pull requests prêtes et ceux qui attendent une réponse. Un fil peut aussi tourner sur ta machine via Remote Control quand la tâche en a besoin ; les fils cloud ne reprennent rien de la configuration Claude Code locale. Un projet consomme les mêmes limites du plan que les autres sessions, et plus vite.",
+   "description": "Un projet est une conversation au long cours où Claude coordonne un flux de tâches liées : il lance un fil par tâche, en général une session cloud qui part des dépôts GitHub, des instructions et de la mémoire du projet, et le volet Overview montre les fils prêts, en cours ou en attente. Un fil peut tourner sur ta machine via Remote Control ; les fils cloud ne reprennent ni skills, ni `.claude/settings.json`, ni `.mcp.json`. Un projet use les mêmes limites du forfait que les autres sessions, plus vite, et un fil arrêté par la limite reprend seul à la remise à zéro.",
    "description_source": "Hand Claude a stream of related tasks in one conversation and let it run them as parallel cloud sessions that share repositories, instructions, and memory.",
    "usage": "This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.\n\n- Branch from main and open one draft pull request per thread.\n- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.\n- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.\n- Don't merge, force-push, or change CI configuration without asking me in the thread.",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro et Max (bêta publique, déploiement progressif)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie d'abord que « Projects » apparaît dans la barre latérale de claude.ai/code, puis suis Paramètres > Utilisation, car un projet use plus vite les limites que tu dois jauger pour le bilan de l'essai Max (20x) avant le 07/11."
+    "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie que « Projects » apparaît dans claude.ai/code (bêta publique en déploiement progressif), puis confie-lui une seule tâche. Sans crédit cloud depuis le 21/10, les fils puisent dans ton Max (20x) et reprennent seuls à la remise à zéro : à compter dans le bilan d'avant le 03/11."
    },
    "sources": [
     {
@@ -1118,7 +1167,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1151,72 +1200,117 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Projects permet de confier à Claude une suite de tâches liées dans une seule conversation, qu'il exécute en sessions cloud parallèles partageant dépôts, instructions et mémoire.",
+       "source": "https://code.claude.com/docs/en/claude-projects",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus Projects comme des sessions cloud parallèles partageant dépôts, instructions et mémoire, ou la page disparaît."
+      },
+      {
+       "affirmation": "L'exemple d'instructions de projet demande une branche depuis main, une draft pull request par fil, et l'exécution de `make test` et `make lint` avant de déclarer le travail terminé.",
+       "source": "https://code.claude.com/docs/en/claude-projects",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'exemple d'instructions de la page change ou est retiré de la documentation."
+      },
+      {
+       "affirmation": "carnet est le projet le plus actif de Sylvain ; son dépôt est public, hébergé sur GitHub Pages et synchronisé par l'API GitHub Contents.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus carnet comme projet le plus actif, ou son dépôt cesse d'être public ou hébergé sur GitHub."
+      },
+      {
+       "affirmation": "Sur carnet, les tests passent par `node --test` et le lint par `oxlint`, sans CI GitHub Actions.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md décrit une autre chaîne de tests ou de lint pour carnet, ou l'ajout d'une CI."
+      },
+      {
+       "affirmation": "Sylvain se sert surtout de l'app Claude sur iPhone pour piloter ses sessions Claude Code à distance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus cet usage de l'app Claude iPhone."
+      },
+      {
+       "affirmation": "Les Projets en profondeur font partie des fonctions Claude que Sylvain doit encore explorer ; il veut exploiter tout ce qui sert au développement.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que Sylvain a exploré ou écarté les Projets en profondeur."
+      },
+      {
+       "affirmation": "La veille doit signaler en priorité ce qui allège la consommation des limites hebdomadaires.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Cette consigne de priorité disparaît de CONTEXTE.md."
+      },
+      {
+       "affirmation": "Sylvain a pris Claude Max (20x) à l'essai d'un mois le 07/10/2026, avec un bilan d'usage à préparer avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le bilan de l'essai est fait, l'abonnement change ou CONTEXTE.md ne mentionne plus cet essai."
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie d'abord que « Projects » apparaît dans la barre latérale de claude.ai/code, puis suis Paramètres > Utilisation, car un projet use plus vite les limites que tu dois jauger pour le bilan de l'essai Max (20x) avant le 07/11."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
-    "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "3 Projets claude.ai existants ; Projets en profondeur à explorer ; app iPhone pour piloter."
-    },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "Dépôt public sur GitHub, candidat à des fils cloud."
+     "pourquoi": "Dépôt public sur GitHub, projet le plus actif, candidat à des fils cloud."
+    },
+    "usage.hors-machine": {
+     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "pourquoi": "Projets en profondeur à explorer ; app iPhone pour piloter."
     },
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Max (20x) à l'essai, bilan avant le 07/11 ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
    "exemple_impossible": "Usage = instructions d'un projet fictif (payments-api) ; rien d'exécutable, et un projet de Sylvain serait inventé",
    "provenance": [
     {
-     "affirmation": "Projects permet de confier à Claude une suite de tâches liées dans une seule conversation, qu'il exécute en sessions cloud parallèles partageant dépôts, instructions et mémoire.",
+     "affirmation": "Projects est en bêta publique sur Pro et Max, déployé progressivement ; s'il n'apparaît ni dans la barre latérale ni sous More, le déploiement n'a pas atteint le compte.",
      "source": "https://code.claude.com/docs/en/claude-projects",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus Projects comme des sessions cloud parallèles partageant dépôts, instructions et mémoire, ou la page disparaît."
+     "releve_le": "2026-10-23",
+     "caduc_si": "Projects sort de bêta, change de forfaits ou d'accès"
     },
     {
-     "affirmation": "L'exemple d'instructions de projet demande une branche depuis main, une draft pull request par fil, et l'exécution de `make test` et `make lint` avant de déclarer le travail terminé.",
+     "affirmation": "Un projet puise dans les mêmes limites que les autres sessions Claude Code, plus vite ; un fil arrêté par la limite attend et reprend seul à la remise à zéro.",
      "source": "https://code.claude.com/docs/en/claude-projects",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'exemple d'instructions de la page change ou est retiré de la documentation."
+     "releve_le": "2026-10-23",
+     "caduc_si": "la page change le décompte de l'usage ou la reprise automatique"
     },
     {
-     "affirmation": "carnet est le projet le plus actif de Sylvain ; son dépôt est public, hébergé sur GitHub Pages et synchronisé par l'API GitHub Contents.",
+     "affirmation": "carnet est le projet le plus actif ; son dépôt est public sur GitHub.",
      "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme projet le plus actif, ou son dépôt cesse d'être public ou hébergé sur GitHub."
+     "releve_le": "2026-10-23",
+     "caduc_si": "carnet cesse d'être hébergé sur GitHub ou devient privé"
     },
     {
-     "affirmation": "Sur carnet, les tests passent par `node --test` et le lint par `oxlint`, sans CI GitHub Actions.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md décrit une autre chaîne de tests ou de lint pour carnet, ou l'ajout d'une CI."
-    },
-    {
-     "affirmation": "Sylvain se sert surtout de l'app Claude sur iPhone pour piloter ses sessions Claude Code à distance.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus cet usage de l'app Claude iPhone."
-    },
-    {
-     "affirmation": "Les Projets en profondeur font partie des fonctions Claude que Sylvain doit encore explorer ; il veut exploiter tout ce qui sert au développement.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que Sylvain a exploré ou écarté les Projets en profondeur."
-    },
-    {
-     "affirmation": "La veille doit signaler en priorité ce qui allège la consommation des limites hebdomadaires.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Cette consigne de priorité disparaît de CONTEXTE.md."
-    },
-    {
-     "affirmation": "Sylvain a pris Claude Max (20x) à l'essai d'un mois le 07/10/2026, avec un bilan d'usage à préparer avant le 07/11.",
+     "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le bilan de l'essai est fait, l'abonnement change ou CONTEXTE.md ne mentionne plus cet essai."
+     "releve_le": "2026-10-23",
+     "caduc_si": "un crédit cloud est repris ou le forfait change",
+     "revoir_le": "2026-11-03"
     }
    ]
   },
@@ -1379,16 +1473,16 @@
    "categorie": "fonctionnalites",
    "nom": "Configure cloud environments",
    "gabarit": "complet",
-   "description": "Configure l'environnement des sessions cloud : niveau d'accès réseau (le Default n'autorise que les registres de paquets et une liste de domaines), variables d'environnement, script d'installation et cache de l'environnement. On le choisit dans le sélecteur de claude.ai/code ou de l'app, ou par `/remote-env` depuis le CLI.",
+   "description": "Configure l'environnement des sessions cloud : niveau d'accès réseau (le Default, en Trusted, n'atteint que les registres de paquets et des domaines autorisés), variables d'environnement, secrets réseau que la session utilise sans les voir, script d'installation lancé en root sur Ubuntu 24.04 avant Claude, et cache de l'environnement. On le choisit dans claude.ai/code ou l'app, ou par `/remote-env` depuis la CLI.",
    "description_source": "Configure cloud environments for Claude Code cloud sessions: network access levels, environment variables, setup scripts, and environment caching.",
    "usage": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
    "usage_nature": "syntaxe",
    "exemple": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
-   "disponibilite": "Pro, Max et Team (aperçu de recherche)",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour préparer les tests de delta-ia dans une session cloud, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait de lancer `.venv/bin/pytest -q` sur delta-ia dans la session ; ne place aucun jeton en clair dans les variables."
+    "pourquoi": "Pour les missions `code` qu'OPÉRER confie à `claude-cloud` sur delta-ia, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait d'y lancer `.venv/bin/pytest -q`, que le Default n'installe pas. Les variables sont lisibles par tout utilisateur de l'environnement : une clé passe par un secret réseau, jamais en clair."
    },
    "sources": [
     {
@@ -1401,7 +1495,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1422,38 +1516,82 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les sessions cloud de Claude Code se configurent par un environnement qui règle le niveau d'accès réseau, les variables d'environnement, un script d'installation (setup script) et la mise en cache de l'environnement.",
+       "source": "https://code.claude.com/docs/en/cloud-environments",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire les setup scripts ou les variables d'environnement de la configuration des environnements cloud."
+      },
+      {
+       "affirmation": "OPÉRER répartit les missions entre Claude local, Claude cloud et Codex ; l'exécutant `claude-cloud` est limité aux natures `code` et `mecanique`.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'exécutant `claude-cloud` ou change les natures de mission qui lui sont permises."
+      },
+      {
+       "affirmation": "Sur la machine de Sylvain, `pytest` est absent du système et présent seulement dans `delta-ia/.venv` ; `python3.12-venv` est installé.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que pytest est installé au niveau système ou que delta-ia n'utilise plus de .venv."
+      }
+     ],
+     "raison": "section:methode.operer"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour préparer les tests de delta-ia dans une session cloud, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait de lancer `.venv/bin/pytest -q` sur delta-ia dans la session ; ne place aucun jeton en clair dans les variables."
+     },
+     "raison": "section:methode.operer"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "allocation vers Claude cloud, natures code et mecanique"
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Allocation des missions vers Claude cloud, natures `code` et `mecanique`."
     },
     "env.machine": {
      "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "pytest seulement dans delta-ia/.venv"
+     "pourquoi": "pytest absent du système, présent seulement dans delta-ia/.venv."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Les sessions cloud de Claude Code se configurent par un environnement qui règle le niveau d'accès réseau, les variables d'environnement, un script d'installation (setup script) et la mise en cache de l'environnement.",
+     "affirmation": "Un environnement cloud règle l'accès réseau, les variables d'environnement, des secrets réseau et un script d'installation lancé avant Claude ; le Default n'a ni variables ni script.",
      "source": "https://code.claude.com/docs/en/cloud-environments",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire les setup scripts ou les variables d'environnement de la configuration des environnements cloud."
+     "releve_le": "2026-10-23",
+     "caduc_si": "la documentation retire les scripts d'installation ou change le Default"
     },
     {
-     "affirmation": "OPÉRER répartit les missions entre Claude local, Claude cloud et Codex ; l'exécutant `claude-cloud` est limité aux natures `code` et `mecanique`.",
+     "affirmation": "Le script d'installation s'exécute en root sur Ubuntu 24.04 ; les valeurs des variables sont lisibles par quiconque utilise l'environnement, d'où les secrets réseau pour les clés.",
+     "source": "https://code.claude.com/docs/en/cloud-environments",
+     "releve_le": "2026-10-23",
+     "caduc_si": "le système des sessions cloud ou la visibilité des variables change"
+    },
+    {
+     "affirmation": "OPÉRER confie des missions de nature `code` et `mecanique` à l'exécutant `claude-cloud`.",
      "source": "contexte:methode.operer",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'exécutant `claude-cloud` ou change les natures de mission qui lui sont permises."
+     "releve_le": "2026-10-23",
+     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
     },
     {
-     "affirmation": "Sur la machine de Sylvain, `pytest` est absent du système et présent seulement dans `delta-ia/.venv` ; `python3.12-venv` est installé.",
+     "affirmation": "pytest est absent du système de Sylvain et présent seulement dans delta-ia/.venv.",
      "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que pytest est installé au niveau système ou que delta-ia n'utilise plus de .venv."
+     "releve_le": "2026-10-23",
+     "caduc_si": "pytest est installé au niveau système ou delta-ia change d'outil de test"
     }
    ]
   },
@@ -7589,16 +7727,16 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Fable models on your plan",
    "gabarit": "complet",
-   "description": "Sur Max, Fable 5 et Fable 5.1 font partie du forfait : d'après la page officielle, on peut y consacrer jusqu'à 50 % des limites hebdomadaires sans surcoût ; ils puisent dans le quota hebdomadaire habituel, plus vite que les autres modèles, et au-delà on continue en crédits d'usage ou avec un autre modèle. Sur Pro, ils fonctionnent d'emblée en crédits d'usage payants. La promotion de Fable 5 (jusqu'à 50 % de la limite hebdomadaire sans surcoût) a pris fin le 19 juillet 2026 ; Fable 5.1 n'en a jamais fait partie.",
+   "description": "Sur Max, Fable 5 et Fable 5.1 font partie du forfait : on peut y consacrer jusqu'à 50 % des limites hebdomadaires sans surcoût, en puisant dans le quota hebdomadaire commun, plus vite qu'avec les autres modèles ; au-delà, on continue en crédits d'usage payants ou on change de modèle. Sur Pro, ils fonctionnent d'emblée en crédits d'usage. La promotion de Fable 5 a pris fin le 19/07/2026 et Fable 5.1 n'en a jamais fait partie.",
    "description_source": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage": "We previously ran a promotion that allowed you to use up to 50% of your weekly subscription limit on Claude Fable 5 at no extra cost. That promotion ended on July 19, 2026 at 11:59:59 PM PT, and it applied to Fable 5 only. Claude Fable 5.1 was never part of it.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Max (inclus jusqu'à 50 % des limites hebdomadaires) ; Pro en crédits d'usage",
+   "disponibilite": "Pro, Max, Team, Enterprise (inclus dans le forfait sur Max et sièges premium ; crédits d'usage sur Pro)",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Sur ton Max (20x), à l'essai jusqu'au 07/11, retiens le constat de Sylvain du 15/10 (DECISIONS.md:272, distinct de la page officielle) : Fable consomme le quota hebdomadaire commun et a son propre plafond ; Fable à 100 % n'arrête pas Opus, Sonnet ni Haiku, qui tournent jusqu'à épuisement du quota commun. Vérifie la part Fable dans Paramètres > Utilisation avant une mission longue en Fable, et note-la pour le bilan d'avant le 07/11."
+    "pourquoi": "Sur ton Max (20x) à l'essai jusqu'au 07/11, Fable ne donne pas 50 % de plus : il prend jusqu'à la moitié du quota hebdomadaire qu'Opus et Sonnet partagent avec lui. À la limite Fable, la page propose des crédits d'usage payants : choisis plutôt un autre modèle et décide, pour le bilan d'avant le 03/11, si Fable vaut sa part du quota."
    },
    "sources": [
     {
@@ -7611,7 +7749,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7677,37 +7815,86 @@
     {
      "date": "2026-10-15",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Sur Max, jusqu'à 50 % des limites hebdomadaires sont utilisables sur Fable sans surcoût ; Fable puise dans le quota hebdomadaire habituel, plus vite que les autres modèles.",
+       "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la page change la part Fable incluse, ou le fonctionnement du quota hebdomadaire sur Max"
+      },
+      {
+       "affirmation": "Au-delà de la limite Fable sur Max, on continue en crédits d'usage ou avec un autre modèle ; sur Pro, Fable fonctionne en crédits d'usage dès le départ.",
+       "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la page change la bascule en crédits d'usage ou l'inclusion de Fable sur Pro"
+      },
+      {
+       "affirmation": "La promotion de Fable 5 a pris fin le 19/07/2026 ; Fable 5.1 n'en a jamais fait partie.",
+       "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+       "releve_le": "2026-10-15",
+       "caduc_si": "une nouvelle promotion Fable est annoncée sur la page"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Sur ton Max (20x), à l'essai jusqu'au 07/11, retiens le constat de Sylvain du 15/10 (DECISIONS.md:272, distinct de la page officielle) : Fable consomme le quota hebdomadaire commun et a son propre plafond ; Fable à 100 % n'arrête pas Opus, Sonnet ni Haiku, qui tournent jusqu'à épuisement du quota commun. Vérifie la part Fable dans Paramètres > Utilisation avant une mission longue en Fable, et note-la pour le bilan d'avant le 07/11."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Max (20x) pris le 07/10, à l'essai d'un mois, bilan d'usage à préparer avant le 07/11."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11 (03/11 venu de Delta)."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Point 11 : consommation Fable/Opus proche des plafonds hebdomadaires, choix du modèle par session pour étaler la charge."
     }
    },
    "provenance": [
     {
-     "affirmation": "Sur Max, jusqu'à 50 % des limites hebdomadaires sont utilisables sur Fable sans surcoût ; Fable puise dans le quota hebdomadaire habituel, plus vite que les autres modèles.",
+     "affirmation": "Sur Max, jusqu'à 50 % des limites hebdomadaires sont utilisables sur Fable sans surcoût ; Fable puise dans le quota hebdomadaire habituel, plus vite que les autres modèles, et ne l'augmente pas.",
      "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
-     "releve_le": "2026-10-15",
-     "caduc_si": "la page change la part Fable incluse, ou le fonctionnement du quota hebdomadaire sur Max"
+     "releve_le": "2026-10-23",
+     "caduc_si": "la page change la part Fable incluse ou le fonctionnement du quota hebdomadaire sur Max"
     },
     {
      "affirmation": "Au-delà de la limite Fable sur Max, on continue en crédits d'usage ou avec un autre modèle ; sur Pro, Fable fonctionne en crédits d'usage dès le départ.",
      "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-23",
      "caduc_si": "la page change la bascule en crédits d'usage ou l'inclusion de Fable sur Pro"
     },
     {
-     "affirmation": "La promotion de Fable 5 a pris fin le 19/07/2026 ; Fable 5.1 n'en a jamais fait partie.",
-     "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
-     "releve_le": "2026-10-15",
-     "caduc_si": "une nouvelle promotion Fable est annoncée sur la page"
+     "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-23",
+     "caduc_si": "l'essai est tranché ou le forfait change",
+     "revoir_le": "2026-11-03"
+    },
+    {
+     "affirmation": "La limite Fable figure parmi les frictions récurrentes de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-23",
+     "caduc_si": "CONTEXTE.md ne cite plus la limite Fable parmi les frictions"
     }
    ]
   },

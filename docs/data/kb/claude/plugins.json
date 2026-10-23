@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-10-18",
+ "maj_le": "2026-10-23",
  "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
  "contexte_sections": {
   "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
@@ -2413,7 +2413,7 @@
    "categorie": "plugins",
    "nom": "pr-review-toolkit",
    "gabarit": "complet",
-   "description": "Plugin du marketplace claude-plugins-official pour Claude Code, installé par `/plugin install pr-review-toolkit@claude-plugins-official`. Il fournit des agents de relecture de pull requests, spécialisés chacun dans un domaine : commentaires, tests, gestion des erreurs, conception des types, qualité du code et simplification du code.",
+   "description": "Plugin d'Anthropic du marketplace claude-plugins-official, installé par `/plugin install pr-review-toolkit@claude-plugins-official`. Il fournit des agents de relecture de pull requests spécialisés chacun dans un domaine : commentaires, tests, gestion des erreurs, conception des types, qualité et simplification du code.",
    "description_source": "Comprehensive PR review agents specializing in comments, tests, error handling, type design, code quality, and code simplification",
    "usage": "/plugin install pr-review-toolkit@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -2422,7 +2422,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur trading-sim, priorité actuelle, les commits passent par une PR et Codex en fait l'audit adversarial : une relecture spécialisée par Claude (tests, gestion des erreurs) peut compléter cet audit. C'est à essayer sur une seule PR, parce que le principe retenu est d'optimiser l'existant plutôt que d'adopter des outils tiers et que les audits coûtent déjà cher en jetons."
+    "pourquoi": "Sur trading-sim, ta priorité, les changements passent par une PR que Codex audite : essaie ces agents sur une seule PR (tests, gestion des erreurs) et compare leurs constats à l'audit Codex. L'essai reste limité à une PR, car tu préfères optimiser l'existant et les audits coûtent déjà cher en jetons."
    },
    "sources": [
     {
@@ -2435,7 +2435,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2475,57 +2475,95 @@
      "changement": "description corrigée",
      "avant": "Plugin d'agents de relecture de pull requests spécialisés : commentaires, tests, gestion des erreurs, conception des types, qualité et simplification du code.",
      "raison": "recommentaire D128 : La mention d'une PR sur trading-sim est bien dans CONTEXTE.md, mais dans la section methode.travail et non dans projet.trading-sim ; le verdict `tester` est maintenu sur cette sec"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "pr-review-toolkit regroupe des agents de relecture de PR spécialisés dans les commentaires, les tests, la gestion des erreurs, la conception des types, la qualité et la simplification du code.",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pr-review-toolkit",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le plugin est retiré du marketplace claude-plugins-official ou ses agents changent de spécialités."
+      },
+      {
+       "affirmation": "Sur trading-sim, les commits sont rares et formels (docs:, fix:, audit:, decision:) et passent par une PR.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "trading-sim cesse de passer ses changements par des pull requests."
+      },
+      {
+       "affirmation": "Sur trading-sim, Claude Code exécute et Codex fait l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La répartition des rôles sur trading-sim change et Codex n'y audite plus."
+      },
+      {
+       "affirmation": "La priorité actuelle déclarée de Sylvain est trading-sim.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Sylvain déclare une autre priorité."
+      },
+      {
+       "affirmation": "Le principe associé est d'optimiser l'existant ou de créer des outils intégrés à Delta plutôt que d'adopter des outils tiers.",
+       "source": "contexte:config.claude-code.sous-agents",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Ce principe est retiré ou assoupli dans CONTEXTE.md."
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur trading-sim, priorité actuelle, les commits passent par une PR et Codex en fait l'audit adversarial : une relecture spécialisée par Claude (tests, gestion des erreurs) peut compléter cet audit. C'est à essayer sur une seule PR, parce que le principe retenu est d'optimiser l'existant plutôt que d'adopter des outils tiers et que les audits coûtent déjà cher en jetons."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Établit que les commits de trading-sim passent par une PR, ce qui est l'objet même du plugin."
+     "pourquoi": "Commits de trading-sim passés par une PR ; coût en jetons des audits parmi les frictions."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Codex fait l'audit adversarial sur trading-sim : le plugin s'y ajouterait comme relecture complémentaire."
+     "pourquoi": "Codex fait l'audit adversarial sur trading-sim ; le plugin serait une relecture complémentaire."
     },
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "trading-sim est la priorité déclarée de Sylvain."
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "trading-sim est la priorité déclarée."
     },
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
-     "pourquoi": "Principe d'optimiser l'existant plutôt qu'adopter des outils tiers : cela limite l'essai à une seule PR."
+     "pourquoi": "Principe : optimiser l'existant plutôt qu'adopter des outils tiers, d'où l'essai sur une seule PR."
     }
    },
    "provenance": [
     {
-     "affirmation": "pr-review-toolkit regroupe des agents de relecture de PR spécialisés dans les commentaires, les tests, la gestion des erreurs, la conception des types, la qualité et la simplification du code.",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pr-review-toolkit",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le plugin est retiré du marketplace claude-plugins-official ou ses agents changent de spécialités."
+     "affirmation": "pr-review-toolkit, d'Anthropic, regroupe des agents de relecture de PR spécialisés dans les commentaires, les tests, la gestion des erreurs, la conception des types, la qualité et la simplification du code.",
+     "source": "https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json",
+     "releve_le": "2026-10-23",
+     "caduc_si": "le plugin est retiré du marketplace ou ses agents changent de spécialités"
     },
     {
-     "affirmation": "Sur trading-sim, les commits sont rares et formels (docs:, fix:, audit:, decision:) et passent par une PR.",
+     "affirmation": "Sur trading-sim, les commits sont rares et formels et passent par une PR.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "trading-sim cesse de passer ses changements par des pull requests."
+     "releve_le": "2026-10-23",
+     "caduc_si": "trading-sim cesse de passer ses changements par des pull requests"
     },
     {
      "affirmation": "Sur trading-sim, Claude Code exécute et Codex fait l'audit adversarial.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La répartition des rôles sur trading-sim change et Codex n'y audite plus."
-    },
-    {
-     "affirmation": "La priorité actuelle déclarée de Sylvain est trading-sim.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Sylvain déclare une autre priorité."
-    },
-    {
-     "affirmation": "Le principe associé est d'optimiser l'existant ou de créer des outils intégrés à Delta plutôt que d'adopter des outils tiers.",
-     "source": "contexte:config.claude-code.sous-agents",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Ce principe est retiré ou assoupli dans CONTEXTE.md."
+     "releve_le": "2026-10-23",
+     "caduc_si": "Codex cesse d'auditer trading-sim"
     }
    ]
   },
