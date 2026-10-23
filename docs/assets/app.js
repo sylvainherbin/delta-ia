@@ -1,6 +1,6 @@
 /* Delta — application du site statique.
  * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens ; aucun build.
- * Le widget externe X est chargé uniquement à l’ouverture de son bloc.
+ * Le widget externe X est chargé uniquement dans Actu IA, pour les posts intégrés.
  * Sécurité : tout texte issu des données passe par textContent ; les liens sont limités à http(s). */
 (function () {
   "use strict";
@@ -449,7 +449,7 @@
   function chargerWidgetsX() {
     if (!widgetsX) widgetsX = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://platform.x.com/widgets.js";
+      script.src = "https://platform.twitter.com/widgets.js";
       script.async = true;
       script.onload = () => resolve(window.twttr);
       script.onerror = reject;
@@ -457,29 +457,42 @@
     });
     return widgetsX;
   }
-  function blocListeX() {
+  function blocMurX() {
     const comptes = ["AnthropicAI", "claudeai", "ClaudeDevs", "OpenAI", "ChatGPT", "OpenAIDevs"];
-    // X ne rend pas le fil de liste à un visiteur sans compte (relevé du 23/10) : les liens restent visibles sans ouvrir.
-    const fil = el("details", null,
-      el("summary", { text: "Fil intégré de X / X embedded feed" }),
-      el("a", { class: "twitter-timeline", href: "https://x.com/i/lists/2113336377958084762",
-        "data-height": "600", rel: "noopener noreferrer", target: "_blank",
-        text: "Ouvrir la liste / Open list — AI Agents & Builders" }),
-      el("p", { text: "X peut n'afficher aucun post ici sans compte X ni cookies tiers : utilisez les liens ci-dessus. / X may show no posts here without an X account or third-party cookies: use the links above." }));
-    let demande = false;
-    fil.addEventListener("toggle", () => {
-      if (!fil.open || demande) return;
-      demande = true;
-      chargerWidgetsX().then((twitter) => twitter.widgets.load(fil)).catch(() => {
-        // Si X est bloqué ou indisponible, la liste et les six comptes restent utilisables.
-      });
-    });
-    return el("section", { class: "liste-x" },
+    return el("section", { class: "liste-x", id: "mur-x" },
       el("h3", { text: "Veille sur X / X watch" }),
       el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", "Liste « AI Agents & Builders » sur X / list on X")),
       el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
         ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))),
-      fil);
+      el("div", { class: "mur-x-posts", "aria-label": "Posts sur X / X posts" },
+        el("p", { text: "Chargement des posts… / Loading posts…" })));
+  }
+  async function completerMurX() {
+    const section = document.getElementById("mur-x");
+    if (!section || etat.page !== "actu") return;
+    const conteneur = section.querySelector(".mur-x-posts");
+    let ids = [];
+    try {
+      const r = await fetch("data/actu/x-ids.json", { cache: "no-cache" });
+      if (!r.ok) throw new Error("relevé absent");
+      const d = await r.json();
+      if (d && Array.isArray(d.ids)) ids = [...new Set(d.ids.filter((id) => typeof id === "string" && /^[0-9]{1,25}$/.test(id)))].slice(0, 30);
+    } catch (_) { /* Fichier absent ou illisible : les liens restent disponibles. */ }
+    // Un changement de page ou de thème a pu remplacer le mur pendant la requête.
+    if (document.getElementById("mur-x") !== section || etat.page !== "actu") return;
+    vider(conteneur);
+    if (!ids.length) {
+      conteneur.append(el("p", { text: "Aucun post disponible pour le moment. / No posts available yet." }));
+      return;
+    }
+    const theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    for (const id of ids) conteneur.append(el("div", { class: "mur-x-post" },
+      el("blockquote", { class: "twitter-tweet", "data-theme": theme, "data-dnt": "true", "data-conversation": "none" },
+        lienSur(`https://x.com/i/status/${id}`, "Voir le post sur X / View on X"))));
+    try {
+      const twitter = await chargerWidgetsX();
+      if (document.getElementById("mur-x") === section && etat.page === "actu") twitter.widgets.load(conteneur);
+    } catch (_) { /* X bloqué ou indisponible : chaque lien de post reste visible. */ }
   }
 
   function pageAujourdhui(alertes) {
@@ -491,7 +504,7 @@
     const outils = blocOutils();
     if (outils) frag.append(outils);
     frag.append(el("div", { id: "encart-kb" }));
-    frag.append(blocListeX());
+    frag.append(el("p", null, el("a", { href: "#actu", text: "Veille sur X : voir le mur / X watch: view posts" })));
     const quotidiens = [];
     let elements = [];
     for (const p of PERIMETRES) {
@@ -537,7 +550,7 @@
   }
   function pageActu() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Actu IA" }), noteFenetre());
+    frag.append(el("h2", { text: "Actu IA" }), blocMurX(), noteFenetre());
     const tous = elementsDe("actu", datesRecentes("actu")).sort(triChrono);
     const bn = basculeNul(tous);
     if (bn) frag.append(bn);
@@ -1658,7 +1671,7 @@
     switch (etat.page) {
       case "semaine": main.append(pageSemaine()); break;
       case "changelogs": main.append(pageChangelogs()); break;
-      case "actu": main.append(pageActu()); break;
+      case "actu": main.append(pageActu()); completerMurX(); break;
       case "reference": main.append(pageReference()); rendreResultatsKb(); break;
       case "a-tester": main.append(pageATester()); break;
       case "archives": main.append(pageArchives()); rendreResultatsRecherche(); break;
@@ -1682,6 +1695,9 @@
       main.append(el("p", { class: "erreur", text: `Erreur de chargement : ${e.message || e}` }));
       return;
     }
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (etat.page === "actu") rendre().catch((e) => console.error("delta:theme-x", e));
+    });
     window.addEventListener("hashchange", () => { rendre().catch((e) => console.error("delta:rendu", e)); });
     console.log("delta:pret", matchMedia("(prefers-color-scheme: dark)").matches ? "theme=sombre" : "theme=clair");
   }

@@ -1,4 +1,4 @@
-"""Capteur de la liste X officielle (décisions de Sylvain du 22/10/2026) : relevé interne par l'API X, rien n'est affiché sur Delta-IA.
+"""Capteur de la liste X officielle (décisions de Sylvain du 22/10/2026) : relevé par l'API X et identifiants publics pour les intégrations officielles.
 
 La liste (six comptes officiels d'Anthropic et d'OpenAI) est lue par `GET /2/lists/{id}/tweets`. L'endpoint n'a ni `since_id` ni
 `start_time` : le capteur lit la page la plus récente, s'arrête dès qu'elle contient un post déjà vu (identifiants `x-<id>` de
@@ -10,6 +10,7 @@ journalisé, jamais dans le dépôt, un message ou une erreur.
 
 Le brut est écrit dans `raw/x-liste.json` (ignoré par git) ; l'analyseur `x_liste` en tire les éléments, et le texte des posts est
 purgé à la fin du passage (`purger`) : Delta-IA garde les conclusions, les références et les pistes, jamais le texte.
+Seuls `maj` et les 30 identifiants les plus récents sont publiés dans `docs/data/actu/x-ids.json` ; X rend les posts chez le visiteur.
 
 Jamais d'exception vers l'appelant : un jeton absent, une erreur 401, des crédits ou un plafond épuisés (402, 429) donnent un brut
 avec un statut et un message clair, que l'analyseur remonte dans `sources_en_echec` sans bloquer le passage.
@@ -21,6 +22,7 @@ import json
 import os
 import re
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,6 +34,8 @@ API_URL = f"https://api.x.com/2/lists/{LISTE_ID}/tweets"
 USAGE_URL = "https://api.x.com/2/usage/tweets"   # compteur de lectures de posts du cycle (essai du 22/10/2026 : 200, non facturé)
 FICHIER_BRUT = Path("raw") / "x-liste.json"
 FICHIER_COUT = Path("raw") / "x-cout.jsonl"
+FICHIER_IDS = Path("docs/data/actu/x-ids.json")
+FICHIER_IDS_ATTENTE = Path("raw/x-ids.json")
 EPOCH_X_MS = 1288834974657   # origine des identifiants « snowflake » de X : la date d'un post se lit dans son identifiant
 STATUTS = ("ok", "jeton_absent", "jeton_refuse", "acces_refuse", "credits_epuises", "limite_atteinte", "illisible", "erreur")
 TARIF_POST_USD = 0.005       # docs.x.com/x-api/getting-started/pricing, lu le 22/10/2026 (« Posts: Read », par ressource retournée)
@@ -202,9 +206,30 @@ def releve(racine: Path, jeton: str | None, session=None, connus: set[str] | Non
     return _brut("ok", None, posts, lectures, partiel)
 
 
-def ecrire(racine: Path, brut: dict) -> dict:
+def identifiants_publics(brut: dict) -> dict:
+    """Projection sans contenu de post : IDs uniques, numériques, du plus récent au plus ancien, 30 au plus."""
+    ids = {p.get("id") for p in brut["posts"] if isinstance(p, dict) and isinstance(p.get("id"), str)
+           and re.fullmatch(r"[0-9]{1,25}", p["id"])}
+    return {"maj": brut["releve_le"], "ids": sorted(ids, key=int, reverse=True)[:30]}
+
+
+def ecrire_ids(racine: Path, brut: dict, fichier: Path = FICHIER_IDS) -> None:
+    """Remplace atomiquement les seuls IDs après un relevé réussi ; tout échec garde le fichier précédent."""
+    if brut["statut"] != "ok":
+        return
+    chemin = racine / fichier
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    tmp = chemin.with_suffix(".json.tmp")
+    try:
+        tmp.write_text(json.dumps(identifiants_publics(brut), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        os.replace(tmp, chemin)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def ecrire(racine: Path, brut: dict, fichier_ids: Path = FICHIER_IDS) -> dict:
     """Écrit `raw/x-liste.json` (texte compris, purgé en fin de passage) et ajoute la ligne de comptes de la nuit à
-    `raw/x-cout.jsonl` (chiffres seulement, conservée)."""
+    `raw/x-cout.jsonl` (chiffres seulement, conservée). Publie les seuls IDs si le relevé réussit."""
     chemin = racine / FICHIER_BRUT
     chemin.parent.mkdir(parents=True, exist_ok=True)
     tmp = chemin.with_suffix(".json.tmp")
@@ -214,19 +239,81 @@ def ecrire(racine: Path, brut: dict) -> dict:
              "nouveaux": sum(1 for p in brut["posts"] if p["type"] != "repost")}
     with open(racine / FICHIER_COUT, "a", encoding="utf-8") as f:
         f.write(json.dumps(ligne, ensure_ascii=False) + "\n")
+    ecrire_ids(racine, brut, fichier_ids)
     return brut
 
 
-def lancer(racine: Path, jeton=lire_jeton, session=None) -> dict:
+def lancer(racine: Path, jeton=lire_jeton, session=None, fichier_ids: Path = FICHIER_IDS) -> dict:
     """Relevé complet : jeton, lecture, écriture. Ne lève jamais."""
     try:
         brut = releve(racine, jeton(), session)
     except Exception as e:   # le capteur ne bloque jamais le passage
         brut = _brut("erreur", f"{type(e).__name__} dans le capteur"[:200])
     try:
-        return ecrire(racine, brut)
+        return ecrire(racine, brut, fichier_ids)
     except OSError as e:
         return {**brut, "statut": "erreur", "message": f"écriture du brut impossible : {type(e).__name__}"}
+
+
+# ------------------------------------------------------------------------------------------------ publication
+
+def publier_ids(racine: Path) -> tuple[int, str, str]:
+    """Publie le relevé en attente par commit dédié, avant les étapes. Aucun changement local avant push réussi.
+
+    Index temporaire et commit-tree : un push rejeté laisse seulement des objets non référencés, jamais un commit local en
+    avance ni un arbre sale. Sans distant, avance locale seulement. L'appelant journalise le résultat sans bloquer la chaîne.
+    """
+    commit = "aucun"
+    try:
+        attente = racine / FICHIER_IDS_ATTENTE
+        if not attente.exists():
+            return 0, commit, "aucun relevé réussi à publier"
+        d = json.loads(attente.read_text(encoding="utf-8"))
+        if (not isinstance(d, dict) or set(d) != {"maj", "ids"} or not isinstance(d["maj"], str)
+                or not isinstance(d["ids"], list) or len(d["ids"]) > 30
+                or any(not isinstance(i, str) or not re.fullmatch(r"[0-9]{1,25}", i) for i in d["ids"])
+                or len(set(d["ids"])) != len(d["ids"])
+                or d["ids"] != sorted(d["ids"], key=int, reverse=True)
+                or datetime.fromisoformat(d["maj"].replace("Z", "+00:00")).utcoffset() is None):
+            raise ValueError("identifiants publics invalides")
+        # Re-sérialise seulement les deux champs autorisés, jamais le brut de l'API.
+        contenu = json.dumps({"maj": d["maj"], "ids": d["ids"]}, ensure_ascii=False, indent=1) + "\n"
+        env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+
+        def git(*args, entree=None, index=None):
+            r = subprocess.run(["git", "-C", str(racine), *args], input=entree, capture_output=True, text=True,
+                               timeout=60, env={**env, **({"GIT_INDEX_FILE": str(index)} if index else {})})
+            if r.returncode:
+                raise RuntimeError(f"git {args[0]} : code {r.returncode}")
+            return r.stdout.strip()
+
+        if git("status", "--porcelain=v1", "--untracked-files=all"):
+            raise ValueError("arbre non propre, publication X différée")
+        avant = git("rev-parse", "HEAD")
+        distant = bool(git("remote"))
+        if distant:
+            if git("branch", "--show-current") != "main":
+                raise ValueError("publication X réservée à main")
+            git("fetch", "--quiet", "origin", "main")
+            if avant != git("rev-parse", "origin/main"):
+                raise ValueError("main diffère de origin/main, publication X différée")
+        with tempfile.TemporaryDirectory(prefix=".tmp-x-ids-", dir=racine) as tmp:
+            index = Path(tmp) / "index"
+            git("read-tree", avant, index=index)
+            blob = git("hash-object", "-w", "--stdin", entree=contenu)
+            git("update-index", "--add", "--cacheinfo", "100644", blob, str(FICHIER_IDS), index=index)
+            arbre = git("write-tree", index=index)
+            if arbre == git("rev-parse", f"{avant}^{{tree}}"):
+                return 0, commit, "identifiants déjà publiés"
+            candidat = git("commit-tree", arbre, "-p", avant, "-m", f"delta(x): {d['maj'][:10]} — {len(d['ids'])} identifiants")
+        if distant:
+            git("push", "origin", f"{candidat}:refs/heads/main")
+            commit = candidat[:12]  # Déjà publié, même si le fast-forward local échoue ensuite.
+        git("merge", "--ff-only", candidat)
+        return 0, candidat[:12], "identifiants publiés"
+    except Exception as e:
+        # Ni sortie de git, ni contenu de réponse API : ils peuvent contenir des informations privées.
+        return 1, commit, f"publication X différée ({type(e).__name__})"
 
 
 # ------------------------------------------------------------------------------------------------ purge

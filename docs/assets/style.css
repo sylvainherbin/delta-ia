@@ -204,7 +204,16 @@ a.ref-lien code { color: inherit; }
 .actions-faites summary { cursor: pointer; font-weight: 600; }
 .liste-x { margin: .75rem 0; padding: .75rem 1rem; border: 1px solid var(--bord); border-radius: var(--rayon); background: var(--surface); }
 .liste-x h3 { margin: 0 0 .4rem; }
-.liste-x summary { cursor: pointer; font-size: .9rem; color: var(--doux); }
+/* X crée ses propres cadres : colonnes souples, sans étirer les posts au-delà de 550 px. */
+.mur-x-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; align-items: start; }
+.mur-x-post { min-width: 0; max-width: 550px; width: 100%; }
+.mur-x-post blockquote { margin: 0; overflow-wrap: anywhere; }
+.mur-x-post .twitter-tweet { max-width: 100%; }
+@media (max-width: 620px) {
+  .contenu { padding-left: 16px; padding-right: 16px; }
+  .liste-x { padding: .75rem 0; border-left: 0; border-right: 0; background: transparent; }
+  .mur-x-posts { grid-template-columns: minmax(0, 1fr); }
+}
 .liste-x p { margin: .6rem 0; font-size: .9rem; }
 .ecartes ul { margin: .3rem 0 0; padding-left: 1.2rem; }
 .jours { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .5rem; }

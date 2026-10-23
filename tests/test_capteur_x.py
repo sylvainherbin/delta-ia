@@ -326,6 +326,8 @@ def test_la_chaine_ne_lance_le_capteur_que_si_la_configuration_le_demande(tmp_pa
     assert appels == []
     orc.Chaine(tmp_path, cfg, []).releve_x()
     assert appels[0][0] == sys.executable and appels[0][1].endswith("scripts/capteur_x.py") and appels[1] == ("journal", "capteur-x", 0)
+    assert "--ids-en-attente" in appels[0]
+    assert appels[2] == ("journal", "capteur-x-publication", 0)
     assert "--claude" not in appels[0]
 
 
@@ -344,3 +346,158 @@ def test_purge_de_fin_de_chaine(tmp_path):
     (tmp_path / "raw" / "x-liste.json").write_text("{}")
     orc.Chaine(tmp_path, orc.charger_config(), []).purge_x()
     assert not (tmp_path / "raw" / "x-liste.json").exists()
+
+
+# ------------------------------------------------------------------------------------------------ IDs publics et publication isolée
+
+def test_ids_publics_projection_limitee_et_aucune_copie_de_texte(tmp_path):
+    s = Session(Rep(corps=API), Rep(corps=USAGE))
+    b = capteur_x.lancer(tmp_path, jeton=lambda: JETON, session=s)
+    public = json.loads((tmp_path / capteur_x.FICHIER_IDS).read_text())
+    assert set(public) == {"maj", "ids"}
+    assert public == {"maj": b["releve_le"], "ids": sorted(IDS, key=int, reverse=True)[:30]}
+    assert len(s.appels) == 2  # Liste et compteur déjà existants, aucune requête ajoutée.
+    for f in tmp_path.rglob("*"):
+        if f.is_file() and f != tmp_path / capteur_x.FICHIER_BRUT:
+            assert all(p["texte"] not in f.read_text() for p in b["posts"] if p["texte"])
+
+
+def test_ids_remplaces_et_erreur_garde_octets_precedents(tmp_path):
+    capteur_x.ecrire(tmp_path, brut())
+    b = brut(posts=[BRUT["posts"][-1]], releve_le="2026-10-23T02:00:00+00:00")
+    capteur_x.ecrire(tmp_path, b)
+    f = tmp_path / capteur_x.FICHIER_IDS
+    assert json.loads(f.read_text()) == {"maj": b["releve_le"], "ids": [b["posts"][0]["id"]]}
+    avant = f.read_bytes()
+    capteur_x.lancer(tmp_path, jeton=lambda: JETON, session=Session(Rep(429)))
+    assert f.read_bytes() == avant
+    capteur_x.lancer(tmp_path, jeton=lambda: None)
+    assert f.read_bytes() == avant
+    capteur_x.purger(tmp_path)
+    assert f.read_bytes() == avant
+
+
+def test_ids_filtrage_numerique_deduplication_et_tri_numerique():
+    # Identifiants fictifs, longueurs différentes pour détecter un tri lexicographique.
+    b = brut(posts=[{"id": i, "texte": "à écarter"} for i in ["9", "11", "9", "abc", "１２", "1" * 26, 123]])
+    assert capteur_x.identifiants_publics(b) == {"maj": b["releve_le"], "ids": ["11", "9"]}
+
+
+def test_ids_ecriture_atomique_en_echec_garde_fichier(tmp_path, monkeypatch):
+    capteur_x.ecrire_ids(tmp_path, brut())
+    f = tmp_path / capteur_x.FICHIER_IDS
+    avant = f.read_bytes()
+    monkeypatch.setattr(capteur_x.os, "replace", lambda *a: (_ for _ in ()).throw(OSError("disque")))
+    with pytest.raises(OSError):
+        capteur_x.ecrire_ids(tmp_path, brut(posts=[]))
+    assert f.read_bytes() == avant and not f.with_suffix(".json.tmp").exists()
+
+
+def test_ids_en_attente_ne_salissent_pas_docs(tmp_path):
+    capteur_x.lancer(tmp_path, jeton=lambda: JETON, session=Session(Rep(corps=API)), fichier_ids=capteur_x.FICHIER_IDS_ATTENTE)
+    assert (tmp_path / capteur_x.FICHIER_IDS_ATTENTE).is_file()
+    assert not (tmp_path / "docs").exists()
+
+
+@pytest.fixture
+def depot_publication(tmp_path):
+    import subprocess
+    def git(*args, cwd=tmp_path):
+        return subprocess.run(["git", "-C", str(cwd), *args], check=True, capture_output=True, text=True).stdout.strip()
+    git("init", "-q", "-b", "main")
+    git("config", "user.email", "test@example.invalid")
+    git("config", "user.name", "Test")
+    (tmp_path / ".gitignore").write_text("raw/\n.tmp-*\n")
+    (tmp_path / "notes.txt").write_text("intact")
+    git("add", ".gitignore", "notes.txt")
+    git("commit", "-qm", "initial")
+    capteur_x.ecrire_ids(tmp_path, brut(posts=[{"id": "999999999999990001"}], releve_le="2026-10-23T00:00:00Z"), capteur_x.FICHIER_IDS_ATTENTE)
+    return tmp_path, git
+
+
+def test_publication_sans_distant_commit_du_seul_fichier_et_resiste_arret_actu(depot_publication):
+    racine, git = depot_publication
+    code, commit, message = capteur_x.publier_ids(racine)
+    assert code == 0 and commit == git("rev-parse", "--short=12", "HEAD")
+    assert git("show", "--format=", "--name-only", "HEAD") == str(capteur_x.FICHIER_IDS)
+    assert git("log", "-1", "--format=%s").startswith("delta(x):")
+    avant = (racine / capteur_x.FICHIER_IDS).read_bytes()
+    (racine / capteur_x.FICHIER_IDS).write_text("cassé")
+    cfg = orc.charger_config()["etapes"]["delta"]
+    etape = orc.Etape(nom="delta", agent="claude", commande=[], delai_s=1, checkout=cfg["checkout"], clean=cfg["clean"])
+    orc.arret_propre(racine, etape)
+    assert (racine / capteur_x.FICHIER_IDS).read_bytes() == avant
+    assert git("status", "--porcelain") == ""
+    assert capteur_x.publier_ids(racine)[:2] == (0, "aucun")
+
+
+@pytest.mark.parametrize("rejet", [False, True])
+def test_publication_push_avant_avance_locale_et_rejet_sans_effet(depot_publication, rejet):
+    racine, git = depot_publication
+    distant = racine / "raw" / "distant.git"
+    git("init", "--bare", "-q", str(distant))
+    git("remote", "add", "origin", str(distant))
+    git("push", "-q", "origin", "main")
+    avant = git("rev-parse", "HEAD")
+    if rejet:
+        hook = distant / "hooks" / "pre-receive"
+        hook.write_text("#!/bin/sh\nexit 1\n")
+        hook.chmod(0o755)
+    code, commit, _ = capteur_x.publier_ids(racine)
+    assert code == int(rejet)
+    assert git("status", "--porcelain") == ""
+    assert git("rev-parse", "HEAD") == git("rev-parse", "refs/heads/main", cwd=distant)
+    if rejet:
+        assert commit == "aucun" and git("rev-parse", "HEAD") == avant
+        assert not (racine / capteur_x.FICHIER_IDS).exists()
+    else:
+        assert git("rev-parse", "HEAD") != avant
+        assert json.loads((racine / capteur_x.FICHIER_IDS).read_text())["ids"] == ["999999999999990001"]
+
+
+@pytest.mark.parametrize("corruption", ["texte", "ids", "date", "ordre"])
+def test_publication_refuse_payload_inattendu_sans_modifier_depot(depot_publication, corruption):
+    racine, git = depot_publication
+    f = racine / capteur_x.FICHIER_IDS_ATTENTE
+    d = json.loads(f.read_text())
+    if corruption == "texte":
+        d["texte"] = "ne pas publier"
+    elif corruption == "ids":
+        d["ids"] = ["abc"]
+    elif corruption == "date":
+        d["maj"] = "hier"
+    else:
+        d["ids"] = ["9", "11"]
+    f.write_text(json.dumps(d))
+    avant = git("rev-parse", "HEAD")
+    assert capteur_x.publier_ids(racine)[:2] == (1, "aucun")
+    assert git("rev-parse", "HEAD") == avant and git("status", "--porcelain") == ""
+
+
+def test_releve_rate_ne_republie_pas_l_attente_et_publication_ratee_ne_bloque_pas(tmp_path, monkeypatch):
+    attente = tmp_path / capteur_x.FICHIER_IDS_ATTENTE
+    attente.parent.mkdir()
+    attente.write_text('ancien relevé')
+    journaux = []
+    monkeypatch.setattr(orc, "journaliser", lambda *a: journaux.append((a[1], a[3])))
+    def faux_capteur(*a, **k):
+        assert not attente.exists()  # Un ancien succès ne doit pas masquer un échec actuel.
+        return type("R", (), {"returncode": 0})()
+    monkeypatch.setattr(orc.subprocess, "run", faux_capteur)
+    c = orc.Chaine(tmp_path, orc.charger_config(), [])
+    c.releve_x()
+    assert journaux == [("capteur-x", 0), ("capteur-x-publication", 0)]
+    journaux.clear()
+    monkeypatch.setattr(capteur_x, "publier_ids", lambda *a: (1, "aucun", "publication différée"))
+    # L'échec de publication est journalisé mais ne change pas l'issue de la chaîne.
+    assert c.executer() == 0
+    assert ("capteur-x-publication", 1) in journaux and journaux[-1] == ("chaine", 0)
+
+
+def test_publication_sur_arbre_sale_garde_les_modifications(depot_publication):
+    racine, git = depot_publication
+    (racine / "notes.txt").write_text("travail à garder")
+    avant = git("rev-parse", "HEAD")
+    assert capteur_x.publier_ids(racine)[:2] == (1, "aucun")
+    assert git("rev-parse", "HEAD") == avant
+    assert (racine / "notes.txt").read_text() == "travail à garder"

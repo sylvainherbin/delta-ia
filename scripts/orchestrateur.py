@@ -26,9 +26,10 @@ Pour chaque étape, sans aucun LLM :
    pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
    inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
-   sinon la chaîne s'arrête : l'orchestrateur ne pousse jamais, ne supprime
+   sinon la chaîne s'arrête : l'orchestrateur ne pousse aucun commit d'étape, ne supprime
    jamais un `.git/index.lock` (D21) et ne touche jamais à `raw/` (historique du brut, D72), sauf le capteur de la liste X (clé
-   `chaine.capteur_x`) : relevé avant la première étape, purge du texte des posts après la supervision ;
+   `chaine.capteur_x`) : relevé avant la première étape, publication dédiée des seuls IDs (`delta(x):`,
+   push avant fast-forward local, échec non bloquant), purge du texte des posts après la supervision ;
 5. contrôle de `valider.py` : étape réussie, `valider.py` relancé seul (sans tube : son code est lu directement) sur l'arbre
    après l'étape, un appel par périmètre (`valider` de la configuration, avec `--date` du jour ; `--kb` du produit pour une
    étape kb). Un échec marque l'étape en échec (code 131, détail dans la ligne de sortie de l'étape et dans la supervision) ;
@@ -775,22 +776,29 @@ class Chaine:
     def releve_x(self) -> None:
         """Capteur de la liste X (décisions du 22/10/2026), avant la première étape : relevé par l'API X (jeton du trousseau) dans
         l'environnement de la chaîne. Jamais bloquant : le statut du relevé est dans `raw/x-liste.json`, l'analyseur `x_liste` le remonte dans
-        `sources_en_echec`. Inactif sans la clé `chaine.capteur_x`."""
+        `sources_en_echec`. Les seuls IDs sont préparés dans raw/, puis publiés avant les étapes par un commit dédié : ils
+        survivent au checkout/clean d'actu. Un échec de publication ne laisse ni arbre sale ni commit en avance et ne bloque
+        pas la chaîne. Inactif sans la clé `chaine.capteur_x`."""
         c = self.cfg["chaine"].get("capteur_x")
         if not c:
             return
         code = 0
         try:
-            res = subprocess.run([sys.executable, str(self.racine / "scripts" / "capteur_x.py"), "--racine", str(self.racine)],
+            (self.racine / capteur_x.FICHIER_IDS_ATTENTE).unlink(missing_ok=True)
+            res = subprocess.run([sys.executable, str(self.racine / "scripts" / "capteur_x.py"), "--racine", str(self.racine), "--ids-en-attente"],
                                  env=environnement(self.cfg), cwd=self.racine, stdin=subprocess.DEVNULL, capture_output=True,
                                  text=True, timeout=c.get("delai_s", 180))
             code = res.returncode
         except Exception:   # y compris le délai : le passage continue sans la liste X
             code = 124
         journaliser(self.racine, "capteur-x", "aucun", code)
+        if code == 0:
+            publication, commit, message = capteur_x.publier_ids(self.racine)
+            print(f"capteur X : {message}", flush=True)
+            journaliser(self.racine, "capteur-x-publication", commit, publication)
 
     def purge_x(self) -> None:
-        """Fin de chaîne : le texte original des posts ne reste pas dans raw/ (décision du 22/10/2026)."""
+        """Fin de chaîne : purge du texte dans raw/ ; les seuls IDs publics restent (décisions des 22 et 23/10/2026)."""
         if self.cfg["chaine"].get("capteur_x"):
             try:
                 capteur_x.purger(self.racine)
