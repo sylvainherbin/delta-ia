@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-16",
+ "maj_le": "2026-10-23",
  "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
  "contexte_sections": {
   "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
@@ -3268,16 +3268,16 @@
    "categorie": "commandes",
    "nom": "codex queue",
    "gabarit": "complet",
-   "description": "`codex queue` met en attente un message texte destiné à une session Codex existante, désignée par son UUID ou son nom exact avec `--thread`, le texte étant passé par `--message`. La documentation la classe comme stable.",
+   "description": "`codex queue` met en attente un message texte pour une session Codex existante : `--thread` accepte son UUID ou son nom exact et `--message` porte le texte. La documentation classe cette commande comme stable et recommande l'UUID si plusieurs sessions partagent un nom.",
    "description_source": "Queue a text message for an existing session by UUID or exact name. (maturité : Stable)",
    "usage": "codex queue --thread <SESSION_ID> --message \"Run the remaining checks\"",
    "usage_nature": "syntaxe",
-   "exemple": "codex queue --thread \"Arbitrage\" --message \"trading-sim : accuse réception du rapport d’audit.\"",
+   "exemple": "codex queue --thread \"01a0c06f-bf36-74f3-836d-c139a0b3300e\" --message \"trading-sim : accuse réception du rapport d’audit.\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "OPÉRER remet aujourd'hui les messages aux sessions en les collant dans leur volet tmux, puis en renvoyant Entrée par un appel distinct. Or les sessions Codex durables tournent sous `codex-session@<nom>`. Il vaut donc la peine d'essayer `codex queue --thread <UUID> --message \"…\"` sur une de ces sessions, comme canal de remise plus propre que le collage tmux, et de vérifier que le message est bien pris en compte."
+    "pourquoi": "Pour un essai OPÉRER sur une session Codex durable, utiliser `codex queue --thread <UUID> --message \"Accuse réception de ce test OPÉRER.\"`, puis vérifier l'accusé dans la session visée. OPÉRER décrit encore une remise par collage dans tmux ; cet essai mesurerait si la mise en attente native assure la remise attendue."
    },
    "sources": [
     {
@@ -3287,25 +3287,25 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "OPÉRER assure la remise directe des messages aux sessions par collage dans tmux : c'est le geste que codex queue pourrait remplacer pour Codex."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER remet les messages par collage dans tmux puis Entrée ; l'essai compare cette remise avec la file native Codex."
     },
     "env.multi-sessions": {
      "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions Codex durables existent comme services `codex-session@<nom>` sous tmux : ce sont des destinataires possibles de codex queue."
+     "pourquoi": "Les sessions Codex durables sont des services codex-session sous tmux, destinataires possibles du test."
     },
-    "config.codex.interface": {
-     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Les deux binaires Codex partagent `~/.codex`, où vivent sessions et `queue` : le choix du binaire pour l'essai est sans effet sur les données."
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Les échanges liés aux audits trading-sim constituent un cas concret de message à une session Codex."
     }
    },
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-10-14",
@@ -3337,33 +3337,71 @@
      "changement": "description corrigée",
      "avant": "Met en attente un message texte pour une session existante, désignée par UUID ou nom exact. Un UUID évite les ambiguïtés entre noms identiques ; les pièces jointes image ne sont pas prises en charge.",
      "raison": "recommentaire D128 : L'ancien commentaire visait l'arbitre ChatGPT « Work », que codex queue ne peut pas atteindre : la recommandation porte désormais sur la remise des messages d'OPÉRER aux sessions"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`codex queue` met en attente un message texte pour une session existante, désignée par UUID ou par nom exact ; maturité Stable.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande est retirée, renommée ou ne cible plus que des sessions de l'app."
+      },
+      {
+       "affirmation": "Le moteur OPÉRER colle le message dans le volet tmux de la session, puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-16",
+       "caduc_si": "OPÉRER change de mécanisme de remise, par exemple en adoptant déjà codex queue."
+      },
+      {
+       "affirmation": "Les sessions Codex suivent le modèle de service `codex-session@<nom>`, sous tmux `-L codex-<nom>`, avec `codex remote-control`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions Codex durables sont abandonnées ou ne tournent plus sous tmux."
+      },
+      {
+       "affirmation": "Le binaire du PATH et celui de l'app de bureau partagent le même `$CODEX_HOME` (`~/.codex`), si bien que les sessions et la `queue` restent cohérentes entre les deux.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les deux binaires reçoivent des `CODEX_HOME` distincts."
+      }
+     ],
+     "raison": "Relecture officielle après modification de la section OPÉRER ; exemple utilisant l'UUID fourni dans les consignes du dépôt."
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "OPÉRER remet aujourd'hui les messages aux sessions en les collant dans leur volet tmux, puis en renvoyant Entrée par un appel distinct. Or les sessions Codex durables tournent sous `codex-session@<nom>`. Il vaut donc la peine d'essayer `codex queue --thread <UUID> --message \"…\"` sur une de ces sessions, comme canal de remise plus propre que le collage tmux, et de vérifier que le message est bien pris en compte."
+     },
+     "raison": "Relecture officielle après modification de la section OPÉRER ; exemple utilisant l'UUID fourni dans les consignes du dépôt."
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "compose",
    "provenance": [
     {
-     "affirmation": "`codex queue` met en attente un message texte pour une session existante, désignée par UUID ou par nom exact ; maturité Stable.",
+     "affirmation": "codex queue met en attente un message pour une session existante, ciblée par UUID ou nom exact, avec --thread et --message.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande est retirée, renommée ou ne cible plus que des sessions de l'app."
+     "releve_le": "2026-10-23",
+     "caduc_si": "La commande, ses arguments ou le ciblage des sessions changent."
     },
     {
-     "affirmation": "Le moteur OPÉRER colle le message dans le volet tmux de la session, puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
+     "affirmation": "OPÉRER colle le message dans tmux puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
      "source": "contexte:methode.operer",
-     "releve_le": "2026-10-16",
-     "caduc_si": "OPÉRER change de mécanisme de remise, par exemple en adoptant déjà codex queue."
+     "releve_le": "2026-10-23",
+     "caduc_si": "OPÉRER adopte un autre mécanisme de remise, notamment codex queue."
     },
     {
-     "affirmation": "Les sessions Codex suivent le modèle de service `codex-session@<nom>`, sous tmux `-L codex-<nom>`, avec `codex remote-control`.",
+     "affirmation": "Les sessions Codex durables tournent sous des services codex-session et des sessions tmux dédiées.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions Codex durables sont abandonnées ou ne tournent plus sous tmux."
-    },
-    {
-     "affirmation": "Le binaire du PATH et celui de l'app de bureau partagent le même `$CODEX_HOME` (`~/.codex`), si bien que les sessions et la `queue` restent cohérentes entre les deux.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les deux binaires reçoivent des `CODEX_HOME` distincts."
+     "releve_le": "2026-10-23",
+     "caduc_si": "Cette organisation des sessions Codex est abandonnée."
     }
    ]
   },
