@@ -1,10 +1,10 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-22",
- "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+ "maj_le": "2026-10-23",
+ "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
  "contexte_sections": {
-  "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
   "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -33,7 +33,7 @@
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
   "methode.organisation": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
-  "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+  "methode.operer": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
   "methode.missions": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
@@ -655,16 +655,16 @@
    "categorie": "fonctionnalites",
    "nom": "Checkpointing",
    "gabarit": "complet",
-   "description": "Claude Code enregistre l'état des fichiers avant chaque prompt ; `/rewind` ou `Échap` deux fois (saisie vide) ouvre un menu pour restaurer le code, la conversation ou les deux, ou résumer la conversation avant ou après un point pour libérer du contexte. Les points de reprise survivent à `--resume`, mais seules les modifications faites par les outils d'édition sont suivies, pas celles des commandes shell.",
+   "description": "Claude Code enregistre l'état des fichiers avant chaque prompt ; `/rewind` ou `Échap` deux fois (saisie vide) ouvre un menu pour restaurer le code, la conversation ou les deux, ou résumer la conversation avant ou après un point pour libérer du contexte. Les points de reprise survivent à `--resume`. Un fichier que seuls des commandes Bash ont modifié n'est pas suivi, et les modifications d'un sous-agent ne sont en général pas capturées.",
    "description_source": "Track, rewind, and summarize Claude's edits and conversation to manage session state.",
-   "usage": "rm file.txt\nmv old.txt new.txt\ncp source.txt dest.txt",
+   "usage": "/rewind",
    "usage_nature": "syntaxe",
    "exemple": "/rewind",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Bash domine l'usage mesuré le 25/09 (≈2 900 appels contre 177 Edit) : les fichiers changés par `rm`, `mv` ou un script ne sont pas restaurables, git reste donc le filet. « Summarize up to here » allège le contexte des sessions longues reprises par `--resume`."
+    "pourquoi": "Bash domine l'usage mesuré le 25/09 (≈2 900 appels contre 177 Edit) : un fichier que seul Bash a changé n'est pas restaurable, git reste donc le filet. « Summarize up to here » allège le contexte des sessions longues reprises par `--resume`."
    },
    "sources": [
     {
@@ -677,7 +677,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -702,50 +702,85 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "usage modifié dans la documentation",
+     "avant": "rm file.txt\nmv old.txt new.txt\ncp source.txt dest.txt",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Checkpointing permet de suivre, de revenir en arrière (rewind) et de résumer les modifications de Claude et la conversation, afin de gérer l'état de la session.",
+       "source": "https://code.claude.com/docs/en/checkpointing",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La fonctionnalité Checkpointing disparaît de la documentation ou ne permet plus le rewind ni le résumé."
+      },
+      {
+       "affirmation": "La page Checkpointing donne en exemple les commandes shell `rm file.txt`, `mv old.txt new.txt` et `cp source.txt dest.txt`.",
+       "source": "https://code.claude.com/docs/en/checkpointing",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Ces exemples de commandes shell sont retirés de la page Checkpointing."
+      },
+      {
+       "affirmation": "Selon le relevé du 25/09 sur 14 transcripts, Bash est l'outil très dominant avec environ 2 900 appels, contre 219 pour Write et 177 pour Edit.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md publie un nouveau relevé d'usage où Bash n'est plus dominant face à Edit et Write."
+      },
+      {
+       "affirmation": "Parmi les commandes tapées par Sylvain figure `/compact` (relevé du 25/09).",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus `/compact` parmi les commandes tapées."
+      },
+      {
+       "affirmation": "trading-sim est un dépôt privé (20 commits en 60 jours) ; une modification locale de la spécification (passage à r3.5) reste non commitée, car l'audit correspondant l'a rejetée.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ou ne mentionne plus la modification r3.5 non commitée."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "usage réel des outils : Bash très dominant (relevé du 25/09)"
+     "pourquoi": "Usage réel des outils : Bash très dominant, Edit 177 (relevé du 25/09)."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "git comme filet sur un projet à fichiers gelés"
+     "pourquoi": "Git comme filet sur un projet à fichiers gelés."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Checkpointing permet de suivre, de revenir en arrière (rewind) et de résumer les modifications de Claude et la conversation, afin de gérer l'état de la session.",
+     "affirmation": "`/rewind`, ou `Échap` deux fois avec une saisie vide, ouvre un menu pour restaurer le code, la conversation ou les deux, ou résumer la conversation ; les points de reprise survivent à une reprise de session.",
      "source": "https://code.claude.com/docs/en/checkpointing",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La fonctionnalité Checkpointing disparaît de la documentation ou ne permet plus le rewind ni le résumé."
+     "releve_le": "2026-10-23",
+     "caduc_si": "La page Checkpointing change la commande, le raccourci ou les actions du menu de rewind."
     },
     {
-     "affirmation": "La page Checkpointing donne en exemple les commandes shell `rm file.txt`, `mv old.txt new.txt` et `cp source.txt dest.txt`.",
+     "affirmation": "Un fichier que seuls des commandes Bash ont modifié n'est pas suivi et reste tel quel ; pour le restaurer, la page renvoie au contrôle de version, Git par exemple.",
      "source": "https://code.claude.com/docs/en/checkpointing",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Ces exemples de commandes shell sont retirés de la page Checkpointing."
+     "releve_le": "2026-10-23",
+     "caduc_si": "La section « Bash command changes not tracked » est retirée ou dit que les fichiers modifiés par Bash seul sont restaurables."
     },
     {
-     "affirmation": "Selon le relevé du 25/09 sur 14 transcripts, Bash est l'outil très dominant avec environ 2 900 appels, contre 219 pour Write et 177 pour Edit.",
+     "affirmation": "Selon le relevé du 25/09, Bash est l'outil très dominant (environ 2 900 appels) contre 177 pour Edit.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-23",
      "caduc_si": "CONTEXTE.md publie un nouveau relevé d'usage où Bash n'est plus dominant face à Edit et Write."
-    },
-    {
-     "affirmation": "Parmi les commandes tapées par Sylvain figure `/compact` (relevé du 25/09).",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus `/compact` parmi les commandes tapées."
-    },
-    {
-     "affirmation": "trading-sim est un dépôt privé (20 commits en 60 jours) ; une modification locale de la spécification (passage à r3.5) reste non commitée, car l'audit correspondant l'a rejetée.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ou ne mentionne plus la modification r3.5 non commitée."
     }
    ]
   },

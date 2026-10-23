@@ -1,0 +1,452 @@
+{
+  "date": "2026-10-23",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-23T02:08:00+00:00",
+  "synthese": "Compte et quotas : aucune page d'aide, offre ni fiche D71 n'a changé cette nuit. Relevé du 23/10 à 02 h UTC : Claude session 5 h à 13 % (remise à zéro à 02 h 10 UTC), semaine à 79 % (remise à zéro le 25/10 vers 16 h UTC), juste sous le seuil D71 de 80 % : si elle le franchit, vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ; semaine Fable à 0 %, ChatGPT semaine à 7 % (remise à zéro le 29/10 vers 19 h UTC). L'annonce du jour qui te touche : les sessions des apps Claude (web, bureau, mobile) passeront en mode auto par défaut la semaine prochaine (annoncé sur X, pas encore confirmé par la documentation) ; ta session Claude Design dans Claude Desktop est de ce côté, tes sessions tmux restent en `bypassPermissions`. Claude Code 2.1.309 (déjà installée) corrige des sessions hébergées par Claude Desktop et la synchronisation des skills claude.ai ; Claude sur Google Cloud (dont le tarif du mode rapide d'Opus 5.5 en API), Agent Skills donné à l'AAIF et le billet sur les sous-agents de la Claude Platform n'ont pas d'effet sur ton compte Max ni sur tes projets. La variable `CLAUDE_CODE_WARN_MEMORY_FREE_GIB` est à essayer sur trading-sim.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "x-2113360845409583307",
+      "ids_bruts": [
+        "x-2113360845409583307"
+      ],
+      "produit": "claude",
+      "titre": "Les sessions des apps Claude (web, bureau, mobile) passeront en mode auto par défaut la semaine prochaine sur Pro, Max et Team",
+      "version": null,
+      "date_publication": "2026-10-22",
+      "type": "amelioration",
+      "resume": "Annoncé sur X par @claudeai, pas encore confirmé par la documentation : la semaine prochaine, les sessions des apps Claude sur le web, le bureau et le mobile démarreront par défaut en mode auto pour les forfaits Pro, Max et Team. Une vérification automatique bloque les actions risquées au lieu de demander une validation à chaque étape ; le retour au mode manuel reste possible à tout moment. Le post ne donne ni date précise ni liste des types de sessions concernés.",
+      "sources": [
+        {
+          "url": "https://x.com/claudeai/status/2113360845409583307",
+          "libelle": "@claudeai — post du 22/10/2026",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tes sessions Claude Code durables (`claude-session@<nom>`) tournent déjà en `bypassPermissions` depuis le 06/10 : le post parle des apps web, bureau et mobile, donc elles ne sont pas visées d'après son texte. Ta session Claude Design, que tu utilises intensivement dans Claude Desktop, est du côté des apps ; CONTEXTE.md ne dit pas dans quel mode elle tourne aujourd'hui, et le post ne précise pas si les sessions Code de l'app de bureau sont comprises.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-10-30 (le post dit « la semaine prochaine », sans date) le mode de permission d'une session Claude Design dans Claude Desktop.",
+        "etapes": [
+          "Après le 26/10, ouvre une nouvelle session Claude Design dans Claude Desktop et lis le mode de permission qu'elle affiche ; résultat attendu : `auto` par défaut si l'annonce s'applique aux sessions Code de l'app de bureau, sinon ton mode actuel inchangé.",
+          "Si `auto` bloque une action voulue de cette session (une installation sur le bureau Delta après test sur banc, par exemple), repasse-la en manuel depuis le même sélecteur, que l'annonce dit possible à tout moment ; résultat attendu : la session redemande une validation à chaque étape."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10 : le mode auto des apps ne les vise pas d'après le post."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design dans Claude Desktop, usage intensif : session du côté des apps."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.309",
+      "ids_bruts": [
+        "claude-code-2.1.309",
+        "claude-code-2.1.308"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.309 : correctifs des sessions hébergées par Claude Desktop et des skills synchronisés depuis claude.ai, `claude ultrareview` soumis à la confiance du dossier (2.1.308 sans détail)",
+      "version": "2.1.309",
+      "date_publication": "2026-10-22",
+      "type": "correction",
+      "resume": "Seul ajout : un avertissement de journal dans VS Code quand la dictée ou les requêtes de l'extension échouent à la vérification de certificat. Changements : `claude ultrareview` exige la confiance du dossier (question sur un terminal, refus sinon ; `--trust-workspace` ou `CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK=1` dans un script), le prompt dangereux `rm`/`rmdir` en mode bypass dans l'app de bureau et VS Code refuse la commande tout de suite avec une indication de réécriture, `sed -i` reçoit le prompt Bash standard et n'est plus restauré par `/rewind`, et la création de worktrees ne récupère plus d'objets à la demande. Parmi 61 correctifs : messages perdus d'une session hébergée par Claude Desktop au rafraîchissement de la connexion, fonctions absentes de ces sessions quand le terminal du même ordinateur était connecté à un autre compte, plugins et skills synchronisés depuis claude.ai retirés après une erreur de lecture du disque, recompactions répétées après la lecture d'un très gros CLAUDE.md imbriqué (seul son début est chargé), contrôles de permission Bash et d'isolation de worktree, bac à sable, VS Code, sessions cloud, Claude Tag et Code Review. La 2.1.308, publiée le même jour, ne détaille que « corrections de bugs et fiabilité ».",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21309",
+          "libelle": "Claude Code 2.1.309",
+          "officielle": true
+        },
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21308",
+          "libelle": "Claude Code 2.1.308",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "La version installée est déjà la 2.1.309 (`docs/data/versions.json`). Tu utilises Claude Design dans Claude Desktop en mode Claude Code : deux correctifs te concernent, les messages d'une session hébergée par Claude Desktop qui se perdaient au rafraîchissement de la connexion, et les fonctions absentes de ces sessions quand le terminal de la machine était connecté à un autre compte ou une autre organisation. Tes skills claude.ai synchronisés (ask-the-council, red-team…) pouvaient être retirés, parfois en pleine session, après une erreur de lecture du disque : corrigé. Le nouveau refus des `rm` et `rmdir` en mode bypass ne vise que l'app de bureau et VS Code ; CONTEXTE.md ne dit pas dans quel mode tourne la session Claude Design. Les autres changements portent sur le bac à sable, `claude ultrareview`, `--worktree` et VS Code, que CONTEXTE.md ne décrit pas comme utilisés ; tes sessions tmux sont en `bypassPermissions`, sans bac à sable décrit.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Contrôler que tes sessions durables tournent sur la 2.1.309 : une session ouverte avant la mise à jour garde l'ancien binaire jusqu'à sa relance.",
+        "etapes": [
+          "Dans une session durable `claude-session@<nom>` (celle du chef delta-ia, par exemple), tape `/status` et lis la ligne de version ; résultat attendu : `2.1.309`, sinon cette session n'a pas encore ces correctifs avant sa prochaine relance."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-status",
+        "claude-code-commandes-ultrareview",
+        "claude-code-parametres-claude-code-disable-ultrareview-trust-check"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design dans Claude Desktop et skills claude.ai synchronisés dans Claude Code."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions, sans bac à sable décrit."
+        },
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables claude-session@<nom> : binaire gardé jusqu'à la relance."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-10-22",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-22",
+        "https://claude.com/blog/claude-models-on-google-cloud-anthropic-managed",
+        "x-2113383092744282186",
+        "x-2113381868364271743",
+        "x-2113380126561800305",
+        "x-2113380122468454765"
+      ],
+      "produit": "claude",
+      "titre": "Claude Models on Google Cloud (Anthropic managed) en disponibilité générale, avec le mode rapide d'Opus 5.5",
+      "version": null,
+      "date_publication": "2026-10-22",
+      "type": "nouveaute",
+      "resume": "L'API Claude exploitée par Anthropic devient accessible depuis un projet Google Cloud : accès par identifiants IAM, facturation par Google Cloud Marketplace avec dépenses imputées sur l'engagement Google Cloud existant, points d'accès US et Global. Elle donne toutes les fonctions de la plateforme (Managed Agents en bêta, exécution de code, Skills API, computer use, advisor, Files API, connecteur MCP), livrées le jour de leur sortie sur la plateforme native ; Fable 5.1, Opus 5.5, Sonnet 5.5 et Haiku 5.5 y sont disponibles. Le mode rapide d'Opus 5.5 l'est aussi : jusqu'à 2,5 fois plus rapide en sortie selon l'article (référence non précisée), à 8 $ l'entrée et 40 $ la sortie par million de jetons. L'offre Google managed reste disponible, Google y étant responsable du traitement des données ; une remise existante se règle avec le commercial avant de commencer, sans effet rétroactif. Publié aussi sur X par @claudeai et @ClaudeDevs.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        },
+        {
+          "url": "https://claude.com/resources/articles/claude-models-on-google-cloud-anthropic-managed",
+          "libelle": "The full Claude Platform, available on Google Cloud",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/claudeai/status/2113380122468454765",
+          "libelle": "@claudeai — post du 22/10/2026",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2113381868364271743",
+          "libelle": "@ClaudeDevs — post du 22/10/2026",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+      "ids_bruts": [
+        "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+        "x-2113328526413996100",
+        "x-2113328528536305718",
+        "x-2113328529911730587"
+      ],
+      "produit": "claude",
+      "titre": "Anthropic donne le standard Agent Skills à l'Agentic AI Foundation",
+      "version": null,
+      "date_publication": "2026-10-22",
+      "type": "nouveaute",
+      "resume": "Le standard ouvert Agent Skills (un dossier avec un fichier `SKILL.md`, ses scripts et ses références) passe à l'Agentic AI Foundation, sous la Linux Foundation, avec son nom, son logo, son organisation GitHub et le domaine agentskills.io. Plus de 70 plateformes l'ont intégré depuis décembre 2025, dont ChatGPT, Cursor, GitHub Copilot et VS Code ; Anthropic compte 1 million de skills publiés et près de 280 millions d'installations. Les skills existants continuent de fonctionner et les licences ne changent pas ; un comité technique (Anthropic, Google, Microsoft, OpenAI, OpenCode, Earendil) gouverne le standard, avec pour première priorité une feuille de route : versions numérotées, procédure de proposition, consignes de sécurité pour les auteurs et les utilisateurs de skills.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+          "libelle": "Donating Agent Skills to the Agentic AI Foundation",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2113328526413996100",
+          "libelle": "@ClaudeDevs — post du 22/10/2026",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
+      "ids_bruts": [
+        "https://claude.com/blog/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
+      ],
+      "produit": "claude",
+      "titre": "Agents de la Claude Platform : quand replier des sous-agents dans la boucle principale",
+      "version": null,
+      "date_publication": "2026-10-22",
+      "type": "nouveaute",
+      "resume": "Billet de l'équipe Applied AI d'Anthropic sur les agents construits dans la Claude Platform : dans plusieurs déploiements en entreprise, un agent unique avec des skills et une recherche d'outils a souvent donné une meilleure qualité qu'une architecture à sous-agents, à coût et latence par tâche souvent plus bas (un client mesure un temps d'exécution environ 2 fois plus court qu'avec son harnais multi-agents). Les sous-agents restent conseillés pour un contexte qui gonfle, des tâches parallèles à fenêtre neuve jetable, ou une sélection d'outils difficile ; ils servent aussi à vérifier. Un kit de migration guide le repli des sous-agents, et Anthropic dit avoir réduit de plus de 80 % le prompt système de Claude Code pour les modèles récents.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
+          "libelle": "Building agents: When to fold subagents into your main agent loop",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-wj6r4t6mxq1r",
+      "ids_bruts": [
+        "anthropic-status-wj6r4t6mxq1r"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur les connecteurs de claude.ai et de Claude Cowork (22/10)",
+      "version": null,
+      "date_publication": "2026-10-22",
+      "type": "correction",
+      "resume": "Incident d'impact mineur ouvert le 22/10 à 03 h 50 UTC : erreurs élevées sur les connecteurs de claude.ai et de Claude Cowork. Un correctif a été déployé à 07 h 28 UTC et l'incident est résolu à 08 h 07 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/wj6r4t6mxq1r",
+          "libelle": "Elevated errors affecting Connectors",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "version": "2.1.307",
+      "date_publication": "2026-10-21",
+      "projets_concernes": [],
+      "pour_toi": "CONTEXTE.md dit désormais « aucun crédit Claude Code cloud » (décision du 21/10) : les correctifs de `/autocompact` et de `/clear` en session cloud ne comptent plus pour toi, même si OPÉRER liste encore l'exécutant `claude-cloud`. Reste la connexion Remote Control plus rapide pour les sessions dont la transcription contient de grandes images collées ou des PDF lus : elle sert tes sessions durables pilotées depuis l'iPhone, et la version installée est la 2.1.309 (`versions.json`), qui la contient.",
+      "action": {
+        "description": "Contrôler qu'une session durable a bien relancé sur une version qui contient la connexion Remote Control de la 2.1.307.",
+        "etapes": [
+          "Dans une session durable `claude-session@<nom>` (celle du chef delta-ia, par exemple), tape `/status` et lis la ligne de version ; résultat attendu : `2.1.309` ou plus, sinon cette session garde l'ancienne connexion Remote Control jusqu'à sa prochaine relance."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-skills-claude-api",
+        "claude-code-commandes-status"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+          "pourquoi": "Sessions durables lancées avec `--remote-control` et pilotées depuis l'iPhone."
+        },
+        "profil": {
+          "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+          "pourquoi": "Aucun crédit Claude Code cloud (décision du 21/10) : les correctifs cloud ne comptent plus."
+        }
+      },
+      "certitude": "officiel",
+      "id": "claude-code-2.1.307",
+      "ids_bruts": [
+        "claude-code-2.1.307"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.307 : `/claude-api api-version`, événement OpenTelemetry `claude_code.safety_event`, correctifs MCP, cloud et Remote Control",
+      "type": "nouveaute",
+      "resume": "Ajouts : `/claude-api api-version` (migre le code d'API Claude vers la version d'API `2026-10-21`), événement OpenTelemetry `claude_code.safety_event` pour chaque appel d'outil arrêté, soumis à approbation ou renvoyé par une règle de permission, le mode auto, un contrôle de sécurité, un hook ou le bac à sable, et `@claude review stop` (aussi `off`, `pause`) pour Code Review. Améliorations : reprise après appel d'outil illisible (deux nouvelles tentatives avant d'arrêter le tour), connexion Remote Control plus rapide pour les sessions dont la transcription contient de grandes images collées ou des PDF lus, lancement groupé de sous-agents « fork » (chacun sait quel lancement est le sien), premier message plus rapide en session cloud quand un serveur MCP de l'app de bureau ne se connecte pas. Correctifs : alias `[1m]` avec `CLAUDE_CODE_DISABLE_1M_CONTEXT`, appels d'outils MCP HTTP envoyés deux fois (seuls les outils en lecture seule ou idempotents sont rejoués), serveurs MCP échoués en mode headless après une mise en veille, erreurs « Autocompact is thrashing » avec beaucoup de pages PDF ou d'images, `/autocompact` perdu au redémarrage d'une session cloud, conversation vidée par `/clear` qui revenait au redémarrage d'une session cloud ou d'un runner auto-hébergé, entrée « Recently denied » de `/permissions`, sous-agents qui enregistraient un usage de jetons factice. Plusieurs changements VS Code et runner auto-hébergé.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21307",
+          "libelle": "Claude Code 2.1.307",
+          "officielle": true
+        }
+      ],
+      "impact": "faible",
+      "revision": true
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-ultrareview-trust-check",
+      "ids_bruts": ["kb-claude-code-parametres-claude-code-disable-ultrareview-trust-check"],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK`, `claude ultrareview` sans confiance de dossier",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, variable d'environnement. D'après la documentation d'origine : à 1, `claude ultrareview` ne s'arrête plus avec « Workspace not trusted » dans un dossier non approuvé quand il ne peut pas poser la question (CI par exemple) ; à définir dans l'environnement qui lance Claude Code, pas dans le bloc `env` de settings, et seulement si chaque exécution démarre dans un dossier de confiance. Demande Claude Code 2.1.309 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-ultrareview-trust-check"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-enable-share-bundle",
+      "ids_bruts": ["kb-claude-code-parametres-claude-code-enable-share-bundle"],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_ENABLE_SHARE_BUNDLE`, `/share` vers une archive locale",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, variable d'environnement. D'après la documentation d'origine : à 1, `/share` enregistre son rapport et toute la transcription de la session dans une archive locale sous `~/.claude/feedback-bundles/` au lieu d'envoyer le rapport à Anthropic ; elle ne rallume pas `/share` si la politique de l'organisation l'a coupé. Demande Claude Code 2.1.299 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-enable-share-bundle"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-warn-disk-free-gib",
+      "ids_bruts": ["kb-claude-code-parametres-claude-code-warn-disk-free-gib"],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_WARN_DISK_FREE_GIB`, avertir Claude quand l'espace disque libre baisse",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, variable d'environnement. D'après la documentation d'origine : un nombre entier de Gio (par exemple 10) fait avertir Claude, par un rappel système, quand l'espace libre du système de fichiers du dossier de travail passe sous ce seuil ; sans effet si absente, à 0 ou non numérique ; à définir dans l'environnement de lancement, pas dans le bloc `env` de settings. Demande Claude Code 2.1.304 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-warn-disk-free-gib"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-warn-memory-free-gib",
+      "ids_bruts": ["kb-claude-code-parametres-claude-code-warn-memory-free-gib"],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_WARN_MEMORY_FREE_GIB`, avertir Claude quand la mémoire disponible baisse",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, variable d'environnement (Linux et WSL). D'après la documentation d'origine : un nombre entier de Gio (par exemple 4) fait avertir Claude, par un rappel système, quand la mémoire disponible passe sous ce seuil ; sans effet si absente, à 0 ou non numérique ; à définir dans l'environnement de lancement, pas dans le bloc `env` de settings. Demande Claude Code 2.1.304 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tes campagnes de trading-sim tournent sur une machine de 14 Gio de RAM, bridées à 9 Go sans swap par `calculs.slice` (CONTEXTE.md) : la variable ne limite rien, elle fait seulement avertir Claude quand la mémoire disponible passe sous le seuil choisi.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Essayer la variable sur une session ouverte dans le dossier de trading-sim pendant une campagne.",
+        "etapes": [
+          "Dans le terminal qui lance la session (pas dans le bloc `env` de settings, ignoré pour cette variable), tape `cd ~/projets/trading-sim && CLAUDE_CODE_WARN_MEMORY_FREE_GIB=3 claude`, puis lance une campagne sous `calculs.slice` ; résultat attendu : un rappel système indique la mémoire disponible quand elle passe sous 3 Gio."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-warn-memory-free-gib"
+      ],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+          "pourquoi": "14 Gio de RAM, `calculs.slice` (MemoryMax 9G, pas de swap) pour les campagnes."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Priorité de Sylvain ; campagnes exhaustives sur une machine lente."
+        }
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2113390212911083894",
+      "raison": "post X sans rapport : article de recherche de la Frontier Red Team sur la vérification formelle de logiciels, sans outil ni réglage à adopter (D24)."
+    },
+    {
+      "id": "https://www.anthropic.com/news/open-call-guest-investigators-life-sciences",
+      "raison": "Appel à projets de recherche en sciences de la vie pour des laboratoires académiques, sans lien avec les modèles ni les outils (D24)."
+    },
+    {
+      "id": "x-2113013250136662488",
+      "raison": "déjà couvert le 2026-10-22 (claude-platform-notes-2026-10-21)"
+    },
+    {
+      "id": "x-2113013248714744208",
+      "raison": "déjà couvert le 2026-10-22 (claude-platform-notes-2026-10-21)"
+    },
+    {
+      "id": "x-2113013247209021918",
+      "raison": "déjà couvert le 2026-10-22 (claude-platform-notes-2026-10-21)"
+    },
+    {
+      "id": "x-2112984669943968099",
+      "raison": "déjà couvert le 2026-10-22 (https://claude.com/blog/claude-duet)"
+    },
+    {
+      "id": "https://claude.com/blog/claude-duet",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.305",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-claude-code-parametres-enable-prompt-caching-1h",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.304",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-enable-prompt-suggestion",
+      "raison": "réévalué, inchangé"
+    }
+  ],
+  "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c"
+}

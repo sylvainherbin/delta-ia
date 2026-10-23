@@ -1,10 +1,10 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-22",
- "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+ "maj_le": "2026-10-23",
+ "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
  "contexte_sections": {
-  "profil": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
   "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
   "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -33,7 +33,7 @@
   "config.codex.regles-globales": "d97caf53e722e0a45e97662f11a418bb311ccb46",
   "methode.travail": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
   "methode.organisation": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
-  "methode.operer": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+  "methode.operer": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
   "methode.missions": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
@@ -1842,7 +1842,7 @@
    "gabarit": "complet",
    "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition la plus prioritaire : portée locale, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Les trois portées se comparent par nom ; plugins et connecteurs se comparent par URL ou commande.",
    "description_source": "When the same server is defined in more than one place, Claude Code connects to it once, using the definition from the highest-precedence source. The entire server entry from that source is used; fields are not merged across scopes.",
-   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -1862,7 +1862,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1891,51 +1891,86 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition de la source la plus prioritaire ; l'entrée entière de cette source est utilisée, sans fusion des champs entre portées.",
+       "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation change la règle de précédence ou permet la fusion des champs entre portées"
+      },
+      {
+       "affirmation": "L'ordre de priorité documenté est : Local scope, Project scope, User scope, Plugin-provided servers, puis claude.ai connectors en dernier.",
+       "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation modifie l'ordre de la hiérarchie ou retire les claude.ai connectors de la liste"
+      },
+      {
+       "affirmation": "Un serveur MCP en portée locale est rattaché au dossier de travail de la session : mint/dev/carnet partagent `~/projets`, delta/delta-ia partagent `~/projets/delta-ia`, herbin-trading a son propre dossier `~/projets/trading-sim`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce rattachement au cwd ou la répartition des dossiers change"
+      },
+      {
+       "affirmation": "Le serveur delta-ia a été ajouté en portée locale (`claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp`) dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`"
+      },
+      {
+       "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet concerné.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte"
+      },
+      {
+       "affirmation": "trading-sim reçoit les connecteurs de compte, Delta-IA compris, car son `.claude/settings.json` ne les liste pas dans son `deny`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "le `deny` de trading-sim est mis à jour pour exclure les connecteurs de compte, selon CONTEXTE.md"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteurs de compte partout, trading-sim compris"
+     "pourquoi": "delta-ia en portée locale dans ~/projets et ~/projets/delta-ia, connecteurs de compte partout, trading-sim compris."
     }
    },
    "provenance": [
     {
-     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition de la source la plus prioritaire ; l'entrée entière de cette source est utilisée, sans fusion des champs entre portées.",
+     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de la source la plus prioritaire, sans fusion des champs ; l'ordre est local, projet, utilisateur, plugins, puis connecteurs claude.ai.",
      "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation change la règle de précédence ou permet la fusion des champs entre portées"
+     "releve_le": "2026-10-23",
+     "caduc_si": "La documentation change la règle de précédence, l'ordre des sources ou permet la fusion des champs."
     },
     {
-     "affirmation": "L'ordre de priorité documenté est : Local scope, Project scope, User scope, Plugin-provided servers, puis claude.ai connectors en dernier.",
-     "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation modifie l'ordre de la hiérarchie ou retire les claude.ai connectors de la liste"
-    },
-    {
-     "affirmation": "Un serveur MCP en portée locale est rattaché au dossier de travail de la session : mint/dev/carnet partagent `~/projets`, delta/delta-ia partagent `~/projets/delta-ia`, herbin-trading a son propre dossier `~/projets/trading-sim`.",
+     "affirmation": "Le serveur delta-ia a été ajouté en portée locale dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
      "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce rattachement au cwd ou la répartition des dossiers change"
+     "releve_le": "2026-10-23",
+     "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`."
     },
     {
-     "affirmation": "Le serveur delta-ia a été ajouté en portée locale (`claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp`) dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
+     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet.",
      "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`"
-    },
-    {
-     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet concerné.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte"
-    },
-    {
-     "affirmation": "trading-sim reçoit les connecteurs de compte, Delta-IA compris, car son `.claude/settings.json` ne les liste pas dans son `deny`.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "le `deny` de trading-sim est mis à jour pour exclure les connecteurs de compte, selon CONTEXTE.md"
+     "releve_le": "2026-10-23",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte."
     }
    ]
   },
