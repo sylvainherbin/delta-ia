@@ -25,7 +25,7 @@ décision de Sylvain du 07/10, `~/projets/DECISIONS.md`]** ; il remplace le Max 
 ChatGPT **Pro (100)** **[déclaré]** ; Sylvain garde les deux et veut que Delta développe l'usage de Claude ET de
 ChatGPT/Codex **[déclaré, 05/10]**. **Aucun crédit Claude Code cloud** **[déclaré : décision de Sylvain du 21/10, `~/projets/DECISIONS.md`]**.
 
-**Priorité actuelle : trading-sim** [déclaré]. **Irritant principal** [déclaré] : ne pas connaître
+**Priorité actuelle : fiabiliser ORQYRA et sa chaîne de publication, avec installation neuve, mises à jour et retour arrière qualifiés** [déclaré : `~/projets/DECISIONS.md` du 22/10 et du 23/10]. **Irritant principal** [déclaré] : ne pas connaître
 assez bien les commandes et les fonctionnalités de Claude Code, de l'app Claude et de Codex pour
 en tirer le maximum. **La veille doit donc surtout signaler les nouvelles fonctionnalités** et la
 façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille choisit la longueur.
@@ -37,10 +37,7 @@ façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille ch
 
 | Élément | Valeur | Nature |
 |---|---|---|
-| OS | Linux Mint 22.1 (base Ubuntu 24.04), bureau Cinnamon, noyau HWE d'Ubuntu (version : `docs/data/versions.json`) | [observé] |
-| Machine | Portable HP, AMD A10-7300 (4 cœurs), 14 Gio de RAM, zram 7,3 Gio ; pilote graphique `amdgpu` permanent (entrée de secours `Radeon (secours)` au démarrage, pour un seul essai) | [observé] |
-| Disques | disque interne ~954 Go signalé non rotatif ; disque USB externe ~931 Go (sauvegardes Timeshift) | [observé] |
-| Réseau | Wi-Fi seul (clé USB TP-Link sur rallonge), connexion directe à la box en 5 GHz (le répéteur ne sert plus que de secours), pas de repli cellulaire ; les décrochages ont cessé après ce changement | [observé] ; problème déclaré clos le 02/10 [déclaré] |
+| Machine | Le K8 Plus est la machine de développement et de fabrication. Le HP est l'instance cliente Beta et la machine d'essai d'installation. Versions des systèmes et outils : `docs/data/versions.json`. | [déclaré : DECISIONS.md du 15/10 et du 23/10] |
 | Outils CLI | git, gh, Python, tmux, nvm (Node via le bundle Codex), `python3.12-venv` ; pas de `sqlite3` ; `pytest` absent du système, présent seulement dans `delta-ia/.venv` | [observé] |
 | Claude Code | installation native | [observé] |
 | Codex | deux binaires : celui livré avec l'app de bureau ChatGPT (qui se met à jour avec elle ; utilisé par la chaîne D70 et par l'app) et la CLI npm du PATH (sessions tmux `codex-<nom>`, missions `mission-codex`, mise à jour par npm) | [observé] |
@@ -48,8 +45,7 @@ façon de s'en servir concrètement sur ses projets ; l'éditeur de la veille ch
 | Mobile | iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS) | [observé] |
 | Versions installées | voir `docs/data/versions.json` du dépôt delta-ia (relevé automatique à chaque passage), seule source à jour | [observé] |
 
-La machine est modeste : les calculs lourds (campagnes de simulation) sont bridés dans une tranche
-systemd dédiée `calculs.slice` (CPUWeight 20, MemoryMax 9G, pas de swap) **[observé]**.
+Le HP Beta est une destination décidée : les migrations et qualifications prévues ne sont pas présentées comme achevées, et ses caractéristiques matérielles ne décrivent pas la machine de développement.
 
 ### Architecture multi-sessions Claude Code
 <!-- ctx-id: env.multi-sessions -->
@@ -66,7 +62,7 @@ principe (service modèle `codex-session@<nom>`, tmux `-L codex-<nom>`, `codex r
 dans OPÉRER (`operer qui`, `operer etat`, voir la section « OPÉRER » du §5). Seul le durable est décrit dans ce
 fichier : l'organisation par chefs et devs (§5), le régime des permissions (§3).
 
-Les sessions se parlent via `SendMessage` / `ListAgents` ; depuis le 03/10, OPÉRER remet lui-même les
+Depuis une session Claude Code, les sessions se parlent via `SendMessage` / `ListAgents` ; depuis Codex, les messages aux sessions Claude passent par `operer message`. Systemd assure le démarrage du moteur ; OPÉRER assure la reprise des missions, et l'organisation réelle se lit dans OPÉRER, sans liste figée de sessions ou de missions. Le Bureau se ferme indépendamment du moteur. Le superviseur général reste hors OPÉRER ; Delta-opérations pilote le développement du K8. Carnet et trading-sim sont destinés à l'ORQYRA du HP comme projets personnels d'un client ; leurs couches personnelles restent hors du produit distribué. Depuis le 03/10, OPÉRER remet lui-même les
 missions et les relances, et Sylvain ne relaie plus les prompts à la main **[observé : OPÉRER, transcripts]**.
 Depuis une session Claude Code, `/list-agents` montre la conversation
 Dispatch de Cowork comme session Remote Control ; les sessions Cowork cloud n'y apparaissent pas
@@ -563,7 +559,7 @@ sont signalés au fil du tableau.
 | Skills claude.ai | surtout **red-team** ; les autres peu ou pas | [déclaré] |
 | ChatGPT | abonnement Pro ; utilisé aussi hors trading-sim (console de pilotage), principalement pour **auditer le travail de Claude** | [déclaré] |
 | Codex | CLI sous tmux avec remote control (app de bureau non lancée au démarrage) ; profils audit / rapide / securite tous utilisés | [déclaré] |
-| Priorité | trading-sim | [déclaré] |
+| Priorité | fiabiliser ORQYRA et sa chaîne de publication (installation neuve, mises à jour, retour arrière) | [déclaré] |
 | Irritant | méconnaissance des commandes et fonctionnalités, donc un usage sous-optimal | [déclaré] |
 | restoration-id | pas d'évolution pour l'instant | [déclaré] |
 | Veille attendue | alertes sur les **nouvelles fonctionnalités** ; longueur laissée à l'éditeur | [déclaré] |
