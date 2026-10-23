@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 129,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -4927,7 +4927,7 @@
    "categorie": "commandes",
    "nom": "/fork",
    "gabarit": "complet",
-   "description": "Copie la conversation dans une nouvelle session d'arrière-plan et te laisse continuer ici ; avec un prompt, la copie démarre tout de suite. Sauf édition sur place, la copie crée son propre worktree avant de modifier du code.",
+   "description": "Copie la conversation courante dans une nouvelle session d'arrière-plan et te laisse continuer ici ; avec un prompt, la copie s'y met tout de suite, sans prompt elle attend dans l'agent view. Sauf édition sur place, Claude Code lui demande de créer son propre worktree avant de modifier du code (v2.1.221 ou plus) ; agent view désactivée, `/fork` lance un subagent forké.",
    "description_source": "Copy the current conversation into a new background session and keep working here. Pass a prompt and the copy starts working on it immediately; without one it waits in agent view for its first prompt. Except when the copy edits in place, Claude Code instructs it to create a worktree of its own before making code changes; the isolation instruction requires Claude Code v2.1.221 or later. To hand a side task to a subagent whose result comes back into this conversation, use /subtask; to switch into a copy yourself, use /branch. When agent view is turned off, /fork starts a forked subagent instead",
    "usage": "/fork [prompt]",
    "usage_nature": "syntaxe",
@@ -4936,7 +4936,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Chaque session coûte environ 300 Mio de RAM sur une machine de 14 Gio (tu as arrêté `dev` pour ça) ; une copie en arrière-plan ajoute cette charge."
+    "pourquoi": "Tes travaux parallèles passent par OPÉRER, avec une branche et un worktree par mission sous `~/projets/.worktrees/` ; une copie d'arrière-plan qui crée son propre worktree échapperait à ce suivi."
    },
    "sources": [
     {
@@ -4945,11 +4945,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4966,10 +4966,19 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Une branche et un worktree par mission, créés par le chef ou par OPÉRER ; option --worktree de Claude Code non utilisée."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -5330,7 +5339,7 @@
    "categorie": "commandes",
    "nom": "/import",
    "gabarit": "complet",
-   "description": "Reprend dans Claude Code la configuration d'OpenAI Codex, de Gemini CLI ou de Cursor présente sur la machine : fichiers d'instructions, serveurs MCP, commandes, subagents et skills. `--dry-run` prévisualise sans rien écrire, `--yes` saute le sélecteur. En mode `-p`, elle liste ce qu'elle a trouvé et donne la commande de confirmation.",
+   "description": "Reprend dans Claude Code la configuration d'OpenAI Codex, de Gemini CLI ou de Cursor présente sur la machine : fichiers d'instructions, serveurs MCP, commandes, subagents et skills. `--dry-run` prévisualise sans rien écrire, `--yes` saute le sélecteur ; en mode `-p`, elle liste ce qu'elle a trouvé et donne la commande qui confirme l'import.",
    "description_source": "Bring configuration from OpenAI Codex, Google Gemini CLI, or Cursor on your machine into Claude Code, including instruction files, MCP servers, commands, subagents, and skills. In non-interactive mode with -p, /import lists what it found and gives you the command that confirms the import. Add --dry-run to preview without writing anything, or --yes to skip the interactive picker. Not available on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or Claude Platform on AWS, or through a Claude apps gateway. Also unavailable when you turn off feature-flag fetching. Importing from Cursor requires v2.1.265 or later",
    "usage": "/import [codex|gemini|cursor] [--dry-run] [--yes]",
    "usage_nature": "syntaxe",
@@ -5339,7 +5348,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ta configuration Codex se limite à des profils, des règles et des skills système ; rien d'utile à reprendre côté Claude Code."
+    "pourquoi": "Côté Codex, tu n'as que les skills système, une seule `prefix_rule` et une consigne Delta-IA dont l'équivalent est déjà dans `~/.claude/CLAUDE.md` : rien d'utile à importer."
    },
    "sources": [
     {
@@ -5348,11 +5357,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5369,10 +5378,27 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_sections": {
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Codex n'a que les skills système ; aucune skill propre à importer."
+    },
+    "config.codex.regles-globales": {
+     "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
+     "pourquoi": "~/.codex/AGENTS.md porte la consigne Delta-IA ; une seule prefix_rule dans default.rules."
+    },
+    "config.claude-code.regles-globales": {
+     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
+     "pourquoi": "~/.claude/CLAUDE.md porte déjà la consigne Delta-IA côté Claude Code."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -7948,16 +7974,16 @@
    "categorie": "commandes",
    "nom": "/schedule",
    "gabarit": "complet",
-   "description": "Crée, modifie, liste ou lance des routines, qui s'exécutent dans le cloud ; Claude guide la configuration par la conversation et peut rendre compte des exécutions récentes. Alias : `/routines`.",
+   "description": "Crée, modifie, liste ou lance des tâches planifiées cloud (anciennement routines) ; Claude guide la configuration par la conversation et peut rendre compte des exécutions récentes. Alias : `/routines`.",
    "description_source": "Create, update, list, or run cloud scheduled tasks, formerly routines. Claude walks you through the setup conversationally. You can also ask about a scheduled task's recent runs. Alias: /routines",
    "usage": "/schedule [description]",
    "usage_nature": "syntaxe",
    "exemple": "/schedule chaque lundi, résume les commits de la semaine sur carnet",
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team, Enterprise (aperçu de recherche)",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les routines planifiées sont sur la liste à explorer de Sylvain ; `/schedule` crée une routine cloud sur le dépôt carnet (résumé hebdomadaire des commits), sans session ni machine allumée, mais elle consomme les limites du plan."
+    "pourquoi": "Les routines planifiées sont sur ta liste à explorer : essaie `/schedule` sur carnet (résumé hebdomadaire des commits), qui tourne dans le cloud sans machine allumée. Sans crédit d'usage, une exécution qui atteint la limite de ton Max (20x) est rejetée jusqu'à la remise à zéro : vérifie dans le bilan d'avant le 03/11 ce qu'elle a consommé."
    },
    "sources": [
     {
@@ -7966,11 +7992,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8044,20 +8070,55 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "usage.hors-machine": {
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "routines planifiées : fonction à explorer"
+     "pourquoi": "Routines planifiées citées parmi les fonctions à explorer."
     },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "dépôt GitHub sur lequel la routine tournerait"
+     "pourquoi": "Dépôt GitHub public et actif sur lequel la tâche tournerait."
+    },
+    "profil": {
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Max (20x) à l'essai, bilan avant le 07/11 ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/schedule` crée, modifie, liste ou lance des tâches planifiées cloud (anciennement routines), par la conversation ; alias `/routines`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande change de nom, de fonction ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Les tâches planifiées sont en aperçu de recherche, sur Pro, Max, Team et Enterprise ; sans crédits d'usage, les exécutions au-delà de la limite d'abonnement sont rejetées jusqu'à la remise à zéro.",
+     "source": "https://code.claude.com/docs/en/routines",
+     "releve_le": "2026-10-23",
+     "caduc_si": "les forfaits, le statut d'aperçu ou le comportement à la limite changent"
+    },
+    {
+     "affirmation": "Les routines planifiées figurent parmi les fonctions de Claude à explorer.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-23",
+     "caduc_si": "Sylvain adopte ou écarte les routines planifiées"
+    },
+    {
+     "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-23",
+     "caduc_si": "un crédit est repris ou le forfait change",
+     "revoir_le": "2026-11-03"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-scroll-speed",
@@ -8678,16 +8739,16 @@
    "categorie": "commandes",
    "nom": "/subtask",
    "gabarit": "complet",
-   "description": "`/subtask <task>` lance un subagent forké : il hérite de toute la conversation, travaille en arrière-plan sur la tâche pendant que tu continues, et son résultat revient dans la conversation à la fin. `/fork` copie plutôt la conversation dans une session d'arrière-plan séparée. La commande demande Claude Code v2.1.212 ou plus récent ; si l'agent view est désactivée, elle n'est pas disponible et `/fork` garde ce comportement.",
+   "description": "`/subtask <task>` lance un subagent forké : il hérite de toute la conversation (prompt système, outils, modèle, historique), travaille en arrière-plan pendant que tu continues, et seul son résultat revient dans la conversation. `/fork` copie plutôt la conversation dans une session d'arrière-plan séparée ; agent view désactivée, `/subtask` n'est pas disponible.",
    "description_source": "Spawn a forked subagent: a background subagent that inherits the full conversation and works on the task while you keep working. Its result returns to this conversation when it finishes. To copy the conversation into a separate background session instead, use /fork. When agent view is turned off, /subtask isn't available and /fork spawns the forked subagent instead",
    "usage": "/subtask <task>",
    "usage_nature": "syntaxe",
-   "exemple": "/subtask relis scripts/garde.py et liste ses codes de sortie",
+   "exemple": "/subtask relis ~/projets/delta-ia/scripts/garde.py et liste ses codes de sortie",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu utilises déjà les sous-agents et ta consigne prévoit des vérifications indépendantes en parallèle. `/subtask` en lance une sans rebriefer, puisqu'il hérite de la conversation. Comme les limites d'usage sont une friction récurrente, essaie-le sur une vraie vérification et compare son coût avec un `Explore` ; vérifie d'abord avec `--help` que ta version l'offre."
+    "pourquoi": "Ta consigne prévoit des vérifications indépendantes en parallèle : `/subtask` en lance une sans rebriefer, puisqu'il hérite de la conversation, et garde ton contexte propre. Il reprend tout l'historique et le modèle de la session : essaie-le sur une vraie vérification et compare son coût à un `Explore`, les limites d'usage étant une friction récurrente."
    },
    "sources": [
     {
@@ -8696,11 +8757,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8779,24 +8840,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
-     "pourquoi": "Sous-agents utilisés et consigne de Sylvain : vérifications indépendantes en parallèle, pas de sous-agent pour un petit correctif."
+     "pourquoi": "Sous-agents utilisés ; consigne : vérifications indépendantes en parallèle, Explore pour les gros fichiers."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Les limites d'usage hebdomadaires sont une friction récurrente : le coût d'un fork qui hérite du contexte est à mesurer."
-    },
-    "config.claude-code.regles-globales": {
-     "sha1": "571d760f16857a79730fc43372b11d3cd17ddf08",
-     "pourquoi": "Règle globale : vérifier une commande sur la version installée (--help) avant de l'exécuter."
+     "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Un fork hérite de toute la conversation (prompt système, outils, modèle, historique) ; ses appels d'outils restent hors de la conversation et seul son résultat final revient.",
+     "source": "https://code.claude.com/docs/en/sub-agents",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la documentation change ce que le fork hérite ou renvoie"
+    },
+    {
+     "affirmation": "`/subtask <task>` lance un subagent forké en arrière-plan ; agent view désactivée, `/subtask` n'est pas disponible et `/fork` lance le fork.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la commande change de syntaxe ou disparaît"
+    },
+    {
+     "affirmation": "Consigne de Sylvain du 04/10 : vérifications indépendantes en parallèle, exploration de gros fichiers par Explore.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-23",
+     "caduc_si": "la consigne sur les sous-agents change"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-tasks",
@@ -8903,16 +8984,16 @@
    "categorie": "commandes",
    "nom": "/team-onboarding",
    "gabarit": "complet",
-   "description": "Génère un guide d'accueil d'équipe à partir de ton usage de Claude Code sur les 30 derniers jours (sessions, commandes, MCP), à coller comme premier message par un coéquipier ; les abonnés claude.ai obtiennent aussi un lien de partage.",
+   "description": "Génère un guide d'accueil d'équipe à partir de ton usage de Claude Code sur 30 jours (sessions, commandes, serveurs MCP), qu'un coéquipier colle comme premier message ; sur Team et Enterprise, il donne aussi un lien de partage.",
    "description_source": "Generate a team onboarding guide from your Claude Code usage history. Claude analyzes your sessions, commands, and MCP server usage from the past 30 days. It produces a markdown guide a teammate can paste as a first message to get set up quickly. For claude.ai subscribers on Team and Enterprise plans, also returns a share link teammates can open directly in Claude Code",
    "usage": "/team-onboarding",
    "usage_nature": "syntaxe",
    "exemple": "/team-onboarding",
-   "disponibilite": "Pro, Max, Team et Enterprise pour le lien de partage",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu travailles seul ; aucun coéquipier à accueillir."
+    "pourquoi": "Tu développes seul, sans coéquipier à accueillir."
    },
    "sources": [
     {
@@ -8921,11 +9002,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8942,10 +9023,19 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "pourquoi": "Sylvain développe seul ses projets logiciels avec des agents IA."
+    }
+   },
    "exemple_origine": "source"
   },
   {
