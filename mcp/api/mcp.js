@@ -5,6 +5,10 @@
 // anglais par défaut, en français sur demande (`?langue=fr` sur l'adresse du serveur, ou `langue` à chaque appel).
 // Il ne possède aucune donnée personnelle : sur la référence commune, avis, impacts, essais et versions installées sont
 // absents et dits indisponibles ; constats internes et recommandations OPÉRER ne sont jamais rendus (lib/modeles.js).
+// Lot L4 : les mêmes six outils servent le MCP stdio local (stdio.js) quand le contexte porte `source: "local"` et un
+// lecteur local (lib/local.js, construit par stdio.js ou bureau.js seulement) : couche commune du miroir de l'instance et
+// bloc `personnel` distinct, avec ses dates. Le serveur HTTP ne construit jamais ce contexte (`?source=` n'admet que les
+// deux sources publiques) et ce fichier n'ouvre aucun fichier : la racine personnelle lui reste inaccessible.
 
 import CONFIG from "../lib/config.js";
 import { developperModeles } from "../lib/modeles.js";
@@ -33,10 +37,13 @@ const VERSION = "0.3.0";
 // DELTA_SOURCE, sinon l'ancienne route. L'adresse du serveur peut les fixer (`?langue=fr`, `?source=commun`).
 const langueDefaut = () => (LANGUES.includes(process.env.DELTA_LANGUE) ? process.env.DELTA_LANGUE : CONFIG.langue_commune_defaut);
 const contexteDefaut = () => ({ langue: langueDefaut(), source: sourceDefaut() });
-const lire = (chemin, ctx) => (ctx.source === "commun" ? lireCommun(chemin) : lireRoute(chemin));
+// Format commun (génération versionnée) : référence publique `commun` ou miroir local de l'instance (`local`).
+const estLocal = (ctx) => ctx.source === "local" && Boolean(ctx.local);
+const formatCommun = (ctx) => ctx.source === "commun" || estLocal(ctx);
+const lire = async (chemin, ctx) => (estLocal(ctx) ? ctx.local.lireCommun(chemin) : ctx.source === "commun" ? lireCommun(chemin) : lireRoute(chemin));
 const avertir = (ctx) => t(ctx.langue, "avertissement");
 // en-tête commun des réponses : avertissement, puis la source lue et ses dates (jamais « commun » pour l'ancienne route)
-const entete = async (ctx) => ({ avertissement: avertir(ctx), donnees: await blocDonnees(ctx) });
+const entete = async (ctx) => ({ avertissement: avertir(ctx), donnees: estLocal(ctx) ? ctx.local.blocDonnees(ctx.langue) : await blocDonnees(ctx) });
 
 // D105 : même normalisation que `normaliser_nom` (catalogue.py) et `normaliserNom` (app.js) : NFKC, espaces réduits, minuscules.
 const normaliserNom = (s) => String(s || "").normalize("NFKC").split(/\s+/).filter(Boolean).join(" ").toLowerCase();
@@ -57,7 +64,7 @@ const parPublication = (a, b) => String(b.date_publication || "").localeCompare(
 
 async function resumeDuJour({ date, inclure_faibles = false } = {}, ctx) {
   if (date !== undefined && !RE_DATE.test(String(date))) throw new ErreurParametre("param.date");
-  if (ctx.source === "commun") return resumeCommun(date, ctx);
+  if (formatCommun(ctx)) return resumeCommun(date, ctx, inclure_faibles);
   const index = await derniersJours(ctx);
   const perimetres = [];
   for (const p of PERIMETRES) {
@@ -85,7 +92,7 @@ async function resumeDuJour({ date, inclure_faibles = false } = {}, ctx) {
 }
 
 // Référence commune : éléments factuels du jour, tirés des publications de `veille/<périmètre>.json` (pas de synthèse rédigée en L2).
-async function resumeCommun(date, ctx) {
+async function resumeCommun(date, ctx, inclure_faibles = false) {
   const tete = await entete(ctx);
   const perimetres = [];
   for (const p of PERIMETRES) {
@@ -100,9 +107,22 @@ async function resumeCommun(date, ctx) {
         impact: null, certitude: pub.certitude ?? null, date_publication: pub.date_publication ?? null, revision: pub.revision === true,
         kb_refs: Array.isArray(pub.kb_refs) ? pub.kb_refs : [], sources: (pub.sources || []).map((s) => ({ url: s.url, libelle: s.libelle ?? null, officielle: s.officielle === true })) });
     tous.sort(parPublication);
-    const r = { perimetre: p, date: d, genere_le: (v.jours.find((j) => j.date === d) || {}).genere_le ?? null, synthese: null, tri: "publication",
-      total: tous.length, affichees: Math.min(tous.length, MAX_RESUME_COMMUN), elements: tous.slice(0, MAX_RESUME_COMMUN),
-      avis: [t(ctx.langue, "resume.synthese_absente"), tous.length > MAX_RESUME_COMMUN ? t(ctx.langue, "resume.tronque", { affichees: MAX_RESUME_COMMUN, total: tous.length }) : null].filter(Boolean).join(" ; ") };
+    // local : avis du jour de cette instance (impact, pour_toi, action) en bloc personnel ; s'il en existe, la sélection
+    // personnelle (fort, moyen, et faible sur demande) s'applique, sinon tous les éléments, par publication
+    let liste = tous, tri = "publication", compte;
+    if (estLocal(ctx)) {
+      for (const e of tous) e.personnel = ctx.local.veille(e.identite, p, d) ?? { statut: "non_personnalise", impact: null };
+      compte = { fort: 0, moyen: 0, faible: 0, nul: 0, inconnu: 0 };
+      for (const e of tous) compte[IMPACTS.includes(e.personnel.impact) ? e.personnel.impact : "inconnu"] += 1;
+      if (tous.some((e) => IMPACTS.includes(e.personnel.impact))) {
+        const ordre = inclure_faibles ? ["fort", "moyen", "faible"] : ["fort", "moyen"];
+        liste = tous.filter((e) => ordre.includes(e.personnel.impact)).sort((a, b) => ordre.indexOf(a.personnel.impact) - ordre.indexOf(b.personnel.impact));
+        tri = "impact_personnel";
+      }
+    }
+    const r = { perimetre: p, date: d, genere_le: (v.jours.find((j) => j.date === d) || {}).genere_le ?? null, synthese: null, tri,
+      ...(compte ? { compte } : {}), total: liste.length, affichees: Math.min(liste.length, MAX_RESUME_COMMUN), elements: liste.slice(0, MAX_RESUME_COMMUN),
+      avis: [t(ctx.langue, "resume.synthese_absente"), liste.length > MAX_RESUME_COMMUN ? t(ctx.langue, "resume.tronque", { affichees: MAX_RESUME_COMMUN, total: liste.length }) : null].filter(Boolean).join(" ; ") };
     perimetres.push(r);
   }
   return { ...tete, perimetres };
@@ -157,7 +177,7 @@ function ficheModele(e, complete, ctx) {
     forfait: e.forfait?.nom ?? null, cout_quota: e.cout_quota ?? null,
     // la recommandation d'un couple est celle d'OPÉRER : retirée de la réponse publique (L3), sur les deux formats
     verdict: null, pourquoi: null,
-    statut_usage: ctx.source === "commun" ? null : e.statut_usage ?? null, date_releve: e.date_releve ?? null, source: (e.sources || [])[0]?.url || null };
+    statut_usage: formatCommun(ctx) ? null : e.statut_usage ?? null, date_releve: e.date_releve ?? null, source: (e.sources || [])[0]?.url || null };
   if (complete) {
     Object.assign(f, {
       aliases: e.aliases ?? [],
@@ -186,11 +206,16 @@ function ficheModele(e, complete, ctx) {
     });
   }
   if (ctx.source === "commun") Object.assign(f, { avis_personnel: t(ctx.langue, "personnel.indisponible") });
+  // local : constats de cette instance pour ce couple (bilan OPÉRER projeté), à côté des faits publics, jamais dedans
+  if (estLocal(ctx) && complete) f.constats_instance = ctx.local.constatsCouple(e.identite, e);
   return f;
 }
 
 function fiche(e, ctx, complete = false) {
-  return { ...contenuFiche(e, complete, ctx), ...(e._validite || validiteFiche(e)) };
+  const f = { ...contenuFiche(e, complete, ctx), ...(e._validite || validiteFiche(e)) };
+  // local : identité, puis bloc personnel distinct (statut, dates, avis) ; la syntaxe reste celle de la fiche commune
+  if (estLocal(ctx)) Object.assign(f, { identite: e.identite ?? null, personnel: ctx.local.blocPersonnel(e.identite, e, { complet: complete }) });
+  return f;
 }
 
 function contenuFiche(e, complete, ctx) {
@@ -207,6 +232,7 @@ function contenuFiche(e, complete, ctx) {
   const bilingue = description(e, ctx, complete ? 8000 : 600);
   if (bilingue) Object.assign(f, bilingue, { description_documentation: complete ? court(e.description_source, 1500) : undefined });
   if (ctx.source === "commun") Object.assign(f, personnelIndisponible(ctx));
+  if (estLocal(ctx)) Object.assign(f, { verdict: null, pourquoi: null, statut_usage: null });
   if (Object.hasOwn(e, "systemes")) f.systemes = Array.isArray(e.systemes) ? e.systemes : null;
   if (complete) Object.assign(f, { exemple: e.exemple || null, exemple_origine: e.exemple ? e.exemple_origine || null : null, disponibilite: e.disponibilite || null, maj_le: e.maj_le ?? null });
   return f;
@@ -231,7 +257,7 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
   try {
     const doc = await lire("kb/noms.json", ctx);
     // ancienne route : la carte nom → ids à la racine ; référence commune : sous `noms`
-    const noms = ctx.source === "commun" ? doc?.noms : doc;
+    const noms = formatCommun(ctx) ? doc?.noms : doc;
     if (!noms || typeof noms !== "object" || Array.isArray(noms)) throw erreurFormat("kb/noms.json");
     const ids = (nom) => { const v = Object.hasOwn(noms, nom) ? noms[nom] : []; return Array.isArray(v) ? v.filter((i) => typeof i === "string") : []; };
     exacts = new Set(ids(normaliserNom(requete)));
@@ -254,7 +280,9 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
   for (const e of entrees) {
     if (produit && !duProduit(e, produit)) continue;
     if (categorie && e.categorie !== categorie) continue;
-    if (statut && e.statut_usage !== statut) continue;
+    // local : le statut d'usage est celui de cette instance (bloc personnel)
+    const avisLocal = estLocal(ctx) ? ctx.local.objet(e.identite) : null;
+    if (statut && (estLocal(ctx) ? avisLocal?.statut_usage ?? "inconnu" : e.statut_usage) !== statut) continue;
     // D121 : le slug d’une méthode compte dans son nom ; les alias et efforts des modèles restent dans le texte indexé.
     const nom = e.categorie === "methodes"
       ? `${e.nom} ${String(e.id).replace(/^methode-/, "").replaceAll("-", " ")}`
@@ -263,8 +291,10 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
         : e.nom;
     const titre = sansAccents(nom);
     const textes = e.textes && e.textes.description ? Object.values(e.textes.description).map((x) => x && x.texte) : [];
-    const texte = [nom, e.usage, e.description, e.description_source, ...textes, e.groupe, e.effort, e.executant, ...(e.aliases || [])].join(" ");
-    candidates.push([e, titre, indexer(nom), indexer(texte)]);
+    const commun = [nom, e.usage, e.description, e.description_source, ...textes, e.groupe, e.effort, e.executant, ...(e.aliases || [])].join(" ");
+    // local : une seule requête cherche aussi dans l'avis de cette instance ; l'origine du fragment trouvé est rendue
+    const perso = avisLocal ? [avisLocal.recommandation?.pourquoi, avisLocal.pour_toi, avisLocal.action, avisLocal.exemple_local].filter((x) => typeof x === "string").join(" ") : "";
+    candidates.push([e, titre, indexer(nom), indexer(perso ? `${commun} ${perso}` : commun), perso ? [indexer(commun), indexer(perso)] : null]);
   }
   const classer = (liste) => liste.sort((a, b) => b[0] - a[0] || Number(a[1].categorie === "modeles") - Number(b[1].categorie === "modeles") || String(a[1].nom).localeCompare(String(b[1].nom)));
   const scores = [];
@@ -273,7 +303,7 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
   const litterale = retenus.length === 1 && (/^[-/]/.test(retenus[0]) || /[._:=]/.test(retenus[0]) || /-\d/.test(retenus[0]));
   const aExact = candidates.some(([e]) => exacts.has(e.id));
   const aLitterale = litterale && candidates.some(([, , , texte]) => presence(texte, retenus[0]));
-  for (const [e, nom, titreIndexe, texte] of candidates) {
+  for (const [e, nom, titreIndexe, texte, parts] of candidates) {
     const aliasExact = e.categorie === "modeles" && (e.id === q || (Array.isArray(e.aliases) && e.aliases.some((a) => sansAccents(a) === q)));
     const exact = exacts.has(e.id) || aliasExact;
     if (aExact && !exact) continue;
@@ -286,6 +316,7 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
     let s = (exact ? 1e6 : commandeNommee ? 1e5 : 0) + poids + nomme * 500;
     if (nom === q) s += 100; else if (nom.startsWith(q)) s += 40; else if (nom.includes(q)) s += 20;
     if (e.commentee) s += 2;
+    if (parts) e._trouve_dans = [["commun", parts[0]], ["personnel", parts[1]]].filter(([, x]) => retenus.some((m) => presence(x, m))).map(([c]) => c);
     scores.push([s, e]);
     if (!exact && !commandeNommee && !complet) partiels = true;
   }
@@ -310,7 +341,11 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
     }
     if (scores.length > selection.length && !exacts.size) avis = [avis, t(ctx.langue, "avis.mixte", { affiches: selection.length, total: scores.length, plafond: plafondModeles })].filter(Boolean).join(" ; ");
   }
-  const r = { ...tete, total: scores.length, resultats: selection.slice(0, n).map(([, e]) => fiche(e, ctx)) };
+  const r = { ...tete, total: scores.length, resultats: selection.slice(0, n).map(([, e]) => {
+    const f = fiche(e, ctx);
+    if (estLocal(ctx)) f.trouve_dans = e._trouve_dans?.length ? e._trouve_dans : ["commun"];  // nom exact ou alias : la fiche commune
+    return f;
+  }) };
   if (categories_non_lues.length) r.categories_non_lues = categories_non_lues;
   if (avis) r.avis = avis;
   return r;
@@ -340,10 +375,16 @@ async function ficheReference({ id } = {}, ctx) {
 async function etatVersions(args, ctx) {
   const tete = await entete(ctx);
   const v = await lire("versions.json", ctx);
-  if (ctx.source === "commun") {
+  if (formatCommun(ctx)) {
     if (!Array.isArray(v.entrees)) throw erreurFormat("versions.json");
-    return { ...tete, outils: v.entrees.map((l) => ({ outil: l.outil, installee: null, derniere_publiee: l.derniere_publiee ?? null,
-      source_derniere: l.source_derniere ?? null, statut: "inconnu", releve_le: null, note: t(ctx.langue, "versions.inconnue_commun") })) };
+    return { ...tete, outils: v.entrees.map((l) => {
+      const commun = { outil: l.outil, identite: l.identite ?? null, derniere_publiee: l.derniere_publiee ?? null, source_derniere: l.source_derniere ?? null };
+      // local : version relevée sur cette instance, comparée seulement à ce même fait commun ; sinon inconnue
+      const i = estLocal(ctx) ? ctx.local.versionInstallee(l.identite, l) : null;
+      if (i) return { ...commun, installee: i.installee, statut: i.statut, releve_le: i.releve_le, methode: i.methode, note: null, couche_installee: "personnel" };
+      return { ...commun, installee: null, statut: "inconnu", releve_le: null,
+        note: t(ctx.langue, estLocal(ctx) ? "versions.inconnue_local" : "versions.inconnue_commun") };
+    }) };
   }
   if (!Array.isArray(v)) throw erreurFormat("versions.json");
   return { ...tete, outils: v.map((l) => {
@@ -376,8 +417,8 @@ async function nouveautesBase({ jours = 7 } = {}, ctx) {
   if (!Number.isInteger(jours) || jours < 1 || jours > 30) throw new ErreurParametre("param.jours");
   const tete = await entete(ctx);
   // la génération commune ne publie pas encore de date d'ajout : réponse explicite, jamais une liste vide présentée comme complète
-  if (ctx.source === "commun") return { ...tete, jours, disponible: false, total: null, affichees: 0, entrees: [],
-    avis: t(ctx.langue, "nouveautes.indisponible", { generation: tete.donnees.generation }) };
+  if (formatCommun(ctx)) return { ...tete, jours, disponible: false, total: null, affichees: 0, entrees: [],
+    avis: t(ctx.langue, "nouveautes.indisponible", { generation: estLocal(ctx) ? tete.donnees.commun.generation ?? "?" : tete.donnees.generation }) };
   const d = await fichierLeger("kb/recent.json", ctx);
   const depuis = new Date(Date.now() - jours * 864e5).toISOString().slice(0, 10);
   const fenetre = d.entrees.filter((e) => typeof e.date_ajout === "string" && e.date_ajout >= depuis);
@@ -398,6 +439,7 @@ async function aTester({ limite = LIMITE_ESSAIS, curseur, id } = {}, ctx) {
   if (id !== undefined && (typeof id !== "string" || !RE_ID_FICHE.test(id))) throw new ErreurParametre("param.id_a_tester");
   if (id !== undefined && curseur !== undefined) throw new ErreurParametre("param.exclusifs");
   const tete = await entete(ctx);
+  if (estLocal(ctx)) return aTesterLocal({ limite, curseur, id }, ctx, tete);
   // référence commune : aucun essai ni action personnels ; réponse vide explicite, sans copie de la liste de Sylvain
   if (ctx.source === "commun") {
     if (id !== undefined) throw new ErreurParametre("param.id_a_tester_inconnu");
@@ -449,6 +491,49 @@ async function aTester({ limite = LIMITE_ESSAIS, curseur, id } = {}, ctx) {
     actions_total: actions.length, actions: pageActions, essais_base: essais };
 }
 
+// Local : actions personnelles des 30 derniers jours de veille et fiches à essayer selon l'avis de cette instance, sans
+// celles qui ont un essai déclaré (journal de la base ou essai OPÉRER). Même pagination liée au contenu que l'ancienne route.
+async function aTesterLocal({ limite, curseur, id }, ctx, tete) {
+  const depuis = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const actions = [];
+  for (const p of PERIMETRES) {
+    const v = await lire(`veille/${p}.json`, ctx);
+    if (!Array.isArray(v.entrees)) throw erreurFormat(`veille/${p}.json`);
+    for (const e of v.entrees) for (const pub of e.publications || []) {
+      if (!pub || typeof pub.jour !== "string" || pub.jour < depuis) continue;
+      const a = ctx.local.veille(e.identite, p, pub.jour);
+      if (!a || !a.action) continue;
+      const s = (pub.sources || [])[0];
+      actions.push({ id: `action:${p}:${pub.jour}:${e.id}`, id_element: e.id, identite: e.identite, date: pub.jour, produit: pub.produit ?? null,
+        date_publication: pub.date_publication ?? null, impact: a.impact, action: a.action,
+        source: s ? { url: s.url ?? null, libelle: s.libelle ?? null, officielle: s.officielle === true } : null });
+    }
+  }
+  actions.sort((a, b) => IMPACTS.indexOf(a.impact) - IMPACTS.indexOf(b.impact) || b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
+  const { entrees } = await toutesEntrees(ctx);
+  const parIdentite = new Map(entrees.map((e) => [e.identite, e]));
+  const restants = ctx.local.aTester().filter((x) => parIdentite.has(x.identite));
+  if (id !== undefined) {
+    const action = actions.find((e) => e.id === id);
+    if (action) return { ...tete, detail: action };
+    if (restants.some((e) => e.id === id)) return ficheReference({ id }, ctx);
+    throw new ErreurParametre("param.id_a_tester_inconnu");
+  }
+  const empreinte = createHash("sha256").update(JSON.stringify([actions, restants])).digest("hex").slice(0, 16);
+  const debut = curseur === undefined ? 0 : Number(curseur.split(":")[2]);
+  const total = actions.length + restants.length;
+  if (curseur !== undefined && (curseur.split(":")[1] !== empreinte || debut >= total)) throw new ErreurParametre("param.curseur_perime");
+  const fin = Math.min(total, debut + limite);
+  const pageActions = actions.slice(debut, fin).map(({ action, ...e }) => ({ ...e, action: court(action, 400) }));
+  const pageBase = restants.slice(Math.max(0, debut - actions.length), Math.max(0, fin - actions.length)).map((x) => {
+    const e = parIdentite.get(x.identite);
+    return { id: e.id, identite: x.identite, nom: court(e.nom, 160), produit: e.produit, categorie: e.categorie, couche_verdict: "personnel", verdict: x.verdict };
+  });
+  return { ...tete, avertissement: tete.avertissement + t(ctx.langue, "avertissement.a_tester_local"),
+    total, affichees: fin - debut, limite, curseur_suivant: fin < total ? `v1:${empreinte}:${fin}` : null,
+    actions_total: actions.length, actions: pageActions, essais_base: { total: restants.length, affichees: pageBase.length, entrees: pageBase } };
+}
+
 const LECTURE = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 // Schémas des six outils ; titres et descriptions viennent du dictionnaire de la langue demandée (lib/textes.js).
 const SCHEMAS = {
@@ -464,13 +549,15 @@ const SCHEMAS = {
     id: { type: "string", pattern: RE_ID_FICHE.source } } },
   nouveautes_base: { f: nouveautesBase, proprietes: { jours: { type: "integer", minimum: 1, maximum: 30, default: 7 } } },
 };
-function outils(langue) {
+function outils(langue, source) {
   return Object.fromEntries(Object.entries(SCHEMAS).map(([nom, o]) => {
     const properties = Object.fromEntries(Object.entries(o.proprietes).map(([p, s]) => [p, { ...s, description: t(langue, `outil.${nom}.${p}`) }]));
     // paramètre de langue commun aux six outils (décision du 22/10) : défaut = langue du serveur ou de son adresse
     properties.langue = { type: "string", enum: LANGUES, default: langue, description: t(langue, "outil.langue") };
     const inputSchema = { type: "object", ...(o.requis ? { required: o.requis } : {}), properties, additionalProperties: false };
-    return [nom, { f: o.f, titre: t(langue, `outil.${nom}.titre`), description: t(langue, `outil.${nom}.description`), inputSchema }];
+    // local : la description dit ce que rend la couche personnelle de cette instance
+    const description = t(langue, `outil.${nom}.description`) + (source === "local" ? t(langue, `outil.${nom}.local`) : "");
+    return [nom, { f: o.f, titre: t(langue, `outil.${nom}.titre`), description, inputSchema }];
   }));
 }
 const OUTILS = outils("fr");
@@ -488,11 +575,12 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
       return ok(id, { protocolVersion: typeof params.protocolVersion === "string" ? params.protocolVersion : PROTOCOLE,
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "delta", title: t(ctx.langue, "init.titre"), version: VERSION },
-        instructions: t(ctx.langue, "init.instructions", { site: CONFIG.site_public_url, source: ctx.source }) });
+        instructions: ctx.source === "local" ? t(ctx.langue, "init.instructions_local", { site: CONFIG.site_public_url })
+          : t(ctx.langue, "init.instructions", { site: CONFIG.site_public_url, source: ctx.source }) });
     case "ping":
       return ok(id, {});
     case "tools/list":
-      return ok(id, { tools: Object.entries(outils(ctx.langue)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
+      return ok(id, { tools: Object.entries(outils(ctx.langue, ctx.source)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
       const o = SCHEMAS[params.name];
@@ -507,7 +595,7 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
         if (params.name === "a_tester") mesure.nb_resultats = Number.isInteger(r.affichees) ? r.affichees : r.detail || r.fiche ? 1 : null;
         return ok(id, { content: [{ type: "text", text: JSON.stringify(r, null, 1) }], structuredContent: r, isError: false });
       } catch (e) {
-        const cle = e instanceof ErreurParametre ? "erreur.parametre" : c.source === "commun" ? "erreur.commun" : "erreur.donnees";
+        const cle = e instanceof ErreurParametre ? "erreur.parametre" : c.source === "local" ? "erreur.local" : c.source === "commun" ? "erreur.commun" : "erreur.donnees";
         return ok(id, { content: [{ type: "text", text: t(c.langue, cle, { message: texteErreur(e, c.langue) }) }], isError: true });
       }
     }
@@ -562,7 +650,7 @@ async function lireCorps(req) {
   if (req.body !== undefined) return typeof req.body === "string" ? JSON.parse(req.body) : req.body;
   const morceaux = [];
   let taille = 0;
-  for await (const m of req) { taille += m.length; if (taille > 256 * 1024) throw new Error("corps trop volumineux"); morceaux.push(m); }
+  for await (const m of req) { taille += m.length; if (taille > 256 * 1024) throw new ErreurTexte("rpc.json"); morceaux.push(m); }
   return JSON.parse(Buffer.concat(morceaux).toString("utf8") || "null");
 }
 

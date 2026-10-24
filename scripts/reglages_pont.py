@@ -102,8 +102,12 @@ def verifier_export(doc: object) -> dict:
     return doc
 
 
-def collecter(dossier: Path, maintenant: datetime | None = None, config: Path | None = None) -> list[dict]:
-    """Un export daté par source ; une entrée {source, statut: ok|echec, chemin, motif, missions}."""
+def collecter(dossier: Path, maintenant: datetime | None = None, config: Path | None = None,
+              ranger=None) -> list[dict]:
+    """Un export daté par source ; une entrée {source, statut: ok|echec, chemin, motif, missions}.
+    `ranger(commande, doc)` (facultatif) reçoit l'export `principal` valide : la collecte hebdomadaire alimente ainsi
+    l'instantané privé partagé de l'instance (deux couches, lot L4) par la même lecture du journal, sans second collecteur ;
+    son échec est noté dans `instantane`, sans toucher à l'export."""
     maintenant = maintenant or datetime.now().astimezone()
     dossier.mkdir(parents=True, exist_ok=True)
     horodatage = maintenant.strftime("%Y-%m-%d_%H%M")
@@ -130,7 +134,20 @@ def collecter(dossier: Path, maintenant: datetime | None = None, config: Path | 
         chemin = dossier / f"{horodatage}-{source}.json"
         chemin.write_text(json.dumps(doc, ensure_ascii=False) + "\n", encoding="utf-8")
         res.update(statut="ok", chemin=str(chemin), missions=doc.get("missions"))
+        if ranger is not None and source == "principal":
+            try:
+                res["instantane"] = ranger(cmd, doc)
+            except Exception as e:  # noqa: BLE001 — l'export reste valable ; l'instantané garde sa dernière version
+                res["instantane"] = f"non rangé : {e}"[:160]
     return resultats
+
+
+def ranger_instance(cmd: list[str], doc: dict) -> str:
+    """Instantané partagé de l'installation historique (`<etat>/delta-ia/personnel/reglages-bilan.json`)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from deltalib.couches import bilan, racines
+    res = bilan.enregistrer(racines.resoudre(historique=True), cmd, doc)
+    return f"rangé ({res['bilan']}, {res['couples_rattaches']} couples)"
 
 
 # ───────────────────────────── fiches et correspondance ─────────────────────────────
@@ -444,7 +461,7 @@ def main(argv: list[str] | None = None) -> int:
     collecte = None
     try:
         if a.cmd in ("collecter", "tout"):
-            collecte = collecter(a.dossier)
+            collecte = collecter(a.dossier, ranger=ranger_instance)
         if a.cmd == "collecter":
             print(json.dumps(collecte, ensure_ascii=False) if a.json else "\n".join(
                 f"{c['source']} : {c['statut']} {c['chemin'] or c['motif']}" for c in collecte))

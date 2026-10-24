@@ -14,13 +14,19 @@ export function sansPrive(texte) {
 
 const estCommun = (doc) => doc && doc.schema === "delta.commun" && doc.schema_version === 1;
 
+// Erreur à clé, sans dictionnaire ici : le MCP et le site la traduisent (clés `modeles.*` de leurs dictionnaires EN/FR) ;
+// le message anglais ne sert que de repli.
+export class ErreurModeles extends Error {
+  constructor(cle, vars = {}) { super(`${cle}${vars.modele ? `: ${vars.modele}` : ""}`); this.cle = cle; this.vars = vars; }
+}
+
 export function developperModeles(doc) {
   const commun = estCommun(doc);
-  if (commun ? doc.version_source !== 2 : doc.schema_version !== 2) throw new Error("format modèles inattendu");
-  if (!doc.modeles || Array.isArray(doc.modeles) || !Array.isArray(doc.entrees)) throw new Error("format modèles inattendu");
+  if (commun ? doc.version_source !== 2 : doc.schema_version !== 2) throw new ErreurModeles("modeles.format");
+  if (!doc.modeles || Array.isArray(doc.modeles) || !Array.isArray(doc.entrees)) throw new ErreurModeles("modeles.format");
   return doc.entrees.map((e) => {
     const m = doc.modeles[e.modele];
-    if (!m) throw new Error(`modèle absent : ${e.modele}`);
+    if (!m) throw new ErreurModeles("modeles.absent", { modele: e.modele });
     const { aliases_effort, aliases_defaut, description_commune, ...partage } = m;
     // la génération commune ne publie pas les alias internes : seuls `modèle:effort` et, pour le défaut, le modèle seul
     const aliases = commun

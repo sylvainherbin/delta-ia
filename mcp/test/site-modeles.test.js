@@ -89,7 +89,9 @@ test("développement : référence absente refusée, champs communs et alias de 
     assert.ok(e.description.includes("### Tous les niveaux"));
     assert.ok(e.description.includes("Coût de `" + e.effort + "`"));
   }
-  assert.throws(() => developperModeles({...doc, modeles: {}}), /modèle absent/);
+  // erreur à clé, traduite par le dictionnaire du MCP et du site (relecture L3, À NOTER 1)
+  assert.throws(() => developperModeles({...doc, modeles: {}}), (e) => e.cle === "modeles.absent" && e.vars.modele === doc.entrees[0].modele);
+  assert.throws(() => developperModeles({...doc, schema_version: 1}), (e) => e.cle === "modeles.format");
 });
 
 test("L3 : aucun constat interne ni recommandation OPÉRER, ancien JSON mixte comme génération commune", () => {

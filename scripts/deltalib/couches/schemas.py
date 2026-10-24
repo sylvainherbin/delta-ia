@@ -59,7 +59,14 @@ CLES_OBJET = {"objet", "commun_empreinte", "statut", "langue", "observe_le", "ev
 CLES_PERSONNEL = {"overlay": {"schema", "schema_version", "vue", "commun_generation", "profil_empreinte", "objets"},
                   "en_attente": {"schema", "schema_version", "vue", "commun_generation", "objets", "refus"},
                   "import": {"schema", "schema_version", "vue", "commun_generation", "entrees", "comptes"},
-                  "sources": {"schema", "schema_version", "vue", "commun_generation", "fichiers"}}
+                  "sources": {"schema", "schema_version", "vue", "commun_generation", "fichiers"},
+                  # lot L4 : instantanés des sources OPÉRER et projection modèle × effort (bilan.py)
+                  "reglages_bilan": {"schema", "schema_version", "vue", "commande", "filtres", "version", "jusqu_au",
+                                     "lignes_ignorees", "lu_le", "sha256", "bilan"},
+                  "essais_operer": {"schema", "schema_version", "vue", "commande", "lu_le", "sha256", "essais"},
+                  "modeles_efforts": {"schema", "schema_version", "vue", "commun_generation", "bilan_empreinte", "filtres",
+                                      "jusqu_au", "observe_le", "objets", "non_rattaches"}}
+CLES_COUPLE = {"objet", "commun_empreinte", "bilan_empreinte", "observe_le", "jusqu_au", "groupes"}
 
 
 def id_brut(identite: str) -> str:
@@ -318,6 +325,19 @@ def valider_personnel(doc, vue: str, ou: str) -> list[str]:
                     erreurs.append(f"{ou} {cle}: `objet` différent de sa clé")
                 if o.get("statut") not in STATUTS_OBJET:
                     erreurs.append(f"{ou} {cle}: statut inconnu {o.get('statut')!r}")
+    elif vue == "modeles_efforts":
+        objets = doc.get("objets")
+        if not isinstance(objets, dict) or not isinstance(doc.get("non_rattaches"), list):
+            return erreurs + [f"{ou}: `objets` et `non_rattaches` attendus"]
+        for cle, o in objets.items():
+            if not cle.startswith("kb:delta:modeles:"):
+                erreurs.append(f"{ou} {cle}: clé de couple kb:delta:modeles:<id> attendue")
+            if _fermer(o, CLES_COUPLE, f"{ou} {cle}", erreurs) and o.get("objet") != cle:
+                erreurs.append(f"{ou} {cle}: `objet` différent de sa clé")
+    elif vue in ("reglages_bilan", "essais_operer"):
+        contenu = doc.get("bilan" if vue == "reglages_bilan" else "essais")
+        if not isinstance(doc.get("sha256"), str) or doc["sha256"] != empreinte(contenu):
+            erreurs.append(f"{ou}: `sha256` différent du contenu")
     return erreurs
 
 

@@ -899,7 +899,7 @@
             e._texte = sansAccents(texteRechercheKb(e));
             nouvelles.push(e);
           }
-        } catch (err) { kb.erreurs.push(`${cle} : ${err.message || err}`); }
+        } catch (err) { kb.erreurs.push(`${cle} : ${err && err.cle ? t(err.cle, err.vars) : err.message || err}`); }
         if (nouvelles.length) kb.entrees = fusionnerParNomKb(kb.entrees, nouvelles.sort(comparerNomKb));
         kb.charges.add(cle);
         if (kb.charges.size === KB_FICHIERS.length) {

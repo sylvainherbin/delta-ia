@@ -288,12 +288,18 @@ test("dictionnaires : mêmes clés EN/FR, aucune valeur vide, toute clé utilis�
     assert.ok(typeof v === "string" && v.trim(), `${l}.${k} vide`);
     assert.deepEqual((v.match(/\{\w+\}/g) || []).sort(), (TEXTES[l === "en" ? "fr" : "en"][k].match(/\{\w+\}/g) || []).sort(), `${k} : mêmes variables`);
   }
-  const code = ["../api/mcp.js", "../lib/couches.js"].map((f) => fs.readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
+  // L4 (relecture L3, À NOTER 1) : le scan couvre aussi les modules partagés et locaux, et les deux lanceurs
+  const code = ["../api/mcp.js", "../lib/couches.js", "../lib/modeles.js", "../lib/local.js", "../stdio.js", "../bureau.js"].map((f) => fs.readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
   const utilisees = new Set([...code.matchAll(/(?:\bt\([^,()]+,\s*|ErreurParametre\(|ErreurTexte\()"([a-z_.]+)"/g)].map((m) => m[1]));
   assert.ok(utilisees.size > 30, `${utilisees.size} clés repérées`);
   for (const k of utilisees) assert.ok(Object.hasOwn(TEXTES.en, k), `clé utilisée absente : ${k}`);
   // aucune phrase d'interface écrite en dur dans le serveur : plus de message français ou anglais hors dictionnaire
-  for (const motif of [/ErreurParametre\("`/, /new Error\(`[^$]/, /"Paramètre invalide/, /"Données Delta/, /: format inattendu/]) assert.equal(motif.test(code), false, String(motif));
+  for (const motif of [/ErreurParametre\("`/, /new Error\(`[^$]/, /new Error\("/, /"Paramètre invalide/, /"Données Delta/, /: format inattendu/,
+    /"format modèles/, /modèle absent :/, /"usage:/, /"invalid JSON"/]) assert.equal(motif.test(code), false, String(motif));
+  // les clés des modules partagés et locaux (`ErreurModeles("…")`, `local.motif.<code>`) existent dans les deux langues
+  for (const m of code.matchAll(/ErreurModeles\("([a-z_.]+)"/g)) assert.ok(Object.hasOwn(TEXTES.en, m[1]) && Object.hasOwn(TEXTES.fr, m[1]), m[1]);
+  for (const m of code.matchAll(/motif: "([a-z_]+)"/g)) if (!["commun_modifie", "fiche_absente", "commun_tres_ancien", "projection_absente", "bilan_absent", "projection_anterieure_au_bilan"].includes(m[1]))
+    assert.ok(Object.hasOwn(TEXTES.en, `local.motif.${m[1]}`), m[1]);
 });
 
 test("adresses centralisées : copie du bootstrap, aucune adresse de Delta en dur dans le serveur", () => {

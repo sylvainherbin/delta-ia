@@ -164,3 +164,33 @@ Retenu, avec son test :
 - Paramètre `couche`/`source` par appel : la source se choisit pour la session (adresse du serveur ou `DELTA_SOURCE`) ;
   un mélange par appel rendrait une même conversation incohérente (fiche commune, résumé mixte) pour aucun usage observé.
 - Plusieurs outils par couche : refusé par la conception (§4.1) ; les six noms restent.
+
+## Lot L4 (deux couches) : accès personnel local (24/10/2026, mission m-7ca497536e5d)
+
+Changements reçus par les clients : un serveur stdio local (`stdio.js`) sert les mêmes six outils sur la source `local`
+(miroir commun de l'instance et bloc `personnel` distinct, avec ses dates) ; le serveur HTTP public est inchangé pour ses
+clients (`?source=local` n'est pas admis, aucune lecture de fichier dans `api/mcp.js`). Erreurs des fiches modèles
+traduites (`modeles.*`). Tests : `test/local.test.js` (nouveau fichier : les tests de `mcp.test.js` visent le serveur
+public servi par HTTP ; même écart de lieu qu'en L3, sans effet sur la preuve) et le scan étendu de `test/couches.test.js`.
+
+Retenu, avec son test :
+
+- « The description is the contract » : en local, chaque description ajoute ce que rend la couche personnelle de cette
+  instance (`personnel`, `trouve_dans`, `constats_instance`, version installée), et `initialize` dit que le serveur est
+  local, en lecture seule. Test « MCP stdio : protocole ligne à ligne… ».
+- « Tight schemas » : schémas inchangés ; `statut` accepté en local, où il filtre sur l'usage de cette instance (refusé
+  seulement sur la référence commune publique). Test « une requête retrouve la syntaxe commune et l'avis personnel… ».
+- Erreurs qui disent comment repartir : racines non désignées → passer `--instance`, lancer dans l'instance ou demander
+  `--historique` ; miroir absent → « synchroniser ou importer d'abord » ; fichier altéré → erreur de couche, jamais de repli.
+  Tests « MCP stdio… », « avis périmé… ».
+- Erreurs hors dictionnaire (relecture L3, À NOTER 1) : `lib/modeles.js` lève des erreurs à clé (`modeles.format`,
+  `modeles.absent`), traduites par le MCP et par le site ; le scan des chaînes en dur couvre désormais `lib/modeles.js`,
+  `lib/local.js`, `stdio.js` et `bureau.js`. Test « dictionnaires… » et `site-modeles.test.js`.
+
+Écarté, avec la raison :
+
+- Nouvel outil d'écriture (essai, adoption) : refusé par la conception (§4.1) ; les écritures restent `kb-essais.yaml` et
+  `operer essai`.
+- `outputSchema` : même raison qu'en L3 ; la source `local` ajouterait d'autres formes sans client qui s'en serve.
+- Journal par requête en local : le serveur stdio n'écrit rien sur stdout hors JSON-RPC et n'envoie aucune télémétrie
+  (conception §4.1) ; le compteur D66/D100 reste celui du serveur public.

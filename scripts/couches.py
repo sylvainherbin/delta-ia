@@ -10,6 +10,9 @@ Usage :
   couches.py (--instance <profil.json> | --historique) publier --route <docs/commun/v1>
   couches.py (--instance <profil.json> | --historique) synchroniser [--url <route publiée>]
   couches.py surveiller (--route <dossier> | --url <route publiée>)
+  couches.py (--instance <profil.json> | --historique) racines
+  couches.py (--instance <profil.json> | --historique) personnel rafraichir [--depuis D] [--nature N] [--si-ancien H]
+  couches.py (--instance <profil.json> | --historique) personnel bilan [--couple <id>]
 
 Dans une instance lancée par K1 (`DELTA_INSTANCE` posée), les racines viennent de l'environnement et l'option de
 racines est inutile. `importer` lit `docs/data` et les journaux privés du dépôt sans les modifier, et écrit seulement sous
@@ -20,8 +23,14 @@ fidélité au dépôt (mêmes identités, avis et essais historiques retrouvés,
 génération active dans la route versionnée (instance productrice seulement, `mode: producteur` ou `--historique`).
 `synchroniser` met le miroir local à jour depuis `reference_base_url` ; un échec garde la dernière génération valide.
 `surveiller` signale un cycle de publication manqué ou un périmètre en retard (code 1).
+`racines` imprime les racines résolues et les emplacements du composant (lecteur MCP local, Bureau).
+`personnel rafraichir` (lot L4) relit `operer reglages bilan --json` et `operer essai --json liste`, garde leurs instantanés
+privés et projette le bilan sur les couples modèle × effort communs ; `--si-ancien H` garde un instantané de moins de H heures
+aux mêmes filtres. `personnel bilan` imprime l'empreinte, les filtres et `jusqu_au` de l'instantané (et les groupes d'un couple) :
+c'est ce qu'un second lecteur, comme le pilote des réserves, compare pour parler du même instantané.
 Sorties JSON sur stdout ; aucun contenu personnel n'est imprimé par `importer` ni par `verifier`.
-Codes : 0 succès, 1 refus, validation en échec, synchronisation en échec ou alerte, 2 usage, 75 magasin occupé.
+Codes : 0 succès, 1 refus, validation en échec, synchronisation en échec, alerte ou source OPÉRER en échec, 2 usage,
+75 magasin occupé.
 """
 
 from __future__ import annotations
@@ -33,6 +42,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from deltalib.couches import bilan as mod_bilan  # noqa: E402
 from deltalib.couches import config as mod_config  # noqa: E402
 from deltalib.couches import publication  # noqa: E402
 from deltalib.couches import racines as mod_racines  # noqa: E402
@@ -69,6 +79,19 @@ def verifier(racines: mod_racines.Racines) -> list[str]:
             erreurs.append(f"personnel/{nom}.json : droits ouverts au groupe ou aux autres")
         if doc.get("commun_generation") != lecteur.generation:
             erreurs.append(f"personnel/{nom}.json : génération {doc.get('commun_generation')} ≠ active {lecteur.generation}")
+    # L4 : instantanés OPÉRER et projection modèle × effort, facultatifs (instance sans missions ni rafraîchissement)
+    for nom, vue in (("reglages-bilan", "reglages_bilan"), ("essais-operer", "essais_operer"), ("modeles-efforts", "modeles_efforts")):
+        chemin = racines.personnel / f"{nom}.json"
+        if not chemin.exists():
+            continue
+        try:
+            doc = json.loads(chemin.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as e:
+            erreurs.append(f"personnel/{nom}.json illisible : {e}")
+            continue
+        erreurs += schemas.valider_personnel(doc, vue, f"personnel/{nom}.json")
+        if not schemas.permissions_privees(chemin):
+            erreurs.append(f"personnel/{nom}.json : droits ouverts au groupe ou aux autres")
     if racines.personnel.is_dir() and not schemas.permissions_privees(racines.personnel):
         erreurs.append("personnel/ : droits ouverts au groupe ou aux autres")
     return erreurs
@@ -100,6 +123,15 @@ def main(argv: list[str] | None = None) -> int:
     pu.add_argument("--route", type=Path, required=True)
     sy = sous.add_parser("synchroniser", help="met le miroir commun à jour depuis la route publiée")
     sy.add_argument("--url", help="route publiée (défaut : reference_base_url)")
+    sous.add_parser("racines", help="racines résolues et emplacements du composant delta-ia")
+    pe = sous.add_parser("personnel", help="sources OPÉRER du magasin personnel (bilan des réglages, essais)")
+    pe_sous = pe.add_subparsers(dest="operation", required=True)
+    pr = pe_sous.add_parser("rafraichir", help="relit le bilan et les essais OPÉRER, projette les couples modèle × effort")
+    pr.add_argument("--depuis", help="filtre `--depuis` du bilan (AAAA-MM-JJ, ISO ou Nj ; défaut : tout le journal)")
+    pr.add_argument("--nature", help="filtre `--nature` du bilan (nature exacte ; défaut : toutes)")
+    pr.add_argument("--si-ancien", type=float, metavar="H", help="garde un instantané de moins de H heures aux mêmes filtres")
+    pb = pe_sous.add_parser("bilan", help="empreinte, filtres et date de l'instantané du bilan ; groupes d'un couple")
+    pb.add_argument("--couple", help="identité kb:delta:modeles:<id> ou id du couple")
     su = sous.add_parser("surveiller", help="cycle de publication et couverture des périmètres du producteur")
     cible = su.add_mutually_exclusive_group(required=True)
     cible.add_argument("--route", type=Path)
@@ -132,6 +164,22 @@ def main(argv: list[str] | None = None) -> int:
     except mod_config.ConfigInvalide as e:
         print(f"couches.py : {e}", file=sys.stderr)
         return 2
+    if args.commande == "racines":
+        _sortir({"origine": racines.origine, **{k: str(getattr(racines, k)) for k in (
+            "configuration", "etat", "cache", "runtime", "config", "personnel", "commun", "commun_actif", "verrous")}})
+        return 0
+    if args.commande == "personnel":
+        if args.operation == "bilan":
+            res = mod_bilan.resume(racines, args.couple)
+            _sortir(res)
+            return 0 if res["statut"] == "disponible" else 1
+        try:
+            res = mod_bilan.rafraichir(racines, args.depuis, args.nature, args.si_ancien)
+        except MagasinOccupe as e:
+            print(f"couches.py : {e}", file=sys.stderr)
+            return 75
+        _sortir(res)
+        return 1 if res["echecs"] else 0
     if args.commande == "importer":
         budget = conf["production"]["budget_traduction"] if args.budget_traduction is None else args.budget_traduction
         redacteur = RedacteurClaude(args.modele or conf["production"]["modele_traduction"]) if budget > 0 else None
