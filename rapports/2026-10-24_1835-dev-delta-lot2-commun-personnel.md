@@ -1,9 +1,9 @@
 ## En-tête
 
 - état : livré
-- tests : 1837/1837
-- hash : 63b09c3d84389248e83f9d8d07388bf6d742c558
-- reçus : abeb94767a18, 98056d9bad49
+- tests : commandes : `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 22d5203e9ce2) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu abeb94767a18) ; `/home/herbin/.local/bin/verrou-tests --depot . --nom lot2-mcp -- /home/herbin/.nvm/current/bin/node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 4d2c270a2b70) ; `/home/herbin/.local/bin/verrou-tests --depot . --nom lot2-mcp -- /home/herbin/.nvm/current/bin/node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 98056d9bad49)
+- hash : 31fc2aefd3f098b7a733e292142d4acea5348b01
+- reçus : abeb94767a18, 98056d9bad49; écartés : 22d5203e9ce2 (reçu 22d5203e9ce2 (« vérification du dépôt réussie : python3 -B outils/tests/verifier.py ») : worktree non propre au moment du reçu (fichier suivi modifié, indexé ou non suivi non ignoré) ; commiter ou ignorer, puis relancer `operer preuve m-0aa17aa21d59 --affirme "vérification du dépôt réussie : python3 -B outils/tests/verifier.py" -- <commande>` / reçu 22d5203e9ce2 (« vérification du dépôt réussie : python3 -B outils/tests/verifier.py ») : le reçu porte sur 5a6fe73f3be3, pas sur la version livrée 31fc2aefd3f0 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-0aa17aa21d59 --affirme "vérification du dépôt réussie : python3 -B outils/tests/verifier.py" -- <commande>` sur la version livrée) ; 4d2c270a2b70 (reçu 4d2c270a2b70 (« tests 86 ») : le nombre 86 ne figure pas dans la sortie conservée ; corriger l'affirmation (pas de date ni de numéro qui n'en vient pas) ou relancer `operer preuve m-0aa17aa21d59 --affirme "tests 86" -- <commande>`)
 - réserves : aucune
 
 # Delta-IA lot 2 — commun / personnel raccordés, « Utile pour mon ORQYRA », consultation courte (mission m-0aa17aa21d59)
