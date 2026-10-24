@@ -298,7 +298,7 @@ test("dictionnaires : mêmes clés EN/FR, aucune valeur vide, toute clé utilis�
     /"format modèles/, /modèle absent :/, /"usage:/, /"invalid JSON"/]) assert.equal(motif.test(code), false, String(motif));
   // les clés des modules partagés et locaux (`ErreurModeles("…")`, `local.motif.<code>`) existent dans les deux langues
   for (const m of code.matchAll(/ErreurModeles\("([a-z_.]+)"/g)) assert.ok(Object.hasOwn(TEXTES.en, m[1]) && Object.hasOwn(TEXTES.fr, m[1]), m[1]);
-  for (const m of code.matchAll(/motif: "([a-z_]+)"/g)) if (!["commun_modifie", "fiche_absente", "commun_tres_ancien", "projection_absente", "bilan_absent", "projection_anterieure_au_bilan"].includes(m[1]))
+  for (const m of code.matchAll(/motif: "([a-z_]+)"/g)) if (!["commun_modifie", "commun_indisponible", "fiche_absente", "commun_tres_ancien", "projection_absente", "bilan_absent", "projection_anterieure_au_bilan"].includes(m[1]))
     assert.ok(Object.hasOwn(TEXTES.en, `local.motif.${m[1]}`), m[1]);
 });
 
