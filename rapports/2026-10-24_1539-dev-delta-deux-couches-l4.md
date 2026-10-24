@@ -1,10 +1,10 @@
 ## En-tête
 
 - état : livré
-- tests : commandes : `python3 -B outils/tests/verifier.py --fusion` : échec (code 1, reçu e4c23c561a51) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 3ea60f5219be) ; `/home/herbin/.local/bin/verrou-tests --depot /home/herbin/projets/.worktrees/delta-ia/m-7ca497536e5d --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 54d1d62cdf5d) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 09e09011a6a2)
-- hash : 64676391abe12fd0dbee8be3420fd6dc1f173ce1
-- reçus : 3ea60f5219be, 54d1d62cdf5d, 09e09011a6a2; écartés : e4c23c561a51 (reçu e4c23c561a51 (« VERIFY OK ») : commande en code 1 ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` une fois la commande réussie / reçu e4c23c561a51 (« VERIFY OK ») : le reçu porte sur 6c1650e58e6f, pas sur la version livrée 64676391abe1 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée)
-- réserves : reçus sur `5208475` (suite complète 1828/1828, MCP 74/74) ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
+- tests : à compléter
+- hash : à compléter
+- reçus : à compléter
+- réserves : delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
 
@@ -12,7 +12,7 @@
 - Agent : `dev-delta`, Claude Code (Opus 5.5, effort high), reprise de m-9821de74d173 (réaffectation au compte 108, décision de Sylvain du 24/10) ; Codex n'avait rien commencé
 - Tâche : lot L4 « Accès personnel local » de la conception « Delta-IA en deux couches », plus le reste À NOTER 1 de la relecture L3
 - Branche : `operer/m-7ca497536e5d`, partie d'`origin/main` `3800414` (L3 fusionnée), linéaire
-- Commits produits : `6c1650e` (livraison), `5208475` (test de forme du chargement de la base, rouge à la première suite complète : il cherchait la ligne exacte modifiée par la traduction des erreurs à clé), puis le commit de ce rapport (`git add -f`, `rapports/*` étant ignoré)
+- Commits produits : `6c1650e` (livraison), `5208475` (test de forme du chargement de la base, rouge à la première suite complète : il cherchait la ligne exacte modifiée par la traduction des erreurs à clé), commits du rapport (`git add -f`, `rapports/*` étant ignoré), puis les corrections de relecture (voir « Corrections de relecture ») et leur rapport
 - `contexte_empreinte` : `abb92beeff351d9ba4bf8891e4f210ac2bee97a6`
 
 ## Compte et quotas
@@ -53,10 +53,10 @@ Choix structurants :
   - Test « une requête retrouve la syntaxe commune et l'avis personnel… » : `usage` commun, `verdict: null` dans la partie commune, bloc `personnel` avec `evalue_le` (réévaluation du 13/10).
   - Une requête qui ne trouve que l'avis rend `trouve_dans: ["personnel"]`.
   - Sur l'instance réelle, un agent Claude (Haiku) a appelé `fiche_reference` par le MCP stdio déclaré dans `--mcp-config`. Il a recopié `/add-dir <path>`, la génération `g-577f3bcfc94e5b8b` « recente », le statut `importe`, le verdict `tester`, `evalue_le` 2026-10-13 et `lu_le` du bilan.
-- **Avis périmé signalé après un changement commun** : test « avis périmé… ». Une nouvelle génération change l'empreinte de `/add-dir`, et le pointeur bascule pendant que le lecteur tourne. L'avis passe `a_revoir` avec `avis_precedent`, et sort de `a_tester`. Un fichier altéré du miroir donne une erreur explicite, sans repli.
+- **Avis périmé signalé après un changement commun** : test « avis périmé… ». Une nouvelle génération change l'empreinte de `advisor` (verdict `utiliser`, sans essai), et le pointeur bascule pendant que le lecteur tourne. L'avis passe `a_revoir` avec `avis_precedent`. La fiche était proposée par `a_tester` avant le changement ; elle ne l'est plus après. Même chose quand le commun vieillit pendant la vie du serveur (test « fraîcheur recalculée à chaque lecture »). Un fichier altéré du miroir donne une erreur explicite, sans repli.
 - **Sans profil, aucun conseil de Sylvain** : test « sans profil personnel… ». Les six outils rendent `personnel.statut: absent`. Il n'y a ni avis ni version installée, `a_tester` est vide, les constats valent `indisponible` / `bilan_absent`, et la sentinelle d'avis n'apparaît nulle part.
 - **Le MCP public ne lit jamais la racine P** : test « MCP public… ». Pas de lecture de fichier ni d'import du lecteur local dans `api/mcp.js`, `SOURCES` réduit aux deux sources publiques, `?source=local` sans effet. Les constats d'instance sont absents de la réponse publique (test « couple modèle × effort… »).
-- **Lecture réelle Desktop/agent sur l'instance, sans banc** : magasin réel peuplé par `couches.py --historique importer` et `personnel rafraichir` (voir « Vérifications hors reçu »). `bureau.js --historique etat` et `stdio.js --historique` ont lu ce magasin, et l'agent Haiku ci-dessus aussi. Avant/après les lectures, les empreintes du magasin personnel sont identiques.
+- **Lecture réelle Desktop/agent sur l'instance, sans banc** : magasin réel peuplé par `couches.py --historique importer` et `personnel rafraichir` (voir « Vérifications hors reçu »). `bureau.js --historique etat` et `stdio.js --historique` ont lu ce magasin, et l'agent Haiku ci-dessus aussi. Empreinte globale des fichiers du magasin personnel (SHA-256 des `sha256sum` de `personnel/*.json`) : `88bb0e0747ae06f6` avant et après les lectures du Bureau, du MCP et de l'agent. Aucun fichier modifié après le rafraîchissement de 15:28.
 - **Ni double collecteur ni perte d'un essai.**
   - Test « collecte du pont… sans second collecteur » : une seule commande lancée, l'export du pont inchangé, et l'instantané rangé.
   - Test « veille, versions et essais… » : la fiche porte ses essais `kb-essais.yaml` et OPÉRER (`lecon_apprendre` de l'essai clos), chacun avec sa source. Une fiche essayée n'est plus proposée.
@@ -79,7 +79,7 @@ Choix structurants :
 6. **Pas de bloc quotas dans `resume_du_jour` local** : le Bureau lit déjà les quotas d'OBSERVATORY. Un relevé de plus serait le collecteur concurrent que la conception écarte.
 7. **`nouveautes_base` local** : même réponse que le commun, car les dates d'ajout ne sont pas publiées (L3, écart 4). Les avis se lisent par `fiche_reference`.
 8. **Synthèse du jour** : `null` en local aussi. La synthèse rédigée est classée S (en attente) depuis L1. Les éléments portent leur avis du jour (impact, `pour_toi`, action), et la sélection fort/moyen s'applique s'il y en a.
-9. **Premier peuplement du magasin réel.** Le magasin personnel n'existait pas sur l'installation historique (le service `delta-ia-commun` n'est pas installé). Il a été créé par `couches.py --historique importer --depot ~/projets/delta-ia`, avec un budget de traduction nul et le cache de traductions copié hors du dépôt. Résultat : la génération `g-577f3bcfc94e5b8b`, identique à la publiée. Le SHA-256 global de `docs/data` est identique avant et après.
+9. **Premier peuplement du magasin réel.** Le magasin personnel n'existait pas sur l'installation historique (le service `delta-ia-commun` n'est pas installé). Il a été créé par `couches.py --historique importer --depot ~/projets/delta-ia`, avec un budget de traduction nul et le cache de traductions copié hors du dépôt. Résultat : la génération `g-577f3bcfc94e5b8b`, identique à la publiée. Le SHA-256 global de `docs/data` vaut `46554d3f06d12626` avant et après, et `git status --porcelain docs/data` est vide.
 
 ## Changement à faire dans delta-desktop (mission à ouvrir, non modifié ici)
 
@@ -89,7 +89,7 @@ Choix structurants :
 - La note d'architecture `docs/architecture/2026-10-21-m-e0a21175c65b-versions-mises-a-jour.md:45` prévoit un instantané versionné du moteur via `desktop/portable/transport.cjs`.
 
 Changement :
-1. **Pont d'instance** (`desktop/portable/transport.cjs`, `preload.cjs`) : une commande moteur `delta-ia`, qui lance `node <dépôt delta-ia>/mcp/bureau.js <racines> <commande>`.
+1. **Pont d'instance** : `desktop/portable/transport.cjs` (transport vers le moteur) et `desktop/portable/preload.cjs` (API `window.bureau` de la fenêtre principale). Le flux de l'orbe est assemblé par `desktop/flux-bureau.cjs` à partir de `desktop/savoir-flux.cjs` : c'est là que se branche une commande moteur `delta-ia`, qui lance `node <dépôt delta-ia>/mcp/bureau.js <racines> <commande>`.
    - `<racines>` vaut `--historique` sur l'installation historique et rien dans une instance K1 (`DELTA_INSTANCE` posée). On peut aussi passer `--instance <profil>`.
    - `node` est celui de `~/.nvm/current/bin`.
    - Sortie : une ligne JSON. Code 0 pour une réponse, 1 pour un outil en erreur (`{erreur}`), 2 pour un usage invalide ou des racines absentes (message sur stderr).
@@ -104,12 +104,33 @@ Changement :
 
 ## Changement à faire pour le pilote des réserves (discipline, m-5b1a151d5fc8, livré)
 
-Son brief (`docs/briefs/m-5b1a151d5fc8.md:124`) lance `operer reglages bilan --json` lui-même. Pour lire le même instantané que Desktop et le MCP local, il doit lire `<etat>/delta-ia/personnel/reglages-bilan.json` :
+Son brief (`docs/briefs/m-5b1a151d5fc8.md:60-71`) lance `operer reglages bilan --json` lui-même. C'est une suite de ce lot, pas une partie de la livraison : le critère est tenu côté delta-ia (même empreinte pour le Bureau, le MCP local et `couches.py personnel bilan`), et le branchement du pilote revient à une mission discipline ou à la L5. Pour lire le même instantané que Desktop et le MCP local, il doit lire `<etat>/delta-ia/personnel/reglages-bilan.json` :
 - `bilan` = sortie brute de la commande ;
 - `sha256` = empreinte du JSON canonique ;
 - `filtres`, `jusqu_au`, `lu_le`.
 
 À défaut, il peut lire `scripts/couches.py --historique personnel bilan [--couple <id>]`, et rafraîchir par `personnel rafraichir --si-ancien H` plutôt que par un appel direct. Sa décision doit citer l'empreinte et les filtres ; si ses filtres diffèrent, il les expose. Une mission discipline est à ouvrir : ce lot ne touche pas discipline.
+
+## Corrections de relecture (24/10, verdict de delta : 1 BLOQUANT, 8 À NOTER)
+
+Trois relectures concordantes, une relecture Codex. Chaque correctif a son test, rouge sur `3de9cce` (rejoué dans une copie détachée : 4 tests de `mcp/test/local.test.js` en échec, 7 succès) et vert après.
+
+1. **BLOQUANT, corrigé** : `a_tester` proposait encore un avis périmé. `LecteurLocal.aTester(fiches)` ne garde plus que les fiches dont le bloc personnel, recalculé sur la fiche commune courante, est `importe`. Le test vise maintenant `advisor` (sans essai, `utiliser`), proposée avant le changement commun et retirée après. L'ancien test visait `/add-dir`, déjà exclue par son essai : il ne prouvait rien.
+2. **Corrigé** : `tools/call` avec `params: null` arrêtait le serveur stdio. `traiter` prend `{}` pour des paramètres absents ou non objets (réponse `-32602`), et `stdio.js` rattrape toute erreur par requête (`-32603`) sans s'arrêter. Test : `params: null` puis `ping` reçoivent chacun leur réponse.
+3. **Corrigé** : avec `--si-ancien`, les essais OPÉRER n'étaient pas relus quand le bilan était gardé. Ils sont relus à chaque rafraîchissement ; seul le bilan, coûteux, peut être gardé. Test : bilan `garde`, essai ouvert entre-temps présent, une seule commande lancée (`operer essai --json liste`).
+4. **Corrigé** : `bureau.js` écrivait ses erreurs de démarrage en anglais. `stdio.js` et `bureau.js` prennent la langue de `--langue`, avant même la validation des options. Test : `bureau.js --langue fr etat` sans racines → `delta-bureau: racines non désignées…`.
+5. **Corrigé (rapport)** : en-tête sans chemin absolu ; empreintes du critère c chiffrées (`docs/data` `46554d3f06d12626`, magasin `88bb0e0747ae06f6`) ; fichiers delta-desktop désignés par leur chemin (`desktop/portable/preload.cjs`, `desktop/flux-bureau.cjs`) ; référence du brief du pilote corrigée (`:60-71`).
+6. **Prouvé puis corrigé (Codex)** : la fraîcheur était calculée au chargement de la génération, puis figée tant que le pointeur et `synchro.json` ne changeaient pas. Un serveur stdio vit toute une session : il aurait annoncé `recente` après une semaine sans synchronisation. La fraîcheur est maintenant recalculée à chaque lecture. Test : même lecteur, horloge avancée de 2 jours → `ancienne`, de 8 jours → `tres_ancienne`, avis `a_revoir` / `commun_tres_ancien`, retiré de `a_tester`.
+7. **Corrigé** : sans miroir commun valide, plus rien n'était consultable, alors que la conception §2.3 dit que « le personnel indépendant reste consultable ».
+   - `fiche_reference` rend maintenant les blocs personnels de l'id (`fiches_personnelles`, fiche commune `null`), avec l'indisponibilité du commun dans `donnees.commun` et un `avis` qui le dit.
+   - `etat_versions` rend les versions relevées sur l'instance, sans rien comparer.
+   - Les avis y sont `a_revoir` / `commun_indisponible` : aucune compatibilité actuelle n'est établie.
+   - `chercher_reference` liste ses catégories non lues ; les outils qui ne vivent que du commun (`resume_du_jour`, `a_tester`) répondent par une erreur explicite qui dit de synchroniser ou d'importer.
+   - Le `Lecteur` Python suit les mêmes règles, avec les mêmes motifs : `commun_indisponible`, `commun_modifie`, `fiche_absente`, `commun_tres_ancien` (test `test_lecteur_python_memes_regles_que_le_lecteur_local`).
+8. **Pris acte, suite** : le pilote des réserves ne lit pas encore l'instantané partagé (voir plus haut) ; mission discipline ou L5.
+9. **Pris acte, L5** : les alias historiques (`opus`, `sonnet` du journal) sont rattachés par l'alias courant de la génération active. La règle « alias historique sans équivalence prouvée » relève de l'historique, donc de la L5.
+
+Correctif ajouté pendant la reprise : la fixture des tests MCP datait sa publication de celle de la génération commitée. Les tests de fraîcheur (`recente`) seraient devenus rouges un jour après, sans changement de code. Elle date maintenant la publication et la vérification de l'exécution du test.
 
 ## Points fragiles ou à décider
 
@@ -128,7 +149,7 @@ Son brief (`docs/briefs/m-5b1a151d5fc8.md:124`) lance `operer reglages bilan --j
 ## Vérifications hors reçu
 
 Toutes sur l'instance réelle, le 24/10 entre 15:25 et 15:38 :
-- **Import** : `couches.py --historique importer --depot ~/projets/delta-ia --budget-traduction 0` → génération `g-577f3bcfc94e5b8b`, 2 403 objets personnels, 1 refus (`fichier_inconnu`, `actu/x-ids.json`, déjà connu de L2). SHA-256 global de `docs/data` identique avant et après.
+- **Import** : `couches.py --historique importer --depot ~/projets/delta-ia --budget-traduction 0` → génération `g-577f3bcfc94e5b8b`, 2 403 objets personnels, 1 refus (`fichier_inconnu`, `actu/x-ids.json`, déjà connu de L2). SHA-256 global de `docs/data` : `46554d3f06d12626` avant et après.
 - **Rafraîchissement** : `couches.py --historique personnel rafraichir` → 1 109 missions, 162 groupes, 15 couples rattachés, 58 groupes non rattachés (`modele_ou_effort_inconnu`), 0 échec, 17 s. `couches.py --historique verifier` → `ok`.
 - **Comparaison à la source et même empreinte** pour le Bureau, le MCP stdio et le résumé pilote : voir « Critère de fin ».
 - **Agent réel** : `claude -p --model haiku --strict-mcp-config --mcp-config <stdio --historique --langue fr>` → réponse exacte sur les deux couches, 0,0041 $.
