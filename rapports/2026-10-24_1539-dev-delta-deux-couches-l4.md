@@ -1,10 +1,10 @@
 ## En-tête
 
 - état : livré
-- tests : à compléter
-- hash : à compléter
-- reçus : à compléter
-- réserves : delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
+- tests : 1829/1829
+- hash : 610f40dd0a95c4e66dbf5ee965bfe6297bc3fbd2
+- reçus : 06b17ef903fc, 91a5bfcc43d2
+- réserves : reçus sur `610f40d` (suite complète 1829/1829, MCP 77/77) après le second tour ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
 
@@ -144,6 +144,8 @@ Points 1 à 7 du premier tour tenus. Deux corrections, chacune avec un test roug
      - « avis de veille périmé après un changement commun » : nouvelle génération où l'empreinte de l'entrée de veille change, action retirée, `a_revoir` / `commun_modifie`, impact précédent `fort`.
 2. **À NOTER, corrigé : les essais OPÉRER étaient perdus sans miroir commun.** Sans fiche commune, l'id court n'était pas connu, et les essais OPÉRER, qui citent l'id court de la fiche, n'étaient pas rattachés. Il est maintenant déduit de l'identité (`idCourt`). Test « miroir commun indisponible… » : `claude-code-commandes-agents` garde son essai OPÉRER.
 
+Correctif ajouté : le scan des motifs de `mcp/test/couches.test.js` admet `commun_indisponible`, devenu un littéral avec `statutAvis` ; c'est un motif de statut d'avis, pas un motif d'indisponibilité du miroir (`610f40d`).
+
 Pris acte : les chemins personnels de la ligne « tests » de l'en-tête viennent du commit « Preuves de la mission » d'OPÉRER ; delta les traite côté OPÉRER.
 
 ## Points fragiles ou à décider
@@ -172,6 +174,5 @@ Toutes sur l'instance réelle, le 24/10 entre 15:25 et 15:38 :
 
 ## Preuves
 
-VERIFY OK | reçu 32186733ecba
-tests 76 | reçu bfee71dd01c1
-vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 2e1b53a46f80
+VERIFY OK | reçu 06b17ef903fc
+tests 77 | reçu 91a5bfcc43d2
