@@ -1,9 +1,9 @@
 ## En-tête
 
 - état : livré
-- tests : 1828/1828
-- hash : 520847551fc83e77ba3fea3d595cffad5ba73d4a
-- reçus : 3ea60f5219be, 54d1d62cdf5d
+- tests : commandes : `python3 -B outils/tests/verifier.py --fusion` : échec (code 1, reçu e4c23c561a51) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 3ea60f5219be) ; `/home/herbin/.local/bin/verrou-tests --depot /home/herbin/projets/.worktrees/delta-ia/m-7ca497536e5d --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 54d1d62cdf5d) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 09e09011a6a2)
+- hash : 64676391abe12fd0dbee8be3420fd6dc1f173ce1
+- reçus : 3ea60f5219be, 54d1d62cdf5d, 09e09011a6a2; écartés : e4c23c561a51 (reçu e4c23c561a51 (« VERIFY OK ») : commande en code 1 ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` une fois la commande réussie / reçu e4c23c561a51 (« VERIFY OK ») : le reçu porte sur 6c1650e58e6f, pas sur la version livrée 64676391abe1 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée)
 - réserves : reçus sur `5208475` (suite complète 1828/1828, MCP 74/74) ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
@@ -139,3 +139,4 @@ Toutes sur l'instance réelle, le 24/10 entre 15:25 et 15:38 :
 
 VERIFY OK | reçu 3ea60f5219be
 tests 74 | reçu 54d1d62cdf5d
+vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 09e09011a6a2
