@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 86,
+ "commentees": 100,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -200,7 +200,7 @@
    "categorie": "fonctionnalites",
    "nom": "Manage multiple agents with agent view",
    "gabarit": "complet",
-   "description": "`claude agents` ouvre un écran unique qui liste les sessions en arrière-plan : en cours, en attente d'une réponse, terminées. On y lance une tâche par prompt (chacune démarre une nouvelle session), on jette un œil à une ligne avec `Espace` pour répondre, et on s'y attache pour la conversation complète. Aperçu de recherche ; chaque session consomme le quota séparément.",
+   "description": "`claude agents` ouvre un écran unique qui liste les sessions en arrière-plan : en cours, en attente d'une réponse, terminées ; on y lance une tâche par prompt, on jette un œil à une ligne pour répondre et on s'y attache pour la conversation complète. Aperçu de recherche : les sessions ouvertes dans d'autres terminaux n'y figurent qu'une fois passées en arrière-plan, et chaque session consomme le forfait comme une session interactive (dix agents en parallèle usent le quota environ dix fois plus vite).",
    "description_source": "Dispatch and manage many Claude Code sessions from one screen. Agent view shows what every session is doing and which ones need your input.",
    "usage": "claude agents",
    "usage_nature": "syntaxe",
@@ -209,7 +209,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions sont interactives sous tmux (services `claude-session@<nom>`), et la page précise que les sessions ouvertes dans d'autres terminaux n'apparaissent pas tant qu'on ne les passe pas en arrière-plan ; OPÉRER (`operer etat`) tient déjà la vue d'ensemble."
+    "pourquoi": "Tes sessions sont interactives sous tmux (services `claude-session@<nom>`) et n'apparaîtraient pas sans passage en arrière-plan ; OPÉRER (`operer etat`, `operer qui`) tient déjà la vue d'ensemble."
    },
    "sources": [
     {
@@ -218,11 +218,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -243,17 +243,21 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables `claude-session@<nom>` sous tmux, interactives, pilotées par Remote Control."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables `claude-session@<nom>` sous tmux, interactives ; l'organisation réelle se lit dans OPÉRER."
     },
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "OPÉRER tient missions, incidents et état des sessions (`operer etat`, `operer qui`)."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER tient missions, incidents et remise directe aux sessions."
     }
    },
    "exemple_origine": "source"
@@ -493,7 +497,7 @@
    "categorie": "fonctionnalites",
    "nom": "Best practices for Claude Code",
    "gabarit": "complet",
-   "description": "Guide de pratiques éprouvées : donner à Claude un moyen de vérifier son travail (tests, build, capture), explorer puis planifier avant de coder, gérer le contexte qui se remplit vite, et passer à l'échelle avec des sessions parallèles. Le fil conducteur est que la qualité baisse à mesure que la fenêtre de contexte se remplit.",
+   "description": "Guide de pratiques : donner à Claude une vérification qu'il peut lancer (tests, build, capture), explorer puis planifier avant de coder, gérer un contexte qui se remplit vite et passer à l'échelle avec des sessions parallèles. Il recommande aussi une étape de revue adversariale : faire relire le diff par un sous-agent dans un contexte neuf, par exemple avec la skill intégrée `/code-review`, avant de tenir le travail pour fini.",
    "description_source": "Tips and patterns for getting the most out of Claude Code, from configuring your environment to scaling across parallel sessions.",
    "usage": "read /src/auth and understand how we handle sessions and login.\nalso look at how we manage environment variables for secrets.",
    "usage_nature": "syntaxe",
@@ -502,7 +506,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La section sur la vérification rejoint les tests `unittest` de trading-sim et `node --test` de carnet ; celle sur le contexte touche la consommation des limites hebdomadaires, qui reste une friction récurrente."
+    "pourquoi": "Essai : à la fin d'une mission de Dev-delta, avant le passage à `A_RELIRE`, lancer `/code-review` sur le diff ; résultat attendu, une liste d'écarts rendue à la session avant la relecture du chef et l'audit Codex, ce qui renforcerait les audits croisés sans copier de constats entre fenêtres."
    },
    "sources": [
     {
@@ -511,11 +515,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -585,23 +589,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "tests unittest, vérification formelle"
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Les devs commitent après l'OK du chef, qui relit le résultat de chaque mission."
     },
-    "projet.carnet": {
-     "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "tests node --test sur copies figées"
-    },
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Rôle de Codex : auditer ce que fait Claude, sur trading-sim et ailleurs."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La page recommande de faire relire le diff par un sous-agent dans un contexte neuf avant de tenir une tâche pour finie, et cite la skill intégrée `/code-review` pour une vérification de correction.",
+     "source": "https://code.claude.com/docs/en/best-practices",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la section « Add an adversarial review step » ou `/code-review` disparaît de la page"
+    },
+    {
+     "affirmation": "Le chef relit le résultat d'une mission et donne l'OK ; le dev commite et pousse après cet OK.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le cycle de relecture des missions change"
+    },
+    {
+     "affirmation": "Codex sert surtout à auditer ce que fait Claude.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Codex n'a plus ce rôle d'audit"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-channels",
@@ -609,7 +634,7 @@
    "categorie": "fonctionnalites",
    "nom": "Push events into a running session with channels",
    "gabarit": "complet",
-   "description": "Un canal est un serveur MCP, installé comme plugin, qui pousse des événements (messages Telegram, Discord ou iMessage, alertes, webhooks) dans une session Claude Code déjà ouverte ; Claude peut répondre par le même canal. Aperçu de recherche, authentification claude.ai requise, et chaque plugin de canal exige Bun.",
+   "description": "Un canal est un serveur MCP, installé comme plugin, qui pousse des événements (messages Telegram, Discord ou iMessage, alertes, webhooks) dans une session Claude Code déjà ouverte ; Claude peut répondre par le même canal. Aperçu de recherche, authentification claude.ai ou clé API Console requise, chaque plugin de canal exige Bun, et iMessage exige macOS.",
    "description_source": "Use channels to push messages, alerts, and webhooks into your Claude Code session from an MCP server. Forward CI results, chat messages, and monitoring events so Claude can react while you're away.",
    "usage": "/plugin install telegram@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -618,7 +643,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Remote Control couvre déjà le pilotage des sessions depuis l'iPhone, et aucune CI ne produit d'événements à pousser."
+    "pourquoi": "Remote Control couvre déjà le pilotage des sessions depuis l'iPhone, OPÉRER remet les messages aux sessions, et aucune CI ne produit d'événements à pousser."
    },
    "sources": [
     {
@@ -627,11 +652,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -644,10 +669,24 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "iPhone : pilote le PC à distance par Remote Control et l'app Claude iOS."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 10 : pas de CI, les tests de carnet ne tournent qu'en local."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-checkpointing",
@@ -790,7 +829,7 @@
    "categorie": "fonctionnalites",
    "nom": "Use Claude Code with Chrome",
    "gabarit": "complet",
-   "description": "Relie Claude Code à l'extension Claude in Chrome pour piloter un navigateur visible depuis le CLI : lire la console et le DOM, tester des formulaires, vérifier un rendu, extraire des données, enregistrer un GIF. Claude partage l'état de connexion du navigateur et regroupe ses onglets dans un groupe lié à la session.",
+   "description": "Relie Claude Code à l'extension Claude in Chrome (version 1.0.36 ou plus) pour piloter un navigateur Chromium visible depuis le CLI : lire la console et le DOM, tester des formulaires, vérifier un rendu, extraire des données, enregistrer un GIF. Claude partage l'état de connexion du navigateur et regroupe ses onglets dans un groupe lié à la session, fermé par `/clear`.",
    "description_source": "Connect Claude Code to your Chrome browser to test web apps, debug with console logs, automate form filling, and extract data from web pages.",
    "usage": "claude --chrome",
    "usage_nature": "syntaxe",
@@ -799,7 +838,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "L'extension Chrome est souvent déconnectée selon les frictions relevées ; sur carnet, `claude --chrome` pour vérifier un écran de la PWA dans le navigateur serait l'usage direct, à condition qu'elle soit reconnectée. trading-sim interdit le navigateur dans ses réglages."
+    "pourquoi": "Essai sur carnet : lancer `claude --chrome`, ouvrir la PWA servie par Vite et demander les erreurs de console de l'onglet Stats ; résultat attendu, la liste des erreurs lue sans copie manuelle, à condition que l'extension, souvent déconnectée, soit reconnectée. `/clear` (utilisé par `mission-dev`) ferme le groupe d'onglets ; trading-sim interdit le navigateur."
    },
    "sources": [
     {
@@ -808,11 +847,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -876,23 +915,58 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "extension Chrome souvent déconnectée"
-    },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "PWA React/Vite à contrôler à l'écran"
+     "pourquoi": "PWA React/Vite, travail en cours sur les courbes de l'onglet Stats."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Extension Chrome souvent déconnectée, parmi les frictions récurrentes."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "`mission-dev` vide le contexte du dev par `/clear` avant chaque mission."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "navigateur interdit dans .claude/settings.json"
+     "pourquoi": "Navigateur interdit par `.claude/settings.json`."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`claude --chrome` relie Claude Code à l'extension Claude in Chrome pour lire console et DOM et tester des applications web ; `/clear` ferme le groupe d'onglets de la session.",
+     "source": "https://code.claude.com/docs/en/chrome",
+     "releve_le": "2026-10-24",
+     "caduc_si": "l'intégration Chrome change de commande ou de comportement à `/clear`"
+    },
+    {
+     "affirmation": "carnet est une PWA React/Vite ; travail en cours sur les courbes de l'onglet Stats.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-24",
+     "caduc_si": "carnet change de stack ou le travail sur Stats est terminé"
+    },
+    {
+     "affirmation": "L'extension Chrome est souvent déconnectée.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la friction disparaît du relevé"
+    },
+    {
+     "affirmation": "trading-sim interdit le navigateur dans `.claude/settings.json`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la politique de capacités de trading-sim change"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-claude-code-on-the-web",
@@ -1713,11 +1787,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1734,9 +1808,13 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {},
    "exemple_origine": "source"
   },
@@ -1746,16 +1824,16 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude use your computer from the CLI",
    "gabarit": "complet",
-   "description": "Serveur MCP intégré `computer-use` qui laisse Claude ouvrir des applications, cliquer, taper et voir l'écran depuis le CLI, pour les outils sans API ni CLI. Désactivé par défaut, on l'active dans `/mcp` ; il exige une session interactive.",
+   "description": "Serveur MCP intégré `computer-use` qui laisse Claude ouvrir des applications, cliquer, taper et voir l'écran depuis le CLI, pour les outils sans API ni CLI. Aperçu de recherche sur macOS, forfait Pro ou Max, session interactive seulement (pas avec `-p`).",
    "description_source": "Enable computer use in the Claude Code CLI so Claude can open apps, click, type, and see your screen on macOS. Test native apps, debug visual issues, and automate GUI-only tools without leaving your terminal.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
-   "exemple": "Build the app target, launch it, and click through each tab to make\nsure nothing crashes. Screenshot any error states you find.",
-   "disponibilite": "macOS, plans Pro et Max (aperçu de recherche)",
+   "exemple": null,
+   "disponibilite": "macOS ; Pro ou Max",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservé à macOS alors que la machine est sous Linux Mint."
+    "pourquoi": "Réservé à macOS, alors que tes apps de bureau sont installées en paquets Debian."
    },
    "sources": [
     {
@@ -1764,11 +1842,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1781,10 +1859,24 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "exemple impossible"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Desktop et ChatGPT Desktop installés en paquets Debian."
+    }
+   },
+   "exemple_impossible": "Fonction réservée à macOS, système exclu du profil (Linux) : aucun exemple exécutable sur la machine servie."
   },
   {
    "id": "claude-code-fonctionnalites-page-context-window",
@@ -1792,16 +1884,16 @@
    "categorie": "fonctionnalites",
    "nom": "Explore the context window",
    "gabarit": "complet",
-   "description": "Simulation interactive qui montre comment la fenêtre de contexte de Claude Code se remplit au cours d'une session : ce qui se charge automatiquement, ce que coûte chaque lecture de fichier, et à quel moment les règles et les hooks se déclenchent.",
+   "description": "Simulation interactive du remplissage de la fenêtre de contexte : ce qui se charge avant le premier message (CLAUDE.md, mémoire automatique, noms d'outils MCP, descriptions de skills), ce qu'ajoute chaque lecture, règle ou hook, et ce qui survit à `/compact`. Après compaction, le corps des skills invoquées revient tronqué à 5 000 jetons par skill et 25 000 au total ; `/context` donne la répartition réelle de la session.",
    "description_source": "An interactive simulation of how Claude Code's context window fills during a session. See what loads automatically, what each file read costs, and when rules and hooks fire.",
    "usage": "--append-system-prompt",
    "usage_nature": "syntaxe",
-   "exemple": "ENABLE_TOOL_SEARCH=auto",
+   "exemple": "/context",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions chargent beaucoup de mémoires automatiques (environ 70 dans ~/projets) et les limites d'usage hebdomadaires reviennent comme friction. Parcourir cette simulation te montrerait ce qui pèse à chaque session, pour savoir quoi alléger."
+    "pourquoi": "Essai dans une session chef : lancer `/context` pour voir ce que pèsent tes quelque 70 mémoires automatiques et tes CLAUDE.md ; résultat attendu, la répartition par catégorie avec des suggestions, utile contre les limites hebdomadaires. La troncature des skills après compaction concerne tes skills longues : les consignes clés doivent être en tête de `SKILL.md`."
    },
    "sources": [
     {
@@ -1810,11 +1902,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1881,20 +1973,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "Mémoire automatique très utilisée (environ 70 mémoires dans ~/projets), donc beaucoup de contenu chargé d'office."
+     "pourquoi": "Mémoire automatique très utilisée : environ 70 mémoires dans ~/projets et 7 dans ~ au 04/10."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Les limites d'usage hebdomadaires figurent parmi les frictions récurrentes observées."
+     "pourquoi": "Limites d'usage hebdomadaire et Fable parmi les frictions récurrentes."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/context` donne la répartition réelle du contexte par catégorie avec des suggestions ; après compaction, le corps des skills invoquées revient plafonné à 5 000 jetons par skill et 25 000 au total.",
+     "source": "https://code.claude.com/docs/en/context-window",
+     "releve_le": "2026-10-24",
+     "caduc_si": "`/context` ou les plafonds de réinjection des skills changent"
+    },
+    {
+     "affirmation": "Environ 70 mémoires automatiques dans ~/projets et 7 dans ~ au 04/10.",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le nombre de mémoires change nettement"
+    },
+    {
+     "affirmation": "Les limites d'usage hebdomadaire et Fable sont une friction récurrente.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la friction disparaît du relevé"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-cross-session-messaging",
@@ -2234,16 +2350,16 @@
    "categorie": "fonctionnalites",
    "nom": "Claude Desktop on Linux (beta)",
    "gabarit": "complet",
-   "description": "Page de documentation qui explique comment installer et mettre à jour l'app de bureau Claude (Claude Desktop, en bêta sous Linux) sur Ubuntu et Debian. La procédure commence par l'installation des prérequis `curl` et `gnupg` avec `apt`.",
+   "description": "Installation et mise à jour de Claude Desktop (bêta sous Linux) depuis le dépôt apt d'Anthropic, sur Ubuntu 22.04+ ou Debian 12+, pour que les mises à jour arrivent avec celles du système. La clé de signature se vérifie avec `gpg --show-keys` (empreinte `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE`) ; Cowork y tourne dans une machine virtuelle QEMU/KVM qui exige la virtualisation matérielle et l'appartenance au groupe `kvm`.",
    "description_source": "Install and update the Claude desktop app on Ubuntu and Debian",
    "usage": "sudo apt install curl gnupg",
    "usage_nature": "syntaxe",
    "exemple": "gpg --show-keys /usr/share/keyrings/claude-desktop-archive-keyring.asc",
-   "disponibilite": null,
+   "disponibilite": "Linux : Ubuntu 22.04+ ou Debian 12+ (bêta)",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Claude Desktop est déjà installé en paquet Debian sur Linux Mint 22.1 (base Ubuntu 24.04), et tu veux en utiliser toutes les fonctionnalités utiles au développement. Vérifie que ton installation suit bien la procédure officielle de mise à jour décrite ici."
+    "pourquoi": "Claude Desktop est installé en paquet Debian et tu veux en exploiter toutes les fonctions utiles : lance `gpg --show-keys /usr/share/keyrings/claude-desktop-archive-keyring.asc` ; résultat attendu, l'empreinte `31DDDE24…ACE`, qui confirme que les mises à jour passent par le dépôt apt officiel."
    },
    "sources": [
     {
@@ -2252,11 +2368,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2319,19 +2435,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Claude Desktop y figure comme installé en paquet Debian sur Linux Mint 22.1, base Ubuntu 24.04 : la page concerne directement cette installation."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Desktop et ChatGPT Desktop installés en paquets Debian."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Sylvain déclare vouloir utiliser toutes les fonctionnalités utiles de Claude Desktop pour ses projets."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Sylvain veut utiliser toutes les fonctionnalités utiles de Claude Desktop pour ses projets."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "L'installation passe par le dépôt apt d'Anthropic ; `gpg --show-keys` sur la clé doit afficher l'empreinte 31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE.",
+     "source": "https://code.claude.com/docs/en/desktop-linux",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la clé, son empreinte ou la procédure apt change"
+    },
+    {
+     "affirmation": "Claude Desktop est installé en paquet Debian.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Claude Desktop est désinstallé ou installé autrement"
+    },
+    {
+     "affirmation": "Sylvain veut utiliser toutes les fonctionnalités de Claude Desktop utiles au développement.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Sylvain retire ce souhait"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-desktop-scheduled-tasks",
@@ -2824,7 +2965,7 @@
    "categorie": "fonctionnalites",
    "nom": "Automate actions with hooks",
    "gabarit": "complet",
-   "description": "Les hooks sont des commandes shell (ou requêtes HTTP, prompts, sous-agents) que Claude Code exécute à des moments précis : avant ou après un outil, en attente d'une saisie, en fin de tour. Ils rendent un comportement déterministe au lieu de compter sur le modèle ; on les déclare dans un bloc `hooks` du fichier de réglages.",
+   "description": "Les hooks sont des commandes shell (ou requêtes HTTP, prompts, sous-agents) que Claude Code exécute à des moments précis : avant ou après un outil, en attente d'une saisie, en fin de tour. Ils rendent un comportement déterministe au lieu de compter sur le modèle ; un hook `PreToolUse` qui sort en code 2 bloque l'action et renvoie son message d'erreur à Claude.",
    "description_source": "Run shell commands automatically when Claude Code edits files, finishes tasks, or needs input. Format code, send notifications, validate commands, and enforce project rules.",
    "usage": "{\n  \"hooks\": {\n    \"Notification\": [\n      {\n        \"matcher\": \"\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"osascript -e 'display notification \\\"Claude Code needs your attention\\\" with title \\\"Claude Code\\\"'\"\n          }\n        ]\n      }\n…",
    "usage_nature": "syntaxe",
@@ -2833,7 +2974,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu as un hook, `PermissionDenied` → `operer refus` ; la piste 3 vise le contrôle SHA-256 des missions, fait à la main : un hook `PreToolUse` qui compare un fichier de mission à son `.sha256` avant lecture arrêterait une mission altérée avant exécution."
+    "pourquoi": "D'après la page, `PermissionDenied` ne se déclenche que sur un refus du mode auto : en `bypassPermissions`, ton seul hook (`operer refus`) ne verrait probablement plus de refus. Essai pour la piste 3 : un hook `PreToolUse` sur `Read` qui compare une mission à son `.sha256` et sort en code 2 en cas d'écart ; résultat attendu, lecture bloquée avec le motif."
    },
    "sources": [
     {
@@ -2842,11 +2983,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2916,24 +3057,64 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "Un seul hook au 07/10 : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`."
     },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Piste 3 : vérification SHA-256 des missions et `PYTHONDONTWRITEBYTECODE=1` refaits à la main, candidats à des hooks."
+     "pourquoi": "Piste 3 : vérification SHA-256 des missions refaite à la main, candidate à un hook."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Missions hachées, empreinte SHA-256 dans un fichier `.sha256` séparé."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`PermissionDenied` se déclenche quand le mode auto refuse un appel d'outil ; un hook `PreToolUse` qui sort en code 2 bloque l'action et renvoie stderr à Claude.",
+     "source": "https://code.claude.com/docs/en/hooks-guide",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le déclencheur de `PermissionDenied` ou la sémantique du code 2 change"
+    },
+    {
+     "affirmation": "Le seul hook est `PermissionDenied`, qui lance `operer refus`.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-24",
+     "caduc_si": "d'autres hooks sont ajoutés ou celui-ci est retiré"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le régime des permissions change"
+    },
+    {
+     "affirmation": "La vérification SHA-256 des missions, faite à la main, pourrait devenir un hook (piste 3).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la piste 3 est close"
+    },
+    {
+     "affirmation": "Les missions portent leur empreinte SHA-256 dans un fichier `.sha256` séparé.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la convention d'empreinte change"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-how-claude-code-works",
@@ -3628,7 +3809,7 @@
    "categorie": "fonctionnalites",
    "nom": "Choose a permission mode",
    "gabarit": "complet",
-   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default`, `acceptEdits`, `plan`, `auto` (un classifieur contrôle les actions à ta place), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande. On passe de l'un à l'autre par `Maj+Tab` ; `bypassPermissions` n'entre dans le cycle qu'avec `--permission-mode bypassPermissions` au lancement ou `permissions.defaultMode` dans les réglages utilisateur.",
+   "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (Manual), `acceptEdits`, `plan`, `auto` (un classifieur contrôle les actions), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande. On passe de l'un à l'autre par `Maj+Tab` ; même en `bypassPermissions`, les règles `deny` bloquent, et les règles `ask`, `AskUserQuestion`, les suppressions de chemins critiques et deux garde-fous de la messagerie entre sessions demandent toujours.",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
    "usage": "claude -p \"Run the test suite and fix any failures\" --permission-mode auto",
    "usage_nature": "syntaxe",
@@ -3637,7 +3818,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` depuis le 06/10 (D83) : les règles `allow` n'y ont plus d'effet, les règles `deny` bloquent toujours. Une session cloud (exécutant `claude-cloud`) n'offre pas ce mode, et un `bypassPermissions` dans `.claude/settings.json` de projet est sans effet."
+    "pourquoi": "Toutes tes sessions locales sauf trading et les étapes Claude de la chaîne de nuit tournent en `bypassPermissions` (D83) : les règles `deny` bloquent encore, et `AskUserQuestion` ou un `rm` de chemin critique attendraient une réponse. Une session cloud (`claude-cloud`) ignore ce mode s'il vient d'un fichier de réglages, et un `bypassPermissions` dans `.claude/settings.json` de projet est sans effet."
    },
    "sources": [
     {
@@ -3646,11 +3827,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3776,9 +3957,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
@@ -3789,11 +3974,43 @@
      "pourquoi": "Étapes Claude de la chaîne D70 lancées avec `--permission-mode bypassPermissions` (D83)."
     },
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
      "pourquoi": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "Même en `bypassPermissions`, les règles `deny` bloquent et les règles `ask`, `AskUserQuestion` et les suppressions de chemins critiques demandent toujours.",
+     "source": "https://code.claude.com/docs/en/permission-modes",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la liste des actions jamais auto-approuvées change"
+    },
+    {
+     "affirmation": "Les sessions cloud n'appliquent pas `defaultMode: \"bypassPermissions\"` des fichiers de réglages ; un `bypassPermissions` dans `.claude/settings.json` de projet n'est pas appliqué aux sessions de terminal.",
+     "source": "https://code.claude.com/docs/en/permission-modes",
+     "releve_le": "2026-10-24",
+     "caduc_si": "les sessions cloud ou les réglages de projet acceptent ce mode"
+    },
+    {
+     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le régime des permissions change"
+    },
+    {
+     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions`.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-24",
+     "caduc_si": "l'orchestrateur change de mode de permission"
+    },
+    {
+     "affirmation": "OPÉRER confie des missions à l'exécutant `claude-cloud`.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-10-24",
+     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-permissions",
@@ -4069,7 +4286,7 @@
    "categorie": "fonctionnalites",
    "nom": "Continue local sessions from any device with Remote Control",
    "gabarit": "complet",
-   "description": "Remote Control relie claude.ai/code ou l'app Claude mobile à une session qui tourne sur la machine locale, avec ses fichiers, ses serveurs MCP et sa configuration. La conversation est synchronisée sur tous les appareils, on peut joindre photos et fichiers depuis le téléphone, et la session se reconnecte seule après une coupure réseau ou une mise en veille.",
+   "description": "Remote Control relie claude.ai/code ou l'app Claude mobile à une session qui tourne sur la machine locale, avec ses fichiers, ses serveurs MCP et sa configuration. La conversation est synchronisée sur tous les appareils et la session se reconnecte seule après une mise en veille ou une coupure réseau ; après environ 30 minutes de signaux de présence perdus, `/remote-control` la reconnecte.",
    "description_source": "Continue a local Claude Code session from your phone, tablet, or any browser using Remote Control. Works with claude.ai/code and the Claude mobile app.",
    "usage": "claude remote-control",
    "usage_nature": "syntaxe",
@@ -4078,7 +4295,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes services `claude-session@<nom>` sont lancés avec `--remote-control <nom>` et pilotés depuis l'iPhone ; la reconnexion automatique couvre une coupure réseau, même si le Wi-Fi est stable depuis la connexion directe à la box (02/10)."
+    "pourquoi": "Tes services `claude-session@<nom>` sont lancés avec `--remote-control <nom>` et pilotés depuis l'iPhone ; si une session affiche `could not reach the Remote Control server for about 30 minutes`, `/remote-control` la reconnecte sans relancer le service."
    },
    "sources": [
     {
@@ -4087,11 +4304,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4159,19 +4376,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec `--remote-control <nom>`, pilotés depuis l'iPhone."
     },
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Wi-Fi seul, connexion directe à la box en 5 GHz ; décrochages déclarés clos le 02/10."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS)."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "La session se reconnecte seule après une veille ou une coupure réseau ; après l'erreur `could not reach the Remote Control server for about 30 minutes`, `/remote-control` la reconnecte.",
+     "source": "https://code.claude.com/docs/en/remote-control",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le mécanisme de reconnexion change"
+    },
+    {
+     "affirmation": "Les services `claude-session@<nom>` lancent `claude --resume <id> --remote-control <nom>` et sont pilotés depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-24",
+     "caduc_si": "les services ne lancent plus Remote Control"
+    },
+    {
+     "affirmation": "L'iPhone pilote le PC à distance par Remote Control.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Sylvain ne pilote plus ses sessions depuis l'iPhone"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-routines",
@@ -4179,16 +4421,16 @@
    "categorie": "fonctionnalites",
    "nom": "Automate work with scheduled tasks",
    "gabarit": "complet",
-   "description": "Une routine enregistre un prompt, des dépôts et des connecteurs, puis s'exécute sur l'infrastructure d'Anthropic selon un déclencheur : planning, appel HTTP avec jeton ou événement GitHub. Aperçu de recherche, gérée sur claude.ai/code/routines ou par `/schedule`, elle consomme les limites du plan.",
+   "description": "Une tâche planifiée cloud (anciennement routine) enregistre un prompt, des dépôts et des connecteurs, puis s'exécute sur l'infrastructure d'Anthropic selon un déclencheur : planning, appel HTTP avec jeton, ou événement GitHub de pull request ou de release. Aperçu de recherche sur Pro, Max, Team et Enterprise, géré sur claude.ai/code/routines ou par `/schedule` ; chaque exécution puise dans le forfait, et sans crédits d'usage les exécutions sont refusées une fois la limite atteinte.",
    "description_source": "Put Claude Code on autopilot. Create scheduled tasks, formerly routines, that run in the cloud on a schedule, on API calls, or on GitHub events.",
    "usage": "/schedule tomorrow at 9am, summarize yesterday's merged PRs",
    "usage_nature": "syntaxe",
    "exemple": "/schedule tomorrow at 9am, summarize yesterday's merged PRs",
-   "disponibilite": null,
+   "disponibilite": "Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "carnet n'a pas de CI (ses tests ne tournent qu'en local) : une routine déclenchée par un événement GitHub (push) lancerait `node --test` dans le cloud sur le clone, sans la machine ; elle n'a pas accès aux fichiers locaux et consomme les limites du plan."
+    "pourquoi": "carnet n'a pas de CI ; comme tu commites directement, sans PR, seul un déclencheur de planning conviendrait : par `/schedule`, une tâche nocturne qui lance `node --test` sur le clone et signale les échecs. Elle puiserait dans ton Max (20x), sans crédit cloud depuis le 21/10 : à réserver à une semaine où le quota hebdomadaire laisse de la marge."
    },
    "sources": [
     {
@@ -4197,11 +4439,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4269,24 +4511,65 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "pas de CI, tests node --test seulement en local"
+     "pourquoi": "Pas de CI, tests `node --test` seulement en local ; commits très fréquents."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "carnet : tests qui ne tournent qu'en local, pas de CI"
+     "pourquoi": "Piste 10 : carnet a des tests qui ne tournent qu'en local, pas de CI."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "routines planifiées : fonction à explorer"
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Routines planifiées : fonction de Claude à explorer."
+    },
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Max (20x) à l'essai ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Déclencheurs : planning, appel API, ou événements GitHub de pull request et de release ; les exécutions puisent dans le forfait et sont refusées à la limite sans crédits d'usage.",
+     "source": "https://code.claude.com/docs/en/routines",
+     "releve_le": "2026-10-24",
+     "caduc_si": "les déclencheurs GitHub couvrent le push ou la facturation change"
+    },
+    {
+     "affirmation": "carnet n'a pas de CI ; ses tests `node --test` ne tournent qu'en local.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-24",
+     "caduc_si": "une CI est ajoutée à carnet"
+    },
+    {
+     "affirmation": "Pas de CI sur carnet (piste 10).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la piste 10 est close"
+    },
+    {
+     "affirmation": "Les routines planifiées sont une fonction à explorer.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Sylvain les écarte"
+    },
+    {
+     "affirmation": "Max (20x) à l'essai ; aucun crédit Claude Code cloud (21/10).",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le forfait change ou un crédit cloud est repris",
+     "revoir_le": "2026-11-03"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-sandboxing",
@@ -4294,7 +4577,7 @@
    "categorie": "fonctionnalites",
    "nom": "Configure the sandboxed Bash tool",
    "gabarit": "complet",
-   "description": "Le bac à sable Bash est une limite appliquée par le système autour des commandes shell de Claude (Bash, Monitor et leurs sous-processus) : écriture limitée au dossier de travail et au dossier temporaire, réseau coupé sauf domaines autorisés, ce qui permet de les exécuter sans demande d'autorisation. Les outils Read, Edit, Write, WebFetch, les hooks et les serveurs MCP restent hors du bac à sable. `/sandbox` ouvre le panneau de réglage ; sous Linux, il faut `bubblewrap` et `socat`, et sans eux les commandes tournent sans bac à sable, sauf si `sandbox.failIfUnavailable` vaut `true`.",
+   "description": "Le bac à sable Bash est une limite appliquée par le système autour des commandes shell de Claude (Bash, Monitor et leurs sous-processus) : écriture limitée au dossier de travail et au dossier temporaire, réseau coupé sauf domaines autorisés. Read, Edit, Write, WebFetch, les hooks et les serveurs MCP restent hors du bac à sable ; `/sandbox` ouvre le panneau de réglage. Sous Linux, il faut `bubblewrap` et `socat`, et sans eux les commandes tournent sans bac à sable, sauf si `sandbox.failIfUnavailable` vaut `true`.",
    "description_source": "Restrict the files and network hosts Claude Code's shell commands can reach with the built-in sandbox. Turn it on, set the boundary, and fix what it breaks.",
    "usage": "/sandbox",
    "usage_nature": "syntaxe",
@@ -4303,7 +4586,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur trading-sim, la règle « aucun accès web » ne couvre que WebFetch, WebSearch, le navigateur et les connecteurs : une session lancée avec `claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` couperait aussi le réseau des commandes Bash (un `curl` doit échouer), sans rien écrire. Choisir un mode dans `/sandbox` l'enregistre dans `.claude/settings.local.json`, et le réglage durable de ce dépôt passe par Work."
+    "pourquoi": "Sur trading-sim, la règle « aucun accès web » ne couvre que WebFetch, WebSearch, le navigateur et les connecteurs : `claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` couperait aussi le réseau des commandes Bash (un `curl` doit échouer), sans rien écrire. Choisir un mode dans `/sandbox` l'enregistre dans `.claude/settings.local.json`, et le réglage durable de ce dépôt passe par Work."
    },
    "sources": [
     {
@@ -4312,11 +4595,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4394,9 +4677,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -4405,13 +4692,29 @@
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "Règle « aucun accès web en Lot 001 » ; dépôt trading-sim gouverné par Work."
-    },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1 : `bubblewrap` et `socat` requis."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`claude --settings '{\"sandbox\": {\"enabled\": true, \"allowUnsandboxedCommands\": false}}'` active le bac à sable sans repli ; un mode choisi dans `/sandbox` est enregistré dans `.claude/settings.local.json`.",
+     "source": "https://code.claude.com/docs/en/sandboxing",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la syntaxe des réglages sandbox ou leur emplacement change"
+    },
+    {
+     "affirmation": "trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la politique de capacités de trading-sim change"
+    },
+    {
+     "affirmation": "trading-sim suit la règle « aucun accès web en Lot 001 » et son dépôt est gouverné par Work.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la règle ou la gouvernance du dépôt change"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-scheduled-tasks",
@@ -4836,7 +5139,7 @@
    "categorie": "fonctionnalites",
    "nom": "Create custom subagents",
    "gabarit": "complet",
-   "description": "Un sous-agent est un assistant spécialisé qui travaille dans sa propre fenêtre de contexte, avec son invite système, ses outils et ses permissions, puis ne rend qu'un résumé à la session principale. Il se définit dans un fichier Markdown à en-tête YAML, dans `~/.claude/agents/` (personnel) ou `.claude/agents/` (projet), et peut fixer son propre modèle avec `model:`.",
+   "description": "Un sous-agent est un assistant spécialisé qui travaille dans sa propre fenêtre de contexte, avec son invite système, ses outils et ses permissions, et ne rend qu'un résumé ; ses requêtes comptent dans les mêmes limites d'usage que la conversation principale. Il se définit dans un fichier Markdown à en-tête YAML, dans `~/.claude/agents/` ou `.claude/agents/`, et fixe son modèle avec `model:`. Avec un abonnement Claude, le sous-agent intégré `Explore` tourne sur Opus ; un sous-agent utilisateur nommé `Explore` le remplace et garde son propre `model`.",
    "description_source": "Create and use specialized AI subagents in Claude Code for task-specific workflows and improved context management.",
    "usage": "Create a personal code-improver subagent in ~/.claude/agents/ that scans\nfiles and suggests improvements for readability, performance, and best\npractices. It should explain each issue, show the current code, and\nprovide an improved version. Make it read-only and have it use Sonnet.",
    "usage_nature": "syntaxe",
@@ -4845,7 +5148,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes sessions appellent déjà des sous-agents (31 appels relevés le 04/10, surtout `general-purpose` et `Explore`), et les briefs confient la lecture des gros fichiers à `Explore` ; une définition propre fixe `model:` et `tools:`, conformément à la politique du pilote Routage (modèle dans chaque définition plutôt qu'un défaut global)."
+    "pourquoi": "Tes briefs confient la lecture des gros fichiers à `Explore`, qui tourne sur Opus avec un abonnement : un `~/.claude/agents/Explore.md` avec `model: haiku` (ou `sonnet`) l'optimiserait sans changer d'outil et allégerait les limites hebdomadaires. Le modèle se fixe dans chaque définition, conformément à la politique du pilote Routage."
    },
    "sources": [
     {
@@ -4854,11 +5157,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4942,20 +5245,60 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
-     "pourquoi": "31 appels `Agent` en cinq jours au 04/10 ; consigne : `Explore` pour lire les gros fichiers, vérifications en parallèle."
+     "pourquoi": "31 appels `Agent` au 04/10, dont 11 `Explore` ; consigne : `Explore` pour lire les gros fichiers, à optimiser au besoin."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Modèle choisi dans la définition de chaque sous-agent ; agent perso `executant` non adopté."
+     "pourquoi": "Modèle choisi dans la définition de chaque sous-agent plutôt qu'un défaut global (pilote Routage, 25/09)."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 11 : choix du modèle par tâche pour étaler la charge des limites."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Avec un abonnement Claude, `Explore` tourne sur le modèle de l'alias `opus` ; un sous-agent utilisateur ou projet nommé `Explore` le remplace et garde son propre champ `model`.",
+     "source": "https://code.claude.com/docs/en/sub-agents",
+     "releve_le": "2026-10-24",
+     "caduc_si": "le modèle d'Explore ou la règle de remplacement change"
+    },
+    {
+     "affirmation": "Les requêtes d'un sous-agent comptent dans les mêmes limites d'usage que la conversation principale.",
+     "source": "https://code.claude.com/docs/en/sub-agents",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page change la comptabilisation des sous-agents"
+    },
+    {
+     "affirmation": "Consigne du 04/10 : lecture des gros fichiers par `Explore`, qu'on garde et qu'on optimise au besoin ; 11 appels `Explore` sur 31 relevés.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la consigne sur `Explore` change"
+    },
+    {
+     "affirmation": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-24",
+     "caduc_si": "un défaut global `CLAUDE_CODE_SUBAGENT_MODEL` est adopté"
+    },
+    {
+     "affirmation": "Choisir le modèle par tâche pourrait étaler la charge des limites (piste 11).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la piste 11 est close"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-terminal-config",
