@@ -1,4 +1,4 @@
-"""Import privé et projection commune conservatrice (lot L1 de la conception « Delta-IA en deux couches », §2.2 et §6 étape 1).
+"""Import privé et projection commune conservatrice (lots L1 et L2 de la conception « Delta-IA en deux couches », §2.2, §3.1, §6).
 
 Lit, sans les modifier, `docs/data/**` et les journaux privés du dépôt producteur (`kb-essais.yaml`, `kb-rejugements.yaml`,
 empreinte de `profil.yaml`), puis écrit hors du dépôt :
@@ -6,8 +6,14 @@ empreinte de `profil.yaml`), puis écrit hors du dépôt :
   publiées, noms) limitée aux champs C certains, avec son manifeste, validée avant de devenir active ;
 - le magasin privé `<etat>/delta-ia/personnel/` : avis, essais, réévaluations et rejugements par identité (`overlay.json`),
   textes S, champs inconnus et champs C retenus pour donnée personnelle (`en_attente.json`), relevé d'import (`import.json`).
-Les vues dérivées (index, semaine, recherche, récents, à tester) ne sont pas recopiées au commun : elles se recalculeront
-depuis le commun (lot L2) ; leurs champs P et S vont au magasin privé. Même entrée, mêmes octets : une relance ne réécrit rien.
+Les vues dérivées (index, semaine, recherche, récents, à tester) ne sont pas recopiées au commun ; leurs champs P et S vont
+au magasin privé. Même entrée, mêmes octets : une relance ne réécrit rien.
+
+Lot L2 : la base commune couvre tous les systèmes (`extraction`, sans le filtre du profil), la veille porte ses jours
+couverts, et la génération passe par une frontière : l'étape privée écrit l'entrée du générateur commun
+(`<etat>/delta-ia/production/entree-commune/`), le générateur isolé (`generateur`) n'ouvre qu'elle et le cache de
+traductions, puis l'étape privée contrôle sa sortie (sentinelles des sources scindées, données de l'instance) avant de
+l'activer. Les sources modèles et méthodes sont scindées (`scission`) : part privée au magasin personnel.
 """
 
 from __future__ import annotations
@@ -23,12 +29,17 @@ import yaml
 
 from . import classement as cl
 from . import schemas
+from .extraction import Extraction, extraire_tous_systemes, systemes_de
+from .generateur import ecrire_entree, generer
 from .racines import Racines
+from .scission import scinder_sources, textes_prives
 from .sentinelles import Detecteur, termes_instance
 from .stockage import dossier_prive, ecrire, serialiser, sha256_fichier, verrou
 
 # Journaux privés du dépôt producteur lus par l'import (D119, rejugements), et profil dont seule l'empreinte est gardée.
 ESSAIS, REJUGEMENTS, PROFIL = "kb-essais.yaml", "kb-rejugements.yaml", "profil.yaml"
+SOURCES = "sources.yaml"
+SOURCES_SCINDEES = ("kb-modeles", "kb-methodes")
 ORDRE = ("kb_catalogue", "methodes", "modeles", "quotidien", "versions", "a_tester", "recent", "index_veille", "etat",
          "recherche", "semaine", "index_semaine", "noms")  # reevaluations : rattachées ligne par ligne
 AVIS = ("kb_catalogue", "methodes", "modeles")  # familles dont `statut_usage` et `recommandation` sont l'avis courant
@@ -60,6 +71,8 @@ class Resultat:
     comptes: dict
     refus: list
     changements: list[str]
+    traduction: dict | None = None
+    textes: dict | None = None
 
 
 def slug_outil(outil) -> str | None:
@@ -103,6 +116,7 @@ class Projection:
         self.racines: dict[str, dict] = {}  # fichier → champs C de sa racine
         self.refus: list[dict] = []
         self.ids_kb: dict[str, str] = {}  # id de fiche → identité `kb:<perimetre>:<id>`
+        self.ajoutees: dict[str, list[str]] = {}  # périmètre → ids ajoutés par l'extraction sans filtre de système
 
     def _identite(self, famille: str, rel: str, doc, reel: list) -> tuple[str, list] | None:
         parties = rel.split("/")
@@ -192,14 +206,50 @@ def _garder(racine: dict, cles: tuple) -> dict:
     return {k: racine[k] for k in cles if k in racine}
 
 
-def construire_commun(p: Projection, familles: dict[str, list[str]]) -> dict[str, dict]:
+def _base_commune(p: Projection, familles: dict[str, list[str]], extraction: Extraction | None) -> tuple[dict, dict]:
+    """Fiches C de la base par fichier, complétées par l'extraction sans filtre de système : fiches absentes de la base de
+    l'instance ajoutées, fiche « retirée » que la documentation lue en entier décrit encore remise en service, et
+    `systemes` calculé pour chacune. Rend (fichier → [(identité, champs)], ids ajoutés par périmètre)."""
+    par_rel = {rel: p.fiches(rel) for rel in sorted(familles.get("kb_catalogue", []))}
+    ajoutees: dict[str, list[str]] = {}
+    if extraction is None:
+        extraites = {}
+    else:
+        extraites = {e["id"]: (per, e) for per, lst in extraction.entrees.items() for e in lst}
+    connus = {c.get("id") for lst in par_rel.values() for _, c in lst}
+    for rel, lst in par_rel.items():
+        for _, contenu in lst:
+            ext = extraites.get(contenu.get("id"))
+            if (ext and contenu.get("retiree") is True and ext[1].get("retiree") is False
+                    and contenu.get("origine") in extraction.extraites.get(ext[0], set())):
+                contenu["retiree"] = False
+            contenu["systemes"] = systemes_de(contenu.get("nom") or "", contenu.get("description_source"),
+                                              contenu.get("usage"))
+    for ident_brut, (per, e) in sorted(extraites.items()):
+        if ident_brut in connus or e.get("retiree"):
+            continue
+        ident = f"kb:{per}:{ident_brut}"
+        nature = p.detecteur.motif(e)
+        if nature:
+            p.refus.append({"objet": ident, "fichier": f"raw/kb ({per})", "chemin": "entrees[]",
+                            "motif": f"donnee_personnelle:{nature}"})
+            continue
+        rel = f"kb/{per}/{e['categorie']}.json"
+        par_rel.setdefault(rel, []).append((ident, dict(e)))
+        p.racines.setdefault(rel, {"perimetre": per, "categorie": e["categorie"]})
+        ajoutees.setdefault(per, []).append(ident_brut)
+    return par_rel, ajoutees
+
+
+def construire_commun(p: Projection, familles: dict[str, list[str]], extraction: Extraction | None = None) -> dict[str, dict]:
     """Documents communs de la génération, par chemin relatif ; `familles` : famille → fichiers lus."""
     from ..kb.catalogue import construire_noms
     communs: dict[str, dict] = {}
     toutes_kb = []
-    for rel in sorted(familles.get("kb_catalogue", [])):
-        fiches = [_fiche(i, c) for i, c in p.fiches(rel)]
-        toutes_kb += [{k: v for k, v in f.items() if k not in ("identite", "empreinte")} for f in fiches]
+    par_rel, p.ajoutees = _base_commune(p, familles, extraction)
+    for rel, lst in sorted(par_rel.items()):
+        fiches = [_fiche(i, c) for i, c in lst]
+        toutes_kb += [{k: v for k, v in f.items() if k not in ("identite", "empreinte", "systemes")} for f in fiches]
         communs[rel] = _doc("kb", **_garder(p.racines[rel], ("perimetre", "categorie", "maj_le")),
                             total=len(fiches), entrees=fiches)
     if "kb/methodes.json" in familles.get("methodes", []):
@@ -238,7 +288,9 @@ def construire_commun(p: Projection, familles: dict[str, list[str]]) -> dict[str
             fiches.append(_fiche(ident, {"id": id_brut, "publications": [
                 {k: v for k, v in pub.items() if k != "_id"} for pub in pubs]}))
         fiches.sort(key=lambda f: (f["publications"][0]["jour"] or "", f["identite"]))
-        communs[f"veille/{perimetre}.json"] = _doc("veille", perimetre=perimetre, total=len(fiches), entrees=fiches)
+        index = p.racines.get(f"{perimetre}/index.json", {})
+        communs[f"veille/{perimetre}.json"] = _doc("veille", perimetre=perimetre, **_garder(index, ("maj_le", "jours")),
+                                                   total=len(fiches), entrees=fiches)
     if "versions.json" in familles.get("versions", []):
         fiches = [_fiche(i, c) for i, c in p.fiches("versions.json")]
         communs["versions.json"] = _doc("versions", total=len(fiches), entrees=fiches)
@@ -328,7 +380,9 @@ def _empreintes(depot: Path, rels) -> dict[str, str | None]:
 
 def lire_entrees(depot: Path) -> list[Entree]:
     rels = sorted(p.relative_to(depot).as_posix() for p in (depot / "docs" / "data").rglob("*") if p.is_file())
-    rels += [r for r in (ESSAIS, REJUGEMENTS, PROFIL) if (depot / r).is_file()]
+    rels += [r for r in (ESSAIS, REJUGEMENTS, PROFIL, SOURCES) if (depot / r).is_file()]
+    rels += sorted(p.relative_to(depot).as_posix() for d in SOURCES_SCINDEES if (depot / d).is_dir()
+                   for p in (depot / d).iterdir() if p.is_file() and p.suffix in (".yaml", ".md") and p.name != "README.md")
     sortie = []
     for rel in rels:
         octets = (depot / rel).read_bytes()
@@ -336,7 +390,8 @@ def lire_entrees(depot: Path) -> list[Entree]:
     return sortie
 
 
-def projeter(entrees: list[Entree], detecteur: Detecteur) -> tuple[dict, dict, dict, Projection, list[str]]:
+def projeter(entrees: list[Entree], detecteur: Detecteur,
+             extraction: Extraction | None = None) -> tuple[dict, dict, dict, Projection, list[str]]:
     """Sans écriture : (documents communs, overlay, en attente, projection, fichiers de docs/data de famille inconnue)."""
     p = Projection(detecteur)
     par_famille: dict[str, list[tuple[str, list]]] = {}
@@ -362,32 +417,18 @@ def projeter(entrees: list[Entree], detecteur: Detecteur) -> tuple[dict, dict, d
         for rel, docs in par_famille.get(famille, []):
             p.ajouter(rel, famille, docs[0])
     familles = {f: [rel for rel, _ in lst] for f, lst in par_famille.items()}
-    communs = construire_commun(p, familles)
+    communs = construire_commun(p, familles, extraction)
     journaux = {e.rel: e.octets for e in entrees if e.rel in (ESSAIS, REJUGEMENTS)}
     overlay, attente = construire_personnel(p, communs, par_famille.get("reevaluations", []), journaux)
     return communs, overlay, attente, p, inconnus
 
 
-def _manifeste(communs: dict) -> dict:
-    fichiers = [{"chemin": rel, "taille": len(serialiser(doc)), "sha256": hashlib.sha256(serialiser(doc)).hexdigest()}
-                for rel, doc in sorted(communs.items())]
-    dates = [d for doc in communs.values() for d in _dates(doc)]
-    return {"schema": schemas.MANIFEST, "schema_version": schemas.VERSION, "generation": schemas.generation_de(fichiers),
-            "publie_le": None, "donnees_du": max(dates) if dates else None,
-            "schemas_requis": [f"{schemas.COMMUN}@{schemas.VERSION}"], "langues": [],
-            "couverture": {rel: doc.get("total", len(doc.get("noms", {}))) for rel, doc in sorted(communs.items())},
-            "fichiers": fichiers}
-
-
-def _dates(doc) -> list[str]:
-    sortie = [doc[c][:10] for c in ("maj_le", "date_releve") if isinstance(doc.get(c), str)]
-    for f in doc.get("entrees", []) if isinstance(doc.get("entrees"), list) else []:
-        sortie += [pub["jour"] for pub in f.get("publications", []) if isinstance(pub.get("jour"), str)]
-    return sortie
-
-
-def importer(depot: Path, racines: Racines, detecteur: Detecteur | None = None) -> Resultat:
-    """Import complet, sous le verrou du magasin. `ImportImpossible` si une règle de sûreté n'est pas tenue."""
+def importer(depot: Path, racines: Racines, detecteur: Detecteur | None = None, brut: Path | None = None,
+             traductions: Path | None = None, redacteur=None, budget: int = 0) -> Resultat:
+    """Import complet, sous le verrou du magasin. `ImportImpossible` si une règle de sûreté n'est pas tenue.
+    `brut` : dépôt dont `raw/kb/` porte les pages de documentation (défaut : `depot`) ; `traductions` : cache de
+    traductions (défaut : `<etat>/delta-ia/production/traductions-fr.json`) ; `budget` : unités au plus envoyées au
+    rédacteur, 0 pour le seul cache."""
     depot = depot.resolve()
     for nom in ("configuration", "etat", "cache", "runtime"):
         p = getattr(racines, nom).resolve()
@@ -396,15 +437,72 @@ def importer(depot: Path, racines: Racines, detecteur: Detecteur | None = None) 
     if not (depot / "docs" / "data").is_dir():
         raise ImportImpossible(f"{depot}: docs/data introuvable")
     detecteur = detecteur or Detecteur(termes_instance(depot))
+    extraction = None
+    if (depot / SOURCES).is_file():
+        extraction = extraire_tous_systemes((brut or depot).resolve(), depot / SOURCES)
+    traductions = traductions or racines.production / "traductions-fr.json"
     with verrou(racines.verrous, "couches-import"):
-        return _importer(depot, racines, detecteur)
+        return _importer(depot, racines, detecteur, extraction, traductions, redacteur, budget)
 
 
-def _importer(depot: Path, racines: Racines, detecteur: Detecteur) -> Resultat:
+def _couverture_sources(extraction: Extraction | None, p: Projection) -> dict:
+    if extraction is None:
+        return {"base": {"statut": "sans_extraction", "motif": f"{SOURCES} absent"}}
+    return {f"base:{per}": {**c, "ajoutees": sorted(p.ajoutees.get(per, []))} if per != "_" else c
+            for per, c in sorted(extraction.couverture.items())}
+
+
+def fuites_privees(communs: dict, textes: list[str]) -> int:
+    """Nombre de textes privés (sources scindées) retrouvés dans les textes de la génération commune."""
+    if not textes:
+        return 0
+    morceaux: list[str] = []
+
+    def parcourir(v):
+        if isinstance(v, str):
+            morceaux.append(v)
+        elif isinstance(v, dict):
+            for x in v.values():
+                parcourir(x)
+        elif isinstance(v, list):
+            for x in v:
+                parcourir(x)
+    parcourir(communs)
+    tout = "\n".join(morceaux)
+    return sum(1 for x in textes if x in tout)
+
+
+def _journaliser(racines: Racines, bilan, le: str) -> None:
+    """Coût et envois d'un lot de traduction : journal local de production, jamais publié."""
+    if not bilan.appels:
+        return
+    dossier = dossier_prive(racines.production)
+    for nom, lignes in (("couts.jsonl", [{"le": le, "vue": "traduction", **bilan.resume()}]),
+                        ("traductions-envois.jsonl", bilan.journal)):
+        with open(dossier / nom, "a", encoding="utf-8") as f:
+            for ligne in lignes:
+                f.write(json.dumps(ligne, ensure_ascii=False, sort_keys=True) + "\n")
+        (dossier / nom).chmod(0o600)
+
+
+def _importer(depot: Path, racines: Racines, detecteur: Detecteur, extraction: Extraction | None, traductions: Path,
+              redacteur, budget: int) -> Resultat:
+    from datetime import datetime, timezone
     entrees = lire_entrees(depot)
     avant = {e.rel: e.sha256 for e in entrees}
-    communs, overlay, attente, p, inconnus = projeter(entrees, detecteur)
-    manifest = _manifeste(communs)
+    communs, overlay, attente, p, inconnus = projeter(entrees, detecteur, extraction)
+    try:
+        publique, privee = scinder_sources(depot)
+    except (OSError, ValueError, yaml.YAMLError) as e:
+        raise ImportImpossible(f"sources modèles et méthodes illisibles : {type(e).__name__}") from e
+    # Frontière (conception §3.1) : le générateur commun ne reçoit que l'entrée écrite ici.
+    entree = dossier_prive(racines.production) / "entree-commune"
+    ecrire_entree(entree, communs, _couverture_sources(extraction, p))
+    gen = generer(entree, traductions, redacteur, budget, datetime.now(timezone.utc).date().isoformat())
+    _journaliser(racines, gen.bilan, datetime.now(timezone.utc).isoformat(timespec="seconds"))
+    if fuites_privees(gen.communs, textes_prives(privee)):
+        raise ImportImpossible("génération commune refusée : texte privé d'une source scindée retrouvé")
+    communs, manifest = gen.communs, gen.manifest
     generation = manifest["generation"]
     refus = p.refus + [{"objet": f"fichier:{r}", "fichier": f"docs/data/{r}", "chemin": None, "motif": "fichier_inconnu"}
                        for r in inconnus]
@@ -420,6 +518,8 @@ def _importer(depot: Path, racines: Racines, detecteur: Detecteur) -> Resultat:
         "import.json": {"schema": schemas.PERSONNEL, "schema_version": schemas.VERSION, "vue": "import",
                         "commun_generation": generation, "comptes": comptes,
                         "entrees": [{"chemin": r, "sha256": s} for r, s in sorted(avant.items())]},
+        "sources.json": {"schema": schemas.PERSONNEL, "schema_version": schemas.VERSION, "vue": "sources",
+                         "commun_generation": generation, "fichiers": privee},
     }
     for nom, doc in prives.items():
         erreurs = schemas.valider_personnel(doc, doc["vue"], nom)
@@ -433,10 +533,15 @@ def _importer(depot: Path, racines: Racines, detecteur: Detecteur) -> Resultat:
     for nom, doc in prives.items():
         if ecrire(racines.personnel / nom, doc):
             changements.append(f"personnel/{nom}")
+    if ecrire(racines.production / "sources-publiques.json", {"schema": schemas.COMMUN, "schema_version": schemas.VERSION,
+                                                               "vue": "sources", "fichiers": publique}):
+        changements.append("production/sources-publiques.json")
     _activer(racines, generation, dossier, changements)
     if _empreintes(depot, avant) != avant:
         raise ImportImpossible("entrées modifiées pendant l'import : relancer l'import")
-    return Resultat(generation, dossier, comptes, refus, changements)
+    return Resultat(generation, dossier, comptes, refus, changements, gen.bilan.resume() if gen.bilan.appels else None,
+                    {"textes": gen.textes, "traduits_fr": gen.traduits, "cache_modifie": gen.cache_modifie,
+                     "lectures_generateur": len(gen.lus)})
 
 
 def _ecrire_generation(racines: Racines, communs: dict, manifest: dict, detecteur: Detecteur,
@@ -466,8 +571,10 @@ def _ecrire_generation(racines: Racines, communs: dict, manifest: dict, detecteu
     return cible
 
 
-def _activer(racines: Racines, generation: str, dossier: Path, changements: list[str]) -> None:
-    """Pointeur vers la génération validée ; la précédente est gardée pour retour, les plus anciennes sont retirées."""
+def _activer(racines: Racines, generation: str, dossier: Path, changements: list[str], origine: str = "import",
+             publie_le: str | None = None) -> None:
+    """Pointeur vers la génération validée ; la précédente est gardée pour retour, les plus anciennes sont retirées.
+    `origine` : `import` (instance productrice) ou `synchro` (miroir d'une publication, avec son heure de publication)."""
     try:
         actuel = json.loads(racines.commun_actif.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -477,7 +584,8 @@ def _activer(racines: Racines, generation: str, dossier: Path, changements: list
     if actuel.get("generation") not in (None, generation):
         precedente = actuel["generation"]
     doc = {"schema": schemas.COMMUN, "schema_version": schemas.VERSION, "vue": "actif", "generation": generation,
-           "manifest_sha256": sha256_fichier(dossier / "manifest.json"), "precedente": precedente}
+           "manifest_sha256": sha256_fichier(dossier / "manifest.json"), "precedente": precedente, "origine": origine,
+           "publie_le": publie_le}
     if ecrire(racines.commun_actif, doc):
         changements.append("commun-actif.json")
     for d in racines.commun.iterdir():

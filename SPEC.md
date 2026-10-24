@@ -27,6 +27,8 @@ Finalité : optimiser finement l'usage de Claude et de ChatGPT, et rester à jou
 | Claude Code | `claude`, `actu` | `claude`, `claude-code`, `actu` (actualité IA générale) | `docs/data/claude/`, `docs/data/actu/`, `docs/data/kb/claude/`, `docs/data/kb/recent.json`, `docs/data/kb/a-tester.json`, `docs/data/kb/noms.json`, `docs/data/versions.json`, `docs/data/etat.json`, `docs/data/semaine/`, `docs/data/recherche.json`, `state/claude.json`, `state/actu.json` |
 | Codex | `openai` | `chatgpt`, `codex` | `docs/data/openai/`, `docs/data/kb/openai/`, `docs/data/kb/recent.json`, `docs/data/kb/a-tester.json`, `docs/data/kb/noms.json`, `state/openai.json` |
 
+Hors des passages, le service déterministe `delta-ia-commun` (`scripts/commun_auto.py`, deux couches, lot L2) écrit seul `docs/commun/v1/` (route commune versionnée, servie à `https://ai.orqyra.io/commun/v1/`, à côté des routes de `docs/data` qu'il ne modifie pas) et `kb-traductions/fr.json` (traductions automatiques des extraits publics de la base) ; il n'entre dans aucune étape de la chaîne et ne tourne qu'après elle, sous le même verrou.
+
 `docs/data/kb/recent.json` (D99), `docs/data/kb/a-tester.json` (D103) et `docs/data/kb/noms.json` (D105) sont les seuls fichiers écrits par les deux agents : ils sont dérivés des deux bases par `scripts/catalogue.py` et régénérés à chaque écriture de la base ; chaque étape l'ajoute à son commit et la garde le tolère dans l'arbre de l'étape.
 
 Vocabulaire (D6) : un **périmètre** (`claude` | `openai` | `actu`) est l'unité de récupération, d'état, de dossier de données, du champ `perimetre` du fichier quotidien et du commit. Un **produit** (`claude` | `claude-code` | `chatgpt` | `codex` | `actu`) qualifie chaque élément.

@@ -68,6 +68,31 @@ def ecrire(chemin: Path, doc) -> bool:
     return True
 
 
+def ecrire_public(chemin: Path, doc) -> bool:
+    """Comme `ecrire`, pour un fichier destiné à la publication (route versionnée, cache de traductions suivi) : droits
+    0644, dossier parent laissé tel quel. Rend True si le fichier a changé."""
+    contenu = serialiser(doc)
+    return ecrire_octets_public(chemin, contenu)
+
+
+def ecrire_octets_public(chemin: Path, contenu: bytes) -> bool:
+    try:
+        if chemin.read_bytes() == contenu:
+            return False
+    except OSError:
+        pass
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    tmp = chemin.with_name(f".{chemin.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_bytes(contenu)
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, chemin)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+    return True
+
+
 @contextmanager
 def verrou(dossier: Path, nom: str):
     """Verrou exclusif non bloquant `<dossier>/<nom>.lock` : un seul écrivain par magasin."""

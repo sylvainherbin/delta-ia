@@ -4,13 +4,19 @@ Le lecteur n'écrit rien et n'appelle aucun modèle. Chaque bloc porte sa couche
 composée n'est pas étiquetée « commun » à sa racine. Sans magasin personnel (instance neuve, profil absent), le bloc
 personnel dit `non_personnalise`, jamais un avis de repli. Sans génération commune valide, l'indisponibilité est explicite.
 Le mode `personnel=False` est celui d'un serveur public : la racine personnelle n'est jamais ouverte.
+
+Lot L2 : fraîcheur du commun (vérification du miroir et publication, ou dernier jour des données chez le producteur),
+dernière erreur de synchronisation, texte d'une fiche dans la langue demandée avec repli anglais annoncé ; un avis importé
+devient `a_revoir` quand le commun est très ancien.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 
 from . import schemas
+from .publication import chemin_synchro, fraicheur
 from .racines import Racines
 from .sentinelles import Detecteur
 from .stockage import sha256_fichier
@@ -18,8 +24,12 @@ from ..kb.catalogue import normaliser_nom
 
 
 class Lecteur:
-    def __init__(self, racines: Racines, personnel: bool = True, detecteur: Detecteur | None = None):
-        self.racines = racines
+    def __init__(self, racines: Racines, personnel: bool = True, detecteur: Detecteur | None = None, langue: str = "en",
+                 maintenant: datetime | None = None, seuils: dict | None = None):
+        self.racines, self.langue = racines, langue
+        self.maintenant = maintenant or datetime.now(timezone.utc)
+        self.seuils = seuils or {"ancienne_h": 24, "tres_ancienne_j": 7}
+        self.publie_le = self.verifie_le = self.fraicheur = self.erreur_synchro = None
         self.commun_statut, self.motif, self.generation, self.manifest = "indisponible", None, None, None
         self.fiches: dict[str, dict] = {}
         self.noms: dict[str, list[str]] = {}
@@ -63,6 +73,15 @@ class Lecteur:
             for fiche in (doc.get("modeles") or {}).values():
                 self.fiches[fiche["identite"]] = fiche
         self.generation, self.commun_statut = generation, "disponible"
+        self.publie_le = actif.get("publie_le") if actif.get("origine") == "synchro" else self.manifest.get("publie_le")
+        try:
+            synchro = json.loads(chemin_synchro(self.racines).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            synchro = {}
+        if actif.get("origine") == "synchro" and isinstance(synchro, dict) and not schemas.valider_synchro(synchro):
+            self.verifie_le, self.erreur_synchro = synchro.get("verifie_le"), synchro.get("erreur")
+        self.fraicheur = fraicheur(self.maintenant, self.verifie_le, self.publie_le, self.manifest.get("donnees_du"),
+                                   self.seuils["ancienne_h"], self.seuils["tres_ancienne_j"])
 
     def _charger_personnel(self) -> None:
         chemin = self.racines.personnel / "overlay.json"
@@ -95,10 +114,24 @@ class Lecteur:
         fiche = self.fiches.get(identite)
         if fiche is None:
             return {"couche": "commun", "statut": "introuvable", "generation": self.generation}
-        return {"couche": "commun", "statut": "disponible", "generation": self.generation,
-                "publie_le": self.manifest.get("publie_le"), "donnees_du": self.manifest.get("donnees_du"),
-                "source_verifiee_le": fiche.get("verifie_le"), "verifie_le": None, "langue": None, "fraicheur": None,
-                "fiche": fiche}
+        bloc = {"couche": "commun", "statut": "disponible", "generation": self.generation, "publie_le": self.publie_le,
+                "donnees_du": self.manifest.get("donnees_du"), "source_verifiee_le": fiche.get("verifie_le"),
+                "verifie_le": self.verifie_le, "langue": self.langue, "fraicheur": self.fraicheur, "fiche": fiche}
+        if self.erreur_synchro:
+            bloc["derniere_erreur_synchro"] = self.erreur_synchro
+        if "textes" in fiche:
+            bloc["textes"] = {champ: self.texte(fiche, champ) for champ in fiche["textes"]}
+        return bloc
+
+    def texte(self, fiche: dict, champ: str) -> dict:
+        """Texte d'un champ dans la langue du lecteur ; à défaut, l'anglais avec `repli: true` (jamais un texte de l'avis)."""
+        langues = fiche.get("textes", {}).get(champ, {})
+        choisi = langues.get(self.langue)
+        if choisi is not None:
+            return {"langue": self.langue, "texte": choisi["texte"], "statut": choisi["statut"], "repli": False}
+        en = langues.get("en")
+        return {"langue": "en", "texte": en["texte"] if en else None, "statut": en["statut"] if en else None,
+                "repli": self.langue != "en"}
 
     def bloc_personnel(self, identite: str) -> dict:
         if self.personnel_statut != "disponible":
@@ -112,6 +145,8 @@ class Lecteur:
             statut = "a_revoir"  # le fait commun a changé depuis l'avis
         elif fiche is None and self.commun_statut == "disponible" and statut == "importe" and o["commun_empreinte"]:
             statut = "reference_introuvable"
+        elif statut == "importe" and self.fraicheur == "tres_ancienne":
+            statut = "a_revoir"  # la compatibilité actuelle n'est plus établie par un commun récent
         return {"couche": "personnel", "statut": statut, "observe_le": o["observe_le"], "evalue_le": o["evalue_le"],
                 "avis": {"statut_usage": o["statut_usage"], "recommandation": o["recommandation"]},
                 "essais": o["essais"], "reevaluations": o["reevaluations"], "rejugements": o["rejugements"],
@@ -144,4 +179,5 @@ class Lecteur:
                 ligne["avis_local"] = bool(self.objets and i in self.objets)
             lignes.append(ligne)
         return {"commun": {"couche": "commun", "statut": self.commun_statut, "generation": self.generation,
-                           "motif": self.motif}, "total": len(tous), "affichees": len(lignes), "resultats": lignes}
+                           "motif": self.motif, "fraicheur": self.fraicheur, "publie_le": self.publie_le,
+                           "verifie_le": self.verifie_le}, "total": len(tous), "affichees": len(lignes), "resultats": lignes}

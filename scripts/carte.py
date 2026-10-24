@@ -21,7 +21,7 @@ RACINE = Path(__file__).resolve().parent.parent
 CENTRAUX = ("scripts/deltalib/",)
 SOCLE = ("tests/conftest.py", "pytest.ini", "requirements.txt")
 # Données produites par les passages : aucun test n'en dépend, `valider.py` les contrôle.
-DONNEES = ("docs/data/", "state/", "rapports/", "raw/")
+DONNEES = ("docs/data/", "docs/commun/", "kb-traductions/", "state/", "rapports/", "raw/")
 GENERIQUES = ("SKILL.md", "README.md", "AGENTS.md", "CLAUDE.md.exemple", "__init__.py", "openai.yaml")
 OUTILLAGE = ("tests/test_verifier.py", "tests/test_carte.py", "tests/test_skill_verify.py")
 

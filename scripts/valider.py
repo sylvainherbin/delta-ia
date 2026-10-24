@@ -6,6 +6,7 @@ Usage :
              [--contexte CONTEXTE.md] [--racine <dossier>]
   valider.py --perimetre {claude,openai} --kb         base de référence (SPEC §7.4)
   valider.py --commun <dossier de génération>           génération commune des deux couches (delta.commun v1)
+  valider.py --publication <route>                      route versionnée publiée (index, génération servie et précédente)
 
 Vérifie tous les fichiers quotidiens du dossier `docs/data/<p>/` (schéma, énumérations, dates, unicité des
 identifiants, cohérences, secrets), la couverture des nouveautés brutes par le fichier du jour (`--brut`),
@@ -1560,8 +1561,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--kb", action="store_true", help="valider la base de référence docs/data/kb/<perimetre>/ (SPEC §7.4)")
     p.add_argument("--commun", type=Path, metavar="DOSSIER",
                    help="valider une génération commune (manifeste, empreintes, aucun champ P ni inconnu, aucune donnée personnelle)")
+    p.add_argument("--publication", type=Path, metavar="ROUTE",
+                   help="valider une route commune publiée (docs/commun/v1 : index.json et générations annoncées)")
     p.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
     args = p.parse_args(argv)
+    if args.publication is not None:
+        from deltalib.couches.publication import valider_route
+        erreurs = valider_route(args.publication)
+        if not erreurs:
+            print(f"valider.py : route commune {args.publication} valide")
+            return 0
+        print(f"valider.py : {len(erreurs)} erreur(s) dans la route commune {args.publication}", file=sys.stderr)
+        for e in erreurs[:200]:
+            print(f"  - {e}", file=sys.stderr)
+        return 1
     if args.commun is not None:
         from deltalib.couches.schemas import valider_generation
         from deltalib.couches.sentinelles import Detecteur, termes_instance
@@ -1574,7 +1587,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {e}", file=sys.stderr)
         return 1
     if args.perimetre is None:
-        p.error("--perimetre est requis (sauf avec --commun)")
+        p.error("--perimetre est requis (sauf avec --commun ou --publication)")
     if args.kb:
         rapport = Rapport()
         verifier_organisation_privee(args.racine, rapport)

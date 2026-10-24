@@ -4,6 +4,7 @@ Chaque famille de fichiers porte la liste positive de ses chemins de champs norm
 modèle, nom d'outil, ctx-id), `[]` pour un membre de liste. Un chemin absent de la table est inconnu : il n'est jamais
 réputé commun (refusé à l'export, conservé localement). Un champ sous un conteneur P hérite de P. Un chemin classé dont
 aucun descendant n'est listé est atomique (liste de textes, alias, carte de noms) : toute sa valeur prend sa classe.
+`entrees[].systemes` (lot L2) n'existe pas dans `docs/data` : la génération commune le calcule depuis la documentation.
 
 Lot L1 (« projection commune conservatrice ») : seuls les champs C certains passent au commun. Les champs C « sous revue
 du contenu » qui sont du texte libre (extraits, notes, points forts) sont mis en attente avec les textes S.
@@ -45,7 +46,8 @@ _TABLE = {
     "kb_catalogue": {
         "C": "categorie entrees[].categorie entrees[].description_source entrees[].gabarit entrees[].groupe entrees[].id "
              "entrees[].nom entrees[].origine entrees[].produit entrees[].retiree entrees[].sources entrees[].sources[].libelle "
-             "entrees[].sources[].officielle entrees[].sources[].url entrees[].usage entrees[].usage_nature maj_le perimetre total",
+             "entrees[].sources[].officielle entrees[].sources[].url entrees[].systemes entrees[].usage entrees[].usage_nature "
+             "maj_le perimetre total",
         "P": "contexte_deprecies contexte_empreinte contexte_sections contexte_sections.* entrees[].contexte_empreinte "
              "entrees[].contexte_sections entrees[].contexte_sections.* entrees[].contexte_sections.*.pourquoi "
              "entrees[].contexte_sections.*.sha1 entrees[].recommandation entrees[].recommandation.pourquoi "
@@ -54,7 +56,8 @@ _TABLE = {
              "entrees[].exemple_impossible entrees[].exemple_origine entrees[].historique entrees[].historique[].avant "
              "entrees[].historique[].avant.exemple entrees[].historique[].avant.pourquoi entrees[].historique[].avant.verdict "
              "entrees[].historique[].avant[].affirmation entrees[].historique[].avant[].caduc_si "
-             "entrees[].historique[].avant[].releve_le entrees[].historique[].avant[].source entrees[].historique[].changement "
+             "entrees[].historique[].avant[].releve_le entrees[].historique[].avant[].revoir_le "
+             "entrees[].historique[].avant[].source entrees[].historique[].changement "
              "entrees[].historique[].date entrees[].historique[].raison entrees[].maj_le entrees[].provenance "
              "entrees[].provenance[].affirmation entrees[].provenance[].caduc_si entrees[].provenance[].releve_le "
              "entrees[].provenance[].revoir_le entrees[].provenance[].source",

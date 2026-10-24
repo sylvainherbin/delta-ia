@@ -4,7 +4,9 @@
   a sa fiche commune (sauf refus déclaré), et le commun n'en invente aucune ;
 - avis et essais historiques retrouvés dans le magasin privé : `statut_usage` et `recommandation` de chaque fiche, chaque
   ligne de réévaluation, d'essai (`kb-essais.yaml`, `essai` de l'onglet À tester) et de rejugement ;
-- noms : `kb/noms.json` du commun identique à celui du dépôt quand aucune fiche n'a été retenue ;
+- noms : `kb/noms.json` du commun identique à celui du dépôt quand aucune fiche n'a été retenue ni ajoutée ;
+- lot L2 : les seules fiches communes absentes du dépôt sont celles que l'extraction sans filtre de système déclare
+  ajoutées dans le manifeste (`couverture_sources.base:<périmètre>.ajoutees`) ;
 - empreintes des entrées identiques à celles du relevé d'import.
 Rend des messages sans valeur personnelle (identités et compteurs seulement).
 """
@@ -69,8 +71,10 @@ def fidelite(depot: Path, racines: Racines) -> tuple[list[str], dict]:
             attendues |= {f"veille:{perimetre}:{e['id']}" for e in _charger(chemin)["elements"]}
     if (data / "versions.json").is_file():
         attendues |= {f"version:{slug_outil(v['outil'])}" for v in _charger(data / "versions.json")}
+    ajoutees = {f"kb:{cle.split(':', 1)[1]}:{i}" for cle, c in (manifest.get("couverture_sources") or {}).items()
+                if cle.startswith("base:") for i in c.get("ajoutees", [])}
     manquantes = attendues - identites_communes - retenus
-    inventees = identites_communes - attendues
+    inventees = identites_communes - attendues - ajoutees
     if manquantes:
         erreurs.append(f"{len(manquantes)} identité(s) du dépôt absente(s) du commun, ex. {sorted(manquantes)[:3]}")
     if inventees:
@@ -113,10 +117,10 @@ def fidelite(depot: Path, racines: Racines) -> tuple[list[str], dict]:
                          for k, o in overlay.items() if id_brut(k) == e["id"] for h in o["historique_importe"])
             if not trouve:
                 erreurs.append(f"{e['id']}: essai de l'onglet À tester absent du magasin privé")
-    if (data / "kb" / "noms.json").is_file() and "kb/noms.json" in communs and not retenus:
+    if (data / "kb" / "noms.json").is_file() and "kb/noms.json" in communs and not retenus and not ajoutees:
         if communs["kb/noms.json"]["noms"] != _charger(data / "kb" / "noms.json"):
             erreurs.append("kb/noms.json du commun différent de celui du dépôt")
     comptes = {"identites_attendues": len(attendues), "identites_communes": len(identites_communes),
                "retenues": len(retenus), "avis": avis, "reevaluations": reevaluations, "essais": essais,
-               "essais_a_tester": essais_a_tester, "rejugements": rejugements}
+               "essais_a_tester": essais_a_tester, "rejugements": rejugements, "ajoutees_tous_systemes": len(ajoutees)}
     return erreurs, comptes
