@@ -268,6 +268,26 @@ test("sans profil personnel : aucun conseil, aucun essai, aucune version install
   assert.deepEqual(c, { statut: "indisponible", motif: "bilan_absent", groupes: [] });
 });
 
+for (const [magasin, contenu] of [["absent", null], ["invalide", { schema: "delta.personnel", schema_version: 1, vue: "autre" }], ["illisible", "{pas du json"]])
+  test(`essais OPÉRER sans overlay importé (${magasin}) : essais rendus, aucun avis`, async () => {
+    const i = instance();
+    try {
+      const overlay = path.join(i.etat, "personnel/overlay.json");
+      if (contenu === null) fs.rmSync(overlay); else ecrire(overlay, contenu);
+      const ctx = ctxLocal(i, "fr");
+      const r = await donnees("fiche_reference", { id: "claude-code-commandes-agents" }, ctx);
+      assert.equal(r.donnees.personnel.statut, magasin);
+      assert.equal(r.donnees.personnel.essais_operer.total, 1);
+      const p = r.fiche.personnel;
+      assert.deepEqual([p.couche, p.statut, p.magasin, p.avis], ["personnel", "non_personnalise", magasin, null], magasin);
+      assert.deepEqual(p.essais.map((e) => [e.source, e.id, e.statut, e.issue, e.lecon_apprendre]), [["operer", "e-1", "adopte", "adopte", "lec_1"]], magasin);
+      // fiche sans essai OPÉRER : bloc inchangé, et rien de l'avis privé
+      const a = await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctx);
+      assert.deepEqual(a.fiche.personnel, { couche: "personnel", statut: "non_personnalise", magasin, avis: null }, magasin);
+      assert.equal(JSON.stringify(a).includes(SENTINELLE), false, magasin);
+    } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+  });
+
 test("MCP public : jamais la racine personnelle, même si elle existe sur la machine", async () => {
   const code = fs.readFileSync(new URL("../api/mcp.js", import.meta.url), "utf8");
   assert.equal(/from "node:fs"|from "fs"|import[^;]*local\.js|readFileSync|readdirSync/.test(code), false, "api/mcp.js ne lit aucun fichier");

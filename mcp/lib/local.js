@@ -267,10 +267,11 @@ export class LecteurLocal {
   // Bloc personnel d'une fiche : statut, dates et avis séparés de la fiche commune.
   blocPersonnel(identite, fiche, { complet = false } = {}) {
     const p = this.personnel();
-    if (p.statut !== "disponible") return { couche: "personnel", statut: "non_personnalise", magasin: p.statut, avis: null };
-    const o = p.objets[identite];
-    // sans fiche commune (miroir indisponible), l'id court vient de l'identité : les essais OPÉRER le citent ainsi
+    // sans fiche commune (miroir indisponible), l'id court vient de l'identité : les essais OPÉRER le citent ainsi.
+    // Leur instantané ne dépend pas de l'overlay : sans overlay importé, ils restent rendus, jamais un avis.
     const essais = this.essais(identite, fiche?.id ?? idCourt(identite));
+    if (p.statut !== "disponible") return { couche: "personnel", statut: "non_personnalise", magasin: p.statut, avis: null, ...(essais.length ? { essais } : {}) };
+    const o = p.objets[identite];
     if (!o) return { couche: "personnel", statut: "non_personnalise", magasin: "disponible", avis: null, ...(essais.length ? { essais } : {}) };
     const { statut, motif } = this.statutAvis(o, fiche);
     const rec = o.recommandation && typeof o.recommandation === "object" ? o.recommandation : null;
