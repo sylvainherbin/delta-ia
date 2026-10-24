@@ -34,7 +34,8 @@ def test_le_fond_lit_les_noms_puis_les_trente_jours_hors_reference():
 
 
 def test_changelogs_actu_et_a_tester_attendent_avec_un_indicateur():
-    assert 'const PAGES_FENETRE = { changelogs: "Changelogs", actu: "Actu IA", "a-tester": "À tester" };' in APP
+    assert 'const PAGES_FENETRE = { changelogs: "onglet.changelogs", actu: "onglet.actu", "a-tester": "onglet.a_tester" };' in APP
+    assert 'el("h2", { text: t(PAGES_FENETRE[etat.page]) })' in APP
     rendre = morceau(APP, "async function rendre", "async function demarrer")
     assert "PAGES_FENETRE[etat.page] ? chargerFenetre() : null" in rendre and "pageAttenteFenetre(fenetre)" in rendre
     assert "await Promise.all([chargerDeLaPage(), fenetre && fenetre.termine]);" in rendre
@@ -60,7 +61,7 @@ def test_un_fichier_n_est_lu_qu_une_fois():
 
 def test_texte_rendu_avant_les_noms_est_complete_sur_place():
     enr = morceau(APP, "function enrichi", "\n  }\n")
-    assert 'etat.noms === undefined && t.includes("`")' in enr and '"data-enrichir": t' in enr
+    assert 'etat.noms === undefined && t0.includes("`")' in enr and '"data-enrichir": t0' in enr
     lien = morceau(APP, "function completerLiens", "\n  }\n")
     assert 'span[data-enrichir]' in lien and "replaceWith(...enrichi(" in lien and "innerHTML" not in lien
     assert '"data-produit": typeof produit === "string" ? produit : null' in enr and 's.getAttribute("data-produit")' in lien, "le produit de l'élément (D110) suit le texte"

@@ -5,6 +5,7 @@ import struct
 from pathlib import Path
 
 import fetch
+from textes_site import EN, FR
 
 DOCS = Path(fetch.RACINE) / "docs"
 
@@ -33,12 +34,15 @@ def test_index_declare_icone_manifeste_et_zone_sure():
 
 
 def test_manifeste_relatif():
-    m = json.loads((DOCS / "manifest.webmanifest").read_text(encoding="utf-8"))
-    assert m["name"] == "Delta — veille IA" and m["short_name"] == "Delta" and m["display"] == "standalone"
-    assert m["start_url"] == "./" and m["scope"] == "./" and m["background_color"] == "#060a13"
-    assert {i["sizes"] for i in m["icons"]} == {"180x180", "512x512"}
-    for i in m["icons"]:
-        assert not i["src"].startswith("/") and (DOCS / i["src"]).exists()
+    # L3 : un manifeste par langue (racine anglaise, /fr/ française), icônes partagées par chemin relatif
+    for dossier, nom in ((DOCS, EN["manifeste.nom"]), (DOCS / "fr", FR["manifeste.nom"])):
+        m = json.loads((dossier / "manifest.webmanifest").read_text(encoding="utf-8"))
+        assert m["name"] == nom and m["short_name"] == "Delta" and m["display"] == "standalone"
+        assert m["start_url"] == "./" and m["scope"] == "./" and m["background_color"] == "#060a13"
+        assert {i["sizes"] for i in m["icons"]} == {"180x180", "512x512"}
+        for i in m["icons"]:
+            assert not i["src"].startswith("/") and (dossier / i["src"]).resolve().exists()
+    assert FR["manifeste.nom"] == "Delta — veille IA"
 
 
 def test_voyant_agent_prend_le_passage_le_plus_ancien():
@@ -47,7 +51,7 @@ def test_voyant_agent_prend_le_passage_le_plus_ancien():
     app = (Path(__file__).resolve().parent.parent / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
     debut = app.index("function rendreEtatAgents")
     corps = app[debut:app.index("return alertes", debut)]
-    assert "t < parAgent[idx.agent]" in corps and "t > parAgent[idx.agent]" not in corps
+    assert "t0 < parAgent[idx.agent]" in corps and "t0 > parAgent[idx.agent]" not in corps
 
 
 def test_a_tester_ouvertes_puis_faites_repliees():
@@ -55,7 +59,8 @@ def test_a_tester_ouvertes_puis_faites_repliees():
     from pathlib import Path
     app = (Path(__file__).resolve().parent.parent / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
     corps = app[app.index("function pageATester"):app.index("function pageArchives")]
-    assert "Actions ouvertes (${ouvertes.length})" in corps and "Actions faites (${faites.length})" in corps
+    assert 't("atester.ouvertes", { n: ouvertes.length })' in corps and 't("atester.faites", { n: faites.length })' in corps
+    assert FR["atester.ouvertes"] == "Actions ouvertes ({n})" and FR["atester.faites"] == "Actions faites ({n})"
     assert 'el("details", { class: "actions-faites" }' in corps and corps.index("ouvertes.length") < corps.index("faites.length")
     assert "surFait" in app[app.index("function carte"):app.index("function listeCartes")]
 
@@ -87,13 +92,14 @@ def test_vue_recente_de_la_reference():
     f = app[app.index("function dateAjout"):app.index("function jourLocalIso")]
     assert "lignes.map((l) => l.date).sort()[0] || null" in f
     corps = app[app.index("function filtrerKb"):app.index("function carteKb")]
-    assert 'kbFiltre.tri !== "recent"' in corps and "ajouteeDepuis(e, kbFiltre.depuis, ref)" in corps and "String(a.nom).localeCompare(String(b.nom)" in corps
-    assert 'choix("Tri", "tri"' in app and "Ajoutées depuis 7 jours" in app and "Ajoutées depuis 30 jours" in app
+    assert 'kbFiltre.tri !== "recent"' in corps and "ajouteeDepuis(e, depuis, ref)" in corps and "String(a.nom).localeCompare(String(b.nom)" in corps
+    assert 'const depuis = enCommun() ? "" : kbFiltre.depuis;' in corps   # L3 : dates d'ajout non publiées en commun
+    assert 'choix(t("filtre.tri"), "tri"' in app and FR["filtre.depuis_7"] == "Ajoutées depuis 7 jours" and FR["filtre.depuis_30"] == "Ajoutées depuis 30 jours"
     assert 'new URLSearchParams(requete || "").get("recent")' in app and "#reference?recent=7" in app
-    assert 'id: "encart-kb"' in app and "Nouveau dans la base (7 jours) : " in app
+    assert 'id: "encart-kb"' in app and FR["encart.titre"] == "Nouveau dans la base (7 jours) : " and 't("encart.titre")' in app
     # la carte montre syntaxe, exemple et pourquoi
     carte = app[app.index("function carteKb"):app.index("function badgeContexte")]
-    assert "e.usage" in carte and "e.exemple" in carte and "recommandation.pourquoi" in carte and "ajoutée le" in carte
+    assert "e.usage" in carte and "e.exemple" in carte and "recommandation.pourquoi" in carte and 't("kb.ajoutee_le"' in carte
 
 
 def test_encart_compte_et_quotas():
@@ -101,25 +107,26 @@ def test_encart_compte_et_quotas():
     app = (DOCS / "assets" / "app.js").read_text(encoding="utf-8")
     page = app[app.index("function pageAujourdhui"):app.index("function completerEncartKb")]
     assert page.index("blocComptes(Date.now())") < page.index("blocOutils()") < page.index('id: "encart-kb"')
-    assert 'lireJson("data/etat.json")' in app and "etat.comptes = e && typeof e.comptes" in app
+    assert 'lireJson(chemin("etat.json"))' in app and "etat.comptes = e && typeof e.comptes" in app
     assert "Promise.all([chargerDernierJour(), chargerVersions(), chargerComptes()])" in app
     corps = app[app.index("function blocComptes"):app.index("/* ---------- Tes outils")]
     # bloc absent si `comptes` manque ; quatre quotas ; barre, pourcentage, remise à zéro, relevé et âge
-    assert "if (!c || typeof c !== \"object\") return null;" in corps
+    assert "if (enCommun() || !c || typeof c !== \"object\") return null;" in corps   # L3 : jamais lu sur la référence commune
     for cle in ("claude_session_5h", "claude_semaine", "claude_semaine_fable", "chatgpt_semaine"):
         assert cle in app
-    assert 'role: "progressbar"' in corps and "remise à zéro le ${rz}" in corps and "Relevé du ${releve}" in corps and "ageFr(c.releve_le" in corps
+    assert 'role: "progressbar"' in corps and 't("quota.rz", { rz })' in corps and 't("comptes.releve", { quand: releve' in corps and "age(c.releve_le" in corps
+    assert FR["quota.rz"] == "remise à zéro le {rz}" and FR["comptes.releve"] == "Relevé du {quand} ({age})."
     # alerte D71 : seuls les quotas hebdomadaires, au-delà de 80 %, phrase exacte
     assert "const SEUIL_ALERTE_PCT = 80;" in app and "hebdo && q.pct > SEUIL_ALERTE_PCT" in corps
-    assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in app
-    assert '["claude_session_5h", "Claude, session 5 h", false]' in app
+    assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in FR["quota.alerte_d71"]
+    assert '["claude_session_5h", "quota.claude_session_5h", false]' in app and FR["quota.claude_session_5h"] == "Claude, session 5 h"
     # D120 : le relevé de chaque quota est affiché ; plus de 30 min (ou date inconnue) : « ancien »
-    assert "const ANCIEN_MIN = 30;" in app and "maintenant - tRel > ANCIEN_MIN * 60000" in corps and '" · ancien"' in corps
-    assert "date du relevé inconnue" in corps
+    assert "const ANCIEN_MIN = 30;" in app and "maintenant - tRel > ANCIEN_MIN * 60000" in corps and '` · ${t("quota.ancien")}`' in corps
+    assert 't("quota.releve_inconnu")' in corps and FR["quota.releve_inconnu"] == "date du relevé inconnue"
     # une valeur inconnue ou périmée n'est jamais présentée comme actuelle
-    assert '"inconnu"' in corps and "valeur périmée" in corps
+    assert 't("quota.inconnu")' in corps and "valeur périmée" in FR["quota.rz_passee"]
     # jamais d'injection de HTML, heure locale
-    assert "innerHTML" not in corps and "getHours()" in app[app.index("function jjmmHhmm"):app.index("function ageFr")]
+    assert "innerHTML" not in corps and "getHours()" in app[app.index("function jjmmHhmm"):app.index("function age(")]
     css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
     for sel in (".comptes", ".quota.alerte", ".barre span", ".alerte-d71"):
         assert sel in css
@@ -127,7 +134,7 @@ def test_encart_compte_et_quotas():
 
 def test_site_ne_presente_plus_de_credit_cloud():
     """Le crédit fictif ne doit réapparaître ni dans l'aide ni dans les pages publiques."""
-    for fichier in [DOCS / "assets" / "app.js", *sorted(DOCS.glob("*.html"))]:
+    for fichier in [DOCS / "assets" / "app.js", DOCS / "assets" / "textes.js", *sorted(DOCS.glob("**/*.html"))]:
         texte = fichier.read_text(encoding="utf-8").casefold()
         assert "crédit sessions cloud" not in texte, fichier
         assert not ("crédit" in texte and "échéance" in texte), fichier

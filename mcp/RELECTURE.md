@@ -132,3 +132,35 @@ identifiant validés) ; « The description is the contract » (résumés, détai
 Chaque remarque est couverte par les tests ci-dessus et la grille existante.
 Les autres points déjà écartés dans la grille restent inchangés ; ce lot ne change ni les
 annotations, ni le protocole, ni le nombre d'outils, ni le déploiement.
+
+## Lot L3 (deux couches) : lecteurs publics compatibles, langue (24/10/2026, mission m-ddc3b4c02860)
+
+Changements reçus par les clients : source lue (`ancienne_route` ou `commun`) étiquetée dans chaque réponse (`donnees`),
+paramètre `langue` (`en` par défaut, `fr`) sur les six outils, textes et erreurs en deux dictionnaires (`lib/textes.js`),
+adresse du serveur `?langue=fr` et `?source=commun`, réponses sans personnel sur la référence commune, constats internes
+et recommandation OPÉRER retirés des fiches modèles sur les deux formats. Tests : `test/couches.test.js`, rouges sur la L2.
+
+Retenu, avec son test :
+
+- « Describe every parameter » et « Tight schemas » : `langue` décrit, `enum: ["en", "fr"]`, défaut déclaré égal à la
+  langue réellement appliquée (`en`, ou `fr` par `?langue=fr`) ; valeur inconnue refusée en erreur d'outil.
+  Test « langue : anglais par défaut… ».
+- « The description is the contract » / « says what it doesn't do » : chaque description dit ce que rend la référence
+  commune (pas d'avis, d'impact, d'essai ni de version installée). Même test.
+- Erreurs qui disent comment repartir : `statut` sur la référence commune → « relancer sans `statut` » ; couche commune
+  illisible → « Référence commune indisponible : <fichier> : <motif> », jamais de repli silencieux sur l'ancienne route.
+  Tests « référence commune : modèles… » et « couche commune illisible… ».
+- « Truncate huge payloads and say so » : le résumé commun liste tous les éléments du jour, borné à 30 avec `total`,
+  `affichees` et `avis`. Test « résumé commun : plus de 30 éléments… ».
+- « Include IDs for follow-up calls » : chaque élément du résumé commun porte `id` et `kb_refs` (pour `fiche_reference`).
+  Test « résumé commun : éléments factuels du jour… ».
+
+Écarté, avec la raison :
+
+- Descriptions qui disent quoi faire (« À appeler AVANT… ») : même raison que la grille du 11/10 (critère d'annuaire,
+  connecteur non soumis, consigne voulue).
+- `outputSchema` : toujours facultatif ; deux sources et deux langues rendraient douze formes à maintenir sans client
+  qui s'en serve.
+- Paramètre `couche`/`source` par appel : la source se choisit pour la session (adresse du serveur ou `DELTA_SOURCE`) ;
+  un mélange par appel rendrait une même conversation incohérente (fiche commune, résumé mixte) pour aucun usage observé.
+- Plusieurs outils par couche : refusé par la conception (§4.1) ; les six noms restent.

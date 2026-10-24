@@ -7,6 +7,12 @@ import { developperModeles as developperMcp } from "../lib/modeles.js";
 import { developperModeles } from "../../docs/assets/kb-modeles.mjs";
 const app = fs.readFileSync(new URL("../../docs/assets/app.js", import.meta.url), "utf8");
 const doc = JSON.parse(fs.readFileSync(new URL("../../docs/data/kb/modeles.json", import.meta.url), "utf8"));
+// L3 : génération commune publiée (docs/commun/v1/<génération>/kb/modeles.json), même lecteur
+const generation = JSON.parse(fs.readFileSync(new URL("../../docs/commun/v1/index.json", import.meta.url), "utf8")).generation;
+const docCommun = JSON.parse(fs.readFileSync(new URL(`../../docs/commun/v1/${generation}/kb/modeles.json`, import.meta.url), "utf8"));
+// dictionnaire français du site (docs/assets/textes.js) : t() d'app.js
+const textesJs = fs.readFileSync(new URL("../../docs/assets/textes.js", import.meta.url), "utf8");
+const FR = JSON.parse(textesJs.slice(textesJs.indexOf("window.DELTA_TEXTES = ") + 22, textesJs.lastIndexOf(";"))).fr;
 const prendre = (debut, fin) => app.slice(app.indexOf(debut), app.indexOf(fin, app.indexOf(debut)));
 class Noeud {
   constructor(tag) { this.tag = tag; this.enfants = []; this.attrs = {}; }
@@ -19,10 +25,14 @@ class Noeud {
 }
 function contexte() {
   const c = vm.createContext({ document: { createElement: (t) => new Noeud(t), createTextNode: (s) => String(s) }, Intl, Date });
-  vm.runInContext(`${prendre("function el(", "/* ---------- D105")}
+  vm.runInContext(`const LANGUE = "fr"; const DICO = ${JSON.stringify(FR)};
+    const t = (cle, vars) => { let s = DICO[cle]; if (typeof s !== "string") throw new Error("texte manquant : " + cle);
+      return vars ? s.replace(/\\{(\\w+)\\}/g, (m, k) => (k in vars ? String(vars[k]) : m)) : s; };
+    const enCommun = () => false;
+    ${prendre("function el(", "/* ---------- D105")}
     const badge = (type, text) => el("span", {class: type, text});
     const PRODUITS = {}, KB_CATEGORIES = {modeles: "Modèles"}, VERDICTS = {}, STATUTS = {};
-    const dateFr = (s) => s;
+    const dateAffichee = (s) => s;
     ${prendre("function noeudsEnLigne", "function carteMethode")}
     ${prendre("function carteModele", "function carteKb")}
     const sansAccents = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -80,4 +90,34 @@ test("développement : référence absente refusée, champs communs et alias de 
     assert.ok(e.description.includes("Coût de `" + e.effort + "`"));
   }
   assert.throws(() => developperModeles({...doc, modeles: {}}), /modèle absent/);
+});
+
+test("L3 : aucun constat interne ni recommandation OPÉRER, ancien JSON mixte comme génération commune", () => {
+  // l'ancien JSON publié les contient encore (garde : le test verrait leur retour)
+  assert.ok(Object.values(doc.modeles).some((m) => (m.constats_internes || []).length));
+  assert.ok(doc.entrees.some((e) => e.recommandation_operer));
+  for (const [source, es] of [["ancien", developperModeles(doc)], ["commun", developperModeles(docCommun)]]) {
+    assert.equal(es.length, docCommun.entrees.length, source);
+    assert.deepEqual(developperMcp(source === "ancien" ? doc : docCommun), es, source);
+    for (const e of es) {
+      for (const k of ["constats_internes", "recommandation_operer", "recommandation"]) assert.ok(!(k in e), `${source} ${e.id} : ${k}`);
+      const d = e.description || "";
+      assert.ok(!d.includes("Constats internes datés") && !d.includes("Recommandation OPÉRER"), `${source} ${e.id}`);
+    }
+  }
+  // génération commune : pas de texte rédigé, alias réduits au couple exact (et au modèle seul pour l'effort par défaut)
+  for (const e of developperModeles(docCommun)) {
+    assert.equal(e.description, null);
+    assert.deepEqual(e.aliases, [`${e.modele}:${e.effort}`, ...(e.effort_defaut ? [e.modele] : [])]);
+  }
+  // la carte du site se rend aussi sur la génération commune, sans texte de description
+  const api = contexte();
+  for (const e of developperModeles(docCommun)) {
+    const carte = api.carteModele(e);
+    assert.ok(carte.textContent.includes(e.nom) && carte.textContent.includes(e.usage));
+    assert.ok(!carte.textContent.includes("OPÉRER ("));
+  }
+  // les deux copies du lecteur restent identiques (hors commentaire d'en-tête)
+  const sansEntete = (u) => fs.readFileSync(new URL(u, import.meta.url), "utf8").split("\n").slice(2).join("\n");
+  assert.equal(sansEntete("../lib/modeles.js"), sansEntete("../../docs/assets/kb-modeles.mjs"));
 });

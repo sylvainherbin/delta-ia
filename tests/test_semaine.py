@@ -181,13 +181,14 @@ def test_valider_refuse_les_traces_operer(tmp_path):
 
 
 def test_site_onglet_semaine():
-    html = (RACINE / "docs" / "index.html").read_text(encoding="utf-8")
+    html = (RACINE / "docs" / "fr" / "index.html").read_text(encoding="utf-8")   # L3 : page française ; l'anglaise à la racine
     aujourdhui = '<a href="#aujourdhui" data-page="aujourdhui">Aujourd\'hui</a>'
     assert aujourdhui + '\n        <a href="#semaine" data-page="semaine">Semaine</a>' in html
+    assert '<a href="#semaine" data-page="semaine">Week</a>' in (RACINE / "docs" / "index.html").read_text(encoding="utf-8")
     app = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    for attendu in ('lireJson("data/semaine/index.json")', 'lireJson(`data/semaine/${semaine}.json`)', 'case "semaine": main.append(pageSemaine())',
+    for attendu in ('lireJson(chemin("semaine/index.json"))', 'lireJson(chemin(`semaine/${semaine}.json`))', 'case "semaine": main.append(pageSemaine())',
                     '"aujourdhui", "semaine", "changelogs"', "RE_SEMAINE.test(param || \"\")", "location.hash = `#semaine/${choixSemaine.value}`",
-                    '"Compte et quotas", d.d71', "d.base_ajoutees", "d.base_verdicts", "`#archives/${l.jour}`"):
+                    "blocSemaine(t(\"comptes.titre\"), d.d71", "d.base_ajoutees", "d.base_verdicts", "`#archives/${l.jour}`"):
         assert attendu in app, attendu
     # jamais de HTML injecté depuis les données (même règle que le reste du site)
     assert ".innerHTML" not in app and "insertAdjacentHTML" not in app

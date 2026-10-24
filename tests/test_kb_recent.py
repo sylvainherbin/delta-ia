@@ -8,6 +8,7 @@ import valider
 from conftest import RACINE
 from deltalib.kb import catalogue as cat
 from deltalib.kb.modeles import EntreeExtraite
+from textes_site import FR
 
 CONTEXTE = "# Profil\n<!-- ctx-id: profil -->\n\nUn profil.\n"
 JOUR = "2026-10-08"
@@ -140,10 +141,10 @@ def test_encart_lit_recent_json_et_non_la_base():
     encart = app[app.index("function completerEncartKb"):app.index("function pageChangelogs")]
     assert "chargerRecentKb()" in encart and "chargerKb" not in encart, "l'onglet Aujourd'hui ne charge pas la base complète"
     charge = app[app.index("async function chargerRecentKb"):app.index("async function chargerKb")]
-    assert 'lireJson("data/kb/recent.json")' in charge and "etat.kbRecent = null" in charge, "repli silencieux si le fichier manque"
+    assert 'lireJson(chemin("kb/recent.json"))' in charge and "etat.kbRecent = null" in charge, "repli silencieux si le fichier manque"
     assert "console" not in charge
     corps = app[app.index("function encartNouveauKb"):app.index("function carteKb")]
-    assert "etat.kb" not in corps and "recent.entrees" in corps and "au moins " in corps
+    assert "etat.kb" not in corps and "recent.entrees" in corps and 't("encart.au_moins")' in corps and FR["encart.au_moins"] == "au moins "
     # la base complète reste chargée par l'onglet Référence seulement
     assert 'case "reference": await chargerKb(); break;' in app
     assert app.count("chargerKb()") == 2  # définition... appel de la route ; aucun autre appelant

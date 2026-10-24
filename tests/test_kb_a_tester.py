@@ -9,6 +9,7 @@ import valider
 from conftest import RACINE
 from deltalib.kb import catalogue as cat
 from deltalib.kb.modeles import EntreeExtraite
+from textes_site import FR
 
 CONTEXTE = "# Profil\n<!-- ctx-id: profil -->\n\nUn profil.\n"
 JOUR = "2026-10-08"
@@ -251,7 +252,8 @@ def app_js():
 def test_onglet_lit_a_tester_json_et_non_la_base():
     app = app_js()
     charge = app[app.index("async function chargerATesterKb"):app.index("async function chargerKb")]
-    assert 'lireJson("data/kb/a-tester.json")' in charge and "etat.kbATester = null" in charge, "repli silencieux si le fichier manque"
+    assert 'lireJson(chemin("kb/a-tester.json"))' in charge and "etat.kbATester = null" in charge, "repli silencieux si le fichier manque"
+    assert "if (enCommun()) { etat.kbATester = null; return null; }" in charge, "L3 : couche personnelle, jamais lue sur la référence commune"
     assert "console" not in charge and "chargerKb" not in charge
     section = app[app.index("function carteEssai"):app.index("function pageArchives")]
     assert "etat.kb." not in section and "etat.kb)" not in section, "l'onglet ne charge ni n'utilise la base complète"
@@ -262,7 +264,7 @@ def test_onglet_lit_a_tester_json_et_non_la_base():
 def test_section_essais_sous_les_actions_avec_la_meme_case_fait():
     app = app_js()
     page = app[app.index("function pageATester"):app.index("function pageArchives")]
-    assert page.index("Actions ouvertes (${ouvertes.length})") < page.index("sectionEssais(etat.kbATester)"), "sous les actions"
+    assert page.index('t("atester.ouvertes", { n: ouvertes.length })') < page.index("sectionEssais(etat.kbATester)"), "sous les actions"
     assert "etat.kbATester && etat.kbATester.entrees.length" in page, "section omise si le fichier manque ou est vide"
     carte = app[app.index("function carteEssai"):app.index("function sectionEssais")]
     assert "lireFaits()" in carte and "ecrireFait(id, caseFait.checked)" in carte, "même stockage local que les actions"
@@ -278,11 +280,12 @@ def test_essai_declare_coche_sans_geste_sur_le_site():
     carte = app[app.index("function essaiDeclare"):app.index("function sectionEssais")]
     assert 'ISO_JOUR.test(e.essai || "")' in carte
     assert 'disabled: true' in carte and "caseFait.checked = true" in carte
-    assert "Fait le ${dateFr(declare)} pendant une mission" in carte
+    assert 't("essai.fait_mission", { date: dateAffichee(declare) })' in carte and FR["essai.fait_mission"] == "Fait le {date} pendant une mission"
     section = app[app.index("function sectionEssais"):app.index("function pageATester")]
     assert "!essaiFait(e, faits)" in section and "entrees.filter((e) => essaiFait(e, faits))" in section
     section = app[app.index("function sectionEssais"):app.index("function pageATester")]
-    assert "Essais de la base (${ouverts.length})" in section and "Essais faits (${faitsListe.length})" in section
+    assert 't("essais.titre", { n: ouverts.length })' in section and 't("essais.faits", { n: faitsListe.length })' in section
+    assert FR["essais.titre"] == "Essais de la base ({n})" and FR["essais.faits"] == "Essais faits ({n})"
     assert "ouverts.slice(0, etat.essaisLimite)" in section, "affichage borné"
 
 

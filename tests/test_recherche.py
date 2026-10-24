@@ -12,6 +12,7 @@ import recherche as cli
 import valider
 from conftest import FIXTURES, RACINE
 from deltalib import recherche as rech
+from textes_site import FR
 
 PLEINE = FIXTURES / "semaine" / "pleine"
 MAINTENANT = "2026-10-09T12:00:00+00:00"
@@ -228,7 +229,7 @@ def test_valider_brancher_au_perimetre_claude():
 
 def test_site_recherche_des_archives():
     app = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    for attendu in ('lireJson("data/recherche.json")', 'case "archives": await Promise.all([chargerJoursArchive(), etat.archiveDate ? null : chargerRecherche()])',
+    for attendu in ('lireJson(chemin("recherche.json"))', 'case "archives": await Promise.all([chargerJoursArchive(), etat.archiveDate ? null : chargerRecherche()])',
                     'case "archives": main.append(pageArchives()); rendreResultatsRecherche(); break;', "const RECHERCHE_PAGE = 50;",
                     "etat.rq.limite += RECHERCHE_PAGE", "trouves.slice(0, etat.rq.limite)", 'new URLSearchParams(requete || "").get("q")',
                     "history.replaceState", "`#archives/${l.date}`", "termes.every("):
@@ -237,7 +238,8 @@ def test_site_recherche_des_archives():
     assert 'normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase()' in app and "p.length === c.length ? p : c" in app
     assert "plier(`" not in app and "_titre: plier(l.titre), _texte: plier(l.texte)" in app
     # recherche en place : l'index absent ou illisible se dit, il ne masque pas le reste des Archives
-    assert "Recherche indisponible" in app and "Index incomplet" in app
+    assert 't("recherche.indisponible"' in app and 't("recherche.incomplet"' in app
+    assert FR["recherche.indisponible"].startswith("Recherche indisponible") and FR["recherche.incomplet"].startswith("Index incomplet")
     # jamais de HTML injecté depuis les données : les occurrences passent par <mark> et textContent
     bloc = app[app.index("/* ---------- Recherche dans toute la veille (D114)"):app.index("  function pageArchives()")]
     assert 'el("mark", { text:' in bloc and "innerHTML" not in bloc and "insertAdjacentHTML" not in app
@@ -246,8 +248,7 @@ def test_site_recherche_des_archives():
 
 
 def test_aide_dit_la_recherche():
-    app = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    aide = app[app.index('{ id: "archives"'):app.index('{ id: "mcp"')]
+    aide = " ".join(FR[f"aide.archives.{c}"] for c in ("sert", "geste", "limite"))
     assert "`/code-review`" in aide and "sans casse ni accents" in aide and "Afficher plus" in aide and "recherche.json" in aide
 
 

@@ -9,6 +9,9 @@ import { fileURLToPath } from "node:url";
 const DATA = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../docs/data");
 let donnees, serveurMcp, url, handler, OUTILS;
 
+// Tests historiques en français (même contenu que l'anglais, par défaut du serveur) ; tests L3 de langue plus bas.
+process.env.DELTA_LANGUE = "fr";
+
 before(async () => {
   donnees = http.createServer((req, res) => {
     const f = path.join(DATA, decodeURIComponent(req.url.split("?")[0]));
@@ -41,8 +44,8 @@ test("initialize, notification et liste des outils", async () => {
   const liste = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
   const noms = liste.corps.result.tools.map((t) => t.name).sort();
   assert.deepEqual(noms, ["a_tester", "chercher_reference", "etat_versions", "fiche_reference", "nouveautes_base", "resume_du_jour"]);
-  assert.equal(init.corps.result.serverInfo.version, "0.2.3");
-  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.2.3");
+  assert.equal(init.corps.result.serverInfo.version, "0.3.0");
+  assert.equal(JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version, "0.3.0");
   for (const t of liste.corps.result.tools) assert.match(t.description, /À appeler/, `${t.name} : dire quand l'appeler`);
   for (const t of liste.corps.result.tools) assert.equal(t.annotations.readOnlyHint, true);
 });
@@ -468,10 +471,16 @@ test("modèles × efforts : chercher_reference et fiche_reference couvrent les 1
   assert.equal(sonnetAgyHigh.id, "modele-antigravity-claude-sonnet-5-5-high");
   assert.ok(sonnetAgyHigh.sources_internes.some((c) => c.date === "2026-10-19" && c.constat.includes("21 min")));
 
+  // L3 : l'ancien JSON mixte porte encore constats internes et recommandation OPÉRER ; la réponse publique ne les rend pas.
+  const brut = lireDonnee("kb/modeles.json");
+  assert.ok(brut.modeles["Qwen3.5-4B"].constats_internes.some((c) => c.constat.includes("un seul appel")), "fixture d'ancien format mixte");
   const qwenLocal = (await appel("fiche_reference", { id: "Qwen3.5-4B" })).corps.result.structuredContent.fiche;
   assert.equal(qwenLocal.id, "modele-qwen3-5-4b-sans-reflexion");
-  assert.ok(qwenLocal.constats_internes.some((c) => c.date === "2026-10-19" && c.constat.includes("un seul appel")));
-  assert.equal(JSON.stringify(qwenLocal).includes("/home/"), false);
+  const texte = JSON.stringify(qwenLocal);
+  for (const absent of ["constats_internes", "recommandation_operer", "un seul appel", "Constats internes datés", "Recommandation OPÉRER", "verdict_operer"])
+    assert.equal(texte.includes(absent), false, absent);
+  assert.equal(qwenLocal.verdict, null);
+  assert.equal(texte.includes("/home/"), false);
 });
 
 test("modèles × efforts : fichier absent signalé ou retirée ignorée, le reste de la base répond", async () => {

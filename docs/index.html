@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en" data-racine="">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -9,42 +9,59 @@
   <meta name="apple-mobile-web-app-title" content="Delta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Delta — veille IA</title>
-  <meta name="description" content="Veille IA quotidienne : Claude, Claude Code, ChatGPT, Codex et actualité, avec recommandations personnalisées.">
+  <title>Delta — AI watch</title>
+  <meta name="description" content="Daily AI watch: Claude, Claude Code, ChatGPT, Codex and AI news, with a reference of commands and settings.">
+  <link rel="canonical" href="https://ai.orqyra.io/">
+  <link rel="alternate" hreflang="en" href="https://ai.orqyra.io/">
+  <link rel="alternate" hreflang="fr" href="https://ai.orqyra.io/fr/">
+  <link rel="alternate" hreflang="x-default" href="https://ai.orqyra.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Delta">
+  <meta property="og:title" content="Delta — AI watch">
+  <meta property="og:description" content="Daily AI watch: Claude, Claude Code, ChatGPT, Codex and AI news, with a reference of commands and settings.">
+  <meta property="og:url" content="https://ai.orqyra.io/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="fr_FR">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <a class="saut" href="#contenu">Aller au contenu</a>
+  <a class="saut" href="#contenu">Skip to content</a>
   <header class="entete">
     <div class="entete-carte">
       <div class="entete-ligne">
-        <a class="marque" href="#aujourdhui" aria-label="Delta, veille IA : aujourd'hui">
+        <a class="marque" href="#aujourdhui" aria-label="Delta, AI watch: today">
           <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="dl" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color: var(--a1)"/><stop offset="1" style="stop-color: var(--a2)"/></linearGradient></defs><path d="M32 6 L59 56 H5 Z" fill="none" stroke="url(#dl)" stroke-width="5" stroke-linejoin="round"/><path d="M32 24 L45 48 H19 Z" fill="url(#dl)" opacity=".85"/></svg>
-          <span class="marque-texte"><span class="marque-nom">DELTA</span><span class="marque-sous">VEILLE IA</span></span>
+          <span class="marque-texte"><span class="marque-nom">DELTA</span><span class="marque-sous">AI WATCH</span></span>
         </a>
-        <div id="etat-agents" class="etat-agents" aria-live="polite"></div>
+        <div class="entete-droite">
+          <div id="etat-agents" class="etat-agents" aria-live="polite"></div>
+          <a id="choix-langue" class="choix-langue" href="fr/" data-base="fr/" hreflang="fr" lang="fr" aria-label="Lire en français">FR</a>
+        </div>
       </div>
       <nav class="onglets" aria-label="Pages">
-        <a href="#aujourdhui" data-page="aujourdhui">Aujourd'hui</a>
-        <a href="#semaine" data-page="semaine">Semaine</a>
+        <a href="#aujourdhui" data-page="aujourdhui">Today</a>
+        <a href="#semaine" data-page="semaine">Week</a>
         <a href="#changelogs" data-page="changelogs">Changelogs</a>
-        <a href="#actu" data-page="actu">Actu IA</a>
-        <a href="#reference" data-page="reference">Référence</a>
-        <a href="#a-tester" data-page="a-tester">À tester</a>
+        <a href="#actu" data-page="actu">AI news</a>
+        <a href="#reference" data-page="reference">Reference</a>
+        <a href="#a-tester" data-page="a-tester">To try</a>
         <a href="#archives" data-page="archives">Archives</a>
-        <a href="#aide" data-page="aide">Aide</a>
+        <a href="#aide" data-page="aide">Help</a>
       </nav>
     </div>
   </header>
   <main id="contenu" class="contenu" tabindex="-1">
-    <p class="chargement">Chargement des données…</p>
+    <p class="chargement">Loading data…</p>
   </main>
   <footer class="pied">
-    <p>Delta lit des fichiers JSON statiques produits par Claude Code et Codex. Aucune donnée n'est envoyée ; la case « fait » reste dans ce navigateur. <a href="#aide">Aide</a></p>
+    <p>Delta reads static JSON files produced by Claude Code and Codex. No data is sent; the “done” box stays in this browser. <a href="#aide">Help</a></p>
+    <p id="couche-lue" class="couche-lue"></p>
   </footer>
+  <script src="assets/config.js"></script>
+  <script src="assets/textes.js"></script>
   <script src="assets/app.js"></script>
 </body>
 </html>

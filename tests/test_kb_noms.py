@@ -9,6 +9,7 @@ import valider
 from conftest import RACINE
 from deltalib.kb import catalogue as cat
 from deltalib.kb.modeles import EntreeExtraite
+from textes_site import FR
 
 CONTEXTE = "# Profil\n<!-- ctx-id: profil -->\n\nUn profil.\n"
 EMPREINTE = hashlib.sha1(CONTEXTE.encode("utf-8")).hexdigest()
@@ -193,7 +194,7 @@ def test_valider_laisse_les_ids_de_l_autre_perimetre_a_son_controle(tmp_path):
 def test_l_index_est_charge_a_part_et_sans_la_base():
     app = app_js()
     charge = morceau(app, "function chargerNomsKb", "async function chargerKb")
-    assert 'lireJson("data/kb/noms.json")' in charge and "etat.noms = null" in charge, "repli silencieux si le fichier manque"
+    assert 'adapterNoms(await lireJson(chemin("kb/noms.json")))' in charge and "etat.noms = null" in charge, "repli silencieux si le fichier manque"
     assert "chargerKb" not in charge and "console" not in charge
     fond = morceau(app, "function lancerFond", "// texte rendu avant")
     assert 'if (etat.page === "reference") return;' in fond and "chargerNomsKb().then(completerLiens)" in fond, "les pages de veille chargent l'index après leur premier affichage, pas la Référence"
@@ -223,7 +224,7 @@ def test_regles_de_lien():
     assert "#reference?id=${encodeURIComponent(ids[0])}" in enr, "un seul id : la fiche"
     assert "#reference?q=${encodeURIComponent(m[1].trim())}" in enr, "plusieurs ids : la recherche"
     assert "if (!ids.length) continue;" in enr, "inconnu : texte simple, accents graves conservés"
-    assert "if (!etat.noms) return [t];" in enr
+    assert "if (!etat.noms) return [t0];" in enr
     assert 'el("code", { text: m[1] })' in enr and "innerHTML" not in enr
 
 
@@ -260,9 +261,9 @@ def test_fiche_seule_et_recherche_par_l_url():
     assert 'params.get("id")' in route and "etat.kbFicheId" in route
     assert 'params.get("q")' in route and "Object.assign(kbFiltre, { q," in route, "la recherche repart de filtres vides"
     fiche = morceau(app, "if (etat.kbFicheId)", "const extraites = kb.entrees.filter((e) => e.categorie !== \"methodes\");  // D121\n")
-    assert "carteKb(fiche)" in fiche and 'href: "#reference", text: "← Toute la référence"' in fiche
+    assert "carteKb(fiche)" in fiche and 'href: "#reference", text: t("reference.retour")' in fiche and FR["reference.retour"] == "← Toute la référence"
     assert "return frag;" in fiche, "pas de filtres ni de liste sous la fiche"
-    assert "Aucune fiche pour cet identifiant" in fiche
+    assert 't("reference.fiche_absente")' in fiche and FR["reference.fiche_absente"].startswith("Aucune fiche pour cet identifiant")
 
 
 def test_style_des_liens_de_reference():

@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 import pytest
 
 from test_relais_reference import trouver_node
+from textes_site import t_js
 
 
 DOCS = Path(__file__).resolve().parents[1] / "docs"
@@ -27,7 +28,7 @@ class Scripts(HTMLParser):
 
 
 def test_seul_script_tiers_admis_et_aucun_chargement_statique():
-    for page in DOCS.glob("*.html"):
+    for page in DOCS.glob("**/*.html"):
         scripts = Scripts()
         scripts.feed(page.read_text(encoding="utf-8"))
         # Même widgets.js doit attendre l'affichage d'Actu IA.
@@ -94,6 +95,7 @@ const fetch = async (url, options) => {
   return {ok: !indisponible, json: async () => { if (casse) throw Error("JSON"); return donnees; }};
 };
 '''
+    recette += t_js("fr") + 'const LANGUE = "fr"; const enCommun = () => false; const chemin = (r) => "data/" + r;\n'
     recette += utils + bloc + r'''
 (async () => {
   courant = blocMurX();
@@ -118,7 +120,7 @@ const fetch = async (url, options) => {
     assert.deepEqual(b.attrs, {"data-theme":"light", "data-dnt":"true", "data-conversation":"none"});
     assert.equal(b.children.length, 1);
     assert.equal(b.children[0].attrs.href, `https://x.com/i/status/${id}`);
-    assert.equal(b.children[0].textContent, "Voir le post sur X / View on X");
+    assert.equal(b.children[0].textContent, "Voir le post sur X");
   }
   assert.deepEqual(charges, [posts]);
   // Retour dans Actu et changement de thème : nouvelles citations et load sur le nouveau conteneur.

@@ -41,6 +41,8 @@ jobs:
           for p in claude openai actu; do
             python scripts/valider.py --perimetre "$p"
           done
+          python scripts/urls.py --verifier
+          python scripts/site_langues.py --verifier
           if [ -f docs/commun/v1/index.json ]; then
             python scripts/valider.py --publication docs/commun/v1
           fi

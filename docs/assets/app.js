@@ -1,22 +1,48 @@
 /* Delta — application du site statique.
- * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens ; aucun build.
+ * Lit docs/data/<perimetre>/index.json et les fichiers quotidiens (ancienne route), ou la génération commune
+ * docs/commun/v1/<generation>/ (deux couches, lot L3) ; aucun build.
+ * Langue : <html lang> (en à la racine, fr sous /fr/) ; textes d'interface dans docs/assets/textes.js, adresses publiques
+ * dans docs/assets/config.js (copie générée du bootstrap). Les données ne sont pas traduites : elles s'affichent telles quelles.
  * Le widget externe X est chargé uniquement dans Actu IA, pour les posts intégrés.
  * Sécurité : tout texte issu des données passe par textContent ; les liens sont limités à http(s). */
 (function () {
   "use strict";
 
+  /* ---------- textes (L3) : langue de la page, dictionnaire de cette langue, adresses publiques ---------- */
+  const LANGUE = document.documentElement.lang === "fr" ? "fr" : "en";
+  // racine du site relative à la page : "" à la racine, "../" sous /fr/ ; toutes les lectures de données la préfixent
+  const RACINE = document.documentElement.getAttribute("data-racine") || "";
+  const TEXTES = (window.DELTA_TEXTES && window.DELTA_TEXTES[LANGUE]) || {};
+  const CONFIG = window.DELTA_CONFIG || {};
+  const LOCALE = LANGUE === "fr" ? "fr-CA" : "en-CA";
+  // texte d'interface `cle`, `{nom}` remplacé par vars.nom ; une clé absente se voit (la clé elle-même) et se journalise
+  function t(cle, vars) {
+    let s = TEXTES[cle];
+    if (typeof s !== "string") { console.error("delta:texte-manquant", cle); return cle; }
+    if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m));
+    return s;
+  }
+  /* ---------- fin des textes ---------- */
+
   const PERIMETRES = ["claude", "openai", "actu"];
   const AGENTS = { "claude-code": "Claude Code", codex: "Codex" };
-  const PRODUITS = { claude: "Claude", "claude-code": "Claude Code", chatgpt: "ChatGPT", codex: "Codex", actu: "Actu" };
+  const PRODUITS = { claude: "Claude", "claude-code": "Claude Code", chatgpt: "ChatGPT", codex: "Codex", actu: t("produit.actu") };
   const IMPACTS = ["fort", "moyen", "faible", "nul"];
-  const TYPES = { nouveaute: "nouveauté", amelioration: "amélioration", correction: "correction", changement_rupture: "rupture", depreciation: "dépréciation", actu: "actu" };
-  const CERTITUDES = { officiel: "officiel", rapporte: "rapporté", non_confirme: "non confirmé" };
+  const TYPES = ["nouveaute", "amelioration", "correction", "changement_rupture", "depreciation", "actu"];
+  const CERTITUDES = ["officiel", "rapporte", "non_confirme"];
   const ALERTE_HEURES = 36;
   const FENETRE_JOURS = 30; // D38 : Changelogs, Actu et À tester n'affichent que les 30 derniers jours ; au-delà, les Archives
   const CLE_FAITS = "delta.faits";
+  const CLE_LANGUE = "delta.langue";
 
   const etat = { index: {}, jours: {}, page: "aujourdhui", filtreProduit: "tous", archiveDate: null, semaines: { index: undefined, docs: {}, courante: null, erreur: null }, semaineDemandee: null, essaisLimite: 50, recherche: undefined, rq: { q: "", limite: 50 }, noms: undefined, kbFicheId: null, rendu: 0, fenetre: null };
   const main = document.getElementById("contenu");
+
+  /* ---------- couche lue (L3) : ancienne route `data/` par défaut, génération commune sur ?couche=commun ou quand l'ancienne
+     route est illisible ; jamais de repli de la couche commune vers l'ancienne route (encore mixte) ---------- */
+  const COUCHE = { demandee: new URLSearchParams(location.search).get("couche") === "commun", automatique: false, mode: "ancienne", generation: null, publie_le: null, erreur: null };
+  const enCommun = () => COUCHE.mode === "commun";
+  function chemin(rel) { return enCommun() ? `${RACINE}commun/v1/${COUCHE.generation}/${rel}` : `${RACINE}data/${rel}`; }
 
   /* ---------- utilitaires DOM (jamais innerHTML) ---------- */
   function el(tag, attrs, ...enfants) {
@@ -38,6 +64,8 @@
     if (typeof url !== "string" || !/^https?:\/\//i.test(url)) return el("span", { text: texte || String(url) });
     return el("a", { href: url, rel: "noopener noreferrer", target: "_blank", text: texte || url });
   }
+  // texte de données en français (ancienne route) dans une page anglaise : attribut lang pour les lecteurs d'écran
+  const langueDonnees = () => (LANGUE === "fr" ? null : "fr");
   function texte(v, defaut) { return typeof v === "string" && v.trim() ? v : (defaut || ""); }
 
   /* ---------- D105 : noms entre accents graves → fiche de la base ---------- */
@@ -72,34 +100,35 @@
   // plusieurs fiches aussi quand une seule est du produit de l'élément, `produit`), un nom encore ambigu un lien vers la recherche,
   // un segment inconnu reste en texte simple (accents graves compris)
   function enrichi(s, produit) {
-    const t = typeof s === "string" ? s : String(s === null || s === undefined ? "" : s);
+    const t0 = typeof s === "string" ? s : String(s === null || s === undefined ? "" : s);
     // noms.json se lit après le premier affichage (m-e6c49a1336e3) : en attendant, le texte à segments est repris par `completerLiens`
-    if (etat.noms === undefined && t.includes("`")) return [el("span", { "data-enrichir": t, "data-produit": typeof produit === "string" ? produit : null }, t)];
-    if (!etat.noms) return [t];
+    if (etat.noms === undefined && t0.includes("`")) return [el("span", { "data-enrichir": t0, "data-produit": typeof produit === "string" ? produit : null }, t0)];
+    if (!etat.noms) return [t0];
     const out = [];
     let fin = 0;
-    for (const m of t.matchAll(RE_SEGMENT_CODE)) {
+    for (const m of t0.matchAll(RE_SEGMENT_CODE)) {
       const ids = idsDuProduit(idsDuNom(m[1]), produit);
       if (!ids.length) continue;
-      if (m.index > fin) out.push(t.slice(fin, m.index));
+      if (m.index > fin) out.push(t0.slice(fin, m.index));
       out.push(el("a", {
         class: "ref-lien", href: ids.length === 1 ? `#reference?id=${encodeURIComponent(ids[0])}` : `#reference?q=${encodeURIComponent(m[1].trim())}`,
-        title: ids.length === 1 ? "Fiche de la base de référence" : `${ids.length} fiches portent ce nom : recherche dans la référence`,
+        title: ids.length === 1 ? t("lien.fiche") : t("lien.plusieurs", { n: ids.length }),
       }, el("code", { text: m[1] })));
       fin = m.index + m[0].length;
     }
-    if (fin < t.length) out.push(t.slice(fin));
+    if (fin < t0.length) out.push(t0.slice(fin));
     return out;
   }
-  function dateFr(iso) {
-    if (typeof iso !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return "date inconnue";
+  // date AAAA-MM-JJ affichée : JJ/MM/AAAA en français, AAAA-MM-JJ en anglais
+  function dateAffichee(iso) {
+    if (typeof iso !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return t("date.inconnue");
     const [a, m, j] = iso.slice(0, 10).split("-");
-    return `${j}/${m}/${a}`;
+    return LANGUE === "fr" ? `${j}/${m}/${a}` : `${a}-${m}-${j}`;
   }
-  function horodatageFr(iso) {
+  function horodatage(iso) {
     const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return "inconnu";
-    return d.toLocaleString("fr-CA", { dateStyle: "short", timeStyle: "short" });
+    if (Number.isNaN(d.getTime())) return t("date.inconnu");
+    return d.toLocaleString(LOCALE, { dateStyle: "short", timeStyle: "short" });
   }
   function vider(n) { while (n.firstChild) n.removeChild(n.firstChild); }
 
@@ -116,20 +145,147 @@
     } catch (e) { /* stockage indisponible : la case reste cochée à l'écran seulement */ }
   }
 
+  /* ---------- sélecteur de langue : même vue (recherche et ancre) dans l'autre langue, choix mémorisé sur l'appareil,
+     aucune redirection (décision du 22/10) ---------- */
+  function lireLangue() { try { return localStorage.getItem(CLE_LANGUE); } catch (e) { return null; } }
+  function ecrireLangue(l) { try { localStorage.setItem(CLE_LANGUE, l); } catch (e) { /* sans stockage : le lien suffit */ } }
+  function majLienLangue() {
+    const a = document.getElementById("choix-langue");
+    if (!a) return;
+    a.setAttribute("href", `${a.getAttribute("data-base") || ""}${location.search || ""}${location.hash || ""}`);
+  }
+  function brancherLangue() {
+    const a = document.getElementById("choix-langue");
+    if (!a) return;
+    const cible = a.getAttribute("hreflang");
+    a.addEventListener("click", () => ecrireLangue(cible));
+    // choix mémorisé (au clic seulement) différent de cette page : le lien est marqué, la page ne change pas d'elle-même
+    if (lireLangue() === cible) a.classList.add("prefere");
+    majLienLangue();
+  }
+
   /* ---------- éléments d'impact nul : masqués par défaut, bascule mémorisée (sous try/catch) ---------- */
   const CLE_NUL = "delta.afficherNul";
   function lireAfficherNul() { try { return localStorage.getItem(CLE_NUL) === "1"; } catch (e) { return false; } }
   function ecrireAfficherNul(v) { try { localStorage.setItem(CLE_NUL, v ? "1" : "0"); } catch (e) { /* sans stockage : pour cette page seulement */ } }
   etat.afficherNul = lireAfficherNul();
+  // seul l'impact `nul` déclaré est masqué : un impact inconnu (null, couche commune ou vue compatible) reste affiché
   function sansNul(elements) { return etat.afficherNul ? elements : elements.filter((e) => e.impact !== "nul"); }
   function basculeNul(elements) {
     const n = elements.filter((e) => e.impact === "nul").length;
     if (!n) return null;
     const b = el("button", { type: "button", class: "bascule-nul", "aria-pressed": String(etat.afficherNul),
-      text: `${etat.afficherNul ? "Masquer" : "Afficher"} les éléments sans impact (${n})` });
+      text: t(etat.afficherNul ? "nul.masquer" : "nul.afficher", { n }) });
     b.addEventListener("click", () => { etat.afficherNul = !etat.afficherNul; ecrireAfficherNul(etat.afficherNul); rendre(); });
     return el("div", { class: "filtres" }, b);
   }
+
+  /* ---------- adaptateurs de format (L3) : ancienne route et génération commune vers les formes lues par les pages.
+     Fonctions pures (aucun DOM, aucune requête) ; un schéma ou une version majeure inconnus sont refusés, jamais lus au jugé. ---------- */
+  const SCHEMA_COMMUN = "delta.commun";
+  const SCHEMA_MANIFESTE = "delta.manifest";
+  const RE_GENERATION = /^g-[0-9a-f]{16}$/;
+  // un document de la nouvelle forme porte un schéma ; l'ancienne route n'en a pas
+  const aSchema = (doc) => Boolean(doc) && typeof doc === "object" && !Array.isArray(doc) && typeof doc.schema === "string";
+  function verifierSchema(doc, schema, quoi) {
+    if (!aSchema(doc)) throw new Error(t("erreur.format", { quoi }));
+    if (doc.schema !== schema) throw new Error(t("erreur.schema", { quoi, schema: String(doc.schema) }));
+    if (doc.schema_version !== 1) throw new Error(t("erreur.schema_version", { quoi, schema, version: String(doc.schema_version) }));
+    return doc;
+  }
+  // commun/v1/index.json : génération servie et heure de publication
+  function adapterPublication(doc) {
+    verifierSchema(doc, SCHEMA_MANIFESTE, "commun/v1/index.json");
+    if (doc.vue !== "publication" || !RE_GENERATION.test(String(doc.generation || ""))) throw new Error(t("erreur.format", { quoi: "commun/v1/index.json" }));
+    return { generation: doc.generation, publie_le: typeof doc.publie_le === "string" ? doc.publie_le : null };
+  }
+  function adapterManifeste(doc, generation) {
+    verifierSchema(doc, SCHEMA_MANIFESTE, "manifest.json");
+    if (doc.generation !== generation || !Array.isArray(doc.fichiers)) throw new Error(t("erreur.format", { quoi: "manifest.json" }));
+    const requis = Array.isArray(doc.schemas_requis) ? doc.schemas_requis : [];
+    const inconnu = requis.find((s) => s !== `${SCHEMA_COMMUN}@1`);
+    if (inconnu) throw new Error(t("erreur.schema_requis", { schema: String(inconnu) }));
+    return { langues: Array.isArray(doc.langues) ? doc.langues : [] };
+  }
+  // veille/<p>.json : une entrée par nouveauté, ses publications datées ; aucun titre, résumé ni impact (couche commune)
+  function adapterVeille(doc, p) {
+    verifierSchema(doc, SCHEMA_COMMUN, `veille/${p}.json`);
+    if (doc.famille !== "veille" || !Array.isArray(doc.entrees) || !Array.isArray(doc.jours)) throw new Error(t("erreur.format", { quoi: `veille/${p}.json` }));
+    const jours = {}, agents = {};
+    const iso = /^\d{4}-\d{2}-\d{2}$/;
+    const datesIndex = doc.jours.filter((j) => j && iso.test(j.date || "")).map((j) => ({ date: j.date, genere_le: j.genere_le ?? null }));
+    for (const j of datesIndex) jours[j.date] = { elements: [], synthese: null, sources_en_echec: [], ecartes: [], commun: true };
+    for (const e of doc.entrees) {
+      if (!e || typeof e !== "object" || !Array.isArray(e.publications)) continue;
+      for (const pub of e.publications) {
+        if (!pub || !iso.test(pub.jour || "")) continue;
+        if (!jours[pub.jour]) { jours[pub.jour] = { elements: [], synthese: null, sources_en_echec: [], ecartes: [], commun: true }; datesIndex.push({ date: pub.jour, genere_le: null }); }
+        if (typeof pub.agent === "string") agents[pub.agent] = (agents[pub.agent] || 0) + 1;
+        jours[pub.jour].elements.push({ id: e.id, identite: e.identite ?? null, produit: pub.produit ?? null, version: pub.version ?? null,
+          type: pub.type ?? null, certitude: pub.certitude ?? null, date_publication: pub.date_publication ?? null,
+          revision: pub.revision === true, kb_refs: Array.isArray(pub.kb_refs) ? pub.kb_refs : [], sources: Array.isArray(pub.sources) ? pub.sources : [],
+          titre: null, resume: null, impact: null, pour_toi: null, action: null });
+      }
+    }
+    const agent = Object.entries(agents).sort((a, b) => b[1] - a[1])[0];
+    return { index: { perimetre: p, agent: agent ? agent[0] : null, maj_le: doc.maj_le ?? null, jours: datesIndex, commun: true }, jours };
+  }
+  // titre affiché d'un élément : son titre ; à défaut (couche commune), le produit (sa version suit) ou le libellé de la première source
+  function titreElement(e) {
+    if (texte(e.titre)) return e.titre;
+    if (e.version && PRODUITS[e.produit]) return PRODUITS[e.produit];
+    const s = Array.isArray(e.sources) ? e.sources.find((x) => x && texte(x.libelle)) : null;
+    return s ? s.libelle : (PRODUITS[e.produit] || t("carte.sans_titre"));
+  }
+  // versions.json : ancienne route (tableau, version installée relevée) ou commune (dernières versions publiées seules)
+  function adapterVersions(doc) {
+    if (Array.isArray(doc)) {
+      return { installees: true, lignes: doc.filter((l) => l && typeof l === "object").map((l) => ({ outil: l.outil, version: l.version ?? null,
+        derniere_publiee: l.derniere_publiee ?? null, detectee_le: l.detectee_le ?? null, note: [texte(l.raison), texte(l.note)].filter(Boolean).join(" "),
+        // sans version installée (vue compatible), aucune comparaison : statut inconnu
+        statut: l.version ? l.statut : "inconnu" })) };
+    }
+    verifierSchema(doc, SCHEMA_COMMUN, "versions.json");
+    if (doc.famille !== "versions" || !Array.isArray(doc.entrees)) throw new Error(t("erreur.format", { quoi: "versions.json" }));
+    return { installees: false, lignes: doc.entrees.filter((l) => l && typeof l === "object").map((l) => ({ outil: l.outil, version: null,
+      derniere_publiee: l.derniere_publiee ?? null, detectee_le: null, note: "", statut: "inconnu" })) };
+  }
+  // kb/noms.json : map plate (ancienne route) ou { schema, noms } (commune)
+  function adapterNoms(doc) {
+    if (aSchema(doc)) {
+      verifierSchema(doc, SCHEMA_COMMUN, "kb/noms.json");
+      if (!doc.noms || typeof doc.noms !== "object" || Array.isArray(doc.noms)) throw new Error(t("erreur.format", { quoi: "kb/noms.json" }));
+      return doc.noms;
+    }
+    if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new Error(t("erreur.format", { quoi: "kb/noms.json" }));
+    return doc;
+  }
+  // fichier de la base : ancienne route (`entrees`) ou commune (schéma vérifié, `entrees`)
+  function adapterKb(doc, quoi) {
+    if (aSchema(doc)) verifierSchema(doc, SCHEMA_COMMUN, quoi);
+    if (!doc || !Array.isArray(doc.entrees)) throw new Error(t("erreur.sans_entrees"));
+    return doc.entrees;
+  }
+  // description d'une fiche dans la langue de la page : textes bilingues (L2) d'abord, repli anglais annoncé ;
+  // sans textes, l'ancienne route : description commentée (française) ou description d'origine (anglaise)
+  function descriptionKb(e) {
+    const d = e && e.textes && e.textes.description;
+    if (d && typeof d === "object") {
+      const ici = d[LANGUE] && texte(d[LANGUE].texte) ? d[LANGUE] : null;
+      const en = d.en && texte(d.en.texte) ? d.en : null;
+      const choisi = ici || en;
+      if (choisi) return { texte: choisi.texte, langue: ici ? LANGUE : "en", repli: !ici, statut: choisi.statut ?? null };
+    }
+    if (e && e.commentee && texte(e.description)) return { texte: e.description, langue: "fr", repli: false, statut: "commentee" };
+    if (e && texte(e.description_source)) return { texte: e.description_source, langue: "en", repli: LANGUE !== "en", statut: "source" };
+    return null;
+  }
+  // texte de recherche d'une fiche : toutes ses descriptions, des deux langues
+  function texteRechercheKb(e) {
+    const d = e && e.textes && e.textes.description && typeof e.textes.description === "object" ? Object.values(e.textes.description).map((x) => x && x.texte) : [];
+    return [e.nom, e.description, e.description_source, ...d, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" ");
+  }
+  /* ---------- fin des adaptateurs ---------- */
 
   /* ---------- chargement des données ---------- */
   /* m-e6c49a1336e3 : Aujourd'hui ne lit que les index, le dernier jour de chaque périmètre, etat.json et versions.json ; les 30 jours des
@@ -137,26 +293,62 @@
      Chaque fichier n'est demandé qu'une fois : les lectures mémorisent leur promesse (`unefois`), même si l'on change d'onglet pendant le fond. */
   const lectures = new Map();
   function unefois(cle, lire) { if (!lectures.has(cle)) lectures.set(cle, lire()); return lectures.get(cle); }
-  async function lireJson(chemin) {
-    const r = await fetch(chemin, { cache: "no-cache" });
-    if (!r.ok) throw new Error(`${chemin} : HTTP ${r.status}`);
+  async function lireJson(url) {
+    const r = await fetch(url, { cache: "no-cache" });
+    if (!r.ok) throw new Error(t("erreur.http", { chemin: url, statut: r.status }));
     return r.json();
   }
-  async function chargerIndex() {
+  async function chargerIndexAncien() {
     await Promise.all(PERIMETRES.map(async (p) => {
       try {
-        const idx = await lireJson(`data/${p}/index.json`);
-        if (!idx || !Array.isArray(idx.jours)) throw new Error("index sans `jours`");
+        const idx = await lireJson(chemin(`${p}/index.json`));
+        if (!idx || !Array.isArray(idx.jours)) throw new Error(t("erreur.index_sans_jours"));
         etat.index[p] = idx;
       } catch (e) { etat.index[p] = { erreur: String(e.message || e), jours: [] }; }
     }));
   }
+  // génération commune : index de publication, manifeste, puis la veille des trois périmètres (une erreur reste celle de sa couche)
+  async function chargerCommun() {
+    COUCHE.mode = "commun";
+    try {
+      const pub = adapterPublication(await lireJson(`${RACINE}commun/v1/index.json`));
+      COUCHE.generation = pub.generation;
+      COUCHE.publie_le = pub.publie_le;
+      adapterManifeste(await lireJson(chemin("manifest.json")), pub.generation);
+    } catch (e) {
+      COUCHE.erreur = String(e.message || e);
+      for (const p of PERIMETRES) etat.index[p] = { erreur: COUCHE.erreur, jours: [] };
+      return;
+    }
+    await Promise.all(PERIMETRES.map(async (p) => {
+      try {
+        const v = adapterVeille(await lireJson(chemin(`veille/${p}.json`)), p);
+        etat.index[p] = v.index;
+        for (const [d, q] of Object.entries(v.jours)) etat.jours[`${p}/${d}`] = q;
+      } catch (e) { etat.index[p] = { erreur: String(e.message || e), jours: [] }; }
+    }));
+  }
+  async function chargerIndex() {
+    if (!COUCHE.demandee) {
+      await chargerIndexAncien();
+      if (PERIMETRES.some((p) => !etat.index[p].erreur)) return;
+      // aucun index de l'ancienne route : la référence commune prend le relais (jamais l'inverse) ; ce qui a pu partir avant
+      // (etat.json, versions.json de l'ancienne route) est oublié
+      COUCHE.automatique = true;
+      COUCHE.erreurAncienne = etat.index[PERIMETRES[0]].erreur;
+      for (const cle of ["comptes", "versions"]) lectures.delete(cle);
+      etat.comptes = undefined; etat.versions = undefined;
+    }
+    etat.index = {};
+    await chargerCommun();
+  }
   function chargerJour(p, date) {
     const cle = `${p}/${date}`;
+    if (enCommun()) return Promise.resolve(etat.jours[cle] || { erreur: t("erreur.jour_absent"), elements: [], ecartes: [] });
     return unefois(`jour:${cle}`, async () => {
       try {
-        const q = await lireJson(`data/${p}/${date}.json`);
-        etat.jours[cle] = q && Array.isArray(q.elements) ? q : { erreur: "fichier quotidien illisible", elements: [], ecartes: [] };
+        const q = await lireJson(chemin(`${p}/${date}.json`));
+        etat.jours[cle] = q && Array.isArray(q.elements) ? q : { erreur: t("erreur.jour_illisible"), elements: [], ecartes: [] };
       } catch (e) { etat.jours[cle] = { erreur: String(e.message || e), elements: [], ecartes: [] }; }
       return etat.jours[cle];
     });
@@ -168,7 +360,7 @@
     return datesDe(p).filter((d) => d >= limite);
   }
   function noteFenetre() {
-    return el("p", { class: "sous-titre" }, `Passages des ${FENETRE_JOURS} derniers jours. Au-delà, voir les `, el("a", { href: "#archives", text: "Archives" }), ".");
+    return el("p", { class: "sous-titre" }, t("fenetre.note_debut", { n: FENETRE_JOURS }), el("a", { href: "#archives", text: t("onglet.archives") }), t("fenetre.note_fin"));
   }
   // Aujourd'hui : le dernier jour publié de chaque périmètre
   async function chargerDernierJour() {
@@ -180,8 +372,8 @@
   }
   // les 30 derniers jours des trois périmètres, du plus récent au plus ancien, quelques fichiers à la fois ; une seule fois par page
   const FOND_PARALLELE = 4;
-  const PAGES_FENETRE = { changelogs: "Changelogs", actu: "Actu IA", "a-tester": "À tester" };
-  function texteAvancementFenetre(f) { return `Chargement des passages des ${FENETRE_JOURS} derniers jours : ${f.faits}/${f.total} fichiers…`; }
+  const PAGES_FENETRE = { changelogs: "onglet.changelogs", actu: "onglet.actu", "a-tester": "onglet.a_tester" };
+  function texteAvancementFenetre(f) { return t("fenetre.chargement", { n: FENETRE_JOURS, faits: f.faits, total: f.total }); }
   function chargerFenetre() {
     if (etat.fenetre) return etat.fenetre;
     const taches = PERIMETRES.flatMap((p) => datesRecentes(p).map((d) => [p, d])).sort((a, b) => b[1].localeCompare(a[1]));
@@ -201,7 +393,7 @@
   }
   function pageAttenteFenetre(f) {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: PAGES_FENETRE[etat.page] }),
+    frag.append(el("h2", { text: t(PAGES_FENETRE[etat.page]) }),
       el("p", { id: "fenetre-avancement", class: "sous-titre", role: "status", "aria-busy": "true", text: texteAvancementFenetre(f) }));
     return frag;
   }
@@ -236,38 +428,53 @@
     for (const p of PERIMETRES) {
       const idx = etat.index[p];
       if (!idx || !idx.agent) continue;
-      const t = new Date(idx.maj_le || "");
-      if (Number.isNaN(t.getTime())) continue;
+      const t0 = new Date(idx.maj_le || "");
+      if (Number.isNaN(t0.getTime())) continue;
       // un agent à plusieurs périmètres (Claude Code : claude et actu) prend le passage le plus ANCIEN,
       // pour qu'un périmètre qui n'a pas tourné ne soit pas masqué par l'autre (audit du 25/09)
-      if (!parAgent[idx.agent] || t < parAgent[idx.agent]) parAgent[idx.agent] = t;
+      if (!parAgent[idx.agent] || t0 < parAgent[idx.agent]) parAgent[idx.agent] = t0;
     }
     const alertes = [];
     for (const agent of Object.keys(AGENTS)) {
-      const t = parAgent[agent];
-      const heures = t ? (Date.now() - t.getTime()) / 36e5 : Infinity;
+      const t0 = parAgent[agent];
+      const heures = t0 ? (Date.now() - t0.getTime()) / 36e5 : Infinity;
       // D36, D53 : vert jusqu'à 24 h, orange de 24 à 36 h, rouge au-delà de 36 h
       const couleur = heures > ALERTE_HEURES ? "rouge" : heures > 24 ? "orange" : "vert";
-      const quand = t ? horodatageFr(t.toISOString()) : "aucun passage";
-      zone.append(el("span", { class: `agent ${couleur}`, title: t ? `Dernier passage il y a ${Math.floor(heures)} h` : "Aucun passage" },
+      const quand = t0 ? horodatage(t0.toISOString()) : t("agent.aucun_passage");
+      zone.append(el("span", { class: `agent ${couleur}`, title: t0 ? t("agent.dernier", { h: Math.floor(heures) }) : t("agent.aucun") },
         el("span", { class: "point", "aria-hidden": "true" }), el("strong", { text: AGENTS[agent] }), ` ${quand}`,
-        couleur === "rouge" ? el("span", { class: "saut", text: " (en retard)" }) : null));
-      if (couleur === "rouge") alertes.push(t ? `${AGENTS[agent]} n'a pas tourné depuis ${Math.floor(heures)} h` : `${AGENTS[agent]} n'a jamais tourné`);
+        couleur === "rouge" ? el("span", { class: "saut", text: t("agent.en_retard") }) : null));
+      if (couleur === "rouge") alertes.push(t0 ? t("agent.alerte", { agent: AGENTS[agent], h: Math.floor(heures) }) : t("agent.jamais", { agent: AGENTS[agent] }));
     }
     return alertes;
   }
+  // une ligne discrète dans le pied : couche lue, génération et date ; lien vers l'autre couche
+  function rendreCouche() {
+    const zone = document.getElementById("couche-lue");
+    if (!zone) return;
+    vider(zone);
+    if (enCommun()) {
+      zone.append(COUCHE.generation
+        ? t("couche.commun", { generation: COUCHE.generation, date: COUCHE.publie_le ? horodatage(COUCHE.publie_le) : t("date.inconnue") })
+        : t("couche.commun_sans_generation"));
+      if (COUCHE.automatique) zone.append(" ", t("couche.automatique"));
+      if (COUCHE.demandee) zone.append(" ", el("a", { href: `${location.pathname}${location.hash || ""}`, text: t("couche.vers_ancienne") }));
+    } else {
+      zone.append(t("couche.ancienne"), " ", el("a", { href: `?couche=commun${location.hash || ""}`, text: t("couche.vers_commun") }));
+    }
+  }
 
-  /* ---------- Compte et quotas : etat.json > comptes (D93, D71) ---------- */
+  /* ---------- Compte et quotas : etat.json > comptes (D93, D71) ; couche personnelle, jamais lue sur la référence commune ---------- */
   const QUOTAS_AFFICHES = [
-    ["claude_session_5h", "Claude, session 5 h", false], ["claude_semaine", "Claude, semaine", true],
-    ["claude_semaine_fable", "Claude, semaine Fable", true], ["chatgpt_semaine", "ChatGPT, semaine", true]];
+    ["claude_session_5h", "quota.claude_session_5h", false], ["claude_semaine", "quota.claude_semaine", true],
+    ["claude_semaine_fable", "quota.claude_semaine_fable", true], ["chatgpt_semaine", "quota.chatgpt_semaine", true]];
   const SEUIL_ALERTE_PCT = 80;
   const ANCIEN_MIN = 30;  // D120 : un relevé de plus de 30 min s'affiche « ancien » (même seuil que `fraicheur.ancien_min` d'OBSERVATORY)
-  const PHRASE_D71 = "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser";
   async function chargerComptes() {
     return unefois("comptes", async () => {
+      if (enCommun()) { etat.comptes = null; return; }
       try {
-        const e = await lireJson("data/etat.json");
+        const e = await lireJson(chemin("etat.json"));
         etat.comptes = e && typeof e.comptes === "object" && e.comptes ? e.comptes : null;
       } catch (err) { etat.comptes = null; }
     });
@@ -276,29 +483,30 @@
     const d = new Date(iso);
     if (typeof iso !== "string" || Number.isNaN(d.getTime())) return null;
     const z = (n) => String(n).padStart(2, "0");
-    return `${z(d.getDate())}/${z(d.getMonth() + 1)} à ${z(d.getHours())}:${z(d.getMinutes())}`;
+    return t("date.jour_heure", { j: z(d.getDate()), m: z(d.getMonth() + 1), h: z(d.getHours()), min: z(d.getMinutes()) });
   }
-  function ageFr(iso, maintenant) {
+  function age(iso, maintenant) {
     const ms = maintenant - new Date(iso).getTime();
     if (typeof iso !== "string" || Number.isNaN(ms)) return null;
     const min = Math.max(0, Math.round(ms / 60000));
-    if (min < 60) return `il y a ${min} min`;
-    if (min < 2880) return `il y a ${Math.round(min / 60)} h`;
-    return `il y a ${Math.round(min / 1440)} j`;
+    if (min < 60) return t("age.min", { n: min });
+    if (min < 2880) return t("age.h", { n: Math.round(min / 60) });
+    return t("age.j", { n: Math.round(min / 1440) });
   }
   function blocComptes(maintenant) {
     const c = etat.comptes;
-    if (!c || typeof c !== "object") return null;
-    const sec = el("section", { class: "comptes", "aria-label": "Compte et quotas" }, el("h3", { text: "COMPTE ET QUOTAS" }));
+    if (enCommun() || !c || typeof c !== "object") return null;
+    const sec = el("section", { class: "comptes", "aria-label": t("comptes.titre") }, el("h3", { text: t("comptes.titre_haut") }));
     if (c.statut !== "ok" || !c.quotas || typeof c.quotas !== "object") {
-      sec.append(el("p", { class: "pied-comptes", text: `Quotas inconnus${texte(c.raison) ? ` : ${c.raison}` : ""}.` }));
+      sec.append(el("p", { class: "pied-comptes", text: texte(c.raison) ? t("comptes.inconnus_raison", { raison: c.raison }) : t("comptes.inconnus") }));
       return sec;
     }
     let alerte = false;
     const liste = el("ul", { class: "quotas" });
-    for (const [cle, libelle, hebdo] of QUOTAS_AFFICHES) {
+    for (const [cle, libelleCle, hebdo] of QUOTAS_AFFICHES) {
       const q = c.quotas[cle];
       if (!q || typeof q !== "object") continue;
+      const libelle = t(libelleCle);
       const connu = Number.isInteger(q.pct) && q.pct >= 0 && q.pct <= 100;
       const rz = jjmmHhmm(q.remise_a_zero);
       const perimee = rz !== null && new Date(q.remise_a_zero).getTime() < maintenant;
@@ -306,84 +514,83 @@
       const tRel = typeof q.releve_le === "string" ? new Date(q.releve_le).getTime() : NaN;
       const relevable = !Number.isNaN(tRel);
       const ancien = !relevable || maintenant - tRel > ANCIEN_MIN * 60000;
-      const quand = relevable ? `relevé ${jjmmHhmm(q.releve_le)} (${ageFr(q.releve_le, maintenant)})` : "date du relevé inconnue";
+      const quand = relevable ? t("quota.releve", { quand: jjmmHhmm(q.releve_le), age: age(q.releve_le, maintenant) }) : t("quota.releve_inconnu");
       if (fort) alerte = true;
       const barre = el("div", { class: "barre", role: "progressbar", "aria-label": libelle, "aria-valuemin": "0", "aria-valuemax": "100",
         "aria-valuenow": connu ? String(q.pct) : null }, el("span", { style: `width:${connu ? q.pct : 0}%` }));
-      const detail = (perimee ? `remise à zéro passée (${rz}) : valeur périmée`
-        : rz ? `remise à zéro le ${rz}` : "remise à zéro inconnue") + ` · ${quand}${ancien ? " · ancien" : ""}`;
+      const detail = (perimee ? t("quota.rz_passee", { rz }) : rz ? t("quota.rz", { rz }) : t("quota.rz_inconnue")) + ` · ${quand}${ancien ? ` · ${t("quota.ancien")}` : ""}`;
       liste.append(el("li", { class: "quota" + (fort ? " alerte" : "") + (perimee ? " perimee" : "") + (ancien ? " ancien" : "") },
         el("span", { class: "quota-nom", text: libelle }),
-        el("span", { class: "quota-pct", text: connu ? `${q.pct} %` : "inconnu" }),
+        el("span", { class: "quota-pct", text: connu ? `${q.pct} %` : t("quota.inconnu") }),
         barre,
-        el("span", { class: "quota-rz", text: connu ? detail : texte(q.raison, "valeur absente") })));
+        el("span", { class: "quota-rz", text: connu ? detail : texte(q.raison, t("quota.absente")) })));
     }
     sec.append(liste);
-    if (alerte) sec.append(el("p", { class: "alerte-d71", role: "status", text: `Quota hebdomadaire au-delà de ${SEUIL_ALERTE_PCT} % : ${PHRASE_D71}.` }));
+    if (alerte) sec.append(el("p", { class: "alerte-d71", role: "status", text: t("quota.alerte_d71", { seuil: SEUIL_ALERTE_PCT }) }));
     const releve = jjmmHhmm(c.releve_le);
-    sec.append(el("p", { class: "pied-comptes", text: releve ? `Relevé du ${releve} (${ageFr(c.releve_le, maintenant)}).` : "Date du relevé inconnue." }));
+    sec.append(el("p", { class: "pied-comptes", text: releve ? t("comptes.releve", { quand: releve, age: age(c.releve_le, maintenant) }) : t("comptes.releve_inconnu") }));
     return sec;
   }
 
-  /* ---------- Tes outils : versions installées (D54 à D56) ---------- */
-  const STATUTS_VERSION = { a_jour: "à jour", en_retard: "en retard", inconnu: "inconnu", embarque: "embarqué", non_utilise: "non utilisée" };
+  /* ---------- Tes outils : versions installées (D54 à D56) ; dernières versions publiées seules sur la référence commune ---------- */
+  const STATUTS_VERSION = ["a_jour", "en_retard", "inconnu", "embarque", "non_utilise"];
   async function chargerVersions() {
     return unefois("versions", async () => {
-      try {
-        const v = await lireJson("data/versions.json");
-        etat.versions = Array.isArray(v) ? v : null;
-      } catch (e) { etat.versions = null; }
+      try { etat.versions = adapterVersions(await lireJson(chemin("versions.json"))); }
+      catch (e) { etat.versions = null; }
     });
   }
   function blocOutils() {
-    const lignes = etat.versions;
-    if (!Array.isArray(lignes) || !lignes.length) return null;
+    const v = etat.versions;
+    if (!v || !v.lignes.length) return null;
     const corps = el("tbody");
-    for (const l of lignes) {
-      if (!l || typeof l !== "object") continue;
-      const statut = STATUTS_VERSION[l.statut] ? l.statut : "inconnu";
-      const note = [texte(l.raison), texte(l.note)].filter(Boolean).join(" ");
-      corps.append(el("tr", { class: note ? "avec-note" : null },
+    for (const l of v.lignes) {
+      const statut = STATUTS_VERSION.includes(l.statut) ? l.statut : "inconnu";
+      corps.append(el("tr", { class: l.note ? "avec-note" : null },
         el("td", { text: texte(l.outil, "?") }),
-        el("td", { class: "v", text: l.version ? String(l.version) : "introuvable" }),
+        el("td", { class: "v", text: l.version ? String(l.version) : t("outils.inconnue") }),
         el("td", { class: "v col-derniere", text: l.derniere_publiee ? String(l.derniere_publiee) : "—" }),
-        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), STATUTS_VERSION[statut]))));
-      if (note) corps.append(el("tr", { class: "ligne-note" }, el("td", { colspan: "4", text: note })));
+        el("td", null, el("span", { class: `statut ${statut}` }, el("span", { class: "point", "aria-hidden": "true" }), t(`version.${statut}`)))));
+      if (l.note) corps.append(el("tr", { class: "ligne-note" }, el("td", { colspan: "4", text: l.note, lang: langueDonnees() })));
     }
-    const date = lignes.map((l) => l && l.detectee_le).filter(Boolean).sort().pop();
-    return el("section", { class: "outils", "aria-label": "Tes outils" },
-      el("h3", { text: "TES OUTILS" }),
+    const date = v.lignes.map((l) => l.detectee_le).filter(Boolean).sort().pop();
+    const titre = v.installees ? t("outils.titre") : t("outils.titre_publiees");
+    return el("section", { class: "outils", "aria-label": titre },
+      el("h3", { text: titre.toUpperCase() }),
       el("table", null,
-        el("thead", null, el("tr", null, el("th", { text: "Outil" }), el("th", { text: "Installée" }),
-          el("th", { class: "col-derniere", text: "Dernière publiée" }), el("th", { text: "Statut" }))),
+        el("thead", null, el("tr", null, el("th", { text: t("outils.outil") }), el("th", { text: t("outils.installee") }),
+          el("th", { class: "col-derniere", text: t("outils.derniere") }), el("th", { text: t("outils.statut") }))),
         corps),
-      el("p", { class: "pied-outils", text: `Relevé le ${date ? horodatageFr(date) : "?"} sur la machine de Sylvain. « Dernière publiée » vient des sources suivies par Delta ; sans source, le statut reste inconnu. Le Codex de l'app ChatGPT suit le canal de l'app : il n'est pas comparé.` }));
+      el("p", { class: "pied-outils", text: v.installees ? t("outils.pied", { quand: date ? horodatage(date) : "?" }) : t("outils.pied_commun") }));
   }
 
   /* ---------- rendu d'un élément ---------- */
   function badge(classe, libelle) { return el("span", { class: `badge ${classe}`, text: libelle }); }
+  // impact personnel déclaré, sinon null : aucun badge ni classe fabriqués quand il manque (couche commune, vue compatible)
+  const impactDe = (e) => (IMPACTS.includes(e.impact) ? e.impact : null);
   function carte(e, options) {
     options = options || {};
     const faits = lireFaits();
-    const c = el("li", { class: `carte impact-${IMPACTS.includes(e.impact) ? e.impact : "nul"}` + (faits[e.id] ? " fait" : "") });
+    const impact = impactDe(e);
+    const c = el("li", { class: `carte impact-${impact || "inconnu"}` + (faits[e.id] ? " fait" : "") });
     const badges = el("div", { class: "badges" },
-      badge(`impact ${IMPACTS.includes(e.impact) ? e.impact : "nul"}`, `impact ${e.impact || "?"}`),
-      badge(`certitude ${e.certitude || ""}`, CERTITUDES[e.certitude] || String(e.certitude || "?")),
+      impact ? badge(`impact ${impact}`, t(`impact.${impact}`)) : null,
+      badge(`certitude ${e.certitude || ""}`, CERTITUDES.includes(e.certitude) ? t(`certitude.${e.certitude}`) : String(e.certitude || "?")),
       badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
-      e.type ? badge("type", TYPES[e.type] || String(e.type)) : null,
-      e.revision === true ? badge("revise", "révisé") : null);
+      e.type ? badge("type", TYPES.includes(e.type) ? t(`type.${e.type}`) : String(e.type)) : null,
+      e.revision === true ? badge("revise", t("carte.revise")) : null);
     c.append(badges);
-    const titre = texte(e.titre, "(sans titre)") + (e.version ? ` ${e.version}` : "");
-    c.append(el(options.niveau === 4 ? "h4" : "h3", { text: titre }));
-    c.append(el("div", { class: "meta", text: `${dateFr(e.date_publication)} · passage du ${dateFr(e._jour)}` }));
-    if (texte(e.resume)) c.append(el("p", { class: "resume" }, ...enrichi(e.resume, e.produit)));
-    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pour toi" }), el("p", null, ...enrichi(e.pour_toi, e.produit))));
+    const titre = titreElement(e) + (e.version ? ` ${e.version}` : "");
+    c.append(el(options.niveau === 4 ? "h4" : "h3", { text: titre, lang: texte(e.titre) ? langueDonnees() : null }));
+    c.append(el("div", { class: "meta", text: t("carte.meta", { publication: dateAffichee(e.date_publication), passage: dateAffichee(e._jour) }) }));
+    if (texte(e.resume)) c.append(el("p", { class: "resume", lang: langueDonnees() }, ...enrichi(e.resume, e.produit)));
+    if (texte(e.pour_toi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: t("carte.pour_toi") }), el("p", { lang: langueDonnees() }, ...enrichi(e.pour_toi, e.produit))));
     if (e.action && typeof e.action === "object") {
-      const a = el("div", { class: "action" }, el("strong", { text: "Action" }),
-        e.action.effort ? el("span", { class: "effort", text: `effort : ${e.action.effort}` }) : null,
-        texte(e.action.description) ? el("p", null, ...enrichi(e.action.description, e.produit)) : null);
+      const a = el("div", { class: "action" }, el("strong", { text: t("carte.action") }),
+        e.action.effort ? el("span", { class: "effort", text: t("carte.effort", { effort: e.action.effort }) }) : null,
+        texte(e.action.description) ? el("p", { lang: langueDonnees() }, ...enrichi(e.action.description, e.produit)) : null);
       if (Array.isArray(e.action.etapes) && e.action.etapes.length) {
-        a.append(el("ol", null, ...e.action.etapes.map((s) => el("li", null, ...enrichi(s, e.produit)))));
+        a.append(el("ol", { lang: langueDonnees() }, ...e.action.etapes.map((s) => el("li", null, ...enrichi(s, e.produit)))));
       }
       const id = String(e.id || "");
       const caseFait = el("input", { type: "checkbox" });
@@ -392,33 +599,33 @@
         ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked);
         if (options.surFait) options.surFait();
       });
-      a.append(el("label", null, caseFait, "Fait"));
+      a.append(el("label", null, caseFait, t("carte.fait")));
       c.append(a);
     }
     if (Array.isArray(e.projets_concernes) && e.projets_concernes.length) {
-      c.append(el("p", { class: "projets", text: `Projets : ${e.projets_concernes.map(String).join(", ")}` }));
+      c.append(el("p", { class: "projets", text: t("carte.projets", { liste: e.projets_concernes.map(String).join(", ") }) }));
     }
     if (Array.isArray(e.sources) && e.sources.length) {
-      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
-        el("li", { class: s && s.officielle === true ? "off" : null, title: s && s.officielle === true ? "source officielle" : "source tierce" },
+      c.append(el("ul", { class: "sources", "aria-label": t("carte.sources") }, ...e.sources.map((s) =>
+        el("li", { class: s && s.officielle === true ? "off" : null, title: s && s.officielle === true ? t("carte.source_officielle") : t("carte.source_tierce") },
           lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
     }
     return c;
   }
   function listeCartes(elements, options) {
-    if (!elements.length) return el("p", { class: "vide", text: (options && options.vide) || "Rien à afficher." });
+    if (!elements.length) return el("p", { class: "vide", text: (options && options.vide) || t("liste.vide") });
     return el("ul", { class: "liste" + ((options && options.colonnes) ? " deux-colonnes" : "") }, ...elements.map((e) => carte(e, options)));
   }
   function blocSynthese(p, q, date) {
     const idx = etat.index[p] || {};
-    const titre = { claude: "Claude et Claude Code", openai: "ChatGPT et Codex", actu: "Actu IA" }[p] || p;
     const b = el("section", { class: "synthese" },
-      el("h3", null, titre, el("span", { class: "meta", text: `${AGENTS[idx.agent] || idx.agent || ""} · ${dateFr(date)}` })));
-    if (!q || q.erreur) b.append(el("p", { class: "erreur", text: q ? `Données indisponibles : ${q.erreur}` : "Aucun passage." }));
+      el("h3", null, t(`perimetre.${p}`), el("span", { class: "meta", text: `${AGENTS[idx.agent] || idx.agent || ""} · ${dateAffichee(date)}` })));
+    if (!q || q.erreur) b.append(el("p", { class: "erreur", text: q ? t("synthese.indisponible", { raison: q.erreur }) : t("synthese.aucun_passage") }));
     else {
-      b.append(el("p", { text: texte(q.synthese, "Synthèse absente.") }));
+      if (q.commun) b.append(el("p", { class: "doux", text: t("synthese.commun_absente", { n: q.elements.length }) }));
+      else b.append(el("p", { lang: texte(q.synthese) ? langueDonnees() : null, text: texte(q.synthese, t("synthese.absente")) }));
       if (Array.isArray(q.sources_en_echec) && q.sources_en_echec.length) {
-        b.append(el("p", { class: "echecs", text: "Sources en échec : " + q.sources_en_echec.map((s) => `${s.id}${s.partiel ? " (partiel)" : ""}`).join(", ") }));
+        b.append(el("p", { class: "echecs", text: t("synthese.echecs", { liste: q.sources_en_echec.map((s) => `${s.id}${s.partiel ? ` (${t("synthese.partiel")})` : ""}`).join(", ") }) }));
       }
     }
     return b;
@@ -427,21 +634,23 @@
     const tous = [];
     for (const q of quotidiens) if (q && Array.isArray(q.ecartes)) tous.push(...q.ecartes);
     if (!tous.length) return null;
-    return el("details", { class: "ecartes" }, el("summary", { text: `${tous.length} nouveauté(s) écartée(s) comme hors sujet` }),
-      el("ul", null, ...tous.map((x) => el("li", { text: `${texte(x && x.raison, "sans raison")} — ${texte(x && x.id, "?")}` }))));
+    return el("details", { class: "ecartes" }, el("summary", { text: t("ecartes.resume", { n: tous.length }) }),
+      el("ul", { lang: langueDonnees() }, ...tous.map((x) => el("li", { text: `${texte(x && x.raison, t("ecartes.sans_raison"))} — ${texte(x && x.id, "?")}` }))));
   }
   function filtresProduit(elements, surChangement) {
     const presents = [...new Set(elements.map((e) => e.produit).filter((p) => PRODUITS[p]))];
     if (presents.length < 2) return null;
-    const f = el("div", { class: "filtres", role: "group", "aria-label": "Filtrer par produit" });
+    const f = el("div", { class: "filtres", role: "group", "aria-label": t("filtre.produit") });
     for (const p of ["tous", ...presents]) {
-      const b = el("button", { type: "button", "aria-pressed": String(etat.filtreProduit === p), text: p === "tous" ? "Tous" : PRODUITS[p] });
+      const b = el("button", { type: "button", "aria-pressed": String(etat.filtreProduit === p), text: p === "tous" ? t("filtre.tous") : PRODUITS[p] });
       b.addEventListener("click", () => { etat.filtreProduit = p; surChangement(); });
       f.append(b);
     }
     return f;
   }
   const filtrer = (elements) => etat.filtreProduit === "tous" ? elements : elements.filter((e) => e.produit === etat.filtreProduit);
+  // note d'une couche personnelle absente : une ligne, sans erreur
+  function notePersonnel(cle) { return el("p", { class: "vide doux", role: "note", text: t(cle) }); }
 
   /* ---------- pages ---------- */
   // Une seule requête de script, même après navigation et reconstruction du bloc.
@@ -460,21 +669,22 @@
   function blocMurX() {
     const comptes = ["AnthropicAI", "claudeai", "ClaudeDevs", "OpenAI", "ChatGPT", "OpenAIDevs"];
     return el("section", { class: "liste-x", id: "mur-x" },
-      el("h3", { text: "Veille sur X / X watch" }),
-      el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", "Liste « AI Agents & Builders » sur X / list on X")),
-      el("ul", { class: "sources", "aria-label": "Comptes officiels / Official accounts" },
+      el("h3", { text: t("x.titre") }),
+      el("p", null, lienSur("https://x.com/i/lists/2113336377958084762", t("x.liste"))),
+      el("ul", { class: "sources", "aria-label": t("x.comptes") },
         ...comptes.map((compte) => el("li", null, lienSur(`https://x.com/${compte}`, `@${compte}`)))),
-      el("div", { class: "mur-x-posts", "aria-label": "Posts sur X / X posts" },
-        el("p", { text: "Chargement des posts… / Loading posts…" })));
+      el("div", { class: "mur-x-posts", "aria-label": t("x.posts") },
+        el("p", { text: t("x.chargement") })));
   }
   async function completerMurX() {
     const section = document.getElementById("mur-x");
     if (!section || etat.page !== "actu") return;
     const conteneur = section.querySelector(".mur-x-posts");
     let ids = [];
-    try {
-      const r = await fetch("data/actu/x-ids.json", { cache: "no-cache" });
-      if (!r.ok) throw new Error("relevé absent");
+    // le relevé des posts n'appartient qu'à l'ancienne route : la référence commune ne le publie pas
+    if (!enCommun()) try {
+      const r = await fetch(chemin("actu/x-ids.json"), { cache: "no-cache" });
+      if (!r.ok) throw new Error("x-ids");
       const d = await r.json();
       if (d && Array.isArray(d.ids)) ids = [...new Set(d.ids.filter((id) => typeof id === "string" && /^[0-9]{1,25}$/.test(id)))].slice(0, 30);
     } catch (_) { /* Fichier absent ou illisible : les liens restent disponibles. */ }
@@ -482,13 +692,13 @@
     if (document.getElementById("mur-x") !== section || etat.page !== "actu") return;
     vider(conteneur);
     if (!ids.length) {
-      conteneur.append(el("p", { text: "Aucun post disponible pour le moment. / No posts available yet." }));
+      conteneur.append(el("p", { text: t("x.aucun") }));
       return;
     }
     const theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     for (const id of ids) conteneur.append(el("div", { class: "mur-x-post" },
       el("blockquote", { class: "twitter-tweet", "data-theme": theme, "data-dnt": "true", "data-conversation": "none" },
-        lienSur(`https://x.com/i/status/${id}`, "Voir le post sur X / View on X"))));
+        lienSur(`https://x.com/i/status/${id}`, t("x.voir")))));
     try {
       const twitter = await chargerWidgetsX();
       if (document.getElementById("mur-x") === section && etat.page === "actu") twitter.widgets.load(conteneur);
@@ -498,13 +708,14 @@
   function pageAujourdhui(alertes) {
     const frag = document.createDocumentFragment();
     if (alertes.length) frag.append(el("div", { class: "bandeau-alerte", role: "status", text: alertes.join(" · ") + "." }));
-    frag.append(el("h2", { text: "Aujourd'hui" }));
+    frag.append(el("h2", { text: t("onglet.aujourdhui") }));
     const comptes = blocComptes(Date.now());
     if (comptes) frag.append(comptes);
+    else if (enCommun()) frag.append(notePersonnel("personnel.aujourdhui"));
     const outils = blocOutils();
     if (outils) frag.append(outils);
     frag.append(el("div", { id: "encart-kb" }));
-    frag.append(el("p", null, el("a", { href: "#actu", text: "Veille sur X : voir le mur / X watch: view posts" })));
+    frag.append(el("p", null, el("a", { href: "#actu", text: t("x.voir_mur") })));
     const quotidiens = [];
     let elements = [];
     for (const p of PERIMETRES) {
@@ -515,12 +726,12 @@
       if (d) elements = elements.concat(elementsDe(p, [d]));
     }
     elements.sort(triImpact);
-    frag.append(el("h2", { text: `Éléments (${sansNul(elements).length})` }));
+    frag.append(el("h2", { text: t("elements.titre", { n: sansNul(elements).length }) }));
     const f = filtresProduit(elements, rendre);
     if (f) frag.append(f);
     const bn = basculeNul(filtrer(elements));
     if (bn) frag.append(bn);
-    frag.append(listeCartes(sansNul(filtrer(elements)), { vide: "Aucun élément pour ce filtre." }));
+    frag.append(listeCartes(sansNul(filtrer(elements)), { vide: t("elements.vide_filtre") }));
     const ec = blocEcartes(quotidiens);
     if (ec) frag.append(ec);
     return frag;
@@ -537,38 +748,40 @@
   }
   function pageChangelogs() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Changelogs" }), el("p", { class: "sous-titre", text: "Par produit, du plus récent au plus ancien." }), noteFenetre());
+    frag.append(el("h2", { text: t("onglet.changelogs") }), el("p", { class: "sous-titre", text: t("changelogs.sous_titre") }), noteFenetre());
     const tous = elementsDe("claude", datesRecentes("claude")).concat(elementsDe("openai", datesRecentes("openai")));
     const bn = basculeNul(tous);
     if (bn) frag.append(bn);
     for (const produit of ["claude-code", "claude", "codex", "chatgpt"]) {
       const liste = sansNul(tous.filter((e) => e.produit === produit)).sort(triChrono);
       frag.append(el("h3", { text: `${PRODUITS[produit]} (${liste.length})` }));
-      frag.append(listeCartes(liste, { niveau: 4, vide: "Aucun élément." }));
+      frag.append(listeCartes(liste, { niveau: 4, vide: t("changelogs.vide") }));
     }
     return frag;
   }
   function pageActu() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Actu IA" }), blocMurX(), noteFenetre());
+    frag.append(el("h2", { text: t("onglet.actu") }), blocMurX(), noteFenetre());
     const tous = elementsDe("actu", datesRecentes("actu")).sort(triChrono);
     const bn = basculeNul(tous);
     if (bn) frag.append(bn);
-    frag.append(listeCartes(sansNul(tous), { vide: "Aucune actualité sur la période." }));
+    frag.append(listeCartes(sansNul(tous), { vide: t("actu.vide") }));
     const ec = blocEcartes(datesRecentes("actu").map((d) => etat.jours[`actu/${d}`]));
     if (ec) frag.append(ec);
     return frag;
   }
   /* ---------- Référence (phase 4) : base extraite de la documentation, commentée par les agents ---------- */
   const KB_PERIMETRES = ["claude", "openai"];
-  const KB_CATEGORIES = { fonctionnalites: "Fonctionnalités", commandes: "Commandes", skills: "Skills", plugins: "Plugins", mcp: "MCP", parametres: "Paramètres", raccourcis: "Raccourcis", methodes: "Méthodes", modeles: "Modèles" };
-  const VERDICTS = { utiliser: "à utiliser", tester: "à tester", ignorer: "à ignorer" };
-  const STATUTS = { utilise: "utilisé", non_utilise: "non utilisé", inconnu: "usage inconnu" };
+  const KB_CATEGORIES_CLES = ["fonctionnalites", "commandes", "skills", "plugins", "mcp", "parametres", "raccourcis", "methodes", "modeles"];
+  const KB_CATEGORIES = Object.fromEntries(KB_CATEGORIES_CLES.map((c) => [c, t(`categorie.${c}`)]));
+  const VERDICTS = { utiliser: t("verdict.utiliser"), tester: t("verdict.tester"), ignorer: t("verdict.ignorer") };
+  const STATUTS = { utilise: t("statut.utilise"), non_utilise: t("statut.non_utilise"), inconnu: t("statut.inconnu") };
   const KB_PAGE = 50;
   const kbFiltre = { q: "", produit: "", categorie: "", verdict: "", statut: "", tri: "", depuis: "", limite: KB_PAGE };
-  const KB_NOMS = { fonctionnalites: ["fonctionnalité", "fonctionnalités"], commandes: ["commande", "commandes"], skills: ["skill", "skills"], plugins: ["plugin", "plugins"], mcp: ["MCP", "MCP"], parametres: ["paramètre", "paramètres"], raccourcis: ["raccourci", "raccourcis"], methodes: ["méthode", "méthodes"], modeles: ["modèle", "modèles"] };
+  // nom d'une catégorie au singulier (n = 1) ou au pluriel
+  const nomCategorie = (c, n) => t(`categorie.${n > 1 ? "nom_pluriel" : "nom"}.${c}`);
   const KB_JOURS_RECENTS = ["7", "30"];
-  const LIGNE_AJOUT = "ajoutée à l'inventaire";
+  const LIGNE_AJOUT = "ajoutée à l'inventaire";  // libellé de l'historique des données (catalogue.py), pas un texte d'interface
   const ISO_JOUR = /^\d{4}-\d{2}-\d{2}$/;
   function sansAccents(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
   // date d'ajout d'une entrée : ligne « ajoutée à l'inventaire » de l'historique, à défaut la plus ancienne date de l'historique, à défaut null (jamais devinée)
@@ -589,21 +802,24 @@
     if (!a || !ISO_JOUR.test(ref)) return false;
     return a >= seuilJours(jours, ref) && a <= ref;
   }
-  // fichier léger des ajouts récents ; absent ou illisible : null, sans message (pas d'encart)
+  // fichier léger des ajouts récents ; absent, illisible ou référence commune (non publié) : null, sans message (pas d'encart)
   async function chargerRecentKb() {
     return unefois("kb-recent", async () => {
+      if (enCommun()) { etat.kbRecent = null; return null; }
       try {
-        const d = await lireJson("data/kb/recent.json");
+        const d = await lireJson(chemin("kb/recent.json"));
         etat.kbRecent = d && Array.isArray(d.entrees) ? d : null;
       } catch (err) { etat.kbRecent = null; }
       return etat.kbRecent;
     });
   }
-  // D103 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message
+  // D103 : essais de la base (verdicts tester puis utiliser) pour l'onglet « À tester » ; absent ou illisible : null, section omise sans message ;
+  // couche personnelle : jamais lue sur la référence commune
   async function chargerATesterKb() {
     return unefois("kb-a-tester", async () => {
+      if (enCommun()) { etat.kbATester = null; return null; }
       try {
-        const d = await lireJson("data/kb/a-tester.json");
+        const d = await lireJson(chemin("kb/a-tester.json"));
         etat.kbATester = d && Array.isArray(d.entrees) ? d : null;
       } catch (err) { etat.kbATester = null; }
       return etat.kbATester;
@@ -612,10 +828,8 @@
   // D105 : index nom → ids (docs/data/kb/noms.json) pour les liens vers les fiches ; absent ou illisible : null, les segments restent en texte simple
   async function chargerNomsKb() {
     return unefois("kb-noms", async () => {
-      try {
-        const d = await lireJson("data/kb/noms.json");
-        etat.noms = d && typeof d === "object" && !Array.isArray(d) ? d : null;
-      } catch (err) { etat.noms = null; }
+      try { etat.noms = adapterNoms(await lireJson(chemin("kb/noms.json"))); }
+      catch (err) { etat.noms = null; }
       return etat.noms;
     });
   }
@@ -629,7 +843,7 @@
       return;
     }
     await Promise.all(KB_PRIORITAIRES.flatMap((c) => KB_PERIMETRES.map((p) => chargerFichierKb(p, c))));
-    console.log(`delta:kb premiers fichiers ${kb.entrees.length} entrées en ${Math.round(performance.now() - kb.debut)} ms`);
+    console.log(`delta:kb premiers=${kb.entrees.length} ms=${Math.round(performance.now() - kb.debut)}`);
     if (kb.entrees.length) chargerResteKb();
     else { chargerResteKb(); await kb.reste; }  // rien de lisible dans les premiers fichiers : conclure sur toute la base
     await chargerFichierKb(KB_LOCALE, "methodes");  // D121 : les méthodes et modèles locaux, après les tests de lisibilité ci-dessus
@@ -646,12 +860,12 @@
   /* D121 : les fiches de méthode (kb-methodes/) et de modèles/efforts (kb-modeles/) tiennent dans des fichiers hors périmètre ;
      leur « périmètre » est LOCALE. */
   const KB_LOCALE = "locale";
-  const KB_LOCALES = ["methodes", "modeles"];
-  const KB_FICHIERS = [...KB_PERIMETRES.flatMap((p) => Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes" && c !== "modeles").map((c) => [p, c])), [KB_LOCALE, "methodes"], [KB_LOCALE, "modeles"]];
-  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${Object.keys(KB_CATEGORIES).filter((c) => c !== "methodes" && c !== "modeles").join("|")})-`);
+  const KB_FICHIERS = [...KB_PERIMETRES.flatMap((p) => KB_CATEGORIES_CLES.filter((c) => c !== "methodes" && c !== "modeles").map((c) => [p, c])), [KB_LOCALE, "methodes"], [KB_LOCALE, "modeles"]];
+  const RE_ID_KB = new RegExp(`^(claude-code|claude|codex|chatgpt)-(${KB_CATEGORIES_CLES.filter((c) => c !== "methodes" && c !== "modeles").join("|")})-`);
   const RE_ID_METHODE = /^methode-/;
   const RE_ID_MODELE = /^modele-/;
-  const cheminKb = (p, c) => p === KB_LOCALE ? `data/kb/${c}.json` : `data/kb/${p}/${c}.json`;
+  // même disposition sur l'ancienne route et dans une génération commune : kb/<périmètre>/<catégorie>.json, kb/<catégorie locale>.json
+  const cheminKb = (p, c) => chemin(p === KB_LOCALE ? `kb/${c}.json` : `kb/${p}/${c}.json`);
   function etatKb() {
     if (!etat.kb) etat.kb = { entrees: [], erreurs: [], charges: new Set(), promesses: new Map(), debut: performance.now(), reste: null, ms: null };
     return etat.kb;
@@ -676,13 +890,13 @@
         const nouvelles = [];
         try {
           const d = await lireJson(cheminKb(p, c));
-          if (!d || !Array.isArray(d.entrees)) throw new Error("fichier sans `entrees`");
-          const entrees = c === "modeles" ? (await import("./kb-modeles.mjs")).developperModeles(d) : d.entrees;
+          const entrees = c === "modeles" ? (await import("./kb-modeles.mjs")).developperModeles(d) : adapterKb(d, `kb/${cle}.json`);
           for (const e of entrees) if (e && typeof e === "object" && e.id) {
             e._sections = d.contexte_sections && typeof d.contexte_sections === "object" ? d.contexte_sections : null;
             e._deprecies = Array.isArray(d.contexte_deprecies) ? d.contexte_deprecies : [];
             e._ajout = dateAjout(e);
-            e._texte = sansAccents([e.nom, e.description, e.description_source, e.usage, e.groupe, e.recommandation && e.recommandation.pourquoi].join(" "));
+            e._desc = descriptionKb(e);
+            e._texte = sansAccents(texteRechercheKb(e));
             nouvelles.push(e);
           }
         } catch (err) { kb.erreurs.push(`${cle} : ${err.message || err}`); }
@@ -690,7 +904,7 @@
         kb.charges.add(cle);
         if (kb.charges.size === KB_FICHIERS.length) {
           kb.ms = Math.round(performance.now() - kb.debut);
-          console.log(`delta:kb complet ${kb.entrees.length} entrées en ${kb.ms} ms`);
+          console.log(`delta:kb complet=${kb.entrees.length} ms=${kb.ms}`);
         }
       })());
     }
@@ -724,25 +938,30 @@
     if (!kb || !zone) return;
     vider(zone);
     if (!kbComplet()) {
-      zone.append(el("span", { text: `Chargement de la base en arrière-plan : ${kb.charges.size}/${KB_FICHIERS.length} fichiers. Compteurs et résultats provisoires.` }));
+      zone.append(el("span", { text: t("kb.chargement", { faits: kb.charges.size, total: KB_FICHIERS.length }) }));
     }
     zone.setAttribute("aria-busy", kbComplet() ? "false" : "true");
     const extraites = kb.entrees.filter((e) => e.categorie !== "methodes" && e.categorie !== "modeles");  // D121 : une méthode ou fiche modèle est rédigée, pas à commenter
     const faites = extraites.filter((e) => e.commentee).length;
     const av = document.getElementById("kb-avancement");
     if (av) {
-      av.querySelector("span").textContent = `${faites}/${extraites.length} entrées commentées${kbComplet() ? "" : " (provisoire)"}`;
+      av.querySelector("span").textContent = t(kbComplet() ? "kb.avancement" : "kb.avancement_provisoire", { faites, total: extraites.length });
       const pr = av.querySelector("progress");
       pr.max = Math.max(extraites.length, 1); pr.value = faites;
     }
     const err = document.getElementById("kb-erreurs");
-    if (err) { err.textContent = kb.erreurs.length ? `Fichiers illisibles : ${kb.erreurs.join(" ; ")}` : ""; err.hidden = !kb.erreurs.length; }
+    if (err) {
+      err.textContent = kb.erreurs.length ? t(enCommun() ? "kb.erreurs_commun" : "kb.erreurs", { liste: kb.erreurs.join(" ; ") }) : "";
+      err.hidden = !kb.erreurs.length;
+    }
   }
   function filtrerKb() {
     const mots = sansAccents(kbFiltre.q).split(/\s+/).filter(Boolean);
     const ref = jourLocalIso(new Date());
+    // la référence commune ne publie pas les dates d'ajout : le filtre de date n'y retient rien de faux, il est ignoré (et dit)
+    const depuis = enCommun() ? "" : kbFiltre.depuis;
     const liste = etat.kb.entrees.filter((e) =>
-      (!kbFiltre.depuis || ajouteeDepuis(e, kbFiltre.depuis, ref)) &&
+      (!depuis || ajouteeDepuis(e, depuis, ref)) &&
       (!kbFiltre.produit || e.produit === kbFiltre.produit || (Array.isArray(e.produits) && e.produits.includes(kbFiltre.produit))) &&
       (!kbFiltre.categorie || e.categorie === kbFiltre.categorie) &&
       (!kbFiltre.statut || e.statut_usage === kbFiltre.statut) &&
@@ -760,12 +979,12 @@
     for (const e of recent.entrees) {
       if (e && typeof e.date_ajout === "string" && ISO_JOUR.test(e.date_ajout) && e.date_ajout >= seuil && e.date_ajout <= ref) compte[e.categorie] = (compte[e.categorie] || 0) + 1;
     }
-    const parties = Object.keys(KB_CATEGORIES).filter((c) => compte[c]).map((c) => `${compte[c]} ${KB_NOMS[c][compte[c] > 1 ? 1 : 0]}`);
+    const parties = KB_CATEGORIES_CLES.filter((c) => compte[c]).map((c) => `${compte[c]} ${nomCategorie(c, compte[c])}`);
     if (!parties.length) return null;
     // fichier coupé avant le seuil des 7 jours : le compte est un minimum
     const minimum = recent.tronque === true && typeof recent.plus_ancienne === "string" && recent.plus_ancienne >= seuil;
-    return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: "Nouveau dans la base (7 jours) : " }), `${minimum ? "au moins " : ""}${parties.join(", ")} `,
-      el("a", { href: "#reference?recent=7", text: "Voir les nouveautés" }));
+    return el("p", { class: "encart-nouveau", role: "status" }, el("strong", { text: t("encart.titre") }), `${minimum ? t("encart.au_moins") : ""}${parties.join(", ")} `,
+      el("a", { href: "#reference?recent=7", text: t("encart.voir") }));
   }
   /* D121 : corps d'une fiche de méthode, en Markdown limité à ce que les fiches écrivent : titres #, paragraphes, listes « - »,
      blocs ``` et, dans le texte, `code` et **gras**. Construit en nœuds DOM, jamais en innerHTML. */
@@ -781,7 +1000,7 @@
     return out;
   }
   function rendreMarkdownMethode(source) {
-    const corps = el("div", { class: "methode-corps" });
+    const corps = el("div", { class: "methode-corps", lang: langueDonnees() });
     let paragraphe = [], liste = null, bloc = null;
     const fermerParagraphe = () => { if (paragraphe.length) corps.append(el("p", null, ...noeudsEnLigne(paragraphe.join(" ")))); paragraphe = []; };
     for (const ligne of String(source || "").split("\n")) {
@@ -808,22 +1027,24 @@
     fermerParagraphe();
     return corps;
   }
+  function listeSources(sources) {
+    return el("ul", { class: "sources", "aria-label": t("carte.sources") }, ...sources.map((s) =>
+      el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url)))));
+  }
   function carteMethode(e) {
     const c = el("li", { class: "carte kb methode" });
     const produits = Array.isArray(e.produits) && e.produits.length ? e.produits : [e.produit];
     c.append(el("div", { class: "badges" },
       ...produits.map((p) => badge("produit", PRODUITS[p] || String(p || "?"))),
       badge("type", KB_CATEGORIES.methodes),
-      badge("statut", "méthode locale à Delta"),
-      e.certitude === "officiel" ? badge("verdict utiliser", "commandes officielles") : null));
-    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
+      badge("statut", t("methode.locale")),
+      e.certitude === "officiel" ? badge("verdict utiliser", t("methode.officielles")) : null));
+    c.append(el("h3", { text: texte(e.nom, t("kb.sans_nom")), lang: langueDonnees() }));
     const versions = e.versions && typeof e.versions === "object" ? Object.entries(e.versions).map(([p, v]) => `${PRODUITS[p] || p} ${v}`) : [];
-    c.append(el("div", { class: "meta", text: [e.verifie_le ? `vérifiée le ${dateFr(e.verifie_le)}` : null, ...versions].filter(Boolean).join(" · ") }));
-    c.append(rendreMarkdownMethode(e.description));
-    if (Array.isArray(e.sources) && e.sources.length) {
-      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
-        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
-    }
+    c.append(el("div", { class: "meta", text: [e.verifie_le ? t("methode.verifiee", { date: dateAffichee(e.verifie_le) }) : null, ...versions].filter(Boolean).join(" · ") }));
+    if (texte(e.description)) c.append(rendreMarkdownMethode(e.description));
+    else if (enCommun()) c.append(notePersonnel("kb.texte_commun_attente"));
+    if (Array.isArray(e.sources) && e.sources.length) c.append(listeSources(e.sources));
     return c;
   }
   function carteModele(e) {
@@ -835,20 +1056,18 @@
       badge("type", KB_CATEGORIES.modeles),
       verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : null,
       e.statut_usage ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage)) : null,
-      e.cout_quota && e.cout_quota.niveau ? badge("statut", `quota : ${e.cout_quota.niveau}`) : null));
-    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
+      e.cout_quota && e.cout_quota.niveau ? badge("statut", t("modele.quota", { niveau: e.cout_quota.niveau })) : null));
+    c.append(el("h3", { text: texte(e.nom, t("kb.sans_nom")) }));
     c.append(el("div", { class: "meta", text: [
-      e.fournisseur ? `fournisseur : ${e.fournisseur}` : null,
-      e.executant ? `exécutant : ${e.executant}` : null,
-      e.date_releve ? `relevé le ${dateFr(e.date_releve)}` : null,
+      e.fournisseur ? t("modele.fournisseur", { nom: e.fournisseur }) : null,
+      e.executant ? t("modele.executant", { nom: e.executant }) : null,
+      e.date_releve ? t("modele.releve", { date: dateAffichee(e.date_releve) }) : null,
     ].filter(Boolean).join(" · ") }));
-    c.append(el("div", { class: "etiquette", text: "Syntaxe" }));
+    c.append(el("div", { class: "etiquette", text: t("kb.syntaxe") }));
     c.append(el("pre", { class: "usage" }, el("code", { text: String(e.usage || "") })));
-    c.append(rendreMarkdownMethode(e.description));
-    if (Array.isArray(e.sources) && e.sources.length) {
-      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
-        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
-    }
+    if (texte(e.effet_effort) && !texte(e.description)) c.append(el("p", { class: "resume", lang: langueDonnees(), text: e.effet_effort }));
+    if (texte(e.description)) c.append(rendreMarkdownMethode(e.description));
+    if (Array.isArray(e.sources) && e.sources.length) c.append(listeSources(e.sources));
     return c;
   }
   function carteKb(e) {
@@ -859,23 +1078,25 @@
     c.append(el("div", { class: "badges" },
       badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
       badge("type", KB_CATEGORIES[e.categorie] || String(e.categorie || "?")),
-      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"),
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : enCommun() ? badge("attente", t("kb.avis_indisponible")) : badge("attente", t("kb.attente")),
       e.commentee ? badge("statut", STATUTS[e.statut_usage] || String(e.statut_usage || "")) : null,
-      e.retiree ? badge("revise", "retirée de la documentation") : null,
+      e.retiree ? badge("revise", t("kb.retiree")) : null,
+      Array.isArray(e.systemes) && e.systemes.length ? badge("statut", t("kb.systemes", { liste: e.systemes.join(", ") })) : null,
       badgeContexte(e)));
-    c.append(el("h3", { text: texte(e.nom, "(sans nom)") }));
-    if (e.groupe || e._ajout) c.append(el("div", { class: "meta", text: [e.groupe, e._ajout ? `ajoutée le ${dateFr(e._ajout)}` : null, `mis à jour le ${dateFr(e.maj_le)}`].filter(Boolean).join(" · ") }));
-    if (e.commentee && texte(e.description)) c.append(el("p", { class: "resume", text: e.description }));
-    else if (texte(e.description_source)) c.append(el("p", { class: "resume source-en", lang: "en", text: e.description_source }));
-    c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? "Accès" : "Syntaxe" }));  // D49
+    c.append(el("h3", { text: texte(e.nom, t("kb.sans_nom")) }));
+    const meta = [e.groupe, e._ajout ? t("kb.ajoutee_le", { date: dateAffichee(e._ajout) }) : null, typeof e.maj_le === "string" ? t("kb.maj_le", { date: dateAffichee(e.maj_le) }) : null].filter(Boolean);
+    if (meta.length) c.append(el("div", { class: "meta", text: meta.join(" · ") }));
+    const d = e._desc || descriptionKb(e);
+    if (d) {
+      c.append(el("p", { class: d.statut === "source" ? "resume source-en" : "resume", lang: d.langue === LANGUE ? null : d.langue, text: d.texte }));
+      if (d.repli && d.langue === "en") c.append(el("p", { class: "doux repli", text: t("kb.repli_en") }));
+    }
+    c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? t("kb.acces") : t("kb.syntaxe") }));  // D49
     c.append(el("pre", { class: "usage" + (e.usage_nature === "etapes" ? " etapes" : "") }, el("code", { text: String(e.usage || "") })));
     if (e.commentee && texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
-    if (verdict && texte(e.recommandation.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.recommandation.pourquoi })));
-    if (texte(e.disponibilite)) c.append(el("p", { class: "projets", text: `Disponibilité : ${e.disponibilite}` }));
-    if (Array.isArray(e.sources) && e.sources.length) {
-      c.append(el("ul", { class: "sources", "aria-label": "Sources" }, ...e.sources.map((s) =>
-        el("li", { class: s && s.officielle === true ? "off" : null }, lienSur(s && s.url, texte(s && s.libelle, s && s.url))))));
-    }
+    if (verdict && texte(e.recommandation.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: t("kb.pourquoi") }), el("p", { lang: langueDonnees(), text: e.recommandation.pourquoi })));
+    if (texte(e.disponibilite)) c.append(el("p", { class: "projets", lang: langueDonnees(), text: t("kb.disponibilite", { texte: e.disponibilite }) }));
+    if (Array.isArray(e.sources) && e.sources.length) c.append(listeSources(e.sources));
     c.append(blocEnvoi(e));
     return c;
   }
@@ -902,26 +1123,28 @@
   }
   // l'heure notée pour (type, id) si elle date de moins d'une heure, sinon null ; type : "envoi", "console" ou "copie"
   function heureRecente(type, id) {
-    const t = (lireHeures()[id] || {})[type];
-    return typeof t === "number" && Date.now() - t < HEURE_MS && t <= Date.now() + 60000 ? t : null;
+    const t0 = (lireHeures()[id] || {})[type];
+    return typeof t0 === "number" && Date.now() - t0 < HEURE_MS && t0 <= Date.now() + 60000 ? t0 : null;
   }
-  function noterHeure(type, id, t) {
+  function noterHeure(type, id, t0) {
     try {
       const v = lireHeures(), maintenant = Date.now();
       for (const k of Object.keys(v)) if (!v[k] || typeof v[k] !== "object" || Object.values(v[k]).every((x) => typeof x !== "number" || maintenant - x >= HEURE_MS)) delete v[k];
-      v[id] = Object.assign(v[id] || {}, { [type]: t });
+      v[id] = Object.assign(v[id] || {}, { [type]: t0 });
       localStorage.setItem(CLE_HEURES, JSON.stringify(v));
     } catch (err) { /* sans stockage : la règle reste tenue par le relais */ }
   }
-  function hhmm(t) { const d = new Date(t); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
-  // même phrase d'ouverture que texte_idee() du relais
+  function hhmm(t0) { const d = new Date(t0); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
+  /* Message destiné à Delta (pas un texte d'interface) : toujours en français, même phrase d'ouverture que texte_idee() du relais,
+     quelle que soit la langue de la page ; les noms de catégorie viennent du dictionnaire français. */
   function texteIdeeKb(e) {
-    const cat = KB_NOMS[e.categorie] ? KB_NOMS[e.categorie][0] : String(e.categorie || "référence");
+    const fr = (window.DELTA_TEXTES && window.DELTA_TEXTES.fr) || {};
+    const cat = fr[`categorie.nom.${e.categorie}`] || String(e.categorie || "référence");
     return `idée : intégrer la référence Delta-IA « ${texte(e.nom, "(sans nom)")} » (${PRODUITS[e.produit] || String(e.produit || "produit inconnu")}, ${cat}, id ${e.id}) ` +
       "dans un workflow ou chez un agent de Delta. Juge sa pertinence pour mes projets et, si elle l'est, dis dans quel workflow ou chez quel agent elle entre et ce que ça change.";
   }
   /* Adresse de la console de pilotage (D104) : jamais dans le dépôt ni sur le site (REGLES §5), seulement dans ce navigateur.
-     Elle s'y enregistre en ouvrant une fois https://ai.orqyra.io/#console=<adresse> ; le fragment est retiré
+     Elle s'y enregistre en ouvrant une fois <site>/#console=<adresse> ; le fragment est retiré
      de l'URL aussitôt. Admis : https, ou http vers une adresse Tailscale (100.64.0.0/10) ou un nom *.ts.net. */
   const CLE_CONSOLE = "delta.console";
   const IDEE_CONSOLE_MAX = 500; // limite de /api/voix
@@ -947,12 +1170,12 @@
     try { history.replaceState(null, "", location.pathname + location.search); } catch (err) { location.hash = ""; }
     if (!brut) {
       try { localStorage.removeItem(CLE_CONSOLE); } catch (err) { /* rien à oublier */ }
-      return "Adresse de la console oubliée dans ce navigateur.";
+      return t("console.oubliee");
     }
     const adresse = adresseConsole(brut);
-    if (!adresse) return "Adresse de console refusée : https, ou http vers une adresse Tailscale (100.64.0.0/10 ou *.ts.net).";
-    try { localStorage.setItem(CLE_CONSOLE, adresse); } catch (err) { return "Ce navigateur refuse d'enregistrer l'adresse de la console."; }
-    return "Adresse de la console enregistrée dans ce navigateur ; « Envoyer à Delta » l'ouvrira quand le relais de bureau n'est pas joignable.";
+    if (!adresse) return t("console.refusee");
+    try { localStorage.setItem(CLE_CONSOLE, adresse); } catch (err) { return t("console.stockage_refuse"); }
+    return t("console.enregistree");
   }
   function annoncer(message) {
     const p = el("p", { class: "avis-console", role: "status", text: message });
@@ -973,22 +1196,20 @@
       return rep.ok;
     } catch (err) { return false; }
   }
-  const MENTION_COPIE = "L'idée est copiée : colle-la une fois dans le lanceur.";
-  const PAS_JOIGNABLE = "Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier Delta-IA » une fois sur cet appareil).";
   // le bouton reste désactivé jusqu'à la fin de l'heure qui suit l'envoi
-  function bloquerBouton(bouton, t) {
+  function bloquerBouton(bouton, t0) {
     bouton.disabled = true;
-    bouton.textContent = "Envoyée";
-    setTimeout(() => { bouton.disabled = false; bouton.textContent = "Envoyer à Delta"; }, Math.max(1000, t + HEURE_MS - Date.now()));
+    bouton.textContent = t("envoi.envoyee");
+    setTimeout(() => { bouton.disabled = false; bouton.textContent = t("envoi.bouton"); }, Math.max(1000, t0 + HEURE_MS - Date.now()));
   }
   async function envoyerADelta(e, bouton, statut) {
     statut.textContent = "";
     for (const vieux of document.querySelectorAll(".envoi-secours")) vieux.remove();
     const dejaT = heureRecente("envoi", e.id);
-    if (dejaT !== null) { bloquerBouton(bouton, dejaT); statut.textContent = `déjà envoyée à ${hhmm(dejaT)}`; return; }
-    if (estIos()) return repli(e, statut, PAS_JOIGNABLE, bouton);
+    if (dejaT !== null) { bloquerBouton(bouton, dejaT); statut.textContent = t("envoi.deja", { heure: hhmm(dejaT) }); return; }
+    if (estIos()) return repli(e, statut, t("envoi.pas_joignable"), bouton);
     bouton.disabled = true;
-    bouton.textContent = "Envoi…";
+    bouton.textContent = t("envoi.en_cours");
     let r = null;
     if (await relaisJoignable()) {
       try {
@@ -998,41 +1219,41 @@
       } catch (err) { r = null; }
     }
     if (r && r.ok === true) {
-      const t = Date.now();
+      const t0 = Date.now();
       noterEnvoi(e.id);
-      noterHeure("envoi", e.id, t);
-      bloquerBouton(bouton, t);
-      statut.textContent = "Envoyé à Delta, jugement en cours";
+      noterHeure("envoi", e.id, t0);
+      bloquerBouton(bouton, t0);
+      statut.textContent = t("envoi.ok");
       return;
     }
     if (r && r.etape === "deja_envoyee") {   // 409 du relais : envoi d'un autre navigateur ou d'un autre onglet
-      const t = typeof r.envoye_a === "number" ? r.envoye_a * 1000 : Date.now();
-      noterHeure("envoi", e.id, t);
-      bloquerBouton(bouton, t);
-      statut.textContent = texte(r.detail, `déjà envoyée à ${hhmm(t)}`);
+      const t0 = typeof r.envoye_a === "number" ? r.envoye_a * 1000 : Date.now();
+      noterHeure("envoi", e.id, t0);
+      bloquerBouton(bouton, t0);
+      statut.textContent = texte(r.detail, t("envoi.deja", { heure: hhmm(t0) }));
       return;
     }
     bouton.disabled = false;
-    bouton.textContent = "Envoyer à Delta";
-    if (r) { statut.textContent = `Pas envoyé : Delta n'a pas pris la référence (${texte(r.detail, String(r.etape || "refus"))})`; return; }
+    bouton.textContent = t("envoi.bouton");
+    if (r) { statut.textContent = t("envoi.refus", { detail: texte(r.detail, String(r.etape || "refus")) }); return; }
     // relais injoignable (téléphone, relais arrêté, accès au réseau local refusé) : la console, sinon le texte de l'idée pour le lanceur
-    return repli(e, statut, PAS_JOIGNABLE, bouton);
+    return repli(e, statut, t("envoi.pas_joignable"), bouton);
   }
   async function repli(e, statut, motif, bouton) {
     const adresse = lireConsole();
     if (adresse) {
       const confirmer = () => {
-        const t = Date.now();
-        noterHeure("envoi", e.id, t);
-        noterHeure("console", e.id, t);
-        bloquerBouton(bouton, t);
-        statut.textContent = "Idée transmise à la console : valide l'envoi dans son lanceur.";
+        const t0 = Date.now();
+        noterHeure("envoi", e.id, t0);
+        noterHeure("console", e.id, t0);
+        bloquerBouton(bouton, t0);
+        statut.textContent = t("envoi.console");
       };
       const url = urlConsole(adresse, e);
       const w = window.open(url, "_blank");
       if (w) { try { w.opener = null; } catch (err) { /* sans effet */ } confirmer(); return; }
-      statut.textContent = "Ouverture bloquée : touche « Ouvrir la console », puis valide l'envoi dans son lanceur.";
-      const ouvrir = el("a", { class: "envoi-delta envoi-secours", href: url, target: "_blank", rel: "noopener", text: "Ouvrir la console" });
+      statut.textContent = t("envoi.ouverture_bloquee");
+      const ouvrir = el("a", { class: "envoi-delta envoi-secours", href: url, target: "_blank", rel: "noopener", text: t("envoi.ouvrir_console") });
       ouvrir.addEventListener("click", (event) => {
         if (bouton.disabled) { event.preventDefault(); return; }
         confirmer();
@@ -1041,11 +1262,11 @@
       return;
     }
     statut.textContent = motif;
-    if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = `${motif} ${MENTION_COPIE}`; return; }
-    const copier = el("button", { type: "button", class: "envoi-delta envoi-secours", text: "Copier l'idée" });
+    if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = `${motif} ${t("envoi.copiee")}`; return; }
+    const copier = el("button", { type: "button", class: "envoi-delta envoi-secours", text: t("envoi.copier") });
     copier.addEventListener("click", async () => {
-      if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = `${motif} ${MENTION_COPIE}`; }
-      else statut.textContent = "Copie refusée par le navigateur.";
+      if (await copierIdeeKb(e)) { noterHeure("copie", e.id, Date.now()); statut.textContent = `${motif} ${t("envoi.copiee")}`; }
+      else statut.textContent = t("envoi.copie_refusee");
       copier.remove();
     });
     statut.after(copier);
@@ -1053,20 +1274,19 @@
   // le presse-papier peut rester en attente sans geste récent de l'utilisateur : 1,5 s au plus
   async function copierIdeeKb(e) {
     try {
-      await Promise.race([navigator.clipboard.writeText(texteIdeeKb(e)), new Promise((_, non) => setTimeout(() => non(new Error("délai")), 1500))]);
+      await Promise.race([navigator.clipboard.writeText(texteIdeeKb(e)), new Promise((_, non) => setTimeout(() => non(new Error("delai")), 1500))]);
       return true;
     } catch (err) { return false; }
   }
   function blocEnvoi(e) {
     const jour = lireEnvois()[e.id], envoi = heureRecente("envoi", e.id), copie = heureRecente("copie", e.id);
-    let message = typeof jour === "string" ? `envoyée à Delta le ${dateFr(jour)}` : "";
+    let message = typeof jour === "string" ? t("envoi.envoyee_le", { date: dateAffichee(jour) }) : "";
     if (envoi !== null) message = heureRecente("console", e.id) === envoi
-      ? `déjà envoyée à ${hhmm(envoi)} : valide l'envoi dans la console`
-      : `Envoyé à Delta à ${hhmm(envoi)}, jugement en cours`;
-    else if (copie !== null) message = `copiée à ${hhmm(copie)} : colle-la une fois dans le lanceur`;
+      ? t("envoi.deja_console", { heure: hhmm(envoi) })
+      : t("envoi.ok_a", { heure: hhmm(envoi) });
+    else if (copie !== null) message = t("envoi.copiee_a", { heure: hhmm(copie) });
     const statut = el("span", { class: "envoi-statut", role: "status", text: message });
-    const b = el("button", { type: "button", class: "envoi-delta", text: "Envoyer à Delta",
-      title: "Delta juge la pertinence de cette référence et, si elle l'est, l'oriente vers un workflow ou un agent" });
+    const b = el("button", { type: "button", class: "envoi-delta", text: t("envoi.bouton"), title: t("envoi.titre") });
     if (envoi !== null) bloquerBouton(b, envoi);
     b.addEventListener("click", () => envoyerADelta(e, b, statut));
     return el("div", { class: "envoi" }, b, statut);
@@ -1074,19 +1294,19 @@
   // D64-bis : péremption par ctx-id de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
   function badgeContexte(e) {
     if (!e.commentee || !e._sections) return null;
-    if (e.contexte_sections === null || e.contexte_sections === undefined) return badge("anterieur", "antérieur à D64");
+    if (e.contexte_sections === null || e.contexte_sections === undefined) return badge("anterieur", t("kb.anterieur_d64"));
     if (typeof e.contexte_sections !== "object") return null;
     const changees = Object.keys(e.contexte_sections).filter((k) => {
       const v = e.contexte_sections[k];
       return e._deprecies.includes(k) || !v || typeof v !== "object" || e._sections[k] !== v.sha1;
     });
-    return changees.length ? badge("perime", `commentaire à revoir : CONTEXTE ${changees.join(", ")} modifié`) : null;
+    return changees.length ? badge("perime", t("kb.a_revoir", { sections: changees.join(", ") })) : null;
   }
   function choix(libelle, cle, options, vide) {
     const s = el("select", { "aria-label": libelle });
     s.append(el("option", { value: "", text: vide || libelle }));
-    for (const [v, t] of Object.entries(options)) {
-      const o = el("option", { value: v, text: t });
+    for (const [v, txt] of Object.entries(options)) {
+      const o = el("option", { value: v, text: txt });
       if (kbFiltre[cle] === v) o.selected = true;
       s.append(o);
     }
@@ -1111,47 +1331,55 @@
     majChargementKb();
     const liste = filtrerKb();
     const commentees = liste.filter((e) => e.commentee).length;
-    zone.append(el("p", { class: "sous-titre", role: "status", text: `${liste.length} entrée(s) affichable(s) · ${commentees}/${liste.length} commentée(s)${manquants.length ? " · provisoire, chargement en cours" : ""}` }));
+    const resume = enCommun() ? t("kb.resultats_commun", { n: liste.length }) : t("kb.resultats", { n: liste.length, commentees });
+    zone.append(el("p", { class: "sous-titre", role: "status", text: resume + (manquants.length ? ` · ${t("kb.provisoire")}` : "") }));
+    if (enCommun() && kbFiltre.depuis) zone.append(notePersonnel("kb.recent_indisponible"));
     zone.append(el("ul", { class: "liste" }, ...liste.slice(0, kbFiltre.limite).map(carteKb)));
     if (liste.length > kbFiltre.limite) {
-      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(KB_PAGE, liste.length - kbFiltre.limite)} de plus` });
+      const b = el("button", { type: "button", class: "plus", text: t("liste.plus", { n: Math.min(KB_PAGE, liste.length - kbFiltre.limite) }) });
       b.addEventListener("click", () => { kbFiltre.limite += KB_PAGE; rendreResultatsKb(); });
       zone.append(b);
     }
   }
   function pageReference() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Référence" }));
+    frag.append(el("h2", { text: t("onglet.reference") }));
     const kb = etat.kb;
     if (!kb || (!kb.entrees.length && kbComplet())) {
-      frag.append(el("p", { class: "vide", text: "La base de référence n'est pas encore publiée." }));
+      frag.append(el("p", { class: "vide", text: kb && kb.erreurs.length && enCommun() ? t("kb.erreurs_commun", { liste: kb.erreurs.join(" ; ") }) : t("reference.non_publiee") }));
       return frag;
     }
     if (etat.kbFicheId) {
       const fiche = kb.entrees.find((e) => e.id === etat.kbFicheId);
-      frag.append(el("p", { class: "retour-ref" }, el("a", { href: "#reference", text: "← Toute la référence" })),
-        fiche ? el("ul", { class: "liste" }, carteKb(fiche)) : el("p", { class: "vide", text: "Aucune fiche pour cet identifiant : la base a pu changer." }));
+      frag.append(el("p", { class: "retour-ref" }, el("a", { href: "#reference", text: t("reference.retour") })),
+        fiche ? el("ul", { class: "liste" }, carteKb(fiche)) : el("p", { class: "vide", text: t("reference.fiche_absente") }));
       window.scrollTo(0, 0);
       return frag;
     }
     const extraites = kb.entrees.filter((e) => e.categorie !== "methodes");  // D121
     const commentables = extraites.filter((e) => e.categorie !== "modeles");
     const total = commentables.length, faites = commentables.filter((e) => e.commentee).length;
-    const barre = el("div", { class: "avancement", id: "kb-avancement" }, el("span", { text: `${faites}/${total} entrées commentées` }),
-      el("progress", { max: String(total), value: String(faites), "aria-label": "Avancement des commentaires" }));
-    frag.append(el("p", { class: "sous-titre", text: "Fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis, extraits de la documentation officielle ; méthodes et fiches de modèles × efforts locales. Les entrées en attente affichent la description d'origine, en anglais." }), barre);
+    if (enCommun()) frag.append(el("p", { class: "sous-titre", text: t("reference.sous_titre_commun") }));
+    else {
+      const barre = el("div", { class: "avancement", id: "kb-avancement" }, el("span", { text: t("kb.avancement", { faites, total }) }),
+        el("progress", { max: String(total), value: String(faites), "aria-label": t("kb.avancement_titre") }));
+      frag.append(el("p", { class: "sous-titre", text: t("reference.sous_titre") }), barre);
+    }
     frag.append(el("div", { id: "kb-chargement", class: "avancement kb-chargement", role: "status", "aria-live": "polite" }),
       el("p", { id: "kb-erreurs", class: "erreur", hidden: true }));
-    const recherche = el("input", { type: "search", placeholder: "Rechercher (nom, usage, description…)", "aria-label": "Recherche plein texte", value: kbFiltre.q });
+    const recherche = el("input", { type: "search", placeholder: t("reference.recherche"), "aria-label": t("reference.recherche_titre"), value: kbFiltre.q });
     let minuterie = null;
     recherche.addEventListener("input", () => { clearTimeout(minuterie); minuterie = setTimeout(() => { kbFiltre.q = recherche.value; kbFiltre.limite = KB_PAGE; rendreResultatsKb(); }, 150); });
-    frag.append(el("div", { class: "filtres kb-filtres" }, recherche,
-      choix("Produit", "produit", Object.fromEntries(["claude-code", "claude", "codex", "chatgpt"].map((p) => [p, PRODUITS[p]]))),
-      choix("Catégorie", "categorie", KB_CATEGORIES),
-      choix("Verdict", "verdict", { ...VERDICTS, attente: "en attente de commentaire" }),
-      choix("Statut d'usage", "statut", STATUTS),
-      choix("Tri", "tri", { recent: "Ajoutées récemment" }, "Tri alphabétique"),
-      choix("Date d'ajout", "depuis", { 7: "Ajoutées depuis 7 jours", 30: "Ajoutées depuis 30 jours" }, "Ajoutées : toutes")));
+    const filtres = [recherche,
+      choix(t("filtre.choix_produit"), "produit", Object.fromEntries(["claude-code", "claude", "codex", "chatgpt"].map((p) => [p, PRODUITS[p]]))),
+      choix(t("filtre.categorie"), "categorie", KB_CATEGORIES)];
+    // avis, usage et dates d'ajout sont personnels ou non publiés : pas de filtre qui ne pourrait rien retenir sur la référence commune
+    if (!enCommun()) filtres.push(
+      choix(t("filtre.verdict"), "verdict", { ...VERDICTS, attente: t("kb.attente") }),
+      choix(t("filtre.statut"), "statut", STATUTS),
+      choix(t("filtre.tri"), "tri", { recent: t("filtre.tri_recent") }, t("filtre.tri_alpha")),
+      choix(t("filtre.date_ajout"), "depuis", { 7: t("filtre.depuis_7"), 30: t("filtre.depuis_30") }, t("filtre.depuis_toutes")));
+    frag.append(el("div", { class: "filtres kb-filtres" }, ...filtres));
     frag.append(el("div", { id: "kb-resultats" }));
     return frag;
   }
@@ -1170,18 +1398,18 @@
       badge("produit", PRODUITS[e.produit] || String(e.produit || "?")),
       badge("type", KB_CATEGORIES[e.categorie] || String(e.categorie || "?")),
       verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict]) : null));
-    c.append(el("h4", { text: texte(e.nom, "(sans nom)") }));
-    if (ISO_JOUR.test(e.date_ajout || "")) c.append(el("div", { class: "meta", text: `ajoutée le ${dateFr(e.date_ajout)}` }));
+    c.append(el("h4", { text: texte(e.nom, t("kb.sans_nom")) }));
+    if (ISO_JOUR.test(e.date_ajout || "")) c.append(el("div", { class: "meta", text: t("kb.ajoutee_le", { date: dateAffichee(e.date_ajout) }) }));
     if (texte(e.usage)) {
-      c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? "Accès" : "Syntaxe" }));
+      c.append(el("div", { class: "etiquette", text: e.usage_nature === "etapes" ? t("kb.acces") : t("kb.syntaxe") }));
       c.append(el("pre", { class: "usage" + (e.usage_nature === "etapes" ? " etapes" : "") }, el("code", { text: String(e.usage) })));
     }
     if (texte(e.exemple) && e.exemple !== e.usage) c.append(el("pre", { class: "usage exemple" }, el("code", { text: e.exemple })));
-    if (texte(e.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: e.pourquoi })));
+    if (texte(e.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: t("kb.pourquoi") }), el("p", { lang: langueDonnees(), text: e.pourquoi })));
     if (declare) {  // cochée par la mission : la case ne se décoche pas, la provenance est dite
       const caseFait = el("input", { type: "checkbox", disabled: true });
       caseFait.checked = true;
-      c.append(el("div", { class: "action" }, el("label", null, caseFait, `Fait le ${dateFr(declare)} pendant une mission`)));
+      c.append(el("div", { class: "action" }, el("label", null, caseFait, t("essai.fait_mission", { date: dateAffichee(declare) }))));
       return c;
     }
     const caseFait = el("input", { type: "checkbox" });
@@ -1190,7 +1418,7 @@
       ecrireFait(id, caseFait.checked); c.classList.toggle("fait", caseFait.checked);
       if (surFait) surFait();
     });
-    c.append(el("div", { class: "action" }, el("label", null, caseFait, "Fait")));
+    c.append(el("div", { class: "action" }, el("label", null, caseFait, t("carte.fait"))));
     return c;
   }
   // section « Essais de la base » : tester d'abord, puis date d'ajout décroissante (ordre du fichier) ; les faits dans une section repliée
@@ -1201,18 +1429,18 @@
     const ouverts = entrees.filter((e) => !essaiFait(e, faits));
     const faitsListe = entrees.filter((e) => essaiFait(e, faits));
     const surFait = () => rendre();
-    sec.append(el("h3", { class: "compte-actions", text: `Essais de la base (${ouverts.length})` }),
-      el("p", { class: "sous-titre", text: "Entrées de la base de référence au verdict « à tester », puis « à utiliser » pas encore utilisées. La case « fait » reste dans ce navigateur ; un essai fait par une mission se coche seul au passage suivant." }));
-    if (doc.tronque === true) sec.append(el("p", { class: "doux", text: `Liste coupée : ${entrees.length} essais affichables sur ${doc.total}.` }));
+    sec.append(el("h3", { class: "compte-actions", text: t("essais.titre", { n: ouverts.length }) }),
+      el("p", { class: "sous-titre", text: t("essais.sous_titre") }));
+    if (doc.tronque === true) sec.append(el("p", { class: "doux", text: t("essais.tronque", { n: entrees.length, total: doc.total }) }));
     const ul = el("ul", { class: "liste" }, ...ouverts.slice(0, etat.essaisLimite).map((e) => carteEssai(e, surFait)));
-    sec.append(ouverts.length ? ul : el("p", { class: "vide", text: "Aucun essai ouvert." }));
+    sec.append(ouverts.length ? ul : el("p", { class: "vide", text: t("essais.aucun") }));
     if (ouverts.length > etat.essaisLimite) {
-      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(ESSAIS_PAGE, ouverts.length - etat.essaisLimite)} de plus` });
+      const b = el("button", { type: "button", class: "plus", text: t("liste.plus", { n: Math.min(ESSAIS_PAGE, ouverts.length - etat.essaisLimite) }) });
       b.addEventListener("click", () => { etat.essaisLimite += ESSAIS_PAGE; rendre(); });
       sec.append(b);
     }
     if (faitsListe.length) {
-      const d = el("details", { class: "actions-faites" }, el("summary", { text: `Essais faits (${faitsListe.length})` }),
+      const d = el("details", { class: "actions-faites" }, el("summary", { text: t("essais.faits", { n: faitsListe.length }) }),
         el("ul", { class: "liste" }, ...faitsListe.map((e) => carteEssai(e, surFait))));
       d.open = etat.essaisFaitsOuverts === true;
       d.addEventListener("toggle", () => { etat.essaisFaitsOuverts = d.open; });
@@ -1222,7 +1450,7 @@
   }
   function pageATester() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "À tester" }), el("p", { class: "sous-titre", text: "Les actions proposées. La case « fait » n'est enregistrée que dans ce navigateur." }), noteFenetre());
+    frag.append(el("h2", { text: t("onglet.a_tester") }), el("p", { class: "sous-titre", text: t("atester.sous_titre") }), noteFenetre());
     let liste = [];
     for (const p of PERIMETRES) liste = liste.concat(elementsDe(p, datesRecentes(p)).filter((e) => e.action && typeof e.action === "object"));
     // audit du 25/09 : les actions ouvertes d'abord, avec leur nombre ; les faites à part, dans une section repliée
@@ -1230,10 +1458,11 @@
     const ouvertes = liste.filter((e) => !faits[String(e.id || "")]).sort(triImpact);
     const faites = liste.filter((e) => faits[String(e.id || "")]).sort(triImpact);
     const surFait = () => rendre();  // une case cochée ou décochée fait passer l'action dans l'autre section
-    frag.append(el("h3", { class: "compte-actions", text: `Actions ouvertes (${ouvertes.length})` }),
-      listeCartes(ouvertes, { vide: "Aucune action ouverte.", surFait }));
+    if (enCommun()) frag.append(notePersonnel("personnel.a_tester"));
+    frag.append(el("h3", { class: "compte-actions", text: t("atester.ouvertes", { n: ouvertes.length }) }),
+      listeCartes(ouvertes, { vide: t("atester.aucune"), surFait }));
     if (faites.length) {
-      const d = el("details", { class: "actions-faites" }, el("summary", { text: `Actions faites (${faites.length})` }),
+      const d = el("details", { class: "actions-faites" }, el("summary", { text: t("atester.faites", { n: faites.length }) }),
         listeCartes(faites, { surFait }));
       d.open = etat.faitesOuvertes === true;
       d.addEventListener("toggle", () => { etat.faitesOuvertes = d.open; });
@@ -1245,7 +1474,6 @@
   /* ---------- Recherche dans toute la veille (D114) : docs/data/recherche.json, écrit par scripts/recherche.py ---------- */
   const RECHERCHE_PAGE = 50;
   const RECHERCHE_MIN = 2;
-  const NOMS_PERIMETRES = { claude: "Claude", openai: "OpenAI", actu: "Actu" };
   // pli de casse et d'accents qui garde la longueur du texte : la position d'un mot dans le texte plié est sa position dans l'original
   function plier(s) {
     let sortie = "";
@@ -1262,8 +1490,8 @@
     const plie = plier(q);
     let m;
     while ((m = re.exec(plie))) {
-      const t = (m[1] || m[2] || "").replace(/^"+|"+$/g, "").trim();
-      if (t) termes.push(t);
+      const x = (m[1] || m[2] || "").replace(/^"+|"+$/g, "").trim();
+      if (x) termes.push(x);
     }
     return termes;
   }
@@ -1273,9 +1501,11 @@
   }
   async function chargerRecherche() {
     await unefois("recherche", async () => {
+      // index construit sur les textes personnels (titre, résumé, pour toi, action) : non publié dans la référence commune
+      if (enCommun()) { etat.recherche = { commun: true }; return; }
       try {
-        const d = await lireJson("data/recherche.json");
-        if (!d || !Array.isArray(d.elements)) throw new Error("index sans `elements`");
+        const d = await lireJson(chemin("recherche.json"));
+        if (!d || !Array.isArray(d.elements)) throw new Error(t("erreur.recherche_sans_elements"));
         const lignes = d.elements.filter(ligneRechercheValide).map((l) => ({ ...l, _titre: plier(l.titre), _texte: plier(l.texte) }));
         etat.recherche = { doc: d, lignes };
       } catch (e) { etat.recherche = { erreur: String(e.message || e) }; }
@@ -1283,13 +1513,13 @@
   }
   // l'index est déjà trié par date décroissante : l'ordre des résultats est celui du fichier
   function chercherDansVeille(lignes, termes) {
-    return lignes.filter((l) => termes.every((t) => l._titre.includes(t) || l._texte.includes(t)));
+    return lignes.filter((l) => termes.every((x) => l._titre.includes(x) || l._texte.includes(x)));
   }
   // texte découpé en morceaux, les occurrences des termes dans des <mark> (positions lues sur le texte plié)
   function surligner(brut, termes) {
     const plie = plier(brut);
     const zones = [];
-    for (const t of termes) for (let i = plie.indexOf(t); i >= 0; i = plie.indexOf(t, i + t.length)) zones.push([i, i + t.length]);
+    for (const x of termes) for (let i = plie.indexOf(x); i >= 0; i = plie.indexOf(x, i + x.length)) zones.push([i, i + x.length]);
     zones.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
     const fusion = [];
     for (const z of zones) {
@@ -1311,7 +1541,7 @@
   const EXTRAIT_AVANT = 70;
   const EXTRAIT_LONGUEUR = 220;
   function extraitDe(l, termes) {
-    const positions = termes.map((t) => l._texte.indexOf(t)).filter((i) => i >= 0);
+    const positions = termes.map((x) => l._texte.indexOf(x)).filter((i) => i >= 0);
     const pos = positions.length ? Math.min(...positions) : 0;
     let debut = Math.max(0, pos - EXTRAIT_AVANT);
     if (debut > 0) { const espace = l.texte.indexOf(" ", debut); if (espace >= 0 && espace < pos) debut = espace + 1; }
@@ -1320,12 +1550,12 @@
     return [debut > 0 ? "… " : "", ...surligner(l.texte.slice(debut, fin), termes), fin < l.texte.length ? " …" : ""];
   }
   function carteRecherche(l, termes) {
-    const impact = IMPACTS.includes(l.impact) ? l.impact : "nul";
-    const c = el("li", { class: `carte resultat impact-${impact}` });
-    c.append(el("div", { class: "badges" }, badge(`impact ${impact}`, `impact ${l.impact || "?"}`), badge("produit", NOMS_PERIMETRES[l.perimetre] || l.perimetre)));
-    c.append(el("h4", null, ...surligner(l.titre || "(sans titre)", termes)));
-    c.append(el("div", { class: "meta" }, `${dateFr(l.date)} · `, el("a", { href: `#archives/${l.date}`, text: `passage du ${dateFr(l.date)}` })));
-    if (l.texte) c.append(el("p", { class: "extrait" }, ...extraitDe(l, termes)));
+    const impact = impactDe(l);
+    const c = el("li", { class: `carte resultat impact-${impact || "inconnu"}` });
+    c.append(el("div", { class: "badges" }, impact ? badge(`impact ${impact}`, t(`impact.${impact}`)) : null, badge("produit", t(`perimetre.court.${l.perimetre}`))));
+    c.append(el("h4", { lang: langueDonnees() }, ...surligner(l.titre || t("carte.sans_titre"), termes)));
+    c.append(el("div", { class: "meta" }, `${dateAffichee(l.date)} · `, el("a", { href: `#archives/${l.date}`, text: t("carte.passage", { date: dateAffichee(l.date) }) })));
+    if (l.texte) c.append(el("p", { class: "extrait", lang: langueDonnees() }, ...extraitDe(l, termes)));
     return c;
   }
   function rendreResultatsRecherche() {
@@ -1335,16 +1565,16 @@
     const q = etat.rq.q;
     const termes = termesDeRecherche(q);
     if (q.trim().length < RECHERCHE_MIN || !termes.length) {
-      zone.append(el("p", { class: "sous-titre", text: `Tape au moins ${RECHERCHE_MIN} caractères. Plusieurs mots : tous doivent apparaître ; entre guillemets, une expression exacte. Sans casse ni accents.` }));
+      zone.append(el("p", { class: "sous-titre", text: t("recherche.aide", { n: RECHERCHE_MIN }) }));
       return;
     }
     const trouves = chercherDansVeille(etat.recherche.lignes, termes);
-    if (!trouves.length) { zone.append(el("p", { class: "vide", text: `Aucun résultat pour « ${q.trim()} ».` })); return; }
+    if (!trouves.length) { zone.append(el("p", { class: "vide", text: t("recherche.aucun", { q: q.trim() }) })); return; }
     const affiches = trouves.slice(0, etat.rq.limite);
-    zone.append(el("p", { class: "sous-titre", role: "status", text: trouves.length > affiches.length ? `${trouves.length} résultats, les ${affiches.length} plus récents affichés` : `${trouves.length} résultat${trouves.length > 1 ? "s" : ""}` }));
+    zone.append(el("p", { class: "sous-titre", role: "status", text: trouves.length > affiches.length ? t("recherche.resultats_coupes", { n: trouves.length, affiches: affiches.length }) : t(trouves.length > 1 ? "recherche.resultats" : "recherche.resultat", { n: trouves.length }) }));
     zone.append(el("ul", { class: "liste" }, ...affiches.map((l) => carteRecherche(l, termes))));
     if (trouves.length > affiches.length) {
-      const b = el("button", { type: "button", class: "plus", text: `Afficher ${Math.min(RECHERCHE_PAGE, trouves.length - affiches.length)} de plus` });
+      const b = el("button", { type: "button", class: "plus", text: t("liste.plus", { n: Math.min(RECHERCHE_PAGE, trouves.length - affiches.length) }) });
       b.addEventListener("click", () => { etat.rq.limite += RECHERCHE_PAGE; rendreResultatsRecherche(); });
       zone.append(b);
     }
@@ -1353,32 +1583,43 @@
     const r = etat.recherche;
     if (!r) return null;
     const sec = el("section", { class: "recherche" });
-    if (r.erreur) { sec.append(el("p", { class: "erreur", text: `Recherche indisponible : ${r.erreur}` })); return sec; }
-    const champ = el("input", { type: "search", placeholder: "Chercher dans toute la veille (/code-review, worktree…)", "aria-label": "Recherche dans toute la veille", value: etat.rq.q });
+    if (r.commun) { sec.append(notePersonnel("personnel.recherche")); return sec; }
+    if (r.erreur) { sec.append(el("p", { class: "erreur", text: t("recherche.indisponible", { raison: r.erreur }) })); return sec; }
+    const champ = el("input", { type: "search", placeholder: t("recherche.placeholder"), "aria-label": t("recherche.titre"), value: etat.rq.q });
     let minuterie = null;
     champ.addEventListener("input", () => {
       clearTimeout(minuterie);
       minuterie = setTimeout(() => {
         etat.rq = { q: champ.value, limite: RECHERCHE_PAGE };
         try { history.replaceState(null, "", champ.value.trim() ? `#archives?q=${encodeURIComponent(champ.value.trim())}` : "#archives"); } catch (e) { /* adresse non mise à jour : sans effet sur la recherche */ }
+        majLienLangue();
         rendreResultatsRecherche();
       }, 150);
     });
     sec.append(el("div", { class: "filtres kb-filtres" }, champ));
     const dates = r.lignes.map((l) => l.date).sort();
-    sec.append(el("p", { class: "sous-titre", text: dates.length ? `Index de ${r.lignes.length} éléments, du ${dateFr(dates[0])} au ${dateFr(dates[dates.length - 1])} (titre, résumé, pour toi, action).` : "Index vide." }));
-    if (r.doc.statut !== "ok") sec.append(el("p", { class: "erreur", text: `Index incomplet : ${texte(r.doc.raison, "raison inconnue")}` }));
+    sec.append(el("p", { class: "sous-titre", text: dates.length ? t("recherche.index", { n: r.lignes.length, du: dateAffichee(dates[0]), au: dateAffichee(dates[dates.length - 1]) }) : t("recherche.index_vide") }));
+    if (r.doc.statut !== "ok") sec.append(el("p", { class: "erreur", text: t("recherche.incomplet", { raison: texte(r.doc.raison, t("raison.inconnue")) }) }));
     sec.append(el("div", { id: "recherche-resultats" }));
     return sec;
   }
+  // compte d'un jour dans la liste des Archives : nombre d'éléments, et impacts forts et moyens seulement quand l'index les déclare
+  function compteurJour(p, d) {
+    const j = (etat.index[p]?.jours || []).find((x) => x.date === d);
+    if (!j) return null;
+    const n = Number.isInteger(j.elements) ? j.elements : (etat.jours[`${p}/${d}`]?.elements || []).length;
+    const imp = j.impact && typeof j.impact === "object" ? j.impact : null;
+    const nom = t(`perimetre.court.${p}`);
+    return imp ? t("archives.compteur_impact", { nom, n, fort: imp.fort ?? 0, moyen: imp.moyen ?? 0 }) : t("archives.compteur", { nom, n });
+  }
   function pageArchives() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Archives" }));
+    frag.append(el("h2", { text: t("onglet.archives") }));
     const toutesDates = [...new Set(PERIMETRES.flatMap(datesDe))].sort().reverse();
-    if (!toutesDates.length) { frag.append(el("p", { class: "vide", text: "Aucun passage archivé." })); return frag; }
+    if (!toutesDates.length) { frag.append(el("p", { class: "vide", text: t("archives.aucune") })); return frag; }
     if (etat.archiveDate && toutesDates.includes(etat.archiveDate)) {
       const d = etat.archiveDate;
-      frag.append(el("p", { class: "sous-titre" }, el("a", { href: "#archives", text: "← Toutes les dates" }), ` · passage du ${dateFr(d)}`));
+      frag.append(el("p", { class: "sous-titre" }, el("a", { href: "#archives", text: t("archives.retour") }), ` · ${t("carte.passage", { date: dateAffichee(d) })}`));
       const quotidiens = [];
       let elements = [];
       for (const p of PERIMETRES) {
@@ -1389,7 +1630,7 @@
         elements = elements.concat(elementsDe(p, [d]));
       }
       elements.sort(triImpact);
-      frag.append(el("h3", { text: `Éléments (${elements.length})` }));
+      frag.append(el("h3", { text: t("elements.titre", { n: elements.length }) }));
       frag.append(listeCartes(elements, { niveau: 4 }));
       const ec = blocEcartes(quotidiens);
       if (ec) frag.append(ec);
@@ -1399,28 +1640,23 @@
     if (recherche) frag.append(recherche);
     const ul = el("ul", { class: "jours" });
     for (const d of toutesDates) {
-      const compteurs = [];
-      for (const p of PERIMETRES) {
-        const j = (etat.index[p]?.jours || []).find((x) => x.date === d);
-        if (!j) continue;
-        const imp = j.impact || {};
-        compteurs.push(`${{ claude: "Claude", openai: "OpenAI", actu: "Actu" }[p]} ${j.elements ?? "?"} (${imp.fort ?? 0} fort, ${imp.moyen ?? 0} moyen)`);
-      }
-      ul.append(el("li", null, el("a", { href: `#archives/${d}` }, el("strong", { text: dateFr(d) }), el("span", { class: "compteurs", text: compteurs.join(" · ") }))));
+      const compteurs = PERIMETRES.map((p) => compteurJour(p, d)).filter(Boolean);
+      ul.append(el("li", null, el("a", { href: `#archives/${d}` }, el("strong", { text: dateAffichee(d) }), el("span", { class: "compteurs", text: compteurs.join(" · ") }))));
     }
     frag.append(ul);
     return frag;
   }
 
-  /* ---------- Semaine (D98) : bilan de la semaine ISO, champs recopiés par scripts/semaine.py ---------- */
+  /* ---------- Semaine (D98) : bilan de la semaine ISO, champs recopiés par scripts/semaine.py ; non publié en commun ---------- */
   const RE_SEMAINE = /^\d{4}-W\d{2}$/;
-  const SOURCES_SEMAINE = { claude: "Claude", actu: "Actu", openai: "OpenAI", "kb-claude": "Base Claude", "kb-openai": "Base OpenAI" };
+  const SOURCES_SEMAINE = ["claude", "actu", "openai"];
   async function chargerSemaine() {
     const s = etat.semaines;
     await unefois("semaine-index", async () => {
+      if (enCommun()) { s.index = null; s.commun = true; return; }
       try {
-        const idx = await lireJson("data/semaine/index.json");
-        if (!idx || !Array.isArray(idx.semaines)) throw new Error("index sans `semaines`");
+        const idx = await lireJson(chemin("semaine/index.json"));
+        if (!idx || !Array.isArray(idx.semaines)) throw new Error(t("erreur.semaine_sans_semaines"));
         s.index = idx.semaines.filter((x) => x && RE_SEMAINE.test(x.semaine));
       } catch (e) { s.index = null; s.erreur = String(e.message || e); }
     });
@@ -1429,22 +1665,23 @@
     const semaine = s.courante;
     await unefois(`semaine:${semaine}`, async () => {
       try {
-        const d = await lireJson(`data/semaine/${semaine}.json`);
-        if (!d || !Array.isArray(d.elements) || !Array.isArray(d.d71) || !Array.isArray(d.base_ajoutees) || !Array.isArray(d.base_verdicts)) throw new Error("bilan illisible");
+        const d = await lireJson(chemin(`semaine/${semaine}.json`));
+        if (!d || !Array.isArray(d.elements) || !Array.isArray(d.d71) || !Array.isArray(d.base_ajoutees) || !Array.isArray(d.base_verdicts)) throw new Error(t("erreur.bilan_illisible"));
         s.docs[semaine] = d;
       } catch (e) { s.docs[semaine] = { erreur: String(e.message || e) }; }
     });
   }
   function ligneSemaine(l) {
-    const c = el("li", { class: `ligne-semaine impact-${IMPACTS.includes(l.impact) ? l.impact : "nul"}` });
+    const impact = impactDe(l);
+    const c = el("li", { class: `ligne-semaine impact-${impact || "inconnu"}` });
     c.append(el("div", { class: "badges" },
-      badge(`impact ${IMPACTS.includes(l.impact) ? l.impact : "nul"}`, `impact ${l.impact || "?"}`),
-      badge(`certitude ${l.certitude || ""}`, CERTITUDES[l.certitude] || String(l.certitude || "?")),
+      impact ? badge(`impact ${impact}`, t(`impact.${impact}`)) : null,
+      badge(`certitude ${l.certitude || ""}`, CERTITUDES.includes(l.certitude) ? t(`certitude.${l.certitude}`) : String(l.certitude || "?")),
       badge("produit", PRODUITS[l.produit] || String(l.produit || "?"))));
-    c.append(el("h4", { text: texte(l.titre, "(sans titre)") + (l.version ? ` ${l.version}` : "") }));
-    c.append(el("div", { class: "meta" }, `${dateFr(l.date_publication)} · `,
-      ISO_JOUR.test(l.jour || "") ? el("a", { href: `#archives/${l.jour}`, text: `passage du ${dateFr(l.jour)}` }) : "passage inconnu"));
-    c.append(texte(l.action) ? el("p", { class: "action-courte" }, el("strong", { text: "Action : " }), ...enrichi(l.action, l.produit)) : el("p", { class: "action-courte doux", text: "Aucune action demandée." }));
+    c.append(el("h4", { lang: langueDonnees(), text: texte(l.titre, t("carte.sans_titre")) + (l.version ? ` ${l.version}` : "") }));
+    c.append(el("div", { class: "meta" }, `${dateAffichee(l.date_publication)} · `,
+      ISO_JOUR.test(l.jour || "") ? el("a", { href: `#archives/${l.jour}`, text: t("carte.passage", { date: dateAffichee(l.jour) }) }) : t("semaine.passage_inconnu")));
+    c.append(texte(l.action) ? el("p", { class: "action-courte", lang: langueDonnees() }, el("strong", { text: t("semaine.action") }), ...enrichi(l.action, l.produit)) : el("p", { class: "action-courte doux", text: t("semaine.aucune_action") }));
     return c;
   }
   function ligneKbSemaine(l, quand) {
@@ -1452,15 +1689,15 @@
     const verdict = l.verdict_apres || l.verdict;
     const badges = el("div", { class: "badges" }, badge("produit", PRODUITS[l.produit] || String(l.produit || "?")),
       badge("type", KB_CATEGORIES[l.categorie] || String(l.categorie || "?")),
-      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", "en attente de commentaire"));
-    if (l.verdict_apres) badges.append(el("span", { class: "meta", text: l.verdict_avant ? `avant : ${VERDICTS[l.verdict_avant] || l.verdict_avant}` : "premier jugement" }));
-    c.append(badges, el("h4", { text: texte(l.nom, "(sans nom)") }), el("div", { class: "meta", text: quand }));
+      verdict ? badge(`verdict ${verdict}`, VERDICTS[verdict] || verdict) : badge("attente", t("kb.attente")));
+    if (l.verdict_apres) badges.append(el("span", { class: "meta", text: l.verdict_avant ? t("semaine.avant", { verdict: VERDICTS[l.verdict_avant] || l.verdict_avant }) : t("semaine.premier_jugement") }));
+    c.append(badges, el("h4", { text: texte(l.nom, t("kb.sans_nom")) }), el("div", { class: "meta", text: quand }));
     c.append(el("pre", { class: "usage" }, el("code", { text: String(l.usage || "") })));
     if (texte(l.exemple) && l.exemple !== l.usage) {
-      c.append(el("div", { class: "etiquette", text: l.exemple_origine === "source" ? "Exemple (de la documentation)" : l.exemple_origine === "compose" ? "Exemple (composé pour ton usage)" : "Exemple" }));
+      c.append(el("div", { class: "etiquette", text: l.exemple_origine === "source" ? t("semaine.exemple_source") : l.exemple_origine === "compose" ? t("semaine.exemple_compose") : t("semaine.exemple") }));
       c.append(el("pre", { class: "usage exemple" }, el("code", { text: l.exemple })));
     }
-    if (texte(l.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: "Pourquoi" }), el("p", { text: l.pourquoi })));
+    if (texte(l.pourquoi)) c.append(el("div", { class: "pour-toi" }, el("strong", { text: t("kb.pourquoi") }), el("p", { lang: langueDonnees(), text: l.pourquoi })));
     return c;
   }
   function blocSemaine(titre, lignes, fabrique, vide) {
@@ -1471,118 +1708,59 @@
   function pageSemaine() {
     const s = etat.semaines;
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Semaine" }));
+    frag.append(el("h2", { text: t("onglet.semaine") }));
+    if (s.commun) { frag.append(notePersonnel("personnel.semaine")); return frag; }
     if (s.index === null) {
-      frag.append(el("p", { class: "erreur", text: `Bilans de semaine indisponibles : ${s.erreur}` }));
+      frag.append(el("p", { class: "erreur", text: t("semaine.indisponible", { raison: s.erreur }) }));
       return frag;
     }
     if (!s.index.length) {
-      frag.append(el("p", { class: "vide", text: "Aucun bilan de semaine publié pour l'instant." }));
+      frag.append(el("p", { class: "vide", text: t("semaine.aucune") }));
       return frag;
     }
-    const choixSemaine = el("select", { "aria-label": "Semaine affichée" });
+    const choixSemaine = el("select", { "aria-label": t("semaine.choix") });
     for (const x of s.index) {
-      choixSemaine.append(el("option", { value: x.semaine, selected: x.semaine === s.courante ? true : null, text: `${x.semaine} · du ${dateFr(x.du)} au ${dateFr(x.au)}` }));
+      choixSemaine.append(el("option", { value: x.semaine, selected: x.semaine === s.courante ? true : null, text: t("semaine.option", { semaine: x.semaine, du: dateAffichee(x.du), au: dateAffichee(x.au) }) }));
     }
     choixSemaine.addEventListener("change", () => { location.hash = `#semaine/${choixSemaine.value}`; });
     frag.append(el("div", { class: "filtres" }, choixSemaine));
     const d = s.docs[s.courante];
     if (!d || d.erreur) {
-      frag.append(el("p", { class: "erreur", text: `Bilan ${s.courante} indisponible : ${d ? d.erreur : "non chargé"}` }));
+      frag.append(el("p", { class: "erreur", text: t("semaine.bilan_indisponible", { semaine: s.courante, raison: d ? d.erreur : t("semaine.non_charge") }) }));
       return frag;
     }
-    frag.append(el("p", { class: "sous-titre", text: `Du ${dateFr(d.du)} au ${dateFr(d.au)} · produit le ${horodatageFr(d.genere_le)} à partir des fichiers quotidiens et de la base, sans rédaction. Les éléments du jour d'OpenAI y figurent au bilan suivant.` }));
-    if (d.statut !== "ok") frag.append(el("p", { class: "erreur", role: "status", text: `Bilan partiel (statut ${d.statut}) : ${texte(d.raison, "raison non indiquée")}` }));
+    frag.append(el("p", { class: "sous-titre", text: t("semaine.sous_titre", { du: dateAffichee(d.du), au: dateAffichee(d.au), quand: horodatage(d.genere_le) }) }));
+    if (d.statut !== "ok") frag.append(el("p", { class: "erreur", role: "status", text: t("semaine.partiel", { statut: d.statut, raison: texte(d.raison, t("raison.non_indiquee")) }) }));
     else {
-      const jours = Object.entries(SOURCES_SEMAINE).filter(([k]) => d.sources && d.sources[k] && !k.startsWith("kb-")).map(([k, nom]) => `${nom} ${d.sources[k].jours.length} j`);
-      frag.append(el("p", { class: "sous-titre doux", text: `Passages lus : ${jours.join(", ")}.` }));
+      const jours = SOURCES_SEMAINE.filter((k) => d.sources && d.sources[k]).map((k) => t("semaine.jours_lus", { nom: t(`perimetre.court.${k}`), n: d.sources[k].jours.length }));
+      frag.append(el("p", { class: "sous-titre doux", text: t("semaine.passages_lus", { liste: jours.join(", ") }) }));
     }
-    frag.append(blocSemaine("Compte et quotas", d.d71, ligneSemaine, "Rien sur le compte, les quotas, les tarifs ou les forfaits cette semaine."));
-    frag.append(blocSemaine("À retenir (impact fort ou moyen)", d.elements, ligneSemaine, "Aucun élément d'impact fort ou moyen cette semaine."));
+    frag.append(blocSemaine(t("comptes.titre"), d.d71, ligneSemaine, t("semaine.vide_d71")));
+    frag.append(blocSemaine(t("semaine.a_retenir"), d.elements, ligneSemaine, t("semaine.vide_elements")));
     const utiles = d.base_ajoutees.filter((l) => l.verdict !== "ignorer");
     const ignorees = d.base_ajoutees.filter((l) => l.verdict === "ignorer");
-    const bAjout = blocSemaine("Nouveau dans la base", utiles, (l) => ligneKbSemaine(l, `ajoutée le ${dateFr(l.date_ajout)}`), ignorees.length ? "Aucune entrée à utiliser ou à tester parmi les ajouts." : "Aucune entrée ajoutée cette semaine.");
+    const ajoutee = (l) => ligneKbSemaine(l, t("kb.ajoutee_le", { date: dateAffichee(l.date_ajout) }));
+    const bAjout = blocSemaine(t("semaine.nouveau"), utiles, ajoutee, ignorees.length ? t("semaine.vide_utiles") : t("semaine.vide_ajouts"));
     if (ignorees.length) {
-      bAjout.append(el("details", { class: "ecartes" }, el("summary", { text: `${ignorees.length} entrée(s) ajoutée(s) jugée(s) à ignorer` }),
-        el("ul", { class: "liste" }, ...ignorees.map((l) => ligneKbSemaine(l, `ajoutée le ${dateFr(l.date_ajout)}`)))));
+      bAjout.append(el("details", { class: "ecartes" }, el("summary", { text: t("semaine.ignorees", { n: ignorees.length }) }),
+        el("ul", { class: "liste" }, ...ignorees.map(ajoutee))));
     }
     frag.append(bAjout);
-    frag.append(blocSemaine("Passées à utiliser ou à tester", d.base_verdicts, (l) => ligneKbSemaine(l, `verdict du ${dateFr(l.date)}`), "Aucune entrée de la base n'a changé de verdict vers utiliser ou tester cette semaine."));
+    frag.append(blocSemaine(t("semaine.verdicts"), d.base_verdicts, (l) => ligneKbSemaine(l, t("semaine.verdict_du", { date: dateAffichee(l.date) })), t("semaine.vide_verdicts")));
     return frag;
   }
 
-  /* ---------- Aide (D112) : texte statique, une section par onglet ou fonction ; aucune donnée personnelle, aucune adresse de console ---------- */
+  /* ---------- Aide (D112) : texte statique, une section par onglet ou fonction ; aucune donnée personnelle, aucune adresse de console.
+     Textes dans le dictionnaire : aide.<id>.titre, .sert, .geste, .limite et, pour le connecteur, aide.mcp.liste.1 à 6. ---------- */
   // sert : à quoi ça sert ; geste : comment s'en servir (bureau, iPhone) ; limite : ce que ça ne fait pas ; liste : lignes courtes (connecteur MCP)
   // les segments entre accents graves s'affichent en code ; les liens `[texte](#ancre)` ne mènent qu'à une ancre du site
   const AIDE = [
-    { id: "etat", titre: "En-tête : voyants des agents",
-      sert: "Date du dernier passage de Claude Code et de Codex : vert jusqu'à 24 h, orange de 24 à 36 h, rouge au-delà (bandeau d'alerte sur Aujourd'hui).",
-      geste: "Rien à faire. Bureau : le survol d'un voyant donne l'âge en heures. iPhone : lis la date à côté du nom.",
-      limite: "Dit si l'agent a tourné, pas si son contenu est juste. Claude Code couvre `claude` et `actu` : le voyant prend le plus ancien des deux passages." },
-    { id: "aujourdhui", titre: "Aujourd'hui",
-      sert: "Dernier passage de chaque périmètre : synthèse, puis éléments triés par impact (fort, moyen, faible, nul), chacun avec sa source et sa certitude.",
-      geste: "Boutons de filtre par produit au-dessus de la liste. Bureau et iPhone : « Afficher les éléments sans impact (n) » est mémorisé dans ce navigateur.",
-      limite: "Éléments sans impact masqués par défaut. Ne montre que le dernier jour de chaque périmètre : les jours précédents sont dans Changelogs et Archives." },
-    { id: "quotas", titre: "Compte et quotas (haut d'Aujourd'hui)",
-      sert: "Quotas Claude (session 5 h, semaine, semaine Fable) et ChatGPT (semaine) avec leur remise à zéro.",
-      geste: "Rien à cliquer. Au-delà de 80 % d'un quota hebdomadaire : « vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ».",
-      limite: "Valeur du dernier relevé, pas en direct (sa date est affichée) ; une remise à zéro passée marque la valeur périmée. Bloc absent quand le relevé n'est pas publié." },
-    { id: "outils", titre: "Tes outils (Aujourd'hui)",
-      sert: "Version installée de Claude Code, du Codex de l'app ChatGPT, de la Codex CLI, de ChatGPT Desktop et de Claude Desktop, face à la dernière version publiée connue de Delta.",
-      geste: "Lecture seule. Statuts : à jour, en retard, inconnu, embarqué (Codex de l'app : suit l'app, non comparé), non utilisée.",
-      limite: "Ne met rien à jour. Relevé à chaque passage, pas en direct." },
-    { id: "nouveau", titre: "Nouveau dans la base (Aujourd'hui)",
-      sert: "Nombre d'entrées de la base de référence ajoutées depuis 7 jours, par catégorie.",
-      geste: "Lien « Voir les nouveautés » : [`#reference?recent=7`](#reference?recent=7), triées de la plus récente à la plus ancienne. Pour 30 jours : [`#reference?recent=30`](#reference?recent=30).",
-      limite: "Absent quand rien n'est nouveau. Dit « au moins N » quand le fichier des ajouts est coupé avant les 7 jours." },
-    { id: "semaine", titre: "Semaine",
-      sert: "Bilan de la semaine ISO assemblé sans rédaction : compte et quotas, éléments d'impact fort ou moyen, entrées ajoutées à la base, entrées passées à utiliser ou à tester.",
-      geste: "Sélecteur de semaine en haut ; adresse directe `#semaine/AAAA-Www`. Les liens des éléments mènent à l'archive du jour.",
-      limite: "Les éléments du jour d'OpenAI n'entrent qu'au bilan suivant. Un bilan partiel est signalé à l'écran." },
-    { id: "changelogs", titre: "Changelogs",
-      sert: "Éléments des 30 derniers jours par produit (Claude Code, Claude, Codex, ChatGPT), du plus récent au plus ancien.",
-      geste: "Défilement ; même bascule des éléments sans impact que sur Aujourd'hui. Changelogs, Actu IA et À tester affichent « n/N fichiers » pendant le chargement de fond des 30 jours.",
-      limite: "Au-delà de 30 jours : Archives. L'actualité générale est dans Actu IA." },
-    { id: "actu", titre: "Actu IA",
-      sert: "Actualité IA hors changelogs des éditeurs, sur 30 jours, avec la certitude de chaque élément : officiel, rapporté, non confirmé.",
-      geste: "Défilement ; sous la liste, « n nouveauté(s) écartée(s) comme hors sujet » se déplie pour voir pourquoi.",
-      limite: "Une rumeur reste marquée non confirmée ; elle n'est jamais présentée comme un fait." },
-    { id: "reference", titre: "Référence",
-      sert: "Base de fonctionnalités, commandes, skills, plugins, MCP, paramètres et raccourcis de Claude Code, Claude, Codex et ChatGPT : syntaxe exacte, exemple, verdict et pourquoi pour toi.",
-      geste: "Recherche plein texte, filtres Produit, Catégorie, Verdict, Statut d'usage et Date d'ajout, tri « Ajoutées récemment ». Adresse directe d'une fiche : `#reference?id=<id>`.",
-      limite: "Une entrée « en attente de commentaire » montre la description d'origine en anglais, sans verdict. Commandes et fonctionnalités se chargent d'abord, le reste quelques secondes après." },
-    { id: "liens", titre: "Liens vers les fiches (dans les éléments)",
-      sert: "Un nom entre accents graves dans un résumé, un « pour toi » ou une action (`/rename`, `--add-dir`) mène à sa fiche de la base.",
-      geste: "Touche ou clique le nom. Une seule fiche : la fiche seule, avec « ← Toute la référence ». Plusieurs fiches de même nom : la recherche, ou la fiche du produit de l'élément si elle est unique.",
-      limite: "Un nom absent de la base reste en texte simple. Sans index des noms, aucun lien et aucun message." },
-    { id: "envoi", titre: "Envoyer à Delta (bouton de chaque fiche)",
-      sert: "Remet l'idée « intégrer la référence … » à Delta, qui juge si elle entre dans un workflow ou chez un agent. Le relais accepte 10 envois par heure au plus ; après un envoi au relais ou une ouverture de console, une même fiche ne repart pas dans l'heure (« déjà envoyée à HH:MM »).",
-      geste: "Bureau : relais local d'abord (sonde de 3 s), puis console reliée dans un nouvel onglet s'il ne répond pas, sinon copie. iPhone/iPad : console reliée, sinon copie. Pour relier la console, ouvre-la et touche « Relier Delta-IA » une fois par navigateur, sur chaque appareil (le lien ouvre `https://ai.orqyra.io/#console=<adresse>` ; fragment vide : oubli). Facultatif — Brave : Paramètres → rechercher localhost (Brave le propose selon la version).",
-      limite: "Relais : « Envoyé à Delta, jugement en cours ». Console : idée préremplie (500 caractères au plus), envoi à valider dans son lanceur ; si l'onglet est bloqué, touche « Ouvrir la console ». Sans relais ni console : « Pas envoyé », puis copie de l'idée à coller une fois dans le lanceur (« copiée à HH:MM » pendant une heure)." },
-    { id: "a-tester", titre: "À tester",
-      sert: "Actions proposées sur 30 jours, ouvertes d'abord, puis « Essais de la base » : entrées au verdict tester, puis à utiliser et pas encore essayées, avec syntaxe, exemple et pourquoi.",
-      geste: "Case « Fait » : l'action passe dans « Actions faites » (repliée). Essais : 50 cartes, puis « Afficher plus ».",
-      limite: "Les cases « Fait » restent dans ce navigateur : pas de synchronisation entre le bureau et l'iPhone." },
-    { id: "archives", titre: "Archives",
-      sert: "Chaque passage par date, avec ses synthèses et tous ses éléments, impact nul compris. Un champ cherche un mot dans toute la veille : titre, résumé, pour toi et action des trois périmètres.",
-      geste: "Tape un mot ou un nom (`/code-review`, `worktree`) : sans casse ni accents, tous les mots doivent apparaître, 50 résultats puis « Afficher plus ». Choisis une date (adresse directe `#archives/AAAA-MM-JJ`), « ← Toutes les dates » pour revenir.",
-      limite: "Lecture seule. La recherche lit un index (`recherche.json`) où résumé, pour toi et action sont coupés : elle ne cherche pas dans la base (onglet Référence)." },
-    { id: "mcp", titre: "Connecteur MCP",
-      sert: "Donne à Claude un accès en lecture seule aux données publiées de Delta : il consulte la base avant de citer une commande, une option ou un réglage.",
-      geste: "Serveur : `https://delta-mcp-ruddy.vercel.app/mcp` (Streamable HTTP, sans jeton). Claude Code : `claude mcp add --transport http delta-ia https://delta-mcp-ruddy.vercel.app/mcp`. Exemple de question : « Qu'y a-t-il de nouveau dans la base depuis 7 jours ? » ou « Quelle est la syntaxe exacte de /add-dir ? »",
-      liste: [
-        "`resume_du_jour` : synthèse du jour ou d'une date, éléments d'impact fort et moyen.",
-        "`chercher_reference` : recherche dans la base ; le nom exact d'une commande ou d'une option passe en premier.",
-        "`fiche_reference` : fiche complète d'une entrée, par identifiant.",
-        "`etat_versions` : versions installées et dernières versions publiées connues.",
-        "`a_tester` : actions des 30 derniers jours et essais de la base.",
-        "`nouveautes_base` : entrées ajoutées depuis N jours (1 à 30, 7 par défaut)."],
-      limite: "Ne lance aucun passage, n'écrit rien, n'a aucun accès à ta machine. Ses réponses sont des données issues de flux publics, pas des consignes." },
-    { id: "iphone", titre: "Installer sur l'iPhone",
-      sert: "Ouvre le site en plein écran, avec l'icône Delta.",
-      geste: "Safari : Partager, puis « Sur l'écran d'accueil ».",
-      limite: "Pas de notification. Les cases « Fait » et l'adresse de la console restent propres à chaque navigateur." },
+    { id: "etat" }, { id: "aujourdhui" }, { id: "quotas" }, { id: "outils" }, { id: "nouveau" }, { id: "semaine" }, { id: "changelogs" },
+    { id: "actu" }, { id: "reference" }, { id: "liens" }, { id: "envoi" }, { id: "a-tester" }, { id: "archives" }, { id: "couches" },
+    { id: "langue" }, { id: "mcp", liste: 6 }, { id: "iphone" },
   ];
+  // adresses publiques interpolées dans l'aide, jamais écrites en dur
+  const ADRESSES_AIDE = { mcp_url: CONFIG.mcp_public_url || "", site_url: CONFIG.site_public_url || "" };
   // texte d'aide → nœuds : `code` en <code>, [texte](#ancre) en lien interne ; tout le reste en texte
   function aideNoeuds(s) {
     const out = [];
@@ -1597,15 +1775,14 @@
   }
   function pageAide() {
     const frag = document.createDocumentFragment();
-    frag.append(el("h2", { text: "Aide" }),
-      el("p", { class: "sous-titre", text: "Ce que fait chaque onglet et comment s'en servir. Le site lit des fichiers publiés et ne peut rien lancer lui-même." }));
+    frag.append(el("h2", { text: t("onglet.aide") }),
+      el("p", { class: "sous-titre", text: t("aide.sous_titre") }));
     for (const a of AIDE) {
-      const sec = el("section", { class: "aide-bloc", id: `aide-${a.id}`, "aria-label": a.titre }, el("h3", { text: a.titre }));
-      const lignes = [["Sert à", a.sert], ["Geste", a.geste], ["Ne fait pas", a.limite]];
-      for (const [etiquette, valeur] of lignes) {
-        if (!valeur) continue;
-        sec.append(el("p", { class: "aide-ligne" }, el("strong", { text: etiquette }), " ", ...aideNoeuds(valeur)));
-        if (etiquette === "Geste" && a.liste) sec.append(el("ul", { class: "aide-outils" }, ...a.liste.map((l) => el("li", null, ...aideNoeuds(l)))));
+      const titre = t(`aide.${a.id}.titre`);
+      const sec = el("section", { class: "aide-bloc", id: `aide-${a.id}`, "aria-label": titre }, el("h3", { text: titre }));
+      for (const champ of ["sert", "geste", "limite"]) {
+        sec.append(el("p", { class: "aide-ligne" }, el("strong", { text: t(`aide.etiquette.${champ}`) }), " ", ...aideNoeuds(t(`aide.${a.id}.${champ}`, ADRESSES_AIDE))));
+        if (champ === "geste" && a.liste) sec.append(el("ul", { class: "aide-outils" }, ...Array.from({ length: a.liste }, (_, i) => el("li", null, ...aideNoeuds(t(`aide.${a.id}.liste.${i + 1}`))))));
       }
       frag.append(sec);
     }
@@ -1615,8 +1792,8 @@
   /* ---------- routage par ancre ---------- */
   function lireRoute() {
     const h = (location.hash || "#aujourdhui").slice(1);
-    const [chemin, requete] = h.split("?");
-    const [page, param] = chemin.split("/");
+    const [cheminRoute, requete] = h.split("?");
+    const [page, param] = cheminRoute.split("/");
     etat.page = ["aujourdhui", "semaine", "changelogs", "actu", "reference", "a-tester", "archives", "aide"].includes(page) ? page : "aujourdhui";
     etat.semaineDemandee = etat.page === "semaine" && RE_SEMAINE.test(param || "") ? param : null;
     etat.archiveDate = etat.page === "archives" && /^\d{4}-\d{2}-\d{2}$/.test(param || "") ? param : null;
@@ -1644,6 +1821,7 @@
   }
   async function rendre() {
     lireRoute();
+    majLienLangue();
     const mien = ++etat.rendu;  // un rendu plus récent a la main : celui-ci s'arrête après ses attentes
     const fenetre = PAGES_FENETRE[etat.page] ? chargerFenetre() : null;
     if (fenetre && !fenetre.fini) {
@@ -1656,18 +1834,23 @@
     if (mien !== etat.rendu) return;
     document.querySelectorAll(".onglets a").forEach((a) => a.classList.toggle("actif", a.dataset.page === etat.page));
     const alertes = rendreEtatAgents();
+    rendreCouche();
     vider(main);
     if (etat.page === "aide") {  // texte statique : s'affiche même si les données sont illisibles
       main.append(pageAide());
-      document.title = "Delta — Aide";
+      document.title = t("titre.page", { page: t("onglet.aide") });
       return;
     }
     const erreursIndex = PERIMETRES.filter((p) => etat.index[p] && etat.index[p].erreur);
     if (erreursIndex.length === PERIMETRES.length) {
-      main.append(el("p", { class: "erreur", text: "Aucune donnée lisible. Le site doit être servi par HTTP (GitHub Pages ou `python -m http.server` dans docs/)." }));
+      // erreur de couche explicite : référence commune indisponible (sans repli sur l'ancienne route) ou aucune donnée lisible
+      if (enCommun()) {
+        if (COUCHE.automatique) main.append(el("p", { class: "erreur", text: t("erreur.ancienne_illisible", { raison: COUCHE.erreurAncienne || "" }) }));
+        main.append(el("p", { class: "erreur", role: "alert", text: t("erreur.commun_indisponible", { raison: COUCHE.erreur || etat.index[PERIMETRES[0]].erreur }) }));
+      } else main.append(el("p", { class: "erreur", text: t("erreur.aucune_donnee") }));
       return;
     }
-    for (const p of erreursIndex) main.append(el("p", { class: "erreur", text: `Index ${p} illisible : ${etat.index[p].erreur}` }));
+    for (const p of erreursIndex) main.append(el("p", { class: "erreur", text: t(enCommun() ? "erreur.index_commun" : "erreur.index", { p, raison: etat.index[p].erreur }) }));
     switch (etat.page) {
       case "semaine": main.append(pageSemaine()); break;
       case "changelogs": main.append(pageChangelogs()); break;
@@ -1677,29 +1860,31 @@
       case "archives": main.append(pageArchives()); rendreResultatsRecherche(); break;
       default: main.append(pageAujourdhui(alertes)); completerEncartKb();
     }
-    document.title = `Delta — ${document.querySelector(".onglets a.actif")?.textContent || "veille IA"}`;
+    document.title = t("titre.page", { page: document.querySelector(".onglets a.actif")?.textContent || t("titre.defaut") });
     lancerFond();
   }
 
   async function demarrer() {
     const avisConsole = enregistrerConsoleDepuisUrl();
     if (avisConsole) annoncer(avisConsole);
+    brancherLangue();
     try {
       lireRoute();
-      // Aujourd'hui : etat.json et versions.json partent avec les index, sans attendre leur réponse
-      if (etat.page === "aujourdhui") { chargerComptes(); chargerVersions(); }
+      // Aujourd'hui : etat.json et versions.json partent avec les index, sans attendre leur réponse (ancienne route seulement :
+      // la référence commune ne lit pas etat.json, et ses versions attendent la génération)
+      if (etat.page === "aujourdhui" && !COUCHE.demandee) { chargerComptes(); chargerVersions(); }
       await chargerIndex();
       await rendre();
     } catch (e) {
       vider(main);
-      main.append(el("p", { class: "erreur", text: `Erreur de chargement : ${e.message || e}` }));
+      main.append(el("p", { class: "erreur", text: t("erreur.chargement", { raison: e.message || e }) }));
       return;
     }
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       if (etat.page === "actu") rendre().catch((e) => console.error("delta:theme-x", e));
     });
     window.addEventListener("hashchange", () => { rendre().catch((e) => console.error("delta:rendu", e)); });
-    console.log("delta:pret", matchMedia("(prefers-color-scheme: dark)").matches ? "theme=sombre" : "theme=clair");
+    console.log("delta:pret", matchMedia("(prefers-color-scheme: dark)").matches ? "theme=sombre" : "theme=clair", `langue=${LANGUE}`, `couche=${COUCHE.mode}`);
   }
   demarrer();
 })();

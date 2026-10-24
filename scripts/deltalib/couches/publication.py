@@ -24,13 +24,13 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urljoin
 
-from . import schemas
+from . import config as mod_config, schemas
 from .racines import Racines
 from .sentinelles import Detecteur
 from .stockage import dossier_prive, ecrire, ecrire_octets_public, ecrire_public, sha256_fichier, verrou
 
 INDEX = "index.json"
-AGENT = "Delta-IA-lecteur/1 (+https://ai.orqyra.io/)"
+AGENT = f"Delta-IA-lecteur/1 (+{mod_config.charger()['site_public_url']})"
 TAILLE_INDEX = 1 << 20
 DELAI = 30
 

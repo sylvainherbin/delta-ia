@@ -11,6 +11,7 @@ import pytest
 import valider
 from conftest import RACINE
 from deltalib.kb import methodes as m
+from textes_site import FR
 
 ENTETE = """---
 id: {id}
@@ -156,7 +157,7 @@ def test_accueil_et_fichiers_legers_n_integrent_pas_les_methodes():
 
 def test_site_affiche_les_methodes_sans_innerhtml():
     app = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
-    assert 'methodes: "Méthodes"' in app and 'const KB_LOCALE = "locale"' in app and "function carteMethode" in app
+    assert '"methodes", "modeles"]' in app and FR["categorie.methodes"] == "Méthodes" and 'const KB_LOCALE = "locale"' in app and "function carteMethode" in app
     corps = app[app.index("function noeudsEnLigne"):app.index("function carteMethode")]
     assert "innerHTML" not in corps and "innerHTML" not in app[app.index("function carteMethode"):app.index("function carteMethode") + 3500]
     assert "^methode-" in app

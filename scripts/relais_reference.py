@@ -38,13 +38,16 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(RACINE / "scripts"))
+from deltalib.couches.config import origines_site  # noqa: E402
+
 PORT = 47613
 KB = RACINE / "docs" / "data" / "kb"
 STATE = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state")
 IDEE = Path(os.environ.get("DELTA_IDEE") or STATE.parent / "share" / "delta-system-experience" / "palier-3" / "idee.py")
 JOURNAL = STATE / "delta-ia" / "envois-reference.jsonl"
-# Le site est servi par ai.orqyra.io depuis le 22/10/2026 ; l'ancienne adresse redirige, son origine reste admise.
-SITES = ("https://ai.orqyra.io", "https://sylvainherbin.github.io")
+# Origines du site public lues dans la configuration commune (L3) : l'adresse actuelle, puis les anciennes qui redirigent.
+SITES = origines_site()
 APERCU = re.compile(r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$")
 CORPS_MAX = 2048
 PLAFOND = 10         # envois par heure glissante (D104)

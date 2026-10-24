@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 import relais_reference as rr
+from textes_site import FR, t_js
 
 RACINE = Path(__file__).resolve().parent.parent
 APP = (RACINE / "docs" / "assets" / "app.js").read_text(encoding="utf-8")
@@ -139,10 +140,11 @@ def test_bouton_de_la_carte_reference():
     # seul l'id part au relais ; l'entrée est relue dans la base locale
     assert "body: JSON.stringify({ id: e.id })" in corps
     # relais injoignable : console si une adresse est enregistrée, sinon idée copiée pour le lanceur ; refus du relais : motif affiché
-    assert "navigator.clipboard.writeText(texteIdeeKb(e))" in corps and "Delta n'a pas pris la référence" in corps
+    assert "navigator.clipboard.writeText(texteIdeeKb(e))" in corps and 't("envoi.refus"' in corps
+    assert "Delta n'a pas pris la référence" in FR["envoi.refus"]
     # le message de repli précède la copie, qui ne peut pas rester en attente ; à défaut, un bouton « Copier l'idée »
     repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
-    assert repli.index("statut.textContent = motif") < repli.index("copierIdeeKb(e)") and "Copier l'idée" in repli
+    assert repli.index("statut.textContent = motif") < repli.index("copierIdeeKb(e)") and 't("envoi.copier")' in repli and FR["envoi.copier"] == "Copier l'idée"
     assert "Promise.race" in corps and "return repli(e, statut," in corps
     assert "localStorage" in corps and corps.count("try {") >= 3 and "innerHTML" not in corps
     css = (RACINE / "docs" / "assets" / "style.css").read_text(encoding="utf-8")
@@ -230,7 +232,7 @@ def test_ios_ipados_et_console_dans_le_navigateur():
 def test_adresse_de_console_jamais_dans_le_depot():
     # REGLES §5 : ni adresse Tailscale (la plage « 100.64.0.0/10 » citée en commentaire est admise) ni adresse de console dans ce qui est publié ou suivi
     motif = re.compile(r"\b100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}\b(?!/)|[a-z0-9-]+\.[a-z0-9-]+\.ts\.net\b", re.I)
-    for chemin in ("docs/assets/app.js", "docs/assets/style.css", "docs/index.html", "scripts/relais_reference.py",
+    for chemin in ("docs/assets/app.js", "docs/assets/textes.js", "docs/assets/style.css", "docs/index.html", "docs/fr/index.html", "scripts/relais_reference.py",
                    "deploy/relais/delta-ia-relais.service.exemple"):
         assert not motif.search((RACINE / chemin).read_text(encoding="utf-8")), chemin
 
@@ -294,28 +296,33 @@ def test_deja_envoyees_relues_dans_le_journal_au_demarrage(tmp_path):
 def test_carte_confirmation_repli_et_memoire_d_une_heure():
     corps = APP[APP.index("const CLE_HEURES"):APP.index("function badgeContexte")]
     # (2) confirmation, bouton désactivé une heure, mémoire par fiche sous try/catch, second clic sans appel
-    assert 'statut.textContent = "Envoyé à Delta, jugement en cours"' in corps
-    assert "HEURE_MS = 3600000" in corps and 'noterHeure("envoi", e.id, t)' in corps and 'localStorage.setItem(CLE_HEURES' in corps
+    assert 'statut.textContent = t("envoi.ok")' in corps and FR["envoi.ok"] == "Envoyé à Delta, jugement en cours"
+    assert "HEURE_MS = 3600000" in corps and 'noterHeure("envoi", e.id, t0)' in corps and 'localStorage.setItem(CLE_HEURES' in corps
     memoire = corps[corps.index("function lireHeures"):corps.index("function hhmm")]
     assert memoire.count("try {") == 2 and memoire.count("catch (err)") == 2
     envoi = corps[corps.index("async function envoyerADelta"):corps.index("async function repli(")]
-    assert "déjà envoyée à ${hhmm(dejaT)}" in envoi and envoi.index('heureRecente("envoi", e.id)') < envoi.index("estIos()") < envoi.index("relaisJoignable()")
-    assert envoi.index("déjà envoyée à ${hhmm(dejaT)}") < envoi.index("relaisJoignable()")   # aucun appel au relais
+    deja = 't("envoi.deja", { heure: hhmm(dejaT) })'
+    assert FR["envoi.deja"] == "déjà envoyée à {heure}"
+    assert deja in envoi and envoi.index('heureRecente("envoi", e.id)') < envoi.index("estIos()") < envoi.index("relaisJoignable()")
+    assert envoi.index(deja) < envoi.index("relaisJoignable()")   # aucun appel au relais
     assert 'r.etape === "deja_envoyee"' in envoi          # 409 du relais : le bouton se bloque aussi
     # (3) repli : le message exact, puis « copiée à HH:MM » pour l'heure
-    assert ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier Delta-IA » "
-            "une fois sur cet appareil).") in corps
+    assert FR["envoi.pas_joignable"] == ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier Delta-IA » "
+                                         "une fois sur cet appareil).")
     assert "brave://settings/content/localhostAccess" not in APP
-    assert "L'idée est copiée : colle-la une fois dans le lanceur." in corps and "return repli(e, statut, PAS_JOIGNABLE, bouton)" in envoi
+    assert FR["envoi.copiee"] == "L'idée est copiée : colle-la une fois dans le lanceur." and 't("envoi.copiee")' in corps
+    assert 'return repli(e, statut, t("envoi.pas_joignable"), bouton)' in envoi
     repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
     assert repli.count('noterHeure("copie", e.id, Date.now())') == 2
     bloc = corps[corps.index("function blocEnvoi"):]
-    assert "copiée à ${hhmm(copie)}" in bloc and 'heureRecente("copie", e.id)' in bloc and "Envoyé à Delta à ${hhmm(envoi)}, jugement en cours" in bloc
+    assert 't("envoi.copiee_a", { heure: hhmm(copie) })' in bloc and 'heureRecente("copie", e.id)' in bloc and 't("envoi.ok_a", { heure: hhmm(envoi) })' in bloc
+    assert FR["envoi.copiee_a"].startswith("copiée à {heure}") and FR["envoi.ok_a"] == "Envoyé à Delta à {heure}, jugement en cours"
     assert "bloquerBouton(b, envoi)" in bloc
 
 
 def test_aide_dit_la_regle_d_une_heure():
-    envoi = APP[APP.index('id: "envoi"'):APP.index('id: "a-tester"')]
+    envoi = " ".join(FR[f"aide.envoi.{c}"] for c in ("sert", "geste", "limite"))
+    assert '{ id: "envoi" }' in APP
     assert "ne repart pas dans l'heure" in envoi and "Pas envoyé" in envoi and "jugement en cours" in envoi
 
 
@@ -339,7 +346,7 @@ def bouton_execute(**options):
     code = APP[APP.index("const RELAIS"):APP.index("// D64-bis : péremption")]
     script = r"""
 const vm = require('node:vm');
-const {code, options: o} = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+const {code, T_JS, options: o} = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
 const appels = [], onglets = [], copies = [], delais = [], liens = [];
 const stockage = new Map();
 if (o.console !== false) stockage.set('delta.console', o.console || 'https://console.example');
@@ -350,15 +357,15 @@ function el(tag, props, ...children) {
     addEventListener(type, cb) { this.listeners[type] = cb; }, remove() {}};
 }
 const context = vm.createContext({
-  Date: Horloge, URL, el, KB_NOMS: {}, PRODUITS: {},
-  texte: (s, defaut) => s || defaut, jourLocalIso: () => '2001-09-09', dateFr: s => s,
+  Date: Horloge, URL, el, PRODUITS: {},
+  texte: (s, defaut) => s || defaut, jourLocalIso: () => '2001-09-09', dateAffichee: s => s,
   localStorage: {getItem: k => stockage.get(k), setItem: (k, v) => stockage.set(k, v)},
   navigator: {userAgent: o.ios ? 'iPhone' : '', platform: o.ipad ? 'MacIntel' : '',
     maxTouchPoints: o.ipad ? 5 : 0, clipboard: {writeText: async s => {
       copies.push(s); if (o.copie === false) throw Error('refus');
     }}},
   document: {querySelectorAll: () => []},
-  window: {open: (url, cible) => {onglets.push({url, cible}); return o.popup === false ? null : {}; }},
+  window: {DELTA_TEXTES: {fr: {}}, open: (url, cible) => {onglets.push({url, cible}); return o.popup === false ? null : {}; }},
   setTimeout: () => {}, AbortSignal: {timeout: ms => {delais.push(ms); return null;}},
   fetch: async (url, opts) => {
     appels.push({url, ...opts});
@@ -366,7 +373,7 @@ const context = vm.createContext({
     return {json: async () => o.post || {ok: true}};
   }
 });
-vm.runInContext(code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole, heureRecente};', context);
+vm.runInContext(T_JS + code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole, heureRecente};', context);
 (async () => {
   const e = {id: 'fiche', nom: o.long ? 'é'.repeat(800) : 'Essai & idée', produit: 'essai'};
   const bouton = el('button', {}), statut = el('span', {});
@@ -390,7 +397,7 @@ vm.runInContext(code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole,
     liens: liens.map(l => ({tag: l.tag, href: l.href, target: l.target, rel: l.rel}))}));
 })().catch(e => {console.error(e); process.exitCode = 1;});
 """
-    res = subprocess.run([node, "-e", script], input=json.dumps({"code": code, "options": options}),
+    res = subprocess.run([node, "-e", script], input=json.dumps({"code": code, "T_JS": t_js("fr"), "options": options}),
                          text=True, capture_output=True, timeout=10)
     assert res.returncode == 0, res.stderr
     return json.loads(res.stdout)

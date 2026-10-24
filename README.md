@@ -41,3 +41,6 @@ Options de `fetch.py` : `--depuis AAAA-MM-JJ` (borne basse, sinon 30 jours au pr
 - Serveur : `https://delta-mcp-ruddy.vercel.app/mcp` (Streamable HTTP, code dans `mcp/`, déployé sur Vercel à chaque push sur `main`).
 - Outils : `resume_du_jour`, `chercher_reference`, `fiche_reference`, `etat_versions`, `a_tester`, `nouveautes_base`.
 - Lecture seule sur les JSON publics de `docs/data` : ni jeton, ni écriture, ni déclenchement de passage (SPEC §2, D61).
+- Deux sources (deux couches, lot L3) : l'ancienne route `docs/data` (défaut tant que la bascule L5 n'est pas faite) ou la génération commune `docs/commun/v1/` (`?source=commun` sur l'adresse, ou `DELTA_SOURCE=commun` sur Vercel). Chaque réponse dit sa source (`donnees`). Sur la référence commune : aucun avis, impact, essai ni version installée, dits indisponibles.
+- Langue : anglais par défaut, français par `?langue=fr` sur l'adresse ou `langue: "fr"` à chaque appel ; commandes, identifiants et données ne se traduisent pas. Constats internes et recommandations OPÉRER ne sont jamais rendus.
+- Adresses publiques : seule source `scripts/deltalib/couches/bootstrap.json` ; `scripts/urls.py` en écrit les copies `docs/assets/config.js` et `mcp/lib/config.js`.
