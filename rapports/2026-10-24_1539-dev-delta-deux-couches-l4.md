@@ -1,10 +1,10 @@
 ## En-tête
 
 - état : livré
-- tests : 1828/1828 (`verifier.py --fusion`, reçu 3ea60f5219be) ; MCP 74/74 (reçu 54d1d62cdf5d)
-- hash : 520847551fc83e77ba3fea3d595cffad5ba73d4a (code vérifié ; le commit suivant n'ajoute que ce rapport)
+- tests : 1828/1828
+- hash : 520847551fc83e77ba3fea3d595cffad5ba73d4a
 - reçus : 3ea60f5219be, 54d1d62cdf5d
-- réserves : delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
+- réserves : reçus sur `5208475` (suite complète 1828/1828, MCP 74/74) ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
 
