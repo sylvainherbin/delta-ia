@@ -1,10 +1,10 @@
 ## En-tête
 
 - état : livré
-- tests : commandes : `python3 -B outils/tests/verifier.py --fusion` : échec (code 1, reçu e4c23c561a51) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 3ea60f5219be) ; `/home/herbin/.local/bin/verrou-tests --depot /home/herbin/projets/.worktrees/delta-ia/m-7ca497536e5d --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 54d1d62cdf5d) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 09e09011a6a2) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 32186733ecba) ; `verrou-tests --depot . --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu f33e59ff27a5) ; `verrou-tests --depot . --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu bfee71dd01c1) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 2e1b53a46f80)
-- hash : c08a1bc6a2211fa7f5194a5d40c4bbc2c1a25731
-- reçus : 32186733ecba, bfee71dd01c1, 2e1b53a46f80; écartés : e4c23c561a51 (reçu e4c23c561a51 (« VERIFY OK ») : commande en code 1 ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` une fois la commande réussie / reçu e4c23c561a51 (« VERIFY OK ») : le reçu porte sur 6c1650e58e6f, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée) ; 3ea60f5219be (reçu 3ea60f5219be (« VERIFY OK ») : le reçu porte sur 520847551fc8, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée) ; 54d1d62cdf5d (reçu 54d1d62cdf5d (« tests 74 ») : le reçu porte sur 520847551fc8, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "tests 74" -- <commande>` sur la version livrée) ; 09e09011a6a2 (reçu 09e09011a6a2 (« vérification du dépôt réussie : python3 -B outils/tests/verifier.py ») : le reçu porte sur 64676391abe1, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "vérification du dépôt réussie : python3 -B outils/tests/verifier.py" -- <commande>` sur la version livrée) ; f33e59ff27a5 (reçu f33e59ff27a5 (« tests 77 ») : le nombre 77 ne figure pas dans la sortie conservée ; corriger l'affirmation (pas de date ni de numéro qui n'en vient pas) ou relancer `operer preuve m-7ca497536e5d --affirme "tests 77" -- <commande>`)
-- réserves : reçus sur `7eb1d3b` (suite complète 1829/1829, MCP 76/76) après les corrections de relecture ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
+- tests : à compléter
+- hash : à compléter
+- reçus : à compléter
+- réserves : delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
 
@@ -131,6 +131,20 @@ Trois relectures concordantes, une relecture Codex. Chaque correctif a son test,
 9. **Pris acte, L5** : les alias historiques (`opus`, `sonnet` du journal) sont rattachés par l'alias courant de la génération active. La règle « alias historique sans équivalence prouvée » relève de l'historique, donc de la L5.
 
 Correctif ajouté pendant la reprise : la fixture des tests MCP datait sa publication de celle de la génération commitée. Les tests de fraîcheur (`recente`) seraient devenus rouges un jour après, sans changement de code. Elle date maintenant la publication et la vérification de l'exécution du test.
+
+## Second tour de relecture (24/10, hash relu `d0fde10` : 1 BLOQUANT, 1 À NOTER)
+
+Points 1 à 7 du premier tour tenus. Deux corrections, chacune avec un test rouge sur `d0fde10` : la contre-épreuve, rejouée dans une copie détachée, donne 3 tests de `mcp/test/local.test.js` en échec et 9 succès. Les deux corrections sont vertes après (12/12).
+
+1. **BLOQUANT, corrigé : les avis de veille périmés restaient courants.** `LecteurLocal.veille()` rendait impact, `pour_toi` et action sans examiner le statut de l'avis. `a_tester` proposait donc encore l'action, et `resume_du_jour` la gardait parmi les éléments forts, alors que la référence commune était très ancienne ou que l'entrée de veille avait changé.
+   - La règle de statut est maintenant une seule méthode, `statutAvis(o, fiche)`, appliquée aux fiches comme aux éléments de veille, sur l'entrée commune courante.
+   - Un avis de veille à revoir n'a plus ni impact ni action courants (`impact: null`, `action: null`, `avis_precedent`). Il sort donc des actions proposées et de la sélection fort/moyen, et la journée retombe sur la liste par publication.
+   - Tests :
+     - « fraîcheur recalculée à chaque lecture » : horloge avancée de 8 jours, plus d'action proposée, élément `a_revoir` / `commun_tres_ancien`, `compte.fort` à 0 ;
+     - « avis de veille périmé après un changement commun » : nouvelle génération où l'empreinte de l'entrée de veille change, action retirée, `a_revoir` / `commun_modifie`, impact précédent `fort`.
+2. **À NOTER, corrigé : les essais OPÉRER étaient perdus sans miroir commun.** Sans fiche commune, l'id court n'était pas connu, et les essais OPÉRER, qui citent l'id court de la fiche, n'étaient pas rattachés. Il est maintenant déduit de l'identité (`idCourt`). Test « miroir commun indisponible… » : `claude-code-commandes-agents` garde son essai OPÉRER.
+
+Pris acte : les chemins personnels de la ligne « tests » de l'en-tête viennent du commit « Preuves de la mission » d'OPÉRER ; delta les traite côté OPÉRER.
 
 ## Points fragiles ou à décider
 
