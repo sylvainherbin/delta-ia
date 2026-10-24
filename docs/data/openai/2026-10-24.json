@@ -1,0 +1,327 @@
+{
+  "date": "2026-10-24",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-10-24T02:15:21+00:00",
+  "synthese": "Aucun nouveau changement de compte ou de quotas dans les sources du passage. Codex CLI 0.164.0, déjà installée dans le terminal, ajoute les consignes réutilisables avec /presets et les réglages directs du modèle et des permissions ; ses correctifs de reprise concernent les conversations sous tmux. Les connexions d’apps ChatGPT touchées par l’incident du 23 octobre sont rétablies ; les sept révisions des tableaux de dépréciation ne révèlent aucun modèle utilisé dans les profils Codex relevés.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "rust-v0.164.0",
+      "produit": "codex",
+      "version": "0.164.0",
+      "date_publication": "2026-10-23",
+      "ids_bruts": [
+        "rust-v0.164.0"
+      ],
+      "titre": "Codex CLI 0.164.0 : /presets et réglages directs du modèle et des permissions",
+      "type": "amelioration",
+      "resume": "La CLI ajoute dix emplacements `/presets` pour réutiliser des consignes ou commandes, des arguments directs pour `/model` et `/permissions`, les aperçus d’images dans les terminaux Kitty/Sixel, de nouveaux parcours d’authentification MCP d’entreprise, le masquage des identifiants dans les commandes Bash distantes compatibles et les instantanés Zsh, ainsi que l’assistant Bedrock activé par défaut. Elle corrige aussi la compaction en échec, la reprise des historiques compressés et des réglages enregistrés, la conservation des options `-c` et `--config`, l’attente des choix de permissions pour les messages en file et des contrôles du bac à sable ; l’espace disque et les journaux du daemon sont mieux bornés.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.164.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises la CLI Codex sous tmux pour auditer le travail de Claude : `/presets` permet de rappeler une consigne de revue trading-sim, et les arguments directs de `/model` et `/permissions` réduisent les manipulations des réglages. Les aperçus Kitty/Sixel concernent l’inspection des images dans le terminal, sous réserve d’un terminal compatible, ce que le contexte ne précise pas. Le masquage des identifiants est ajouté aux commandes Bash distantes prises en charge et aux instantanés Zsh ; ton usage tmux avec remote control ne prouve pas que ces exécutants distants soient utilisés. Le relevé du 24/10 à 02:00 UTC donne déjà la CLI terminal à 0.164.0 ; les correctifs de reprise et de compaction concernent ses conversations durables. Le binaire embarqué utilisé par D70 reste distinct, à 0.164.0-alpha.11.1 : ces nouveautés ne lui sont pas automatiquement attribuées. Pour distinguer les conversations sous tmux, `/title` et `/statusline` reçoivent aussi des arguments limités à la session et des préréglages de présentation ; la note ne précise pas leur syntaxe.",
+      "action": {
+        "description": "Dans une conversation CLI d’essai du flux d’audit trading-sim, ouvre `/presets` et enregistre dans un des dix emplacements la consigne `Relis ce rapport en lecture seule ; distingue les hypothèses, les preuves et les objections` ; résultat attendu : la consigne peut être rappelée depuis le menu sans la ressaisir.",
+        "etapes": [
+          "Faire l’essai sur un rapport existant de trading-sim, sans lancer de campagne ni modifier ses fichiers.",
+          "Ouvrir `/model` puis `/permissions` pour lire les choix disponibles dans cette conversation d’essai ; ces formes sont celles des fiches existantes. La note annonce des arguments directs mais ne donne pas leur grammaire complète : ne pas deviner de valeurs.",
+          "Revenir au menu `/presets` et rappeler la consigne enregistrée ; contrôler son contenu avant de la soumettre."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-commandes-model",
+        "codex-commandes-permissions",
+        "codex-commandes-title",
+        "codex-commandes-statusline"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI npm sous tmux et reprises de conversations pour les audits ; binaire D70 distinct."
+        }
+      },
+      "projets_concernes": [
+        "trading-sim"
+      ]
+    },
+    {
+      "id": "openai-status-01M5NFF94XCJ6CGTD4S78A9BEB",
+      "produit": "chatgpt",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "ids_bruts": [
+        "openai-status-01M5NFF94XCJ6CGTD4S78A9BEB"
+      ],
+      "titre": "Connexions d’apps ChatGPT utilisant CIMD : incident du 23 octobre résolu",
+      "type": "correction",
+      "resume": "Certaines connexions d’apps ChatGPT échouaient lors de l’ajout d’une app ou du rafraîchissement d’une connexion existante, à cause de leur point d’accès de métadonnées d’authentification. L’incident a été ouvert le 23/10 à 22:52:56 UTC et déclaré entièrement résolu à 23:43:22 UTC.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M5NFF94XCJ6CGTD4S78A9BEB",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises les connecteurs dans ChatGPT Desktop et le connecteur Delta-IA avec ChatGPT Work. L’incident concerne cette famille d’usage, sans établir que tes propres connexions aient échoué ni qu’elles utilisent CIMD ; le rétablissement annoncé fournit un repère pour d’éventuels échecs observés à ces heures.",
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+          "pourquoi": "ChatGPT Desktop sert aux connecteurs et ChatGPT aux audits du travail de Claude."
+        }
+      },
+      "projets_concernes": []
+    },
+    {
+      "id": "openai-deprecations-2026-10-01-text-to-speech-models",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-10-01",
+      "ids_bruts": [
+        "openai-deprecations-2026-10-01-text-to-speech-models"
+      ],
+      "titre": "API voix : alias gpt-4o-mini-tts ajouté aux retraits de janvier",
+      "type": "depreciation",
+      "resume": "Lignes modifiées : l’alias `gpt-4o-mini-tts` est ajouté aux instantanés `gpt-4o-mini-tts-2025-03-20` et `gpt-4o-mini-tts-2025-12-15`. Le retrait reste fixé au 6 janvier 2027 ; le remplacement recommandé reste `gpt-realtime-2.1-mini`.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-10-01-gpt-5-3-codex-gpt-5-1-gpt-5-4-nano",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-10-01",
+      "ids_bruts": [
+        "openai-deprecations-2026-10-01-gpt-5-3-codex-gpt-5-1-gpt-5-4-nano"
+      ],
+      "titre": "API : instantanés GPT-5.1 et GPT-5.4 nano explicités",
+      "type": "depreciation",
+      "resume": "Lignes modifiées : `gpt-5.4-nano` mentionne désormais aussi `gpt-5.4-nano-2026-03-17`, et `gpt-5.1` aussi `gpt-5.1-2025-11-13`. Le retrait reste fixé au 1er avril 2027 ; les remplacements recommandés restent respectivement `gpt-6-luna` et `gpt-6-sol`, ce dernier remplaçant également `gpt-5.3-codex`.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-08-26-transcription-models",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-08-26",
+      "ids_bruts": [
+        "openai-deprecations-2026-08-26-transcription-models"
+      ],
+      "titre": "API transcription : instantané de décembre 2025 ajouté au tableau",
+      "type": "depreciation",
+      "resume": "Ligne modifiée : `gpt-4o-mini-transcribe-2025-12-15` est ajouté à côté de l’alias `gpt-4o-mini-transcribe`. Le retrait reste fixé au 26 février 2027, avec `gpt-live-transcribe` ou `gpt-transcribe` comme remplacements recommandés.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-07-20-legacy-audio-realtime-and-transcription-models",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-07-20",
+      "ids_bruts": [
+        "openai-deprecations-2026-07-20-legacy-audio-realtime-and-transcription-models"
+      ],
+      "titre": "API audio : instantanés Realtime et Audio explicités pour janvier",
+      "type": "depreciation",
+      "resume": "Lignes modifiées : ajout de `gpt-realtime-2025-08-28`, `gpt-realtime-mini-2025-12-15`, `gpt-audio-2025-08-28` et `gpt-audio-mini-2025-12-15` à côté de leurs alias. Le retrait reste fixé au 20 janvier 2027 ; les remplacements restent respectivement `gpt-realtime-2.1`, `gpt-realtime-2.1-mini` et `gpt-audio-1.5` pour les deux familles Audio.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-06-11-gpt-5-and-o3-model-deprecations",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-06-11",
+      "ids_bruts": [
+        "openai-deprecations-2026-06-11-gpt-5-and-o3-model-deprecations"
+      ],
+      "titre": "API : alias GPT-5 et o3 ajoutés aux retraits de décembre",
+      "type": "depreciation",
+      "resume": "Lignes modifiées : ajout des alias `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-5-pro`, `o3` et `o3-pro` à côté de leurs instantanés datés. Le retrait reste fixé au 11 décembre 2026 : remplacements `gpt-5.6-sol`, `gpt-5.6-terra` pour GPT-5 mini, `gpt-5.6-luna` pour GPT-5 nano et `gpt-5.6-sol` avec `reasoning.mode: pro` pour les variantes Pro.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-06-02-gpt-image-model-deprecations",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-06-02",
+      "ids_bruts": [
+        "openai-deprecations-2026-06-02-gpt-image-model-deprecations"
+      ],
+      "titre": "API images : instantané GPT Image 1.5 ajouté au tableau",
+      "type": "depreciation",
+      "resume": "Ligne modifiée : `gpt-image-1.5-2025-12-16` est ajouté à côté de l’alias `gpt-image-1.5`. Le retrait reste fixé au 1er décembre 2026, avec `gpt-image-2.5-sunburst` ou `gpt-image-2.5-flare` comme remplacements recommandés.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    },
+    {
+      "id": "openai-deprecations-2026-04-22-legacy-gpt-model-snapshots",
+      "produit": "codex",
+      "version": null,
+      "date_publication": "2026-04-22",
+      "ids_bruts": [
+        "openai-deprecations-2026-04-22-legacy-gpt-model-snapshots"
+      ],
+      "titre": "API : les retraits du 23 octobre sont désormais confirmés au passé",
+      "type": "depreciation",
+      "resume": "Texte modifié : la formulation d’un retrait futur devient la confirmation que l’accès aux anciens modèles a été coupé le 23 octobre 2026. Sont ajoutées une phrase rappelant l’annonce du 22 avril et la confirmation des retraits des versions ajustées ; les introductions générales précédentes sont retirées. Les remplacements indiqués restent notamment `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.6-luna` et, pour `gpt-image-1`, `gpt-image-2.5-sunburst` ou `gpt-image-2.5-flare` ; aucune action sur une échéance déjà passée.",
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/deprecations",
+          "libelle": "openai-deprecations",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "projets_concernes": [],
+      "revision": true
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2113766354386084338",
+      "raison": "post X sans rapport : découverte de sécurité Brotli, sans changement documenté de modèle ou d’outil IA utilisé ; le fragment ne précise ni version affectée ni correctif."
+    },
+    {
+      "id": "x-2113753218543243304",
+      "raison": "post X sans rapport : témoignage promotionnel d’utilisation de Dots, Space et Codex, sans nouveauté de fonctionnement ni condition de compte."
+    },
+    {
+      "id": "x-2113718797505036665",
+      "raison": "post X sans rapport : sécurité interne de l’entraînement des modèles, sans changement annoncé des outils utilisés par Sylvain."
+    },
+    {
+      "id": "x-2113682853644882361",
+      "raison": "post X sans rapport : architecture interne du stockage, sans commande, fonctionnalité ou condition d’usage nouvelle."
+    },
+    {
+      "id": "x-2113682851182915726",
+      "raison": "post X sans rapport : architecture interne du stockage, sans commande, fonctionnalité ou condition d’usage nouvelle."
+    },
+    {
+      "id": "x-2113682848607780912",
+      "raison": "post X sans rapport : architecture interne du stockage, sans commande, fonctionnalité ou condition d’usage nouvelle."
+    },
+    {
+      "id": "https://openai.com/index/decisions-api",
+      "raison": "réévalué, inchangé : les sections profil actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    },
+    {
+      "id": "openai-aide-index-docs-enterprise-education-plans",
+      "raison": "réévalué, inchangé : les sections profil, usage.hors-machine actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    },
+    {
+      "id": "releasebot-69483",
+      "raison": "réévalué, inchangé : les sections profil, usage.hors-machine actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    },
+    {
+      "id": "openai-status-01M5E4G39TD1BW1QWHZG6RFA5H",
+      "raison": "réévalué, inchangé : les sections usage.hors-machine actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    },
+    {
+      "id": "releasebot-70003",
+      "raison": "réévalué, inchangé : les sections usage.hors-machine actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    },
+    {
+      "id": "releasebot-70585",
+      "raison": "réévalué, inchangé : les sections usage.hors-machine actualisent la priorité ORQYRA, sans changer l’éligibilité ou l’usage qui fondent cet élément."
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
