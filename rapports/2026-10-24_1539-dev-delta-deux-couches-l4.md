@@ -1,10 +1,10 @@
 ## En-tête
 
 - état : livré
-- tests : à compléter
-- hash : à compléter
-- reçus : à compléter
-- réserves : delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
+- tests : 1829/1829
+- hash : 7eb1d3be07254461d6d60003ca6b2e99058f5b54
+- reçus : 32186733ecba, bfee71dd01c1
+- réserves : reçus sur `7eb1d3b` (suite complète 1829/1829, MCP 76/76) après les corrections de relecture ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
 
@@ -153,11 +153,10 @@ Toutes sur l'instance réelle, le 24/10 entre 15:25 et 15:38 :
 - **Rafraîchissement** : `couches.py --historique personnel rafraichir` → 1 109 missions, 162 groupes, 15 couples rattachés, 58 groupes non rattachés (`modele_ou_effort_inconnu`), 0 échec, 17 s. `couches.py --historique verifier` → `ok`.
 - **Comparaison à la source et même empreinte** pour le Bureau, le MCP stdio et le résumé pilote : voir « Critère de fin ».
 - **Agent réel** : `claude -p --model haiku --strict-mcp-config --mcp-config <stdio --historique --langue fr>` → réponse exacte sur les deux couches, 0,0041 $.
-- **Tests ciblés sous `verrou-tests`** : `pytest tests/test_couches_l4.py tests/test_couches.py tests/test_couches_l2.py tests/test_reglages_pont.py tests/test_kb_morceaux.py tests/test_site_l3.py` → verts. Première suite complète sur `6c1650e` : 1 échec (`test_kb_morceaux.py:60`, forme de ligne), corrigé par `5208475`.
+- **Tests ciblés sous `verrou-tests`** (première livraison) : `pytest tests/test_couches_l4.py tests/test_couches.py tests/test_couches_l2.py tests/test_reglages_pont.py tests/test_kb_morceaux.py tests/test_site_l3.py` → verts. Première suite complète sur `6c1650e` : 1 échec (`test_kb_morceaux.py:60`, forme de ligne), corrigé par `5208475`.
 - `scripts/urls.py --verifier` et `scripts/site_langues.py --verifier` → code 0.
 
 ## Preuves
 
-VERIFY OK | reçu 3ea60f5219be
-tests 74 | reçu 54d1d62cdf5d
-vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 09e09011a6a2
+VERIFY OK | reçu 32186733ecba
+tests 76 | reçu bfee71dd01c1
