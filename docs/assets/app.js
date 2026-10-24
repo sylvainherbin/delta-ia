@@ -1349,6 +1349,12 @@
     else if (f.etat === "installe" || f.etat === "adopte") zone.append(el("br"), t("suivi.resultat_aucun"));
     zone.hidden = false;
   }
+  function libelleAjustement(f) {
+    const r = f.ajustement && f.ajustement.reglage;
+    if (!r || typeof r.cle !== "string") return null;
+    return el("span", { text: t("ameliorations.ajustement", { nature: String(f.ajustement.nature || "?"), champ: r.cle.split(".").pop(),
+      temoin: String(r.temoin), essai: String(r.essai) }) });
+  }
   // rubrique « Améliorations appliquées » de l'onglet Référence : fiches installées ou adoptées (dit comme tel), date et lot, repliée
   function remplirAmeliorations(r) {
     const sec = document.getElementById("kb-ameliorations");
@@ -1360,7 +1366,8 @@
     const d = el("details", { class: "actions-faites" }, el("summary", { text: t("ameliorations.titre", { n: installees.length }) }),
       el("p", { class: "sous-titre", text: t("ameliorations.sous_titre") }),
       el("ul", null, ...installees.map((f) => el("li", null,
-        el("a", { href: `#reference?id=${encodeURIComponent(f.id)}`, text: texte(noms.get(f.id), f.id) }),
+        // ajustement de réglage (lot 4, reglages_pont.py) : pas de fiche de la base, le réglage tient lieu de nom
+        libelleAjustement(f) || el("a", { href: `#reference?id=${encodeURIComponent(f.id)}`, text: texte(noms.get(f.id), f.id) }),
         ` — ${f.installations.map(libelleInstallation).join(" ; ")}`))));
     if ((r.sources_en_echec || []).length) d.append(el("p", { class: "erreur", text: t("suivi.incomplet", { liste: r.sources_en_echec.join(" ; ") }) }));
     sec.append(d);

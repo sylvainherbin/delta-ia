@@ -21,5 +21,9 @@ systemctl --user daemon-reload && systemctl --user enable --now delta-reglages-p
 systemctl --user list-timers delta-reglages-pont.timer
 ```
 
+Ajustements proposés (lot 4) : le même passage écrit `<etat>/delta-ia/personnel/ajustements-reglages.json` (couche personnelle,
+hors dépôt), lu par le relais local (`GET /suivi`) ; un nouvel ajustement est signalé au chef même sans constat à changer. Rien n'est
+appliqué : la qualification revient à Delta Lab (`operer essai ouvrir --protocole`, protocole complété à partir du brouillon).
+
 Essai à blanc, sans message : `DELTA_PONT_SANS_MESSAGE=1 scripts/reglages-pont.sh` (supprimer ensuite la branche et le worktree
 affichés). Exports datés : `~/.local/state/delta/reglages-bilans/`.

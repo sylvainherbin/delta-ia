@@ -663,3 +663,29 @@ def test_rubrique_ameliorations_appliquees():
     rubrique = APP[APP.index("function remplirAmeliorations"):APP.index("// D64-bis : péremption")]
     assert 'f.etat === "installe"' in rubrique and "#reference?id=" in rubrique and "libelleInstallation" in rubrique
     assert FR["ameliorations.titre"] == "Améliorations appliquées ({n})" and "rien n'est publié" in FR["ameliorations.sous_titre"]
+
+
+def test_suivi_sert_les_ajustements_proposes(relais, tmp_path):
+    """Lot 4 (m-3bfd4d23988f) : le fichier du pont des réglages entre dans /suivi, « proposé »."""
+    chemin = tmp_path / "ajustements-reglages.json"
+    chemin.write_text(json.dumps({"version": 1, "vue": "ajustements_reglages", "ajustements": [
+        {"id": "reglage-claude-code-effort-high-vers-medium", "statut": "propose", "propose_le": "2026-10-26",
+         "reglage": {"cle": "operer.reglage_missions.claude.table.code.*.effort", "temoin": "high", "essai": "medium"}}]}),
+        encoding="utf-8")
+    R = relais["R"]
+    R.suivi = rr.Suivi(R.journal, lire=lire_factice(VUES), ajustements=chemin)
+    R.suivi.lancer(attendre=True)
+    f = appel(relais["url"] + "/suivi")[2]["fiches"]["reglage-claude-code-effort-high-vers-medium"]
+    assert f["etat"] == "propose" and f["ajustement"]["reglage"]["essai"] == "medium"
+
+
+def test_rubrique_ajustement_installe_sans_lien_vers_une_fiche():
+    """Un ajustement de réglage n'a pas de fiche dans la base : son réglage tient lieu de nom, sans lien mort."""
+    corps = {"ok": True, "sources_en_echec": [], "fiches": {"reglage-claude-code-effort-high-vers-medium": {
+        "id": "reglage-claude-code-effort-high-vers-medium", "etat": "installe",
+        "ajustement": {"nature": "code", "reglage": {"cle": "operer.reglage_missions.claude.table.code.*.effort",
+                                                     "temoin": "high", "essai": "medium"}},
+        "installations": [{"lot": "ess_0123456789ab", "le": "2026-11-09", "par": "essai", "resultat": "T"}]}}}
+    r = bouton_execute(etat=True, suivi={"corps": corps}, rubrique=True)["rubrique"]
+    assert r["liens"] == [None]
+    assert "Ajustement de réglage (code) : effort high → medium, qualifié par Delta Lab — installée le 2026-11-09" in r["texte"]

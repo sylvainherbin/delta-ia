@@ -1,5 +1,6 @@
 """Pont du bilan OPÉRER des réglages vers les constats internes des fiches de modèles."""
 import json
+import re
 import shutil
 import sys
 from datetime import date
@@ -296,3 +297,167 @@ def test_catalogue_public_valide_sans_cle_auto_sur_les_vraies_fiches(tmp_path):
         assert any(c["titre"].startswith("Bilan automatique") for c in d["modeles"][fiche]["constats_internes"]), fiche
     # le constat manuel de la vraie fiche Sonnet 5.5 high reste en tête
     assert d["modeles"]["claude-sonnet-5-5"]["constats_internes"][0]["titre"].startswith("Développement borné")
+
+
+# ───────────────────────────── ajustements proposés (lot 4, m-3bfd4d23988f) ─────────────────────────────
+
+PRIX = {"claude-sonnet-5-5": 15, "claude-opus-5-5": 20}
+
+
+def politique(tmp_path, cases=None, famille="claude"):
+    cases = cases if cases is not None else {"code": {"*": {"modele": "sonnet", "effort": "high", "motif": "règle"}}}
+    chemin = tmp_path / "politique.json"
+    chemin.write_text(json.dumps({"operer": {"reglage_missions": {famille: {"effort": "high", "table": cases}}}}), encoding="utf-8")
+    return chemin
+
+
+def avec_prix(depot):
+    """Ajoute le prix API public de sortie aux deux fiches du dépôt d'essai."""
+    chemin = depot / "kb-modeles/claude.yaml"
+    doc = yaml.safe_load(chemin.read_text(encoding="utf-8"))
+    for m in doc["modeles"]:
+        m["prix_api"] = {"sortie_usd": PRIX[m["modele"]]}
+    chemin.write_text(yaml.safe_dump(doc, allow_unicode=True, sort_keys=False), encoding="utf-8")
+
+
+def relues(n, ok, debut=0, **kw):
+    return [mission(debut + i, ok=i < ok, **kw) for i in range(n)]
+
+
+def proposer(depot, doc, pol, **kw):
+    cible = {"chemin": depot / "perso" / "ajustements-reglages.json", "politique": pol, "motif": None}
+    r = lancer(depot, doc, ajustements=cible, **kw)
+    lu = json.loads(cible["chemin"].read_text(encoding="utf-8")) if cible["chemin"].exists() else None
+    return r["ajustements"], lu
+
+
+def test_ajustement_economie_effort_propose_jamais_applique(depot, tmp_path):
+    pol = politique(tmp_path)
+    avant_pol = pol.read_text(encoding="utf-8")
+    temoin = relues(6, 4, jetons=1000)
+    essai = relues(6, 5, debut=100)
+    for m in temoin[:2]:
+        m["quota"] = {"statut": "estimé", "valeur": 0.125, "jauge": "claude.semaine"}
+    a, lu = proposer(depot, export(groupe(temoin), groupe(essai, effort="medium")), pol)
+    assert a["statut"] == "ok" and a["proposes"] == ["reglage-claude-code-effort-high-vers-medium"] and a["nouveaux"] == a["proposes"]
+    (aj,) = lu["ajustements"]
+    assert lu["vue"] == "ajustements_reglages" and lu["version"] == 1
+    assert aj["statut"] == "propose" and aj["actuel"] is True and aj["sens"] == "economie" and aj["propose_le"] == "2026-10-22"
+    assert aj["reglage"] == {"cle": "operer.reglage_missions.claude.table.code.*.effort", "temoin": "high", "essai": "medium"}
+    assert "5/6" in aj["motif"] and "4/6" in aj["motif"] and "pas plus basse" in aj["motif"]
+    # jetons, quota et équivalent API : trois grandeurs séparées, jamais converties
+    t = aj["observations"]["temoin"]
+    assert t["jetons"] == {"missions_mesurees": 6, "mediane": 1000}
+    assert t["quota"] == {"missions_estimees": 2, "mediane_valeur": 0.125, "jauges": ["claude.semaine"]}
+    assert t["equivalent_api"]["valeur"] is None and aj["observations"]["essai"]["jetons"]["missions_mesurees"] == 0
+    assert any("Aucun gain" in l for l in aj["limites"]) and any("non appariées" in l for l in aj["limites"])
+    assert any("Effectif réduit" in l for l in aj["limites"]) and any("Jetons mesurés pour 0 missions sur 6 (essai)" in l for l in aj["limites"])
+    q = aj["qualification"]
+    assert q["par"] == "Delta Lab" and q["etat"] == "a_qualifier" and q["protocole"]["fiche"] == aj["id"]
+    assert q["protocole"]["reglage"] == aj["reglage"] and "mesures" not in q["protocole"] and "mesures" in q["a_completer"]
+    # rien n'est appliqué : politique intacte, aucun identifiant de mission recopié
+    assert pol.read_text(encoding="utf-8") == avant_pol
+    assert not re.search(r"m-[0-9a-f]{12}", json.dumps(lu))
+
+
+def test_economie_ecartee_si_acceptation_observee_plus_basse(depot, tmp_path):
+    a, lu = proposer(depot, export(groupe(relues(6, 5)), groupe(relues(6, 4, debut=100), effort="medium")), politique(tmp_path))
+    assert a["proposes"] == [] and lu["ajustements"] == []
+    assert lu["ecartes"] == [{"famille": "claude", "nature": "code", "couple": "sonnet medium",
+                              "motif": "plus économe en principe, mais acceptation observée plus basse que le témoin"}]
+
+
+def test_une_baisse_sur_quelques_missions_n_attribue_pas_de_renfort(depot, tmp_path):
+    """Renfort (plus coûteux) : la borne basse de Wilson doit dépasser la part du témoin ; 5/6 contre 3/6 ne suffit pas."""
+    avec_prix(depot)
+    pol = politique(tmp_path)
+    a, _ = proposer(depot, export(groupe(relues(6, 3)), groupe(relues(6, 5, debut=100), modele="opus")), pol)
+    assert a["proposes"] == [] and "sans écart d'acceptation au-delà de la précision" in a["ecartes"][0]["motif"]
+    a, lu = proposer(depot, export(groupe(relues(10, 2)), groupe(relues(10, 10, debut=100), modele="opus")), pol)
+    assert a["proposes"] == ["reglage-claude-code-modele-sonnet-vers-opus"]
+    aj = lu["ajustements"][0]
+    assert aj["sens"] == "renfort" and aj["reglage"]["cle"].endswith(".code.*.modele") and aj["reglage"]["essai"] == "opus"
+    assert "prix API public de sortie 20 $ au lieu de 15 $" in aj["motif"]
+
+
+def test_modele_sans_prix_public_sens_inconnu(depot, tmp_path):
+    a, _ = proposer(depot, export(groupe(relues(6, 2)), groupe(relues(6, 6, debut=100), modele="opus")), politique(tmp_path))
+    assert a["proposes"] == [] and a["ecartes"][0]["motif"].startswith("prix API public de sortie inconnu")
+
+
+def test_un_seul_reglage_a_la_fois_et_seuils(depot, tmp_path):
+    pol = politique(tmp_path, {"code": {"*": {"modele": "opus", "effort": "high"}, "M": {"modele": "opus", "effort": "high"}}})
+    a, _ = proposer(depot, export(groupe(relues(6, 3), modele="opus"), groupe(relues(6, 6, debut=100), effort="medium"),
+                                  groupe(relues(4, 4, debut=200), modele="sonnet")), pol)
+    assert a["proposes"] == []
+    motifs = {e.get("couple"): e["motif"] for e in a["ecartes"]}
+    assert motifs["sonnet medium"] == "deux réglages changent à la fois : un essai ne change qu'une clé"
+    a, _ = proposer(depot, export(groupe(relues(4, 2), modele="opus"), groupe(relues(6, 6, debut=100))), pol)
+    assert a["ecartes"] == [{"famille": "claude", "nature": "code", "motif": "témoin opus high sous le seuil (4 relues)"}]
+
+
+def test_limite_des_cases_de_taille(depot, tmp_path):
+    pol = politique(tmp_path, {"code": {"*": {"modele": "sonnet", "effort": "high"}, "S": {"modele": "sonnet", "effort": "high"},
+                                        "M": {"modele": "sonnet", "effort": "high"}}})
+    _, lu = proposer(depot, export(groupe(relues(6, 4)), groupe(relues(6, 6, debut=100), effort="medium")), pol)
+    assert any("cases M, S" in l for l in lu["ajustements"][0]["limites"])
+
+
+def test_famille_sans_table_ecartee(depot, tmp_path):
+    a, _ = proposer(depot, export(groupe(relues(6, 4)), groupe(relues(6, 6, debut=100), effort="medium")),
+                    politique(tmp_path, famille="codex"))
+    assert a["proposes"] == [] and a["ecartes"] == [{"famille": "claude", "nature": "code",
+                                                     "motif": "aucune table operer.reglage_missions.claude : réglage non branché sur une clé de politique"}]
+
+
+def test_non_renouvele_conserve_et_premiere_date_gardee(depot, tmp_path):
+    pol = politique(tmp_path)
+    doc = export(groupe(relues(6, 4)), groupe(relues(6, 6, debut=100), effort="medium"))
+    proposer(depot, doc, pol)
+    doc["jusqu_au"] = "2026-10-29T11:00:00+02:00"
+    a, lu = proposer(depot, doc, pol)
+    assert a["nouveaux"] == [] and lu["ajustements"][0]["propose_le"] == "2026-10-22" and lu["ajustements"][0]["vu_le"] == "2026-10-29"
+    a, lu = proposer(depot, export(groupe(relues(6, 4)), jusqu_au="2026-11-05T11:00:00+02:00"), pol)
+    assert a["proposes"] == [] and a["non_renouveles"] == ["reglage-claude-code-effort-high-vers-medium"]
+    assert lu["ajustements"][0]["actuel"] is False and lu["ajustements"][0]["propose_le"] == "2026-10-22"
+
+
+def test_ajustements_dry_run_et_echecs(depot, tmp_path):
+    doc = export(groupe(relues(6, 4)), groupe(relues(6, 6, debut=100), effort="medium"))
+    a, lu = proposer(depot, doc, politique(tmp_path), dry_run=True)
+    assert a["ecrit"] is False and a["proposes"] and lu is None
+    illisible = tmp_path / "illisible.json"
+    illisible.write_text("{", encoding="utf-8")
+    a, lu = proposer(depot, doc, illisible)
+    assert a["statut"] == "echec" and "politique d'instance illisible" in a["motif"] and lu is None
+    a, _ = proposer(depot, doc, None)
+    assert a == {"statut": "echec", "motif": "politique d'instance non désignée : témoin inconnu"}
+    # l'export de l'instance d'essai ne propose rien : sa politique n'est pas celle-ci
+    a, _ = proposer(depot, doc, politique(tmp_path), source="essai")
+    assert a["statut"] == "echec" and "export principal absent" in a["motif"]
+
+
+def test_cli_ajustements_code_et_resume(depot, tmp_path, capsys):
+    exp = ecrire(depot, export(groupe(relues(6, 4)), groupe(relues(6, 6, debut=100), effort="medium")))
+    fichier = tmp_path / "aj.json"
+    code = rp.main(["maj", "--racine", str(depot), "--export", f"principal={exp}", "--ajustements", str(fichier),
+                    "--politique", str(politique(tmp_path))])
+    sortie = capsys.readouterr().out
+    assert code == 0 and fichier.exists()
+    assert "ajustements proposés : 1 (dont 1 nouveaux)" in sortie and "rien n'est appliqué" in sortie
+    code = rp.main(["maj", "--racine", str(depot), "--export", f"principal={exp}", "--ajustements", str(fichier),
+                    "--politique", str(tmp_path / "absente" / "x.json"), "--json"])
+    r = json.loads(capsys.readouterr().out)
+    assert code == 0 and r["ajustements"]["politique"] == "sans table" and r["ajustements"]["proposes"] == []
+    (tmp_path / "casse.json").write_text("[", encoding="utf-8")
+    assert rp.main(["maj", "--racine", str(depot), "--export", f"principal={exp}", "--ajustements", str(fichier),
+                    "--politique", str(tmp_path / "casse.json")]) == 3
+    capsys.readouterr()
+    assert rp.main(["maj", "--racine", str(depot), "--export", f"principal={exp}", "--sans-ajustements", "--json"]) == 0
+    assert "ajustements" not in json.loads(capsys.readouterr().out)
+
+
+def test_wilson():
+    assert rp.wilson(0, 0) == (None, None)
+    bas, haut = rp.wilson(6, 6)
+    assert haut == pytest.approx(1.0) and 0.6 < bas < 0.62

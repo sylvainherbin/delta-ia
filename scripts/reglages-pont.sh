@@ -4,6 +4,8 @@
 # (reglages-pont/AAAA-MM-JJ), jamais dans le dépôt principal : collecte les bilans (scripts/reglages_pont.py tout), régénère
 # docs/data/kb/modeles.json, passe valider.py et les tests des fiches, commite sur la branche, puis prévient le chef Delta-IA
 # (operer message, de dev-delta) avec la branche et le hash. Aucun push, aucune fusion : le chef relit avant publication (site public).
+# Le même passage range les ajustements proposés (lot 4) dans la couche personnelle, hors dépôt ; un nouvel ajustement est dit
+# au chef même sans constat à changer. Rien n'est appliqué : Delta Lab qualifie sur le K8 avant tout lot.
 #
 # Fenêtre sans commit 03 h 30 – 08 h 00 : en cas de lancement dans la fenêtre (rattrapage au démarrage), attend 08 h 05.
 # Tient .git/delta-passage.lock sans attendre pendant tout le travail (une chaîne de nuit en cours : rien n'est fait, code 14).
@@ -64,13 +66,21 @@ e = r["ecartes"]
 print(f"{len(r['ecrits'])} constats écrits ({len(r['inchanges'])} inchangés, {len(r['obsoletes'])} obsolètes conservés) ; "
       f"écartés : {len(e['sous_seuil'])} cellules sous le seuil de {r['seuil']} relues, {e['nature_inconnue']} missions de nature inconnue, "
       f"{e['sans_reglage']} sans modèle ou effort, {len(e['sans_fiche'])} couples sans fiche"
-      + (f" ; SOURCE EN ÉCHEC : {', '.join(echec)}" if echec else "") + f". Rapport : {sys.argv[1]}")
+      + (f" ; SOURCE EN ÉCHEC : {', '.join(echec)}" if echec else ""), end="")
+a = r.get("ajustements")
+if a and a["statut"] != "ok":
+    print(f" ; AJUSTEMENTS EN ÉCHEC : {a['motif']}", end="")
+elif a:
+    print(f" ; ajustements proposés : {len(a['proposes'])} (nouveaux : {', '.join(a['nouveaux']) or 'aucun'}), "
+          "à qualifier par Delta Lab avant tout lot, rien n'est appliqué", end="")
+print(f". Rapport : {sys.argv[1]}")
 PY
 )"
 
+nouveaux="$("$PYTHON" -B -c 'import json, sys; print(len((json.load(open(sys.argv[1], encoding="utf-8")).get("ajustements") or {}).get("nouveaux") or []))' "$rapport")"
 if [ -z "$(git status --porcelain -- kb-modeles)" ]; then
     cd "$RACINE" && git worktree remove --force "$WT" && git branch -D "$BRANCHE" >/dev/null
-    [ "$code" -eq 3 ] && prevenir "Mise à jour hebdomadaire : aucun constat à changer. $resume"
+    { [ "$code" -eq 3 ] || [ "${nouveaux:-0}" -gt 0 ]; } && prevenir "Mise à jour hebdomadaire : aucun constat à changer. $resume"
     echo "reglages-pont : aucun constat à changer. $resume"
     exit "$code"
 fi

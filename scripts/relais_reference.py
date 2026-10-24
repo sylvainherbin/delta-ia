@@ -20,14 +20,15 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
        donc pas le compte.
   GET /etat   le relais répond (sert à l'installation et au contrôle).
   GET /suivi  boucle d'adoption (m-a04181983623) : l'état de chaque fiche envoyée, projeté depuis OPÉRER par
-    deltalib/adoptions.py (proposé, retenu ou écarté, en réalisation, installé ; résultat observé de Delta Lab à part).
+    deltalib/adoptions.py (proposé, retenu ou écarté, en réalisation, installé ; résultat observé de Delta Lab à part),
+    et les ajustements de réglage proposés par le pont hebdomadaire (lot 4, `--ajustements`).
     Donnée personnelle, servie seulement à une origine admise et sous l'hôte 127.0.0.1 ou localhost (pas de
     rebinding DNS) ; calcul d'environ 15 s gardé 10 min, refait en arrière-plan à la demande suivante : la page reçoit
     le dernier calcul, ou 503 « en_calcul » avant le premier.
 
 Réponses : JSON {"ok": bool, "etape": ..., "detail": ...}, même forme que idee.py.
 
-  relais_reference.py [--port 47613] [--kb DOSSIER] [--idee CHEMIN]
+  relais_reference.py [--port 47613] [--kb DOSSIER] [--idee CHEMIN] [--journal CHEMIN] [--ajustements CHEMIN]
 """
 import argparse
 import json
@@ -228,14 +229,16 @@ def envois_reussis(journal):
 class Suivi:
     """Dernière projection de la boucle d'adoption ; un seul calcul à la fois, lancé en arrière-plan."""
 
-    def __init__(self, journal=None, lire=adoptions.lire_operer, ttl=SUIVI_TTL, horloge=time.time):
+    def __init__(self, journal=None, lire=adoptions.lire_operer, ttl=SUIVI_TTL, horloge=time.time, ajustements=None):
         self.journal, self.lire, self.ttl, self.horloge = journal, lire, ttl, horloge
+        self.ajustements = ajustements   # fichier des ajustements proposés (lot 4), ou None
         self.verrou = threading.Lock()
         self.dernier, self.calcule_a, self.en_cours = None, None, False
 
     def _calculer(self):
         try:
-            r = adoptions.suivi(envois_reussis(self.journal) if self.journal else [], lire=self.lire)
+            r = adoptions.suivi(envois_reussis(self.journal) if self.journal else [], lire=self.lire,
+                                ajustements=self.ajustements)
             r = {"ok": True, "etape": "suivi", "calcule_le": time.strftime("%Y-%m-%dT%H:%M:%S%z"), **r}
         except Exception as exc:   # le relais reste debout ; la raison est dite, sans trace
             r = {"ok": False, "etape": "suivi", "detail": f"projection impossible : {type(exc).__name__}"}
@@ -263,6 +266,16 @@ class Suivi:
 
 def heure(t):
     return time.strftime("%H:%M", time.localtime(t))
+
+
+def chemin_ajustements():
+    """Fichier des ajustements proposés dans la couche personnelle de l'installation historique, ou None (dit sur stderr)."""
+    try:
+        from deltalib.couches import racines
+        return racines.resoudre(historique=True).ajustements
+    except Exception as exc:   # le suivi des fiches envoyées reste servi
+        print(f"relais : ajustements proposés non suivis ({type(exc).__name__})", file=sys.stderr)
+        return None
 
 
 def journaliser(journal, ligne):
@@ -376,11 +389,13 @@ def main(argv=None):
     a.add_argument("--kb", default=str(KB), help="dossier de la base (défaut : docs/data/kb du dépôt)")
     a.add_argument("--idee", default=str(IDEE), help="porte des idées du bureau (idee.py)")
     a.add_argument("--journal", default=str(JOURNAL))
+    a.add_argument("--ajustements", default=None,
+                   help="ajustements proposés du pont des réglages (défaut : couche personnelle, ajustements-reglages.json)")
     o = a.parse_args(argv)
     Relais.kb, Relais.idee, Relais.journal = Path(o.kb), Path(o.idee), Path(o.journal)
     Relais.limiteur = Limiteur(Relais.journal)
     Relais.deja = DejaEnvoyees(Relais.journal)
-    Relais.suivi = Suivi(Relais.journal)
+    Relais.suivi = Suivi(Relais.journal, ajustements=Path(o.ajustements) if o.ajustements else chemin_ajustements())
     Relais.suivi.lancer()   # premier calcul dès le démarrage
     serveur = ThreadingHTTPServer(("127.0.0.1", o.port), Relais)
     print(f"relais Référence → Delta sur http://127.0.0.1:{o.port}", flush=True)

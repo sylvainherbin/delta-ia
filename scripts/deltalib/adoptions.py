@@ -25,6 +25,13 @@ pas (mission close : seules ses preuves disent installée, adoptée ou non) ; la
 Delta Lab ne rejoint qu'une fiche déjà dans la boucle (envoyée ou jugée) ; son id peut porter le préfixe « kb- »
 (sortie réelle de `essai liste`, 24/10/2026), retiré quand la forme nue est celle de la fiche.
 
+Ajustements proposés (lot 4) : le pont hebdomadaire des réglages (`scripts/reglages_pont.py`) range dans la couche
+personnelle (`Racines.ajustements`) des ajustements de réglage tirés des bilans OPÉRER. Chacun entre ici « proposé », sous
+son id (`reglage-…`), avec son réglage, son motif, ses observations et ses limites (`ajustement`). Il ne bouge qu'avec un
+essai Delta Lab ouvert sur cet id (`protocole.fiche`) : essai en cours ou proposé à l'adoption, « en réalisation »
+(qualification sur le K8) ; écarté ou régressif, « écarté » ; adopté (réglage de la politique en vigueur), « installé ». La
+qualification précède toute distribution dans un lot ; rien n'est appliqué par Delta-IA.
+
 Ces données décrivent l'organisation de Sylvain : couche personnelle, jamais publiées (SPEC §1, couches). Seul le relais
 local les sert, à la page ouverte sur ce poste.
 """
@@ -43,6 +50,7 @@ TRI = re.compile(r"^(\S+) · (\S+)(?: \[[^\]]*\])? : (.+)$")
 OUVERTES_SANS_TRAVAIL = ("BRIEF",)
 DELAI = 120   # `operer --json idees` et `essai liste` prennent environ 13 s chacun (mesure du 24/10/2026)
 RESULTAT_MAX = 240
+CHAMPS_AJUSTEMENT = ("famille", "nature", "sens", "reglage", "motif", "observations", "limites", "actuel", "qualification")
 
 
 class LectureImpossible(ValueError):
@@ -123,15 +131,23 @@ def _plus_haut(a, b):
     return a if ETATS.index(a) >= ETATS.index(b) else b
 
 
-def projeter(sujets, missions, essais=(), tries=(), envois=()):
+def projeter(sujets, missions, essais=(), tries=(), envois=(), ajustements=()):
     """Projection par fiche. `missions` : id → vue mission d'OPÉRER ; `essais` : essais Delta Lab (dict d'`essai voir`) ;
-    `tries` : (jour, fiche, raison) des fiches écartées au tri ; `envois` : lignes réussies du journal du relais."""
+    `tries` : (jour, fiche, raison) des fiches écartées au tri ; `envois` : lignes réussies du journal du relais ;
+    `ajustements` : ajustements proposés par le pont des réglages (entrent « proposé »)."""
     fiches = {}
 
     def fiche(ident):
         return fiches.setdefault(ident, {"id": ident, "etat": "propose", "propose_le": None, "position": None,
                                          "missions": [], "installations": [], "resultat_observe": [],
                                          "missions_illisibles": []})
+
+    for a in ajustements:
+        if not (isinstance(a, dict) and isinstance(a.get("id"), str) and a.get("statut") == "propose"):
+            continue
+        f = fiche(a["id"])
+        f["propose_le"] = _jour(a.get("propose_le"))
+        f["ajustement"] = {k: a.get(k) for k in CHAMPS_AJUSTEMENT}
 
     for e in envois:
         if isinstance(e, dict) and e.get("ok") is True and isinstance(e.get("id"), str):
@@ -184,6 +200,10 @@ def projeter(sujets, missions, essais=(), tries=(), envois=()):
         f["resultat_observe"].append({"essai": x.get("id"), "statut": x.get("statut"), "maturite": x.get("maturite"),
                                       "titre": _ligne(p.get("titre"), 120), "le": _jour(clos.get("ts") or x.get("fige_le")),
                                       "explication": _ligne(clos.get("explication"))})
+        if "ajustement" in f and x.get("statut") in ("en_essai", "propose"):
+            f["etat"] = _plus_haut(f["etat"], "en_realisation")   # qualification en cours sur le K8
+        elif "ajustement" in f and x.get("statut") in ("ecarte", "regressif") and f["etat"] == "propose":
+            f["etat"] = "ecarte"
         if x.get("statut") == "adopte":
             adoption = x.get("adoption") if isinstance(x.get("adoption"), dict) else {}
             f["installations"].append({"lot": x.get("id"), "le": _jour(adoption.get("ts")), "par": "essai",
@@ -222,9 +242,26 @@ def lire_essais(liste):
     return ids, tries
 
 
-def suivi(envois=(), lire=lire_operer):
-    """Projection complète, avec les vues en échec nommées (jamais un résultat vide silencieux)."""
-    echecs = []
+def lire_ajustements(chemin):
+    """(ajustements, échec ou None) du fichier du pont ; absent = aucun ajustement proposé encore, pas un échec."""
+    if chemin is None:
+        return [], None
+    try:
+        d = json.loads(open(chemin, encoding="utf-8").read())
+    except FileNotFoundError:
+        return [], None
+    except (OSError, UnicodeError, ValueError):
+        return [], "ajustements : fichier illisible"
+    if not isinstance(d, dict) or d.get("vue") != "ajustements_reglages" or not isinstance(d.get("ajustements"), list):
+        return [], "ajustements : fichier hors contrat"
+    return d["ajustements"], None
+
+
+def suivi(envois=(), lire=lire_operer, ajustements=None):
+    """Projection complète, avec les vues en échec nommées (jamais un résultat vide silencieux).
+    `ajustements` : chemin du fichier des ajustements proposés, ou None."""
+    liste_ajustements, echec = lire_ajustements(ajustements)
+    echecs = [echec] if echec else []
     try:
         sujets = lire("idees").get("sujets") or []
     except LectureImpossible as exc:
@@ -255,4 +292,4 @@ def suivi(envois=(), lire=lire_operer):
                 echecs.append(f"essai {ident} : {exc}")
     except LectureImpossible as exc:
         echecs.append(f"essais : {exc}")
-    return {"fiches": projeter(sujets, missions, essais, tries, envois), "sources_en_echec": echecs}
+    return {"fiches": projeter(sujets, missions, essais, tries, envois, liste_ajustements), "sources_en_echec": echecs}

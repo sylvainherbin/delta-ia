@@ -54,6 +54,11 @@ class Racines:
         return self.etat / COMPOSANT / "personnel"
 
     @property
+    def ajustements(self) -> Path:
+        """Ajustements de réglage proposés par le pont hebdomadaire (lot 4) : couche personnelle, jamais publiée."""
+        return self.personnel / "ajustements-reglages.json"
+
+    @property
     def production(self) -> Path:
         return self.etat / COMPOSANT / "production"
 

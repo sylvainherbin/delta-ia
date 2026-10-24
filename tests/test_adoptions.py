@@ -183,3 +183,58 @@ def test_aucune_sortie_reelle_d_operer_dans_les_fixtures():
     for p in FIXTURES.glob("*.json"):
         texte = p.read_text(encoding="utf-8")
         assert not re.search(r"m-(?!0{12})[0-9a-f]{12}", texte) and "reglage_missions" not in texte, p.name
+
+
+# ───────────────────────────── ajustements proposés (lot 4, m-3bfd4d23988f) ─────────────────────────────
+
+AJ = "reglage-claude-code-effort-high-vers-medium"
+
+
+def ajustement(ident=AJ, **champs):
+    return {"id": ident, "statut": "propose", "actuel": True, "propose_le": "2026-10-26", "famille": "claude", "nature": "code",
+            "sens": "economie", "reglage": {"cle": "operer.reglage_missions.claude.table.code.*.effort", "temoin": "high", "essai": "medium"},
+            "motif": "m", "observations": {}, "limites": ["Aucun gain n'est attribué au réglage"],
+            "qualification": {"par": "Delta Lab", "etat": "a_qualifier"}, **champs}
+
+
+def essai_sur(ident, statut, **champs):
+    return {"id": "ess_0123456789ab", "statut": statut, "maturite": None, "protocole": {"fiche": ident, "titre": "T"}, **champs}
+
+
+def test_ajustement_entre_propose_dans_la_boucle():
+    f = a.projeter([], {}, ajustements=[ajustement(), {"id": "x", "statut": "autre"}, "illisible"])
+    assert set(f) == {AJ}
+    assert f[AJ]["etat"] == "propose" and f[AJ]["propose_le"] == "2026-10-26" and f[AJ]["installations"] == []
+    assert f[AJ]["ajustement"]["reglage"]["essai"] == "medium" and f[AJ]["ajustement"]["limites"]
+    assert "id" not in f[AJ]["ajustement"] and "statut" not in f[AJ]["ajustement"]
+
+
+@pytest.mark.parametrize("statut,etat", [("en_essai", "en_realisation"), ("propose", "en_realisation"),
+                                         ("ecarte", "ecarte"), ("regressif", "ecarte"), ("remplace", "propose")])
+def test_ajustement_suit_la_qualification_delta_lab(statut, etat):
+    f = a.projeter([], {}, [essai_sur(AJ, statut)], ajustements=[ajustement()])[AJ]
+    assert f["etat"] == etat and f["resultat_observe"][0]["statut"] == statut and f["installations"] == []
+
+
+def test_ajustement_adopte_par_delta_lab_installe():
+    x = essai_sur(AJ, "adopte", adoption={"ts": "2026-11-09T08:00:00+01:00"}, clos={"ts": "2026-11-09T08:00:00+01:00"})
+    f = a.projeter([], {}, [x], ajustements=[ajustement()])[AJ]
+    assert f["etat"] == "installe" and f["installations"] == [{"lot": "ess_0123456789ab", "le": "2026-11-09", "par": "essai", "resultat": "T"}]
+
+
+def test_essai_sans_ajustement_reste_hors_boucle():
+    assert a.projeter([], {}, [essai_sur(AJ, "en_essai")]) == {}
+
+
+def test_suivi_lit_le_fichier_des_ajustements(tmp_path):
+    def lire(*args):
+        return {"sujets": []} if args == ("idees",) else {"essais": []}
+    chemin = tmp_path / "ajustements-reglages.json"
+    chemin.write_text(json.dumps({"version": 1, "vue": "ajustements_reglages", "ajustements": [ajustement()]}), encoding="utf-8")
+    r = a.suivi([], lire=lire, ajustements=chemin)
+    assert r["sources_en_echec"] == [] and r["fiches"][AJ]["etat"] == "propose"
+    assert a.suivi([], lire=lire, ajustements=tmp_path / "absent.json") == {"fiches": {}, "sources_en_echec": []}
+    chemin.write_text("{", encoding="utf-8")
+    assert a.suivi([], lire=lire, ajustements=chemin)["sources_en_echec"] == ["ajustements : fichier illisible"]
+    chemin.write_text(json.dumps({"vue": "autre"}), encoding="utf-8")
+    assert a.suivi([], lire=lire, ajustements=chemin)["sources_en_echec"] == ["ajustements : fichier hors contrat"]

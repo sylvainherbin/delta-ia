@@ -7,6 +7,7 @@ Usage :
                                                                écrit les constats automatiques dans kb-modeles/*.yaml
   reglages_pont.py tout [--dossier D] [--seuil N] [--dry-run] [--json]
                                                                collecter, puis maj sur les exports du jour
+  maj et tout : [--ajustements FICHIER] [--politique FICHIER] [--sans-ajustements]   ajustements proposés (lot 4)
 
 Sources (`principal`, `essai`) : `principal` lance `operer reglages bilan --json` ; les commandes se redéfinissent, et `essai` (lecture
 seule, sur une autre machine) se déclare, dans ~/.config/delta/reglages-bilans.json : {"essai": ["ssh", …]} (variable
@@ -32,7 +33,21 @@ changé, le constat existant reste (aucune écriture pour rien) ; une cellule no
 
 Rien n'est écrit dans docs/ : `catalogue.py modeles` régénère docs/data/kb/modeles.json.
 
-Codes : 0 fait ; 1 erreur (YAML illisible, export invalide) ; 2 usage ; 3 fait, mais au moins une source en échec.
+Ajustements proposés (lot 4) : depuis l'export `principal` seulement, chaque cellule (famille, nature) de la règle par mission est
+comparée au témoin en vigueur, la case `<nature>.*` de `operer.reglage_missions.<famille>.table` (politique lue comme OPÉRER).
+Un ajustement ne change qu'une clé (modèle ou effort), à seuil atteint des deux côtés ; « economie » (effort plus bas, ou prix API
+public de sortie plus bas d'après la fiche) si l'acceptation au premier tour observée n'est pas plus basse que celle du témoin,
+« renfort » si la borne basse de son intervalle de Wilson à 95 % dépasse la part du témoin. Format : id `reglage-…`, `reglage`
+{cle, temoin, essai}, `motif`, `observations` (témoin et essai : effectifs, parts, intervalle, corrections ; `jetons`, `quota` et
+`equivalent_api` séparés, jamais convertis), `limites`, `qualification` (Delta Lab sur le K8 : protocole partiel pour `operer essai
+ouvrir`, champs à compléter, aucun deviné). Une baisse sur des missions différentes n'attribue jamais un gain au réglage : le
+motif dit un écart observé, les limites le disent non apparié. Les ajustements vont dans la couche personnelle
+(`<etat>/delta-ia/personnel/ajustements-reglages.json`, jamais publié), entrent « proposé » dans la boucle d'adoption
+(deltalib/adoptions.py) et n'en sortent que par un essai Delta Lab ouvert sur leur id. Un ajustement non renouvelé reste listé
+(`actuel: false`). Rien n'est appliqué : aucune politique, aucun essai, aucune mission n'est écrit ici.
+
+Codes : 0 fait ; 1 erreur (YAML illisible, export invalide) ; 2 usage ; 3 fait, mais au moins une source ou les ajustements
+en échec.
 """
 
 from __future__ import annotations
@@ -58,6 +73,14 @@ COMMANDES_DEFAUT = {"principal": ["operer", "reglages", "bilan", "--json"]}
 DOSSIER_DEFAUT = Path.home() / ".local/state/delta/reglages-bilans"
 CONFIG_DEFAUT = Path.home() / ".config/delta/reglages-bilans.json"
 DELAI_COMMANDE_S = 120
+EFFORTS_RANG = ("minimal", "low", "medium", "high", "xhigh", "max")
+Z95 = 1.96
+LIMITES_AJUSTEMENT = (
+    "Missions différentes, non appariées : l'écart observé peut venir des tâches, pas du réglage.",
+    "Tous les exécutants de la famille et toutes les tailles sont confondus.",
+    "Aucun gain n'est attribué au réglage : seule la qualification par Delta Lab peut en établir un.",
+    "Jetons, équivalent API et quota sont trois grandeurs distinctes, jamais converties l'une dans l'autre.",
+)
 
 # Ce qui ne doit jamais apparaître dans un texte publié.
 MOTIFS_PRIVES = [
@@ -165,7 +188,10 @@ def charger_familles(racine: Path) -> dict[str, dict]:
         fiches = {}
         for m in doc["modeles"]:
             noms = {m["modele"], m.get("modele_operer") or m["modele"], *(m.get("aliases_modele") or [])}
-            fiches[m["modele"]] = {"noms": noms, "efforts": {e["effort"] for e in m.get("efforts") or []}}
+            prix = m.get("prix_api") if isinstance(m.get("prix_api"), dict) else {}
+            fiches[m["modele"]] = {"noms": noms, "efforts": {e["effort"] for e in m.get("efforts") or []},
+                                   "operer": m.get("modele_operer") or m["modele"],
+                                   "prix_sortie": prix.get("sortie_usd") if isinstance(prix.get("sortie_usd"), (int, float)) else None}
         familles[chemin.stem] = {
             "executants": list(doc.get("executants_operer") or []),
             "fiches": fiches,
@@ -297,6 +323,216 @@ def composer_constat(st: dict, source: str, famille: str, effort: str, nature: s
     return {"date": jour, "titre": titre, "constat": texte, "source": source_txt, "cle_auto": f"auto:{source}:{effort}:{nature}"}
 
 
+# ───────────────────────────── ajustements proposés (lot 4) ─────────────────────────────
+
+def wilson(succes: int, n: int) -> tuple[float, float] | tuple[None, None]:
+    """Intervalle de Wilson à 95 % d'une part ; (None, None) sans effectif."""
+    if not n:
+        return None, None
+    p, z2 = succes / n, Z95 * Z95
+    centre = (p + z2 / (2 * n)) / (1 + z2 / n)
+    demi = Z95 * ((p * (1 - p) / n + z2 / (4 * n * n)) ** 0.5) / (1 + z2 / n)
+    return max(0.0, centre - demi), min(1.0, centre + demi)
+
+
+def lire_table_politique(chemin: Path) -> dict:
+    """famille → nature → cases {taille: {modele, effort}} de `operer.reglage_missions` ; {} sans table."""
+    try:
+        doc = json.loads(Path(chemin).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+    except (OSError, UnicodeError, ValueError) as e:
+        raise ErreurPont(f"politique d'instance illisible : {type(e).__name__}") from e
+    table = ((doc.get("operer") or {}).get("reglage_missions") if isinstance(doc, dict) else None) or {}
+    res: dict[str, dict] = {}
+    for famille, f in table.items() if isinstance(table, dict) else ():
+        natures = (f or {}).get("table") if isinstance(f, dict) else None
+        if isinstance(natures, dict):
+            res[famille] = {n: c for n, c in natures.items() if isinstance(c, dict)}
+    return res
+
+
+def _mediane(valeurs: list) -> float | None:
+    v = [x for x in valeurs if isinstance(x, (int, float)) and not isinstance(x, bool)]
+    return statistics.median(v) if v else None
+
+
+def observation(famille: dict, fiche: str, effort: str, missions: list[dict]) -> dict:
+    """Observations d'une cellule, sans conversion : jetons, équivalent API et quota restent trois grandeurs."""
+    st = statistiques(missions)
+    bas, haut = wilson(st["ok_premier_tour"], st["relues"])
+    quotas = [m["quota"] for m in missions if isinstance(m.get("quota"), dict)]
+    estimes = [q.get("valeur") for q in quotas if q.get("statut") == "estimé"]
+    arrondi = (lambda x: round(x, 3) if x is not None else None)
+    return {
+        "modele": famille["fiches"][fiche]["operer"], "fiche": fiche, "effort": effort,
+        "missions": st["missions"], "relues": st["relues"], "ok_premier_tour": st["ok_premier_tour"],
+        "part_ok_premier_tour": arrondi(st["ok_premier_tour"] / st["relues"]) if st["relues"] else None,
+        "intervalle_95": [arrondi(bas), arrondi(haut)],
+        "corrections_moyennes": arrondi(st["corrections_moyennes"]),
+        "echecs": st["echecs"], "remplacees": st["remplacees"], "duree_mediane_s": st["duree_mediane_s"],
+        "jetons": {"missions_mesurees": st["jetons_mesures"], "mediane": _mediane([m.get("jetons_mesures") for m in missions])},
+        "quota": {"missions_estimees": sum(1 for v in estimes if isinstance(v, (int, float))), "mediane_valeur": _mediane(estimes),
+                  "jauges": sorted({q["jauge"] for q in quotas if isinstance(q.get("jauge"), str)})},
+        "equivalent_api": {"valeur": None, "raison": "non fourni par le bilan ; jamais déduit des jetons (entrée, sortie et "
+                                                      "cache non séparés) ni du quota"},
+    }
+
+
+def _slug(*parts: str) -> str:
+    return re.sub(r"[^a-z0-9.]+", "-", "-".join(parts).lower()).strip("-")
+
+
+def _pct(x: float | None) -> str:
+    return "inconnu" if x is None else f"{round(100 * x)} %"
+
+
+def proposer_ajustements(cellules: dict, familles: dict[str, dict], table: dict, seuil: int, jour: str,
+                         source: str = "principal") -> tuple[list[dict], list[dict]]:
+    """(ajustements, ecartes) : un réglage à la fois, comparé au témoin en vigueur (case `<nature>.*` de la politique).
+
+    Sens « economie » (effort plus bas, ou modèle au prix API public de sortie plus bas) : proposé si l'acceptation observée
+    au premier tour n'est pas plus basse que celle du témoin. Sens « renfort » (plus coûteux en principe) : proposé seulement
+    si la borne basse de son intervalle à 95 % dépasse la part du témoin. Aucun des deux n'attribue un gain : l'ajustement
+    reste « proposé » jusqu'à la qualification de Delta Lab, et rien n'est appliqué."""
+    ajustements, ecartes = [], []
+    par_nature: dict[tuple, dict] = {}
+    for (fam, fiche, effort, nature), missions in cellules.items():
+        par_nature.setdefault((fam, nature), {})[(fiche, effort)] = list(missions.values())
+    for (fam, nature), couples in sorted(par_nature.items()):
+        if fam not in table:
+            ecartes.append({"famille": fam, "nature": nature, "motif": f"aucune table operer.reglage_missions.{fam} : "
+                            "réglage non branché sur une clé de politique"})
+            continue
+        cases = table[fam].get(nature)
+        ref = (cases or {}).get("*")
+        if not isinstance(ref, dict) or not ref.get("modele") or not ref.get("effort"):
+            ecartes.append({"famille": fam, "nature": nature, "motif": "aucune case « * » dans la politique : aucune clé à essayer"})
+            continue
+        famille = familles[fam]
+        fiche_t, effort_t = fiche_de(famille, ref["modele"]), ref["effort"]
+        if fiche_t is None:
+            ecartes.append({"famille": fam, "nature": nature, "motif": f"modèle de la politique sans fiche : {ref['modele']}"})
+            continue
+        temoin = couples.get((fiche_t, effort_t))
+        st_t = statistiques(temoin) if temoin else None
+        if st_t is None or st_t["relues"] < seuil:
+            ecartes.append({"famille": fam, "nature": nature, "motif": f"témoin {ref['modele']} {effort_t} sous le seuil "
+                            f"({st_t['relues'] if st_t else 0} relues)"})
+            continue
+        part_t = st_t["ok_premier_tour"] / st_t["relues"]
+        autres_tailles = sorted(t for t in cases if t != "*")
+        for (fiche_a, effort_a), missions in sorted(couples.items()):
+            if (fiche_a, effort_a) == (fiche_t, effort_t):
+                continue
+            nom = f"{famille['fiches'][fiche_a]['operer']} {effort_a}"
+            ecart = {"famille": fam, "nature": nature, "couple": nom}
+            if fiche_a != fiche_t and effort_a != effort_t:
+                ecartes.append({**ecart, "motif": "deux réglages changent à la fois : un essai ne change qu'une clé"})
+                continue
+            st_a = statistiques(missions)
+            if st_a["relues"] < seuil:
+                ecartes.append({**ecart, "motif": f"sous le seuil ({st_a['relues']} relues)"})
+                continue
+            if fiche_a == fiche_t:
+                dimension, val_t, val_a = "effort", effort_t, effort_a
+                if effort_a not in EFFORTS_RANG or effort_t not in EFFORTS_RANG:
+                    ecartes.append({**ecart, "motif": "rang d'effort inconnu : sens du coût inconnu"})
+                    continue
+                economie = EFFORTS_RANG.index(effort_a) < EFFORTS_RANG.index(effort_t)
+                raison = f"effort {effort_a} au lieu de {effort_t}"
+            else:
+                dimension, val_t, val_a = "modele", ref["modele"], famille["fiches"][fiche_a]["operer"]
+                p_t, p_a = famille["fiches"][fiche_t]["prix_sortie"], famille["fiches"][fiche_a]["prix_sortie"]
+                if p_t is None or p_a is None or p_t == p_a:
+                    ecartes.append({**ecart, "motif": "prix API public de sortie inconnu ou égal : sens du coût inconnu"})
+                    continue
+                economie = p_a < p_t
+                raison = f"prix API public de sortie {_fr(p_a, 0)} $ au lieu de {_fr(p_t, 0)} $ par million de jetons"
+            part_a = st_a["ok_premier_tour"] / st_a["relues"]
+            bas_a, haut_a = wilson(st_a["ok_premier_tour"], st_a["relues"])
+            observe = (f"acceptation au premier tour {st_a['ok_premier_tour']}/{st_a['relues']} ({_pct(part_a)}, intervalle à "
+                       f"95 % {_pct(bas_a)} à {_pct(haut_a)}) contre {st_t['ok_premier_tour']}/{st_t['relues']} ({_pct(part_t)}) "
+                       f"pour le témoin {ref['modele']} {effort_t}")
+            if economie and part_a < part_t:
+                ecartes.append({**ecart, "motif": "plus économe en principe, mais acceptation observée plus basse que le témoin"})
+                continue
+            if not economie and bas_a <= part_t:
+                ecartes.append({**ecart, "motif": "plus coûteux en principe, sans écart d'acceptation au-delà de la précision"})
+                continue
+            sens = "economie" if economie else "renfort"
+            motif = (f"Plus économe en principe ({raison}) ; {observe} : pas plus basse sur ces missions."
+                     if economie else
+                     f"Plus coûteux en principe ({raison}) ; {observe} : plus haute au-delà de la précision des effectifs.")
+            limites = list(LIMITES_AJUSTEMENT)
+            if min(st_t["relues"], st_a["relues"]) < SEUIL_EFFECTIF_REDUIT:
+                limites.append(f"Effectif réduit (moins de {SEUIL_EFFECTIF_REDUIT} missions relues d'un côté) : intervalle large.")
+            for cote, st in (("témoin", st_t), ("essai", st_a)):
+                if st["jetons_mesures"] < st["missions"]:
+                    limites.append(f"Jetons mesurés pour {st['jetons_mesures']} missions sur {st['missions']} ({cote}).")
+            if autres_tailles:
+                limites.append("La clé « * » ne règle que les missions sans taille déclarée ; la politique a aussi les cases "
+                               + ", ".join(autres_tailles) + ", que Delta Lab choisit d'essayer ou non.")
+            cle = f"operer.reglage_missions.{fam}.table.{nature}.*.{dimension}"
+            ident = _slug("reglage", fam, nature, dimension, str(val_t), "vers", str(val_a))
+            ajustements.append({
+                "id": ident, "statut": "propose", "actuel": True, "propose_le": jour, "vu_le": jour, "source": source,
+                "famille": fam, "nature": nature, "sens": sens,
+                "reglage": {"cle": cle, "temoin": val_t, "essai": val_a},
+                "motif": motif,
+                "observations": {"temoin": observation(famille, fiche_t, effort_t, temoin),
+                                 "essai": observation(famille, fiche_a, effort_a, missions),
+                                 "comparabilite": "aucune : missions différentes, non appariées, de difficulté inconnue"},
+                "limites": limites,
+                "qualification": {
+                    "par": "Delta Lab", "instance": "K8", "etat": "a_qualifier",
+                    "protocole": {"fiche": ident, "version": jour, "titre": f"{nature} : {dimension} {val_t} → {val_a}",
+                                  "hypothese": f"{motif} Hypothèse à qualifier, aucun gain attribué.",
+                                  "reglage": {"cle": cle, "temoin": val_t, "essai": val_a},
+                                  "portee": {"projets": "*", "natures": [nature]}},
+                    "a_completer": ["methode", "part", "mesures", "min_missions", "min_favorable", "min_prometteur",
+                                    "min_regression", "max_missions", "perimetre", "touche_relecture"],
+                    "commandes": ["operer essai ouvrir --gabarit", "operer essai ouvrir --protocole <protocole complété>"],
+                },
+            })
+    return ajustements, ecartes
+
+
+def fusionner_ajustements(precedent: dict | None, nouveaux: list[dict], jour: str) -> list[dict]:
+    """Garde la date de première proposition ; un ajustement non renouvelé reste listé (`actuel: false`), jamais retiré :
+    un essai ouvert sur son id doit pouvoir s'y rattacher dans la boucle d'adoption."""
+    anciens = {a["id"]: a for a in (precedent or {}).get("ajustements") or [] if isinstance(a, dict) and a.get("id")}
+    res = []
+    for a in nouveaux:
+        if a["id"] in anciens and anciens[a["id"]].get("propose_le"):
+            a = {**a, "propose_le": min(a["propose_le"], anciens[a["id"]]["propose_le"])}
+        res.append(a)
+    vus = {a["id"] for a in nouveaux}
+    res += [{**a, "actuel": False} for i, a in sorted(anciens.items()) if i not in vus]
+    return res
+
+
+def ecrire_ajustements(chemin: Path, ajustements: list[dict], ecartes: list[dict], meta: dict) -> None:
+    """Couche personnelle : jamais dans docs/ ni dans le dépôt. Écriture atomique."""
+    doc = {"version": 1, "vue": "ajustements_reglages", **meta, "ajustements": ajustements, "ecartes": ecartes}
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    tmp = chemin.with_suffix(chemin.suffix + ".tmp")
+    tmp.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    tmp.replace(chemin)
+
+
+def lire_ajustements_fichier(chemin: Path) -> dict | None:
+    try:
+        doc = json.loads(Path(chemin).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None
+    except (OSError, UnicodeError, ValueError) as e:
+        raise ErreurPont(f"ajustements précédents illisibles : {type(e).__name__}") from e
+    if not isinstance(doc, dict) or doc.get("vue") != "ajustements_reglages":
+        raise ErreurPont("ajustements précédents hors contrat (vue ajustements_reglages attendue)")
+    return doc
+
+
 # ───────────────────────────── écriture dans les YAML ─────────────────────────────
 
 def _rendre(items: list[dict]) -> list[str]:
@@ -364,8 +600,10 @@ def appliquer_constats(texte: str, fiche: str, nouveaux: dict[str, dict]) -> tup
 # ───────────────────────────── mise à jour ─────────────────────────────
 
 def mettre_a_jour(racine: Path, exports: dict[str, Path], seuil: int = SEUIL_DEFAUT, aujourd_hui: date | None = None,
-                  dry_run: bool = False, echecs_collecte: list[dict] | None = None) -> dict:
+                  dry_run: bool = False, echecs_collecte: list[dict] | None = None, ajustements: dict | None = None) -> dict:
+    """`ajustements` ({chemin, politique}, facultatif) : propose aussi les ajustements de la source `principal` (lot 4)."""
     familles = charger_familles(racine)
+    principal = None  # (cellules, jour) de l'export principal valide
     aujourd_hui = aujourd_hui or date.today()
     rapport = {"seuil": seuil, "sources": [], "ecrits": [], "inchanges": [], "obsoletes": [], "ecartes": {
         "sous_seuil": [], "sans_fiche": {}, "nature_inconnue": 0, "sans_reglage": 0}}
@@ -383,6 +621,8 @@ def mettre_a_jour(racine: Path, exports: dict[str, Path], seuil: int = SEUIL_DEF
         rapport["sources"].append({"source": source, "statut": "ok", "missions": export.get("missions"), "groupes": len(export["groupes"])})
         jour = (export.get("jusqu_au") or "")[:10] or aujourd_hui.isoformat()
         cellules, ecartes = agreger(export, familles)
+        if source == "principal":
+            principal = (cellules, jour, export.get("jusqu_au"))
         rapport["ecartes"]["nature_inconnue"] += ecartes["nature_inconnue"]
         rapport["ecartes"]["sans_reglage"] += ecartes["sans_reglage"]
         for cle, n in ecartes["sans_fiche"].items():
@@ -413,7 +653,34 @@ def mettre_a_jour(racine: Path, exports: dict[str, Path], seuil: int = SEUIL_DEF
                 texte, modifie = texte2, True
         if modifie and not dry_run:
             famille["chemin"].write_text(texte, encoding="utf-8")
+    if ajustements is not None:
+        rapport["ajustements"] = maj_ajustements(familles, principal, ajustements, seuil, dry_run)
     return rapport
+
+
+def maj_ajustements(familles: dict, principal: tuple | None, cible: dict, seuil: int, dry_run: bool) -> dict:
+    """Propose et range les ajustements ; un échec est dit (`statut: echec`), le fichier précédent reste intact."""
+    if principal is None:
+        return {"statut": "echec", "motif": "export principal absent ou illisible : aucun ajustement proposé"}
+    if cible.get("motif"):
+        return {"statut": "echec", "motif": cible["motif"]}
+    if cible.get("politique") is None:
+        return {"statut": "echec", "motif": "politique d'instance non désignée : témoin inconnu"}
+    cellules, jour, jusqu_au = principal
+    try:
+        table = lire_table_politique(cible["politique"])
+        precedent = lire_ajustements_fichier(cible["chemin"])
+    except ErreurPont as e:
+        return {"statut": "echec", "motif": str(e)}
+    proposes, ecartes = proposer_ajustements(cellules, familles, table, seuil, jour)
+    tous = fusionner_ajustements(precedent, proposes, jour)
+    deja = {a.get("id") for a in (precedent or {}).get("ajustements") or [] if isinstance(a, dict)}
+    if not dry_run:
+        ecrire_ajustements(cible["chemin"], tous, ecartes, {"jusqu_au": jusqu_au, "seuil": seuil,
+                                                             "politique": "lue" if table else "sans table"})
+    return {"statut": "ok", "ecrit": not dry_run, "politique": "lue" if table else "sans table",
+            "proposes": [a["id"] for a in proposes], "nouveaux": [a["id"] for a in proposes if a["id"] not in deja],
+            "non_renouveles": [a["id"] for a in tous if not a["actuel"]], "ecartes": ecartes}
 
 
 # ───────────────────────────── présentation ─────────────────────────────
@@ -437,7 +704,30 @@ def resume_texte(rapport: dict, collecte: list[dict] | None = None) -> str:
         L.append(f"  sous le seuil : {c['source']}|{c['fiche']}|{c['effort']}|{c['nature']} ({c['relues']} relues sur {c['missions']})")
     for c, n in e["sans_fiche"].items():
         L.append(f"  sans fiche : {c} ({n} missions)")
+    a = rapport.get("ajustements")
+    if a and a["statut"] != "ok":
+        L.append(f"ajustements : ÉCHEC ({a['motif']})")
+    elif a:
+        L.append(f"ajustements proposés : {len(a['proposes'])} (dont {len(a['nouveaux'])} nouveaux) ; non renouvelés (conservés) : "
+                 f"{len(a['non_renouveles'])} ; comparaisons écartées : {len(a['ecartes'])} ; rien n'est appliqué")
+        for i in a["proposes"]:
+            L.append(f"  proposé {i}")
     return "\n".join(L)
+
+
+def cible_ajustements(fichier: Path | None, politique: Path | None) -> dict:
+    """{chemin, politique, motif} : couche personnelle et politique résolues comme OPÉRER (installation historique)."""
+    if fichier is not None and politique is not None:
+        return {"chemin": fichier, "politique": politique, "motif": None}
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    try:
+        from deltalib.couches import instance, racines
+        r = racines.resoudre(historique=True)
+        if politique is None:
+            politique, _ = instance.chemin_politique(r)
+        return {"chemin": fichier or r.ajustements, "politique": politique, "motif": None}
+    except Exception as e:  # noqa: BLE001 — l'échec est dit dans le bilan, les constats continuent
+        return {"chemin": fichier, "politique": politique, "motif": f"racines ou politique non résolues : {type(e).__name__}"}
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -451,6 +741,11 @@ def _parser() -> argparse.ArgumentParser:
         if nom != "collecter":
             s.add_argument("--seuil", type=int, default=SEUIL_DEFAUT)
             s.add_argument("--dry-run", action="store_true")
+            s.add_argument("--ajustements", type=Path, default=None, metavar="FICHIER",
+                           help="ajustements proposés (défaut : couche personnelle, ajustements-reglages.json)")
+            s.add_argument("--politique", type=Path, default=None, metavar="FICHIER",
+                           help="politique d'instance (défaut : celle d'OPÉRER)")
+            s.add_argument("--sans-ajustements", action="store_true")
         if nom == "maj":
             s.add_argument("--export", action="append", default=[], metavar="SOURCE=CHEMIN")
     return p
@@ -480,12 +775,14 @@ def main(argv: list[str] | None = None) -> int:
                 print("maj : au moins un --export est requis", file=sys.stderr)
                 return 2
         rapport = mettre_a_jour(a.racine, exports, a.seuil, dry_run=a.dry_run,
-                                echecs_collecte=[c for c in collecte or [] if c["statut"] != "ok"])
+                                echecs_collecte=[c for c in collecte or [] if c["statut"] != "ok"],
+                                ajustements=None if a.sans_ajustements else cible_ajustements(a.ajustements, a.politique))
     except ErreurPont as e:
         print(f"reglages_pont : {e}", file=sys.stderr)
         return 1
     print(json.dumps(rapport, ensure_ascii=False) if a.json else resume_texte(rapport))
-    return 3 if any(s["statut"] == "echec" for s in rapport["sources"]) else 0
+    echec_ajustements = (rapport.get("ajustements") or {}).get("statut") == "echec"
+    return 3 if echec_ajustements or any(s["statut"] == "echec" for s in rapport["sources"]) else 0
 
 
 if __name__ == "__main__":

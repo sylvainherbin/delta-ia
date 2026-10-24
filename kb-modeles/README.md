@@ -54,3 +54,7 @@ catalogue public). Un constat sans `cle_auto` est manuel et n'est jamais lu ni r
 réserve d'effectif réduit sous 10 ; les cellules écartées et les couples sans fiche sont listés dans le bilan de l'outil. Les
 exécutants d'une famille sont confondus, les valeurs inconnues restent « inconnu ». Un timer hebdomadaire prépare la mise à jour sur une
 branche dédiée, sans push (`deploy/systemd/reglages-pont.md`).
+
+Ajustements proposés (24/10/2026, lot 4) : le même passage compare chaque couple observé au témoin de la politique en vigueur et range
+des ajustements (une clé, motif, observations, limites) dans la couche personnelle, hors dépôt et hors site ; ils entrent « proposé »
+dans la boucle d'adoption et attendent la qualification de Delta Lab. Ils ne touchent ni aux fiches ni aux constats.
