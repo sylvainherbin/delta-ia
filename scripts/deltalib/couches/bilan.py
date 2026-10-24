@@ -219,8 +219,8 @@ def enregistrer(racines: Racines, commande: list[str], doc: dict, maintenant: da
 
 def rafraichir(racines: Racines, depuis: str | None = None, nature: str | None = None, si_ancien_h: float | None = None,
                executer: Executer = _executer, maintenant: datetime | None = None) -> dict:
-    """Relit le bilan et les essais OPÉRER, réécrit les instantanés et la projection. Un instantané plus récent que
-    `si_ancien_h` et de mêmes filtres est gardé. Une source en échec ne touche pas au dernier instantané valide de cette
+    """Relit le bilan et les essais OPÉRER, réécrit les instantanés et la projection. Un instantané du bilan plus récent
+    que `si_ancien_h` et de mêmes filtres est gardé ; les essais sont toujours relus. Une source en échec ne touche pas au dernier instantané valide de cette
     source et figure dans `echecs`. Rend un résumé sans contenu personnel."""
     filtres = {"depuis": depuis, "nature": nature}
     res = {"bilan": None, "essais": None, "couples": None, "echecs": []}
@@ -240,13 +240,15 @@ def rafraichir(racines: Racines, depuis: str | None = None, nature: str | None =
             except SourceIndisponible as e:
                 inst = actuel
                 res["echecs"].append(str(e))
-            try:
-                commande, essais = lire_essais(executer)
-                doc_essais = {"schema": schemas.PERSONNEL, "schema_version": schemas.VERSION, "vue": "essais_operer",
-                              "commande": commande, "lu_le": lu_le, "sha256": empreinte(essais), "essais": essais}
-                res["essais"] = "modifie" if ecrire(chemins(racines)["essais"], doc_essais) else "inchange"
-            except SourceIndisponible as e:
-                res["echecs"].append(str(e))
+        # les essais sont relus à chaque fois : `--si-ancien` ne garde que le bilan (lecture du journal coûteuse), un essai
+        # ouvert ou clos depuis le dernier instantané ne doit pas attendre le prochain bilan
+        try:
+            commande, essais = lire_essais(executer)
+            doc_essais = {"schema": schemas.PERSONNEL, "schema_version": schemas.VERSION, "vue": "essais_operer",
+                          "commande": commande, "lu_le": lu_le, "sha256": empreinte(essais), "essais": essais}
+            res["essais"] = "modifie" if ecrire(chemins(racines)["essais"], doc_essais) else "inchange"
+        except SourceIndisponible as e:
+            res["echecs"].append(str(e))
         if inst is not None:
             _projeter_et_resumer(racines, inst, res)
     return res

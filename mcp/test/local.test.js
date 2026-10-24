@@ -49,7 +49,8 @@ function instance({ personnel = true } = {}) {
   fs.cpSync(path.join(DOCS, "commun/v1", GEN), path.join(cache, "commun", GEN), { recursive: true });
   ecrire(path.join(etat, "commun-actif.json"), { schema: "delta.commun", schema_version: 1, vue: "actif", generation: GEN,
     manifest_sha256: sha(fs.readFileSync(path.join(cache, "commun", GEN, "manifest.json"))), precedente: null, origine: "synchro",
-    publie_le: INDEX.publie_le });
+    // publication et vérification datées de l'exécution du test : la fixture ne vieillit pas avec la génération commitée
+    publie_le: new Date().toISOString() });
   ecrire(path.join(etat, "synchro.json"), { verifie_le: new Date().toISOString(), erreur: null });
   if (personnel) {
     const p = path.join(etat, "personnel");
@@ -128,42 +129,92 @@ test("une requête retrouve la syntaxe commune et l'avis personnel, étiquetés 
   assert.equal((await donnees("chercher_reference", { requete: "/add-dir", statut: "utilise" }, ctx)).total, 0);
 });
 
+// Nouvelle génération du miroir où l'empreinte commune de `identite` (kb/claude/commandes.json) a changé ; le pointeur bascule.
+function changerFait(i, identite) {
+  const nouvelle = "g-" + sha(identite + Date.now()).slice(0, 16);
+  const dossier = path.join(i.cache, "commun", nouvelle);
+  fs.cpSync(path.join(i.cache, "commun", GEN), dossier, { recursive: true });
+  const rel = "kb/claude/commandes.json";
+  const doc = JSON.parse(fs.readFileSync(path.join(dossier, rel), "utf8"));
+  doc.entrees.find((e) => e.identite === identite).empreinte = "a".repeat(64);
+  const octets = Buffer.from(JSON.stringify(doc));
+  fs.writeFileSync(path.join(dossier, rel), octets);
+  const manifeste = JSON.parse(fs.readFileSync(path.join(dossier, "manifest.json"), "utf8"));
+  Object.assign(manifeste.fichiers.find((f) => f.chemin === rel), { taille: octets.length, sha256: sha(octets) });
+  manifeste.generation = nouvelle;
+  const m = Buffer.from(JSON.stringify(manifeste));
+  fs.writeFileSync(path.join(dossier, "manifest.json"), m);
+  const actif = JSON.parse(fs.readFileSync(path.join(i.etat, "commun-actif.json"), "utf8"));
+  ecrire(path.join(i.etat, "commun-actif.json"), { ...actif, generation: nouvelle, manifest_sha256: sha(m), precedente: GEN });
+  return { nouvelle, fichier: path.join(dossier, rel), octets };
+}
+const proposees = async (ctx) => (await donnees("a_tester", { limite: 20 }, ctx)).essais_base.entrees.map((e) => e.identite);
+
 test("avis périmé signalé après un changement commun : nouvelle génération, avis à revoir et jamais courant", async () => {
   const i = instance();
   try {
     const ctx = ctxLocal(i);
-    assert.equal((await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctx)).fiche.personnel.statut, "importe");
-    // nouvelle génération où le fait commun de /add-dir a changé ; le pointeur bascule, le lecteur relit sans redémarrer
-    const nouvelle = "g-" + "f".repeat(16);
-    const dossier = path.join(i.cache, "commun", nouvelle);
-    fs.cpSync(path.join(i.cache, "commun", GEN), dossier, { recursive: true });
-    const rel = "kb/claude/commandes.json";
-    const doc = JSON.parse(fs.readFileSync(path.join(dossier, rel), "utf8"));
-    doc.entrees.find((e) => e.identite === ADD_DIR).empreinte = "a".repeat(64);
-    const octets = Buffer.from(JSON.stringify(doc));
-    fs.writeFileSync(path.join(dossier, rel), octets);
-    const manifeste = JSON.parse(fs.readFileSync(path.join(dossier, "manifest.json"), "utf8"));
-    Object.assign(manifeste.fichiers.find((f) => f.chemin === rel), { taille: octets.length, sha256: sha(octets) });
-    manifeste.generation = nouvelle;
-    const m = Buffer.from(JSON.stringify(manifeste));
-    fs.writeFileSync(path.join(dossier, "manifest.json"), m);
-    const actif = JSON.parse(fs.readFileSync(path.join(i.etat, "commun-actif.json"), "utf8"));
-    ecrire(path.join(i.etat, "commun-actif.json"), { ...actif, generation: nouvelle, manifest_sha256: sha(m), precedente: GEN });
-    const r = await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctx);
+    // fiche sans essai, verdict `utiliser` : proposée tant que son avis est courant
+    assert.equal((await donnees("fiche_reference", { id: "claude-code-commandes-advisor" }, ctx)).fiche.personnel.statut, "importe");
+    assert.deepEqual(await proposees(ctx), [ADVISOR]);
+    // le fait commun change ; le lecteur relit le pointeur sans redémarrer
+    const { nouvelle, fichier, octets } = changerFait(i, ADVISOR);
+    const r = await donnees("fiche_reference", { id: "claude-code-commandes-advisor" }, ctx);
     assert.equal(r.donnees.commun.generation, nouvelle);
     const p = r.fiche.personnel;
     assert.equal(p.statut, "a_revoir");
     assert.equal(p.motif, "commun_modifie");
     assert.equal(p.avis, null);
-    assert.equal(p.avis_precedent.verdict, "tester");
-    // un avis à revoir n'est plus proposé à l'essai
-    const t = await donnees("a_tester", { limite: 20 }, ctx);
-    assert.equal(t.essais_base.entrees.some((e) => e.identite === ADD_DIR), false);
+    assert.equal(p.avis_precedent.verdict, "utiliser");
+    // un avis à revoir n'est plus proposé à l'essai (relecture L4, BLOQUANT 1)
+    assert.deepEqual(await proposees(ctx), []);
     // fichier altéré dans le miroir (lu par un nouveau lecteur) : erreur explicite, jamais une lecture de repli
-    fs.writeFileSync(path.join(dossier, rel), octets.toString("utf8") + " ");
-    const e = await appeler("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctxLocal(i));
+    fs.writeFileSync(fichier, octets.toString("utf8") + " ");
+    const e = await appeler("fiche_reference", { id: "claude-code-commandes-advisor" }, ctxLocal(i));
     assert.equal(e.isError, true);
     assert.match(e.content[0].text, /^Local Delta data unavailable: .*size or hash differs/);
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+});
+
+test("fraîcheur recalculée à chaque lecture : un serveur qui dure voit le commun vieillir et ses avis passer à revoir", async () => {
+  const lecteur = new local.LecteurLocal(local.resoudreRacines({ instance: inst.profil, env: {} }), { maintenant: Date.now() });
+  const ctx = { langue: "en", source: "local", local: lecteur };
+  assert.equal((await donnees("fiche_reference", { id: "claude-code-commandes-advisor" }, ctx)).donnees.commun.fraicheur, "recente");
+  assert.deepEqual(await proposees(ctx), [ADVISOR]);
+  lecteur.maintenant += 2 * 864e5;  // même lecteur, deux jours plus tard, sans nouvelle synchronisation
+  assert.equal((await donnees("fiche_reference", { id: "claude-code-commandes-advisor" }, ctx)).donnees.commun.fraicheur, "ancienne");
+  lecteur.maintenant += 6 * 864e5;  // huit jours
+  const r = await donnees("fiche_reference", { id: "claude-code-commandes-advisor" }, ctx);
+  assert.equal(r.donnees.commun.fraicheur, "tres_ancienne");
+  assert.equal(r.fiche.personnel.statut, "a_revoir");
+  assert.equal(r.fiche.personnel.motif, "commun_tres_ancien");
+  assert.deepEqual(await proposees(ctx), []);
+});
+
+test("miroir commun indisponible : la couche personnelle reste consultable, avis à revoir, indisponibilité dite", async () => {
+  const i = instance();
+  try {
+    fs.rmSync(path.join(i.etat, "commun-actif.json"));
+    const ctx = ctxLocal(i, "fr");
+    const f = await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctx);
+    assert.equal(f.donnees.commun.statut, "indisponible");
+    assert.equal(f.donnees.commun.motif, "aucune_generation");
+    assert.match(f.avis, /couche personnelle/);
+    const [fp] = f.fiches_personnelles;
+    assert.equal(fp.identite, ADD_DIR);
+    assert.equal(fp.fiche, null);
+    assert.equal(fp.personnel.statut, "a_revoir");
+    assert.equal(fp.personnel.motif, "commun_indisponible");
+    assert.equal(fp.personnel.avis_precedent.verdict, "tester");
+    const v = await donnees("etat_versions", {}, ctx);
+    assert.deepEqual(v.outils.map((o) => [o.identite, o.installee, o.statut, o.derniere_publiee]), [["version:claude-code", "2.1.300", "inconnu", null]]);
+    // les outils qui ne vivent que du commun le disent, sans liste vide
+    const c = await appeler("chercher_reference", { requete: "/add-dir" }, ctx);
+    assert.equal(c.isError, false);
+    assert.ok(c.structuredContent.categories_non_lues.length > 0);
+    const e = await appeler("resume_du_jour", {}, ctx);
+    assert.equal(e.isError, true);
+    assert.match(e.content[0].text, /aucune génération commune active/);
   } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });
 
@@ -253,20 +304,30 @@ test("veille, versions et essais : bloc personnel du jour, version de l'instance
 
 test("MCP stdio : protocole ligne à ligne, outils décrits pour la couche personnelle, racines refusées sans source", () => {
   const entree = [{ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }, { jsonrpc: "2.0", method: "notifications/initialized" },
-    { jsonrpc: "2.0", id: 2, method: "tools/list" }, { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "fiche_reference", arguments: { id: "claude-code-commandes-add-dir" } } }]
+    { jsonrpc: "2.0", id: 2, method: "tools/list" }, { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "fiche_reference", arguments: { id: "claude-code-commandes-add-dir" } } },
+    { jsonrpc: "2.0", id: 4, method: "tools/call", params: null }, { jsonrpc: "2.0", id: 5, method: "ping" }]
     .map((m) => JSON.stringify(m)).join("\n") + "\nnot json\n";
   const p = spawnSync(process.execPath, [path.join(ICI, "../stdio.js"), "--instance", inst.profil, "--langue", "fr"], { input: entree, encoding: "utf8", env: { ...process.env, DELTA_INSTANCE: "" } });
   assert.equal(p.status, 0, p.stderr);
   const lignes = p.stdout.trim().split("\n").map((l) => JSON.parse(l));
-  assert.deepEqual(lignes.map((l) => l.id), [1, 2, 3, null]);
+  assert.deepEqual(lignes.map((l) => l.id), [1, 2, 3, 4, 5, null]);
   assert.match(lignes[0].result.instructions, /bloc `personnel` distinct/);
   assert.equal(lignes[1].result.tools.length, 6);
   assert.ok(lignes[1].result.tools.every((o) => /Serveur local/.test(o.description)));
   assert.equal(lignes[2].result.structuredContent.fiche.personnel.avis.verdict, "tester");
-  assert.equal(lignes[3].error.code, -32700);
+  // `params: null` : réponse d'erreur, le serveur continue (relecture L4) ; puis ping, puis JSON illisible
+  assert.equal(lignes[3].error.code, -32602);
+  assert.deepEqual(lignes[4].result, {});
+  assert.equal(lignes[5].error.code, -32700);
   const refus = spawnSync(process.execPath, [path.join(ICI, "../stdio.js")], { input: "", encoding: "utf8", env: { ...process.env, DELTA_INSTANCE: "" } });
   assert.equal(refus.status, 2);
   assert.match(refus.stderr, /instance roots not designated/);
+  // erreurs de démarrage dans la langue demandée, au MCP comme au Bureau
+  const fr = spawnSync(process.execPath, [path.join(ICI, "../stdio.js"), "--langue", "fr"], { input: "", encoding: "utf8", env: { ...process.env, DELTA_INSTANCE: "" } });
+  assert.match(fr.stderr, /racines non désignées/);
+  const b = spawnSync(process.execPath, [path.join(ICI, "../bureau.js"), "--langue", "fr", "etat"], { encoding: "utf8", env: { ...process.env, DELTA_INSTANCE: "" } });
+  assert.equal(b.status, 2);
+  assert.match(b.stderr, /^delta-bureau: racines non désignées/);
 });
 
 test("racines : mêmes règles que racines.py (profil K1, environnement d'instance, historique demandé)", () => {

@@ -353,9 +353,19 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
 
 const RE_ID_FICHE = /^[A-Za-z0-9]+([._:/@-][A-Za-z0-9]+)*$/;
 
+// Local, miroir commun indisponible : la couche personnelle reste consultable (conception §2.3), sans fiche commune,
+// avis marqués à revoir (aucune compatibilité actuelle établie) ; l'indisponibilité du commun est dite dans `donnees`.
+const communLocalIndisponible = (ctx) => estLocal(ctx) && ctx.local.generation().statut !== "disponible";
+
 async function ficheReference({ id } = {}, ctx) {
   if (typeof id !== "string" || !RE_ID_FICHE.test(id)) throw new ErreurParametre("param.id");
   const tete = await entete(ctx);
+  if (communLocalIndisponible(ctx)) {
+    const identites = ctx.local.identitesPersonnelles(id);
+    if (!identites.length) throw new ErreurTexte(`local.motif.${tete.donnees.commun.motif}`);
+    return { ...tete, avis: t(ctx.langue, "local.personnel_seul"),
+      fiches_personnelles: identites.map((i) => ({ identite: i, fiche: null, personnel: ctx.local.blocPersonnel(i, null, { complet: true }) })) };
+  }
   const { entrees, categories_non_lues } = await toutesEntrees(ctx);
   const cible = id.toLowerCase();
   const canonique = entrees.find((x) => x.id === id || x.id === cible);
@@ -374,6 +384,9 @@ async function ficheReference({ id } = {}, ctx) {
 // versions publiées seules. Une installée absente vaut null et le statut « inconnu », jamais une comparaison supposée.
 async function etatVersions(args, ctx) {
   const tete = await entete(ctx);
+  if (communLocalIndisponible(ctx)) return { ...tete, avis: t(ctx.langue, "local.personnel_seul"),
+    outils: ctx.local.versionsPersonnelles().map((v) => ({ outil: null, identite: v.identite, derniere_publiee: null, source_derniere: null,
+      installee: v.installee, statut: "inconnu", releve_le: v.releve_le, methode: v.methode, note: null, couche_installee: "personnel" })) };
   const v = await lire("versions.json", ctx);
   if (formatCommun(ctx)) {
     if (!Array.isArray(v.entrees)) throw erreurFormat("versions.json");
@@ -512,7 +525,7 @@ async function aTesterLocal({ limite, curseur, id }, ctx, tete) {
   actions.sort((a, b) => IMPACTS.indexOf(a.impact) - IMPACTS.indexOf(b.impact) || b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
   const { entrees } = await toutesEntrees(ctx);
   const parIdentite = new Map(entrees.map((e) => [e.identite, e]));
-  const restants = ctx.local.aTester().filter((x) => parIdentite.has(x.identite));
+  const restants = ctx.local.aTester(parIdentite).filter((x) => parIdentite.has(x.identite));
   if (id !== undefined) {
     const action = actions.find((e) => e.id === id);
     if (action) return { ...tete, detail: action };
@@ -568,7 +581,8 @@ class ErreurParametre extends ErreurTexte {}
 
 async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
   if (!msg || msg.jsonrpc !== "2.0" || typeof msg.method !== "string") return erreur(msg?.id ?? null, -32600, t(ctx.langue, "rpc.invalide"));
-  const { id, method, params = {} } = msg;
+  const { id, method } = msg;
+  const params = msg.params && typeof msg.params === "object" ? msg.params : {};
   const notification = id === undefined || id === null;
   switch (method) {
     case "initialize":

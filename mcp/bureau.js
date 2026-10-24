@@ -12,7 +12,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { traiter } from "./api/mcp.js";
 import { ErreurTexte, texteErreur } from "./lib/textes.js";
-import { contexteLocal, options } from "./stdio.js";
+import { contexteLocal, langueDemandee, options } from "./stdio.js";
 import CONFIG from "./lib/config.js";
 
 const COMMANDES = { versions: ["etat_versions", () => ({})], fiche: ["fiche_reference", (x) => ({ id: x })],
@@ -44,5 +44,5 @@ export async function executer(argv) {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   executer(process.argv.slice(2)).then(({ code, sortie }) => { process.stdout.write(JSON.stringify(sortie) + "\n"); process.exitCode = code; },
-    (e) => { process.stderr.write(`delta-bureau: ${texteErreur(e, "en")}\n`); process.exitCode = 2; });
+    (e) => { process.stderr.write(`delta-bureau: ${texteErreur(e, langueDemandee(process.argv.slice(2)))}\n`); process.exitCode = 2; });
 }

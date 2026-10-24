@@ -194,3 +194,7 @@ Retenu, avec son test :
 - `outputSchema` : même raison qu'en L3 ; la source `local` ajouterait d'autres formes sans client qui s'en serve.
 - Journal par requête en local : le serveur stdio n'écrit rien sur stdout hors JSON-RPC et n'envoie aucune télémétrie
   (conception §4.1) ; le compteur D66/D100 reste celui du serveur public.
+
+Corrections de relecture du lot L4 (spécification JSON-RPC, reprises dans le même test « MCP stdio… ») : une requête dont
+`params` est absent, nul ou n'est pas un objet reçoit une erreur `-32602` au lieu d'arrêter le serveur ; toute erreur de
+traitement d'une requête rend `-32603` à cette requête seule, le serveur stdio continue avec les suivantes.

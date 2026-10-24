@@ -15,7 +15,7 @@ from deltalib.couches import bilan as mod_bilan
 from deltalib.couches import racines as mod_racines
 from deltalib.couches import schemas
 from deltalib.couches.stockage import empreinte
-from test_couches import RACINE, _json
+from test_couches import RACINE, _json, depot, instance  # noqa: F401 (fixtures)
 
 T = datetime(2026, 10, 24, 13, 5, tzinfo=timezone.utc)
 INDEX = json.loads((RACINE / "docs/commun/v1/index.json").read_text(encoding="utf-8"))
@@ -161,9 +161,14 @@ def test_rafraichir_ecrit_les_instantanes_prives_et_le_second_lecteur_retrouve_l
     assert [g["missions"] for g in resume["couple"]["groupes"]] == [9]
     # relance identique : rien ne change ; `--si-ancien` garde un instantané récent sans relancer OPÉRER
     assert mod_bilan.rafraichir(racines, maintenant=T, executer=Source())["bilan"] == "inchange"
-    garde = Source()
-    assert mod_bilan.rafraichir(racines, si_ancien_h=24, maintenant=T, executer=garde)["bilan"] == "garde"
-    assert garde.commandes == []
+    # `--si-ancien` garde un bilan récent sans relire le journal, mais relit les essais OPÉRER (essai ouvert entre-temps)
+    nouvel_essai = {**ESSAIS, "essais": ESSAIS["essais"] + [{"id": "e-2", "statut": "en_essai", "protocole": {"fiche": "x"}}]}
+    garde = Source(essais=nouvel_essai)
+    res = mod_bilan.rafraichir(racines, si_ancien_h=24, maintenant=T, executer=garde)
+    assert res["bilan"] == "garde" and res["essais"] == "modifie"
+    assert garde.commandes == [mod_bilan.COMMANDE_ESSAIS]
+    essais = json.loads(mod_bilan.chemins(racines)["essais"].read_text(encoding="utf-8"))
+    assert [e["id"] for e in essais["essais"]] == ["e-1", "e-2"]
 
 
 def test_filtres_declares_et_source_en_echec_sans_perte(lectrice):
@@ -226,3 +231,22 @@ def test_collecte_du_pont_alimente_l_instantane_partage_sans_second_collecteur(l
     # échec du rangement : noté, l'export reste
     res = rp.collecter(tmp_path / "bilans2", config=cfg, ranger=lambda cmd, doc: 1 / 0)
     assert next(r for r in res if r["source"] == "principal")["instantane"].startswith("non rangé")
+
+
+def test_lecteur_python_memes_regles_que_le_lecteur_local(depot, instance):
+    """Mêmes statuts et motifs que LecteurLocal.blocPersonnel (mcp/test/local.test.js) : commun très ancien, commun
+    indisponible."""
+    from datetime import timedelta
+
+    from deltalib.couches.lecteur import Lecteur
+    from deltalib.couches.projection import importer
+
+    importer(depot, instance)
+    ident = "kb:claude:claude-code-commandes-a"
+    assert Lecteur(instance).fiche(ident)["personnel"]["statut"] == "importe"
+    tard = datetime.now(timezone.utc) + timedelta(days=60)
+    p = Lecteur(instance, maintenant=tard).fiche(ident)["personnel"]
+    assert (p["statut"], p["motif"]) == ("a_revoir", "commun_tres_ancien")
+    instance.commun_actif.unlink()
+    p = Lecteur(instance).fiche(ident)["personnel"]
+    assert (p["statut"], p["motif"]) == ("a_revoir", "commun_indisponible")

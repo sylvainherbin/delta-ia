@@ -140,14 +140,18 @@ class Lecteur:
         if o is None:
             return {"couche": "personnel", "statut": "non_personnalise", "magasin": "disponible", "avis": None}
         fiche = self.fiches.get(identite)
-        statut = o["statut"]
-        if fiche is not None and o["commun_empreinte"] not in (None, fiche["empreinte"]):
-            statut = "a_revoir"  # le fait commun a changé depuis l'avis
-        elif fiche is None and self.commun_statut == "disponible" and statut == "importe" and o["commun_empreinte"]:
-            statut = "reference_introuvable"
+        statut, motif = o["statut"], None
+        # mêmes règles que LecteurLocal.blocPersonnel (mcp/lib/local.js), dans le même ordre
+        if self.commun_statut != "disponible" and statut == "importe":
+            statut, motif = "a_revoir", "commun_indisponible"  # aucune compatibilité actuelle établie sans commun
+        elif fiche is not None and o["commun_empreinte"] not in (None, fiche["empreinte"]):
+            statut, motif = "a_revoir", "commun_modifie"  # le fait commun a changé depuis l'avis
+        elif fiche is None and statut == "importe" and o["commun_empreinte"]:
+            statut, motif = "reference_introuvable", "fiche_absente"
         elif statut == "importe" and self.fraicheur == "tres_ancienne":
-            statut = "a_revoir"  # la compatibilité actuelle n'est plus établie par un commun récent
-        return {"couche": "personnel", "statut": statut, "observe_le": o["observe_le"], "evalue_le": o["evalue_le"],
+            statut, motif = "a_revoir", "commun_tres_ancien"  # la compatibilité actuelle n'est plus établie par un commun récent
+        return {"couche": "personnel", "statut": statut, **({"motif": motif} if motif else {}),
+                "observe_le": o["observe_le"], "evalue_le": o["evalue_le"],
                 "avis": {"statut_usage": o["statut_usage"], "recommandation": o["recommandation"]},
                 "essais": o["essais"], "reevaluations": o["reevaluations"], "rejugements": o["rejugements"],
                 "historique_importe": o["historique_importe"]}

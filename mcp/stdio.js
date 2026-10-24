@@ -16,6 +16,12 @@ import { LANGUES, ErreurTexte, t, texteErreur } from "./lib/textes.js";
 import { LecteurLocal, resoudreRacines } from "./lib/local.js";
 import CONFIG from "./lib/config.js";
 
+// Langue d'un message d'erreur de démarrage, avant que les options soient validées.
+export function langueDemandee(argv) {
+  const i = argv.indexOf("--langue");
+  return LANGUES.includes(argv[i + 1]) ? argv[i + 1] : LANGUES.includes(process.env.DELTA_LANGUE) ? process.env.DELTA_LANGUE : CONFIG.langue_commune_defaut;
+}
+
 export function options(argv) {
   const o = { historique: false, instance: null, langue: LANGUES.includes(process.env.DELTA_LANGUE) ? process.env.DELTA_LANGUE : CONFIG.langue_commune_defaut };
   for (let i = 0; i < argv.length; i++) {
@@ -36,7 +42,7 @@ export function contexteLocal(o) {
 async function main() {
   let o, ctx;
   try { o = options(process.argv.slice(2)); ctx = contexteLocal(o); } catch (e) {
-    process.stderr.write(`delta-local: ${texteErreur(e, o?.langue ?? "en")}\n`);
+    process.stderr.write(`delta-local: ${texteErreur(e, o?.langue ?? langueDemandee(process.argv.slice(2)))}\n`);
     process.exit(2);
   }
   const entree = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
@@ -51,7 +57,10 @@ async function main() {
         return;
       }
       const lot = Array.isArray(msg);
-      const reponses = (await Promise.all((lot ? msg : [msg]).map((m) => traiter(m, {}, ctx)))).filter(Boolean);
+      // une requête qui fait échouer le traitement reçoit une erreur interne ; le serveur continue avec les suivantes
+      const une = (m) => traiter(m, {}, ctx).catch(() => (m && m.id !== undefined && m.id !== null
+        ? { jsonrpc: "2.0", id: m.id, error: { code: -32603, message: t(ctx.langue, "rpc.interne") } } : null));
+      const reponses = (await Promise.all((lot ? msg : [msg]).map(une))).filter(Boolean);
       if (reponses.length) process.stdout.write(JSON.stringify(lot ? reponses : reponses[0]) + "\n");
     });
   }

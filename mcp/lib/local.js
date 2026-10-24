@@ -104,10 +104,13 @@ export class LecteurLocal {
   // --- couche commune : pointeur, manifeste et fichiers vérifiés (taille, SHA-256, schéma) ---
   generation() {
     const s = signature(this.e.commun_actif) + "|" + signature(this.e.synchro);
-    if (this.sig.commun === s && this.g) return this.g;
-    this.sig.commun = s;
-    this.verifies.clear();
-    this.g = this.chargerGeneration();
+    if (this.sig.commun !== s || !this.g) {
+      this.sig.commun = s;
+      this.verifies.clear();
+      this.g = this.chargerGeneration();
+    }
+    // la fraîcheur dépend de l'heure de la lecture, pas du chargement : un serveur stdio vit toute une session
+    if (this.g.statut === "disponible") this.g.fraicheur = fraicheurLocale(this.g.verifie_le, this.g.publie_le, this.g.donnees_du, this.heure());
     return this.g;
   }
 
@@ -130,8 +133,7 @@ export class LecteurLocal {
     }
     return { statut: "disponible", generation: actif.generation, origine: actif.origine ?? null, dossier, manifeste, publie_le, verifie_le,
       erreur_synchro, donnees_du: manifeste.donnees_du ?? null, langues: Array.isArray(manifeste.langues) ? manifeste.langues : [],
-      fichiers: new Map((manifeste.fichiers || []).map((f) => [f.chemin, f])),
-      fraicheur: fraicheurLocale(verifie_le, publie_le, manifeste.donnees_du, this.heure()) };
+      fichiers: new Map((manifeste.fichiers || []).map((f) => [f.chemin, f])), fraicheur: null };
   }
 
   lireCommun(chemin) {
@@ -198,6 +200,22 @@ export class LecteurLocal {
     return { source: "local", langue, commun, personnel };
   }
 
+  // Identités personnelles d'un id de fiche (`kb:<périmètre>:<id>`, `kb:delta:<famille>:<id>`), pour lire la couche
+  // personnelle quand le miroir commun est indisponible (conception §2.3 : le personnel indépendant reste consultable).
+  identitesPersonnelles(id) {
+    const p = this.personnel();
+    if (p.statut !== "disponible") return [];
+    return Object.keys(p.objets).filter((i) => i === id || (i.startsWith("kb:") && i.split(":").slice(i.startsWith("kb:delta:") ? 3 : 2).join(":") === id)).sort();
+  }
+
+  // Versions relevées sur cette instance, sans le fait commun (miroir indisponible) : rien n'est comparé.
+  versionsPersonnelles() {
+    const p = this.personnel();
+    if (p.statut !== "disponible") return [];
+    return Object.keys(p.objets).filter((i) => i.startsWith("version:")).sort().map((i) => ({ identite: i, ...this.versionInstallee(i, null) }))
+      .filter((v) => v.installee).map((v) => ({ ...v, statut: "inconnu" }));
+  }
+
   objet(identite) { const p = this.personnel(); return p.statut === "disponible" ? p.objets[identite] ?? null : null; }
 
   // Essais d'une fiche : journal des essais de la base (importé) et essais OPÉRER qui la nomment ; chacun garde sa source.
@@ -220,9 +238,11 @@ export class LecteurLocal {
     const essais = this.essais(identite, id);
     if (!o) return { couche: "personnel", statut: "non_personnalise", magasin: "disponible", avis: null, ...(essais.length ? { essais } : {}) };
     let statut = o.statut, motif = null;
-    if (fiche && o.commun_empreinte && fiche.empreinte && o.commun_empreinte !== fiche.empreinte) { statut = "a_revoir"; motif = "commun_modifie"; }
-    else if (!fiche && this.generation().statut === "disponible" && statut === "importe" && o.commun_empreinte) { statut = "reference_introuvable"; motif = "fiche_absente"; }
-    else if (statut === "importe" && this.generation().fraicheur === "tres_ancienne") { statut = "a_revoir"; motif = "commun_tres_ancien"; }
+    const g = this.generation();
+    if (g.statut !== "disponible" && statut === "importe") { statut = "a_revoir"; motif = "commun_indisponible"; }
+    else if (fiche && o.commun_empreinte && fiche.empreinte && o.commun_empreinte !== fiche.empreinte) { statut = "a_revoir"; motif = "commun_modifie"; }
+    else if (!fiche && statut === "importe" && o.commun_empreinte) { statut = "reference_introuvable"; motif = "fiche_absente"; }
+    else if (statut === "importe" && g.fraicheur === "tres_ancienne") { statut = "a_revoir"; motif = "commun_tres_ancien"; }
     const rec = o.recommandation && typeof o.recommandation === "object" ? o.recommandation : null;
     const reev = (o.reevaluations || []).filter((r) => typeof r?.date === "string").map((r) => r.date).sort();
     const evalue_le = o.evalue_le ?? reev.at(-1) ?? null;
@@ -272,8 +292,9 @@ export class LecteurLocal {
       projets_concernes: importe(o, "projets_concernes", fichier) ?? [], observe_le: jour };
   }
 
-  // Fiches proposées à l'essai : verdict local `tester` puis `utiliser`, pas encore utilisées, sans essai déclaré.
-  aTester() {
+  // Fiches proposées à l'essai : verdict local `tester` puis `utiliser`, pas encore utilisées, sans essai déclaré, et dont
+  // l'avis est courant pour la fiche commune actuelle (`fiches` : identité → fiche) ; un avis à revoir n'est jamais proposé.
+  aTester(fiches = new Map()) {
     const p = this.personnel();
     if (p.statut !== "disponible") return [];
     const out = [];
@@ -285,6 +306,7 @@ export class LecteurLocal {
       if (!VERDICTS_A_TESTER.includes(verdict) || o.statut_usage === "utilise") continue;
       const id = identite.split(":").slice(2).join(":");
       if (this.essais(identite, id).length) continue;  // D119 : un essai déclaré n'est plus proposé
+      if (this.blocPersonnel(identite, fiches.get(identite) ?? null).statut !== "importe") continue;
       out.push({ identite, id, verdict });
     }
     return out.sort((a, b) => VERDICTS_A_TESTER.indexOf(a.verdict) - VERDICTS_A_TESTER.indexOf(b.verdict) || a.id.localeCompare(b.id));
