@@ -1,9 +1,9 @@
 ## En-tête
 
 - état : livré
-- tests : commandes : `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 6f1d937093a0)
-- hash : 1f9e6d5a1daf04df3ef84c48bb983b932f48143a
-- reçus : 6f1d937093a0
+- tests : commandes : `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 6f1d937093a0) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 423119dcffd8)
+- hash : d1f032f3ea58ea48490c1385579d529bbafcada7
+- reçus : 423119dcffd8; écartés : 6f1d937093a0 (reçu 6f1d937093a0 (« vérification du dépôt réussie : python3 -B outils/tests/verifier.py ») : le reçu porte sur 1f9e6d5a1daf, pas sur la version livrée d1f032f3ea58 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-d4055b3a5908 --affirme "vérification du dépôt réussie : python3 -B outils/tests/verifier.py" -- <commande>` sur la version livrée)
 - réserves : aucune
 
 # Delta-IA deux couches — lot L2
@@ -109,4 +109,4 @@ Verdict de la relecture : CORRECTIONS, 1 BLOQUANT, 4 À NOTER.
 
 ## Preuves
 
-vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 6f1d937093a0
+vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 423119dcffd8
