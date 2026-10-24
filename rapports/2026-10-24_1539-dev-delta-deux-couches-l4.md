@@ -1,9 +1,9 @@
 ## En-tête
 
 - état : livré
-- tests : 1829/1829
-- hash : 7eb1d3be07254461d6d60003ca6b2e99058f5b54
-- reçus : 32186733ecba, bfee71dd01c1
+- tests : commandes : `python3 -B outils/tests/verifier.py --fusion` : échec (code 1, reçu e4c23c561a51) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 3ea60f5219be) ; `/home/herbin/.local/bin/verrou-tests --depot /home/herbin/projets/.worktrees/delta-ia/m-7ca497536e5d --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu 54d1d62cdf5d) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 09e09011a6a2) ; `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu 32186733ecba) ; `verrou-tests --depot . --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu f33e59ff27a5) ; `verrou-tests --depot . --nom mcp-l4 -- node --test mcp/test/couches.test.js mcp/test/local.test.js mcp/test/mcp.test.js mcp/test/site-modeles.test.js` : succès (code 0, reçu bfee71dd01c1) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 2e1b53a46f80)
+- hash : c08a1bc6a2211fa7f5194a5d40c4bbc2c1a25731
+- reçus : 32186733ecba, bfee71dd01c1, 2e1b53a46f80; écartés : e4c23c561a51 (reçu e4c23c561a51 (« VERIFY OK ») : commande en code 1 ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` une fois la commande réussie / reçu e4c23c561a51 (« VERIFY OK ») : le reçu porte sur 6c1650e58e6f, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée) ; 3ea60f5219be (reçu 3ea60f5219be (« VERIFY OK ») : le reçu porte sur 520847551fc8, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "VERIFY OK" -- <commande>` sur la version livrée) ; 54d1d62cdf5d (reçu 54d1d62cdf5d (« tests 74 ») : le reçu porte sur 520847551fc8, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "tests 74" -- <commande>` sur la version livrée) ; 09e09011a6a2 (reçu 09e09011a6a2 (« vérification du dépôt réussie : python3 -B outils/tests/verifier.py ») : le reçu porte sur 64676391abe1, pas sur la version livrée c08a1bc6a221 : l'arbre a changé hors `rapports/` depuis ; relancer `operer preuve m-7ca497536e5d --affirme "vérification du dépôt réussie : python3 -B outils/tests/verifier.py" -- <commande>` sur la version livrée) ; f33e59ff27a5 (reçu f33e59ff27a5 (« tests 77 ») : le nombre 77 ne figure pas dans la sortie conservée ; corriger l'affirmation (pas de date ni de numéro qui n'en vient pas) ou relancer `operer preuve m-7ca497536e5d --affirme "tests 77" -- <commande>`)
 - réserves : reçus sur `7eb1d3b` (suite complète 1829/1829, MCP 76/76) après les corrections de relecture ; le commit suivant n'ajoute que ce rapport ; delta-desktop et le pilote des réserves (discipline) ne sont pas modifiés ; les changements à y faire sont décrits plus bas
 
 # Delta-IA deux couches — lot L4 (mission m-7ca497536e5d)
@@ -160,3 +160,4 @@ Toutes sur l'instance réelle, le 24/10 entre 15:25 et 15:38 :
 
 VERIFY OK | reçu 32186733ecba
 tests 76 | reçu bfee71dd01c1
+vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 2e1b53a46f80
