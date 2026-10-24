@@ -65,7 +65,9 @@ CLES_PERSONNEL = {"overlay": {"schema", "schema_version", "vue", "commun_generat
                                      "lignes_ignorees", "lu_le", "sha256", "bilan"},
                   "essais_operer": {"schema", "schema_version", "vue", "commande", "lu_le", "sha256", "essais"},
                   "modeles_efforts": {"schema", "schema_version", "vue", "commun_generation", "bilan_empreinte", "filtres",
-                                      "jusqu_au", "observe_le", "objets", "non_rattaches"}}
+                                      "jusqu_au", "observe_le", "objets", "non_rattaches"},
+                  # lot 2 : profil d'hôte et réglages courants de l'instance (instance.py)
+                  "instance": {"schema", "schema_version", "vue", "lu_le", "profil", "reglages", "sha256"}}
 CLES_COUPLE = {"objet", "commun_empreinte", "bilan_empreinte", "observe_le", "jusqu_au", "groupes"}
 
 
@@ -334,6 +336,14 @@ def valider_personnel(doc, vue: str, ou: str) -> list[str]:
                 erreurs.append(f"{ou} {cle}: clé de couple kb:delta:modeles:<id> attendue")
             if _fermer(o, CLES_COUPLE, f"{ou} {cle}", erreurs) and o.get("objet") != cle:
                 erreurs.append(f"{ou} {cle}: `objet` différent de sa clé")
+    elif vue == "instance":
+        contenu = {"profil": doc.get("profil"), "reglages": doc.get("reglages")}
+        if not isinstance(doc.get("sha256"), str) or doc["sha256"] != empreinte(contenu):
+            erreurs.append(f"{ou}: `sha256` différent du contenu")
+        if not isinstance(doc.get("profil"), dict) or doc["profil"].get("statut") not in ("absent", "invalide", "present"):
+            erreurs.append(f"{ou}: statut de profil inconnu")
+        if not isinstance(doc.get("reglages"), dict) or not isinstance(doc["reglages"].get("cases"), list):
+            erreurs.append(f"{ou}: `reglages.cases` attendu")
     elif vue in ("reglages_bilan", "essais_operer"):
         contenu = doc.get("bilan" if vue == "reglages_bilan" else "essais")
         if not isinstance(doc.get("sha256"), str) or doc["sha256"] != empreinte(contenu):

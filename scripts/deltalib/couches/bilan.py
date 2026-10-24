@@ -16,6 +16,9 @@ courant par supposition. Les groupes gardent nature et exécutant et leurs métr
 Essais OPÉRER (`operer essai --json liste`) : instantané `personnel/essais-operer.json`, rattaché aux fiches par l'id de
 fiche du protocole ; la leçon APPRENDRE d'un essai clos est écrite par OPÉRER, ce module ne la recopie que par référence.
 
+Instantané de l'instance (lot 2, instance.py) : profil d'hôte et réglages courants, relu à chaque rafraîchissement avec les
+essais, dans `personnel/instance.json`.
+
 Écritures sous le verrou des écrivains du magasin (`couches-import`), atomiques, en 0600 ; aucun appel de modèle.
 """
 
@@ -64,7 +67,8 @@ def maintenant_iso(maintenant: datetime | None = None) -> str:
 
 def chemins(racines: Racines) -> dict[str, Path]:
     p = racines.personnel
-    return {"bilan": p / "reglages-bilan.json", "essais": p / "essais-operer.json", "couples": p / "modeles-efforts.json"}
+    return {"bilan": p / "reglages-bilan.json", "essais": p / "essais-operer.json", "couples": p / "modeles-efforts.json",
+            "instance": p / "instance.json"}
 
 
 def commande_bilan(depuis: str | None = None, nature: str | None = None) -> list[str]:
@@ -218,12 +222,15 @@ def enregistrer(racines: Racines, commande: list[str], doc: dict, maintenant: da
 
 
 def rafraichir(racines: Racines, depuis: str | None = None, nature: str | None = None, si_ancien_h: float | None = None,
-               executer: Executer = _executer, maintenant: datetime | None = None) -> dict:
+               executer: Executer = _executer, maintenant: datetime | None = None, politique: Path | None = None,
+               env: dict | None = None) -> dict:
     """Relit le bilan et les essais OPÉRER, réécrit les instantanés et la projection. Un instantané du bilan plus récent
-    que `si_ancien_h` et de mêmes filtres est gardé ; les essais sont toujours relus. Une source en échec ne touche pas au dernier instantané valide de cette
-    source et figure dans `echecs`. Rend un résumé sans contenu personnel."""
+    que `si_ancien_h` et de mêmes filtres est gardé ; les essais et l'instantané de l'instance (profil, réglages courants)
+    sont toujours relus. Une source en échec ne touche pas au dernier instantané valide de cette source et figure dans
+    `echecs`. Rend un résumé sans contenu personnel."""
+    from . import instance as mod_instance  # instance.py rattache les réglages par `rattacher` de ce module
     filtres = {"depuis": depuis, "nature": nature}
-    res = {"bilan": None, "essais": None, "couples": None, "echecs": []}
+    res = {"bilan": None, "essais": None, "couples": None, "instance": None, "echecs": []}
     with verrou(racines.verrous, "couches-import"):
         actuel = lire_instantane(racines)
         age = age_h(actuel, maintenant)
@@ -248,6 +255,12 @@ def rafraichir(racines: Racines, depuis: str | None = None, nature: str | None =
                           "commande": commande, "lu_le": lu_le, "sha256": empreinte(essais), "essais": essais}
             res["essais"] = "modifie" if ecrire(chemins(racines)["essais"], doc_essais) else "inchange"
         except SourceIndisponible as e:
+            res["echecs"].append(str(e))
+        try:
+            doc_instance = mod_instance.instantane(racines, lu_le, politique, env)
+            res["instance"] = "modifie" if ecrire(chemins(racines)["instance"], doc_instance) else "inchange"
+            res.update(profil=doc_instance["profil"]["statut"], reglages=doc_instance["reglages"]["statut"])
+        except mod_instance.PolitiqueIllisible as e:
             res["echecs"].append(str(e))
         if inst is not None:
             _projeter_et_resumer(racines, inst, res)

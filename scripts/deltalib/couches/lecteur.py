@@ -150,9 +150,12 @@ class Lecteur:
             statut, motif = "reference_introuvable", "fiche_absente"
         elif statut == "importe" and self.fraicheur == "tres_ancienne":
             statut, motif = "a_revoir", "commun_tres_ancien"  # la compatibilité actuelle n'est plus établie par un commun récent
+        avis = {"statut_usage": o["statut_usage"], "recommandation": o["recommandation"]}
+        courant = statut == "importe"
+        # comme LecteurLocal.blocPersonnel : un avis à revoir reste lisible comme précédent, jamais comme conseil courant
         return {"couche": "personnel", "statut": statut, **({"motif": motif} if motif else {}),
                 "observe_le": o["observe_le"], "evalue_le": o["evalue_le"],
-                "avis": {"statut_usage": o["statut_usage"], "recommandation": o["recommandation"]},
+                "avis": avis if courant else None, **({} if courant else {"avis_precedent": avis}),
                 "essais": o["essais"], "reevaluations": o["reevaluations"], "rejugements": o["rejugements"],
                 "historique_importe": o["historique_importe"]}
 

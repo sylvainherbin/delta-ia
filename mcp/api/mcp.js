@@ -9,6 +9,9 @@
 // lecteur local (lib/local.js, construit par stdio.js ou bureau.js seulement) : couche commune du miroir de l'instance et
 // bloc `personnel` distinct, avec ses dates. Le serveur HTTP ne construit jamais ce contexte (`?source=` n'admet que les
 // deux sources publiques) et ce fichier n'ouvre aucun fichier : la racine personnelle lui reste inaccessible.
+// Lot 2 : `chercher_reference` a une forme courte, `forme: "consultation"`, pour une consultation ponctuelle d'un agent
+// (quelques résumés, validité, références et emplacement dans le monde KNOW), gardée en mémoire sous une clé qui porte la
+// version du catalogue lu (génération commune) ; en local, `fiche_reference` ajoute la vue « Utile pour mon ORQYRA ».
 
 import CONFIG from "../lib/config.js";
 import { developperModeles } from "../lib/modeles.js";
@@ -17,7 +20,7 @@ import { createHash } from "node:crypto";
 import { MOTS_VIDES, sansAccents, presence, pertinence, indexer } from "../lib/recherche.js";
 import { validiteFiche } from "../lib/validite.js";
 import { LANGUES, t, ErreurTexte, texteErreur } from "../lib/textes.js";
-import { SOURCES, sourceDefaut, lireRoute, lireCommun, blocDonnees, raisonLecture, erreurFormat, texteBilingue } from "../lib/couches.js";
+import { SOURCES, sourceDefaut, lireRoute, lireCommun, blocDonnees, raisonLecture, erreurFormat, texteBilingue, generationCommune, fraicheur } from "../lib/couches.js";
 
 import { compter } from "../lib/compteur.js";
 
@@ -30,6 +33,7 @@ const PRODUITS = ["claude", "claude-code", "chatgpt", "codex"];
 // D121 : les fiches de méthode locales (kb/methodes.json, rédigées à la main) et les fiches de modèles/efforts (kb/modeles.json) forment deux catégories locales hors périmètre
 const CATEGORIES = [...KB.claude, "methodes", "modeles"];
 const IMPACTS = ["fort", "moyen", "faible", "nul"];
+const FORMES = ["liste", "consultation"];
 const MAX_RESUME_COMMUN = 30;
 const VERSION = "0.3.0";
 
@@ -137,13 +141,14 @@ async function toutesEntrees(ctx) {
   const lots = await Promise.all(FICHIERS_KB.map(async ([categorie, chemin]) => {
     try {
       const d = await fichierLeger(chemin, ctx);
-      return [categorie, categorie === "modeles" ? { ...d, entrees: developperModeles(d) } : d, null];
+      return [categorie, categorie === "modeles" ? { ...d, entrees: developperModeles(d) } : d, null, chemin];
     }
-    catch (e) { return [categorie, null, texteErreur(raisonLecture(e), ctx.langue)]; }
+    catch (e) { return [categorie, null, texteErreur(raisonLecture(e), ctx.langue), chemin]; }
   }));
-  for (const [categorie, d, raison] of lots) {
+  for (const [categorie, d, raison, chemin] of lots) {
     if (raison !== null) { categories_non_lues.push({ categorie, raison }); continue; }
-    for (const e of d.entrees) if (!e.retiree) out.push({ ...e, _validite: validiteFiche(e, d) });
+    // `_chemin` : fichier de catégorie lu, pour situer la fiche dans le monde KNOW (consultation courte)
+    for (const e of d.entrees) if (!e.retiree) out.push({ ...e, _validite: validiteFiche(e, d), _chemin: chemin });
   }
   return { entrees: out, categories_non_lues };
 }
@@ -241,13 +246,16 @@ function contenuFiche(e, complete, ctx) {
 
 const resumeNonLues = (liste) => liste.map((x) => `${x.categorie} (${x.raison})`).join(", ");
 
-async function chercherReference({ requete, produit, categorie, statut, limite = 8 } = {}, ctx) {
+// Recherche commune aux deux formes de chercher_reference : en-tête, total et fiches retenues (entrées de la base).
+async function rechercher({ requete, produit, categorie, statut, limite, forme = "liste" } = {}, ctx) {
   if (typeof requete !== "string" || !requete.trim()) throw new ErreurParametre("param.requete");
+  if (!FORMES.includes(forme)) throw new ErreurParametre("param.forme", { liste: FORMES.join(", ") });
   if (produit !== undefined && !PRODUITS.includes(produit)) throw new ErreurParametre("param.produit", { liste: PRODUITS.join(", ") });
   if (categorie !== undefined && !CATEGORIES.includes(categorie)) throw new ErreurParametre("param.categorie", { liste: CATEGORIES.join(", ") });
   if (statut !== undefined && !STATUTS.includes(statut)) throw new ErreurParametre("param.statut", { liste: STATUTS.join(", ") });
   if (statut !== undefined && ctx.source === "commun") throw new ErreurParametre("param.statut_commun");
-  const n = Math.max(1, Math.min(20, Number(limite) || 8));
+  const n = forme === "consultation" ? Math.max(1, Math.min(MAX_CONSULTATION, Number(limite) || LIMITE_CONSULTATION))
+    : Math.max(1, Math.min(20, Number(limite) || 8));
   const q = sansAccents(requete.trim());
   const mots = q.split(/\s+/).filter(Boolean);
   // Repli : mots d'au moins 2 caractères, hors mots vides, sans doublon ; un mot en `-` ou `/` est aussi cherché sans son préfixe.
@@ -342,14 +350,85 @@ async function chercherReference({ requete, produit, categorie, statut, limite =
     }
     if (scores.length > selection.length && !exacts.size) avis = [avis, t(ctx.langue, "avis.mixte", { affiches: selection.length, total: scores.length, plafond: plafondModeles })].filter(Boolean).join(" ; ");
   }
-  const r = { ...tete, total: scores.length, resultats: selection.slice(0, n).map(([, e]) => {
+  return { tete, total: scores.length, entrees: selection.slice(0, n).map(([, e]) => e), avis, categories_non_lues };
+}
+
+// nom exact ou alias : la fiche commune
+const trouveDans = (e) => (e._trouve_dans?.length ? e._trouve_dans : ["commun"]);
+
+async function chercherReference(args = {}, ctx) {
+  if (args.forme === "consultation") return consulterReference(args, ctx);
+  const { tete, total, entrees, avis, categories_non_lues } = await rechercher(args, ctx);
+  const r = { ...tete, total, resultats: entrees.map((e) => {
     const f = fiche(e, ctx);
-    if (estLocal(ctx)) f.trouve_dans = e._trouve_dans?.length ? e._trouve_dans : ["commun"];  // nom exact ou alias : la fiche commune
+    if (estLocal(ctx)) f.trouve_dans = trouveDans(e);
     return f;
   }) };
   if (categories_non_lues.length) r.categories_non_lues = categories_non_lues;
   if (avis) r.avis = avis;
   return r;
+}
+
+// ---- consultation courte (lot 2) : à la demande d'un agent, jamais systématique ; quelques résumés, validité, références
+const LIMITE_CONSULTATION = 3, MAX_CONSULTATION = 5, MAX_CACHE_CONSULTATIONS = 64;
+const consultations = new Map();  // clé (qui porte la version du catalogue) → résultats ; les plus anciennes sortent d'abord
+
+// Version du catalogue lu : identifiant de la génération commune (tiré de son contenu), publiée ou du miroir local.
+// L'ancienne route n'en a pas : ses consultations ne sont pas gardées.
+async function versionCatalogue(ctx) {
+  if (estLocal(ctx)) {
+    const g = ctx.local.generation();
+    return g.statut === "disponible" ? { generation: g.generation, publie_le: g.publie_le, fraicheur: g.fraicheur } : null;
+  }
+  if (ctx.source !== "commun") return null;
+  const g = await generationCommune();
+  return { generation: g.generation, publie_le: g.publie_le, fraicheur: fraicheur(g.publie_le) };
+}
+
+// Résumé de consultation : texte court dans la langue demandée (texte d'origine de l'éditeur, jamais le commentaire
+// personnel de l'ancienne route), validité, trois références au plus, emplacement de la fiche dans le monde KNOW.
+function resumeConsultation(e, ctx) {
+  const b = texteBilingue(e, "description", ctx.langue);
+  const v = e._validite || validiteFiche(e);
+  const r = { id: e.id, identite: e.identite ?? null, nom: e.categorie === "modeles" ? e.nom ?? e.nom_modele : e.nom, produit: e.produit ?? null,
+    categorie: e.categorie, syntaxe: court(e.usage, 200), resume: court(b?.texte ?? e.description_source ?? e.description ?? null, 280),
+    ...(b ? { resume_langue: b.langue, resume_repli: b.repli } : {}),
+    validite: v.validite, perimee: v.perimee, verifie_le: v.verifie_le,
+    references: (e.sources || []).slice(0, 3).map((s) => ({ url: s.url ?? null, libelle: court(s.libelle ?? null, 120), officielle: s.officielle === true })),
+    // monde KNOW (JUGER) : copie factuelle des fichiers kb/ ; son filtre peut écarter une fiche, l'emplacement reste attendu
+    know_world: e._chemin ? { fichier: e._chemin.replace(/^kb\//, ""), id: e.id } : null };
+  if (estLocal(ctx)) {
+    const p = ctx.local.blocPersonnel(e.identite, e);
+    Object.assign(r, { trouve_dans: trouveDans(e), personnel: { statut: p.statut, verdict: p.avis?.verdict ?? null } });
+  }
+  return r;
+}
+
+async function consulterReference(args, ctx) {
+  const tete = await entete(ctx);
+  const v = await versionCatalogue(ctx);
+  // la clé change avec la génération, la fraîcheur (statut des avis) et, en local, les fichiers du magasin personnel
+  const cle = v ? createHash("sha256").update(JSON.stringify([ctx.source, v.generation, v.fraicheur, estLocal(ctx) ? ctx.local.personnel().signature : null,
+    ctx.langue, typeof args.requete === "string" ? sansAccents(args.requete.trim()) : null, args.produit ?? null, args.categorie ?? null,
+    args.statut ?? null, args.limite ?? null])).digest("hex").slice(0, 16) : null;
+  let c = cle ? consultations.get(cle) : undefined;
+  const reutilise = c !== undefined;
+  if (reutilise) { consultations.delete(cle); consultations.set(cle, c); }
+  else {
+    const r = await rechercher(args, ctx);
+    c = { total: r.total, resultats: r.entrees.map((e) => resumeConsultation(e, ctx)), avis: r.avis ?? null, categories_non_lues: r.categories_non_lues };
+    if (cle) {
+      consultations.set(cle, c);
+      if (consultations.size > MAX_CACHE_CONSULTATIONS) consultations.delete(consultations.keys().next().value);
+    }
+  }
+  const out = { ...tete, forme: "consultation", catalogue: { source: ctx.source === "local" ? "local" : ctx.source, version: v?.generation ?? null, publie_le: v?.publie_le ?? null },
+    cache: { cle, statut: !cle ? "sans_version" : reutilise ? "reutilise" : "calcule" }, total: c.total, affichees: c.resultats.length,
+    resultats: c.resultats, suite: t(ctx.langue, "consultation.suite") };
+  if (c.categories_non_lues.length) out.categories_non_lues = c.categories_non_lues;
+  const avis = [c.avis, cle ? null : t(ctx.langue, "consultation.sans_cache")].filter(Boolean).join(" ; ");
+  if (avis) out.avis = avis;
+  return out;
 }
 
 const RE_ID_FICHE = /^[A-Za-z0-9]+([._:/@-][A-Za-z0-9]+)*$/;
@@ -378,7 +457,22 @@ async function ficheReference({ id } = {}, ctx) {
     throw new ErreurTexte("fiche.non_lues", { liste: resumeNonLues(categories_non_lues), id });
   }
   if (!e) throw new ErreurParametre("param.id_inconnu", { id });
-  return { ...tete, fiche: fiche(e, ctx, true) };
+  const f = fiche(e, ctx, true);
+  if (estLocal(ctx)) f.utile_pour_instance = await vueUtile(e, ctx);
+  return { ...tete, fiche: f };
+}
+
+// Lot 2 : vue « Utile pour mon ORQYRA » (local seulement) : raisons sourcées pour lesquelles la fiche concerne cette instance,
+// avis courant ou absence d'avis dite telle quelle ; aucune mission ni aucun réglage n'en découle.
+async function vueUtile(e, ctx) {
+  let versions = new Map();
+  try {
+    const v = await lire("versions.json", ctx);
+    if (Array.isArray(v.entrees)) versions = new Map(v.entrees.map((x) => [x.identite, x]));
+  } catch { /* versions communes illisibles : la version installée est rendue sans dernière publiée */ }
+  const u = ctx.local.utile(e.identite, e, { versions });
+  return { ...u, avis: [t(ctx.langue, u.concerne ? "utile.raisons" : "utile.aucune_raison"),
+    t(ctx.langue, u.recommandation ? "utile.avec_avis" : `utile.sans.${u.sans_recommandation}`), t(ctx.langue, "utile.effet")].join(" ") };
 }
 
 // Versions : ancienne route = tableau historique (installée relevée sur une machine) ; référence commune = dernières
@@ -555,7 +649,8 @@ const SCHEMAS = {
     date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$" }, inclure_faibles: { type: "boolean", default: false } } },
   chercher_reference: { f: chercherReference, requis: ["requete"], proprietes: {
     requete: { type: "string", minLength: 1 }, produit: { type: "string", enum: PRODUITS }, categorie: { type: "string", enum: CATEGORIES },
-    statut: { type: "string", enum: STATUTS }, limite: { type: "integer", minimum: 1, maximum: 20, default: 8 } } },
+    statut: { type: "string", enum: STATUTS }, limite: { type: "integer", minimum: 1, maximum: 20, default: 8 },
+    forme: { type: "string", enum: FORMES, default: "liste" } } },
   fiche_reference: { f: ficheReference, requis: ["id"], proprietes: { id: { type: "string", pattern: RE_ID_FICHE.source } } },
   etat_versions: { f: etatVersions, proprietes: {} },
   a_tester: { f: aTester, proprietes: {

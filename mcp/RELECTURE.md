@@ -198,3 +198,34 @@ Retenu, avec son test :
 Corrections de relecture du lot L4 (spécification JSON-RPC, reprises dans le même test « MCP stdio… ») : une requête dont
 `params` est absent, nul ou n'est pas un objet reçoit une erreur `-32602` au lieu d'arrêter le serveur ; toute erreur de
 traitement d'une requête rend `-32603` à cette requête seule, le serveur stdio continue avec les suivantes.
+
+## Lot 2 : commun / personnel raccordés, « Utile pour mon ORQYRA », consultation courte (24/10/2026, mission m-0aa17aa21d59)
+
+Changements reçus par les clients : `chercher_reference` prend `forme` (`liste` par défaut, réponse inchangée ;
+`consultation`, forme courte) ; en local, `fiche_reference` ajoute `utile_pour_instance`. Toujours six outils, schémas
+fermés, mêmes annotations. Tests : `test/local.test.js` (« lot 2 — … ») et `test/mcp.test.js` (« consultation courte sur
+l'ancienne route… »).
+
+Retenu, avec son test :
+
+- « How many tools? » (coût de chaque schéma à chaque tour) et « Disambiguate siblings » : la consultation est une forme
+  de `chercher_reference` plutôt qu'un septième outil ; sa description dit quand s'en servir (question du moment, pas à
+  chaque mission) et renvoie à `fiche_reference` pour le détail et à la forme `liste` pour une liste plus longue
+  (`suite`). Test « lot 2 — consultation courte… ».
+- « Tight schemas » : `forme` déclarée en `enum` avec son `default` ; valeur inconnue → erreur de paramètre qui liste les
+  valeurs admises. `limite` garde son schéma (1 à 20) ; en consultation, 3 par défaut et 5 au plus, dit dans la
+  description du paramètre. Tests « grille de relecture… » (existant) et « lot 2 — consultation courte… ».
+- « Truncate huge payloads and say so » : la consultation rend `total` et `affichees`, des résumés coupés à 280 caractères
+  et trois références au plus (environ 3 Ko pour trois fiches sur l'instance réelle).
+- « Include IDs Claude will need for follow-up calls » : chaque résumé porte `id`, `identite` et `know_world`
+  (`fichier` relatif à la racine du monde KNOW, `id`) ; la réponse porte `catalogue.version` (génération commune) et
+  `cache.cle`.
+
+Écarté, avec la raison :
+
+- Septième outil `consulter_reference` : même contrat qu'une forme de `chercher_reference`, avec un schéma de plus à
+  chaque tour pour tous les clients ; l'aide du site, qui décrit les six outils, aurait dû changer (gel esthétique).
+- Cache sur l'ancienne route : elle n'a pas de version de catalogue ; la réponse le dit (`cache.statut: sans_version`)
+  plutôt que de garder un résultat qu'aucune version n'invaliderait. Les lectures HTTP restent celles du cache de
+  10 minutes de `lib/couches.js`.
+- `outputSchema` : même raison qu'en L3 et L4.

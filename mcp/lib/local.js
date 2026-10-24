@@ -2,8 +2,11 @@
 // magasin personnel, lus sur disque, sans écriture ni appel de modèle. Utilisé par le MCP stdio (stdio.js) et l'adaptateur
 // du Bureau (bureau.js) ; jamais par le serveur HTTP public (api/mcp.js n'importe pas ce module et ne reçoit la source
 // `local` que d'un contexte construit ici).
-// Racines : mêmes trois sources que scripts/deltalib/couches/racines.py (profil K1, environnement DELTA_INSTANCE,
-// installation historique sur demande), sans découverte d'une autre instance.
+// Racines : mêmes trois sources que scripts/deltalib/couches/racines.py (profil K1 v1, ou v2 avec le profil d'hôte de P1 ;
+// environnement DELTA_INSTANCE ; installation historique sur demande), sans découverte d'une autre instance.
+// Lot 2 : vue « Utile pour mon ORQYRA » (`utile`) : pourquoi une fiche commune concerne cette instance, d'après
+// l'instantané de l'instance (profil d'hôte, réglages courants, rangés par `couches.py personnel rafraichir`), les versions
+// installées et l'avis courant ; elle ne recommande rien d'elle-même et ne déclenche ni mission ni changement de politique.
 // Invalidation : pointeur de génération et fichiers personnels relus dès que leur date ou leur taille change ; une fiche dont
 // l'empreinte commune diffère de celle de l'avis rend cet avis `a_revoir`, présenté comme précédent, jamais comme conseil courant.
 import fs from "node:fs";
@@ -16,12 +19,18 @@ import { ErreurTexte, t } from "./textes.js";
 const COMPOSANT = "delta-ia";
 const DEFAUTS_K1 = { configuration: ".config/delta", etat: ".local/state/delta", cache: ".cache/delta", runtime: ".local/run/delta" };
 const CHAMPS_K1 = new Set(["schema", "version", "identite", "mode", "home", "racines", "executables", "path", "venv",
-  "prefixe_node", "superviseur", "composants", "projets"]);
+  "prefixe_node", "superviseur", "composants", "projets", "hote", "installation"]);
 const RACINES_K1 = new Set(["code", "configuration", "etat", "cache", "runtime", "lanceurs"]);
 const XDG = { configuration: ["XDG_CONFIG_HOME", ".config"], etat: ["XDG_STATE_HOME", ".local/state"],
   cache: ["XDG_CACHE_HOME", ".cache"], runtime: ["XDG_RUNTIME_DIR", ".local/run"] };
 const RE_GENERATION = /^g-[0-9a-f]{16}$/;
 const VERDICTS_A_TESTER = ["tester", "utiliser"];
+// Versions communes qui concernent un produit de fiche (identités de versions.json) : seules celles qu'un relevé de
+// l'instance porte deviennent une raison de la vue « Utile pour mon ORQYRA ».
+const VERSIONS_PRODUIT = { "claude-code": ["version:claude-code"], claude: ["version:claude-desktop"],
+  codex: ["version:codex-cli-terminal", "version:codex-app-chatgpt"], chatgpt: ["version:chatgpt-desktop", "version:codex-app-chatgpt"] };
+// Exécutables déclarés par le profil d'instance qui servent un produit (clés de `executables`, discipline instance.py).
+const EXECUTABLES_PRODUIT = { "claude-code": ["claude"], codex: ["codex"] };
 
 const absolu = (v, quoi) => {
   if (typeof v !== "string" || !v || !path.isAbsolute(v) || v.split(path.sep).includes("..")) throw new ErreurTexte("local.racine", { quoi });
@@ -29,18 +38,22 @@ const absolu = (v, quoi) => {
 };
 const dedans = (p, home) => p.startsWith(home.endsWith(path.sep) ? home : home + path.sep);
 
-// Racines d'instance : { configuration, etat, cache, runtime, origine } ; refus explicite sans source désignée.
+// Racines d'instance : { configuration, etat, cache, runtime, origine, profil } ; refus explicite sans source désignée.
+// `profil` : le profil K1 lu (option, ou OPERER_INSTANCE_PROFIL d'une instance lancée par K1), null sur l'historique.
 export function resoudreRacines({ instance, historique = false, env = process.env, home = os.homedir() } = {}) {
   if (instance) {
     let d;
     try { d = JSON.parse(fs.readFileSync(instance, "utf8")); } catch { throw new ErreurTexte("local.profil_illisible"); }
     if (!d || typeof d !== "object" || Array.isArray(d) || Object.keys(d).some((k) => !CHAMPS_K1.has(k))) throw new ErreurTexte("local.profil_forme");
-    if (d.schema !== "delta.instance" || d.version !== 1) throw new ErreurTexte("local.profil_forme");
+    if (d.schema !== "delta.instance" || ![1, 2].includes(d.version)) throw new ErreurTexte("local.profil_forme");
+    // P1 : hôte et identité d'installation n'existent qu'en version 2, qui porte toujours son profil d'hôte
+    if (d.version === 1 && ("hote" in d || "installation" in d)) throw new ErreurTexte("local.profil_forme");
+    if (d.version === 2 && (!d.hote || typeof d.hote !== "object" || Array.isArray(d.hote))) throw new ErreurTexte("local.profil_forme");
     if (typeof d.identite !== "string" || !/^[a-z][a-z0-9-]{0,47}$/.test(d.identite)) throw new ErreurTexte("local.profil_forme");
     const h = absolu(d.home, "home");
     const declarees = d.racines ?? {};
     if (!declarees || typeof declarees !== "object" || Object.keys(declarees).some((k) => !RACINES_K1.has(k))) throw new ErreurTexte("local.profil_forme");
-    const r = { origine: "instance" };
+    const r = { origine: "instance", profil: instance };
     for (const [nom, defaut] of Object.entries(DEFAUTS_K1)) {
       const p = nom in declarees ? absolu(declarees[nom], nom) : path.join(h, defaut, d.identite);
       if (!dedans(p, h)) throw new ErreurTexte("local.racine", { quoi: nom });
@@ -49,7 +62,7 @@ export function resoudreRacines({ instance, historique = false, env = process.en
     return r;
   }
   if (env.DELTA_INSTANCE) {
-    const r = { origine: "environnement" };
+    const r = { origine: "environnement", profil: env.OPERER_INSTANCE_PROFIL ? absolu(env.OPERER_INSTANCE_PROFIL, "OPERER_INSTANCE_PROFIL") : null };
     for (const [nom, [v]] of Object.entries(XDG)) {
       if (!env[v]) throw new ErreurTexte("local.environnement", { variable: v });
       r[nom] = absolu(env[v], v);
@@ -57,7 +70,7 @@ export function resoudreRacines({ instance, historique = false, env = process.en
     return r;
   }
   if (historique) {
-    const r = { origine: "historique" };
+    const r = { origine: "historique", profil: null };
     for (const [nom, [v, defaut]] of Object.entries(XDG)) r[nom] = path.join(env[v] ? env[v] : path.join(home, defaut), "delta");
     return r;
   }
@@ -134,7 +147,7 @@ export class LecteurLocal {
     if (actif.origine === "synchro") {
       try { const s = lireJsonFichier(this.e.synchro); verifie_le = s.verifie_le ?? null; erreur_synchro = s.erreur ?? null; } catch { /* aucune vérification connue */ }
     }
-    return { statut: "disponible", generation: actif.generation, origine: actif.origine ?? null, dossier, manifeste, publie_le, verifie_le,
+    return { statut: "disponible", generation: actif.generation, manifest_sha256: actif.manifest_sha256, origine: actif.origine ?? null, dossier, manifeste, publie_le, verifie_le,
       erreur_synchro, donnees_du: manifeste.donnees_du ?? null, langues: Array.isArray(manifeste.langues) ? manifeste.langues : [],
       fichiers: new Map((manifeste.fichiers || []).map((f) => [f.chemin, f])), fraicheur: null };
   }
@@ -160,11 +173,12 @@ export class LecteurLocal {
   // --- couche personnelle : overlay (import L1), couples modèle × effort et essais OPÉRER (L4) ---
   personnel() {
     const f = { overlay: path.join(this.e.personnel, "overlay.json"), couples: path.join(this.e.personnel, "modeles-efforts.json"),
-      bilan: path.join(this.e.personnel, "reglages-bilan.json"), essais: path.join(this.e.personnel, "essais-operer.json") };
+      bilan: path.join(this.e.personnel, "reglages-bilan.json"), essais: path.join(this.e.personnel, "essais-operer.json"),
+      instance: path.join(this.e.personnel, "instance.json") };
     const s = Object.values(f).map(signature).join("|");
     if (this.sig.personnel === s && this.p) return this.p;
     this.sig.personnel = s;
-    const p = { statut: "absent", objets: null, couples: null, essais: null, bilan: null };
+    const p = { statut: "absent", objets: null, couples: null, essais: null, bilan: null, instance: null, signature: s };
     try {
       const d = lireJsonFichier(f.overlay);
       if (d?.schema === "delta.personnel" && d.schema_version === 1 && d.vue === "overlay" && d.objets && typeof d.objets === "object") {
@@ -186,6 +200,12 @@ export class LecteurLocal {
       const d = lireJsonFichier(f.essais);
       if (d?.vue === "essais_operer" && Array.isArray(d.essais)) p.essais = { lu_le: d.lu_le ?? null, essais: d.essais };
     } catch { /* aucun instantané */ }
+    try {
+      // lot 2 : profil d'hôte et réglages courants de l'instance (couches.py personnel rafraichir)
+      const d = lireJsonFichier(f.instance);
+      if (d?.vue === "instance" && d.schema_version === 1 && d.profil && Array.isArray(d.reglages?.cases))
+        p.instance = { lu_le: d.lu_le ?? null, sha256: d.sha256 ?? null, profil: d.profil, reglages: d.reglages };
+    } catch { /* aucun instantané : profil et réglages inconnus */ }
     this.p = p;
     return p;
   }
@@ -199,7 +219,8 @@ export class LecteurLocal {
     const personnel = { couche: "personnel", statut: p.statut, commun_generation: p.commun_generation ?? null,
       bilan_operer: p.bilan ? { statut: "disponible", sha256: p.bilan.sha256, filtres: p.bilan.filtres, jusqu_au: p.bilan.jusqu_au, lu_le: p.bilan.lu_le }
         : { statut: "absent" },
-      essais_operer: p.essais ? { statut: "disponible", lu_le: p.essais.lu_le, total: p.essais.essais.length } : { statut: "absent" } };
+      essais_operer: p.essais ? { statut: "disponible", lu_le: p.essais.lu_le, total: p.essais.essais.length } : { statut: "absent" },
+      instance: this.resumeInstance() };
     return { source: "local", langue, commun, personnel };
   }
 
@@ -303,6 +324,87 @@ export class LecteurLocal {
     const { statut, motif } = this.statutAvis(o, entree ?? null);
     if (statut === "importe") return { statut, ...avis, observe_le: jour };
     return { statut, motif, impact: null, pour_toi: null, action: null, projets_concernes: [], observe_le: jour, avis_precedent: avis };
+  }
+
+  // Instance lue (lot 2) : profil d'hôte de P1 (identité, socle, couches personnelles) et réglages courants, avec la date
+  // de leur instantané ; `absent` tant qu'aucun rafraîchissement ne les a rangés.
+  resumeInstance() {
+    const i = this.personnel().instance;
+    if (!i) return { statut: "absent" };
+    const pr = i.profil, hote = pr.hote ?? null;
+    return { statut: "disponible", lu_le: i.lu_le, sha256: i.sha256,
+      profil: { statut: pr.statut, ...(pr.motif ? { motif: pr.motif } : {}), identite: pr.identite ?? null, mode: pr.mode ?? null,
+        hote: hote ? { id: hote.id, socle: hote.socle, couches_personnelles: hote.couches_personnelles } : null },
+      reglages: { statut: i.reglages.statut, ...(i.reglages.motif ? { motif: i.reglages.motif } : {}), origine: i.reglages.origine ?? null,
+        sha256: i.reglages.sha256 ?? null, cases: i.reglages.cases.length } };
+  }
+
+  // Vue « Utile pour mon ORQYRA » d'une fiche commune : les raisons, chacune avec sa source, pour lesquelles cette fiche
+  // concerne l'instance (version installée du produit, exécutable déclaré par le profil, cases des réglages courants qui
+  // désignent ce couple, constats OPÉRER, essais), puis l'avis courant s'il existe. Aucune raison et aucun avis sont des
+  // réponses valables, rendues comme telles ; la vue ne propose ni mission ni changement de réglage (`effet: aucun`).
+  // `versions` : identité → entrée commune de versions.json (comparaison au même fait commun seulement).
+  utile(identite, fiche, { versions = new Map() } = {}) {
+    const p = this.personnel(), inst = p.instance;
+    const produits = [...new Set([fiche?.produit, ...(Array.isArray(fiche?.produits) ? fiche.produits : [])].filter(Boolean))];
+    const raisons = [];
+    for (const iv of [...new Set(produits.flatMap((x) => VERSIONS_PRODUIT[x] || []))]) {
+      const v = this.versionInstallee(iv, versions.get(iv) ?? null);
+      if (v) raisons.push({ type: "version_installee", identite: iv, installee: v.installee, releve_le: v.releve_le, statut: v.statut,
+        derniere_publiee: versions.get(iv)?.derniere_publiee ?? null, source: "personnel:version" });
+    }
+    if (inst?.profil?.statut === "present") for (const x of [...new Set(produits.flatMap((y) => EXECUTABLES_PRODUIT[y] || []))])
+      if ((inst.profil.executables || []).includes(x)) raisons.push({ type: "executable_declare", executable: x, source: "personnel:profil" });
+    if (identite?.startsWith("kb:delta:modeles:")) {
+      const cases = (inst?.reglages?.cases || []).filter((c) => c.couple === identite);
+      if (cases.length) {
+        // une case rattachée à une version antérieure de la fiche commune est dite à revoir, pas courante
+        const perime = cases.some((c) => c.couple_empreinte && fiche?.empreinte && c.couple_empreinte !== fiche.empreinte);
+        raisons.push({ type: "reglage_courant", statut: perime ? "a_revoir" : "courant", origine: inst.reglages.origine ?? null,
+          cases: cases.map((c) => ({ famille: c.famille, nature: c.nature, taille: c.taille, motif_reglage: c.motif_reglage ?? null })),
+          lu_le: inst.lu_le, source: "personnel:reglages" });
+      }
+      const c = this.constatsCouple(identite, fiche);
+      if (c.groupes.length) raisons.push({ type: "constats_operer", statut: c.statut, groupes: c.groupes.length,
+        missions: c.groupes.reduce((n, g) => n + (Number.isInteger(g.missions) ? g.missions : 0), 0), observe_le: c.observe_le,
+        bilan_empreinte: c.bilan_empreinte, source: "personnel:bilan" });
+    }
+    const bloc = this.blocPersonnel(identite, fiche);
+    if (bloc.essais?.length) raisons.push({ type: "essais", total: bloc.essais.length,
+      derniere_date: bloc.essais.map((e) => e.date ?? e.clos_le).filter((d) => typeof d === "string").sort().at(-1) ?? null, source: "personnel:essais" });
+    const a = bloc.avis;
+    const recommandation = a && (a.verdict || a.pour_toi || a.action)
+      ? { verdict: a.verdict, pourquoi: a.pourquoi, pour_toi: a.pour_toi, action: a.action, evalue_le: bloc.evalue_le ?? null, source: "personnel:avis" } : null;
+    // pourquoi il n'y a pas de recommandation : magasin absent, avis à revoir (précédent gardé à part), ou aucun avis
+    const sans = recommandation ? null : p.statut !== "disponible" ? "magasin_absent" : bloc.avis_precedent ? "avis_a_revoir" : "aucun_avis";
+    return { vue: "utile_pour_instance", identite: identite ?? null, instance: this.resumeInstance(), concerne: raisons.length > 0, raisons,
+      recommandation, sans_recommandation: sans, ...(bloc.avis_precedent ? { statut_avis: bloc.statut, motif_avis: bloc.motif ?? null } : {}),
+      effet: "aucun" };
+  }
+
+  // Cases « fait » partagées (lot 2) : fiches de la documentation des éditeurs qui ont un essai déclaré, au journal des
+  // essais de la base (kb-essais.yaml, D119) ou par OPÉRER (`operer essai`). Ce sont les seules marques « fait » qu'un
+  // autre lecteur (Bureau, agent) peut voir ; une case cochée dans un navigateur reste dans ce navigateur.
+  faits() {
+    const p = this.personnel();
+    if (p.statut !== "disponible") return [];
+    const out = [];
+    for (const identite of Object.keys(p.objets)) {
+      if (!/^kb:(claude|openai):/.test(identite)) continue;
+      const id = idCourt(identite), essais = this.essais(identite, id);
+      if (!essais.length) continue;
+      const dates = essais.map((e) => e.date ?? e.clos_le).filter((d) => typeof d === "string").sort();
+      out.push({ identite, id, essais: essais.length, derniere_date: dates.at(-1) ?? null, sources: [...new Set(essais.map((e) => e.source))].sort() });
+    }
+    // essais OPÉRER d'une fiche sans avis importé : rattachés par l'id de fiche de leur protocole
+    for (const e of p.essais?.essais || []) {
+      const f = e?.protocole?.fiche;
+      if (typeof f !== "string" || out.some((x) => x.id === f || x.identite === f)) continue;
+      const tous = p.essais.essais.filter((x) => x?.protocole?.fiche === f);
+      out.push({ identite: null, id: f, essais: tous.length,
+        derniere_date: tous.map((x) => x.clos?.ts).filter((d) => typeof d === "string").sort().at(-1) ?? null, sources: ["operer"] });
+    }
+    return out.sort((a, b) => String(b.derniere_date ?? "").localeCompare(String(a.derniere_date ?? "")) || a.id.localeCompare(b.id));
   }
 
   // Fiches proposées à l'essai : verdict local `tester` puis `utiliser`, pas encore utilisées, sans essai déclaré, et dont

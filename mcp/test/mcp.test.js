@@ -1034,3 +1034,20 @@ test("recherche : corpus de 12 questions de mission, noms exacts stables et gain
   }
   assert.ok(dansHuit >= 8, `${dansHuit}/12 cibles parmi les huit premiers résultats (avant : 4/12)`);
 });
+
+// Lot 2 : consultation courte sur l'ancienne route (sans version de catalogue : rien n'est gardé en cache), résumé tiré du
+// texte de l'éditeur, jamais du commentaire personnel de l'ancienne route.
+test("consultation courte sur l'ancienne route : sans cache, résumés courts, références et monde KNOW", async () => {
+  const r = (await appel("chercher_reference", { requete: "/add-dir", forme: "consultation" })).corps.result;
+  assert.equal(r.isError, false, r.content[0].text);
+  const c = r.structuredContent;
+  assert.deepEqual([c.forme, c.catalogue.version, c.cache.statut, c.cache.cle], ["consultation", null, "sans_version", null]);
+  assert.match(c.avis, /pas de version de catalogue/);
+  assert.ok(c.affichees >= 1 && c.affichees <= 3);
+  const f = c.resultats[0];
+  assert.equal(f.id, "claude-code-commandes-add-dir");
+  assert.deepEqual(f.know_world, { fichier: "claude/commandes.json", id: "claude-code-commandes-add-dir" });
+  const brut = JSON.parse(fs.readFileSync(path.join(DATA, "kb/claude/commandes.json"), "utf8")).entrees.find((e) => e.id === f.id);
+  if (brut.commentee && brut.description) assert.equal(f.resume.startsWith(brut.description.slice(0, 40)), false, "pas le commentaire personnel");
+  assert.equal("personnel" in f, false);
+});

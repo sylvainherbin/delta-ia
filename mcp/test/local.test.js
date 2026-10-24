@@ -363,16 +363,16 @@ test("racines : mêmes règles que racines.py (profil K1, environnement d'instan
   const home = "/srv/essai";
   const f = path.join(inst.home, "p.json");
   ecrire(f, { schema: "delta.instance", version: 1, identite: "lab", home, racines: { etat: "/srv/essai/etat" } });
-  assert.deepEqual(local.resoudreRacines({ instance: f, env: {} }), { origine: "instance", configuration: "/srv/essai/.config/delta/lab",
+  assert.deepEqual(local.resoudreRacines({ instance: f, env: {} }), { origine: "instance", profil: f, configuration: "/srv/essai/.config/delta/lab",
     etat: "/srv/essai/etat", cache: "/srv/essai/.cache/delta/lab", runtime: "/srv/essai/.local/run/delta/lab" });
   ecrire(f, { schema: "delta.instance", version: 1, identite: "lab", home, racines: { etat: "/ailleurs/etat" } });
   assert.throws(() => local.resoudreRacines({ instance: f, env: {} }), (e) => e.cle === "local.racine");
   ecrire(f, { schema: "delta.instance", version: 1, identite: "lab", home, inconnu: 1 });
   assert.throws(() => local.resoudreRacines({ instance: f, env: {} }), (e) => e.cle === "local.profil_forme");
   const env = { DELTA_INSTANCE: "lab", XDG_CONFIG_HOME: "/i/c", XDG_STATE_HOME: "/i/s", XDG_CACHE_HOME: "/i/k", XDG_RUNTIME_DIR: "/i/r" };
-  assert.deepEqual(local.resoudreRacines({ env }), { origine: "environnement", configuration: "/i/c", etat: "/i/s", cache: "/i/k", runtime: "/i/r" });
+  assert.deepEqual(local.resoudreRacines({ env }), { origine: "environnement", profil: null, configuration: "/i/c", etat: "/i/s", cache: "/i/k", runtime: "/i/r" });
   assert.throws(() => local.resoudreRacines({ env: { DELTA_INSTANCE: "lab" } }), (e) => e.cle === "local.environnement");
-  assert.deepEqual(local.resoudreRacines({ historique: true, env: {}, home: "/h" }), { origine: "historique", configuration: "/h/.config/delta",
+  assert.deepEqual(local.resoudreRacines({ historique: true, env: {}, home: "/h" }), { origine: "historique", profil: null, configuration: "/h/.config/delta",
     etat: "/h/.local/state/delta", cache: "/h/.cache/delta", runtime: "/h/.local/run/delta" });
   assert.throws(() => local.resoudreRacines({ env: {} }), (e) => e.cle === "local.sans_racines");
 });
@@ -398,4 +398,140 @@ test("Bureau : contrat `etat` et outils, mêmes couches que le MCP local, aucune
   assert.equal(vide_.sortie.personnel.objets, null);
   const apres = fs.readdirSync(path.join(inst.etat, "personnel")).map((f) => [f, sha(fs.readFileSync(path.join(inst.etat, "personnel", f)))]);
   assert.deepEqual(apres, avant);
+});
+
+// ---------------------------------------------------------------------------------------------- lot 2
+// Profil v2 de P1, vue « Utile pour mon ORQYRA », consultation courte et cases « fait » partagées.
+const HOTE = { schema: "delta.hote", version: 1, id: "hp", socle: ["moteur", "operer", "files", "tic", "pilote"],
+  couches_personnelles: [{ id: "tiroir", libelle: "Tiroir", ressources: ["tiroir/etat.json"] }], migration: [], lectures_ssh: [] };
+// Instantané de l'instance tel que `couches.py personnel rafraichir` le range (instance.py) : profil présent, une case de
+// réglage rattachée au couple de test.
+function instanceLot2() {
+  const i = instance();
+  ecrire(path.join(i.etat, "personnel", "instance.json"), { schema: "delta.personnel", schema_version: 1, vue: "instance", lu_le: "2026-10-24T18:00:00+02:00",
+    profil: { statut: "present", identite: "essai-l4", version: 2, mode: "essai", hote: { id: "hp", version: 1, socle: HOTE.socle,
+      couches_personnelles: [{ id: "tiroir", libelle: "Tiroir" }] }, executables: ["claude"] },
+    reglages: { statut: "disponible", motif: null, origine: "option", commun_generation: GEN, sha256: "1".repeat(64), cases: [
+      { famille: "codex", nature: "code", taille: "*", modele: "gpt-6.1-sol", effort: "high", motif_reglage: "mesuré", couple: COUPLE,
+        couple_empreinte: empreinteDe(COUPLE), non_rattache: null }] }, sha256: "2".repeat(64) });
+  return i;
+}
+const empreinteDossier = (d) => sha(fs.readdirSync(d).sort().map((f) => f + sha(fs.readFileSync(path.join(d, f)))).join());
+
+test("lot 2 — profil v2 de P1 : accepté avec son profil d'hôte, v1 avec hôte refusé, profil installé lu de l'environnement", () => {
+  const v2 = path.join(inst.home, "instance-v2.json");
+  ecrire(v2, { schema: "delta.instance", version: 2, identite: "essai-l4", mode: "essai", home: inst.home, hote: HOTE,
+    installation: "0f6d3c5e-8a1b-4c2d-9e7f-123456789abc", executables: { claude: path.join(inst.home, ".local/bin/claude") } });
+  const r = local.resoudreRacines({ instance: v2 });
+  assert.equal(r.profil, v2);
+  assert.equal(r.etat, path.join(inst.home, ".local/state/delta/essai-l4"));
+  const v1 = path.join(inst.home, "instance-v1-hote.json");
+  ecrire(v1, { schema: "delta.instance", version: 1, identite: "essai-l4", mode: "essai", home: inst.home, hote: HOTE });
+  assert.throws(() => local.resoudreRacines({ instance: v1 }), (e) => e.cle === "local.profil_forme");
+  const sansHote = path.join(inst.home, "instance-v2-sans-hote.json");
+  ecrire(sansHote, { schema: "delta.instance", version: 2, identite: "essai-l4", mode: "essai", home: inst.home });
+  assert.throws(() => local.resoudreRacines({ instance: sansHote }), (e) => e.cle === "local.profil_forme");
+  const env = { DELTA_INSTANCE: "x", XDG_CONFIG_HOME: "/c", XDG_STATE_HOME: "/s", XDG_CACHE_HOME: "/k", XDG_RUNTIME_DIR: "/r" };
+  assert.equal(local.resoudreRacines({ env }).profil, null);
+  assert.equal(local.resoudreRacines({ env: { ...env, OPERER_INSTANCE_PROFIL: "/c/instance.json" } }).profil, "/c/instance.json");
+  assert.equal(local.resoudreRacines({ historique: true, env: {}, home: inst.home }).profil, null);
+});
+
+test("lot 2 — vue « Utile pour mon ORQYRA » : raisons sourcées, avis courant ou absence dite, rien de déclenché", async () => {
+  const i = instanceLot2();
+  try {
+    const avant = empreinteDossier(path.join(i.etat, "personnel"));
+    const ctx = ctxLocal(i, "fr");
+    const u = (await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctx)).fiche.utile_pour_instance;
+    assert.equal(u.vue, "utile_pour_instance");
+    assert.equal(u.effet, "aucun");
+    assert.equal(u.concerne, true);
+    const version = u.raisons.find((x) => x.type === "version_installee");
+    assert.deepEqual([version.identite, version.installee, version.source], ["version:claude-code", "2.1.300", "personnel:version"]);
+    assert.equal(version.derniere_publiee, lireGen("versions.json").entrees.find((e) => e.identite === "version:claude-code").derniere_publiee);
+    assert.deepEqual(u.raisons.find((x) => x.type === "executable_declare"), { type: "executable_declare", executable: "claude", source: "personnel:profil" });
+    assert.equal(u.raisons.find((x) => x.type === "essais").total, 1);
+    assert.deepEqual([u.recommandation.verdict, u.recommandation.source, u.sans_recommandation], ["tester", "personnel:avis", null]);
+    assert.match(u.avis, /Vue en lecture seule : elle n'ouvre aucune mission/);
+    assert.equal(u.instance.profil.hote.id, "hp");
+    assert.deepEqual(u.instance.profil.hote.couches_personnelles, [{ id: "tiroir", libelle: "Tiroir" }]);
+    assert.equal(JSON.stringify(u).includes("tiroir/etat.json"), false, "ressources du profil d'hôte non recopiées");
+    // couple modèle × effort : case des réglages courants et constats OPÉRER de l'instance
+    const c = (await donnees("fiche_reference", { id: "modele-gpt-6-1-sol-high" }, ctx)).fiche.utile_pour_instance;
+    const reglage = c.raisons.find((x) => x.type === "reglage_courant");
+    assert.deepEqual([reglage.statut, reglage.cases], ["courant", [{ famille: "codex", nature: "code", taille: "*", motif_reglage: "mesuré" }]]);
+    assert.deepEqual([c.raisons.find((x) => x.type === "constats_operer").missions, c.recommandation.verdict], [12, "utiliser"]);
+    // aucune raison et aucun avis : réponse valable, dite telle quelle
+    const autre = lireGen("kb/openai/commandes.json").entrees[0].id;
+    const n = (await donnees("fiche_reference", { id: autre }, ctx)).fiche.utile_pour_instance;
+    assert.deepEqual([n.concerne, n.raisons, n.recommandation, n.sans_recommandation], [false, [], null, "aucun_avis"]);
+    assert.match(n.avis, /^Rien ne relie cette fiche à cette instance/);
+    // avis à revoir (commun très ancien) : aucune recommandation courante, précédent dit à part
+    const tard = { langue: "en", source: "local", local: new local.LecteurLocal(local.resoudreRacines({ instance: i.profil }), { maintenant: Date.now() + 8 * 864e5 }) };
+    const r = (await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, tard)).fiche.utile_pour_instance;
+    assert.deepEqual([r.recommandation, r.sans_recommandation, r.statut_avis, r.motif_avis], [null, "avis_a_revoir", "a_revoir", "commun_tres_ancien"]);
+    assert.match(r.avis, /No current recommendation: the previous opinion is to review/);
+    // sans couche personnelle : aucune recommandation, instance absente
+    const v = (await donnees("fiche_reference", { id: "claude-code-commandes-add-dir" }, ctxLocal(vide))).fiche.utile_pour_instance;
+    assert.deepEqual([v.recommandation, v.sans_recommandation, v.instance.statut], [null, "magasin_absent", "absent"]);
+    assert.equal(empreinteDossier(path.join(i.etat, "personnel")), avant, "la vue n'écrit rien");
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+});
+
+test("lot 2 — consultation courte : quelques résumés, validité, références, cache lié à la génération et au magasin", async () => {
+  const i = instanceLot2();
+  try {
+    const ctx = ctxLocal(i, "fr");
+    const c1 = await donnees("chercher_reference", { requete: "/add-dir", forme: "consultation" }, ctx);
+    assert.deepEqual([c1.forme, c1.catalogue.source, c1.catalogue.version, c1.cache.statut], ["consultation", "local", GEN, "calcule"]);
+    assert.equal(c1.donnees.commun.generation, GEN);
+    assert.ok(c1.resultats.length >= 1 && c1.resultats.length <= 3);
+    const [f] = c1.resultats;
+    assert.deepEqual([f.id, f.identite, f.know_world], ["claude-code-commandes-add-dir", ADD_DIR, { fichier: "claude/commandes.json", id: "claude-code-commandes-add-dir" }]);
+    assert.ok(f.references.length >= 1 && f.references.length <= 3 && f.references.every((x) => typeof x.url === "string"));
+    assert.ok("validite" in f && "perimee" in f && "verifie_le" in f);
+    assert.ok(f.resume.length <= 282 && f.syntaxe.startsWith("/add-dir"));
+    assert.deepEqual(f.personnel, { statut: "importe", verdict: "tester" });
+    assert.equal(JSON.stringify(c1).includes(SENTINELLE), false, "aucun texte d'avis dans un résumé de consultation");
+    assert.match(c1.suite, /fiche_reference/);
+    // même question, même catalogue, même magasin : réponse gardée, même clé ; en-tête recalculé
+    const c2 = await donnees("chercher_reference", { requete: "/add-dir", forme: "consultation" }, ctx);
+    assert.deepEqual([c2.cache.cle, c2.cache.statut], [c1.cache.cle, "reutilise"]);
+    assert.deepEqual(c2.resultats, c1.resultats);
+    const large = await donnees("chercher_reference", { requete: "context", forme: "consultation", limite: 20 }, ctx);
+    assert.ok(large.affichees <= 5 && large.total >= large.affichees);
+    // un fichier du magasin personnel change : nouvelle clé, recalculée
+    const ov = path.join(i.etat, "personnel", "overlay.json");
+    fs.utimesSync(ov, new Date(), new Date(Date.now() + 5000));
+    const c3 = await donnees("chercher_reference", { requete: "/add-dir", forme: "consultation" }, ctx);
+    assert.notEqual(c3.cache.cle, c1.cache.cle);
+    assert.equal(c3.cache.statut, "calcule");
+    const e = await appeler("chercher_reference", { requete: "/add-dir", forme: "resume" }, ctx);
+    assert.equal(e.isError, true);
+    assert.match(e.content[0].text, /`forme` doit valoir : liste, consultation|`forme` must be one of: liste, consultation/);
+    // la liste par défaut ne change pas de forme
+    assert.equal((await donnees("chercher_reference", { requete: "/add-dir", limite: 1 }, ctx)).forme, undefined);
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+});
+
+test("lot 2 — Bureau : vue utile, consultation et cases « fait » partagées (essais déclarés)", async () => {
+  const i = instanceLot2();
+  try {
+    const e = await bureau.executer(["--instance", i.profil, "etat"]);
+    assert.ok(["utile", "consulter", "a-tester"].every((x) => e.sortie.outils.includes(x)));
+    assert.deepEqual([e.sortie.personnel.instance.statut, e.sortie.personnel.instance.profil.hote.id, e.sortie.personnel.instance.reglages.cases],
+      ["disponible", "hp", 1]);
+    const u = await bureau.executer(["--instance", i.profil, "--langue", "fr", "utile", "claude-code-commandes-add-dir"]);
+    assert.equal(u.code, 0);
+    assert.deepEqual(Object.keys(u.sortie).sort(), ["avertissement", "donnees", "fiche", "utile_pour_instance"]);
+    assert.equal(u.sortie.fiche.identite, ADD_DIR);
+    const c = await bureau.executer(["--instance", i.profil, "consulter", "/add-dir"]);
+    assert.equal(c.sortie.forme, "consultation");
+    const t = await bureau.executer(["--instance", i.profil, "a-tester"]);
+    const faits = Object.fromEntries(t.sortie.faits.entrees.map((x) => [x.id, x.sources]));
+    assert.deepEqual(faits["claude-code-commandes-add-dir"], ["kb-essais.yaml"]);
+    assert.deepEqual(faits["claude-code-commandes-agents"], ["operer"]);
+    // une fiche « faite » n'est plus proposée à l'essai
+    assert.equal(t.sortie.essais_base.entrees.some((x) => x.id in faits), false);
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });

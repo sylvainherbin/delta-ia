@@ -12,6 +12,7 @@ Usage :
   couches.py surveiller (--route <dossier> | --url <route publiée>)
   couches.py (--instance <profil.json> | --historique) racines
   couches.py (--instance <profil.json> | --historique) personnel rafraichir [--depuis D] [--nature N] [--si-ancien H]
+             [--politique <fichier>]
   couches.py (--instance <profil.json> | --historique) personnel bilan [--couple <id>]
 
 Dans une instance lancée par K1 (`DELTA_INSTANCE` posée), les racines viennent de l'environnement et l'option de
@@ -26,7 +27,9 @@ génération active dans la route versionnée (instance productrice seulement, `
 `racines` imprime les racines résolues et les emplacements du composant (lecteur MCP local, Bureau).
 `personnel rafraichir` (lot L4) relit `operer reglages bilan --json` et `operer essai --json liste`, garde leurs instantanés
 privés et projette le bilan sur les couples modèle × effort communs ; `--si-ancien H` garde un instantané de moins de H heures
-aux mêmes filtres. `personnel bilan` imprime l'empreinte, les filtres et `jusqu_au` de l'instantané (et les groupes d'un couple) :
+aux mêmes filtres. Il range aussi l'instantané de l'instance (lot 2) : profil d'hôte de P1 et table des réglages
+courants d'OPÉRER (`--politique` désigne la politique, sinon résolue comme OPÉRER), lu par la vue « Utile pour mon ORQYRA ».
+`personnel bilan` imprime l'empreinte, les filtres et `jusqu_au` de l'instantané (et les groupes d'un couple) :
 c'est ce qu'un second lecteur, comme le pilote des réserves, compare pour parler du même instantané.
 Sorties JSON sur stdout ; aucun contenu personnel n'est imprimé par `importer` ni par `verifier`.
 Codes : 0 succès, 1 refus, validation en échec, synchronisation en échec, alerte ou source OPÉRER en échec, 2 usage,
@@ -80,7 +83,9 @@ def verifier(racines: mod_racines.Racines) -> list[str]:
         if doc.get("commun_generation") != lecteur.generation:
             erreurs.append(f"personnel/{nom}.json : génération {doc.get('commun_generation')} ≠ active {lecteur.generation}")
     # L4 : instantanés OPÉRER et projection modèle × effort, facultatifs (instance sans missions ni rafraîchissement)
-    for nom, vue in (("reglages-bilan", "reglages_bilan"), ("essais-operer", "essais_operer"), ("modeles-efforts", "modeles_efforts")):
+    # lot 2 : instantané de l'instance (profil d'hôte, réglages courants), facultatif comme eux
+    for nom, vue in (("reglages-bilan", "reglages_bilan"), ("essais-operer", "essais_operer"), ("modeles-efforts", "modeles_efforts"),
+                     ("instance", "instance")):
         chemin = racines.personnel / f"{nom}.json"
         if not chemin.exists():
             continue
@@ -100,7 +105,7 @@ def verifier(racines: mod_racines.Racines) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="couches.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     source = p.add_mutually_exclusive_group()
-    source.add_argument("--instance", type=Path, help="profil d'instance K1 (delta.instance v1)")
+    source.add_argument("--instance", type=Path, help="profil d'instance K1 (delta.instance v1 ou v2 avec profil d'hôte)")
     source.add_argument("--historique", action="store_true", help="racines XDG de l'installation historique (…/delta)")
     sous = p.add_subparsers(dest="commande", required=True)
     imp = sous.add_parser("importer", help="import privé et génération commune depuis le dépôt producteur")
@@ -130,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("--depuis", help="filtre `--depuis` du bilan (AAAA-MM-JJ, ISO ou Nj ; défaut : tout le journal)")
     pr.add_argument("--nature", help="filtre `--nature` du bilan (nature exacte ; défaut : toutes)")
     pr.add_argument("--si-ancien", type=float, metavar="H", help="garde un instantané de moins de H heures aux mêmes filtres")
+    pr.add_argument("--politique", type=Path, help="politique d'instance d'OPÉRER (défaut : résolue comme OPÉRER)")
     pb = pe_sous.add_parser("bilan", help="empreinte, filtres et date de l'instantané du bilan ; groupes d'un couple")
     pb.add_argument("--couple", help="identité kb:delta:modeles:<id> ou id du couple")
     su = sous.add_parser("surveiller", help="cycle de publication et couverture des périmètres du producteur")
@@ -165,8 +171,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"couches.py : {e}", file=sys.stderr)
         return 2
     if args.commande == "racines":
-        _sortir({"origine": racines.origine, **{k: str(getattr(racines, k)) for k in (
-            "configuration", "etat", "cache", "runtime", "config", "personnel", "commun", "commun_actif", "verrous")}})
+        _sortir({"origine": racines.origine, "profil": str(racines.profil) if racines.profil else None,
+                 **{k: str(getattr(racines, k)) for k in (
+                     "configuration", "etat", "cache", "runtime", "config", "personnel", "commun", "commun_actif", "verrous")}})
         return 0
     if args.commande == "personnel":
         if args.operation == "bilan":
@@ -174,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
             _sortir(res)
             return 0 if res["statut"] == "disponible" else 1
         try:
-            res = mod_bilan.rafraichir(racines, args.depuis, args.nature, args.si_ancien)
+            res = mod_bilan.rafraichir(racines, args.depuis, args.nature, args.si_ancien, politique=args.politique)
         except MagasinOccupe as e:
             print(f"couches.py : {e}", file=sys.stderr)
             return 75

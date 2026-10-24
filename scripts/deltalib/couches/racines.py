@@ -1,13 +1,16 @@
 """Racines d'instance des deux couches (conception §2.1), résolues une seule fois.
 
 Trois sources, sans découverte implicite d'une autre instance :
-- profil d'instance K1 (`delta.instance` v1 de Discipline, `--instance <profil.json>`) : ses racines déclarées, sinon
-  `<home>/<défaut>/<identite>` comme `ContexteInstance` ;
+- profil d'instance K1 (`delta.instance` v1, ou v2 avec le profil d'hôte `hote` et l'identité `installation` de P1, de
+  Discipline, `--instance <profil.json>`) : ses racines déclarées, sinon `<home>/<défaut>/<identite>` comme `ContexteInstance` ;
 - environnement d'une instance lancée par K1 (`DELTA_INSTANCE` posée) : `ContexteInstance.environnement()` y fait pointer
-  `XDG_CONFIG_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME` et `XDG_RUNTIME_DIR` sur les racines de l'instance ;
+  `XDG_CONFIG_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME` et `XDG_RUNTIME_DIR` sur les racines de l'instance, et
+  `OPERER_INSTANCE_PROFIL` sur son profil installé, quand il existe ;
 - installation historique, sur demande explicite (`historique=True`) : racines XDG existantes suffixées de `delta`
   (`~/.local/state/delta`, `~/.cache/delta`…), là où vivent déjà OPÉRER et ses états.
 Les emplacements du composant `delta-ia` sont relatifs à ces racines ; aucun chemin personnel n'est codé en dur.
+Le profil lui-même (`Racines.profil`) n'est lu que pour la vue « Utile pour mon ORQYRA » (instance.py) ; l'installation
+historique n'en a pas.
 """
 
 from __future__ import annotations
@@ -23,7 +26,7 @@ COMPOSANT = "delta-ia"
 DEFAUTS_K1 = {"configuration": ".config/delta", "etat": ".local/state/delta", "cache": ".cache/delta",
               "runtime": ".local/run/delta"}
 CHAMPS_K1 = {"schema", "version", "identite", "mode", "home", "racines", "executables", "path", "venv",
-             "prefixe_node", "superviseur", "composants", "projets"}
+             "prefixe_node", "superviseur", "composants", "projets", "hote", "installation"}
 RACINES_K1 = {"code", "configuration", "etat", "cache", "runtime", "lanceurs"}
 XDG = {"configuration": ("XDG_CONFIG_HOME", ".config"), "etat": ("XDG_STATE_HOME", ".local/state"),
        "cache": ("XDG_CACHE_HOME", ".cache"), "runtime": ("XDG_RUNTIME_DIR", ".local/run")}
@@ -40,6 +43,7 @@ class Racines:
     cache: Path
     runtime: Path
     origine: str  # « instance », « environnement » ou « historique »
+    profil: Path | None = None  # profil d'instance K1 lu (option ou OPERER_INSTANCE_PROFIL) ; None sur l'historique
 
     @property
     def config(self) -> Path:
@@ -77,15 +81,21 @@ def _absolu(valeur, quoi: str) -> Path:
 
 
 def depuis_profil(chemin: Path) -> Racines:
-    """Racines d'un profil `delta.instance` v1 ; mêmes refus que `ContexteInstance` pour la forme et les chemins."""
+    """Racines d'un profil `delta.instance` v1 ou v2 ; mêmes refus que `ContexteInstance` pour la forme et les chemins
+    (le profil d'hôte d'un v2 est validé à sa lecture, par instance.py)."""
     try:
         donnees = json.loads(Path(chemin).read_text(encoding="utf-8"))
     except (OSError, UnicodeError, ValueError) as e:
         raise RacinesInvalides(f"profil d'instance illisible : {e}") from e
     if not isinstance(donnees, dict) or donnees.keys() - CHAMPS_K1:
         raise RacinesInvalides("profil d'instance : objet attendu, ou clés inconnues")
-    if donnees.get("schema") != "delta.instance" or donnees.get("version") != 1:
-        raise RacinesInvalides("profil d'instance : schema delta.instance, version 1 attendus")
+    version = donnees.get("version")
+    if donnees.get("schema") != "delta.instance" or type(version) is not int or version not in (1, 2):
+        raise RacinesInvalides("profil d'instance : schema delta.instance, version 1 ou 2 attendus")
+    if version == 1 and {"hote", "installation"} & donnees.keys():
+        raise RacinesInvalides("profil d'instance : hôte et identité d'installation exigent la version 2")
+    if version == 2 and not isinstance(donnees.get("hote"), dict):
+        raise RacinesInvalides("profil d'instance : profil d'hôte attendu en version 2")
     identite = donnees.get("identite", "")
     if not isinstance(identite, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,47}", identite):
         raise RacinesInvalides("profil d'instance : identité attendue (lettres minuscules, chiffres, tirets)")
@@ -99,15 +109,17 @@ def depuis_profil(chemin: Path) -> Racines:
         if home not in p.parents:
             raise RacinesInvalides(f"profil d'instance : la racine {nom} doit rester dans son HOME")
         racines[nom] = p
-    return Racines(**racines, origine="instance")
+    return Racines(**racines, origine="instance", profil=Path(chemin))
 
 
 def depuis_environnement(env: dict) -> Racines:
-    """Instance lancée par K1 : les variables XDG désignent déjà ses racines ; toutes doivent être posées."""
+    """Instance lancée par K1 : les variables XDG désignent déjà ses racines ; toutes doivent être posées. Le profil
+    installé vient d'`OPERER_INSTANCE_PROFIL` (posée par l'installateur), sinon il reste inconnu."""
     manquantes = [var for var, _ in XDG.values() if not env.get(var)]
     if manquantes:
         raise RacinesInvalides(f"DELTA_INSTANCE posée sans {', '.join(manquantes)} : racines de l'instance incomplètes")
-    return Racines(**{nom: _absolu(env[var], var) for nom, (var, _) in XDG.items()}, origine="environnement")
+    profil = _absolu(env["OPERER_INSTANCE_PROFIL"], "OPERER_INSTANCE_PROFIL") if env.get("OPERER_INSTANCE_PROFIL") else None
+    return Racines(**{nom: _absolu(env[var], var) for nom, (var, _) in XDG.items()}, origine="environnement", profil=profil)
 
 
 def historiques(env: dict, home: Path) -> Racines:
