@@ -57,7 +57,9 @@ def test_chaque_id_donne_son_fichier():
 def test_chargement_par_fichier_memorise_et_sans_liste_vide_muette():
     charge = morceau(APP, "function chargerFichierKb", "const kbComplet")
     assert "kb.promesses.has(cle)" in charge and "kb.promesses.set(cle" in charge, "un fichier n'est lu qu'une fois, même demandé deux fois"
-    assert "kb.erreurs.push(`${cle} : ${err.message || err}`)" in charge, "un fichier en échec est signalé, jamais ignoré"
+    # erreur à clé des fiches modèles traduite par le dictionnaire du site (L4), message brut sinon
+    assert "kb.erreurs.push(`${cle} : ${err && err.cle ? t(err.cle, err.vars) : err.message || err}`)" in charge, \
+        "un fichier en échec est signalé, jamais ignoré"
     # L3 : même disposition kb/<p>/<c>.json sur l'ancienne route et dans la génération commune, racine choisie par chemin()
     assert 'lireJson(cheminKb(p, c))' in charge and "`kb/${p}/${c}.json`" in APP and 'adapterKb(d, `kb/${cle}.json`)' in charge
     assert FR["erreur.sans_entrees"] == "fichier sans `entrees`" and 't("erreur.sans_entrees")' in APP
