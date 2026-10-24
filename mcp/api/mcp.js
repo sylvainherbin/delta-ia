@@ -111,7 +111,8 @@ async function resumeCommun(date, ctx, inclure_faibles = false) {
     // personnelle (fort, moyen, et faible sur demande) s'applique, sinon tous les éléments, par publication
     let liste = tous, tri = "publication", compte;
     if (estLocal(ctx)) {
-      for (const e of tous) e.personnel = ctx.local.veille(e.identite, p, d) ?? { statut: "non_personnalise", impact: null };
+      const entrees = new Map(v.entrees.map((x) => [x.identite, x]));
+      for (const e of tous) e.personnel = ctx.local.veille(e.identite, p, d, entrees.get(e.identite)) ?? { statut: "non_personnalise", impact: null };
       compte = { fort: 0, moyen: 0, faible: 0, nul: 0, inconnu: 0 };
       for (const e of tous) compte[IMPACTS.includes(e.personnel.impact) ? e.personnel.impact : "inconnu"] += 1;
       if (tous.some((e) => IMPACTS.includes(e.personnel.impact))) {
@@ -514,7 +515,7 @@ async function aTesterLocal({ limite, curseur, id }, ctx, tete) {
     if (!Array.isArray(v.entrees)) throw erreurFormat(`veille/${p}.json`);
     for (const e of v.entrees) for (const pub of e.publications || []) {
       if (!pub || typeof pub.jour !== "string" || pub.jour < depuis) continue;
-      const a = ctx.local.veille(e.identite, p, pub.jour);
+      const a = ctx.local.veille(e.identite, p, pub.jour, e);  // une action à revoir n'a plus d'action courante
       if (!a || !a.action) continue;
       const s = (pub.sources || [])[0];
       actions.push({ id: `action:${p}:${pub.jour}:${e.id}`, id_element: e.id, identite: e.identite, date: pub.jour, produit: pub.produit ?? null,

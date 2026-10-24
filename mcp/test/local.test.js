@@ -129,12 +129,11 @@ test("une requête retrouve la syntaxe commune et l'avis personnel, étiquetés 
   assert.equal((await donnees("chercher_reference", { requete: "/add-dir", statut: "utilise" }, ctx)).total, 0);
 });
 
-// Nouvelle génération du miroir où l'empreinte commune de `identite` (kb/claude/commandes.json) a changé ; le pointeur bascule.
-function changerFait(i, identite) {
+// Nouvelle génération du miroir où l'empreinte commune de `identite` (dans `rel`) a changé ; le pointeur bascule.
+function changerFait(i, identite, rel = "kb/claude/commandes.json") {
   const nouvelle = "g-" + sha(identite + Date.now()).slice(0, 16);
   const dossier = path.join(i.cache, "commun", nouvelle);
   fs.cpSync(path.join(i.cache, "commun", GEN), dossier, { recursive: true });
-  const rel = "kb/claude/commandes.json";
   const doc = JSON.parse(fs.readFileSync(path.join(dossier, rel), "utf8"));
   doc.entrees.find((e) => e.identite === identite).empreinte = "a".repeat(64);
   const octets = Buffer.from(JSON.stringify(doc));
@@ -149,6 +148,8 @@ function changerFait(i, identite) {
   return { nouvelle, fichier: path.join(dossier, rel), octets };
 }
 const proposees = async (ctx) => (await donnees("a_tester", { limite: 20 }, ctx)).essais_base.entrees.map((e) => e.identite);
+const actionsProposees = async (ctx) => (await donnees("a_tester", { limite: 20 }, ctx)).actions.map((a) => a.identite);
+const avisDuJour = async (ctx) => (await donnees("resume_du_jour", { date: JOUR }, ctx)).perimetres.find((x) => x.perimetre === "claude");
 
 test("avis périmé signalé après un changement commun : nouvelle génération, avis à revoir et jamais courant", async () => {
   const i = instance();
@@ -189,6 +190,31 @@ test("fraîcheur recalculée à chaque lecture : un serveur qui dure voit le com
   assert.equal(r.fiche.personnel.statut, "a_revoir");
   assert.equal(r.fiche.personnel.motif, "commun_tres_ancien");
   assert.deepEqual(await proposees(ctx), []);
+  // les avis de veille suivent la même règle (second tour, BLOQUANT) : plus d'impact ni d'action courants
+  assert.deepEqual(await actionsProposees(ctx), []);
+  const jour = await avisDuJour(ctx);
+  // sans impact courant, tous les éléments par publication ; l'élément porte son avis à revoir, sans impact ni action
+  assert.equal(jour.tri, "publication");
+  const el = jour.elements.find((e) => e.identite === ELEMENT.identite);
+  assert.deepEqual([el.personnel.statut, el.personnel.motif, el.personnel.impact, el.personnel.action], ["a_revoir", "commun_tres_ancien", null, null]);
+  assert.equal(el.personnel.avis_precedent.impact, "fort");
+  assert.equal(jour.compte.fort, 0);
+});
+
+test("avis de veille périmé après un changement commun : action retirée, impact rendu en avis précédent", async () => {
+  const i = instance();
+  try {
+    const ctx = ctxLocal(i);
+    assert.deepEqual(await actionsProposees(ctx), [ELEMENT.identite]);
+    assert.equal((await avisDuJour(ctx)).elements[0].personnel.impact, "fort");
+    changerFait(i, ELEMENT.identite, "veille/claude.json");
+    assert.deepEqual(await actionsProposees(ctx), []);
+    const jour = await avisDuJour(ctx);
+    assert.equal(jour.tri, "publication");
+    const el = jour.elements.find((e) => e.identite === ELEMENT.identite);
+    assert.deepEqual([el.personnel.statut, el.personnel.motif, el.personnel.impact, el.personnel.action], ["a_revoir", "commun_modifie", null, null]);
+    assert.equal(el.personnel.avis_precedent.impact, "fort");
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });
 
 test("miroir commun indisponible : la couche personnelle reste consultable, avis à revoir, indisponibilité dite", async () => {
@@ -206,6 +232,9 @@ test("miroir commun indisponible : la couche personnelle reste consultable, avis
     assert.equal(fp.personnel.statut, "a_revoir");
     assert.equal(fp.personnel.motif, "commun_indisponible");
     assert.equal(fp.personnel.avis_precedent.verdict, "tester");
+    // essais OPÉRER rattachés à l'id court, retrouvés sans fiche commune (second tour, À NOTER)
+    const agents = (await donnees("fiche_reference", { id: "claude-code-commandes-agents" }, ctx)).fiches_personnelles[0].personnel;
+    assert.deepEqual(agents.essais.map((e) => e.source), ["operer"]);
     const v = await donnees("etat_versions", {}, ctx);
     assert.deepEqual(v.outils.map((o) => [o.identite, o.installee, o.statut, o.derniere_publiee]), [["version:claude-code", "2.1.300", "inconnu", null]]);
     // les outils qui ne vivent que du commun le disent, sans liste vide

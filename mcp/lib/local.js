@@ -90,6 +90,9 @@ function importe(o, champ, fichier) {
   return v;
 }
 
+// Id d'origine d'une identité de fiche : `kb:claude:<id>` → `<id>`, `kb:delta:modeles:<id>` → `<id>`.
+export const idCourt = (identite) => (identite.startsWith("kb:delta:") ? identite.split(":").slice(3) : identite.split(":").slice(2)).join(":");
+
 export class LecteurLocal {
   constructor(racines, { maintenant } = {}) {
     this.racines = racines;
@@ -205,7 +208,7 @@ export class LecteurLocal {
   identitesPersonnelles(id) {
     const p = this.personnel();
     if (p.statut !== "disponible") return [];
-    return Object.keys(p.objets).filter((i) => i === id || (i.startsWith("kb:") && i.split(":").slice(i.startsWith("kb:delta:") ? 3 : 2).join(":") === id)).sort();
+    return Object.keys(p.objets).filter((i) => i === id || (i.startsWith("kb:") && idCourt(i) === id)).sort();
   }
 
   // Versions relevées sur cette instance, sans le fait commun (miroir indisponible) : rien n'est comparé.
@@ -229,20 +232,26 @@ export class LecteurLocal {
     return [...base, ...operer];
   }
 
-  // Bloc personnel d'une fiche (même règle que Lecteur.bloc_personnel) : statut, dates et avis séparés de la fiche commune.
+  // Statut courant d'un avis (même règle que Lecteur.bloc_personnel) : commun indisponible, fait commun modifié, fiche
+  // absente, commun très ancien. Seul `importe` est un conseil courant ; il vaut pour les fiches comme pour la veille.
+  statutAvis(o, fiche) {
+    const g = this.generation();
+    if (g.statut !== "disponible" && o.statut === "importe") return { statut: "a_revoir", motif: "commun_indisponible" };
+    if (fiche && o.commun_empreinte && fiche.empreinte && o.commun_empreinte !== fiche.empreinte) return { statut: "a_revoir", motif: "commun_modifie" };
+    if (!fiche && o.statut === "importe" && o.commun_empreinte) return { statut: "reference_introuvable", motif: "fiche_absente" };
+    if (o.statut === "importe" && g.fraicheur === "tres_ancienne") return { statut: "a_revoir", motif: "commun_tres_ancien" };
+    return { statut: o.statut, motif: null };
+  }
+
+  // Bloc personnel d'une fiche : statut, dates et avis séparés de la fiche commune.
   blocPersonnel(identite, fiche, { complet = false } = {}) {
     const p = this.personnel();
     if (p.statut !== "disponible") return { couche: "personnel", statut: "non_personnalise", magasin: p.statut, avis: null };
     const o = p.objets[identite];
-    const id = fiche?.id ?? null;
-    const essais = this.essais(identite, id);
+    // sans fiche commune (miroir indisponible), l'id court vient de l'identité : les essais OPÉRER le citent ainsi
+    const essais = this.essais(identite, fiche?.id ?? idCourt(identite));
     if (!o) return { couche: "personnel", statut: "non_personnalise", magasin: "disponible", avis: null, ...(essais.length ? { essais } : {}) };
-    let statut = o.statut, motif = null;
-    const g = this.generation();
-    if (g.statut !== "disponible" && statut === "importe") { statut = "a_revoir"; motif = "commun_indisponible"; }
-    else if (fiche && o.commun_empreinte && fiche.empreinte && o.commun_empreinte !== fiche.empreinte) { statut = "a_revoir"; motif = "commun_modifie"; }
-    else if (!fiche && statut === "importe" && o.commun_empreinte) { statut = "reference_introuvable"; motif = "fiche_absente"; }
-    else if (statut === "importe" && g.fraicheur === "tres_ancienne") { statut = "a_revoir"; motif = "commun_tres_ancien"; }
+    const { statut, motif } = this.statutAvis(o, fiche);
     const rec = o.recommandation && typeof o.recommandation === "object" ? o.recommandation : null;
     const reev = (o.reevaluations || []).filter((r) => typeof r?.date === "string").map((r) => r.date).sort();
     const evalue_le = o.evalue_le ?? reev.at(-1) ?? null;
@@ -281,15 +290,19 @@ export class LecteurLocal {
       statut: perime ? "a_revoir" : importe(o, "statut") ?? "inconnu" };
   }
 
-  // Avis du jour d'un élément de veille (impact, pour_toi, action importés de ce quotidien).
-  veille(identite, perimetre, jour) {
+  // Avis du jour d'un élément de veille (impact, pour_toi, action importés de ce quotidien), validé comme l'avis d'une
+  // fiche sur l'entrée commune `entree` : un avis à revoir n'a ni impact ni action courants, il reste en `avis_precedent`.
+  veille(identite, perimetre, jour, entree) {
     const o = this.objet(identite);
     if (!o) return null;
     const fichier = `docs/data/${perimetre}/${jour}.json`;
     const impact = importe(o, "impact", fichier);
     if (impact === undefined) return null;
-    return { impact: impact ?? null, pour_toi: importe(o, "pour_toi", fichier) ?? null, action: importe(o, "action", fichier) ?? null,
-      projets_concernes: importe(o, "projets_concernes", fichier) ?? [], observe_le: jour };
+    const avis = { impact: impact ?? null, pour_toi: importe(o, "pour_toi", fichier) ?? null, action: importe(o, "action", fichier) ?? null,
+      projets_concernes: importe(o, "projets_concernes", fichier) ?? [] };
+    const { statut, motif } = this.statutAvis(o, entree ?? null);
+    if (statut === "importe") return { statut, ...avis, observe_le: jour };
+    return { statut, motif, impact: null, pour_toi: null, action: null, projets_concernes: [], observe_le: jour, avis_precedent: avis };
   }
 
   // Fiches proposées à l'essai : verdict local `tester` puis `utiliser`, pas encore utilisées, sans essai déclaré, et dont
@@ -304,7 +317,7 @@ export class LecteurLocal {
       if (!/^kb:(claude|openai):/.test(identite) || o.statut !== "importe") continue;
       const verdict = o.recommandation?.verdict;
       if (!VERDICTS_A_TESTER.includes(verdict) || o.statut_usage === "utilise") continue;
-      const id = identite.split(":").slice(2).join(":");
+      const id = idCourt(identite);
       if (this.essais(identite, id).length) continue;  // D119 : un essai déclaré n'est plus proposé
       if (this.blocPersonnel(identite, fiches.get(identite) ?? null).statut !== "importe") continue;
       out.push({ identite, id, verdict });
