@@ -1221,6 +1221,7 @@
     if (r && r.ok === true) {
       const t0 = Date.now();
       noterEnvoi(e.id);
+      suiviPromesse = null;
       noterHeure("envoi", e.id, t0);
       bloquerBouton(bouton, t0);
       statut.textContent = t("envoi.ok");
@@ -1289,7 +1290,81 @@
     const b = el("button", { type: "button", class: "envoi-delta", text: t("envoi.bouton"), title: t("envoi.titre") });
     if (envoi !== null) bloquerBouton(b, envoi);
     b.addEventListener("click", () => envoyerADelta(e, b, statut));
-    return el("div", { class: "envoi" }, b, statut);
+    const suivi = el("p", { class: "envoi-suivi", hidden: true });
+    chargerSuivi().then((r) => remplirSuivi(suivi, r, e.id));
+    return el("div", { class: "envoi" }, b, statut, suivi);
+  }
+  /* ---------- Boucle d'adoption (m-a04181983623) : état de la fiche projeté depuis OPÉRER par le relais local (GET /suivi,
+     scripts/deltalib/adoptions.py), sur ce poste seulement : donnée personnelle, jamais publiée. Delta Lab et OBSERVATORY
+     mesurent ; la page ne montre que l'état, les utilisations et où lire le résultat observé. Demandé seulement par un
+     navigateur qui a déjà envoyé une fiche : un visiteur du site ne reçoit pas de demande d'accès au réseau local. ---------- */
+  const ETAPES_SUIVI = ["propose", "retenu", "en_realisation", "installe"];
+  let suiviPromesse = null;
+  function chargerSuivi() {
+    if (suiviPromesse) return suiviPromesse;
+    if (enCommun() || estIos() || !Object.keys(lireEnvois()).length) return (suiviPromesse = Promise.resolve(null));
+    suiviPromesse = (async () => {
+      for (let essai = 0; essai < 4; essai++) {   // 503 « en_calcul » : premier calcul du relais, environ 15 s
+        let rep;
+        try { rep = await fetch(`${RELAIS}/suivi`, { signal: AbortSignal.timeout(5000) }); } catch (err) { return null; }
+        if (rep.status === 503) { await new Promise((ok) => setTimeout(ok, 15000)); continue; }
+        try {
+          const r = await rep.json();
+          return r && r.ok === true && r.fiches && typeof r.fiches === "object" ? r : null;
+        } catch (err) { return null; }
+      }
+      return null;
+    })();
+    return suiviPromesse;
+  }
+  // une livraison fusionnée sans fichier installé (preuves `sans_installation`) est dite « adoptée », jamais « installée »
+  function libelleInstallation(i) {
+    return t(i.par === "mission_sans_installation" ? "suivi.adoption" : "suivi.installation",
+      { date: ISO_JOUR.test(i.le || "") ? dateAffichee(i.le) : "?", lot: String(i.lot || "?") });
+  }
+  function remplirSuivi(zone, r, id) {
+    const f = r && r.fiches[id];
+    if (!f || typeof f !== "object") return;
+    // « inconnu » : vue d'une mission liée illisible (délai, code) ; jamais une échelle devinée à sa place
+    const etapes = f.etat === "inconnu" ? ["inconnu"] : f.etat === "ecarte" ? ["propose", "ecarte"] : f.etat === "adopte" ? ["propose", "retenu", "en_realisation", "adopte"] : ETAPES_SUIVI;
+    const rang = etapes.indexOf(f.etat);
+    zone.append(el("strong", { text: t("suivi.titre") }), " ");
+    etapes.forEach((x, i) => {
+      if (i) zone.append(" › ");
+      zone.append(i === rang ? el("strong", { text: t(`suivi.etape.${x}`) }) : el("span", { class: i > rang ? "a-venir" : null, text: t(`suivi.etape.${x}`) }));
+    });
+    const details = [];
+    if (typeof f.position === "string") details.push(t("suivi.position", { position: f.position }));
+    for (const m of f.missions || []) if (m && m.projete === "en_realisation") details.push(t("suivi.mission", { id: m.id, etat: m.etat }));
+    for (const id of Array.isArray(f.missions_illisibles) ? f.missions_illisibles : []) details.push(t("suivi.illisible", { id: String(id) }));
+    if (details.length) zone.append(` (${details.join(" ; ")})`);
+    const installations = Array.isArray(f.installations) ? f.installations : [];
+    if (installations.length) zone.append(el("br"), t("suivi.utilisations", { liste: installations.map(libelleInstallation).join(" ; ") }));
+    const observes = Array.isArray(f.resultat_observe) ? f.resultat_observe : [];
+    const essais = observes.filter((o) => o && o.essai).map((o) =>
+      `${o.essai} ${t(`suivi.essai.${o.statut}`)}${o.maturite ? ` · ${o.maturite}` : ""}${o.explication ? ` : ${o.explication}` : ""}`);
+    const tris = observes.filter((o) => o && o.statut === "ecarte_au_tri").map((o) =>
+      t("suivi.tri", { date: ISO_JOUR.test(o.le || "") ? dateAffichee(o.le) : "?", raison: String(o.explication || "") }));
+    if (essais.length || tris.length) zone.append(el("br"), t("suivi.resultat", { liste: essais.concat(tris).join(" ; ") }));
+    else if (f.etat === "installe" || f.etat === "adopte") zone.append(el("br"), t("suivi.resultat_aucun"));
+    zone.hidden = false;
+  }
+  // rubrique « Améliorations appliquées » de l'onglet Référence : fiches installées ou adoptées (dit comme tel), date et lot, repliée
+  function remplirAmeliorations(r) {
+    const sec = document.getElementById("kb-ameliorations");
+    if (!sec || !r) return;
+    const installees = Object.values(r.fiches).filter((f) => f && (f.etat === "installe" || f.etat === "adopte") && Array.isArray(f.installations) && f.installations.length)
+      .sort((a, b) => String(b.installations[b.installations.length - 1].le || "").localeCompare(String(a.installations[a.installations.length - 1].le || "")));
+    if (!installees.length && !(r.sources_en_echec || []).length) return;
+    const noms = new Map(((etat.kb && etat.kb.entrees) || []).map((e) => [e.id, e.nom]));
+    const d = el("details", { class: "actions-faites" }, el("summary", { text: t("ameliorations.titre", { n: installees.length }) }),
+      el("p", { class: "sous-titre", text: t("ameliorations.sous_titre") }),
+      el("ul", null, ...installees.map((f) => el("li", null,
+        el("a", { href: `#reference?id=${encodeURIComponent(f.id)}`, text: texte(noms.get(f.id), f.id) }),
+        ` — ${f.installations.map(libelleInstallation).join(" ; ")}`))));
+    if ((r.sources_en_echec || []).length) d.append(el("p", { class: "erreur", text: t("suivi.incomplet", { liste: r.sources_en_echec.join(" ; ") }) }));
+    sec.append(d);
+    sec.hidden = false;
   }
   // D64-bis : péremption par ctx-id de CONTEXTE ; `contexte_sections: null` = commentaire antérieur à D64
   function badgeContexte(e) {
@@ -1380,6 +1455,10 @@
       choix(t("filtre.tri"), "tri", { recent: t("filtre.tri_recent") }, t("filtre.tri_alpha")),
       choix(t("filtre.date_ajout"), "depuis", { 7: t("filtre.depuis_7"), 30: t("filtre.depuis_30") }, t("filtre.depuis_toutes")));
     frag.append(el("div", { class: "filtres kb-filtres" }, ...filtres));
+    if (!enCommun()) {
+      frag.append(el("section", { id: "kb-ameliorations", hidden: true }));
+      chargerSuivi().then(remplirAmeliorations);
+    }
     frag.append(el("div", { id: "kb-resultats" }));
     return frag;
   }

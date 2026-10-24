@@ -19,6 +19,11 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
        écoulée sont relus dans le journal au démarrage (plafond comme fiches déjà envoyées), un redémarrage n'efface
        donc pas le compte.
   GET /etat   le relais répond (sert à l'installation et au contrôle).
+  GET /suivi  boucle d'adoption (m-a04181983623) : l'état de chaque fiche envoyée, projeté depuis OPÉRER par
+    deltalib/adoptions.py (proposé, retenu ou écarté, en réalisation, installé ; résultat observé de Delta Lab à part).
+    Donnée personnelle, servie seulement à une origine admise et sous l'hôte 127.0.0.1 ou localhost (pas de
+    rebinding DNS) ; calcul d'environ 15 s gardé 10 min, refait en arrière-plan à la demande suivante : la page reçoit
+    le dernier calcul, ou 503 « en_calcul » avant le premier.
 
 Réponses : JSON {"ok": bool, "etape": ..., "detail": ...}, même forme que idee.py.
 
@@ -39,6 +44,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE / "scripts"))
+from deltalib import adoptions  # noqa: E402
 from deltalib.couches.config import origines_site  # noqa: E402
 
 PORT = 47613
@@ -53,6 +59,7 @@ CORPS_MAX = 2048
 PLAFOND = 10         # envois par heure glissante (D104)
 FENETRE = 3600
 IDEE_MAX = 4000      # plafond de idee.py
+SUIVI_TTL = 600      # secondes de validité d'une projection OPÉRER
 PRODUITS = {"claude": "Claude", "claude-code": "Claude Code", "chatgpt": "ChatGPT", "codex": "Codex"}
 CATEGORIES = {"fonctionnalites": "fonctionnalité", "commandes": "commande", "skills": "skill", "plugins": "plugin",
               "mcp": "MCP", "parametres": "paramètre", "raccourcis": "raccourci"}
@@ -201,6 +208,59 @@ class DejaEnvoyees:
                 del self.vues[ident]
 
 
+def envois_reussis(journal):
+    """Lignes réussies du journal des envois (fiches proposées, même pas encore jugées)."""
+    try:
+        lignes = Path(journal).read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    vus = []
+    for ligne in lignes:
+        try:
+            d = json.loads(ligne)
+        except ValueError:
+            continue
+        if isinstance(d, dict) and d.get("ok") is True:
+            vus.append(d)
+    return vus
+
+
+class Suivi:
+    """Dernière projection de la boucle d'adoption ; un seul calcul à la fois, lancé en arrière-plan."""
+
+    def __init__(self, journal=None, lire=adoptions.lire_operer, ttl=SUIVI_TTL, horloge=time.time):
+        self.journal, self.lire, self.ttl, self.horloge = journal, lire, ttl, horloge
+        self.verrou = threading.Lock()
+        self.dernier, self.calcule_a, self.en_cours = None, None, False
+
+    def _calculer(self):
+        try:
+            r = adoptions.suivi(envois_reussis(self.journal) if self.journal else [], lire=self.lire)
+            r = {"ok": True, "etape": "suivi", "calcule_le": time.strftime("%Y-%m-%dT%H:%M:%S%z"), **r}
+        except Exception as exc:   # le relais reste debout ; la raison est dite, sans trace
+            r = {"ok": False, "etape": "suivi", "detail": f"projection impossible : {type(exc).__name__}"}
+        with self.verrou:
+            self.dernier, self.calcule_a, self.en_cours = r, self.horloge(), False
+
+    def lancer(self, attendre=False):
+        with self.verrou:
+            if self.en_cours:
+                return
+            self.en_cours = True
+        if attendre:
+            self._calculer()
+        else:
+            threading.Thread(target=self._calculer, daemon=True).start()
+
+    def lire_ou_lancer(self):
+        """Le dernier calcul (éventuellement périmé, relancé) ou None s'il n'y en a encore aucun."""
+        with self.verrou:
+            dernier, perime = self.dernier, self.calcule_a is None or self.horloge() - self.calcule_a >= self.ttl
+        if perime:
+            self.lancer()
+        return dernier
+
+
 def heure(t):
     return time.strftime("%H:%M", time.localtime(t))
 
@@ -221,6 +281,7 @@ class Relais(BaseHTTPRequestHandler):
     journal = JOURNAL
     limiteur = Limiteur()
     deja = DejaEnvoyees()
+    suivi = Suivi()
 
     def _repondre(self, code, corps=None, entetes=None):
         origine = self.headers.get("Origin")
@@ -247,9 +308,24 @@ class Relais(BaseHTTPRequestHandler):
         self._repondre(204 if origine_admise(self.headers.get("Origin")) else 403)
 
     def do_GET(self):
+        if self.path == "/suivi":
+            return self._suivi()
         if self.path != "/etat":
             return self._repondre(404, {"ok": False, "etape": "chemin", "detail": self.path})
         self._repondre(200, {"ok": True, "etape": "pret", "detail": "relais Référence → Delta"})
+
+    def _suivi(self):
+        origine = self.headers.get("Origin")
+        if not origine_admise(origine):
+            return self._repondre(403, {"ok": False, "etape": "origine", "detail": f"origine refusée : {origine}"})
+        hote = self.headers.get("Host") or ""
+        if hote not in (f"127.0.0.1:{self.server.server_address[1]}", f"localhost:{self.server.server_address[1]}"):
+            return self._repondre(403, {"ok": False, "etape": "hote", "detail": "hôte refusé"})
+        r = self.suivi.lire_ou_lancer()
+        if r is None:
+            return self._repondre(503, {"ok": False, "etape": "en_calcul", "detail": "projection OPÉRER en cours"},
+                                  {"Retry-After": "15"})
+        self._repondre(200 if r.get("ok") else 502, r)
 
     def do_POST(self):
         if self.path != "/reference":
@@ -304,6 +380,8 @@ def main(argv=None):
     Relais.kb, Relais.idee, Relais.journal = Path(o.kb), Path(o.idee), Path(o.journal)
     Relais.limiteur = Limiteur(Relais.journal)
     Relais.deja = DejaEnvoyees(Relais.journal)
+    Relais.suivi = Suivi(Relais.journal)
+    Relais.suivi.lancer()   # premier calcul dès le démarrage
     serveur = ThreadingHTTPServer(("127.0.0.1", o.port), Relais)
     print(f"relais Référence → Delta sur http://127.0.0.1:{o.port}", flush=True)
     try:

@@ -70,6 +70,9 @@ def test_cles_utilisees_par_app_js_presentes():
         "categorie.nom": ["fonctionnalites", "commandes", "skills", "plugins", "mcp", "parametres", "raccourcis", "methodes", "modeles"],
         "categorie.nom_pluriel": ["fonctionnalites", "commandes", "skills", "plugins", "mcp", "parametres", "raccourcis", "methodes", "modeles"],
         "aide.etiquette": ["sert", "geste", "limite"],
+        # boucle d'adoption (m-a04181983623) : états projetés, statuts d'essai de Delta Lab (STATUTS d'essais.py)
+        "suivi.etape": ["propose", "retenu", "ecarte", "en_realisation", "adopte", "installe", "inconnu"],
+        "suivi.essai": ["en_essai", "propose", "adopte", "ecarte", "regressif", "remplace"],
     }
     prefixes = {re.sub(r"\.\$\{.*", "", d) for d in dynamiques}
     assert prefixes <= set(valeurs) | {"aide", "categorie"}, prefixes

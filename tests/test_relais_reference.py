@@ -347,33 +347,41 @@ def bouton_execute(**options):
     script = r"""
 const vm = require('node:vm');
 const {code, T_JS, options: o} = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
-const appels = [], onglets = [], copies = [], delais = [], liens = [];
+const appels = [], onglets = [], copies = [], delais = [], liens = [], suivis = [];
 const stockage = new Map();
+const aplatir = x => typeof x === 'string' ? x : x.tag === 'br' ? '|' : (x.textContent || '') + (x.children || []).map(aplatir).join('');
 if (o.console !== false) stockage.set('delta.console', o.console || 'https://console.example');
 let maintenant = 1000000000000;
 class Horloge extends Date { static now() { return maintenant; } }
 function el(tag, props, ...children) {
-  return {tag, ...props, textContent: props.text || '', children, listeners: {},
-    addEventListener(type, cb) { this.listeners[type] = cb; }, remove() {}};
+  return {tag, ...props, textContent: (props || {}).text || '', children, listeners: {},
+    addEventListener(type, cb) { this.listeners[type] = cb; }, remove() {}, append(...x) { this.children.push(...x); }};
 }
+const rubrique = el('section', {hidden: true});
 const context = vm.createContext({
-  Date: Horloge, URL, el, PRODUITS: {},
+  Date: Horloge, URL, el, PRODUITS: {}, enCommun: () => !!o.commun, ISO_JOUR: /^\d{4}-\d{2}-\d{2}$/,
   texte: (s, defaut) => s || defaut, jourLocalIso: () => '2001-09-09', dateAffichee: s => s,
   localStorage: {getItem: k => stockage.get(k), setItem: (k, v) => stockage.set(k, v)},
   navigator: {userAgent: o.ios ? 'iPhone' : '', platform: o.ipad ? 'MacIntel' : '',
     maxTouchPoints: o.ipad ? 5 : 0, clipboard: {writeText: async s => {
       copies.push(s); if (o.copie === false) throw Error('refus');
     }}},
-  document: {querySelectorAll: () => []},
+  document: {querySelectorAll: () => [], getElementById: id => (id === 'kb-ameliorations' && o.rubrique ? rubrique : null)},
+  etat: {kb: {entrees: o.entrees || []}},
   window: {DELTA_TEXTES: {fr: {}}, open: (url, cible) => {onglets.push({url, cible}); return o.popup === false ? null : {}; }},
   setTimeout: () => {}, AbortSignal: {timeout: ms => {delais.push(ms); return null;}},
   fetch: async (url, opts) => {
+    if (url.endsWith('/suivi')) {   // boucle d'adoption : comptée à part, sans relais simulé par défaut
+      suivis.push(url);
+      if (!o.suivi) throw Error('relais absent');
+      return {status: o.suivi.status || 200, json: async () => o.suivi.corps};
+    }
     appels.push({url, ...opts});
     if (url.endsWith('/etat')) {if (o.etat === 'erreur') throw Error('réseau'); return {ok: o.etat === true};}
     return {json: async () => o.post || {ok: true}};
   }
 });
-vm.runInContext(T_JS + code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole, heureRecente};', context);
+vm.runInContext(T_JS + code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlConsole, heureRecente, chargerSuivi, remplirAmeliorations};', context);
 (async () => {
   const e = {id: 'fiche', nom: o.long ? 'é'.repeat(800) : 'Essai & idée', produit: 'essai'};
   const bouton = el('button', {}), statut = el('span', {});
@@ -389,11 +397,16 @@ vm.runInContext(T_JS + code + ';globalThis.api = {envoyerADelta, blocEnvoi, urlC
   if (o.copier) await liens[0].listeners.click();
   const premier = statut.textContent;
   const rendu = context.api.blocEnvoi(e);
+  const projection = await context.api.chargerSuivi();   // la ligne de suivi se remplit dans le .then posé par blocEnvoi
+  if (o.rubrique) context.api.remplirAmeliorations(projection);
   await context.api.envoyerADelta(e, bouton, statut);
   const second = statut.textContent;
   if (o.expire) {maintenant += 3600001; await context.api.envoyerADelta(e, bouton, statut);}
   console.log(JSON.stringify({appels, onglets, copies, delais, avantLien, premier, second,
-    disabled: !!bouton.disabled, rendu: rendu.children[1].textContent,
+    disabled: !!bouton.disabled, rendu: rendu.children[1].textContent, suivis,
+    suivi: {hidden: rendu.children[2].hidden, texte: rendu.children[2].children.map(x => typeof x === 'string' ? x : x.tag === 'br' ? '|' : x.textContent).join('')},
+    rubrique: {hidden: rubrique.hidden, texte: rubrique.children.map(aplatir).join(''),
+      liens: rubrique.children.length ? rubrique.children[0].children[2].children.map(li => li.children[0].href) : []},
     liens: liens.map(l => ({tag: l.tag, href: l.href, target: l.target, rel: l.rel}))}));
 })().catch(e => {console.error(e); process.exitCode = 1;});
 """
@@ -430,7 +443,9 @@ def test_bureau_relais_prioritaire_meme_console_reliee():
     r = bouton_execute(etat=True)
     assert [a["url"].rsplit("/", 1)[-1] for a in r["appels"]] == ["etat", "reference"]
     assert json.loads(r["appels"][1]["body"]) == {"id": "fiche"}
-    assert r["delais"] == [3000, 25000] and not r["onglets"] and not r["copies"]
+    # après l'envoi réussi, la carte redemande le suivi (5 s au plus) ; relais simulé absent : ligne de suivi cachée
+    assert r["delais"] == [3000, 25000, 5000] and not r["onglets"] and not r["copies"]
+    assert len(r["suivis"]) == 1 and r["suivi"]["hidden"] is True
     assert r["premier"] == "Envoyé à Delta, jugement en cours" and r["second"].startswith("déjà envoyée à ")
 
 
@@ -479,3 +494,172 @@ def test_refus_explicite_du_relais_ne_passe_pas_par_console():
     r = bouton_execute(etat=True, post={"ok": False, "etape": "plafond", "detail": "10 envois par heure"})
     assert not r["onglets"] and not r["copies"] and not r["disabled"]
     assert "Delta n'a pas pris la référence (10 envois par heure)" in r["premier"]
+
+
+# ---- m-a04181983623 : boucle d'adoption, GET /suivi projeté depuis OPÉRER ----
+
+def lire_factice(vues, bloque=None):
+    """Remplace `operer --json …` : vues[(arguments)] → dict ; `bloque` (Event) retient le calcul."""
+    def lire(*args):
+        if bloque is not None:
+            bloque.wait(5)
+        return vues[args]
+    return lire
+
+
+VUES = {
+    ("idees",): {"sujets": [{"verbatim": "idée : intégrer la référence Delta-IA « /add-dir » (Claude Code, commande, id "
+                                         "claude-code-commandes-add-dir) dans un workflow", "position": "PERTINENTE",
+                             "premier": "2026-10-09T09:00:00+00:00", "missions": [{"id": "m-1", "etat": "CLOSE"}]}]},
+    ("mission", "m-1"): {"mission": {"etat": "CLOSE", "issue": "livre", "preuves": {
+        "verifie_ts": "2026-10-11T18:04:37+02:00", "sans_installation": False, "fichiers": [{"source": "outils/agents/x.md"}]}}},
+    ("essai", "liste"): {"essais": []},
+}
+
+
+def test_suivi_sert_la_projection_a_l_origine_admise(relais):
+    R = relais["R"]
+    R.suivi = rr.Suivi(R.journal, lire=lire_factice(VUES))
+    R.suivi.lancer(attendre=True)
+    code, h, r = appel(relais["url"] + "/suivi")
+    assert code == 200 and r["ok"] is True and r["etape"] == "suivi" and r["sources_en_echec"] == []
+    f = r["fiches"]["claude-code-commandes-add-dir"]
+    assert f["etat"] == "installe" and f["installations"][0]["lot"] == "m-1" and f["installations"][0]["le"] == "2026-10-11"
+    assert h["Access-Control-Allow-Origin"] == "https://ai.orqyra.io"
+    # donnée personnelle : ni origine inconnue, ni requête sans origine, ni autre hôte (rebinding DNS)
+    for origine in ("https://exemple.com", None):
+        code, h, r = appel(relais["url"] + "/suivi", origine=origine)
+        assert code == 403 and "fiches" not in r and "Access-Control-Allow-Origin" not in h
+    port = relais["url"].rsplit(":", 1)[1]
+    req = urllib.request.Request(relais["url"] + "/suivi", headers={"Origin": "https://ai.orqyra.io", "Host": f"rebind.exemple:{port}"})
+    with pytest.raises(urllib.error.HTTPError) as err:
+        urllib.request.urlopen(req, timeout=10)
+    assert err.value.code == 403 and "fiches" not in json.loads(err.value.read())
+
+
+def test_suivi_premier_calcul_503_puis_cache(relais):
+    R, feu = relais["R"], threading.Event()
+    R.suivi = rr.Suivi(R.journal, lire=lire_factice(VUES, bloque=feu))
+    code, h, r = appel(relais["url"] + "/suivi")
+    assert code == 503 and r["etape"] == "en_calcul" and h["Retry-After"] == "15"
+    feu.set()
+    for _ in range(50):
+        code, _, r = appel(relais["url"] + "/suivi")
+        if code == 200:
+            break
+        threading.Event().wait(0.1)
+    assert code == 200 and "claude-code-commandes-add-dir" in r["fiches"]
+    # périmé : le dernier calcul est servi tout de suite, un seul nouveau calcul part
+    R.suivi.calcule_a -= rr.SUIVI_TTL + 1
+    assert appel(relais["url"] + "/suivi")[0] == 200
+
+
+def test_suivi_une_vue_en_echec_est_nommee(relais):
+    def lire(*args):
+        if args == ("essai", "liste"):
+            raise rr.adoptions.LectureImpossible("essai liste : code de sortie 2")
+        return VUES[args]
+    R = relais["R"]
+    R.suivi = rr.Suivi(R.journal, lire=lire)
+    R.suivi.lancer(attendre=True)
+    code, _, r = appel(relais["url"] + "/suivi")
+    assert code == 200 and r["sources_en_echec"] == ["essais : essai liste : code de sortie 2"]
+    assert r["fiches"]["claude-code-commandes-add-dir"]["etat"] == "installe"
+
+
+def test_suivi_journal_des_envois_propose_la_fiche(relais):
+    R = relais["R"]
+    R.journal.write_text(json.dumps({"date": "2026-10-24T10:00:00+0200", "id": "codex-commandes-review", "ok": True}) + "\n"
+                         + json.dumps({"date": "2026-10-24T10:01:00+0200", "id": "refusee", "ok": False}) + "\n", encoding="utf-8")
+    R.suivi = rr.Suivi(R.journal, lire=lire_factice({**VUES, ("idees",): {"sujets": []}}))
+    R.suivi.lancer(attendre=True)
+    f = appel(relais["url"] + "/suivi")[2]["fiches"]
+    assert f["codex-commandes-review"]["etat"] == "propose" and f["codex-commandes-review"]["propose_le"] == "2026-10-24"
+    assert "refusee" not in f
+
+
+SUIVI_INSTALLE = {"ok": True, "etape": "suivi", "sources_en_echec": [], "fiches": {"fiche": {
+    "id": "fiche", "etat": "installe", "position": "PERTINENTE", "missions": [{"id": "m-1", "etat": "CLOSE", "projete": "installe"}],
+    "installations": [{"lot": "m-1", "le": "2026-10-11", "par": "mission", "resultat": None},
+                      {"lot": "ess_0123456789ab", "le": "2026-10-20", "par": "essai", "resultat": "plafond"}],
+    "resultat_observe": [{"essai": "ess_0123456789ab", "statut": "adopte", "maturite": "confirme", "explication": "gain 12 %"}]}}}
+
+
+def test_carte_affiche_l_etat_projete_et_le_resultat_distinct():
+    r = bouton_execute(etat=True, suivi={"corps": SUIVI_INSTALLE})
+    s = r["suivi"]
+    assert s["hidden"] is False
+    assert s["texte"].startswith("Suivi Delta : proposée › retenue › en réalisation › installée (jugement : PERTINENTE)")
+    assert "|Utilisations : installée le 2026-10-11, lot m-1 ; installée le 2026-10-20, lot ess_0123456789ab." in s["texte"]
+    assert "|Résultat observé (Delta Lab) : ess_0123456789ab adopté · confirme : gain 12 %. À lire dans OBSERVATORY › EXPÉRIENCES" in s["texte"]
+
+
+def test_carte_ecartee_en_realisation_et_sans_mesure():
+    ecartee = {"ok": True, "fiches": {"fiche": {"id": "fiche", "etat": "ecarte", "position": "PAS_PERTINENTE", "missions": [],
+                                                "installations": [], "resultat_observe": []}}}
+    assert bouton_execute(etat=True, suivi={"corps": ecartee})["suivi"]["texte"] == "Suivi Delta : proposée › écartée (jugement : PAS_PERTINENTE)"
+    cours = {"ok": True, "fiches": {"fiche": {"id": "fiche", "etat": "en_realisation", "position": "PERTINENTE", "installations": [],
+                                              "missions": [{"id": "m-2", "etat": "A_RELIRE", "projete": "en_realisation"}], "resultat_observe": []}}}
+    assert "en réalisation › installée (jugement : PERTINENTE ; mission m-2 (A_RELIRE))" in bouton_execute(etat=True, suivi={"corps": cours})["suivi"]["texte"]
+    sans = json.loads(json.dumps(SUIVI_INSTALLE))
+    sans["fiches"]["fiche"]["resultat_observe"] = []
+    assert bouton_execute(etat=True, suivi={"corps": sans})["suivi"]["texte"].endswith("|Résultat observé : pas encore mesuré par Delta Lab.")
+    # fiche absente du suivi, réponse refusée par le relais : rien n'est affiché
+    for corps in ({"ok": True, "fiches": {}}, {"ok": False, "etape": "suivi"}):
+        assert bouton_execute(etat=True, suivi={"corps": corps})["suivi"]["hidden"] is True
+
+
+def test_carte_adoptee_sans_installation_jamais_dite_installee():
+    """Relecture fe21147f : une livraison fusionnée sans fichier installé (preuves sans_installation) est « adoptée »."""
+    adoptee = {"ok": True, "fiches": {"fiche": {"id": "fiche", "etat": "adopte", "position": "PERTINENTE",
+                                                "missions": [{"id": "m-3", "etat": "CLOSE", "projete": "adopte"}],
+                                                "installations": [{"lot": "m-3", "le": "2026-10-11", "par": "mission_sans_installation"}],
+                                                "resultat_observe": []}}}
+    texte = bouton_execute(etat=True, suivi={"corps": adoptee})["suivi"]["texte"]
+    assert texte.startswith("Suivi Delta : proposée › retenue › en réalisation › adoptée (jugement : PERTINENTE)")
+    assert "|Utilisations : adoptée le 2026-10-11, lot m-3 : livrée et fusionnée, rien d'installé." in texte
+    assert "installée" not in texte
+    rubrique = APP[APP.index("function remplirAmeliorations"):APP.index("// D64-bis : péremption")]
+    assert 'f.etat === "installe" || f.etat === "adopte"' in rubrique
+
+
+def test_carte_mission_illisible_etat_inconnu():
+    """Relecture 9d0ce971 (4) : vue mission en échec sur une mission close → « état inconnu », jamais « retenue »."""
+    inconnue = {"ok": True, "sources_en_echec": ["mission m-9 : mission m-9 : délai de 120 s dépassé"], "fiches": {"fiche": {
+        "id": "fiche", "etat": "inconnu", "position": "PERTINENTE", "missions": [{"id": "m-9", "etat": "CLOSE", "projete": "inconnu"}],
+        "missions_illisibles": ["m-9"], "installations": [], "resultat_observe": []}}}
+    texte = bouton_execute(etat=True, suivi={"corps": inconnue})["suivi"]["texte"]
+    assert texte == "Suivi Delta : état inconnu (jugement : PERTINENTE ; mission m-9 : vue OPÉRER illisible, relue au prochain calcul)"
+    assert "retenue" not in texte
+
+
+def test_rubrique_ameliorations_executee():
+    """La vraie remplirAmeliorations sous Node : fiches installées et adoptées, dites comme telles, lien vers la fiche, échecs nommés."""
+    corps = json.loads(json.dumps(SUIVI_INSTALLE))
+    corps["sources_en_echec"] = ["mission m-9 : code de sortie 2"]
+    corps["fiches"]["adoptee"] = {"id": "adoptee", "etat": "adopte", "installations": [
+        {"lot": "m-3", "le": "2026-10-12", "par": "mission_sans_installation"}]}
+    corps["fiches"]["retenue"] = {"id": "retenue", "etat": "retenu", "installations": []}
+    r = bouton_execute(etat=True, suivi={"corps": corps}, rubrique=True, entrees=[{"id": "adoptee", "nom": "/goal"}])["rubrique"]
+    assert r["hidden"] is False and r["liens"] == ["#reference?id=fiche", "#reference?id=adoptee"]   # dernière utilisation la plus récente d'abord
+    assert r["texte"].startswith("Améliorations appliquées (2)")
+    assert "/goal — adoptée le 2026-10-12, lot m-3 : livrée et fusionnée, rien d'installé" in r["texte"]
+    assert "fiche — installée le 2026-10-11, lot m-1 ; installée le 2026-10-20, lot ess_0123456789ab" in r["texte"]
+    assert "retenue" not in r["texte"] and r["texte"].endswith("Suivi incomplet : mission m-9 : code de sortie 2")
+
+
+def test_suivi_jamais_demande_en_commun_ni_sans_envoi():
+    assert bouton_execute(etat=True, commun=True, suivi={"corps": SUIVI_INSTALLE})["suivis"] == []
+    corps = APP[APP.index("function chargerSuivi"):APP.index("function libelleInstallation")]
+    # seul un navigateur qui a déjà envoyé une fiche interroge le relais (pas de demande d'accès au réseau local au visiteur)
+    assert "enCommun() || estIos() || !Object.keys(lireEnvois()).length" in corps
+    assert "innerHTML" not in APP[APP.index("function chargerSuivi"):APP.index("// D64-bis : péremption")]
+
+
+def test_rubrique_ameliorations_appliquees():
+    page = APP[APP.index("function pageReference"):APP.index("const ESSAIS_PAGE")]
+    assert 'el("section", { id: "kb-ameliorations", hidden: true })' in page and "chargerSuivi().then(remplirAmeliorations)" in page
+    assert page.index("if (!enCommun()) {") < page.index("kb-ameliorations")
+    rubrique = APP[APP.index("function remplirAmeliorations"):APP.index("// D64-bis : péremption")]
+    assert 'f.etat === "installe"' in rubrique and "#reference?id=" in rubrique and "libelleInstallation" in rubrique
+    assert FR["ameliorations.titre"] == "Améliorations appliquées ({n})" and "rien n'est publié" in FR["ameliorations.sous_titre"]
