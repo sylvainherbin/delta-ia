@@ -3,7 +3,8 @@
 `bootstrap.json` (à côté de ce module) porte les valeurs par défaut : mode `lecteur`, langue commune `en`, adresses du
 site, de la route commune versionnée et du MCP public, seuils de fraîcheur, réglages de production. Une instance peut les
 remplacer dans `<configuration>/delta-ia/config.json` (écrit par l'installateur) ; une clé inconnue est refusée. Seule
-une configuration locale `mode: producteur` permet de publier : le lecteur n'a aucune capacité de publication.
+une configuration locale `mode: producteur` permet de publier, hors de l'installation historique, productrice par
+construction (`couches.py publier`, `commun_auto.py`) : le lecteur n'a aucune capacité de publication.
 """
 
 from __future__ import annotations

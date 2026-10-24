@@ -178,7 +178,7 @@ def synchroniser(racines: Racines, base_url: str, maintenant: datetime | None = 
             etat["erreur"] = None
             etat["verifie_le"] = etat["derniere_tentative"]
         except SynchroEchec as e:
-            etat["erreur"] = str(e)
+            etat.update(erreur=str(e), etag=None, last_modified=None)  # prochaine tentative sans requête conditionnelle
             res = {"statut": "echec", "generation": etat.get("generation"), "erreur": str(e)}
         ecrire(chemin_synchro(racines), etat)
         return res
@@ -205,12 +205,15 @@ def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir) -> dict:
     if erreurs:
         raise SynchroEchec(f"{INDEX} refusé : {erreurs[0]}")
     generation = index["generation"]
-    etat.update(etag=en_tetes.get("etag"), last_modified=en_tetes.get("last-modified"), publie_le=index["publie_le"])
+    # Validateurs de cet index retenus seulement après bascule réussie : enregistrés plus tôt, un échec les laisserait
+    # attachés à l'ancienne génération et le 304 suivant la déclarerait à jour en effaçant l'erreur.
+    reussite = {"generation": generation, "etag": en_tetes.get("etag"), "last_modified": en_tetes.get("last-modified"),
+                "publie_le": index["publie_le"]}
     dossier_local = racines.commun / generation
     if (actif.get("generation") == generation and actif.get("manifest_sha256") == index["manifest_sha256"]
             and dossier_local.is_dir()):
-        etat["generation"] = generation
         _pointer(racines, generation, dossier_local, index["publie_le"])
+        etat.update(reussite)
         return {"statut": "inchange", "generation": generation, "erreur": None}
     base = dossier_prive(racines.commun)
     chantier = base / f".sync-{generation}"
@@ -246,8 +249,8 @@ def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir) -> dict:
     finally:
         if chantier.exists():
             shutil.rmtree(chantier)
-    etat["generation"] = generation
     _pointer(racines, generation, dossier_local, index["publie_le"])
+    etat.update(reussite)
     return {"statut": "nouvelle", "generation": generation, "erreur": None}
 
 

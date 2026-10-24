@@ -327,13 +327,28 @@ def test_generation_alteree_sur_le_serveur_refusee(depot2, instance, tmp_path, s
                                                              "jours": [{"date": "2026-10-23", "genere_le": "2026-10-23T04:20:00+02:00"}]})
     importer(depot2, instance, detecteur=Detecteur())
     g2 = publication.publier(instance, route)["generation"]
-    (route / g2 / "veille" / "actu.json").write_bytes((route / g2 / "veille" / "actu.json").read_bytes().replace(b"2026-10-23", b"2026-10-24"))
+    veille = route / g2 / "veille" / "actu.json"
+    saine = veille.read_bytes()
+    veille.write_bytes(saine.replace(b"2026-10-23", b"2026-10-24"))
     import os
     os.utime(route / "index.json", (datetime.now().timestamp() + 5,) * 2)  # Last-Modified à la seconde : index récent
     res = publication.synchroniser(lectrice, url)
     assert res["statut"] == "echec" and "refusée" in res["erreur"]
     assert json.loads(lectrice.commun_actif.read_text())["generation"] == g1
     assert sorted(p.name for p in lectrice.commun.iterdir()) == [g1]
+    synchro = json.loads(publication.chemin_synchro(lectrice).read_text())
+    assert synchro["generation"] == g1 and synchro["etag"] is None and synchro["last_modified"] is None
+    # Relance sur le même serveur : pas de 304 trompeur, l'échec et son erreur restent.
+    res = publication.synchroniser(lectrice, url)
+    assert res["statut"] == "echec" and json.loads(publication.chemin_synchro(lectrice).read_text())["erreur"]
+    # Serveur rétabli : la nouvelle génération arrive, l'erreur s'efface, les validateurs suivent g2.
+    veille.write_bytes(saine)
+    res = publication.synchroniser(lectrice, url)
+    assert res == {"statut": "nouvelle", "generation": g2, "erreur": None}
+    synchro = json.loads(publication.chemin_synchro(lectrice).read_text())
+    assert synchro["generation"] == g2 and synchro["erreur"] is None and synchro["last_modified"]
+    assert synchro["publie_le"] == json.loads((route / "index.json").read_text())["publie_le"]
+    assert publication.synchroniser(lectrice, url)["statut"] == "inchange"
 
 
 def test_fraicheur_avis_et_surveillance():

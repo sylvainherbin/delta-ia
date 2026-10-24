@@ -6,18 +6,18 @@
 - reçus : 6f1d937093a0
 - réserves : aucune
 
-# Delta-IA deux couches — lot L2 (mission m-d4055b3a5908)
+# Delta-IA deux couches — lot L2
 
-- Date : 24/10/2026 13:03 CEST (lue par `date`)
-- Agent : `dev-delta`, Claude Code (Opus 5.5, effort high), réaffecté de Codex par décision de Sylvain du 24/10
+- Date : 24/10/2026 13:03 CEST, corrections après relecture à 14:18 CEST (lues par `date`)
+- Agent : `dev-delta`, Claude Code (Opus 5.5, effort high), réaffecté de Codex par décision du 24/10
 - Tâche : lot L2 « Référence neutre et publication versionnée additionnelle » de la conception « Delta-IA en deux couches »
-- Branche : `operer/m-d4055b3a5908`, au sommet de `origin/main` (`f43fabf`), aucun rebase nécessaire (main inchangé à 13:00)
-- Commits produits : `42eb634a9ffe6f511642ff85ba0604a936b340e1` (livraison), puis le commit de ce rapport (ajouté par `git add -f` à la demande de delta du 24/10, `rapports/*` étant ignoré)
+- Branche : branche de la mission, au sommet de `origin/main` (`f43fabf`), aucun rebase nécessaire (main inchangé à 13:00)
+- Commits produits : `42eb634a9ffe6f511642ff85ba0604a936b340e1` (livraison), puis le commit de ce rapport (ajouté par `git add -f` à la demande de delta du 24/10, `rapports/*` étant ignoré ; delta a tranché qu'il peut partir sur main, sans chemin local, identifiant ni secret), puis le commit des corrections après relecture
 - `contexte_empreinte` : `abb92beeff351d9ba4bf8891e4f210ac2bee97a6`
 
 ## Compte et quotas
 
-Relevés de `rapports/usage.json` (console-mur) :
+Relevés de `rapports/usage.json` :
 - Claude session 5 h : 3 % à 11:43 (remise à zéro à 15:10, heure de Paris) ; illisible (`null`) au relevé de 13:03.
 - **Claude semaine : 89 % à 11:43** (remise à zéro le 25/10 à 17:00, heure d'hiver) ; illisible (`null`) à 13:03. **Seuil D71 (80 %) atteint : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser.**
 - ChatGPT semaine : 41 % à 13:02 (remise à zéro le 30/10 à 18:41).
@@ -35,7 +35,7 @@ Choix structurants :
 4. **Rédacteur isolé et mesuré.** `claude -p --safe-mode` (ni CLAUDE.md, ni skills, ni MCP, ni hooks), `--tools ""`, invite système neutre, dossier vide, sans session gardée, Haiku, `--effort low`. Le code entre accents graves et les URL sont masqués (`⟦n⟧`) puis rétablis ; une réponse dont un repère manque est refusée. Si les jetons d'entrée facturés dépassent la moitié des octets envoyés plus 2 500, du contexte a été ajouté, et tout le lot est refusé (`contexte_inattendu`). Mesure réelle : environ 600 jetons de cadre par appel.
 5. **Cache de traduction suivi par Git** : `kb-traductions/fr.json`, clé `(sha256 du texte source, champ, langue, glossaire)`. Il ne contient que des traductions d'extraits publics. Le suivre par Git permet au producteur nocturne de le retrouver ; un cache local d'essai l'aurait perdu au premier passage du service. Il est enregistré après chaque lot accepté.
 6. **Route versionnée immuable.** `docs/commun/v1/<generation>/` est une copie octet pour octet de la génération validée. `docs/commun/v1/index.json` (`delta.manifest`, vue `publication`) porte l'heure du cycle, la génération précédente (gardée pour retour), le cycle attendu et le dernier jour couvert par périmètre. Elle est servie à `https://ai.orqyra.io/commun/v1/`. `docs/data` n'est pas touché.
-7. **Synchroniseur.** Requête conditionnelle sur l'index (ETag, Last-Modified). Seuls les fichiers changés sont téléchargés (les fichiers identiques sont repris de la génération active), dans une génération provisoire validée en entier avant la bascule d'un seul pointeur. En cas d'échec, la dernière génération valide est gardée et l'erreur consignée (`synchro.json`, puis `derniere_erreur_synchro` dans le lecteur). Fraîcheur : `recente`, `ancienne` (plus de 24 h) ou `tres_ancienne` (plus de 7 jours, l'avis importé passe alors `a_revoir`).
+7. **Synchroniseur.** Requête conditionnelle sur l'index (ETag, Last-Modified). Seuls les fichiers changés sont téléchargés (les fichiers identiques sont repris de la génération active), dans une génération provisoire validée en entier avant la bascule d'un seul pointeur. En cas d'échec, la dernière génération valide est gardée et l'erreur consignée (`synchro.json`, puis `derniere_erreur_synchro` dans le lecteur) ; les validateurs (`etag`, `last_modified`) et `publie_le` d'un index ne sont retenus qu'après la bascule réussie, et un échec les efface (correction après relecture). Fraîcheur : `recente`, `ancienne` (plus de 24 h) ou `tres_ancienne` (plus de 7 jours, l'avis importé passe alors `a_revoir`).
 8. **Producteur.** Le service `delta-ia-commun` (`scripts/commun_auto.py`, minuteur à 06:45) suit le modèle de `selection_auto.py` : même verrou que la chaîne, main seul, arbre propre hors de sa route, import dans les racines historiques, publication, `valider_route`, commit des seuls chemins `docs/commun/v1/` et `kb-traductions/fr.json`, push sans force. Il n'entre dans aucune étape de la chaîne. Surveillance : `couches.py surveiller --url …` rend le code 1 si le cycle de 24 h est manqué de plus de 6 h ou si un périmètre n'a pas de jour depuis plus de 2 jours.
 
 ## Ce qui est livré
@@ -85,16 +85,26 @@ Choix structurants :
 ## Points fragiles ou à décider
 
 - **Installation du service après fusion** (geste du pilote, notice `deploy/systemd/commun.md`) : tant que le minuteur n'est pas installé, la génération publiée vieillit, et `surveiller` signalera `cycle_manque` 30 h après 12:35.
-- Budget de traduction nocturne : 0 par défaut. Pour traduire les fiches nouvelles chaque nuit, poser `production.budget_traduction` (par exemple 40) dans `~/.config/delta/delta-ia/config.json`, avec `mode: producteur`. Coût mesuré : environ 0,009 $ au prix catalogue et 50 s par lot de 40 textes.
+- Budget de traduction nocturne : 0 par défaut. Pour traduire les fiches nouvelles chaque nuit, poser `production.budget_traduction` (par exemple 40) dans le `config.json` local de l'instance productrice (`mode` n'y est pas requis : le service publie depuis l'installation historique, productrice par construction). Coût mesuré : environ 0,009 $ au prix catalogue et 50 s par lot de 40 textes.
 - Un échec du service au milieu de sa course laisse `docs/commun/v1/` modifié dans l'arbre de main : la garde de la chaîne suivante le verra. C'est voulu, l'échec reste visible.
 - L'isolation du rédacteur repose sur `--safe-mode` et sur la mesure des jetons d'entrée. Ce que Claude Code ajoute (environ 600 jetons de cadre) n'est pas inspectable directement ; le seuil détecte un CLAUDE.md ou une mémoire injectés, pas un ajout de quelques centaines de jetons.
 - Le dépôt public grandit d'environ une génération par jour (fichiers changés seulement, Git dédoublonne les autres). La route garde la génération active et la précédente.
+
+## Corrections après relecture (24/10, 14:18)
+
+Verdict de la relecture : CORRECTIONS, 1 BLOQUANT, 4 À NOTER.
+
+- **BLOQUANT 1, corrigé** : `publication.py` enregistrait `etag`, `last_modified` et `publie_le` du nouvel index avant le téléchargement de la génération. Après un échec, le 304 suivant rendait `inchange` sur l'ancienne génération et effaçait l'erreur. Ces trois valeurs ne sont désormais retenues dans `synchro.json` qu'après la bascule du pointeur (branche `nouvelle` et branche `inchange` sur index changé). Le `except SynchroEchec` efface aussi `etag` et `last_modified`, donc la tentative suivante n'est pas conditionnelle. Le test `test_generation_alteree_sur_le_serveur_refusee` couvre maintenant la reprise : échec sur g2 altérée, validateurs vides, relance toujours en échec avec son erreur, serveur rétabli, puis `nouvelle` g2, erreur effacée, `publie_le` de l'index, et enfin `inchange` au tour suivant. Contre-épreuve sous `verrou-tests` : le test étendu échoue sur l'ancien `publication.py` et passe sur le nouveau.
+- **À NOTER 1, tranché par delta** : ce rapport peut partir sur main. Il ne contient plus que des quotas et des coûts (REGLES §5), sans chemin local, nom, identifiant de mission ni secret.
+- **À NOTER 2, renvoyé en L5** : les libellés « Observation locale OPÉRER » et les `effet_effort` qui citent le compte, dans `kb/modeles.json` du commun, sont traités avec `constats_internes`.
+- **À NOTER 3, corrigé** : `SPEC.md` §3 dit que le service `delta-ia-commun` est le seul commit automatique admis dans la fenêtre 03 h 30-08 h 00 hors de la chaîne. Ce commit se limite à ses deux chemins et n'est pris qu'une fois le verrou de la chaîne libéré. La notice le rappelle.
+- **À NOTER 4, aligné dans la documentation** : `commun_auto.py` publie toujours depuis l'installation historique, productrice par construction. C'est la même exception que `couches.py publier` ; la notice et la docstring de `config.py` le disent. Aucun `config.json` n'est requis, et `mode: producteur` ne sert qu'à une autre instance qui publierait par `couches.py publier`. J'ai écarté une garde supplémentaire dans le code : elle aurait bloqué le producteur réel sans protéger de rien.
 
 ## Pour les lots suivants
 
 - **L3** : lecteurs publics (MCP HTTP, site) sur la route `commun/v1`, les deux formats, URL centralisées par `bootstrap.json` ; retrait de `constats_internes` et `recommandation_operer` côté public.
 - **L4** : MCP stdio et Desktop sur `Lecteur` (langue, fraîcheur et repli déjà rendus) ; l'overlay modèle × effort reste à faire.
-- **L5** : régénérer `kb/modeles.json` depuis `production/sources-publiques.json` et le magasin privé ; phase commune quotidienne (titres et résumés EN/FR de la veille) ; bascule des producteurs.
+- **L5** : À NOTER 2 de la relecture (libellés de source et `effet_effort` propres à l'instance dans `kb/modeles.json` commun) ; régénérer `kb/modeles.json` depuis `production/sources-publiques.json` et le magasin privé ; phase commune quotidienne (titres et résumés EN/FR de la veille) ; bascule des producteurs.
 - **L6** : relecture des 1 856 traductions automatiques (passage `automatique` → `revu`, les 40 vouvoiements), méthodes et modèles, interface EN/FR.
 
 ## Preuves
