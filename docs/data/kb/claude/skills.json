@@ -1,12 +1,12 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-10-22",
- "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+ "maj_le": "2026-10-24",
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
-  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
-  "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-  "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+  "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
+  "env.machine": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+  "env.multi-sessions": "1445352f2d778113bda87569f2ede546f23b6acb",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -38,7 +38,7 @@
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
+  "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
  "total": 24,
@@ -1906,9 +1906,9 @@
    "categorie": "skills",
    "nom": "Use skills in Claude",
    "gabarit": "complet",
-   "description": "Mode d'emploi des skills dans l'app Claude : sur Max, activer « Code execution and file creation » dans Settings > Capabilities, puis activer ou désactiver chaque skill dans Customize > Skills. Un skill perso s'ajoute en téléversant un dossier zippé (« + », « Create skill », « Upload a skill ») ; les skills Anthropic se déclenchent seuls.",
+   "description": "Mode d'emploi des skills dans l'app Claude : sur Free, Pro et Max, activer « Code execution and file creation » (« Create and edit files » dans la nouvelle disposition) dans Settings > Capabilities, puis activer ou désactiver chaque skill dans Customize > Skills. Un skill perso s'ajoute en téléversant un dossier zippé ; les skills Anthropic se déclenchent seuls.",
    "description_source": "Skills extend Claude's capabilities by giving it access to specialized knowledge and workflows. This guide shows you how to enable, discover, and use skills in Claude.",
-   "usage": "1. For Team / Enterprise plans: Navigate to **[Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills)**, click the “Policy” tab, and ensure that both **Cloud code execution and file creation** and **Skills** are enabled.\n2. For individual Free, Pro, and Max plans: Navigate to **[Settings > Capabilities](https://claude.ai/settings/capabilities)** and ensure that **Code execution and file creation** is enabled.\n3. Go to **[Customize > Skills](https://claude.ai/customize/skills)**.\n4. Toggle individual skills on or off as needed.",
+   "usage": "1. For Team / Enterprise plans: Navigate to **[Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills)**, click the “Policy” tab, and ensure that both **Cloud code execution and file creation** and **Skills** are enabled.\n2. For individual Free, Pro, and Max plans: Navigate to **Settings > Capabilities** and ensure that **Code execution and file creation** (called **Create and edit files** in the updated Settings layout) is enabled.\n3. Go to **[Customize > Skills](https://claude.ai/customize/skills)**.\n4. Toggle individual skills on or off as needed.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -1928,7 +1928,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1973,12 +1973,47 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. For Team / Enterprise plans: Navigate to **[Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills)**, click the “Policy” tab, and ensure that both **Cloud code execution and file creation** and **Skills** are enabled.\n2. For individual Free, Pro, and Max plans: Navigate to **[Settings > Capabilities](https://claude.ai/settings/capabilities)** and ensure that **Code execution and file creation** is enabled.\n3. Go to **[Customize > Skills](https://claude.ai/customize/skills)**.\n4. Toggle individual skills on or off as needed.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Sur les forfaits Free, Pro et Max : activer « Code execution and file creation » dans Settings > Capabilities, puis activer ou couper chaque skill dans Customize > Skills.",
+       "source": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le chemin d'activation des skills change sur la page."
+      },
+      {
+       "affirmation": "Sylvain utilise surtout le skill red-team de claude.ai ; les autres peu ou pas.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'usage déclaré des skills claude.ai change dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Les skills claude.ai synchronisés (orchestrator, scientific-adversary…) ne sont pas invoqués dans Claude Code, sauf ask-the-council une fois.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le relevé d'usage des skills synchronisés change dans CONTEXTE.md."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Skills claude.ai : surtout red-team, les autres peu ou pas."
     },
     "config.claude-code.skills": {
@@ -1988,22 +2023,22 @@
    },
    "provenance": [
     {
-     "affirmation": "Sur les forfaits Free, Pro et Max : activer « Code execution and file creation » dans Settings > Capabilities, puis activer ou couper chaque skill dans Customize > Skills.",
+     "affirmation": "Sur Free, Pro et Max, les skills exigent « Code execution and file creation » (« Create and edit files » dans la nouvelle disposition) activé dans Settings > Capabilities.",
      "source": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le chemin d'activation des skills change sur la page."
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page déplace ou renomme ce réglage, ou n'en fait plus un prérequis des skills"
     },
     {
-     "affirmation": "Sylvain utilise surtout le skill red-team de claude.ai ; les autres peu ou pas.",
+     "affirmation": "Chaque skill s'active ou se désactive dans Customize > Skills.",
+     "source": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page ne place plus l'activation des skills dans Customize > Skills"
+    },
+    {
+     "affirmation": "Sylvain utilise surtout le skill red-team ; les autres skills claude.ai sont peu ou pas utilisés.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'usage déclaré des skills claude.ai change dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Les skills claude.ai synchronisés (orchestrator, scientific-adversary…) ne sont pas invoqués dans Claude Code, sauf ask-the-council une fois.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le relevé d'usage des skills synchronisés change dans CONTEXTE.md."
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md décrit un autre usage des skills claude.ai"
     }
    ]
   },

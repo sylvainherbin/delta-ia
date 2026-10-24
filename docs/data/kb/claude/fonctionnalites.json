@@ -1,12 +1,12 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-23",
- "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+ "maj_le": "2026-10-24",
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
-  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
-  "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-  "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+  "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
+  "env.machine": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+  "env.multi-sessions": "1445352f2d778113bda87569f2ede546f23b6acb",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -38,11 +38,11 @@
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
+  "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 90,
+ "commentees": 86,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -3811,14 +3811,14 @@
    "gabarit": "complet",
    "description": "Claude Code met en cache le préfixe de chaque requête (invite système, contexte du projet, conversation) pour ne pas retraiter tout l'historique à chaque tour. Changer de modèle, modifier les outils chargés ou lancer `/compact` invalide une partie du cache, et une modification de CLAUDE.md ne s'applique qu'à la session suivante ou après `/clear` ou `/compact`.",
    "description_source": "Claude Code manages prompt caching automatically. See why a model switch triggers a slow uncached turn, what /compact costs, why CLAUDE.md edits don't apply mid-session, and how to check your cache hit rate.",
-   "usage": "1. `FORCE_PROMPT_CACHING_5M=1`, which forces five minutes for both buckets\n2. The bucket's environment variable\n3. The bucket's setting\n4. For a subagent's requests, the `cacheTtl` value in the subagent's [`experimental` frontmatter field](/docs/en/sub-agents#supported-frontmatter-fields), which requires Claude Code v2.1.248 or later. Claude Code ignores a `1h` there while your Claude subscription is using usage credits\n5. `ENABLE_PROMPT_CACHING_1H=1`, which requests one hour for both buckets\n6. The [default for the request's bucket](#which-ttl-each-request-gets)",
+   "usage": "1. `FORCE_PROMPT_CACHING_5M=1`, which forces five minutes for both buckets\n2. The bucket's environment variable\n3. The bucket's setting\n4. For a subagent's requests, the `cacheTtl` value in the subagent's [`experimental` frontmatter field](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields), which requires Claude Code v2.1.248 or later. Claude Code ignores a `1h` there while your Claude subscription is using usage credits\n5. `ENABLE_PROMPT_CACHING_1H=1`, which requests one hour for both buckets\n6. The [default for the request's bucket](#which-ttl-each-request-gets)",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Lien direct avec les limites hebdomadaires : ne pas changer de modèle au milieu d'une longue session de mission évite un tour complet sans cache ; un CLAUDE.md modifié ne s'applique qu'après `/clear` ou `/compact`, ce que le `/clear` de `mission-dev` fournit déjà aux devs."
+    "pourquoi": "Lien direct avec les limites hebdomadaires : ne pas changer de modèle au milieu d'une longue session de mission évite un tour sans cache, et le `/clear` de `mission-dev` applique déjà un CLAUDE.md modifié. D71 : la durée de cache `1h` demandée pour un sous-agent est ignorée tant que l'abonnement consomme des usage credits ; rien à activer, aucune échéance publiée."
    },
    "sources": [
     {
@@ -3831,7 +3831,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3872,9 +3872,44 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. `FORCE_PROMPT_CACHING_5M=1`, which forces five minutes for both buckets\n2. The bucket's environment variable\n3. The bucket's setting\n4. For a subagent's requests, the `cacheTtl` value in the subagent's [`experimental` frontmatter field](/docs/en/sub-agents#supported-frontmatter-fields), which requires Claude Code v2.1.248 or later. Claude Code ignores a `1h` there while your Claude subscription is using usage credits\n5. `ENABLE_PROMPT_CACHING_1H=1`, which requests one hour for both buckets\n6. The [default for the request's bucket](#which-ttl-each-request-gets)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Chaque modèle a son propre cache : changer de modèle relit tout l'historique sans cache ; une modification de CLAUDE.md n'atteint la session qu'après `/clear`, `/compact` ou un redémarrage.",
+       "source": "https://code.claude.com/docs/en/prompt-caching",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le cache devient partagé entre modèles ou CLAUDE.md se recharge en cours de session"
+      },
+      {
+       "affirmation": "Les limites d'usage hebdomadaires et le coût en jetons des prompts d'audit sont des frictions récurrentes.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-15",
+       "caduc_si": "ces frictions disparaissent du relevé"
+      },
+      {
+       "affirmation": "`mission-dev` vide le contexte du dev par `/clear` avant chaque mission.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "`mission-dev` ne vide plus le contexte"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -3887,22 +3922,28 @@
    },
    "provenance": [
     {
-     "affirmation": "Chaque modèle a son propre cache : changer de modèle relit tout l'historique sans cache ; une modification de CLAUDE.md n'atteint la session qu'après `/clear`, `/compact` ou un redémarrage.",
+     "affirmation": "Un changement de modèle en cours de session provoque un tour plus lent et plus coûteux, la requête suivante ne trouvant aucun cache.",
      "source": "https://code.claude.com/docs/en/prompt-caching",
-     "releve_le": "2026-10-15",
-     "caduc_si": "le cache devient partagé entre modèles ou CLAUDE.md se recharge en cours de session"
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page ne décrit plus le changement de modèle comme invalidant le cache"
     },
     {
-     "affirmation": "Les limites d'usage hebdomadaires et le coût en jetons des prompts d'audit sont des frictions récurrentes.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-15",
-     "caduc_si": "ces frictions disparaissent du relevé"
+     "affirmation": "Le contexte du projet (CLAUDE.md, mémoire) n'est rechargé qu'au démarrage de la session, ou après `/clear` ou `/compact`.",
+     "source": "https://code.claude.com/docs/en/prompt-caching",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page indique qu'un CLAUDE.md modifié s'applique en cours de session"
     },
     {
-     "affirmation": "`mission-dev` vide le contexte du dev par `/clear` avant chaque mission.",
+     "affirmation": "La durée de cache `1h` demandée pour un sous-agent est ignorée tant que l'abonnement Claude consomme des usage credits.",
+     "source": "https://code.claude.com/docs/en/prompt-caching",
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page retire cette réserve ou change la règle de priorité des durées de cache"
+    },
+    {
+     "affirmation": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-15",
-     "caduc_si": "`mission-dev` ne vide plus le contexte"
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md ne décrit plus ce `/clear` de `mission-dev`"
     }
    ]
   },
@@ -5490,16 +5531,16 @@
    "categorie": "fonctionnalites",
    "nom": "Understanding Claude's personalization features",
    "gabarit": "complet",
-   "description": "Présente les réglages de personnalisation de Claude : instructions valables pour tout le compte (Réglages, « Instructions for Claude »), instructions et connaissances propres à chaque Projet, styles de réponse et mémoire. Chacun agit à un niveau différent.",
+   "description": "Présente les réglages de personnalisation de Claude : instructions valables pour tout le compte (Settings > Your Claude, ou Account dans l'ancienne disposition, rubrique Instructions), instructions et connaissances propres à chaque Projet, styles de réponse et mémoire. Chacun agit à un niveau différent.",
    "description_source": "Claude offers several ways to personalize your experience. Each serves a different purpose in helping Claude better understand and meet your needs.",
-   "usage": "1. Click your initials in the lower left corner.\n2. Select \"Settings.\"\n3. Under \"Instructions for Claude,\" describe your instructions, such as:",
+   "usage": "1. Click your initials in the lower left corner.\n2. Select \"Settings,\" then \"Your Claude\" (or \"Account\" in the older Settings layout).\n3. Under \"Instructions\" (or \"Instructions for Claude\" in the older Settings layout), describe your instructions, such as:",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Poser dans Réglages > « Instructions for Claude » tes règles transversales (français, tutoiement, factuel séparé du déduit), puis vérifier dans une conversation neuve de l'app qu'elles s'appliquent sans les répéter."
+    "pourquoi": "Poser dans Settings > Your Claude > Instructions tes règles transversales (français, tutoiement, factuel séparé du déduit), puis vérifier dans une conversation neuve de l'app qu'elles s'appliquent sans les répéter."
    },
    "sources": [
     {
@@ -5512,7 +5553,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5541,12 +5582,71 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Click your initials in the lower left corner.\n2. Select \"Settings.\"\n3. Under \"Instructions for Claude,\" describe your instructions, such as:",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Pour définir des instructions valables pour tout le compte, on clique sur ses initiales en bas à gauche, on choisit « Settings », puis on décrit ses consignes sous « Instructions for Claude ».",
+       "source": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation déplace ou renomme le réglage « Instructions for Claude », ou en change le chemin d'accès."
+      },
+      {
+       "affirmation": "Claude propose plusieurs moyens de personnaliser l'expérience, chacun servant un but différent pour mieux comprendre et satisfaire les besoins de l'utilisateur.",
+       "source": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page de documentation disparaît ou ne présente plus plusieurs mécanismes de personnalisation distincts."
+      },
+      {
+       "affirmation": "Les règles transversales de Sylvain (français, tutoiement, validation pas à pas, factuel/déduit) restent dans les mémoires, dispersées entre projets.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que ces règles transversales ont été centralisées."
+      },
+      {
+       "affirmation": "La centralisation de ces règles transversales se fait sur proposition et accord explicite de Sylvain ; elle n'est pas faite.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md signale la centralisation faite ou retire l'exigence d'accord explicite de Sylvain."
+      },
+      {
+       "affirmation": "Sylvain a trois Projets claude.ai : « Web app ia », « Application Identité Numérique Implant… » et « Prothésiste Dentaire Indépendant ».",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne liste plus ces Projets claude.ai ou en change le nombre."
+      },
+      {
+       "affirmation": "La mémoire claude.ai est activée et jugée utile par Sylvain.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que la mémoire claude.ai est désactivée ou jugée inutile."
+      },
+      {
+       "affirmation": "Sylvain utilise artefacts, connecteurs et skills de Claude ; les autres fonctions sont à explorer et il veut exploiter tout ce qui sert au développement.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus cette volonté d'explorer les autres fonctions de Claude."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Mémoire claude.ai activée et jugée utile ; trois Projets claude.ai."
     },
     "optimisation.pistes": {
@@ -5556,46 +5656,16 @@
    },
    "provenance": [
     {
-     "affirmation": "Pour définir des instructions valables pour tout le compte, on clique sur ses initiales en bas à gauche, on choisit « Settings », puis on décrit ses consignes sous « Instructions for Claude ».",
+     "affirmation": "Les instructions valables pour tout le compte se règlent par les initiales en bas à gauche, puis Settings > Your Claude (ou Account dans l'ancienne disposition), rubrique Instructions.",
      "source": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation déplace ou renomme le réglage « Instructions for Claude », ou en change le chemin d'accès."
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page déplace ou renomme les instructions du compte"
     },
     {
-     "affirmation": "Claude propose plusieurs moyens de personnaliser l'expérience, chacun servant un but différent pour mieux comprendre et satisfaire les besoins de l'utilisateur.",
-     "source": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page de documentation disparaît ou ne présente plus plusieurs mécanismes de personnalisation distincts."
-    },
-    {
-     "affirmation": "Les règles transversales de Sylvain (français, tutoiement, validation pas à pas, factuel/déduit) restent dans les mémoires, dispersées entre projets.",
+     "affirmation": "Les règles transversales de Sylvain (français, tutoiement, factuel séparé du déduit) restent dispersées dans les mémoires de plusieurs projets.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que ces règles transversales ont été centralisées."
-    },
-    {
-     "affirmation": "La centralisation de ces règles transversales se fait sur proposition et accord explicite de Sylvain ; elle n'est pas faite.",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md signale la centralisation faite ou retire l'exigence d'accord explicite de Sylvain."
-    },
-    {
-     "affirmation": "Sylvain a trois Projets claude.ai : « Web app ia », « Application Identité Numérique Implant… » et « Prothésiste Dentaire Indépendant ».",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne liste plus ces Projets claude.ai ou en change le nombre."
-    },
-    {
-     "affirmation": "La mémoire claude.ai est activée et jugée utile par Sylvain.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que la mémoire claude.ai est désactivée ou jugée inutile."
-    },
-    {
-     "affirmation": "Sylvain utilise artefacts, connecteurs et skills de Claude ; les autres fonctions sont à explorer et il veut exploiter tout ce qui sert au développement.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus cette volonté d'explorer les autres fonctions de Claude."
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md indique que ces règles sont centralisées"
     }
    ]
   },
@@ -6230,9 +6300,9 @@
    "categorie": "fonctionnalites",
    "nom": "Get started with Claude in Chrome",
    "gabarit": "complet",
-   "description": "Claude in Chrome est une extension qui lit, clique et navigue sur les sites aux côtés de l'utilisateur, lancée depuis le panneau latéral de Chrome, Cowork ou Claude Code. Avec Claude Code, elle sert à tester et déboguer une app déployée (console, requêtes réseau, DOM).",
+   "description": "Claude in Chrome est une extension qui lit, clique et navigue sur les sites aux côtés de l'utilisateur, activée dans Settings > Customize > Connectors, puis lancée depuis le panneau latéral de Chrome, Cowork ou Claude Code. Avec Claude Code, elle sert à tester et déboguer une app déployée (console, requêtes réseau, DOM).",
    "description_source": "Claude in Chrome is a browser extension that allows Claude to read, click, and navigate websites alongside you. You can launch Claude in Chrome tasks from the side panel in your Chrome browser, or through Claude Cowork or Claude Code.",
-   "usage": "1. Click your initials in the lower left corner, then select “Settings.”\n2. Navigate to “Connectors.”\n3. Find **Claude in Chrome** in the list and click “Configure.”\n4. Toggle the connector on, then download and install the extension if you haven’t already.",
+   "usage": "1. Click your initials in the lower left corner, then select “Settings.”\n2. Navigate to \"Customize,\" then \"Connectors.\"\n3. Find **Claude in Chrome** in the list and click “Configure.”\n4. Toggle the connector on, then download and install the extension if you haven’t already.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -6252,7 +6322,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6277,9 +6347,68 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Click your initials in the lower left corner, then select “Settings.”\n2. Navigate to “Connectors.”\n3. Find **Claude in Chrome** in the list and click “Configure.”\n4. Toggle the connector on, then download and install the extension if you haven’t already.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Claude in Chrome est une extension de navigateur qui permet à Claude de lire, cliquer et naviguer sur des sites web aux côtés de l'utilisateur.",
+       "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus Claude in Chrome comme une extension capable de lire, cliquer et naviguer sur des sites."
+      },
+      {
+       "affirmation": "Les tâches Claude in Chrome peuvent être lancées depuis le panneau latéral de Chrome, ou via Claude Cowork ou Claude Code.",
+       "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne mentionne plus le lancement des tâches Claude in Chrome depuis Claude Code."
+      },
+      {
+       "affirmation": "Pour l'activer : Settings, puis Connectors, trouver Claude in Chrome, cliquer sur Configure, activer le connecteur puis télécharger et installer l'extension si besoin.",
+       "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La procédure d'activation via Settings > Connectors > Configure change ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "carnet est une PWA hébergée sur GitHub Pages (branche gh-pages), déployée via scripts/deploy.sh, avec Recharts dans sa stack.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus carnet comme hébergé sur GitHub Pages ou ne mentionne plus ce projet."
+      },
+      {
+       "affirmation": "Le travail en cours sur carnet porte sur les courbes de nuit de l'onglet Stats (durée de sommeil avec seuil, SpO2) et des corrections de saisie.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus de travail en cours sur les courbes de l'onglet Stats de carnet."
+      },
+      {
+       "affirmation": "Claude Code est utilisé sur carnet pour le développement et pour le coach.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code pour le développement de carnet."
+      },
+      {
+       "affirmation": "Parmi les frictions récurrentes observées figure une extension Chrome souvent déconnectée.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire la déconnexion fréquente de l'extension Chrome des frictions récurrentes."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -6292,46 +6421,16 @@
    },
    "provenance": [
     {
-     "affirmation": "Claude in Chrome est une extension de navigateur qui permet à Claude de lire, cliquer et naviguer sur des sites web aux côtés de l'utilisateur.",
+     "affirmation": "Claude in Chrome s'active dans Settings > Customize > Connectors (bouton Configure), puis l'extension se télécharge et s'installe si besoin.",
      "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus Claude in Chrome comme une extension capable de lire, cliquer et naviguer sur des sites."
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page change le chemin d'activation ou le nom du connecteur"
     },
     {
-     "affirmation": "Les tâches Claude in Chrome peuvent être lancées depuis le panneau latéral de Chrome, ou via Claude Cowork ou Claude Code.",
-     "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne mentionne plus le lancement des tâches Claude in Chrome depuis Claude Code."
-    },
-    {
-     "affirmation": "Pour l'activer : Settings, puis Connectors, trouver Claude in Chrome, cliquer sur Configure, activer le connecteur puis télécharger et installer l'extension si besoin.",
-     "source": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La procédure d'activation via Settings > Connectors > Configure change ou disparaît de la documentation."
-    },
-    {
-     "affirmation": "carnet est une PWA hébergée sur GitHub Pages (branche gh-pages), déployée via scripts/deploy.sh, avec Recharts dans sa stack.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme hébergé sur GitHub Pages ou ne mentionne plus ce projet."
-    },
-    {
-     "affirmation": "Le travail en cours sur carnet porte sur les courbes de nuit de l'onglet Stats (durée de sommeil avec seuil, SpO2) et des corrections de saisie.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus de travail en cours sur les courbes de l'onglet Stats de carnet."
-    },
-    {
-     "affirmation": "Claude Code est utilisé sur carnet pour le développement et pour le coach.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code pour le développement de carnet."
-    },
-    {
-     "affirmation": "Parmi les frictions récurrentes observées figure une extension Chrome souvent déconnectée.",
+     "affirmation": "L'extension Chrome est souvent déconnectée parmi les frictions récurrentes de Sylvain.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire la déconnexion fréquente de l'extension Chrome des frictions récurrentes."
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md ne liste plus cette friction"
     }
    ]
   },
@@ -6658,8 +6757,8 @@
    "nom": "Use Claude Cowork safely",
    "gabarit": "complet",
    "description": "Présente les risques de Cowork, dont les sessions s'exécutent dans le cloud d'Anthropic et atteignent tes fichiers, ton navigateur et tes apps par Claude Desktop : l'isolation limite où le code tourne, pas ce que Claude lit ni ce qu'il fait avec les accès accordés. La page recommande de limiter ces accès et de garder une supervision humaine sur les tâches sensibles.",
-   "description_source": "Cowork sessions run in the cloud on Anthropic's servers (in beta on Team and Enterprise plans), and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
-   "usage": "Cowork sessions run in the cloud on Anthropic's servers (in beta on Team and Enterprise plans), and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
+   "description_source": "Cowork sessions run in the cloud on Anthropic's servers, and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
+   "usage": "Cowork sessions run in the cloud on Anthropic's servers, and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -6679,7 +6778,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6708,61 +6807,96 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "Cowork sessions run in the cloud on Anthropic's servers (in beta on Team and Enterprise plans), and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les sessions Cowork s'exécutent dans le cloud, sur les serveurs d'Anthropic, et Claude atteint les fichiers, le navigateur et les apps de l'utilisateur à travers l'app Claude Desktop.",
+       "source": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page n'indique plus que Cowork s'exécute sur les serveurs d'Anthropic ou n'accède plus aux fichiers via Claude Desktop."
+      },
+      {
+       "affirmation": "La page présente les risques liés à ces capacités de Cowork, les protections mises en place, les points à surveiller et la façon de se protéger en utilisant Cowork.",
+       "source": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page disparaît de la documentation ou ne traite plus des risques et des protections de Cowork."
+      },
+      {
+       "affirmation": "Depuis le 06/10/2026, Cowork s'exécute dans le cloud sur Pro et Max, sans mode local : Claude récupère dans les dossiers connectés une copie du seul fichier nécessaire, traitée sur les serveurs d'Anthropic, à retenir pour l'activité de sous-traitance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce fonctionnement de Cowork ou retire la mise en garde liée à la sous-traitance."
+      },
+      {
+       "affirmation": "Sylvain n'utilise pas encore Cowork : il figure parmi les fonctions de Claude à explorer, et il veut exploiter tout ce qui sert au développement de ses projets.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que Sylvain utilise déjà Cowork ou ne souhaite plus l'explorer."
+      },
+      {
+       "affirmation": "Le travail qui doit rester sur la machine passe par Claude Code, avec /port-task-data.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus Claude Code ni /port-task-data pour le travail qui doit rester local."
+      },
+      {
+       "affirmation": "Sylvain est céramiste dentaire indépendant, sous-traitant pour des laboratoires.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Sylvain comme sous-traitant pour des laboratoires."
+      },
+      {
+       "affirmation": "Sylvain a un abonnement Claude Max (20x), pris le 07/10/2026 à l'essai d'un mois.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que Sylvain n'a plus d'abonnement Claude Max."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Cowork sessions run in the cloud on Anthropic's servers (in beta on Team and Enterprise plans), and Claude reaches your files, browser, and apps through the Claude Desktop app. These capabilities come with risks worth understanding. This article covers what we've built to keep you safe, what you should watch for, and how to protect yourself when using Cowork.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Cowork à explorer ; fichiers traités sur les serveurs d'Anthropic depuis le 06/10, à retenir pour la sous-traitance."
     },
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Céramiste dentaire sous-traitant pour des laboratoires."
     }
    },
    "provenance": [
     {
-     "affirmation": "Les sessions Cowork s'exécutent dans le cloud, sur les serveurs d'Anthropic, et Claude atteint les fichiers, le navigateur et les apps de l'utilisateur à travers l'app Claude Desktop.",
+     "affirmation": "Les sessions Cowork s'exécutent dans le cloud, sur les serveurs d'Anthropic ; les fichiers locaux ouverts par Claude Desktop y sont traités plutôt que de rester sur l'ordinateur.",
      "source": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page n'indique plus que Cowork s'exécute sur les serveurs d'Anthropic ou n'accède plus aux fichiers via Claude Desktop."
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page indique que Cowork peut de nouveau s'exécuter localement ou que les fichiers ouverts ne quittent plus l'ordinateur"
     },
     {
-     "affirmation": "La page présente les risques liés à ces capacités de Cowork, les protections mises en place, les points à surveiller et la façon de se protéger en utilisant Cowork.",
-     "source": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page disparaît de la documentation ou ne traite plus des risques et des protections de Cowork."
-    },
-    {
-     "affirmation": "Depuis le 06/10/2026, Cowork s'exécute dans le cloud sur Pro et Max, sans mode local : Claude récupère dans les dossiers connectés une copie du seul fichier nécessaire, traitée sur les serveurs d'Anthropic, à retenir pour l'activité de sous-traitance.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce fonctionnement de Cowork ou retire la mise en garde liée à la sous-traitance."
-    },
-    {
-     "affirmation": "Sylvain n'utilise pas encore Cowork : il figure parmi les fonctions de Claude à explorer, et il veut exploiter tout ce qui sert au développement de ses projets.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que Sylvain utilise déjà Cowork ou ne souhaite plus l'explorer."
-    },
-    {
-     "affirmation": "Le travail qui doit rester sur la machine passe par Claude Code, avec /port-task-data.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus Claude Code ni /port-task-data pour le travail qui doit rester local."
-    },
-    {
-     "affirmation": "Sylvain est céramiste dentaire indépendant, sous-traitant pour des laboratoires.",
+     "affirmation": "Sylvain est céramiste dentaire sous-traitant pour des laboratoires ; les fichiers de laboratoire ne doivent pas partir vers un tiers.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Sylvain comme sous-traitant pour des laboratoires."
-    },
-    {
-     "affirmation": "Sylvain a un abonnement Claude Max (20x), pris le 07/10/2026 à l'essai d'un mois.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que Sylvain n'a plus d'abonnement Claude Max."
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md décrit un autre profil ou une autre activité"
     }
    ]
   },
@@ -6886,7 +7020,7 @@
    "nom": "Assign tasks from anywhere in Claude Cowork",
    "gabarit": "complet",
    "description": "Dispatch donne une seule conversation continue avec Claude, joignable du téléphone ou de l'ordinateur, qui exécute les tâches sur l'ordinateur (machine allumée, Claude Desktop ouvert) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil avec une notification. Bêta limitée sur Pro et Max, fermée aux nouveaux utilisateurs ; une note de la page annonce que Cowork et chat fusionnent progressivement en un seul Claude sur Pro et Max (bêta pour Enterprise), ce qui peut changer certaines étapes.",
-   "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+   "description_source": "Claude Cowork gives you one continuous conversation with Claude that you can reach from your phone or your desktop. With Dispatch, you can message Claude from your phone and have it work on your desktop computer, using your local files, connectors, plugins, and apps, then come back to the finished work.",
    "usage": "1. Download or update Claude Desktop.\n2. Download or update Claude for iOS or Android.\n3. Open Cowork on either your phone or your desktop.\n4. Click “Dispatch” on the left side panel.\n5. You’ll land on a page describing the functionality. Click “Get started”:",
    "usage_nature": "etapes",
    "exemple": null,
@@ -6903,11 +7037,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6942,6 +7076,37 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Dispatch exécute les tâches sur l'ordinateur (Claude Desktop ouvert) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil.",
+       "source": "https://support.claude.com/en/articles/13947068-assign-tasks-from-anywhere-in-claude-cowork",
+       "releve_le": "2026-10-17",
+       "caduc_si": "La page change l'endroit d'exécution de Dispatch ou retire la création de sessions Claude Code."
+      },
+      {
+       "affirmation": "Depuis le 06/10/2026, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent dans le cloud ; les tâches Cowork créées par Dispatch n'apparaîtraient donc plus dans `ListAgents` (déduit, à vérifier au prochain essai).",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-17",
+       "caduc_si": "Un essai montre que les tâches de Dispatch apparaissent dans `ListAgents`, ou que CONTEXTE.md retire ce point."
+      },
+      {
+       "affirmation": "Une priorité déclarée est ce qui permet aux sessions Cowork (y compris Dispatch) d'échanger directement avec les sessions Claude Code.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-17",
+       "caduc_si": "Sylvain retire cette priorité de la consigne pour la veille."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -6954,27 +7119,7 @@
      "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
      "pourquoi": "Priorité déclarée : échanges directs entre sessions Cowork, dont Dispatch, et sessions Claude Code."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "Dispatch exécute les tâches sur l'ordinateur (Claude Desktop ouvert) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil.",
-     "source": "https://support.claude.com/en/articles/13947068-assign-tasks-from-anywhere-in-claude-cowork",
-     "releve_le": "2026-10-17",
-     "caduc_si": "La page change l'endroit d'exécution de Dispatch ou retire la création de sessions Claude Code."
-    },
-    {
-     "affirmation": "Depuis le 06/10/2026, les nouvelles tâches Cowork des forfaits Pro et Max s'exécutent dans le cloud ; les tâches Cowork créées par Dispatch n'apparaîtraient donc plus dans `ListAgents` (déduit, à vérifier au prochain essai).",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-17",
-     "caduc_si": "Un essai montre que les tâches de Dispatch apparaissent dans `ListAgents`, ou que CONTEXTE.md retire ce point."
-    },
-    {
-     "affirmation": "Une priorité déclarée est ce qui permet aux sessions Cowork (y compris Dispatch) d'échanger directement avec les sessions Claude Code.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-17",
-     "caduc_si": "Sylvain retire cette priorité de la consigne pour la veille."
-    }
-   ]
+   }
   },
   {
    "id": "claude-fonctionnalites-page-13979539-custom-visuals-in-chat-and-cowork",
@@ -7037,9 +7182,9 @@
    "categorie": "fonctionnalites",
    "nom": "Organize your tasks with projects in Claude Cowork",
    "gabarit": "complet",
-   "description": "Les projets de Cowork regroupent des tâches liées dans un espace avec ses fichiers, son contexte, ses instructions et sa mémoire ; ils fonctionnent comme les Projets de Claude, sont enregistrés dans le compte et exigent la dernière version de Claude Desktop.",
-   "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
-   "usage": "**Note:** Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as **Chat and Cowork unified (beta)**. If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in **[Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823)**, or read our **[blog post](https://claude.com/blog/cowork-is-now-claude)**. For Enterprise owners, see **[Set up and manage the new unified Claude experience for your Enterprise organization](https://support.claude.com/en/articles/17444462)**.",
+   "description": "Les projets de Cowork regroupent des tâches liées dans un espace avec ses fichiers, son contexte, ses instructions et sa mémoire ; ils fonctionnent comme les Projets de Claude. Un projet créé dans Cowork est enregistré dans le compte Claude, et Claude Desktop y déplace les projets créés depuis un dossier local (dossier et fichiers restent sur l'ordinateur).",
+   "description_source": "Projects in Claude Cowork let you group related tasks into dedicated workspaces with their own files, context, instructions, and memory. Projects work the same way in Cowork and in Claude. New projects you create in Cowork are saved to your Claude account, so you can pick them up from your other devices. Claude Desktop also moves projects you created from a folder on your computer into your Claude account, and their folders and files stay on your computer. Learn more about local projects moved to your Claude account.",
+   "usage": "Projects in Claude Cowork let you group related tasks into dedicated workspaces with their own files, context, instructions, and memory. Projects work the same way in Cowork and in Claude. New projects you create in Cowork are saved to your Claude account, so you can pick them up from your other devices. Claude Desktop also moves projects you created from a folder on your computer into your Claude account, and their folders and files stay on your computer. Learn more about **[local projects moved to your Claude account](#h_6a11f1ee1d)**.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -7059,7 +7204,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7092,12 +7237,24 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Projets claude.ai déjà utilisés ; Cowork encore à explorer."
     }
    }
@@ -7109,7 +7266,7 @@
    "nom": "Let Claude use your computer in Cowork",
    "gabarit": "complet",
    "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur (intégré ou Claude in Chrome), et en dernier recours par l'écran (clics, saisie), après une autorisation par application. Bêta sur Pro et Max, sous macOS et Windows ; Cowork et chat fusionnent progressivement en un seul Claude.",
-   "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+   "description_source": "Claude can now use your computer to complete tasks in Claude Cowork and Claude Code (refer to our Claude Code Docs for more information about this). When computer use is enabled and Claude doesn't have a connector or tool for what you need, it may navigate to your screen directly—clicking, typing, and opening apps just like you would. It can work in your browser, open files, and run your dev tools automatically, with no setup required other than enablement.",
    "usage": "1. **Connectors.** If a connector is available—like Gmail, Google Drive, Microsoft 365, or Slack—Claude uses it. This is the fastest and most reliable path.\n2. **Browser.** When there isn't a connector for the tool you need, Claude may work on your task in the browser built into the Claude Desktop app, or in your own Chrome browser through Claude in Chrome if that's your preferred browser. Learn more in **[Use the built-in browser in Claude Cowork](https://support.claude.com/en/articles/16607400)**.\n3. **Screen interaction.** Claude uses computer use to interact directly with your screen: clicking, typing, and navigating your desktop apps.",
    "usage_nature": "etapes",
    "exemple": null,
@@ -7126,11 +7283,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7163,6 +7320,10 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -7500,7 +7661,7 @@
    "nom": "Use live artifacts in Claude Cowork",
    "gabarit": "complet",
    "description": "Les artefacts vivants sont ceux créés dans Cowork avant le 19 août 2026 : ils restent dans la vue « Artifacts », marqués « Cowork », et restent partageables, mais ne se modifient plus en place ; pour les changer, on les republie comme nouvel artefact depuis « Share », et le lien existant montre la nouvelle version. Ceux créés depuis le 19 août fonctionnent comme les autres artefacts.",
-   "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+   "description_source": "Live artifacts are artifacts made in Claude Cowork before August 19, 2026. They stay in your Artifacts view and keep working, and you can still open and share them, but you can't edit them in place. This article explains what you can do with a live artifact and how to republish one so you can keep editing it.",
    "usage": "1. Open the live artifact and click \"Share.\"\n2. Choose to republish it as a new artifact.\n3. If you already shared the live artifact, the dialog shows its existing link. People with that link see the new version.",
    "usage_nature": "etapes",
    "exemple": null,
@@ -7517,11 +7678,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7562,6 +7723,10 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -8064,7 +8229,7 @@
    "nom": "Use the built-in browser in Claude Cowork",
    "gabarit": "complet",
    "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; sous Linux, il peut importer les connexions enregistrées depuis Firefox. Claude Desktop doit rester ouvert et en ligne, même si la session Cowork tourne dans le cloud ; le choix entre navigateur intégré et Chrome se fait dans Settings > Cowork > Preferred browser.",
-   "description_source": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+   "description_source": "Claude Cowork has a browser built into the Claude Desktop app. This article explains how the built-in browser works, how it differs from Claude in Chrome, and how to choose which one Claude uses.",
    "usage": "1. Open the Claude Desktop app and go to **Settings > Cowork**.\n2. Under **Preferred browser**, choose “Built-in browser” or “Chrome (Claude in Chrome)”.",
    "usage_nature": "etapes",
    "exemple": null,
@@ -8081,11 +8246,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8120,6 +8285,37 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Note: Claude Cowork is now just Claude. Ask for what you need, and Claude decides whether that’s a quick answer or a task. This is rolling out gradually to Pro and Max plans, and it’s in beta for Enterprise plans, where an admin turns it on as Chat and Cowork unified (beta). If your message box no longer shows “Chat” and “Cowork” options, you have the new experience, and some steps in this article may look different. Learn more in Claude Cowork and chat are one Claude, or read our blog post. For Enterprise owners, see Set up and manage the new unified Claude experience for your Enterprise organization.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le navigateur intégré à Claude Desktop se choisit dans Settings > Cowork > Preferred browser (« Built-in browser » ou « Chrome (Claude in Chrome) ») ; Claude Desktop doit rester ouvert et en ligne.",
+       "source": "https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork",
+       "releve_le": "2026-10-17",
+       "caduc_si": "La page change le chemin du réglage ou la condition de Claude Desktop ouvert."
+      },
+      {
+       "affirmation": "L'extension Chrome est souvent déconnectée (friction récurrente).",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-17",
+       "caduc_si": "CONTEXTE.md retire cette friction ou Sylvain ne l'observe plus."
+      },
+      {
+       "affirmation": "carnet est une PWA hébergée sur GitHub Pages (branche `gh-pages`).",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-17",
+       "caduc_si": "carnet change d'hébergement."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -8136,27 +8332,7 @@
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "PWA hébergée sur GitHub Pages."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "Le navigateur intégré à Claude Desktop se choisit dans Settings > Cowork > Preferred browser (« Built-in browser » ou « Chrome (Claude in Chrome) ») ; Claude Desktop doit rester ouvert et en ligne.",
-     "source": "https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork",
-     "releve_le": "2026-10-17",
-     "caduc_si": "La page change le chemin du réglage ou la condition de Claude Desktop ouvert."
-    },
-    {
-     "affirmation": "L'extension Chrome est souvent déconnectée (friction récurrente).",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-17",
-     "caduc_si": "CONTEXTE.md retire cette friction ou Sylvain ne l'observe plus."
-    },
-    {
-     "affirmation": "carnet est une PWA hébergée sur GitHub Pages (branche `gh-pages`).",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-17",
-     "caduc_si": "carnet change d'hébergement."
-    }
-   ]
+   }
   },
   {
    "id": "claude-fonctionnalites-page-16761823-claude-cowork-and-chat-are-one-claude",

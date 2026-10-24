@@ -1,0 +1,620 @@
+{
+  "date": "2026-10-24",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-24T02:08:13+00:00",
+  "synthese": "Compte et quotas : la page d'aide « Claude Code avec un plan Pro ou Max » change un mot (« extra usage » devient « usage credits » pour les crédits API mensuels de Max, toujours inutilisables dans Claude Code et les apps Claude), et la fiche du cache de prompt est réécrite sans changement de fond ; aucune de ces deux révisions ne change tes limites. Relevé du 24/10 à 02 h UTC : Claude session 5 h à 5 % (remise à zéro à 03 h 10 UTC), semaine à 87 % (remise à zéro le 25/10 vers 16 h UTC), semaine Fable à 0 %, ChatGPT semaine à 25 % (remise à zéro le 30/10 vers 17 h 42 UTC) ; la semaine Claude dépasse le seuil D71 de 80 % : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Claude Code 2.1.310, déjà installée, allège la mémoire des sessions `claude -p` pendant la compaction, ce que lance la chaîne de nuit D70 ; MCP Tasks et Elicitations arrivent dans la CLI mais aucun serveur MCP décrit chez toi ne s'en sert. Le billet Cowork pour Enterprise, la sécurité de Claude Duet, la Claude Tag API et deux incidents brefs résolus n'ont pas d'effet sur ton compte Max ni sur tes projets.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-aide-claude-code-pro-max-article",
+      "ids_bruts": [
+        "claude-aide-claude-code-pro-max-article"
+      ],
+      "produit": "claude",
+      "titre": "Aide Claude Code avec Pro ou Max : « extra usage » devient « usage credits » dans la phrase sur les crédits API mensuels de Max",
+      "version": null,
+      "date_publication": null,
+      "type": "amelioration",
+      "revision": true,
+      "resume": "Une seule phrase de la page d'aide change : « Monthly API credits included with Max plans can't be used in Claude Code or the Claude apps, including for extra usage » devient « … including for usage credits ». Le fond reste que les crédits API mensuels inclus dans Max ne servent ni dans Claude Code ni dans les apps Claude ; seul le nom du palier supplémentaire est modifié. La page ne donne aucune date ni aucun chiffre nouveau.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+          "libelle": "Claude Code avec un plan Pro ou Max — page d'aide",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : seul le nom du palier supplémentaire est remplacé, « extra usage » par « usage credits ». Tu es sur Max (20x) à l'essai jusqu'au 07/11 : les crédits API mensuels de Max, s'ils sont réclamés via la Console, ne paieraient ni tes sessions Claude Code ni l'app Claude Desktop, d'après cette phrase de la page. Ton quota hebdomadaire est au-dessus du seuil D71, voir l'action.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun geste de compte pour ce changement de mot ; revérifier le 2026-10-31 (aucune échéance publiée) la phrase sur les crédits API mensuels de Max, avant le bilan d'usage de ton essai Max (20x) du 07/11. Relevé du 24/10 à 02 h UTC : semaine Claude à 87 % (remise à zéro le 25/10 vers 16 h UTC), au-dessus du seuil D71 de 80 % : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser.",
+        "etapes": [
+          "Ouvre Paramètres > Utilisation dans l'app Claude et cherche une remise à zéro disponible ; résultat attendu : tu sais si tu peux en utiliser une avant la remise à zéro hebdomadaire du 25/10 vers 16 h UTC, donc avant d'économiser."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Max 20x à l'essai jusqu'au 07/11, bilan d'usage à préparer ; abonnement concerné par la page."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-fonctionnalites-page-prompt-caching",
+      "ids_bruts": [
+        "kb-claude-code-fonctionnalites-page-prompt-caching"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : « How Claude Code uses prompt caching », liens de la fiche réécrits en adresses absolues, contenu inchangé",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "amelioration",
+      "revision": true,
+      "resume": "La fiche `claude-code-fonctionnalites-page-prompt-caching` (sujet D71, durées de cache) voit son `usage` modifié, mais seuls les liens passent de relatifs (`/docs/en/sub-agents#…`) à absolus (`https://code.claude.com/docs/en/…`). L'ordre de priorité des durées de cache est le même : `FORCE_PROMPT_CACHING_5M=1`, variable du compartiment, réglage du compartiment, `cacheTtl` d'un sous-agent, `ENABLE_PROMPT_CACHING_1H=1`, défaut du compartiment. La réserve reste : le `1h` d'un sous-agent est ignoré tant que l'abonnement consomme des usage credits.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/prompt-caching",
+          "libelle": "How Claude Code uses prompt caching",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Ça ne change pas tes limites : seule la forme des liens de la page change, la fiche garde son verdict `utiliser`. Elle te sert pour les longues missions de Dev-delta sur delta-ia, où changer de modèle en cours de session coûte un tour sans cache, alors que le `/clear` de `mission-dev` applique déjà un CLAUDE.md modifié.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun geste de compte ; revérifier le 2026-10-31 (aucune échéance publiée) la fiche `claude-code-fonctionnalites-page-prompt-caching`.",
+        "etapes": [
+          "Pendant une longue mission, garde le même modèle jusqu'à la fin de la session au lieu de basculer de modèle en cours de route ; résultat attendu : pas de tour plus lent et plus coûteux dû à un cache perdu après un changement de modèle."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-fonctionnalites-page-prompt-caching"
+      ],
+      "contexte_sections": {
+        "methode.travail": {
+          "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+          "pourquoi": "Limites d'usage hebdomadaires et coût en jetons parmi les frictions récurrentes."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.310",
+      "ids_bruts": [
+        "claude-code-2.1.310"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.310 : moins de mémoire pour `claude -p` en compaction, Monitor sur Bedrock, Vertex et Foundry, correctifs de `cleanupPeriodDays` et de sessions cloud",
+      "version": "2.1.310",
+      "date_publication": "2026-10-23",
+      "type": "amelioration",
+      "resume": "Ajouts : l'outil Monitor et les moniteurs de plugins fonctionnent sur Bedrock, Vertex et Foundry, ou quand la télémétrie ou le trafic non essentiel est désactivé (les longs `sleep` au premier plan y sont aussi bloqués) ; permissions des sessions cloud et de Remote Control dans les rôles personnalisés Enterprise ; bouton « Choose file » pour charger le script d'installation d'un environnement cloud. Changements : mémoire réduite pendant la compaction des sessions non interactives (`-p`, Agent SDK) quand la transcription est très grosse, `/sandbox` nomme la restriction AppArmor d'Ubuntu sur les espaces de noms utilisateur, nouvelle erreur pour un appel MCP en délai dépassé quand l'elicitation du serveur reste sans réponse, invite du mode auto plus précise avant une première lecture hors des dossiers de travail. Correctifs : reprise sans la valeur bêta `effort-2025-11-24` derrière certaines passerelles, suppression de fichiers récents (images collées) quand `cleanupPeriodDays` est très grand, compaction après « Prompt is too long » avec du texte dense, invite de lecture qui n'indiquait pas la cible d'un lien symbolique, hooks PreToolUse sous Windows, VS Code, Claude Tag et Code Review.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21310",
+          "libelle": "Claude Code 2.1.310",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "La version installée est déjà la 2.1.310 (`docs/data/versions.json`). La chaîne de nuit D70 lance `/delta` et `/delta-kb` en `claude -p`, et JUGER appelle ses rôles par `claude -p` : la mémoire réduite en compaction ne joue que si la transcription d'une de ces étapes devient très grosse. L'ajout de Monitor vise Bedrock, Vertex et Foundry, et CONTEXTE.md ne décrit aucun accès par ces plateformes ; tu n'as aucun crédit Claude Code cloud (décision du 21/10), donc les ajouts de sessions cloud et de rôles Enterprise ne te touchent pas. Les correctifs de `cleanupPeriodDays`, `/sandbox`, VS Code, Windows, Claude Tag et Code Review portent sur des réglages ou des outils que CONTEXTE.md ne décrit pas comme utilisés.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Contrôler la version que lanceront les étapes `claude -p` de la chaîne de nuit D70.",
+        "etapes": [
+          "Dans `~/projets/delta-ia`, lance `claude --version` ; résultat attendu : une sortie qui commence par `2.1.310`, version qu'utiliseront `/delta` et `/delta-kb` à la prochaine exécution de la chaîne de nuit D70."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-sandbox",
+        "claude-code-parametres-cleanupperioddays"
+      ],
+      "contexte_sections": {
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes /delta et /delta-kb lancées en `claude -p` par la chaîne de nuit."
+        },
+        "methode.juger-design": {
+          "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+          "pourquoi": "Rôles LLM de JUGER appelés par `claude -p`."
+        },
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Aucun crédit Claude Code cloud (décision du 21/10) : sessions cloud hors usage."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-warn-memory-free-gib",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-warn-memory-free-gib"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_WARN_MEMORY_FREE_GIB`, avertir Claude quand la mémoire disponible baisse (révision : seuil à choisir sur le K8 Plus)",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "revision": true,
+      "resume": "Révision du 23/10 : CONTEXTE.md du 24/10 ne décrit plus la mémoire de 14 Gio ni `calculs.slice` ; le K8 Plus est la machine de développement et le HP la machine d'essai. La variable est inchangée : un entier de Gio fait avertir Claude, par un rappel système, quand la mémoire disponible passe sous ce seuil ; sans effet si absente, à 0 ou non numérique ; à définir dans l'environnement de lancement, pas dans le bloc `env` de settings ; Claude Code 2.1.304 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "CONTEXTE.md ne chiffre plus la mémoire de la machine où tournent tes campagnes de trading-sim : le seuil de 3 Gio proposé le 23/10, tiré de l'ancienne description du HP, n'a plus de base écrite. La variable ne limite rien, elle fait seulement avertir Claude ; l'action te fait lire la mémoire du K8 Plus avant de fixer un seuil.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Lire la mémoire du K8 Plus, puis essayer la variable dans une session ouverte sur trading-sim pendant une campagne.",
+        "etapes": [
+          "Lance `free -g` et note la mémoire totale ; choisis un entier de Gio proche de 10 % de ce total.",
+          "Dans le terminal qui lance la session (pas dans le bloc `env` de settings, ignoré pour cette variable), tape `cd ~/projets/trading-sim && CLAUDE_CODE_WARN_MEMORY_FREE_GIB=<entier> claude`, puis lance une campagne ; résultat attendu : un rappel système indique la mémoire disponible quand elle passe sous ce seuil."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-warn-memory-free-gib"
+      ],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+          "pourquoi": "K8 Plus machine de développement ; mémoire non chiffrée dans la section."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Campagnes exhaustives, machine lente pour les calculs."
+        }
+      }
+    },
+    {
+      "id": "x-2113698001889927608",
+      "ids_bruts": [
+        "x-2113698001889927608",
+        "x-2113698005161533504",
+        "x-2113698007892070527"
+      ],
+      "produit": "claude",
+      "titre": "Claude Code : MCP Tasks et Elicitations disponibles dans la CLI, déploiement aux autres produits Claude à venir",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "Annoncé sur X par @ClaudeDevs le 23/10 et confirmé par la page MCP de Claude Code : les tâches MCP (un serveur exécute lui-même un travail long, comme un export ou un build, et le résultat revient à la fin) et les elicitations (un plugin demande une saisie à l'utilisateur en cours de tâche) sont disponibles dans la CLI, les autres produits Claude suivront. La documentation exige Claude Code 2.1.304 ou plus pour les tâches et propose `CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND=1` pour attendre le résultat en session interactive ; la 2.1.310 change le message d'erreur d'un appel MCP en délai dépassé quand l'elicitation reste sans réponse en mode non interactif.",
+      "sources": [
+        {
+          "url": "https://x.com/ClaudeDevs/status/2113698001889927608",
+          "libelle": "@ClaudeDevs — post du 23/10/2026",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2113698005161533504",
+          "libelle": "@ClaudeDevs — post du 23/10/2026 (elicitations)",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2113698007892070527",
+          "libelle": "@ClaudeDevs — post du 23/10/2026 (plugins)",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/mcp#mcp-tasks-that-run-on-the-server",
+          "libelle": "Claude Code — MCP tasks that run on the server",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-mcp-tasks-that-run-on-the-server",
+        "claude-code-mcp-mcp-tasks-for-server-authors",
+        "claude-code-mcp-time-limits-on-mcp-tool-calls",
+        "claude-code-parametres-claude-code-disable-mcp-task-background"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-mcp-tasks-that-run-on-the-server",
+      "ids_bruts": [
+        "kb-claude-code-mcp-mcp-tasks-that-run-on-the-server"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : « MCP tasks that run on the server », travaux longs exécutés par le serveur MCP",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "resume": "Catégorie MCP. D'après la documentation d'origine : une tâche MCP est un travail long (export de rapport, build) qu'un serveur MCP exécute lui-même ; l'appel d'outil de Claude rend la main quand le serveur accepte le travail, et à la fin le transcript affiche « MCP task <id> (<serveur>/<outil>) completed ». Verdict de la fiche : `ignorer`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#mcp-tasks-that-run-on-the-server",
+          "libelle": "Claude Code — MCP tasks that run on the server",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-mcp-tasks-that-run-on-the-server"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-mcp-tasks-for-server-authors",
+      "ids_bruts": [
+        "kb-claude-code-mcp-mcp-tasks-for-server-authors"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : « MCP tasks for server authors », répondre à un appel long par une tâche",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "resume": "Catégorie MCP. D'après la documentation d'origine : l'auteur d'un serveur MCP peut répondre à un `tools/call` long par une tâche (`resultType: \"task\"`, `taskId`, `status`, `pollIntervalMs`), selon l'extension MCP tasks ; Claude Code annonce sa prise en charge dans les métadonnées de la requête. Verdict de la fiche : `ignorer`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#mcp-tasks-for-server-authors",
+          "libelle": "Claude Code — MCP tasks for server authors",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-mcp-tasks-for-server-authors"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-time-limits-on-mcp-tool-calls",
+      "ids_bruts": [
+        "kb-claude-code-mcp-time-limits-on-mcp-tool-calls"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : « Time limits on MCP tool calls », champ `timeout` par serveur et `MCP_TOOL_TIMEOUT`",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "resume": "Catégorie MCP. D'après la documentation d'origine : un champ `timeout` en millisecondes dans l'entrée d'un serveur, ou la variable `MCP_TOOL_TIMEOUT` pour tous, borne la durée d'un appel d'outil MCP ; un appel sans réponse ni progression s'interrompt après 5 minutes (HTTP, SSE) ou 30 minutes (stdio). Verdict de la fiche : `ignorer`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#time-limits-on-mcp-tool-calls",
+          "libelle": "Claude Code — Time limits on MCP tool calls",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-time-limits-on-mcp-tool-calls"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-mcp-task-background",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-disable-mcp-task-background"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND`, attendre le résultat d'une tâche MCP",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, variable d'environnement. D'après la documentation d'origine : à 1, Claude attend le résultat d'une tâche MCP en session interactive ; avec l'arrière-plan automatique actif, l'appel passe quand même en arrière-plan après deux minutes par défaut. Demande Claude Code 2.1.304 ou plus. Verdict de la fiche : `ignorer`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-mcp-task-background"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-sshhostcommands",
+      "ids_bruts": [
+        "kb-claude-code-parametres-sshhostcommands"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : `sshHostCommands`, connexions SSH dans le sélecteur d'environnement de Claude Desktop",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "nouveaute",
+      "resume": "Catégorie paramètres, clé de réglage. D'après la documentation d'origine : une liste d'entrées `{id, name, command}` ajoute au sélecteur d'environnement de Claude Desktop des connexions SSH dont l'hôte est affiché par la commande, exécutée sur l'ordinateur à la création de la connexion ou au remplacement de l'hôte. Demande Claude Desktop 3.6556.0 ou plus sur macOS ou Linux, avec un compte Claude connecté. Verdict de la fiche : `ignorer`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#sshhostcommands",
+          "libelle": "Claude Code — settings reference, sshHostCommands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-sshhostcommands"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/claude-duet-safety-privacy-and-security",
+      "ids_bruts": [
+        "https://claude.com/blog/claude-duet-safety-privacy-and-security",
+        "x-2113736176737845353"
+      ],
+      "produit": "claude",
+      "titre": "Claude Duet : sécurité, confidentialité et protection des accès, détail des garde-fous de l'aperçu",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "actu",
+      "resume": "Billet de 12 minutes sur les protections de Claude Duet : validation avant tout envoi sensible, paiement ou suppression (certaines actions, comme le trading de titres ou les virements, restent interdites même avec accord), vérification automatique construite sur le classifieur du mode auto de Claude Code, nouveau classifieur d'informations sensibles sur chaque message sortant, mots de passe et jetons jamais visibles par le modèle, navigateur isolé dans sa propre machine virtuelle. Duet reste un aperçu de recherche, sans nouvelle limite ni nouveau tarif dans ce billet.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/claude-duet-safety-privacy-and-security",
+          "libelle": "Claude Duet Safety, Privacy, and Security",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/claudeai/status/2113736176737845353",
+          "libelle": "@claudeai — post du 23/10/2026",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/unified-claude-enterprise",
+      "ids_bruts": [
+        "https://claude.com/blog/unified-claude-enterprise"
+      ],
+      "produit": "claude",
+      "titre": "Claude Cowork et le chat réunis pour les forfaits Claude Enterprise, avec un mode Efficient et des plafonds de dépense",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "nouveaute",
+      "resume": "L'expérience unifiée chat et Cowork, ouverte aux forfaits Pro et Max en septembre, devient disponible pour Claude Enterprise : le travail d'agent tourne dans un environnement cloud géré par Anthropic. Les administrateurs Enterprise gagnent un mode Efficient (reste sur Sonnet et Haiku), des droits de modèles par rôle et des plafonds de dépense par organisation, groupe et membre. La tarification Enterprise reste à l'usage ; le billet dit qu'Opus 5.5 coûte 40 % de moins à exécuter qu'Opus 5 sur des charges typiques, et Sonnet 5.5 jusqu'à 30 % de moins que Sonnet 5.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/unified-claude-enterprise",
+          "libelle": "Claude Cowork and chat come together for Enterprise",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-20",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-20"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — 20/10 (révision) : Claude Tag API en bêta pour les organisations Claude Enterprise",
+      "version": null,
+      "date_publication": "2026-10-20",
+      "type": "nouveaute",
+      "revision": true,
+      "resume": "Ajoutée à la note du 20/10 : la Claude Tag API, en bêta pour les organisations Claude Enterprise avec l'en-tête bêta `experimental-claude-tag-2026-10-21`. Ses points d'accès `/v1/organizations/claude_tag/` lisent et modifient les réglages de Claude Tag sur les canaux et espaces Slack et rattachent des Access bundles ; elle s'appelle avec une clé Admin API portant la portée `read:claude_tag` ou `write:claude_tag`, et n'est pas disponible pour les organisations Claude Platform (Console). Modifiée : le libellé d'un lien vers la page du web fetch.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-07",
+        "claude-platform-notes-2026-09-28",
+        "claude-platform-notes-2026-09-22",
+        "claude-platform-notes-2026-09-03",
+        "claude-platform-notes-2026-09-01",
+        "claude-platform-notes-2026-08-27",
+        "claude-platform-notes-2026-08-20",
+        "claude-platform-notes-2026-08-10",
+        "claude-platform-notes-2026-07-24",
+        "claude-platform-notes-2026-07-22",
+        "claude-platform-notes-2026-07-15",
+        "claude-platform-notes-2026-07-08",
+        "claude-platform-notes-2026-06-30",
+        "claude-platform-notes-2026-06-29",
+        "claude-platform-notes-2026-06-25",
+        "claude-platform-notes-2026-06-09",
+        "claude-platform-notes-2026-06-02",
+        "claude-platform-notes-2026-05-28",
+        "claude-platform-notes-2026-05-13",
+        "claude-platform-notes-2026-05-06",
+        "claude-platform-notes-2026-04-23",
+        "claude-platform-notes-2026-04-16",
+        "claude-platform-notes-2026-04-09",
+        "claude-platform-notes-2026-04-08",
+        "claude-platform-notes-2026-03-13",
+        "claude-platform-notes-2026-02-19",
+        "claude-platform-notes-2026-02-17",
+        "claude-platform-notes-2026-02-05",
+        "claude-platform-notes-2026-01-29",
+        "claude-platform-notes-2025-12-04",
+        "claude-platform-notes-2025-11-24",
+        "claude-platform-notes-2025-11-14",
+        "claude-platform-notes-2025-10-16",
+        "claude-platform-notes-2025-10-15",
+        "claude-platform-notes-2025-09-02",
+        "claude-platform-notes-2025-08-26",
+        "claude-platform-notes-2025-08-19",
+        "claude-platform-notes-2025-08-13",
+        "claude-platform-notes-2025-06-11",
+        "claude-platform-notes-2025-05-22",
+        "claude-platform-notes-2024-09-10",
+        "claude-platform-notes-2024-06-27",
+        "claude-platform-notes-2024-05-10"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform — révisions de forme de 43 anciennes notes (du 10/05/2024 au 07/10/2026)",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "amelioration",
+      "revision": true,
+      "resume": "Révisions de forme, sans fait nouveau : liens vers Claude sur Vertex AI redirigés vers « Claude Models on Google Cloud (Google managed) », mention « USD » ajoutée aux prix en dollars, « public beta » devenu « beta » dans plusieurs annonces, libellés de liens précisés (« Fast mode model availability », « Supported event types », « Automatic caching »). Les notes du 28/05 (`messages` système en cours de conversation), du 16/04 (effort `xhigh`, `high`, `max`) et du 08/04 (CLI `ant`) ne changent que de libellé ou de mention « USD ». La note du 10/08 garde le même prix pour Claude Sonnet 5 (2 $ / 10 $ par MTok) : seule la mention « USD » est ajoutée.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-h101vcmhnfky",
+      "ids_bruts": [
+        "anthropic-status-h101vcmhnfky"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Fable 5.1, Sonnet 5.5 et Haiku 5.5 (23/10)",
+      "version": null,
+      "date_publication": "2026-10-23",
+      "type": "correction",
+      "resume": "Incident d'impact « critical » sur claude.ai, l'API Claude, Claude Code et Claude Cowork : erreurs élevées sur les requêtes vers Claude Fable 5.1, Sonnet 5.5 et Haiku 5.5, ainsi que sur le mode rapide d'Opus 5.5, du 23/10 à 23 h 28 UTC à 23 h 59 UTC (résolu).",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/h101vcmhnfky",
+          "libelle": "status.claude.com — incident h101vcmhnfky",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-3cqf3pmlnr96",
+      "ids_bruts": [
+        "anthropic-status-3cqf3pmlnr96"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Opus 5.5 (24/10)",
+      "version": null,
+      "date_publication": "2026-10-24",
+      "type": "correction",
+      "resume": "Incident d'impact « major » sur claude.ai, l'API Claude, Claude Code et Claude Cowork : erreurs élevées sur les requêtes vers Claude Opus 5.5, du 24/10 à 00 h 23 UTC à 00 h 34 UTC (résolu).",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/3cqf3pmlnr96",
+          "libelle": "status.claude.com — incident 3cqf3pmlnr96",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2113626655902126442",
+      "raison": "post X sans rapport : analyse d'un incident d'alignement d'un modèle de recherche pendant un test de l'AISI, sans outil ni réglage à adopter (D24)."
+    },
+    {
+      "id": "x-2113626657508516348",
+      "raison": "post X sans rapport : suite du fil sur l'analyse de l'AISI, rapport à lire, sans outil ni réglage (D24)."
+    },
+    {
+      "id": "https://claude.com/blog/claude-duet",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.305",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-claude-code-parametres-enable-prompt-caching-1h",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.304",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-enable-prompt-suggestion",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.302",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.307",
+      "raison": "réévalué, inchangé"
+    },
+    {
+      "id": "claude-code-2.1.309",
+      "raison": "réévalué, inchangé"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

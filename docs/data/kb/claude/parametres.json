@@ -1,12 +1,12 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-23",
- "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+ "maj_le": "2026-10-24",
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
-  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
-  "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-  "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+  "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
+  "env.machine": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+  "env.multi-sessions": "1445352f2d778113bda87569f2ede546f23b6acb",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -38,10 +38,10 @@
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
+  "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 667,
+ "total": 669,
  "commentees": 628,
  "entrees": [
   {
@@ -7316,7 +7316,7 @@
    "nom": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "gabarit": "court",
    "description": "Variable qui désactive toutes les tâches d'arrière-plan, y compris Ctrl+B.",
-   "description_source": "Set to 1 to disable all background task functionality, including the run_in_background parameter on Bash and subagent tools, auto-backgrounding, and the Ctrl+B shortcut",
+   "description_source": "Set to 1 to remove the run_in_background parameter from the Bash, PowerShell, and subagent tools and to turn off the Ctrl+B shortcut and background runs of forked skills. Claude Code then also stops moving subagents, long MCP tool calls, and timed-out shell commands to the background automatically. MCP tasks and the Monitor tool still run in the background",
    "usage": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7333,11 +7333,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7346,6 +7346,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -8099,6 +8103,53 @@
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {}
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-mcp-task-background",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND",
+   "gabarit": "court",
+   "description": "Variable d'environnement à 1 : Claude attend le résultat d'une tâche MCP en session interactive au lieu de la laisser passer en arrière-plan (par défaut après deux minutes, si l'arrière-plan automatique est actif). Exige Claude Code 2.1.304 ou plus.",
+   "description_source": "Set to 1 so that Claude waits for the result of an MCP task in an interactive session. While automatic backgrounding is on, it still moves the call to the background after two minutes by default. Requires Claude Code v2.1.304 or later",
+   "usage": "CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Claude Code 2.1.304 ou plus",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui renvoie des tâches MCP longues ; le seul serveur MCP décrit pour Claude Code est delta-ia."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveur MCP delta-ia en portée locale et connecteurs de compte, sans tâche MCP décrite."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-24",
+   "historique": [
+    {
+     "date": "2026-10-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-model-access-fallback",
@@ -11190,7 +11241,7 @@
    "nom": "CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS",
    "gabarit": "court",
    "description": "Variable qui fixe au bout de combien de temps un appel d'outil MCP passe en arrière-plan, 2 minutes par défaut.",
-   "description_source": "Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off. Requires Claude Code v2.1.212 or later",
+   "description_source": "Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off and, in an interactive session, to make Claude wait for MCP tasks. Requires Claude Code v2.1.212 or later",
    "usage": "CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11207,11 +11258,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11220,6 +11271,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -32065,6 +32120,53 @@
    "contexte_sections": {}
   },
   {
+   "id": "claude-code-parametres-sshhostcommands",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "sshHostCommands",
+   "gabarit": "court",
+   "description": "Clé de réglage : ajoute au sélecteur d'environnement de Claude Desktop des connexions SSH dont l'hôte est affiché par une commande, exécutée sur l'ordinateur à la création de la connexion ou au remplacement de l'hôte.",
+   "description_source": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account.",
+   "usage": "{\n  \"sshHostCommands\": [\n    {\n      \"id\": \"devbox\",\n      \"name\": \"Dev box\",\n      \"command\": \"acme-dev create\"\n    }\n  ]\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Claude Desktop 3.6556.0 ou plus, macOS ou Linux, compte Claude connecté",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucune connexion SSH depuis Claude Desktop ; tes sessions durables tournent sous systemd et tmux sur la machine."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#sshhostcommands",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en services systemd et tmux sur la machine, sans environnement distant dans Claude Desktop."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Remote, desktop, and notifications",
+   "maj_le": "2026-10-24",
+   "historique": [
+    {
+     "date": "2026-10-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-statusline",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -34616,9 +34718,9 @@
    "categorie": "parametres",
    "nom": "Set break reminders and quiet hours",
    "gabarit": "court",
-   "description": "Réglages de claude.ai (Réglages > Time and focus) qui rappellent de faire une pause après une durée d'usage quotidienne et ajoutent une légère friction pendant des heures calmes, sans jamais bloquer.",
+   "description": "Réglages de claude.ai (Settings > Wellbeing, ou Time and focus dans l'ancienne disposition) qui rappellent de faire une pause après une durée d'usage quotidienne et ajoutent une légère friction pendant des heures calmes, sans jamais bloquer.",
    "description_source": "Break reminders and quiet hours are optional controls you can enable in your Claude settings. A break reminder gives you a gentle nudge after you’ve spent a set amount of time with Claude in a day. Quiet hours add light friction during windows you’ve set aside for something else. Neither is a hard lock, so you can always continue past them.",
-   "usage": "1. Go to **[Settings > Time and focus](https://claude.ai/settings/time-limits)**.\n2. Under **Break reminders**, use the dropdowns to choose how much daily time with Claude should pass before you get a nudge.",
+   "usage": "1. Go to **Settings > Wellbeing** (or **Settings > Time and focus** in the older Settings layout).\n2. Under **Break reminders**, use the dropdowns to choose how much daily time with Claude should pass before you get a nudge.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -34638,7 +34740,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34655,12 +34757,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Claude : artefacts, connecteurs, skills ; aucun besoin de limiter le temps d'usage."
     }
    }
@@ -34802,9 +34912,9 @@
    "categorie": "parametres",
    "nom": "Customizing your appearance settings",
    "gabarit": "court",
-   "description": "Réglages d'apparence de claude.ai, accessibles depuis le menu du compte en bas à gauche.",
+   "description": "Réglages d'apparence de claude.ai (Settings > Appearance, ou Settings > General dans l'ancienne disposition), accessibles depuis le menu du compte en bas à gauche : mode de couleur clair, système ou sombre.",
    "description_source": "1. Log in to your account and click your initials or name in the lower left corner.",
-   "usage": "1. Log in to your account and click your initials or name in the lower left corner.\n2. Navigate to [Settings > Appearance](https://claude.ai/settings/appearance).\n3. Select from Light, Match System, and Dark under **Color mode**.",
+   "usage": "1. Log in to your account and click your initials or name in the lower left corner.\n2. Navigate to **Settings > Appearance** (or **Settings > General** in the older Settings layout).\n3. Select from Light, Match System, and Dark under **Color mode**.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -34824,7 +34934,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34841,12 +34951,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Usage de l'app Claude centré sur le développement."
     }
    }

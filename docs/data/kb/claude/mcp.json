@@ -1,12 +1,12 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-23",
- "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+ "maj_le": "2026-10-24",
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
-  "profil": "44514141d0cfc91514e18feff928d71b96be3ba9",
-  "env.machine": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-  "env.multi-sessions": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+  "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
+  "env.machine": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+  "env.multi-sessions": "1445352f2d778113bda87569f2ede546f23b6acb",
   "projet.vue-ensemble": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
   "projet.carnet": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
   "projet.trading-sim": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
@@ -38,11 +38,11 @@
   "methode.juger-design": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
   "methode.chaine-nuit": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
   "optimisation.pistes": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-  "usage.hors-machine": "2fb306f259b2026a1abb023bab0740b6ac8c84d0"
+  "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 45,
- "commentees": 37,
+ "total": 48,
+ "commentees": 39,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -170,7 +170,7 @@
    "nom": "Automatic backgrounding of long tool calls",
    "gabarit": "complet",
    "description": "Un appel d'outil MCP de la conversation principale qui dure plus de deux minutes passe en tâche d'arrière-plan au lieu de bloquer la session ; Claude reçoit l'identifiant de la tâche et continue, puis le résultat arrive en notification. `/tasks` suit ces tâches.",
-   "description_source": "An MCP tool call in the main conversation that is still running after two minutes moves to a background task instead of blocking the session. Claude receives the task ID immediately and keeps working, and the result arrives as a task notification when the call settles.",
+   "description_source": "If a background call's detail view in /tasks shows runs on the server; survives exiting this session, see MCP tasks that run on the server.",
    "usage": "/tasks",
    "usage_nature": "syntaxe",
    "exemple": "/tasks",
@@ -191,7 +191,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -208,6 +208,10 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -221,7 +225,7 @@
    "nom": "Automatic reconnection",
    "gabarit": "complet",
    "description": "Claude Code reconnecte seul un serveur distant (HTTP ou SSE) qui décroche en cours de session et réessaie une première connexion après une erreur passagère ; un serveur stdio, processus local, n'est pas reconnecté automatiquement. `/mcp` montre l'état des serveurs et permet de relancer une connexion.",
-   "description_source": "Claude Code reconnects a remote server that drops mid-session and retries an HTTP or SSE server's first connection after a transient error. Stdio servers are local processes, and Claude Code doesn't reconnect them automatically.",
+   "description_source": "Claude Code reconnects a remote server that drops mid-session and retries an HTTP or SSE server's first connection after a transient error. For a stdio server, see Stdio servers that exit or fail to start.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
    "exemple": "/mcp",
@@ -238,11 +242,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -263,6 +267,10 @@
     {
      "date": "2026-10-15",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -1202,6 +1210,100 @@
    "exemple_impossible": "Usage = variable posée par l'hôte (`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`) ; valeur absente de la source"
   },
   {
+   "id": "claude-code-mcp-mcp-tasks-for-server-authors",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "MCP tasks for server authors",
+   "gabarit": "complet",
+   "description": "Pour l'auteur d'un serveur MCP : répondre à un `tools/call` long par une tâche (`resultType: \"task\"`, `taskId`, `status`, `pollIntervalMs`) selon l'extension MCP tasks. Claude Code annonce sa prise en charge dans les métadonnées de la requête.",
+   "description_source": "If you build an MCP server, you can answer a long-running tools/call with a task. The MCP tasks extension defines the messages you send. On a protocol revision 2026-07-28 connection, each request carries Claude Code's client capabilities at params._meta[\"io.modelcontextprotocol/clientCapabilities\"], with \"io.modelcontextprotocol/tasks\": {} under extensions. A tools/call request that can't become a task omits that extension.",
+   "usage": "{\n  \"resultType\": \"task\",\n  \"taskId\": \"build-7f3a9c2e\",\n  \"status\": \"working\",\n  \"statusMessage\": \"Compiling, 40 of 212 files done\",\n  \"createdAt\": \"2026-10-22T14:03:07Z\",\n  \"lastUpdatedAt\": \"2026-10-22T14:03:07Z\",\n  \"ttlMs\": null,\n  \"pollIntervalMs\": 5000\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé à qui écrit un serveur MCP ; CONTEXTE.md ne décrit aucun serveur MCP de Sylvain qui lance des travaux longs."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#mcp-tasks-for-server-authors",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Seul le serveur delta-ia est décrit, sans travail long côté serveur."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Installing MCP servers",
+   "maj_le": "2026-10-24",
+   "historique": [
+    {
+     "date": "2026-10-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-mcp-mcp-tasks-that-run-on-the-server",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "MCP tasks that run on the server",
+   "gabarit": "complet",
+   "description": "Une tâche MCP est un travail long (export de rapport, build) que le serveur exécute lui-même ; l'appel d'outil de Claude rend la main dès que le serveur l'accepte, et le transcript indique la fin (« MCP task … completed »).",
+   "description_source": "An MCP task is a long job, such as a report export or a build, that an MCP server runs itself using the MCP tasks extension. Claude's tool call returns once the server accepts the job, so Claude keeps working unless you make Claude wait. When the job ends, the transcript says so and Claude gets the result. Ask Claude for it.",
+   "usage": "MCP task <server task id> (<server>/<tool>) completed.",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun serveur MCP décrit dans CONTEXTE.md ne renvoie de tâche longue ; l'entrée ne change rien à tes sessions."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#mcp-tasks-that-run-on-the-server",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Seul le serveur delta-ia est décrit, sans tâche longue."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Installing MCP servers",
+   "maj_le": "2026-10-24",
+   "historique": [
+    {
+     "date": "2026-10-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-mcp-option-1-add-a-remote-http-server",
    "produit": "claude-code",
    "categorie": "mcp",
@@ -1842,7 +1944,7 @@
    "gabarit": "complet",
    "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition la plus prioritaire : portée locale, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Les trois portées se comparent par nom ; plugins et connecteurs se comparent par URL ou commande.",
    "description_source": "When the same server is defined in more than one place, Claude Code connects to it once, using the definition from the highest-precedence source. The entire server entry from that source is used; fields are not merged across scopes.",
-   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](https://code.claude.com/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -1862,7 +1964,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1944,9 +2046,44 @@
     {
      "date": "2026-10-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de la source la plus prioritaire, sans fusion des champs ; l'ordre est local, projet, utilisateur, plugins, puis connecteurs claude.ai.",
+       "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+       "releve_le": "2026-10-23",
+       "caduc_si": "La documentation change la règle de précédence, l'ordre des sources ou permet la fusion des champs."
+      },
+      {
+       "affirmation": "Le serveur delta-ia a été ajouté en portée locale dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-23",
+       "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`."
+      },
+      {
+       "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-23",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
@@ -1955,22 +2092,16 @@
    },
    "provenance": [
     {
-     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de la source la plus prioritaire, sans fusion des champs ; l'ordre est local, projet, utilisateur, plugins, puis connecteurs claude.ai.",
+     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de plus haute priorité ; l'entrée entière de cette source est utilisée, sans fusion des champs.",
      "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
-     "releve_le": "2026-10-23",
-     "caduc_si": "La documentation change la règle de précédence, l'ordre des sources ou permet la fusion des champs."
+     "releve_le": "2026-10-24",
+     "caduc_si": "la page change la règle de précédence ou autorise la fusion des champs entre portées"
     },
     {
-     "affirmation": "Le serveur delta-ia a été ajouté en portée locale dans `~/projets` et `~/projets/delta-ia`, et il est absent de `~/projets/trading-sim`.",
+     "affirmation": "Le serveur MCP delta-ia est en portée locale dans ~/projets et ~/projets/delta-ia ; les connecteurs de compte s'appliquent partout, trading-sim compris.",
      "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-23",
-     "caduc_si": "CONTEXTE.md signale le retrait de delta-ia local ou son ajout dans `~/projets/trading-sim`."
-    },
-    {
-     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets par défaut, sauf `deny` explicite dans le `.claude/settings.json` du projet.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-23",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce comportement par défaut des connecteurs de compte."
+     "releve_le": "2026-10-24",
+     "caduc_si": "CONTEXTE.md décrit une autre répartition du serveur delta-ia et des connecteurs de compte"
     }
    ]
   },
@@ -2025,6 +2156,53 @@
     }
    ],
    "exemple_impossible": "usage = nom d'en-tête seul (X-API-Key), pas une commande ; la section renvoie à headers/headersHelper sans bloc propre à recopier"
+  },
+  {
+   "id": "claude-code-mcp-time-limits-on-mcp-tool-calls",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Time limits on MCP tool calls",
+   "gabarit": "complet",
+   "description": "Borner la durée d'un appel d'outil MCP : champ `timeout` (millisecondes) dans l'entrée du serveur, ou variable `MCP_TOOL_TIMEOUT` pour tous les serveurs. Un appel sans réponse ni progression s'interrompt aussi après 5 minutes (HTTP, SSE) ou 30 minutes (stdio).",
+   "description_source": "To limit how long an MCP tool call can run:",
+   "usage": "timeout",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne rapporte aucun appel MCP bloqué ou trop long ; la valeur par défaut suffit tant que delta-ia répond normalement."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#time-limits-on-mcp-tool-calls",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveur delta-ia en HTTP, sans incident de durée d'appel décrit."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Installing MCP servers",
+   "maj_le": "2026-10-24",
+   "historique": [
+    {
+     "date": "2026-10-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-tool-search-for-mcp-server-authors",
@@ -2373,9 +2551,9 @@
    "categorie": "mcp",
    "nom": "Getting Started with Local MCP Servers on Claude Desktop",
    "gabarit": "complet",
-   "description": "Claude Desktop installe des serveurs MCP locaux sous forme d'extensions, depuis Settings > Extensions, sans configuration manuelle ; ils tournent sur la machine avec les droits de l'utilisateur.",
+   "description": "Claude Desktop installe des serveurs MCP locaux sous forme d'extensions, depuis Settings > Desktop app > Extensions > Manage (ou Settings > Extensions dans l'ancienne disposition), sans configuration manuelle ; ils tournent sur la machine avec les droits de l'utilisateur.",
    "description_source": "The Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. With the introduction of desktop extensions, installing and managing local MCP servers has become significantly easier.",
-   "usage": "1. Navigate to Settings > Extensions on Claude Desktop.\n2. Click “Browse extensions” to view our directory and click on any Anthropic-reviewed tools you want to use. Click \"Install\" on your desired extension.\n3. Configure any required settings (like API keys) through the user-friendly interface.\n4. The extension will automatically be available in your conversations.",
+   "usage": "1. Navigate to **Settings > Desktop app** and select \"Manage\" next to **Extensions** (or **Settings > Extensions** in the older Settings layout) on Claude Desktop.\n2. Click “Browse extensions” to view our directory and click on any Anthropic-reviewed tools you want to use. Click \"Install\" on your desired extension.\n3. Configure any required settings (like API keys) through the user-friendly interface.\n4. The extension will automatically be available in your conversations.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
@@ -2395,7 +2573,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2412,12 +2590,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Claude Desktop : il veut en exploiter les fonctions utiles au développement."
     }
    }
