@@ -148,6 +148,7 @@ test("référence commune : modèles sans constats ni recommandation OPÉRER, ve
   assert.equal(m.id, "modele-claude-haiku-5-5-medium");
   for (const absent of ["constats_internes", "recommandation_operer", "sources_internes"]) assert.equal(Object.hasOwn(m, absent) && m[absent]?.length > 0, false, absent);
   assert.equal(m.verdict, null);
+  assert.equal(JSON.stringify(m).includes("verdict_operer"), false);
   const v = await donnees("etat_versions");
   assert.equal(v.outils.length, 5);
   for (const o of v.outils) { assert.equal(o.installee, null); assert.equal(o.statut, "inconnu"); assert.equal(o.releve_le, null); assert.match(o.note, /installed version unknown/); }

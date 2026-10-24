@@ -28,8 +28,11 @@ export function developperModeles(doc) {
       : [...new Set([...(aliases_effort || []).map((a) => a.replaceAll("{effort}", e.effort)), ...(e.effort_defaut ? aliases_defaut || [] : [])])];
     const fiche = { ...partage, ...e, aliases };
     for (const k of CHAMPS_PRIVES_MODELE) delete fiche[k];
-    // la recommandation d'un couple est celle d'OPÉRER (`verdict_operer`, natures, pourquoi) : retirée avec elle
+    // la recommandation d'un couple est celle d'OPÉRER (`verdict_operer`, natures, pourquoi) : retirée avec elle,
+    // y compris le verdict OPÉRER recopié dans chaque niveau d'effort
     delete fiche.recommandation;
+    if (Array.isArray(fiche.niveaux_effort_disponibles))
+      fiche.niveaux_effort_disponibles = fiche.niveaux_effort_disponibles.map(({ verdict_operer, ...n }) => n);
     fiche.description = commun ? null : sansPrive(`${e.description}\n\n${description_commune}`);
     return fiche;
   });

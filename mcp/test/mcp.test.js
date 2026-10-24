@@ -473,11 +473,12 @@ test("modèles × efforts : chercher_reference et fiche_reference couvrent les 1
 
   // L3 : l'ancien JSON mixte porte encore constats internes et recommandation OPÉRER ; la réponse publique ne les rend pas.
   const brut = lireDonnee("kb/modeles.json");
-  assert.ok(brut.modeles["Qwen3.5-4B"].constats_internes.some((c) => c.constat.includes("un seul appel")), "fixture d'ancien format mixte");
+  assert.ok(brut.modeles["Qwen3.5-4B"].constats_internes.some((c) => c.constat.includes("Modèles locaux lents et faibles")), "fixture d'ancien format mixte");
+  assert.ok(brut.entrees.some((e) => e.recommandation_operer?.pourquoi?.includes("extraction en un seul appel")), "fixture d'ancien format mixte");
   const qwenLocal = (await appel("fiche_reference", { id: "Qwen3.5-4B" })).corps.result.structuredContent.fiche;
   assert.equal(qwenLocal.id, "modele-qwen3-5-4b-sans-reflexion");
   const texte = JSON.stringify(qwenLocal);
-  for (const absent of ["constats_internes", "recommandation_operer", "un seul appel", "Constats internes datés", "Recommandation OPÉRER", "verdict_operer"])
+  for (const absent of ["constats_internes", "recommandation_operer", "Modèles locaux lents et faibles", "extraction en un seul appel", "Constats internes datés", "Recommandation OPÉRER", "verdict_operer"])
     assert.equal(texte.includes(absent), false, absent);
   assert.equal(qwenLocal.verdict, null);
   assert.equal(texte.includes("/home/"), false);
