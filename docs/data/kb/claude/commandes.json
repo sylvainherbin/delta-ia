@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-23",
+ "maj_le": "2026-10-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1358,7 +1358,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1399,12 +1399,41 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`claude` démarre une session interactive.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la commande change de rôle dans la référence CLI"
+      },
+      {
+       "affirmation": "Chaque service `claude-session@<nom>` lance `claude --resume <id> --remote-control <nom>` sous tmux.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les sessions durables ne sont plus lancées par ce service"
+      },
+      {
+       "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le régime des permissions des sessions change"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services `claude-session@<nom>` : `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée, modèle et effort par rôle."
     },
     "config.claude-code.mode-auto": {
@@ -1412,24 +1441,24 @@
      "pourquoi": "Depuis le 06/10, toutes les sessions locales sauf trading tournent en bypassPermissions (lanceur `claude-session.sh`)."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
      "affirmation": "`claude` démarre une session interactive.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "la commande change de rôle dans la référence CLI"
     },
     {
      "affirmation": "Chaque service `claude-session@<nom>` lance `claude --resume <id> --remote-control <nom>` sous tmux.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "les sessions durables ne sont plus lancées par ce service"
     },
     {
      "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
      "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "le régime des permissions des sessions change"
     }
    ]
@@ -2899,7 +2928,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2936,12 +2965,35 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`claude -r \"<session>\" \"query\"` reprend une session par ID ou par nom.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'option change de syntaxe ou disparaît de la référence CLI"
+      },
+      {
+       "affirmation": "Chaque service relance sa session par `claude --resume <id>` sous tmux.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les services ne reprennent plus les sessions par `--resume`"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Chaque service relance sa session par `claude --resume <id>` sous tmux."
     }
    },
@@ -2949,16 +3001,17 @@
     {
      "affirmation": "`claude -r \"<session>\" \"query\"` reprend une session par ID ou par nom.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "l'option change de syntaxe ou disparaît de la référence CLI"
     },
     {
      "affirmation": "Chaque service relance sa session par `claude --resume <id>` sous tmux.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "les services ne reprennent plus les sessions par `--resume`"
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-remote-control",
@@ -4433,7 +4486,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4514,12 +4567,41 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/effort` règle l'effort (low à xhigh, max ou auto) et `status` l'affiche ; `max` ne vaut que pour la session et la clé `ultracode` persiste.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les niveaux, `status` ou la persistance d'`ultracode` changent dans la documentation"
+      },
+      {
+       "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement, par exemple `--model opus --effort medium` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'effort n'est plus fixé par rôle au lancement"
+      },
+      {
+       "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge des limites hebdomadaires.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la piste 11 est close ou abandonnée"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Selon le rôle, chaque session a un modèle et un effort propres, par exemple `--model opus --effort medium` pour le chef."
     },
     "optimisation.pistes": {
@@ -4532,19 +4614,19 @@
     {
      "affirmation": "`/effort` règle l'effort (low à xhigh, max ou auto) et `status` l'affiche ; `max` ne vaut que pour la session et la clé `ultracode` persiste.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "les niveaux, `status` ou la persistance d'`ultracode` changent dans la documentation"
     },
     {
      "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement, par exemple `--model opus --effort medium` pour le chef.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "l'effort n'est plus fixé par rôle au lancement"
     },
     {
      "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge des limites hebdomadaires.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "la piste 11 est close ou abandonnée"
     }
    ]
@@ -5742,7 +5824,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes sessions se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code, les nouvelles tâches Cowork tournant dans le cloud depuis le 06/10."
+    "pourquoi": "Depuis une session Claude Code, tes sessions se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code. Les messages venant de Codex passent par `operer message`, pas par cette liste."
    },
    "sources": [
     {
@@ -5755,7 +5837,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5776,37 +5858,75 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/list-agents` (alias `/peers`, v2.1.224 ou plus) liste les sous-agents, coéquipiers et autres sessions joignables, avec le nom à utiliser.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la commande change de rôle, de version minimale ou disparaît"
+      },
+      {
+       "affirmation": "Les sessions se parlent par `SendMessage`/`ListAgents` ; `/list-agents` a montré Dispatch le 25/09 ; Cowork tourne dans le cloud depuis le 06/10.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'architecture multi-sessions ou l'exécution de Cowork change"
+      },
+      {
+       "affirmation": "Les échanges directs entre Cowork (Dispatch compris) et Claude Code sont une priorité déclarée de la veille.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-15",
+       "caduc_si": "Sylvain retire cette priorité"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tes sessions se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code, les nouvelles tâches Cowork tournant dans le cloud depuis le 06/10."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions reliées par `SendMessage`/`ListAgents` ; `/list-agents` montre Dispatch (observé 25/09) ; Cowork dans le cloud depuis le 06/10."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Claude Code : `SendMessage`/`ListAgents` ; Codex : `operer message` ; `/list-agents` montre Dispatch (25/09) ; Cowork dans le cloud depuis le 06/10."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Priorité de veille : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
      "affirmation": "`/list-agents` (alias `/peers`, v2.1.224 ou plus) liste les sous-agents, coéquipiers et autres sessions joignables, avec le nom à utiliser.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "la commande change de rôle, de version minimale ou disparaît"
     },
     {
-     "affirmation": "Les sessions se parlent par `SendMessage`/`ListAgents` ; `/list-agents` a montré Dispatch le 25/09 ; Cowork tourne dans le cloud depuis le 06/10.",
+     "affirmation": "Depuis Claude Code, les sessions se parlent par `SendMessage`/`ListAgents` ; depuis Codex, par `operer message` ; `/list-agents` a montré Dispatch le 25/09.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
-     "caduc_si": "l'architecture multi-sessions ou l'exécution de Cowork change"
+     "releve_le": "2026-10-24",
+     "caduc_si": "l'architecture multi-sessions ou les canaux de messages changent"
     },
     {
      "affirmation": "Les échanges directs entre Cowork (Dispatch compris) et Claude Code sont une priorité déclarée de la veille.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "Sylvain retire cette priorité"
     }
    ]
@@ -6194,7 +6314,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6267,16 +6387,45 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; `s` dans le sélecteur ne change que la session courante.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-15",
+       "caduc_si": "`/model` n'enregistre plus le défaut ou la touche `s` disparaît"
+      },
+      {
+       "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-15",
+       "caduc_si": "Sylvain change de modèle par défaut"
+      },
+      {
+       "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le modèle n'est plus fixé par rôle au lancement"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; Opus seulement en conseiller des missions de construction."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    },
@@ -6285,19 +6434,19 @@
     {
      "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; `s` dans le sélecteur ne change que la session courante.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "`/model` n'enregistre plus le défaut ou la touche `s` disparaît"
     },
     {
      "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "Sylvain change de modèle par défaut"
     },
     {
      "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-24",
      "caduc_si": "le modèle n'est plus fixé par rôle au lancement"
     }
    ]
@@ -7412,7 +7561,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7475,16 +7624,45 @@
     {
      "date": "2026-10-16",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/remote-control` (alias `/rc`) rend la session courante pilotable par Remote Control depuis claude.ai ; sans connexion, elle indique qu'un abonnement claude.ai est requis.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande change de nom, d'alias ou de condition."
+      },
+      {
+       "affirmation": "`/remote-control` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le relevé des commandes tapées ne la cite plus."
+      },
+      {
+       "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande ; les sessions sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'architecture des sessions change dans CONTEXTE.md."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
      "pourquoi": "`/remote-control` figure parmi les commandes tapées observées (relevé du 25/09)."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Sessions `dev` et `school` lancées à la demande ; pilotage depuis l'iPhone par Remote Control."
     }
    },
@@ -7493,19 +7671,19 @@
     {
      "affirmation": "`/remote-control` (alias `/rc`) rend la session courante pilotable par Remote Control depuis claude.ai ; sans connexion, elle indique qu'un abonnement claude.ai est requis.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-24",
      "caduc_si": "La commande change de nom, d'alias ou de condition."
     },
     {
      "affirmation": "`/remote-control` figure parmi les commandes tapées par Sylvain (relevé du 25/09).",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-24",
      "caduc_si": "Le relevé des commandes tapées ne la cite plus."
     },
     {
      "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande ; les sessions sont pilotées depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-24",
      "caduc_si": "L'architecture des sessions change dans CONTEXTE.md."
     }
    ]
@@ -9499,7 +9677,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer d'ici le 03/11 : les pourcentages sont déjà relevés par Delta, mais le détail de ce qui compte dans les limites n'est donné que par `/usage`, à joindre au bilan avant le 03/11. Depuis le 21/10, aucun crédit cloud : les sessions cloud puisent dans ce même forfait."
+    "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer d'ici le 03/11 : les pourcentages sont déjà relevés par Delta, mais le détail de ce qui compte dans les limites n'est donné que par `/usage`, à joindre au bilan avant le 03/11. Aucun crédit cloud depuis le 21/10 : les sessions cloud puisent dans ce même forfait."
    },
    "sources": [
     {
@@ -9512,7 +9690,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9584,12 +9762,45 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/usage` montre le coût de session, les limites du forfait et les statistiques ; sur Pro, Max, Team et Enterprise, il détaille ce qui compte dans les limites. `/cost` et `/stats` sont des alias.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la commande perd le détail des limites, change de nom ou disparaît de la documentation"
+      },
+      {
+       "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta) ; aucun crédit Claude Code cloud (décision du 21/10).",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-23",
+       "caduc_si": "l'essai est tranché, le forfait change ou un crédit cloud est repris",
+       "revoir_le": "2026-11-03"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Ton Max (20x) est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer d'ici le 03/11 : les pourcentages sont déjà relevés par Delta, mais le détail de ce qui compte dans les limites n'est donné que par `/usage`, à joindre au bilan avant le 03/11. Depuis le 21/10, aucun crédit cloud : les sessions cloud puisent dans ce même forfait."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11 (03/11 venu de Delta) ; aucun crédit Claude Code cloud depuis le 21/10."
     },
     "methode.travail": {
@@ -9602,13 +9813,13 @@
     {
      "affirmation": "`/usage` montre le coût de session, les limites du forfait et les statistiques ; sur Pro, Max, Team et Enterprise, il détaille ce qui compte dans les limites. `/cost` et `/stats` sont des alias.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-24",
      "caduc_si": "la commande perd le détail des limites, change de nom ou disparaît de la documentation"
     },
     {
      "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta) ; aucun crédit Claude Code cloud (décision du 21/10).",
      "source": "contexte:profil",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-24",
      "caduc_si": "l'essai est tranché, le forfait change ou un crédit cloud est repris",
      "revoir_le": "2026-11-03"
     }
