@@ -1,9 +1,9 @@
 ## En-tête
 
 - état : livré
-- tests : 1821/1821
-- hash : 573a423
-- reçus : cebbeea53aab
+- tests : commandes : `python3 -B outils/tests/verifier.py --fusion` : succès (code 0, reçu cebbeea53aab) ; `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 0cdaab30fda7)
+- hash : 55fa804afe4228fe6e33d7c5bb8ffcb609d0424a
+- reçus : cebbeea53aab, 0cdaab30fda7
 - réserves : source par défaut du MCP et du site inchangée (ancienne route) jusqu'à la bascule L5 ; voir « Points fragiles »
 
 # Delta-IA deux couches — lot L3 (mission m-ddc3b4c02860)
@@ -93,3 +93,4 @@ Lancés dans la session sur `573a423` : `cd mcp && npm test` : 65 tests, 65 succ
 ## Preuves
 
 `python3 -B outils/tests/verifier.py --fusion` : code 0, « VERIFY OK en 106.313 s : 58b1baee48c72bd1273 » | reçu cebbeea53aab
+vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 0cdaab30fda7
