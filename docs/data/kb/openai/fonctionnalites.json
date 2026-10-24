@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-23",
+ "maj_le": "2026-10-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -55,11 +55,11 @@
    "usage": "1. **Install the ChatGPT desktop app.** [Download ChatGPT](https://chatgpt.com/download/) for macOS or Windows, or follow the [Linux installation guide](https://learn.chatgpt.com/docs/linux/linux-app).\n2. **Open ChatGPT and sign in.** Open the app, then sign in with your ChatGPT account.\n3. **Choose where to work.** Start a chat, create a project, or open a folder. ChatGPT can use the files and context in the location you choose. [Learn about chats and projects](https://learn.chatgpt.com/docs/projects).\n4. **Send your first message.** Choose ChatGPT or Codex. In ChatGPT, use the toggle above the composer to select Chat or Work. In Codex, start with New chat. For a quick question, point to New chat and select the Quick chat icon on its right. Then describe the result you want and add any files or context ChatGPT needs. [Learn how to use ChatGPT](https://learn.chatgpt.com/docs/use-chatgpt).",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Linux, macOS et Windows",
+   "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises ChatGPT Desktop pour les connecteurs ; conserve cet accès lorsque tu en as besoin pour Work sur trading-sim. D'après l'essai du 02/10, l'app ouverte occupe l'enregistrement distant de la machine et provoque une erreur 409 pour la CLI : ferme-la pour reprendre le pilotage de Codex sous tmux depuis l'iPhone."
+    "pourquoi": "Tu utilises ChatGPT Desktop pour les connecteurs : conserve cet accès pour les tâches qui en ont besoin. L'essai du 02/10 signale une erreur 409 quand l'app ouverte et la CLI distante enregistrent la même machine ; ferme l'app pour reprendre le pilotage de Codex sous tmux depuis l'iPhone."
    },
    "sources": [
     {
@@ -72,7 +72,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -109,37 +109,75 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L’app de bureau réunit projets, fichiers, outils et conversations.",
+       "source": "https://learn.chatgpt.com/docs/app",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tu utilises ChatGPT Desktop pour les connecteurs ; conserve cet accès lorsque tu en as besoin pour Work sur trading-sim. D'après l'essai du 02/10, l'app ouverte occupe l'enregistrement distant de la machine et provoque une erreur 409 pour la CLI : ferme-la pour reprendre le pilotage de Codex sous tmux depuis l'iPhone."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; Codex audite Claude depuis la CLI sous tmux."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; le pilotage Codex passe par la CLI sous tmux."
     },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "L'essai du 02/10 signale le conflit 409 et le démarrage automatique de l'app est désactivé."
     }
    },
    "provenance": [
     {
-     "affirmation": "L’app de bureau réunit projets, fichiers, outils et conversations.",
+     "affirmation": "L'app de bureau réunit chats, projets, fichiers et accès à ChatGPT, Work et Codex.",
      "source": "https://learn.chatgpt.com/docs/app",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-10-24",
+     "caduc_si": "L'app ne réunit plus ces espaces de travail."
     },
     {
-     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "affirmation": "Sylvain utilise ChatGPT Desktop pour les connecteurs.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "L'usage déclaré de ChatGPT Desktop change."
     },
     {
-     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "affirmation": "L'app ouverte provoquait une erreur 409 pour le remote control CLI lors de l'essai du 02/10.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Un nouvel essai établit la coexistence des deux accès distants."
     }
    ]
   },
@@ -694,16 +732,16 @@
    "categorie": "fonctionnalites",
    "nom": "ChatGPT Voice",
    "gabarit": "complet",
-   "description": "ChatGPT Voice permet de discuter et de coordonner des tâches Chat, Work et Codex dans l'app de bureau. La disponibilité dépend du forfait, du déploiement et de l'espace de travail ; une seule conversation vocale peut être active dans l'app à la fois.",
+   "description": "ChatGPT Voice permet de discuter et de coordonner des tâches Chat, Work et Codex dans l'app de bureau, ainsi que via Codex sur iOS après appairage avec un hôte. La disponibilité dépend du forfait, du déploiement et des réglages de l'espace de travail ; une seule conversation vocale peut être active dans l'app de bureau à la fois.",
    "description_source": "Powered by GPT-Live, ChatGPT Voice lets you talk through ideas and coordinate tasks in Chat, Work, and Codex in the ChatGPT desktop app. Start work, check progress, or change direction without switching back to typing.",
    "usage": "1. Open the Codex task you want to discuss in the ChatGPT desktop app, or start a new chat or task.\n2. Select **Start voice chat** in an existing task, or **Start new voice chat** in a new chat or task.\n3. The first time you start a voice chat, allow microphone access, choose a voice, and review screen context on macOS.\n4. Start talking. Select **Stop voice chat** when you finish.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "App de bureau : Plus, Pro, Business, Edu et Enterprise, selon déploiement ; Codex sur iOS après appairage",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Avant l'essai, vérifie que Start voice chat est disponible sur ton compte Pro et consulte sa consommation du budget commun ; dans Work, demande oralement le résumé d'une mission trading-sim écrite puis compare les contraintes restituées au fichier. Tiens compte du conflit observé avec la CLI distante lorsque l'app de bureau est ouverte."
+    "pourquoi": "Depuis ton iPhone, si Start voice chat est disponible dans une tâche Codex d'audit trading-sim déjà ouverte, demande oralement un résumé de ses conclusions puis compare les contraintes restituées au rapport écrit. Avant l'essai, vérifie la disponibilité sur ton compte Pro et les conditions de consommation ; OBSERVATORY relève ChatGPT semaine à 26 % le 24/10/2026 à 02:27 UTC."
    },
    "sources": [
     {
@@ -716,7 +754,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -773,53 +811,97 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "ChatGPT Voice, propulsé par GPT-Live, permet de discuter d'idées et de coordonner des tâches dans Chat, Work et Codex depuis l'app de bureau ChatGPT, sans revenir à la saisie au clavier.",
+       "source": "https://learn.chatgpt.com/docs/features/voice",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne cite plus Work parmi les espaces pris en charge ou Voice quitte l'app de bureau."
+      },
+      {
+       "affirmation": "On lance la voix avec Start voice chat dans une tâche existante ou Start new voice chat dans une nouvelle conversation ; au premier usage il faut autoriser le micro, choisir une voix et, sur macOS, vérifier le contexte d'écran. Stop voice chat y met fin.",
+       "source": "https://learn.chatgpt.com/docs/features/voice",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les libellés Start voice chat / Stop voice chat ou la procédure de premier lancement changent dans la documentation."
+      },
+      {
+       "affirmation": "Sylvain a un abonnement ChatGPT Pro et n'utilise de ChatGPT Desktop que les connecteurs.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique un autre forfait ChatGPT ou un usage plus large de ChatGPT Desktop."
+      },
+      {
+       "affirmation": "Sur trading-sim, ChatGPT, appelé « Work », est l'architecte et l'arbitre ; le dossier contient les missions qu'il rédige (NEXT-CLAUDE-MISSION-*, STEERING-CLAUDE-*, NEXT-CODEX-AUDIT-*…) sous forme de fichiers .md.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Work comme arbitre de trading-sim ou les missions ne sont plus consignées dans des fichiers."
+      },
+      {
+       "affirmation": "Avec l'app de bureau ouverte, codex remote-control start est refusé en boucle par une erreur 409 « Remote app server already online » ; l'app de bureau n'est plus lancée au démarrage.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne signale plus le conflit 409 entre l'app de bureau ouverte et le remote control de la CLI."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Avant l'essai, vérifie que Start voice chat est disponible sur ton compte Pro et consulte sa consommation du budget commun ; dans Work, demande oralement le résumé d'une mission trading-sim écrite puis compare les contraintes restituées au fichier. Tiens compte du conflit observé avec la CLI distante lorsque l'app de bureau est ouverte."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Work arbitre trading-sim ; les missions et verdicts sont consignés dans des fichiers."
-    },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; Codex audite Claude depuis la CLI sous tmux."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "L’iPhone pilote les sessions ; Codex audite Claude et les fonctionnalités utiles restent à explorer."
     },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "Codex est utilisé sous tmux avec remote control depuis l’iPhone."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Les conclusions d’audit et les missions trading-sim existent sous forme écrite."
     }
    },
    "provenance": [
     {
-     "affirmation": "ChatGPT Voice, propulsé par GPT-Live, permet de discuter d'idées et de coordonner des tâches dans Chat, Work et Codex depuis l'app de bureau ChatGPT, sans revenir à la saisie au clavier.",
+     "affirmation": "ChatGPT Voice est utilisable via Codex sur iOS après appairage avec un hôte ; son accès dépend du forfait, du déploiement et de l’espace de travail.",
      "source": "https://learn.chatgpt.com/docs/features/voice",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne cite plus Work parmi les espaces pris en charge ou Voice quitte l'app de bureau."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La documentation retire iOS ou modifie les conditions d’accès."
     },
     {
-     "affirmation": "On lance la voix avec Start voice chat dans une tâche existante ou Start new voice chat dans une nouvelle conversation ; au premier usage il faut autoriser le micro, choisir une voix et, sur macOS, vérifier le contexte d'écran. Stop voice chat y met fin.",
+     "affirmation": "La voix dans une tâche Codex existante utilise sa conversation et le modèle sélectionné ; cette possibilité est en cours de déploiement.",
      "source": "https://learn.chatgpt.com/docs/features/voice",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les libellés Start voice chat / Stop voice chat ou la procédure de premier lancement changent dans la documentation."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La voix ne peut plus reprendre une tâche existante ou la procédure change."
     },
     {
-     "affirmation": "Sylvain a un abonnement ChatGPT Pro et n'utilise de ChatGPT Desktop que les connecteurs.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique un autre forfait ChatGPT ou un usage plus large de ChatGPT Desktop."
-    },
-    {
-     "affirmation": "Sur trading-sim, ChatGPT, appelé « Work », est l'architecte et l'arbitre ; le dossier contient les missions qu'il rédige (NEXT-CLAUDE-MISSION-*, STEERING-CLAUDE-*, NEXT-CODEX-AUDIT-*…) sous forme de fichiers .md.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Work comme arbitre de trading-sim ou les missions ne sont plus consignées dans des fichiers."
-    },
-    {
-     "affirmation": "Avec l'app de bureau ouverte, codex remote-control start est refusé en boucle par une erreur 409 « Remote app server already online » ; l'app de bureau n'est plus lancée au démarrage.",
+     "affirmation": "Sylvain pilote Codex sous tmux à distance depuis l’iPhone.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne signale plus le conflit 409 entre l'app de bureau ouverte et le remote control de la CLI."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Le mode de pilotage change."
+    },
+    {
+     "affirmation": "Les missions et retours trading-sim sont consignés dans des fichiers.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-24",
+     "caduc_si": "Les conclusions ne sont plus conservées sous forme écrite."
     }
    ]
   },
@@ -976,7 +1058,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit visuel de la console de pilotage construite par Claude, essaie `codex --image before.png,after.png \"Compare these states and list the regressions\"` avec deux captures correspondantes, puis vérifie chaque régression proposée sur les images. Cet essai utilise ta CLI sous tmux sans demander d'ouvrir l'app de bureau."
+    "pourquoi": "Pour un audit visuel de la console de pilotage construite par Claude, essaie `codex --image before.png,after.png \"Compare these states and list the regressions\"` avec deux captures correspondantes, puis vérifie chaque régression proposée sur les images. Cet essai utilise ta CLI sous tmux."
    },
    "sources": [
     {
@@ -989,7 +1071,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1022,60 +1104,100 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La documentation donne l'exemple `codex --image before.png,after.png \"Compare these states and list the regressions\"` : `--image` reçoit deux fichiers image séparés par une virgule, accompagnés d'une consigne de comparaison.",
+       "source": "https://learn.chatgpt.com/docs/image-inputs",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option `--image` change de syntaxe, n'accepte plus plusieurs fichiers ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "La documentation recommande d'ajouter des images quand la tâche dépend d'un contexte visuel, par exemple un design d'interface. Il faut préciser ce qu'il faut examiner et le résultat attendu, sans compter sur l'image seule.",
+       "source": "https://learn.chatgpt.com/docs/image-inputs",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire cette recommandation ou ne cite plus les interfaces parmi les contextes visuels."
+      },
+      {
+       "affirmation": "La console de pilotage `carnet-console` est une console web jointe depuis l'iPhone. C'est un projet OPÉRER FULL_AUTO, avec Delta pour chef et Design pour le développement.",
+       "source": "contexte:projet.delta-desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus la console de pilotage ou ne la rattache plus au développement par Design."
+      },
+      {
+       "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs, la console de pilotage étant citée en exemple.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne présente plus Codex comme outil d'audit du travail de Claude sur la console."
+      },
+      {
+       "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux avec remote control, et l'app de bureau n'est plus lancée au démarrage.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que Sylvain revient à l'app de bureau ou abandonne la CLI sous tmux."
+      },
+      {
+       "affirmation": "ChatGPT est utilisé hors de trading-sim, notamment pour la console de pilotage, principalement afin d'auditer le travail de Claude.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de ChatGPT/Codex pour auditer le travail de Claude sur la console."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour un audit visuel de la console de pilotage construite par Claude, essaie `codex --image before.png,after.png \"Compare these states and list the regressions\"` avec deux captures correspondantes, puis vérifie chaque régression proposée sur les images. Cet essai utilise ta CLI sous tmux sans demander d'ouvrir l'app de bureau."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; Codex audite Claude depuis la CLI sous tmux."
-    },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "Codex sous tmux audite le travail de Claude, notamment la console."
     },
     "projet.delta-desktop": {
      "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
-     "pourquoi": "La console de pilotage est construite par Claude Design et peut servir à un essai d'audit visuel."
+     "pourquoi": "La console de pilotage est une interface web construite par Claude Design."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La documentation donne l'exemple `codex --image before.png,after.png \"Compare these states and list the regressions\"` : `--image` reçoit deux fichiers image séparés par une virgule, accompagnés d'une consigne de comparaison.",
+     "affirmation": "La documentation fournit une commande --image avec deux fichiers séparés par une virgule et une consigne de comparaison.",
      "source": "https://learn.chatgpt.com/docs/image-inputs",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option `--image` change de syntaxe, n'accepte plus plusieurs fichiers ou disparaît de la documentation."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La syntaxe multi-images change ou disparaît."
     },
     {
-     "affirmation": "La documentation recommande d'ajouter des images quand la tâche dépend d'un contexte visuel, par exemple un design d'interface. Il faut préciser ce qu'il faut examiner et le résultat attendu, sans compter sur l'image seule.",
+     "affirmation": "La documentation demande de préciser ce que les images montrent et le résultat attendu.",
      "source": "https://learn.chatgpt.com/docs/image-inputs",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire cette recommandation ou ne cite plus les interfaces parmi les contextes visuels."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La procédure de soumission d’images change."
     },
     {
-     "affirmation": "La console de pilotage `carnet-console` est une console web jointe depuis l'iPhone. C'est un projet OPÉRER FULL_AUTO, avec Delta pour chef et Design pour le développement.",
+     "affirmation": "La console de pilotage carnet-console est une interface web construite par Design.",
      "source": "contexte:projet.delta-desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus la console de pilotage ou ne la rattache plus au développement par Design."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La console ou son mode de développement change."
     },
     {
-     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs, la console de pilotage étant citée en exemple.",
+     "affirmation": "Codex audite le travail de Claude, dont celui de la console.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne présente plus Codex comme outil d'audit du travail de Claude sur la console."
-    },
-    {
-     "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux avec remote control, et l'app de bureau n'est plus lancée au démarrage.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que Sylvain revient à l'app de bureau ou abandonne la CLI sous tmux."
-    },
-    {
-     "affirmation": "ChatGPT est utilisé hors de trading-sim, notamment pour la console de pilotage, principalement afin d'auditer le travail de Claude.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de ChatGPT/Codex pour auditer le travail de Claude sur la console."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Codex ne sert plus à ces audits."
     }
    ]
   },
@@ -1085,16 +1207,16 @@
    "categorie": "fonctionnalites",
    "nom": "ChatGPT desktop app for Linux",
    "gabarit": "complet",
-   "description": "L'app ChatGPT pour Linux est disponible en preview avec des paquets x64 et ARM64 pour les distributions listées dans la documentation. L'installation configure un dépôt OpenAI signé pour les mises à jour par le gestionnaire de paquets ; Linux Mint ne figure pas dans la liste des distributions prises en charge.",
+   "description": "L'app ChatGPT pour Linux est disponible en preview avec des paquets x64 et ARM64 pour les distributions listées. L'installation configure un dépôt OpenAI signé pour les mises à jour ; les autres distributions peuvent fonctionner sans prise en charge officielle.",
    "description_source": "The ChatGPT desktop app for Linux is available in preview. Install the package for your Linux distribution and processor architecture, then sign in with your ChatGPT account to work with projects, local files, and Codex.",
    "usage": "uname -m",
    "usage_nature": "syntaxe",
    "exemple": "uname -m",
-   "disponibilite": "Linux, preview ; Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 et Arch Linux ; x64 et ARM64",
+   "disponibilite": null,
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'app est déjà installée en paquet Debian sur ta machine Linux Mint et sert aux connecteurs ; vérifie la compatibilité du paquet avant une réinstallation, qui configure aussi un dépôt signé. Pour le pilotage de Codex sous tmux depuis l'iPhone, garde le démarrage automatique de l'app désactivé, conformément à ton choix du 02/10."
+    "pourquoi": "ChatGPT Desktop est déjà installé en paquet Debian sur le K8 Plus et sert aux connecteurs ; avant une réinstallation, vérifie la distribution et l'architecture compatibles ainsi que le dépôt signé ajouté par l'installation. Garde le démarrage automatique de l'app désactivé pour le pilotage de Codex sous tmux depuis l'iPhone."
    },
    "sources": [
     {
@@ -1107,7 +1229,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1140,48 +1262,92 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La préversion Linux propose des paquets adaptés à la distribution et à l’architecture.",
+       "source": "https://learn.chatgpt.com/docs/linux/linux-app",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "ChatGPT Desktop est installé en paquet Debian sur Linux Mint.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "L'app est déjà installée en paquet Debian sur ta machine Linux Mint et sert aux connecteurs ; vérifie la compatibilité du paquet avant une réinstallation, qui configure aussi un dépôt signé. Pour le pilotage de Codex sous tmux depuis l'iPhone, garde le démarrage automatique de l'app désactivé, conformément à ton choix du 02/10."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1 ; ChatGPT Desktop est installé en paquet Debian."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Le K8 Plus est la machine de développement ; les apps de bureau sont installées en paquets Debian."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; Codex audite Claude depuis la CLI sous tmux."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "ChatGPT Desktop est utilisé pour les connecteurs."
     },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "Le démarrage automatique de l'app est désactivé pour permettre le remote control CLI."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La préversion Linux propose des paquets adaptés à la distribution et à l’architecture.",
+     "affirmation": "La preview Linux fournit des paquets x64 et ARM64 pour les distributions listées ; l'installation configure un dépôt OpenAI signé.",
      "source": "https://learn.chatgpt.com/docs/linux/linux-app",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La liste des plateformes ou le mécanisme d'installation change."
     },
     {
-     "affirmation": "ChatGPT Desktop est installé en paquet Debian sur Linux Mint.",
+     "affirmation": "Le K8 Plus est la machine de développement et ChatGPT Desktop est installé en paquet Debian.",
      "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La machine ou le mode de distribution change."
     },
     {
-     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "affirmation": "ChatGPT Desktop sert aux connecteurs.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "L'usage de l'app change."
     },
     {
-     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "affirmation": "L'app de bureau ne démarre plus automatiquement, en raison du conflit avec le remote control CLI.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Le mode de pilotage ou la coexistence des serveurs change."
     }
    ]
   },
@@ -1850,7 +2016,7 @@
    "categorie": "fonctionnalites",
    "nom": "Web search",
    "gabarit": "complet",
-   "description": "La recherche web intégrée fournit des sources à examiner comme des données non fiables. Dans Codex CLI, la recherche est en cache par défaut ; `--search` demande des résultats en direct pour un lancement, tandis que `web_search` dans `config.toml` fixe un défaut persistant.",
+   "description": "La recherche web intégrée fournit des sources à examiner comme des données non fiables. Dans Codex CLI, `--search` demande des résultats en direct pour un lancement ; `web_search` fixe un défaut persistant, en cache par défaut sauf en accès complet où la recherche passe en direct.",
    "description_source": "ChatGPT includes a first-party web search tool. Treat all web results as untrusted input.",
    "usage": "codex --search \"Summarize the latest release notes for this dependency\"",
    "usage_nature": "syntaxe",
@@ -1859,7 +2025,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pendant un audit de la console, essaie `codex --search` avec une question précise sur une fonction Codex après consultation de Delta-IA si disponible, puis vérifie le passage dans la source primaire avant de conclure. L'option CLI limite le choix de recherche en direct à ce lancement, sans modifier le défaut persistant du fichier de configuration."
+    "pourquoi": "Pendant un audit de la console, essaie `codex --search` avec une question précise sur une fonction Codex, après consultation de Delta-IA si disponible, puis vérifie le passage dans la source primaire avant de conclure. L'option CLI limite le choix de recherche en direct à ce lancement, sans modifier le défaut persistant du fichier de configuration."
    },
    "sources": [
     {
@@ -1872,7 +2038,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1905,64 +2071,104 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "ChatGPT inclut un outil de recherche web first-party, et la documentation demande de traiter tous les résultats web comme des entrées non fiables (untrusted input).",
+       "source": "https://learn.chatgpt.com/docs/web-search",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire l'outil de recherche web ou ne qualifie plus ses résultats d'entrées non fiables."
+      },
+      {
+       "affirmation": "La documentation donne comme exemple d'usage la commande `codex --search \"Summarize the latest release notes for this dependency\"`.",
+       "source": "https://learn.chatgpt.com/docs/web-search",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option `--search` change de syntaxe ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs, par exemple la console de pilotage. L'essentiel passe par la CLI sous tmux, avec des conversations nommées par rôle, dont l'audit et la console.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Codex en CLI sous tmux comme outil d'audit de Claude, ni de conversation d'audit de la console."
+      },
+      {
+       "affirmation": "Le `~/.codex/AGENTS.md` global demande de consulter Delta-IA avant de vérifier une affirmation sur Codex, sauf pendant un passage `$delta`/`$delta-kb`. Ses réponses sont des données secondaires, à recouper avec la source primaire.",
+       "source": "contexte:config.codex.regles-globales",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La règle de consultation de Delta-IA et de recoupement avec la source primaire disparaît du AGENTS.md global décrit dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "La console de pilotage `carnet-console` est une console web jointe depuis l'iPhone, menée comme projet OPÉRER FULL_AUTO.",
+       "source": "contexte:projet.delta-desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus la console de pilotage `carnet-console`."
+      },
+      {
+       "affirmation": "Sylvain utilise ChatGPT/Codex hors trading-sim, sur la console de pilotage, principalement pour auditer le travail de Claude. Il déclare comme irritant la méconnaissance des commandes et fonctionnalités.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de Codex pour auditer Claude sur la console, ni cet irritant."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pendant un audit de la console, essaie `codex --search` avec une question précise sur une fonction Codex après consultation de Delta-IA si disponible, puis vérifie le passage dans la source primaire avant de conclure. L'option CLI limite le choix de recherche en direct à ce lancement, sans modifier le défaut persistant du fichier de configuration."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop sert aux connecteurs ; Codex audite Claude depuis la CLI sous tmux."
-    },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
+     "pourquoi": "Codex sous tmux audite le travail de Claude sur la console."
     },
     "config.codex.regles-globales": {
      "sha1": "d97caf53e722e0a45e97662f11a418bb311ccb46",
-     "pourquoi": "Delta-IA se consulte hors passage Delta, puis les affirmations se recoupent avec les sources primaires."
+     "pourquoi": "Delta-IA est une source secondaire à consulter hors passage Delta, puis à recouper."
     },
     "projet.delta-desktop": {
      "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
-     "pourquoi": "La console de pilotage sert de scénario d'audit hors trading-sim."
+     "pourquoi": "La console fournit le scénario concret de vérification documentaire."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "ChatGPT inclut un outil de recherche web first-party, et la documentation demande de traiter tous les résultats web comme des entrées non fiables (untrusted input).",
+     "affirmation": "`--search` active la recherche en direct pour un lancement ; les résultats web doivent être traités comme des entrées non fiables.",
      "source": "https://learn.chatgpt.com/docs/web-search",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire l'outil de recherche web ou ne qualifie plus ses résultats d'entrées non fiables."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La syntaxe ou le mode de recherche change."
     },
     {
-     "affirmation": "La documentation donne comme exemple d'usage la commande `codex --search \"Summarize the latest release notes for this dependency\"`.",
+     "affirmation": "Codex utilise la recherche en cache par défaut, mais l’accès complet active la recherche en direct par défaut.",
      "source": "https://learn.chatgpt.com/docs/web-search",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option `--search` change de syntaxe ou disparaît de la documentation."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Les défauts de recherche documentés changent."
     },
     {
-     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs, par exemple la console de pilotage. L'essentiel passe par la CLI sous tmux, avec des conversations nommées par rôle, dont l'audit et la console.",
+     "affirmation": "Codex audite le travail de Claude sur la console.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Codex en CLI sous tmux comme outil d'audit de Claude, ni de conversation d'audit de la console."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Ce rôle d’audit change."
     },
     {
-     "affirmation": "Le `~/.codex/AGENTS.md` global demande de consulter Delta-IA avant de vérifier une affirmation sur Codex, sauf pendant un passage `$delta`/`$delta-kb`. Ses réponses sont des données secondaires, à recouper avec la source primaire.",
+     "affirmation": "Les affirmations sur Codex doivent être recoupées avec la source primaire après consultation de Delta-IA hors passage.",
      "source": "contexte:config.codex.regles-globales",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La règle de consultation de Delta-IA et de recoupement avec la source primaire disparaît du AGENTS.md global décrit dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "La console de pilotage `carnet-console` est une console web jointe depuis l'iPhone, menée comme projet OPÉRER FULL_AUTO.",
-     "source": "contexte:projet.delta-desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus la console de pilotage `carnet-console`."
-    },
-    {
-     "affirmation": "Sylvain utilise ChatGPT/Codex hors trading-sim, sur la console de pilotage, principalement pour auditer le travail de Claude. Il déclare comme irritant la méconnaissance des commandes et fonctionnalités.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de Codex pour auditer Claude sur la console, ni cet irritant."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La règle de recoupement change."
     }
    ]
   },
@@ -4346,7 +4552,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Pour répartir les missions trading-sim entre Work et Codex, tiens compte de leur allocation commune : ChatGPT semaine est relevé à 7 % par OBSERVATORY le 23/10/2026 à 02:21 UTC. Avant d'activer un autre mode de vitesse ou niveau d'offre, vérifie ses conditions de consommation sur la page Pricing ; aucune échéance n'est annoncée pour cette vérification."
+    "pourquoi": "Pour répartir les missions trading-sim entre Work et Codex sur ton forfait Pro (100), tiens compte de leur allocation commune : OBSERVATORY relève ChatGPT semaine à 26 % le 24/10/2026 à 02:27 UTC. Avant de changer de mode de vitesse ou de forfait, vérifie les conditions de consommation dans Pricing ; la page ne fixe pas d'échéance pour cette vérification."
    },
    "sources": [
     {
@@ -4359,7 +4565,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4444,38 +4650,82 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Work et Codex partagent usage, crédits et limites ; les tarifs API sont distincts et /status permet de voir les limites restantes en CLI.",
+       "source": "https://learn.chatgpt.com/docs/pricing",
+       "releve_le": "2026-10-23",
+       "caduc_si": "La tarification, le partage de l'allocation ou la consultation des limites changent dans la documentation."
+      },
+      {
+       "affirmation": "Sylvain déclare ChatGPT Pro (100) et trading-sim comme priorité.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-23",
+       "caduc_si": "Le forfait ou la priorité déclarée change."
+      },
+      {
+       "affirmation": "Work conçoit et arbitre trading-sim tandis que Codex réalise l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-23",
+       "caduc_si": "La répartition des rôles entre Work et Codex change."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Pour répartir les missions trading-sim entre Work et Codex, tiens compte de leur allocation commune : ChatGPT semaine est relevé à 7 % par OBSERVATORY le 23/10/2026 à 02:21 UTC. Avant d'activer un autre mode de vitesse ou niveau d'offre, vérifie ses conditions de consommation sur la page Pricing ; aucune échéance n'est annoncée pour cette vérification."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
-     "pourquoi": "Forfait ChatGPT Pro (100) déclaré et priorité trading-sim ; la suppression des crédits Claude cloud ne change pas ce forfait."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Forfait ChatGPT Pro (100) déclaré ; Sylvain souhaite développer les usages de ChatGPT/Codex."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Work conçoit et arbitre trading-sim ; Codex en réalise les audits adversariaux."
+     "pourquoi": "Work conçoit et arbitre trading-sim, Codex réalise les audits."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Work et Codex partagent usage, crédits et limites ; les tarifs API sont distincts et /status permet de voir les limites restantes en CLI.",
+     "affirmation": "ChatGPT Work et Codex partagent tarification, crédits et limites ; les tarifs API sont distincts des usages inclus.",
      "source": "https://learn.chatgpt.com/docs/pricing",
-     "releve_le": "2026-10-23",
-     "caduc_si": "La tarification, le partage de l'allocation ou la consultation des limites changent dans la documentation."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Les allocations Work et Codex sont séparées ou le mode de facturation change."
     },
     {
-     "affirmation": "Sylvain déclare ChatGPT Pro (100) et trading-sim comme priorité.",
+     "affirmation": "Les limites courantes se consultent dans le tableau d’utilisation et avec /status pendant une session CLI.",
+     "source": "https://learn.chatgpt.com/docs/pricing",
+     "releve_le": "2026-10-24",
+     "caduc_si": "La documentation modifie les moyens de consulter les limites."
+    },
+    {
+     "affirmation": "Sylvain déclare un forfait ChatGPT Pro (100).",
      "source": "contexte:profil",
-     "releve_le": "2026-10-23",
-     "caduc_si": "Le forfait ou la priorité déclarée change."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Le forfait déclaré change."
     },
     {
-     "affirmation": "Work conçoit et arbitre trading-sim tandis que Codex réalise l'audit adversarial.",
+     "affirmation": "Work conçoit et arbitre trading-sim ; Codex audite.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-23",
-     "caduc_si": "La répartition des rôles entre Work et Codex change."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Les rôles des outils sur trading-sim changent."
     }
    ]
   },

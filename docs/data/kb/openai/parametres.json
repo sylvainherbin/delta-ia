@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-23",
+ "maj_le": "2026-10-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -9716,7 +9716,7 @@
    "categorie": "parametres",
    "nom": "codex --search",
    "gabarit": "court",
-   "description": "Active la recherche web en direct avec `web_search = \"live\"` à la place du mode `cached` par défaut.",
+   "description": "Active la recherche web en direct avec `web_search = \"live\"` pour ce lancement, au lieu du mode `cached` par défaut.",
    "description_source": "Enable live web search (sets web_search = \"live\" instead of the default \"cached\" ). (valeurs : boolean)",
    "usage": "codex --search",
    "usage_nature": "syntaxe",
@@ -9725,7 +9725,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour la veille delta-ia, essayer `codex --search` pour recouper une nouveauté avec sa documentation officielle ; résultat attendu : une vérification en direct accompagnée de l’URL primaire."
+    "pourquoi": "Pour la veille delta-ia, essayer `codex --search` pour recouper une nouveauté avec sa documentation officielle ; résultat attendu : une vérification en direct accompagnée de l'URL primaire, sans modifier le réglage persistant."
    },
    "sources": [
     {
@@ -9738,7 +9738,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9763,51 +9763,83 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'option `codex --search` active la recherche web en direct : elle règle `web_search = \"live\"` au lieu de la valeur par défaut `\"cached\"`.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option `--search` change de comportement, n'agit plus sur `web_search` ou disparaît de la liste des global flags de la documentation."
+      },
+      {
+       "affirmation": "Sylvain utilise Codex en CLI sous tmux avec remote control.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Codex en CLI par Sylvain."
+      },
+      {
+       "affirmation": "Sylvain attend de la veille des alertes sur les nouvelles fonctionnalités.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus les alertes sur les nouvelles fonctionnalités comme attente de la veille."
+      },
+      {
+       "affirmation": "La consigne de la veille est de partir des nouveautés (changelogs de Claude Code et de Codex, annonces Claude et ChatGPT) et d'expliquer la commande ou le réglage exact à employer.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire ou modifie cette consigne pour la veille."
+      },
+      {
+       "affirmation": "L'irritant déclaré de Sylvain est la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne cite plus cet irritant."
+      },
+      {
+       "affirmation": "Hors trading-sim, ChatGPT/Codex sert à Sylvain pour auditer le travail de Claude.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit du travail de Claude."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour la veille delta-ia, essayer `codex --search` pour recouper une nouveauté avec sa documentation officielle ; résultat attendu : une vérification en direct accompagnée de l’URL primaire."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "La veille doit signaler les nouvelles fonctionnalités et leur usage concret."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "La veille doit signaler les nouveautés et leur usage concret avec une syntaxe exacte."
     }
    },
    "provenance": [
     {
-     "affirmation": "L'option `codex --search` active la recherche web en direct : elle règle `web_search = \"live\"` au lieu de la valeur par défaut `\"cached\"`.",
+     "affirmation": "L’option --search active la recherche en direct en réglant web_search sur live pour le lancement.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option `--search` change de comportement, n'agit plus sur `web_search` ou disparaît de la liste des global flags de la documentation."
+     "releve_le": "2026-10-24",
+     "caduc_si": "L’option ou son effet change."
     },
     {
-     "affirmation": "Sylvain utilise Codex en CLI sous tmux avec remote control.",
+     "affirmation": "Sylvain attend de la veille des nouveautés et des commandes utilisables sur ses projets.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Codex en CLI par Sylvain."
-    },
-    {
-     "affirmation": "Sylvain attend de la veille des alertes sur les nouvelles fonctionnalités.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus les alertes sur les nouvelles fonctionnalités comme attente de la veille."
-    },
-    {
-     "affirmation": "La consigne de la veille est de partir des nouveautés (changelogs de Claude Code et de Codex, annonces Claude et ChatGPT) et d'expliquer la commande ou le réglage exact à employer.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire ou modifie cette consigne pour la veille."
-    },
-    {
-     "affirmation": "L'irritant déclaré de Sylvain est la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne cite plus cet irritant."
-    },
-    {
-     "affirmation": "Hors trading-sim, ChatGPT/Codex sert à Sylvain pour auditer le travail de Claude.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme outil d'audit du travail de Claude."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Les attentes de la veille changent."
     }
    ]
   },

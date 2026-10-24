@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-23",
+ "maj_le": "2026-10-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -3277,7 +3277,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un essai OPÉRER sur une session Codex durable, utiliser `codex queue --thread <UUID> --message \"Accuse réception de ce test OPÉRER.\"`, puis vérifier l'accusé dans la session visée. OPÉRER décrit encore une remise par collage dans tmux ; cet essai mesurerait si la mise en attente native assure la remise attendue."
+    "pourquoi": "Pour un essai OPÉRER sur une session Codex durable, envoie uniquement une demande d'accusé avec `codex queue --thread <UUID> --message \"Accuse réception de ce test OPÉRER.\"`, après avoir remplacé <UUID> par l'identifiant réel, puis vérifie la réception. OPÉRER décrit une remise par collage dans tmux ; cet essai comparerait ce mécanisme à la file native Codex."
    },
    "sources": [
     {
@@ -3287,25 +3287,25 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
      "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
-     "pourquoi": "OPÉRER remet les messages par collage dans tmux puis Entrée ; l'essai compare cette remise avec la file native Codex."
+     "pourquoi": "OPÉRER remet les messages dans tmux puis renvoie Entrée ; l’essai porte sur la réception."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions Codex durables sont des services codex-session sous tmux, destinataires possibles du test."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Les sessions Codex durables utilisent des services codex-session et des tmux dédiés."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Les échanges liés aux audits trading-sim constituent un cas concret de message à une session Codex."
+     "pourquoi": "Les échanges d’audit trading-sim constituent un scénario de message à une session Codex."
     }
    },
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-10-14",
@@ -3381,27 +3381,65 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "codex queue met en attente un message pour une session existante, ciblée par UUID ou nom exact, avec --thread et --message.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+       "releve_le": "2026-10-23",
+       "caduc_si": "La commande, ses arguments ou le ciblage des sessions changent."
+      },
+      {
+       "affirmation": "OPÉRER colle le message dans tmux puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-23",
+       "caduc_si": "OPÉRER adopte un autre mécanisme de remise, notamment codex queue."
+      },
+      {
+       "affirmation": "Les sessions Codex durables tournent sous des services codex-session et des sessions tmux dédiées.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-23",
+       "caduc_si": "Cette organisation des sessions Codex est abandonnée."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour un essai OPÉRER sur une session Codex durable, utiliser `codex queue --thread <UUID> --message \"Accuse réception de ce test OPÉRER.\"`, puis vérifier l'accusé dans la session visée. OPÉRER décrit encore une remise par collage dans tmux ; cet essai mesurerait si la mise en attente native assure la remise attendue."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "compose",
    "provenance": [
     {
-     "affirmation": "codex queue met en attente un message pour une session existante, ciblée par UUID ou nom exact, avec --thread et --message.",
+     "affirmation": "codex queue cible une session existante par UUID ou nom exact ; --message transmet du texte, sans pièce jointe image.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
-     "releve_le": "2026-10-23",
-     "caduc_si": "La commande, ses arguments ou le ciblage des sessions changent."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La commande ou ses arguments changent."
     },
     {
-     "affirmation": "OPÉRER colle le message dans tmux puis renvoie Entrée par un appel distinct, au plus un message par session et par tic.",
+     "affirmation": "OPÉRER décrit une remise dans tmux puis Entrée par un appel distinct.",
      "source": "contexte:methode.operer",
-     "releve_le": "2026-10-23",
-     "caduc_si": "OPÉRER adopte un autre mécanisme de remise, notamment codex queue."
+     "releve_le": "2026-10-24",
+     "caduc_si": "OPÉRER change de mécanisme de remise."
     },
     {
-     "affirmation": "Les sessions Codex durables tournent sous des services codex-session et des sessions tmux dédiées.",
+     "affirmation": "Les sessions Codex durables tournent dans des tmux dédiés via des services codex-session.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-23",
-     "caduc_si": "Cette organisation des sessions Codex est abandonnée."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Cette organisation est remplacée."
     }
    ]
   },
@@ -7623,7 +7661,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Dans tes sessions Codex sous tmux pilotées depuis l'iPhone, contrôle `/status` pour vérifier le modèle, les permissions effectives et la version du serveur avant de poursuivre un audit. Ce contrôle répond directement au besoin de maîtriser les sessions à distance."
+    "pourquoi": "Dans tes sessions Codex sous tmux pilotées depuis l'iPhone, utilise `/status` pour confirmer le modèle, les permissions effectives et la version du serveur avant de poursuivre un audit. Ce contrôle sert directement ton pilotage à distance et ta maîtrise des commandes."
    },
    "sources": [
     {
@@ -7636,7 +7674,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7669,38 +7707,76 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/status affiche notamment modèle, permissions, racines inscriptibles et usage de la session.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Dans tes sessions Codex sous tmux pilotées depuis l'iPhone, contrôle `/status` pour vérifier le modèle, les permissions effectives et la version du serveur avant de poursuivre un audit. Ce contrôle répond directement au besoin de maîtriser les sessions à distance."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control pour les audits."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "La CLI sous tmux et remote control depuis l'iPhone sont utilisés ; les fonctionnalités restent à mieux connaître."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Le pilotage depuis l’iPhone et la maîtrise des commandes sont des usages et besoins déclarés."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "/status affiche notamment modèle, permissions, racines inscriptibles et usage de la session.",
+     "affirmation": "`/status` affiche modèle, approbations, racines inscriptibles et usage des jetons ; en connexion distante, adresse et version du serveur.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-10-24",
+     "caduc_si": "La sortie ou la syntaxe de /status change."
     },
     {
-     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+     "affirmation": "Sylvain utilise Codex sous tmux avec remote control pour auditer le travail de Claude.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Le rôle de Codex ou son interface principale change."
     },
     {
-     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "affirmation": "Sylvain veut mieux connaître les commandes et fonctionnalités.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Cet objectif déclaré change."
     }
    ]
   },
@@ -8127,7 +8203,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Avant une longue mission d'audit trading-sim sous tmux, ouvre `/usage` pour vérifier l'activité et les remises à zéro disponibles avant de réduire les usages. Vérifie les limites courantes et leurs échéances dans le tableau d'utilisation du compte."
+    "pourquoi": "Avant une longue mission d'audit trading-sim sous tmux, ouvre `/usage` pour vérifier si une remise à zéro gagnée est disponible avant de réduire tes usages. OBSERVATORY relève ChatGPT semaine à 26 % le 24/10/2026 à 02:27 UTC ; réserve cette commande aux actions de compte, sans refaire ce relevé."
    },
    "sources": [
     {
@@ -8140,7 +8216,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8173,48 +8249,86 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/usage propose l’activité du compte et les remises à zéro disponibles.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "Trading-sim exige une validation par jalon ; les autres projets sont en FULL_AUTO.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      }
+     ],
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Avant une longue mission d'audit trading-sim sous tmux, ouvre `/usage` pour vérifier l'activité et les remises à zéro disponibles avant de réduire les usages. Vérifie les limites courantes et leurs échéances dans le tableau d'utilisation du compte."
+     },
+     "raison": "Réévaluation D64-bis après modification du contexte ; sources officielles et sections citées relues le 24/10/2026."
+    },
+    {
+     "date": "2026-10-24",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "pourquoi": "Codex sous tmux assure des audits ; la commande s’emploie dans la CLI."
     },
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Trading-sim nécessite des audits longs et coûteux en jetons."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Sylvain demande de signaler les limites d'usage, offres et remises à zéro disponibles."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Sylvain demande de signaler les remises à zéro disponibles."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "/usage propose l’activité du compte et les remises à zéro disponibles.",
+     "affirmation": "`/usage` permet de consulter l’activité de jetons ou de consommer une remise à zéro gagnée disponible, avec authentification de compte Codex.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Le menu ne propose plus ces actions ou ses conditions changent."
     },
     {
-     "affirmation": "Sylvain utilise la CLI npm sous tmux depuis l’iPhone ; D70 utilise le binaire distinct de l’app.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "affirmation": "Trading-sim comporte des cycles de vérification et des audits coûteux en jetons.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-24",
+     "caduc_si": "La méthode de validation ou le coût des audits change."
     },
     {
-     "affirmation": "Trading-sim exige une validation par jalon ; les autres projets sont en FULL_AUTO.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
-    },
-    {
-     "affirmation": "ChatGPT Desktop sert aux connecteurs ; Codex sous tmux est piloté à distance.",
+     "affirmation": "Sylvain souhaite être informé des remises à zéro disponibles.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "releve_le": "2026-10-24",
+     "caduc_si": "Cette priorité est retirée."
     }
    ]
   },
