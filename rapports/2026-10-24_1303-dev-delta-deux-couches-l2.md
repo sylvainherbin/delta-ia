@@ -1,3 +1,11 @@
+## En-tête
+
+- état : livré
+- tests : commandes : `python3 -B outils/tests/verifier.py` : succès (code 0, reçu 6f1d937093a0)
+- hash : 1f9e6d5a1daf04df3ef84c48bb983b932f48143a
+- reçus : 6f1d937093a0
+- réserves : aucune
+
 # Delta-IA deux couches — lot L2 (mission m-d4055b3a5908)
 
 - Date : 24/10/2026 13:03 CEST (lue par `date`)
@@ -74,16 +82,6 @@ Choix structurants :
 8. **Nouveaux schémas** : `delta.manifest` vue `publication`, `delta.commun` vues `entree`, `synchro`, `traductions` et `sources`, `delta.personnel` vue `sources`, `delta.config` v1 pour le bootstrap. Tous sont fermés, et leur version majeure inconnue est refusée.
 9. **Classement** : `entrees[].systemes` est ajouté en C (calculé par la génération), `entrees[].historique[].avant[].revoir_le` en S (champ apparu depuis L1). `docs/data/actu/x-ids.json`, famille inconnue apparue depuis L1, reste refusé et tenu hors du commun.
 
-## Preuves
-
-- `tests/test_couches.py` et `tests/test_couches_l2.py` : 43 réussis, aucun sauté (route publiée comprise), sous `verrou-tests`.
-- **Mutations : 8 garde-fous neutralisés un à un, 8 tués** : lecteur borné, contrôle des textes privés, `contexte_inattendu`, empreinte source du français, liste d'exclusion vide, validation de la génération synchronisée, repères manquants, arbre modifié hors de la route du service.
-- Agent vérificateur, avant la publication : `verifier.py` ciblé vert (1 185 réussis, 1 sauté), plus 224 réussis sur couches, carte, vérificateur et valider. Avant commit, `scripts/verifier.py --cible` donne « VERIFY ciblé OK en 104,7 s » ; les avertissements de `valider.py` sont préexistants (R1, R4, R5, D124).
-- Données réelles, instance d'essai dans le scratchpad (aucune écriture dans les vraies racines ni dans `docs/data`) : import en 3,5 s, relance sans écriture, `verifier --depot` donne `ok: true` (2 284 identités attendues, 2 296 communes, 12 ajouts, 1 861 avis, 1 718 réévaluations, 6 essais et 218 À tester, 188 rejugements).
-- Traduction : 49 appels, 1 856 traductions distinctes acceptées. Il y a eu 41 refus, tous retraduits avec succès au second passage : 1 lot de 40 avec un JSON de réponse invalide, et 1 texte dont un repère s'est perdu. Contrôle du registre : 40 textes sur 1 856 vouvoient le lecteur (paragraphes narratifs longs). Statut `automatique`, à revoir en L6.
-- Diff relu avant commit : chemins indexés explicitement, aucun chemin personnel (la notice systemd dit `~/projets/delta-ia`), courriel, id de mission ni projet. `rapports/` n'est pas commité.
-- `mcp/` n'est pas touché : `npm test` n'était pas requis.
-
 ## Points fragiles ou à décider
 
 - **Installation du service après fusion** (geste du pilote, notice `deploy/systemd/commun.md`) : tant que le minuteur n'est pas installé, la génération publiée vieillit, et `surveiller` signalera `cycle_manque` 30 h après 12:35.
@@ -98,3 +96,7 @@ Choix structurants :
 - **L4** : MCP stdio et Desktop sur `Lecteur` (langue, fraîcheur et repli déjà rendus) ; l'overlay modèle × effort reste à faire.
 - **L5** : régénérer `kb/modeles.json` depuis `production/sources-publiques.json` et le magasin privé ; phase commune quotidienne (titres et résumés EN/FR de la veille) ; bascule des producteurs.
 - **L6** : relecture des 1 856 traductions automatiques (passage `automatique` → `revu`, les 40 vouvoiements), méthodes et modèles, interface EN/FR.
+
+## Preuves
+
+vérification du dépôt réussie : python3 -B outils/tests/verifier.py | reçu 6f1d937093a0
