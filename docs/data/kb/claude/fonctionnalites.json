@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 100,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -5762,16 +5762,16 @@
    "categorie": "fonctionnalites",
    "nom": "Orchestrate subagents at scale with dynamic workflows",
    "gabarit": "complet",
-   "description": "Un dynamic workflow est un script JavaScript, écrit par Claude pour la tâche décrite, qui orchestre en arrière-plan des dizaines à des centaines de sous-agents et recoupe leurs résultats. Il convient aux audits de code entiers, aux grosses migrations et aux recherches vérifiées ; `/workflows` suit les exécutions.",
+   "description": "Un dynamic workflow est un script JavaScript, écrit par Claude pour la tâche décrite, qui orchestre en arrière-plan des dizaines à des centaines de sous-agents et garde lui-même boucles et résultats intermédiaires, si bien que le contexte de Claude ne reçoit que la réponse finale. Il convient aux audits de code entiers, aux grosses migrations et aux recherches recoupées ; `/deep-research` est le workflow fourni et `/workflows` suit les exécutions, agent par agent.",
    "description_source": "Dynamic workflows orchestrate many subagents from a script Claude writes and you can rerun. Use them for codebase audits, large migrations, and cross-checked research.",
    "usage": "/deep-research What changed in the Node.js permission model between v20 and v22?",
    "usage_nature": "syntaxe",
    "exemple": "/workflows",
-   "disponibilite": null,
+   "disponibilite": "Tous les forfaits payants ; sur Pro, à activer dans `/config` (ligne Dynamic workflows)",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "L'outil Workflow est déjà appelé (13 appels relevés le 25/09) et son avertissement est désactivé ; ta consigne du 04/10 le réserve aux tâches que tu as accordées, car chaque exécution multiplie la consommation des limites."
+    "pourquoi": "L'outil Workflow est déjà appelé (13 appels relevés le 25/09) et ta consigne du 04/10 le réserve aux tâches que tu as accordées ; la page précise qu'une exécution compte dans les limites du forfait et coûte nettement plus de jetons qu'en conversation : lance-la d'abord sur une petite portion (un dossier, une question étroite) et surveille la consommation par agent dans `/workflows`, où tu peux l'arrêter."
    },
    "sources": [
     {
@@ -5780,11 +5780,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5870,9 +5870,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
@@ -5886,7 +5890,34 @@
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Avertissement Workflow désactivé dans settings.json."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Un workflow lance de nombreux agents : une exécution peut consommer nettement plus de jetons que la même tâche en conversation et compte dans les limites d'usage du forfait.",
+     "source": "https://code.claude.com/docs/en/workflows",
+     "releve_le": "2026-10-25",
+     "caduc_si": "la section Cost de la page change le décompte des exécutions"
+    },
+    {
+     "affirmation": "Pour jauger la dépense, la page conseille un premier essai sur une petite portion ; `/workflows` affiche la consommation de chaque agent et permet d'arrêter l'exécution.",
+     "source": "https://code.claude.com/docs/en/workflows",
+     "releve_le": "2026-10-25",
+     "caduc_si": "`/workflows` ne montre plus la consommation par agent ou change de nom"
+    },
+    {
+     "affirmation": "Consigne de Sylvain du 04/10 : workflows multi-agents (outil `Workflow`) seulement sur son accord.",
+     "source": "contexte:config.claude-code.sous-agents",
+     "releve_le": "2026-10-25",
+     "caduc_si": "la consigne du 04/10 est levée ou modifiée"
+    },
+    {
+     "affirmation": "L'outil Workflow figure dans le relevé d'usage du 25/09 avec 13 appels.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-25",
+     "caduc_si": "un nouveau relevé d'usage remplace celui du 25/09"
+    }
+   ]
   },
   {
    "id": "claude-code-fonctionnalites-page-worktrees",
@@ -7583,12 +7614,12 @@
    "categorie": "fonctionnalites",
    "nom": "Assign tasks from anywhere in Claude Cowork",
    "gabarit": "complet",
-   "description": "Dispatch donne une seule conversation continue avec Claude, joignable du téléphone ou de l'ordinateur, qui exécute les tâches sur l'ordinateur (machine allumée, Claude Desktop ouvert) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil avec une notification. Bêta limitée sur Pro et Max, fermée aux nouveaux utilisateurs ; une note de la page annonce que Cowork et chat fusionnent progressivement en un seul Claude sur Pro et Max (bêta pour Enterprise), ce qui peut changer certaines étapes.",
+   "description": "Dispatch donne une seule conversation continue avec Claude, joignable du téléphone ou de l'ordinateur, qui exécute les tâches sur l'ordinateur (machine allumée, Claude Desktop ouvert, sous macOS, Windows ou Linux) : le développement part dans une session Claude Code, le reste dans Cowork, et le résultat revient dans le fil avec une notification. Bêta limitée sur certains forfaits Pro et Max, fermée aux nouveaux utilisateurs ; chat et Cowork fusionnent progressivement en un seul Claude, ce qui peut changer certaines étapes.",
    "description_source": "Claude Cowork gives you one continuous conversation with Claude that you can reach from your phone or your desktop. With Dispatch, you can message Claude from your phone and have it work on your desktop computer, using your local files, connectors, plugins, and apps, then come back to the finished work.",
    "usage": "1. Download or update Claude Desktop.\n2. Download or update Claude for iOS or Android.\n3. Open Cowork on either your phone or your desktop.\n4. Click “Dispatch” on the left side panel.\n5. You’ll land on a page describing the functionality. Click “Get started”:",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Pro et Max (bêta limitée, fermée aux nouveaux utilisateurs) ; Claude Desktop (macOS, Windows x64, Linux) et app mobile",
+   "disponibilite": "Bêta limitée sur certains forfaits Pro et Max, fermée aux nouveaux utilisateurs ; Claude Desktop (macOS, Windows x64, Linux) et app mobile",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
@@ -7601,11 +7632,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7671,19 +7702,43 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Dispatch visible comme session Remote Control (25/09) ; tâches Cowork de Dispatch absentes de `ListAgents` : déduit, à vérifier."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Priorité déclarée : échanges directs entre sessions Cowork, dont Dispatch, et sessions Claude Code."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Dispatch exécute les tâches sur l'ordinateur (machine allumée, Claude Desktop ouvert) ; les tâches de développement partent dans une session Claude Code, visible dans sa barre latérale.",
+     "source": "https://support.claude.com/en/articles/13947068-assign-tasks-from-anywhere-in-claude-cowork",
+     "releve_le": "2026-10-25",
+     "caduc_si": "Dispatch passe au cloud ou ne crée plus de session Claude Code"
+    },
+    {
+     "affirmation": "La conversation Dispatch apparaît comme session Remote Control dans `/list-agents` (25/09) ; l'absence des tâches Cowork de Dispatch dans `ListAgents` reste déduite, à vérifier.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-25",
+     "caduc_si": "CONTEXTE.md tranche le point à vérifier"
+    },
+    {
+     "affirmation": "Sylvain demande de signaler en priorité ce qui permet aux sessions Cowork, Dispatch compris, d'échanger avec les sessions Claude Code.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-25",
+     "caduc_si": "cette priorité disparaît de CONTEXTE.md"
+    }
+   ]
   },
   {
    "id": "claude-fonctionnalites-page-13979539-custom-visuals-in-chat-and-cowork",
@@ -7829,16 +7884,16 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude use your computer in Cowork",
    "gabarit": "complet",
-   "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur (intégré ou Claude in Chrome), et en dernier recours par l'écran (clics, saisie), après une autorisation par application. Bêta sur Pro et Max, sous macOS et Windows ; Cowork et chat fusionnent progressivement en un seul Claude.",
+   "description": "Dans Cowork et Claude Code de Claude Desktop, Claude peut utiliser l'ordinateur en passant d'abord par un connecteur, puis par un navigateur (intégré ou Claude in Chrome), et en dernier recours par l'écran (clics, saisie, ouverture d'applications). Bêta sur Pro et Max, dans Claude Desktop sous macOS et Windows seulement.",
    "description_source": "Claude can now use your computer to complete tasks in Claude Cowork and Claude Code (refer to our Claude Code Docs for more information about this). When computer use is enabled and Claude doesn't have a connector or tool for what you need, it may navigate to your screen directly—clicking, typing, and opening apps just like you would. It can work in your browser, open files, and run your dev tools automatically, with no setup required other than enablement.",
    "usage": "1. **Connectors.** If a connector is available—like Gmail, Google Drive, Microsoft 365, or Slack—Claude uses it. This is the fastest and most reliable path.\n2. **Browser.** When there isn't a connector for the tool you need, Claude may work on your task in the browser built into the Claude Desktop app, or in your own Chrome browser through Claude in Chrome if that's your preferred browser. Learn more in **[Use the built-in browser in Claude Cowork](https://support.claude.com/en/articles/16607400)**.\n3. **Screen interaction.** Claude uses computer use to interact directly with your screen: clicking, typing, and navigating your desktop apps.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Pro et Max (bêta) ; Claude Desktop macOS et Windows",
+   "disponibilite": "Bêta, Pro et Max ; Claude Desktop sous macOS et Windows",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La page réserve l'usage de l'ordinateur à Claude Desktop sous macOS et Windows, alors que ta machine est sous Linux Mint."
+    "pourquoi": "La page réserve l'usage de l'ordinateur à Claude Desktop sous macOS et Windows, alors que tes apps de bureau sont installées en paquets Debian, sous Linux."
    },
    "sources": [
     {
@@ -7847,11 +7902,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7888,13 +7943,17 @@
     {
      "date": "2026-10-24",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Machine sous Linux Mint 22.1."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Desktop et ChatGPT Desktop installés en paquets Debian."
     }
    }
   },
@@ -8224,7 +8283,7 @@
    "categorie": "fonctionnalites",
    "nom": "Use live artifacts in Claude Cowork",
    "gabarit": "complet",
-   "description": "Les artefacts vivants sont ceux créés dans Cowork avant le 19 août 2026 : ils restent dans la vue « Artifacts », marqués « Cowork », et restent partageables, mais ne se modifient plus en place ; pour les changer, on les republie comme nouvel artefact depuis « Share », et le lien existant montre la nouvelle version. Ceux créés depuis le 19 août fonctionnent comme les autres artefacts.",
+   "description": "Les artefacts vivants sont ceux créés dans Cowork avant le 19 août 2026 : ils restent dans la vue « Artifacts », marqués « Cowork », et restent partageables dans l'organisation, mais ne se modifient plus en place ; pour les changer, on les republie comme nouvel artefact depuis « Share », et le lien existant montre la nouvelle version. Ceux créés depuis le 19 août fonctionnent comme les autres artefacts.",
    "description_source": "Live artifacts are artifacts made in Claude Cowork before August 19, 2026. They stay in your Artifacts view and keep working, and you can still open and share them, but you can't edit them in place. This article explains what you can do with a live artifact and how to republish one so you can keep editing it.",
    "usage": "1. Open the live artifact and click \"Share.\"\n2. Choose to republish it as a new artifact.\n3. If you already shared the live artifact, the dialog shows its existing link. People with that link see the new version.",
    "usage_nature": "etapes",
@@ -8242,11 +8301,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8291,12 +8350,16 @@
     {
      "date": "2026-10-24",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Artefacts utilisés ; Cowork cité parmi les fonctions à explorer."
     }
    }
@@ -8828,16 +8891,16 @@
    "categorie": "fonctionnalites",
    "nom": "Use the built-in browser in Claude Cowork",
    "gabarit": "complet",
-   "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; sous Linux, il peut importer les connexions enregistrées depuis Firefox. Claude Desktop doit rester ouvert et en ligne, même si la session Cowork tourne dans le cloud ; le choix entre navigateur intégré et Chrome se fait dans Settings > Cowork > Preferred browser.",
+   "description": "Cowork dispose d'un navigateur intégré à Claude Desktop, avec les mêmes capacités que Claude in Chrome mais sans dépendre du navigateur habituel ; sous Linux (bêta), il peut importer les connexions enregistrées depuis Firefox. Claude Desktop doit rester ouvert et en ligne, même si la session Cowork tourne dans le cloud ; le choix entre navigateur intégré et Chrome se fait dans Settings > Cowork > Preferred browser.",
    "description_source": "Claude Cowork has a browser built into the Claude Desktop app. This article explains how the built-in browser works, how it differs from Claude in Chrome, and how to choose which one Claude uses.",
    "usage": "1. Open the Claude Desktop app and go to **Settings > Cowork**.\n2. Under **Preferred browser**, choose “Built-in browser” or “Chrome (Claude in Chrome)”.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Pro, Max et Team ; Claude Desktop macOS, Windows et Linux (bêta)",
+   "disponibilite": "Claude Desktop sous macOS, Windows et Linux (bêta) ; Pro, Max, Team et Enterprise",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans Claude Desktop, Settings > Cowork, choisir « Built-in browser » puis demander une tâche qui ouvre carnet sur GitHub Pages : si elle aboutit sans l'extension Chrome, souvent déconnectée chez toi, ce navigateur la remplacerait, à condition de laisser Claude Desktop ouvert."
+    "pourquoi": "Dans Claude Desktop, Settings > Cowork, choisir « Built-in browser » puis demander une tâche qui ouvre carnet sur GitHub Pages : si elle aboutit sans l'extension Chrome, souvent déconnectée chez toi, ce navigateur la remplacerait, à condition de laisser Claude Desktop ouvert. Effet de bord : toute connexion faite dans ce navigateur reste disponible à Claude dans les sessions Cowork suivantes sur cette machine."
    },
    "sources": [
     {
@@ -8846,11 +8909,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8916,23 +8979,53 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Friction récurrente : extension Chrome souvent déconnectée."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Claude Desktop : toutes ses fonctions utiles au développement voulues ; Cowork à explorer, désormais dans le cloud."
     },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "PWA hébergée sur GitHub Pages."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Le navigateur intégré est disponible dans Cowork de Claude Desktop sous Linux (bêta), avec les capacités de Claude in Chrome, sans dépendre du navigateur habituel ; Claude Desktop doit rester ouvert et en ligne.",
+     "source": "https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork",
+     "releve_le": "2026-10-25",
+     "caduc_si": "la page retire Linux ou change la dépendance à Claude Desktop ouvert"
+    },
+    {
+     "affirmation": "Le navigateur préféré se choisit dans Settings > Cowork > Preferred browser ; une connexion faite dans le navigateur intégré reste disponible à Claude dans les sessions Cowork suivantes sur la machine.",
+     "source": "https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork",
+     "releve_le": "2026-10-25",
+     "caduc_si": "le réglage change de place ou la persistance des connexions change"
+    },
+    {
+     "affirmation": "L'extension Chrome souvent déconnectée figure parmi les frictions récurrentes de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-10-25",
+     "caduc_si": "CONTEXTE.md ne cite plus cette friction"
+    },
+    {
+     "affirmation": "carnet est une PWA hébergée sur GitHub Pages.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-25",
+     "caduc_si": "carnet change d'hébergement"
+    }
+   ]
   },
   {
    "id": "claude-fonctionnalites-page-16761823-claude-cowork-and-chat-are-one-claude",
