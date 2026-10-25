@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-24",
+ "maj_le": "2026-10-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -3634,7 +3634,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Sonnet par défaut est voulu (piste 11) et chaque service fixe le modèle de son rôle au lancement ; `--model` ou `s` dans le sélecteur changent une seule session sans toucher ce défaut. Pour les sous-agents, ta politique fixe le modèle dans chaque définition plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`."
+    "pourquoi": "Sonnet par défaut est voulu (piste 11) et chaque service fixe le modèle et l'effort de son rôle au lancement (`--model opus --effort medium` pour le chef) ; `--model` ou `s` dans le sélecteur changent une seule session sans toucher ce défaut. Pour les sous-agents, ta politique fixe le modèle dans chaque définition plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`."
    },
    "sources": [
     {
@@ -3647,7 +3647,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3716,17 +3716,61 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le modèle se choisit au lancement par `claude --model <alias|name>` ou en cours de session par `/model`.",
+       "source": "https://code.claude.com/docs/en/model-config",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'option `--model` ou l'ordre de priorité des réglages change"
+      },
+      {
+       "affirmation": "Sonnet par défaut est voulu par Sylvain (30/09).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-15",
+       "caduc_si": "Sylvain change de modèle par défaut"
+      },
+      {
+       "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement du service.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le modèle n'est plus fixé par rôle"
+      },
+      {
+       "affirmation": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la politique adopte un défaut global"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Sonnet par défaut est voulu (piste 11) et chaque service fixe le modèle de son rôle au lancement ; `--model` ou `s` dans le sélecteur changent une seule session sans toucher ce défaut. Pour les sous-agents, ta politique fixe le modèle dans chaque définition plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : Sonnet par défaut voulu (30/09) ; missions de construction trading-sim en Sonnet avec `/advisor opus`."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Modèle et effort propres à chaque rôle, fixés dans le lancement du service."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle et effort propres à chaque rôle, fixés dans le lancement du service (`--model opus --effort medium` pour le chef)."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -3738,25 +3782,25 @@
     {
      "affirmation": "Le modèle se choisit au lancement par `claude --model <alias|name>` ou en cours de session par `/model`.",
      "source": "https://code.claude.com/docs/en/model-config",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "l'option `--model` ou l'ordre de priorité des réglages change"
     },
     {
      "affirmation": "Sonnet par défaut est voulu par Sylvain (30/09).",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "Sylvain change de modèle par défaut"
     },
     {
-     "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement du service.",
+     "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement du service, par exemple `--model opus --effort medium` pour le chef.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
-     "caduc_si": "le modèle n'est plus fixé par rôle"
+     "releve_le": "2026-10-25",
+     "caduc_si": "le modèle n'est plus fixé par rôle dans le lancement des services"
     },
     {
      "affirmation": "Politique du pilote Routage : modèle choisi dans la définition de chaque sous-agent plutôt que par `CLAUDE_CODE_SUBAGENT_MODEL`.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "la politique adopte un défaut global"
     }
    ]
@@ -4890,7 +4934,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes services relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante de conversation sur une mission trading-sim sans toucher la session principale, à côté des worktrees qui séparent déjà le code."
+    "pourquoi": "Tes services relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante de conversation sur une mission sans toucher la session principale, à côté des worktrees qui séparent déjà le code."
    },
    "sources": [
     {
@@ -4903,7 +4947,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4948,13 +4992,51 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/branch [nom]` crée une branche de la conversation courante, avec son propre ID de session.",
+       "source": "https://code.claude.com/docs/en/sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "`/branch` change de syntaxe ou disparaît"
+      },
+      {
+       "affirmation": "Chaque service relance sa session par `claude --resume <id>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "les services ne reprennent plus par `--resume`"
+      },
+      {
+       "affirmation": "Une branche et un worktree git par mission, l'arbre principal restant sur `main`.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-15",
+       "caduc_si": "l'organisation des worktrees change"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tes services relancent chaque session par `claude --resume <id>` ; `/branch` permettrait d'essayer une variante de conversation sur une mission trading-sim sans toucher la session principale, à côté des worktrees qui séparent déjà le code."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Chaque service relance sa session par `claude --resume <id> --remote-control <nom>`."
     },
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
@@ -4964,21 +5046,21 @@
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "`/branch [nom]` crée une branche de la conversation courante, avec son propre ID de session.",
+     "affirmation": "`/branch` avec un nom facultatif crée une branche de la conversation courante, avec son propre ID de session.",
      "source": "https://code.claude.com/docs/en/sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "`/branch` change de syntaxe ou disparaît"
     },
     {
      "affirmation": "Chaque service relance sa session par `claude --resume <id>`.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "les services ne reprennent plus par `--resume`"
     },
     {
      "affirmation": "Une branche et un worktree git par mission, l'arbre principal restant sur `main`.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "l'organisation des worktrees change"
     }
    ]
@@ -6579,7 +6661,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6632,12 +6714,35 @@
     {
      "date": "2026-10-15",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Pour une conversation sans mémoire : nouvelle conversation, « + » dans la zone de message, « Memory » pour la couper, puis premier message.",
+       "source": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+       "releve_le": "2026-10-15",
+       "caduc_si": "le chemin pour couper la mémoire d'une conversation change"
+      },
+      {
+       "affirmation": "La mémoire claude.ai est activée et jugée utile ; Sylvain a trois Projets claude.ai.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-15",
+       "caduc_si": "Sylvain désactive la mémoire claude.ai"
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Mémoire claude.ai activée et jugée utile ; trois Projets claude.ai ; Cowork à explorer."
     }
    },
@@ -6645,13 +6750,13 @@
     {
      "affirmation": "Pour une conversation sans mémoire : nouvelle conversation, « + » dans la zone de message, « Memory » pour la couper, puis premier message.",
      "source": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "le chemin pour couper la mémoire d'une conversation change"
     },
     {
      "affirmation": "La mémoire claude.ai est activée et jugée utile ; Sylvain a trois Projets claude.ai.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "Sylvain désactive la mémoire claude.ai"
     }
    ]
@@ -8373,7 +8478,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8477,12 +8582,48 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Sur Max, jusqu'à 50 % des limites hebdomadaires sont utilisables sur Fable sans surcoût ; Fable puise dans le quota hebdomadaire habituel, plus vite que les autres modèles, et ne l'augmente pas.",
+       "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la page change la part Fable incluse ou le fonctionnement du quota hebdomadaire sur Max"
+      },
+      {
+       "affirmation": "Au-delà de la limite Fable sur Max, on continue en crédits d'usage ou avec un autre modèle ; sur Pro, Fable fonctionne en crédits d'usage dès le départ.",
+       "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la page change la bascule en crédits d'usage ou l'inclusion de Fable sur Pro"
+      },
+      {
+       "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-23",
+       "caduc_si": "l'essai est tranché ou le forfait change",
+       "revoir_le": "2026-11-03"
+      },
+      {
+       "affirmation": "La limite Fable figure parmi les frictions récurrentes de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-23",
+       "caduc_si": "CONTEXTE.md ne cite plus la limite Fable parmi les frictions"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Max (20x) à l'essai d'un mois, bilan d'usage avant le 07/11 (03/11 venu de Delta)."
     },
     "methode.travail": {
@@ -8498,26 +8639,26 @@
     {
      "affirmation": "Sur Max, jusqu'à 50 % des limites hebdomadaires sont utilisables sur Fable sans surcoût ; Fable puise dans le quota hebdomadaire habituel, plus vite que les autres modèles, et ne l'augmente pas.",
      "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-25",
      "caduc_si": "la page change la part Fable incluse ou le fonctionnement du quota hebdomadaire sur Max"
     },
     {
      "affirmation": "Au-delà de la limite Fable sur Max, on continue en crédits d'usage ou avec un autre modèle ; sur Pro, Fable fonctionne en crédits d'usage dès le départ.",
      "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-25",
      "caduc_si": "la page change la bascule en crédits d'usage ou l'inclusion de Fable sur Pro"
     },
     {
      "affirmation": "Max (20x) à l'essai depuis le 07/10, bilan d'usage à préparer avant le 07/11.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-25",
      "caduc_si": "l'essai est tranché ou le forfait change",
      "revoir_le": "2026-11-03"
     },
     {
      "affirmation": "La limite Fable figure parmi les frictions récurrentes de Sylvain.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-23",
+     "releve_le": "2026-10-25",
      "caduc_si": "CONTEXTE.md ne cite plus la limite Fable parmi les frictions"
     }
    ]
@@ -9235,7 +9376,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises déjà les artefacts dans Claude, et Claude Design, que tu utilises intensivement, en produit ; l'iPhone sert surtout à piloter tes sessions, donc la modification se fait plutôt dans Claude Desktop."
+    "pourquoi": "Tu utilises déjà les artefacts dans Claude, et Claude Design, que tu utilises intensivement, en produit ; l'iPhone sert surtout à piloter tes sessions et le partage d'un artefact se règle sur le web ou dans Claude Desktop, donc la modification se fait plutôt dans Claude Desktop."
    },
    "sources": [
     {
@@ -9248,7 +9389,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9309,12 +9450,50 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Un artefact se demande dans toute conversation avec Claude, Claude Code compris ; sur iOS on le voit et le modifie, mais le partage se règle sur le web ou dans Claude Desktop.",
+       "source": "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page change les plateformes où l'on crée, modifie ou partage un artefact."
+      },
+      {
+       "affirmation": "Sylvain utilise les artefacts de Claude ; l'app iPhone lui sert surtout à piloter ses sessions Claude Code.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne cite plus les artefacts parmi les fonctions utilisées."
+      },
+      {
+       "affirmation": "Sylvain utilise Claude Design intensivement depuis une session Claude Desktop.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus d'usage de Claude Design."
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tu utilises déjà les artefacts dans Claude, et Claude Design, que tu utilises intensivement, en produit ; l'iPhone sert surtout à piloter tes sessions, donc la modification se fait plutôt dans Claude Desktop."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Claude : artefacts utilisés ; app iPhone surtout pour piloter les sessions Claude Code ; Claude Desktop : toutes ses fonctions utiles voulues."
     },
     "config.claude-code.skills": {
@@ -9326,19 +9505,19 @@
     {
      "affirmation": "Un artefact se demande dans toute conversation avec Claude, Claude Code compris ; sur iOS on le voit et le modifie, mais le partage se règle sur le web ou dans Claude Desktop.",
      "source": "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "La page change les plateformes où l'on crée, modifie ou partage un artefact."
     },
     {
      "affirmation": "Sylvain utilise les artefacts de Claude ; l'app iPhone lui sert surtout à piloter ses sessions Claude Code.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "CONTEXTE.md ne cite plus les artefacts parmi les fonctions utilisées."
     },
     {
      "affirmation": "Sylvain utilise Claude Design intensivement depuis une session Claude Desktop.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "CONTEXTE.md ne décrit plus d'usage de Claude Design."
     }
    ]
@@ -9371,7 +9550,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9424,12 +9603,35 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro et Max vers la nouvelle version, sans perte (instructions, fichiers, historique, tâches planifiées).",
+       "source": "https://support.claude.com/en/articles/9517075-what-are-projects",
+       "releve_le": "2026-10-15",
+       "caduc_si": "la page ne parle plus de migration des projets existants, ou la migration s'étend aux projets de chat et de Cowork"
+      },
+      {
+       "affirmation": "Sylvain a trois Projets claude.ai, dont « Web app ia » pour la veille.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-15",
+       "caduc_si": "CONTEXTE.md ne liste plus ces trois Projets"
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "3 Projets claude.ai, dont « Web app ia » ; Projets en profondeur à explorer."
     }
    },
@@ -9437,13 +9639,13 @@
     {
      "affirmation": "Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro et Max vers la nouvelle version, sans perte (instructions, fichiers, historique, tâches planifiées).",
      "source": "https://support.claude.com/en/articles/9517075-what-are-projects",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "la page ne parle plus de migration des projets existants, ou la migration s'étend aux projets de chat et de Cowork"
     },
     {
      "affirmation": "Sylvain a trois Projets claude.ai, dont « Web app ia » pour la veille.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-15",
+     "releve_le": "2026-10-25",
      "caduc_si": "CONTEXTE.md ne liste plus ces trois Projets"
     }
    ]

@@ -19526,7 +19526,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19575,12 +19575,41 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--effort` fixe l'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), prime sur `modelSettings` et `effortLevel` et ne persiste pas.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option change de valeurs, de priorité ou devient persistante."
+      },
+      {
+       "affirmation": "Chaque service de session est lancé avec un modèle et un effort propres au rôle, par exemple `--model opus --effort medium` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge sur les limites hebdomadaires.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La piste 11 est close ou retirée."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Chaque service lance `claude --resume <id>` avec un modèle et un effort propres au rôle, par exemple `--effort medium` pour le chef."
     },
     "optimisation.pistes": {
@@ -19592,19 +19621,19 @@
     {
      "affirmation": "`--effort` fixe l'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), prime sur `modelSettings` et `effortLevel` et ne persiste pas.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "L'option change de valeurs, de priorité ou devient persistante."
     },
     {
      "affirmation": "Chaque service de session est lancé avec un modèle et un effort propres au rôle, par exemple `--model opus --effort medium` pour le chef.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
     },
     {
      "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge sur les limites hebdomadaires.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "La piste 11 est close ou retirée."
     }
    ]
@@ -26264,7 +26293,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26305,12 +26334,41 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--model` fixe le modèle de la session par alias (`sonnet`, `opus`, `haiku`, `fable`) ou nom complet, et prime sur le réglage `model` et `ANTHROPIC_MODEL`.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option change d'alias ou de priorité."
+      },
+      {
+       "affirmation": "Les services de session passent un modèle propre au rôle, par exemple `--model opus` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Piste 11 : Sonnet pour les tâches machine simples ; le défaut Sonnet est voulu par Sylvain (30/09).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La piste 11 ou le choix du défaut change dans CONTEXTE.md."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec un modèle propre au rôle, par exemple `--model opus` pour le chef."
     },
     "optimisation.pistes": {
@@ -26322,19 +26380,19 @@
     {
      "affirmation": "`--model` fixe le modèle de la session par alias (`sonnet`, `opus`, `haiku`, `fable`) ou nom complet, et prime sur le réglage `model` et `ANTHROPIC_MODEL`.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "L'option change d'alias ou de priorité."
     },
     {
      "affirmation": "Les services de session passent un modèle propre au rôle, par exemple `--model opus` pour le chef.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
     },
     {
      "affirmation": "Piste 11 : Sonnet pour les tâches machine simples ; le défaut Sonnet est voulu par Sylvain (30/09).",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "La piste 11 ou le choix du défaut change dans CONTEXTE.md."
     }
    ]
@@ -28572,7 +28630,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28601,26 +28659,49 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--remote-control` (`--rc`) démarre une session interactive pilotable depuis claude.ai ou l'app Claude, avec un nom facultatif.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option change de nom ou de rôle."
+      },
+      {
+       "affirmation": "Chaque service `claude-session@<nom>` exécute `claude --resume <id> --remote-control <nom>`, piloté depuis l'iPhone.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "`claude --resume <id> --remote-control <nom>` dans chaque service `claude-session@<nom>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "`claude --resume <id> --remote-control <nom>` dans chaque service `claude-session@<nom>`, piloté depuis l'iPhone."
     }
    },
    "provenance": [
     {
      "affirmation": "`--remote-control` (`--rc`) démarre une session interactive pilotable depuis claude.ai ou l'app Claude, avec un nom facultatif.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "L'option change de nom ou de rôle."
     },
     {
      "affirmation": "Chaque service `claude-session@<nom>` exécute `claude --resume <id> --remote-control <nom>`, piloté depuis l'iPhone.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
     }
    ]
@@ -29074,7 +29155,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29099,12 +29180,35 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--resume` reprend une session par ID, nom ou chemin de transcript `.jsonl` ; avec un ID, la recherche couvre le projet, ses worktrees puis les autres projets de la machine.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option change de syntaxe ou de portée de recherche."
+      },
+      {
+       "affirmation": "Les services de session relancent chaque session par `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     }
    },
@@ -29112,13 +29216,13 @@
     {
      "affirmation": "`--resume` reprend une session par ID, nom ou chemin de transcript `.jsonl` ; avec un ID, la recherche couvre le projet, ses worktrees puis les autres projets de la machine.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "L'option change de syntaxe ou de portée de recherche."
     },
     {
      "affirmation": "Les services de session relancent chaque session par `claude --resume <id> --remote-control <nom>`.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-25",
      "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
     }
    ]
