@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-24",
+ "maj_le": "2026-10-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -187,16 +187,16 @@
    "categorie": "fonctionnalites",
    "nom": "Appshots",
    "gabarit": "complet",
-   "description": "Appshots joint à la conversation une capture de la fenêtre au premier plan. La fonction peut inclure du texte accessible au-delà de la zone visible.",
+   "description": "Appshots joint à une conversation une capture de la fenêtre au premier plan et le texte que cette fenêtre rend accessible, y compris hors de la zone visible. La capture est conservée localement dans le fichier de session ; sa création exige l’application de bureau sur macOS ou Windows.",
    "description_source": "Appshots let you send the frontmost app window to a chat in ChatGPT. Use them when you're actively working in another app on your computer and want to provide ChatGPT with your current context so it can help you with the task.",
    "usage": "1. Bring the app window you want to share to the front.\n2. Press both Command keys on macOS or both Alt keys on Windows, or use the custom hotkey you configured in ChatGPT settings.\n3. Complete the permission setup if ChatGPT asks.\n4. Ask ChatGPT to perform a task with the appshot.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "App ChatGPT de bureau sur macOS et Windows",
+   "disponibilite": "Application de bureau sur macOS et Windows",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La documentation limite Appshots à macOS et Windows, tandis que la machine décrite fonctionne sous Linux Mint."
+    "pourquoi": "La fonction exige macOS ou Windows, deux systèmes exclus du profil Delta ; le contexte décrit des applications de bureau installées en paquets Debian sur les postes de Sylvain."
    },
    "sources": [
     {
@@ -209,7 +209,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -234,13 +234,17 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "La machine principale fonctionne sous Linux Mint."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Les applications de bureau sont installées en paquets Debian ; le K8 est le poste de développement."
     }
    }
   },
@@ -516,7 +520,7 @@
    "categorie": "fonctionnalites",
    "nom": "Browser extension",
    "gabarit": "complet",
-   "description": "L’extension relie ChatGPT Desktop aux onglets de Chrome, Edge, Brave, Opera ou Vivaldi et permet d’y lire ou d’agir avec le profil déjà connecté. Opera prend en charge le contrôle des onglets mais pas le side chat.",
+   "description": "L’extension relie ChatGPT Desktop aux onglets de Chrome, Edge, Brave, Opera ou Vivaldi pour lire les pages ou agir avec le profil connecté. Le dialogue latéral est disponible dans ces navigateurs sauf Opera, où les tâches démarrent dans l’application de bureau.",
    "description_source": "Use the ChatGPT browser extension to work in Google Chrome, Microsoft Edge, Brave, Opera, or Vivaldi from the ChatGPT desktop app. ChatGPT can read or act on sites where you're already signed in, such as LinkedIn, Salesforce, Gmail, or internal tools.",
    "usage": "@Edge open Salesforce and update the account from these call notes.",
    "usage_nature": "syntaxe",
@@ -525,7 +529,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun flux actuel de ChatGPT Desktop n’exige un onglet déjà authentifié pour les audits ; la déconnexion de l’extension Chrome mentionnée dans le contexte n’identifie pas un usage de cette extension OpenAI."
+    "pourquoi": "ChatGPT Desktop est déclaré utilisé uniquement pour les connecteurs ; aucun scénario actuel ne nécessite l’accès à un onglet déjà authentifié, et la friction Chrome du contexte n’établit pas l’usage de cette extension OpenAI."
    },
    "sources": [
     {
@@ -538,7 +542,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -563,13 +567,21 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-25",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "ChatGPT Desktop est déclaré utilisé seulement pour les connecteurs."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "ChatGPT Desktop est déclaré utilisé uniquement pour les connecteurs."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "La friction de connexion Chrome ne précise pas quelle extension est concernée."
     }
    },
    "exemple_origine": "source"
