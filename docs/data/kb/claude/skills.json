@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 24,
- "commentees": 22,
+ "commentees": 24,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -709,7 +709,7 @@
    "categorie": "skills",
    "nom": "/design-sync",
    "gabarit": "complet",
-   "description": "Skill qui convertit le design system React d'un dépôt et l'envoie à Claude Design, pour que les maquettes produites utilisent les vrais composants. La première synchronisation vérifie chaque composant et peut durer plusieurs heures sur un gros dépôt.",
+   "description": "Skill qui convertit le design system React d'un dépôt et l'envoie à Claude Design, pour que les maquettes produites utilisent les vrais composants ; un nom de design system peut être passé en argument. La première synchronisation vérifie chaque composant et peut durer plusieurs heures sur un gros dépôt. L'envoi se fait vers le site autonome claude.ai/design, qui ferme au plus tard le 14/12/2026.",
    "description_source": "Skill. Convert your repo's React design system and upload it to Claude Design, so designs it produces use your real components. Optionally name the design system, for example /design-sync Acme DS. A first-time sync verifies every component and can take a few hours on a large repo. Available on the Anthropic API. It needs claude.ai, which the CLI doesn't contact on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or Claude Platform on AWS, or through a Claude apps gateway. The command is unavailable there. This command uploads to the standalone claude.ai/design site, which closes by December 14, 2026; see Migrate from standalone Claude Design to Claude",
    "usage": "/design-sync [hint]",
    "usage_nature": "syntaxe",
@@ -718,7 +718,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "La Console de pilotage (`carnet-console`) est en React avec Vite et son langage visuel Delta repose sur des jetons de couleur : `/design-sync` y convertirait les composants pour que Claude Design les réutilise dans ses maquettes. Lance-le d'abord après `/design-login`, en gardant du temps : la première synchronisation vérifie chaque composant."
+    "pourquoi": "La Console de pilotage (`carnet-console`) est en React avec Vite : `/design-sync Console Delta`, après `/design-login`, y convertirait les composants pour que Claude Design les réutilise. Défavorable : l'envoi va au site autonome claude.ai/design, qui ferme le 14/12/2026 ; un design system synchronisé là devra être déplacé vers Claude avant cette date."
    },
    "sources": [
     {
@@ -727,11 +727,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-22",
+   "maj_le": "2026-10-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -809,9 +809,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -822,7 +826,40 @@
      "pourquoi": "Console de pilotage `carnet-console` en React avec Vite."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/design-sync [hint]` convertit le design system React du dépôt et l'envoie à Claude Design ; la première synchronisation vérifie chaque composant et peut durer quelques heures sur un gros dépôt.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La commande change de syntaxe ou disparaît de la documentation."
+    },
+    {
+     "affirmation": "`/design-sync` envoie vers le site autonome claude.ai/design, qui ferme au plus tard le 14/12/2026 ; `/design-login` autorise cet accès.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-26",
+     "caduc_si": "`/design-sync` envoie vers Claude plutôt que vers le site autonome, ou la date de fermeture change.",
+     "revoir_le": "2026-12-01"
+    },
+    {
+     "affirmation": "Les design systems faits sur le site autonome claude.ai/design peuvent passer dans Claude et doivent l'être avant sa fermeture le 14/12/2026.",
+     "source": "https://support.claude.com/en/articles/14604416-get-started-with-claude-design",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La page change la date de fermeture ou la procédure de migration."
+    },
+    {
+     "affirmation": "Sylvain utilise Claude Design intensivement ; la Console étant en React, `/design-sync` y devient pertinent.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-26",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de Claude Design ou la Console en React."
+    },
+    {
+     "affirmation": "La Console de pilotage `carnet-console` est en React avec Vite.",
+     "source": "contexte:projet.delta-desktop",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La Console change de pile technique."
+    }
+   ]
   },
   {
    "id": "claude-code-skills-doctor",
@@ -1114,7 +1151,7 @@
    "categorie": "skills",
    "nom": "Extend Claude with skills",
    "gabarit": "complet",
-   "description": "Page de référence des skills de Claude Code : un dossier avec un `SKILL.md` (en-tête YAML et instructions), rangé dans `~/.claude/skills/` pour tous les projets ou dans `.claude/skills/` pour un seul. Le nom du dossier devient la commande, et la `description` permet à Claude de le charger automatiquement.",
+   "description": "Page de référence des skills de Claude Code : un dossier avec un `SKILL.md` (en-tête YAML et instructions), rangé dans `~/.claude/skills/` pour tous les projets ou dans `.claude/skills/` pour un seul. Le nom du dossier devient la commande, et la `description` permet à Claude de le charger automatiquement ; les anciennes commandes de `.claude/commands/` fonctionnent de la même façon.",
    "description_source": "Create, manage, and share skills to extend Claude's capabilities in Claude Code. Includes custom commands and bundled skills.",
    "usage": "mkdir -p ~/.claude/skills/summarize-changes",
    "usage_nature": "syntaxe",
@@ -1123,7 +1160,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu as quatre skills perso, dont `latex-manuscrit` et `verif-numerique` jamais invoqués, et tes gestes répétés passent par des scripts de `~/.local/bin`. Les gestes encore faits à la main (revue machine d'une campagne, synchronisation git, piste 5) pourraient devenir des skills sur le même modèle."
+    "pourquoi": "Tu as quatre skills perso, dont `latex-manuscrit` et `verif-numerique` jamais invoqués, et les gestes encore faits à la main (revue machine d'une campagne, synchronisation git, piste 5) pourraient devenir des skills sur ce modèle. La page ajoute qu'un skill projet nommé `verify` est lancé par Claude avant chaque commit (v2.1.286 ou plus), sauf avec `disable-model-invocation: true`."
    },
    "sources": [
     {
@@ -1132,11 +1169,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1224,9 +1261,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
@@ -1236,7 +1277,34 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Pistes 4 et 5 : skills dormants ; restent à la main la revue machine d'une campagne et la synchronisation git."
     }
-   }
+   },
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Un skill personnel se crée dans `~/.claude/skills/<nom>/SKILL.md` et vaut pour tous les projets ; le nom du dossier devient la commande et la `description` sert au chargement automatique.",
+     "source": "https://code.claude.com/docs/en/skills",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La page change l'emplacement des skills personnels ou la règle de nommage."
+    },
+    {
+     "affirmation": "Quand une session démarre avec un skill nommé `verify` ou `simplify` invocable par Claude, les consignes de commit lui font lancer ce skill avant chaque commit, hors docs et tests (v2.1.286 ou plus).",
+     "source": "https://code.claude.com/docs/en/skills",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La documentation retire ce lancement avant commit ou change ses conditions."
+    },
+    {
+     "affirmation": "Skills perso : maintenance-mint, deploy-site, latex-manuscrit, verif-numerique ; latex-manuscrit et verif-numerique jamais invoqués ; aucune commande slash perso.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-26",
+     "caduc_si": "La liste des skills perso ou leur usage change dans CONTEXTE.md."
+    },
+    {
+     "affirmation": "Pistes 4 et 5 : skills dormants ; restent à la main la revue machine d'une campagne et la synchronisation git.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-26",
+     "caduc_si": "Les pistes 4 et 5 sont closes."
+    }
+   ]
   },
   {
    "id": "claude-code-skills-run",
