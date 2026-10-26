@@ -307,10 +307,10 @@ def test_carte_confirmation_repli_et_memoire_d_une_heure():
     assert envoi.index(deja) < envoi.index("relaisJoignable()")   # aucun appel au relais
     assert 'r.etape === "deja_envoyee"' in envoi          # 409 du relais : le bouton se bloque aussi
     # (3) repli : le message exact, puis « copiée à HH:MM » pour l'heure
-    assert FR["envoi.pas_joignable"] == ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier Delta-IA » "
+    assert FR["envoi.pas_joignable"] == ("Pas envoyé : relais non joignable et console non reliée (ouvrez la console et touchez « Relier Delta-IA » "
                                          "une fois sur cet appareil).")
     assert "brave://settings/content/localhostAccess" not in APP
-    assert FR["envoi.copiee"] == "L'idée est copiée : colle-la une fois dans le lanceur." and 't("envoi.copiee")' in corps
+    assert FR["envoi.copiee"] == "L'idée est copiée : collez-la une fois dans le lanceur." and 't("envoi.copiee")' in corps
     assert 'return repli(e, statut, t("envoi.pas_joignable"), bouton)' in envoi
     repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
     assert repli.count('noterHeure("copie", e.id, Date.now())') == 2
@@ -459,7 +459,7 @@ def test_console_reliee_et_memoire_sur_tous_les_appareils(options):
     assert len(urllib.parse.unquote(url.split("#idee=", 1)[1])) == 500
     assert "%C3%A9" in url
     assert r["disabled"] and r["second"].startswith("déjà envoyée à ")
-    assert "valide l'envoi" in r["premier"] and "jugement en cours" not in r["rendu"]
+    assert "validez l'envoi" in r["premier"] and "jugement en cours" not in r["rendu"]
     assert r["rendu"].startswith("déjà envoyée à ")
 
 
@@ -479,8 +479,8 @@ def test_console_redevient_ouvrable_apres_une_heure():
 def test_sans_console_copie_et_message_exact(ios):
     r = bouton_execute(console=False, ios=ios)
     assert not r["onglets"] and r["copies"] and not r["disabled"]
-    assert r["premier"] == ("Pas envoyé : relais non joignable et console non reliée (ouvre la console et touche « Relier "
-                            "Delta-IA » une fois sur cet appareil). L'idée est copiée : colle-la une fois dans le lanceur.")
+    assert r["premier"] == ("Pas envoyé : relais non joignable et console non reliée (ouvrez la console et touchez « Relier "
+                            "Delta-IA » une fois sur cet appareil). L'idée est copiée : collez-la une fois dans le lanceur.")
     assert r["rendu"].startswith("copiée à ")
 
 

@@ -118,7 +118,7 @@ def test_encart_compte_et_quotas():
     assert FR["quota.rz"] == "remise à zéro le {rz}" and FR["comptes.releve"] == "Relevé du {quand} ({age})."
     # alerte D71 : seuls les quotas hebdomadaires, au-delà de 80 %, phrase exacte
     assert "const SEUIL_ALERTE_PCT = 80;" in app and "hebdo && q.pct > SEUIL_ALERTE_PCT" in corps
-    assert "vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in FR["quota.alerte_d71"]
+    assert "vérifiez vos remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser" in FR["quota.alerte_d71"]
     assert '["claude_session_5h", "quota.claude_session_5h", false]' in app and FR["quota.claude_session_5h"] == "Claude, session 5 h"
     # D120 : le relevé de chaque quota est affiché ; plus de 30 min (ou date inconnue) : « ancien »
     assert "const ANCIEN_MIN = 30;" in app and "maintenant - tRel > ANCIEN_MIN * 60000" in corps and '` · ${t("quota.ancien")}`' in corps
