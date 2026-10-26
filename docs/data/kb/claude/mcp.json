@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-24",
+ "maj_le": "2026-10-26",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -2710,7 +2710,7 @@
    "categorie": "mcp",
    "nom": "Use connectors to extend Claude's capabilities",
    "gabarit": "complet",
-   "description": "Mode d'emploi des connecteurs de l'app Claude : on les active par le bouton « + » ou le menu `/` d'une conversation, on autorise l'accès au service, puis Claude s'en sert quand la demande le justifie.",
+   "description": "Mode d'emploi des connecteurs de l'app Claude : on les ajoute par le bouton « + » ou le menu `/` d'une conversation (Connectors, puis Manage connectors), on autorise l'accès au service, puis Claude s'en sert quand la demande le justifie. Leur gestion (déconnexion, réglages, droits d'accès) se fait dans Customize > Connectors.",
    "description_source": "This guide explains how to enable and use connectors with Claude to enhance its capabilities.",
    "usage": "1. Click the \"+\" button in the lower left corner of your chat, or type \"/\" to open the menu.\n2. Hover over “Connectors.”\n3. Select “Manage connectors.”\n4. Click the “+” button next to **Connectors**.\n5. This opens a **Connectors** modal where you can see available connectors by category or scroll through the complete list.",
    "usage_nature": "etapes",
@@ -2719,7 +2719,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises les connecteurs ; c'est ici que se déconnecteraient Gmail, Drive, Calendar, Canva et GoDaddy, connectés mais jamais appelés dans Claude Code (piste 9)."
+    "pourquoi": "Tu utilises les connecteurs de Claude ; Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code (piste 9) : Customize > Connectors permet de déconnecter ceux dont tu ne te sers pas non plus dans l'app, comme la page le conseille."
    },
    "sources": [
     {
@@ -2732,7 +2732,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-26",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2785,13 +2785,55 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Depuis « Manage connectors », chaque service peut être déconnecté, reparamétré ou revu dans ses accès ; la page conseille de déconnecter ceux qu'on n'utilise plus.",
+       "source": "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le chemin de gestion des connecteurs change sur la page."
+      },
+      {
+       "affirmation": "Sylvain utilise les connecteurs de Claude.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne cite plus les connecteurs parmi les fonctions utilisées."
+      },
+      {
+       "affirmation": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code (piste 9).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La piste 9 est close ou ces connecteurs sont retirés."
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "utiliser",
+      "pourquoi": "Tu utilises les connecteurs ; c'est ici que se déconnecteraient Gmail, Drive, Calendar, Canva et GoDaddy, connectés mais jamais appelés dans Claude Code (piste 9)."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-26",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Il utilise les artefacts, les connecteurs et les skills de Claude."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Claude : connecteurs cités parmi les fonctions utilisées."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
@@ -2800,21 +2842,21 @@
    },
    "provenance": [
     {
-     "affirmation": "Depuis « Manage connectors », chaque service peut être déconnecté, reparamétré ou revu dans ses accès ; la page conseille de déconnecter ceux qu'on n'utilise plus.",
+     "affirmation": "Customize > Connectors permet, pour chaque service connecté, de le déconnecter, de modifier ses réglages de connexion ou de revoir ses droits ; la page conseille de déconnecter les services dont on n'a plus besoin.",
      "source": "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le chemin de gestion des connecteurs change sur la page."
+     "releve_le": "2026-10-26",
+     "caduc_si": "La page change le chemin de gestion des connecteurs ou retire la déconnexion d'un service."
     },
     {
-     "affirmation": "Sylvain utilise les connecteurs de Claude.",
+     "affirmation": "Sylvain utilise les connecteurs de Claude, avec les artefacts et les skills.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne cite plus les connecteurs parmi les fonctions utilisées."
+     "releve_le": "2026-10-26",
+     "caduc_si": "CONTEXTE.md ne cite plus les connecteurs parmi les fonctions de Claude utilisées."
     },
     {
      "affirmation": "Gmail, Drive, Calendar, Canva et GoDaddy sont connectés mais jamais appelés dans Claude Code (piste 9).",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-26",
      "caduc_si": "La piste 9 est close ou ces connecteurs sont retirés."
     }
    ]
