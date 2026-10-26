@@ -244,7 +244,6 @@ code { font-family: var(--mesure); font-size: .86em; color: var(--code-texte); b
 .carte.impact-fort::before, .ligne-semaine.impact-fort::before { content: ""; position: absolute; left: -1px; top: -1px; width: 46%; height: 2px; background: linear-gradient(90deg, var(--encre), transparent); }
 .carte.impact-nul { background: transparent; }
 .carte.impact-nul h3, .carte.impact-nul h4 { color: var(--doux); }
-.carte.fait { opacity: .55; }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .badge { display: inline-flex; align-items: center; min-height: 20px; font: 500 10px/1 var(--mesure); text-transform: uppercase; letter-spacing: .14em; border-radius: 2px; padding: 0 7px; border: 1px solid var(--trait-fort); color: var(--faible); }
 .badge.produit, .badge.type { border-color: transparent; padding: 0 2px; }
@@ -270,6 +269,15 @@ code { font-family: var(--mesure); font-size: .86em; color: var(--code-texte); b
 .badge.certitude.non_confirme { border-style: dashed; }
 .badge.revise, .badge.perime { border-style: dashed; border-color: var(--doux); color: var(--doux); }
 .badge.attente { border-style: dashed; }
+/* une action faite s'efface sans perdre de contraste : ni plaque ni filet, le texte en doux, les badges au trait faible
+   (au moins 4,5:1 dans les deux thèmes). Pas d'opacité sur la carte : elle atténuerait aussi le texte. Placé après les
+   badges pour l'emporter sur eux à spécificité égale. */
+.carte.fait { background: transparent; border-style: dashed; color: var(--doux); }
+.carte.fait::before, .carte.fait .pour-toi::before { content: none; }
+.carte.fait h3, .carte.fait h4 { color: var(--doux); }
+.carte.fait .badge { background: transparent; color: var(--faible); }
+.carte.fait .badge:not(.produit, .type) { border-color: var(--trait-fort); }
+.carte.fait .pour-toi, .carte.fait .action { background: transparent; border-color: var(--trait); }
 .badge.anterieur { border-style: dotted; }
 .carte h3, .carte h4 { margin: 0 0 6px; font: 400 18px/1.35 var(--texte); letter-spacing: -.01em; overflow-wrap: anywhere; }
 .carte h4 { font-size: 17px; }

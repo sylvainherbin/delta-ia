@@ -46,6 +46,17 @@ def test_polices_servies_par_le_site():
     assert "@import" not in css and "fonts.googleapis" not in css
 
 
+def test_carte_faite_sans_opacite():
+    # Relecture du 26/10/2026 : une opacité sur .carte.fait atténue aussi le texte (vers 2,8:1 en thème clair) ;
+    # la carte faite s'efface par ses seuls éléments décoratifs.
+    import re
+    css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+    regles = [(sel, decl) for sel, decl in re.findall(r"([^{}]+)\{([^{}]*)\}", css) if ".carte.fait" in sel]
+    assert regles
+    for sel, decl in regles:
+        assert "opacity" not in decl, sel.strip()
+
+
 def test_manifeste_relatif():
     # L3 : un manifeste par langue (racine anglaise, /fr/ française), icônes partagées par chemin relatif
     for dossier, nom in ((DOCS, EN["manifeste.nom"]), (DOCS / "fr", FR["manifeste.nom"])):
