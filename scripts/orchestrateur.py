@@ -889,9 +889,12 @@ class Chaine:
         for etape in [e for e in self.etapes if e.supervision]:  # toujours, même après un échec
             self.executer_etape(etape)
         self.purge_x()
-        echec = any(not i.ok for i in self.issues)
+        echec_etape = any(not i.ok for i in self.issues)
+        echec = echec_etape or bool(erreur_selection)
         journaliser(self.racine, "chaine", "aucun", 1 if echec else 0,
-                    "au moins une étape en échec" if echec else "toutes les étapes terminées sans échec")
+                    "au moins une étape en échec" if echec_etape else
+                    "étapes terminées, publication de la sélection en échec" if echec else
+                    "toutes les étapes terminées sans échec")
         return 1 if echec else 0
 
 

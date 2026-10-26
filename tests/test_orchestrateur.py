@@ -244,6 +244,16 @@ def test_sorties_selection_en_attente_sont_publiees_avant_la_chaine(depot, monke
     assert not depot.sh("git", "status", "--porcelain").stdout
 
 
+def test_echec_de_publication_de_la_selection_fait_echouer_la_ligne_chaine(depot, cfg, monkeypatch):
+    monkeypatch.setattr(orc, "publier_selection_en_attente", lambda racine, jour: "publication de la sélection hebdomadaire impossible (RuntimeError)")
+    e = etape(depot, "delta", "ok", "docs/data/claude", "a.json", checkout=DELTA_CLAUDE)
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot) == {"selection-publication": 1, "delta": 0, "chaine": 1}
+    lignes = {l[2]: l for l in journal(depot)}
+    assert "publication de la sélection en échec" in lignes["chaine"][6]
+    assert "impossible" in lignes["selection-publication"][6]
+
+
 def journal(depot):
     f = depot / "rapports" / "passages.log"
     return [l.split(" | ") for l in f.read_text(encoding="utf-8").splitlines()] if f.exists() else []
