@@ -173,7 +173,7 @@ test("avis périmé signalé après un changement commun : nouvelle génération
     fs.writeFileSync(fichier, octets.toString("utf8") + " ");
     const e = await appeler("fiche_reference", { id: "claude-code-commandes-advisor" }, ctxLocal(i));
     assert.equal(e.isError, true);
-    assert.match(e.content[0].text, /^Local Delta data unavailable: .*size or hash differs/);
+    assert.match(e.content[0].text, /^Local ORQYRA AI data unavailable: .*size or hash differs/);
   } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });
 
@@ -299,7 +299,7 @@ test("MCP public : jamais la racine personnelle, même si elle existe sur la mac
     mcp.default({ method: "POST", url: "/mcp?source=local", body: { jsonrpc: "2.0", id: 1, method: "initialize", params: {} } }, res);
   });
   assert.equal(reponse.statut, 200);
-  assert.doesNotMatch(JSON.parse(reponse.corps).result.instructions, /personnel|this Delta instance/);
+  assert.doesNotMatch(JSON.parse(reponse.corps).result.instructions, /personnel|this ORQYRA AI instance/);
 });
 
 test("couple modèle × effort : constats de l'instance égaux à la source, groupe par nature et exécutant, absence ≠ zéro", async () => {

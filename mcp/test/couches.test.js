@@ -294,7 +294,7 @@ test("dictionnaires : mêmes clés EN/FR, aucune valeur vide, toute clé utilis�
   assert.ok(utilisees.size > 30, `${utilisees.size} clés repérées`);
   for (const k of utilisees) assert.ok(Object.hasOwn(TEXTES.en, k), `clé utilisée absente : ${k}`);
   // aucune phrase d'interface écrite en dur dans le serveur : plus de message français ou anglais hors dictionnaire
-  for (const motif of [/ErreurParametre\("`/, /new Error\(`[^$]/, /new Error\("/, /"Paramètre invalide/, /"Données Delta/, /: format inattendu/,
+  for (const motif of [/ErreurParametre\("`/, /new Error\(`[^$]/, /new Error\("/, /"Paramètre invalide/, /"Données ORQYRA AI/, /: format inattendu/,
     /"format modèles/, /modèle absent :/, /"usage:/, /"invalid JSON"/]) assert.equal(motif.test(code), false, String(motif));
   // les clés des modules partagés et locaux (`ErreurModeles("…")`, `local.motif.<code>`) existent dans les deux langues
   for (const m of code.matchAll(/ErreurModeles\("([a-z_.]+)"/g)) assert.ok(Object.hasOwn(TEXTES.en, m[1]) && Object.hasOwn(TEXTES.fr, m[1]), m[1]);

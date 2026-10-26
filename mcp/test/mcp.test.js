@@ -311,7 +311,7 @@ test("nouveautes_base : fichier absent, illisible ou de forme inattendue = isErr
     await avecDonnees({ "kb/recent.json": corps }, async (outil) => {
       const r = (await outil("nouveautes_base")).result;
       assert.equal(r.isError, true);
-      assert.match(r.content[0].text, /^Données Delta indisponibles : /);
+      assert.match(r.content[0].text, /^Données ORQYRA AI indisponibles : /);
       assert.match(r.content[0].text, motif);
       assert.equal(r.structuredContent, undefined);
     });
@@ -624,7 +624,7 @@ test("chercher_reference et fiche_reference : catégories non lues signalées ex
     assert.equal(ok.result.structuredContent.fiche.id, "a");
     const ko = await outil("fiche_reference", { id: "absente" });
     assert.equal(ko.result.isError, true);
-    assert.match(ko.result.content[0].text, /^Données Delta indisponibles : catégories non lues \(claude\/skills \(HTTP 404\), openai\/mcp \(JSON illisible\), methodes \(format inattendu\)\)/);
+    assert.match(ko.result.content[0].text, /^Données ORQYRA AI indisponibles : catégories non lues \(claude\/skills \(HTTP 404\), openai\/mcp \(JSON illisible\), methodes \(format inattendu\)\)/);
   });
 });
 
