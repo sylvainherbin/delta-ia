@@ -2,7 +2,7 @@
 import { TEXTES, ErreurTexte } from "./textes.js";
 
 export const CAUSES_ERREURS = new Set([
-  ...Object.keys(TEXTES.en).filter(c => /^(param|lecture|couche|local|modeles)\./.test(c)), "interne",
+  ...Object.keys(TEXTES.en).filter(c => /^(param|lecture|couche|local|modeles)\./.test(c)), "fiche.non_lues", "interne",
 ]);
 
 export function causeErreur(e) {

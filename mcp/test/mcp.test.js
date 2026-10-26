@@ -803,6 +803,7 @@ test("/stats : agrégats par jour, total, bornes de jours, CORS et cache", async
     await initialiser("claude-ai");
     await appel("chercher_reference", { requete: "terme-qui-ne-donne-rien-xyz42" });
     await appel("chercher_reference", { requete: "worktree" });
+    await appel("chercher_reference", { requete: "", produit: "prive" });
     await attendre();
     appels.length = 0;
     const r = await lireStatsHttp(stats, "/stats?jours=3");
@@ -814,11 +815,13 @@ test("/stats : agrégats par jour, total, bornes de jours, CORS et cache", async
     assert.deepEqual(Object.keys(r.corps.jours[0]), ["jour", "req", "outils", "zero", "erreurs", "clients", "causes_erreurs"]);
     assert.deepEqual(r.corps.jours[0].req, {});
     const auj = r.corps.jours.at(-1);
-    assert.deepEqual(auj.req, { initialize: 1, "tools/call": 2 });
-    assert.deepEqual(auj.outils, { chercher_reference: 2 });
+    assert.deepEqual(auj.req, { initialize: 1, "tools/call": 3 });
+    assert.deepEqual(auj.outils, { chercher_reference: 3 });
     assert.deepEqual(auj.zero, { chercher_reference: 1 });
     assert.deepEqual(auj.clients, { "claude-ai": 1 });
-    assert.deepEqual(r.corps.total.outils, { chercher_reference: 2 });
+    assert.deepEqual(r.corps.total.outils, { chercher_reference: 3 });
+    assert.deepEqual(auj.causes_erreurs, { "chercher_reference/param.requete": 1 });
+    assert.deepEqual(r.corps.total.causes_erreurs, auj.causes_erreurs);
     assert.equal(r.entetes["cache-control"], "public, max-age=300");
     assert.equal(r.entetes["access-control-allow-origin"], "*");
     assert.deepEqual(appels.map((a) => a.commandes.map((c) => c[0])), [["HGETALL", "HGETALL", "HGETALL"]], "lecture seule : HGETALL en pipeline");
