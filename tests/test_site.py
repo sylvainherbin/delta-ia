@@ -27,10 +27,23 @@ def test_index_declare_icone_manifeste_et_zone_sure():
     for attendu in ('<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">', '<link rel="manifest" href="manifest.webmanifest">',
                     '<meta name="apple-mobile-web-app-title" content="ORQYRA AI">', '<meta name="apple-mobile-web-app-capable" content="yes">',
                     '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">', "viewport-fit=cover",
-                    '<meta name="theme-color" content="#060a13" media="(prefers-color-scheme: dark)">',
-                    '<meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">'):
+                    '<meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">',
+                    '<meta name="theme-color" content="#f4f3ef" media="(prefers-color-scheme: light)">',
+                    '<link rel="icon" href="assets/favicon.ico" sizes="32x32">', '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">'):
         assert attendu in html, attendu
     assert "env(safe-area-inset-top" in (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+
+
+def test_polices_servies_par_le_site():
+    # Refonte du 26/10/2026 : IBM Plex servi depuis docs/assets/polices (licence OFL jointe), aucune police d'un service tiers.
+    import re
+    css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+    fichiers = re.findall(r"url\(([^)]+)\)", css)
+    assert fichiers and all(f.startswith("polices/") and f.endswith(".woff2") for f in fichiers), fichiers
+    for f in fichiers:
+        assert (DOCS / "assets" / f).is_file(), f
+    assert (DOCS / "assets" / "polices" / "OFL.txt").is_file()
+    assert "@import" not in css and "fonts.googleapis" not in css
 
 
 def test_manifeste_relatif():
@@ -38,7 +51,7 @@ def test_manifeste_relatif():
     for dossier, nom in ((DOCS, EN["manifeste.nom"]), (DOCS / "fr", FR["manifeste.nom"])):
         m = json.loads((dossier / "manifest.webmanifest").read_text(encoding="utf-8"))
         assert m["name"] == nom and m["short_name"] == "ORQYRA AI" and m["display"] == "standalone"
-        assert m["start_url"] == "./" and m["scope"] == "./" and m["background_color"] == "#060a13"
+        assert m["start_url"] == "./" and m["scope"] == "./" and m["background_color"] == "#050506"
         assert {i["sizes"] for i in m["icons"]} == {"180x180", "512x512"}
         for i in m["icons"]:
             assert not i["src"].startswith("/") and (dossier / i["src"]).resolve().exists()

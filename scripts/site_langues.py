@@ -39,8 +39,8 @@ GABARIT = """<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#060a13" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4f3ef" media="(prefers-color-scheme: light)">
   <meta name="apple-mobile-web-app-title" content="ORQYRA AI">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -57,7 +57,8 @@ GABARIT = """<!doctype html>
   <meta property="og:url" content="{url}">
   <meta property="og:locale" content="{og_locale}">
   <meta property="og:locale:alternate" content="{og_locale_autre}">
-  <link rel="icon" href="{racine}assets/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="{racine}assets/favicon.ico" sizes="32x32">
+  <link rel="icon" href="{racine}assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{racine}assets/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="{racine}assets/style.css">
@@ -68,8 +69,8 @@ GABARIT = """<!doctype html>
     <div class="entete-carte">
       <div class="entete-ligne">
         <a class="marque" href="#aujourdhui" aria-label="{marque_aria}">
-          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="dl" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color: var(--a1)"/><stop offset="1" style="stop-color: var(--a2)"/></linearGradient></defs><path d="M32 6 L59 56 H5 Z" fill="none" stroke="url(#dl)" stroke-width="5" stroke-linejoin="round"/><path d="M32 24 L45 48 H19 Z" fill="url(#dl)" opacity=".85"/></svg>
-          <span class="marque-texte"><span class="marque-nom">{marque_nom}</span><span class="marque-sous">{marque_sous}</span></span>
+          <svg class="logotype" viewBox="-14 -16 866 132" aria-hidden="true"><g class="logotype-signe" transform="translate(0,-3.92)"><path d="M0,103.92 L60,0 L120,103.92 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter" stroke-miterlimit="12"/><circle cx="60" cy="69.28" r="9" fill="currentColor"/></g><g transform="translate(176,0)" fill="none" stroke="currentColor" stroke-width="10"><circle cx="53" cy="50" r="48"/><path d="M139.8,100 L139.8,5 L166,5 A22.6,22.6 0 0 1 166,50.2 L139.8,50.2"/><line x1="164" y1="50.2" x2="202" y2="100"/><circle cx="287" cy="50" r="48"/><line x1="295" y1="58" x2="344" y2="112"/><path d="M375,0 L413,50 L451,0 M413,50 L413,100"/><path d="M485.8,100 L485.8,5 L512,5 A22.6,22.6 0 0 1 512,50.2 L485.8,50.2"/><line x1="510" y1="50.2" x2="548" y2="100"/><path d="M580,100 L622,8 L664,100" stroke-miterlimit="12"/></g></svg>
+          <span class="marque-texte"><span class="marque-nom">{marque_nom}</span><span class="marque-ai" aria-hidden="true">{marque_ai}</span><span class="marque-sous">{marque_sous}</span></span>
         </a>
         <div class="entete-droite">
           <div id="etat-agents" class="etat-agents" aria-live="polite"></div>
@@ -85,6 +86,7 @@ GABARIT = """<!doctype html>
     <p class="chargement">{chargement}</p>
   </main>
   <footer class="pied">
+    <svg class="pied-signe" viewBox="-11.5 -13.8 143 129.22" aria-hidden="true"><path d="M0,103.92 L60,0 L120,103.92 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter" stroke-miterlimit="12"/><circle cx="60" cy="69.28" r="9" fill="currentColor"/></svg>
     <p>{pied} <a href="#aide">{aide}</a></p>
     <p id="couche-lue" class="couche-lue"></p>
   </footer>
@@ -117,7 +119,8 @@ def page(langue: str, textes: dict, base: str) -> str:
         langue=langue, racine=racine, autre=autre, titre=e("html.titre"), description=e("html.description"),
         url=url_page(base, langue), url_en=url_page(base, "en"), url_fr=url_page(base, "fr"),
         og_locale=d["html.og_locale"], og_locale_autre=textes[autre]["html.og_locale"],
-        saut=e("html.saut"), marque_aria=e("html.marque_aria"), marque_nom=e("html.marque_nom"), marque_sous=e("html.marque_sous"),
+        saut=e("html.saut"), marque_aria=e("html.marque_aria"), marque_nom=e("html.marque_nom"), marque_ai=e("html.marque_ai"),
+        marque_sous=e("html.marque_sous"),
         lien_langue=lien, langue_aria=e("html.langue_aria"), langue_lien=e("html.langue_lien"), nav_aria=e("html.nav_aria"),
         onglets=onglets, chargement=e("html.chargement"), pied=e("html.pied"), aide=e("onglet.aide"))
 
@@ -126,7 +129,7 @@ def manifeste(langue: str, textes: dict) -> str:
     racine = LANGUES[langue][1]
     m = {
         "name": textes[langue]["manifeste.nom"], "short_name": "ORQYRA AI", "lang": langue,
-        "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#060a13", "theme_color": "#060a13",
+        "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#050506", "theme_color": "#050506",
         "icons": [
             {"src": f"{racine}assets/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
             {"src": f"{racine}assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
