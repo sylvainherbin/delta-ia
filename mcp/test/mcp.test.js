@@ -642,7 +642,8 @@ test("compteur D100 et journal D66 couvrent nouveautes_base et a_tester sans cha
     assert.ok(!JSON.stringify(lignes).includes("\"jours\""), "aucun argument dans le journal");
     const h = Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`));
     assert.deepEqual(h, { "req:tools/call": 3, "outil:nouveautes_base": 2, "erreur:nouveautes_base": 1, "cause:nouveautes_base/param.jours": 1, "outil:a_tester": 1 });
-    assert.ok(!Object.keys(h).some((k) => k.includes("jours") || k.includes("99")));
+    // Le code fermé nomme le paramètre ; sa valeur (99) ne doit jamais être conservée.
+    assert.ok(!Object.keys(h).some((k) => k.includes("99") || (k.includes("jours") && k !== "cause:nouveautes_base/param.jours")));
   });
 });
 
