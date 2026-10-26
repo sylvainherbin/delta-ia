@@ -1,4 +1,4 @@
-"""m-944fab565b10 : bouton « Envoyer à Delta » de l'onglet Référence et relais local vers la porte des idées."""
+"""m-944fab565b10 : bouton « Envoyer à ORQYRA » de l'onglet Référence et relais local vers la porte des idées."""
 
 import json
 import os
@@ -141,7 +141,7 @@ def test_bouton_de_la_carte_reference():
     assert "body: JSON.stringify({ id: e.id })" in corps
     # relais injoignable : console si une adresse est enregistrée, sinon idée copiée pour le lanceur ; refus du relais : motif affiché
     assert "navigator.clipboard.writeText(texteIdeeKb(e))" in corps and 't("envoi.refus"' in corps
-    assert "Delta n'a pas pris la référence" in FR["envoi.refus"]
+    assert "ORQYRA n'a pas pris la référence" in FR["envoi.refus"]
     # le message de repli précède la copie, qui ne peut pas rester en attente ; à défaut, un bouton « Copier l'idée »
     repli = corps[corps.index("async function repli("):corps.index("// le presse-papier")]
     assert repli.index("statut.textContent = motif") < repli.index("copierIdeeKb(e)") and 't("envoi.copier")' in repli and FR["envoi.copier"] == "Copier l'idée"
@@ -296,7 +296,7 @@ def test_deja_envoyees_relues_dans_le_journal_au_demarrage(tmp_path):
 def test_carte_confirmation_repli_et_memoire_d_une_heure():
     corps = APP[APP.index("const CLE_HEURES"):APP.index("function badgeContexte")]
     # (2) confirmation, bouton désactivé une heure, mémoire par fiche sous try/catch, second clic sans appel
-    assert 'statut.textContent = t("envoi.ok")' in corps and FR["envoi.ok"] == "Envoyé à Delta, jugement en cours"
+    assert 'statut.textContent = t("envoi.ok")' in corps and FR["envoi.ok"] == "Envoyé à ORQYRA, jugement en cours"
     assert "HEURE_MS = 3600000" in corps and 'noterHeure("envoi", e.id, t0)' in corps and 'localStorage.setItem(CLE_HEURES' in corps
     memoire = corps[corps.index("function lireHeures"):corps.index("function hhmm")]
     assert memoire.count("try {") == 2 and memoire.count("catch (err)") == 2
@@ -316,7 +316,7 @@ def test_carte_confirmation_repli_et_memoire_d_une_heure():
     assert repli.count('noterHeure("copie", e.id, Date.now())') == 2
     bloc = corps[corps.index("function blocEnvoi"):]
     assert 't("envoi.copiee_a", { heure: hhmm(copie) })' in bloc and 'heureRecente("copie", e.id)' in bloc and 't("envoi.ok_a", { heure: hhmm(envoi) })' in bloc
-    assert FR["envoi.copiee_a"].startswith("copiée à {heure}") and FR["envoi.ok_a"] == "Envoyé à Delta à {heure}, jugement en cours"
+    assert FR["envoi.copiee_a"].startswith("copiée à {heure}") and FR["envoi.ok_a"] == "Envoyé à ORQYRA à {heure}, jugement en cours"
     assert "bloquerBouton(b, envoi)" in bloc
 
 
@@ -446,7 +446,7 @@ def test_bureau_relais_prioritaire_meme_console_reliee():
     # après l'envoi réussi, la carte redemande le suivi (5 s au plus) ; relais simulé absent : ligne de suivi cachée
     assert r["delais"] == [3000, 25000, 5000] and not r["onglets"] and not r["copies"]
     assert len(r["suivis"]) == 1 and r["suivi"]["hidden"] is True
-    assert r["premier"] == "Envoyé à Delta, jugement en cours" and r["second"].startswith("déjà envoyée à ")
+    assert r["premier"] == "Envoyé à ORQYRA, jugement en cours" and r["second"].startswith("déjà envoyée à ")
 
 
 @pytest.mark.parametrize("options", [{}, {"etat": "erreur"}, {"ios": True}, {"ipad": True}])
@@ -493,7 +493,7 @@ def test_copie_refusee_reste_possible_par_geste():
 def test_refus_explicite_du_relais_ne_passe_pas_par_console():
     r = bouton_execute(etat=True, post={"ok": False, "etape": "plafond", "detail": "10 envois par heure"})
     assert not r["onglets"] and not r["copies"] and not r["disabled"]
-    assert "Delta n'a pas pris la référence (10 envois par heure)" in r["premier"]
+    assert "ORQYRA n'a pas pris la référence (10 envois par heure)" in r["premier"]
 
 
 # ---- m-a04181983623 : boucle d'adoption, GET /suivi projeté depuis OPÉRER ----
@@ -589,7 +589,7 @@ def test_carte_affiche_l_etat_projete_et_le_resultat_distinct():
     r = bouton_execute(etat=True, suivi={"corps": SUIVI_INSTALLE})
     s = r["suivi"]
     assert s["hidden"] is False
-    assert s["texte"].startswith("Suivi Delta : proposée › retenue › en réalisation › installée (jugement : PERTINENTE)")
+    assert s["texte"].startswith("Suivi ORQYRA : proposée › retenue › en réalisation › installée (jugement : PERTINENTE)")
     assert "|Utilisations : installée le 2026-10-11, lot m-1 ; installée le 2026-10-20, lot ess_0123456789ab." in s["texte"]
     assert "|Résultat observé (Delta Lab) : ess_0123456789ab adopté · confirme : gain 12 %. À lire dans OBSERVATORY › EXPÉRIENCES" in s["texte"]
 
@@ -597,7 +597,7 @@ def test_carte_affiche_l_etat_projete_et_le_resultat_distinct():
 def test_carte_ecartee_en_realisation_et_sans_mesure():
     ecartee = {"ok": True, "fiches": {"fiche": {"id": "fiche", "etat": "ecarte", "position": "PAS_PERTINENTE", "missions": [],
                                                 "installations": [], "resultat_observe": []}}}
-    assert bouton_execute(etat=True, suivi={"corps": ecartee})["suivi"]["texte"] == "Suivi Delta : proposée › écartée (jugement : PAS_PERTINENTE)"
+    assert bouton_execute(etat=True, suivi={"corps": ecartee})["suivi"]["texte"] == "Suivi ORQYRA : proposée › écartée (jugement : PAS_PERTINENTE)"
     cours = {"ok": True, "fiches": {"fiche": {"id": "fiche", "etat": "en_realisation", "position": "PERTINENTE", "installations": [],
                                               "missions": [{"id": "m-2", "etat": "A_RELIRE", "projete": "en_realisation"}], "resultat_observe": []}}}
     assert "en réalisation › installée (jugement : PERTINENTE ; mission m-2 (A_RELIRE))" in bouton_execute(etat=True, suivi={"corps": cours})["suivi"]["texte"]
@@ -616,7 +616,7 @@ def test_carte_adoptee_sans_installation_jamais_dite_installee():
                                                 "installations": [{"lot": "m-3", "le": "2026-10-11", "par": "mission_sans_installation"}],
                                                 "resultat_observe": []}}}
     texte = bouton_execute(etat=True, suivi={"corps": adoptee})["suivi"]["texte"]
-    assert texte.startswith("Suivi Delta : proposée › retenue › en réalisation › adoptée (jugement : PERTINENTE)")
+    assert texte.startswith("Suivi ORQYRA : proposée › retenue › en réalisation › adoptée (jugement : PERTINENTE)")
     assert "|Utilisations : adoptée le 2026-10-11, lot m-3 : livrée et fusionnée, rien d'installé." in texte
     assert "installée" not in texte
     rubrique = APP[APP.index("function remplirAmeliorations"):APP.index("// D64-bis : péremption")]
@@ -629,7 +629,7 @@ def test_carte_mission_illisible_etat_inconnu():
         "id": "fiche", "etat": "inconnu", "position": "PERTINENTE", "missions": [{"id": "m-9", "etat": "CLOSE", "projete": "inconnu"}],
         "missions_illisibles": ["m-9"], "installations": [], "resultat_observe": []}}}
     texte = bouton_execute(etat=True, suivi={"corps": inconnue})["suivi"]["texte"]
-    assert texte == "Suivi Delta : état inconnu (jugement : PERTINENTE ; mission m-9 : vue OPÉRER illisible, relue au prochain calcul)"
+    assert texte == "Suivi ORQYRA : état inconnu (jugement : PERTINENTE ; mission m-9 : vue OPÉRER illisible, relue au prochain calcul)"
     assert "retenue" not in texte
 
 

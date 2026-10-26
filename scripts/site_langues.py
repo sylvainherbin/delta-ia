@@ -41,7 +41,7 @@ GABARIT = """<!doctype html>
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#060a13" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
-  <meta name="apple-mobile-web-app-title" content="Delta">
+  <meta name="apple-mobile-web-app-title" content="ORQYRA AI">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>{titre}</title>
@@ -51,7 +51,7 @@ GABARIT = """<!doctype html>
   <link rel="alternate" hreflang="fr" href="{url_fr}">
   <link rel="alternate" hreflang="x-default" href="{url_en}">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Delta">
+  <meta property="og:site_name" content="ORQYRA AI">
   <meta property="og:title" content="{titre}">
   <meta property="og:description" content="{description}">
   <meta property="og:url" content="{url}">
@@ -125,7 +125,7 @@ def page(langue: str, textes: dict, base: str) -> str:
 def manifeste(langue: str, textes: dict) -> str:
     racine = LANGUES[langue][1]
     m = {
-        "name": textes[langue]["manifeste.nom"], "short_name": "Delta", "lang": langue,
+        "name": textes[langue]["manifeste.nom"], "short_name": "ORQYRA AI", "lang": langue,
         "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#060a13", "theme_color": "#060a13",
         "icons": [
             {"src": f"{racine}assets/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},

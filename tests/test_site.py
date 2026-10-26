@@ -25,7 +25,7 @@ def test_icones_opaques_aux_bonnes_tailles():
 def test_index_declare_icone_manifeste_et_zone_sure():
     html = (DOCS / "index.html").read_text(encoding="utf-8")
     for attendu in ('<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">', '<link rel="manifest" href="manifest.webmanifest">',
-                    '<meta name="apple-mobile-web-app-title" content="Delta">', '<meta name="apple-mobile-web-app-capable" content="yes">',
+                    '<meta name="apple-mobile-web-app-title" content="ORQYRA AI">', '<meta name="apple-mobile-web-app-capable" content="yes">',
                     '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">', "viewport-fit=cover",
                     '<meta name="theme-color" content="#060a13" media="(prefers-color-scheme: dark)">',
                     '<meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">'):
@@ -37,12 +37,12 @@ def test_manifeste_relatif():
     # L3 : un manifeste par langue (racine anglaise, /fr/ française), icônes partagées par chemin relatif
     for dossier, nom in ((DOCS, EN["manifeste.nom"]), (DOCS / "fr", FR["manifeste.nom"])):
         m = json.loads((dossier / "manifest.webmanifest").read_text(encoding="utf-8"))
-        assert m["name"] == nom and m["short_name"] == "Delta" and m["display"] == "standalone"
+        assert m["name"] == nom and m["short_name"] == "ORQYRA AI" and m["display"] == "standalone"
         assert m["start_url"] == "./" and m["scope"] == "./" and m["background_color"] == "#060a13"
         assert {i["sizes"] for i in m["icons"]} == {"180x180", "512x512"}
         for i in m["icons"]:
             assert not i["src"].startswith("/") and (dossier / i["src"]).resolve().exists()
-    assert FR["manifeste.nom"] == "Delta — veille IA"
+    assert FR["manifeste.nom"] == "ORQYRA AI — veille IA"
 
 
 def test_voyant_agent_prend_le_passage_le_plus_ancien():

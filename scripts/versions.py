@@ -18,7 +18,7 @@ Dernière version publiée : seulement si une source de Delta la fournit (état,
 claude-code-changelog pour Claude Code, codex-cli-releases pour Codex CLI. Pour l'app de bureau ChatGPT, la version la
 plus haute est lue directement dans le flux de la source openai-changelog-codex-app (champ `version`, même analyseur
 que la source) ; ses versions « 26.908 » suivent la numérotation du paquet `chatgpt` 26.917.x (correspondance déduite).
-Aucune source de Delta ne publie les versions de Claude Desktop : statut `inconnu`.
+Aucune source d'ORQYRA AI ne publie les versions de Claude Desktop : statut `inconnu`.
 """
 
 from __future__ import annotations
@@ -216,13 +216,13 @@ def detecter(racine: Path, client=None) -> list[dict]:
           note="CLI autonome utilisée par Sylvain [déclaré] (session tmux en remote control depuis le 02/10/2026), mise à jour par npm "
                "et non avec l'app : un retard ne se rattrape pas tout seul. "
                + (f"Comparée à la dernière stable publiée {stables_cli[-1]}." if stables_cli else
-                  "Aucune stable publiée connue de Delta : pas de comparaison."))
+                  "Aucune stable publiée connue d'ORQYRA AI : pas de comparaison."))
     app, raison_app = versions_app_chatgpt(racine, client)
     ligne("ChatGPT Desktop", paquet_chatgpt, app, "openai-changelog-codex-app", composantes=2,
           note=note_app(paquet_chatgpt, app),
           raison_source=raison_app)
     ligne("Claude Desktop", paquet_dpkg("claude-desktop"), [], None,
-          note="Aucune source de Delta ne publie les versions de Claude Desktop.")
+          note="Aucune source d'ORQYRA AI ne publie les versions de Claude Desktop.")
     return res
 
 
