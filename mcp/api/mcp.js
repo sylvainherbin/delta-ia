@@ -694,7 +694,7 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
       return ok(id, { tools: Object.entries(outils(ctx.langue, ctx.source)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
-      const o = Object.hasOwn(SCHEMAS, params.name) ? SCHEMAS[params.name] : null;
+      const o = typeof params.name === "string" && Object.hasOwn(SCHEMAS, params.name) ? SCHEMAS[params.name] : null;
       if (!o) return erreur(id, -32602, t(ctx.langue, "rpc.outil_inconnu", { nom: params.name }));
       const { langue, ...args } = params.arguments || {};
       let c = ctx;

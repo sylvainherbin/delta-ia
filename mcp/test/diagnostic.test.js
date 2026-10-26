@@ -47,8 +47,8 @@ test("diagnostic : erreur de lecture contrôlée, erreur interne et succès rest
 });
 
 test("tools/call : les noms hérités du prototype sont des outils inconnus", async () => {
-  for (const nom of ["__proto__", "constructor", "toString"]) {
+  for (const nom of ["__proto__", "constructor", "toString", { toString: 1 }, null, ["chercher_reference"]]) {
     const r = await traiter(appel({}, nom));
-    assert.equal(r.error?.code, -32602, nom);
+    assert.equal(r.error?.code, -32602, JSON.stringify(nom));
   }
 });
