@@ -15,8 +15,8 @@ def test_format_ligne():
 
 def test_cause_journalisee_et_sans_separateur():
     t = passages.ligne("orchestrateur", "delta", 0, 0, "aucun", 0,
-                       quand=datetime(2026, 10, 26, 4, 4), cause="aucun lot dû")
-    assert t.endswith(" | 0 | aucun lot dû")
+                       quand=datetime(2026, 10, 26, 4, 4), cause="saut: aucun lot dû")
+    assert t.endswith(" | 0 | saut: aucun lot dû")
     with pytest.raises(ValueError, match="cause"):
         passages.ligne("orchestrateur", "delta", 0, 0, "aucun", 0, cause="x | y")
 

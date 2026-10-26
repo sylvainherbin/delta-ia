@@ -7,7 +7,9 @@ jamais de réécriture ; il n'est pas commité (rapports/ est ignoré par git). 
     AAAA-MM-JJ_HHMM | agent | périmètre | <n> éléments (<n> fort) | <commit court ou aucun> | <code> | <cause>
 
 La date et l'heure sont celles de l'écriture (équivalent de `date +%Y-%m-%d_%H%M`). Le code garde sa position historique ;
-un motif lisible le suit, notamment pour expliquer les sauts normaux à code 0. Code 2 : argument invalide, rien n'est écrit.
+un motif lisible le suit. Contrat des sauts normaux : les codes internes 11, 12, 128 (« non lancée »), 129 et 130
+sont journalisés à 0 avec une cause commençant exactement par « saut: ». Une réussite réelle a une cause vide
+ou sans ce préfixe. Code 2 : argument invalide, rien n'est écrit.
 """
 
 from __future__ import annotations

@@ -52,7 +52,8 @@ la sortie d'étape. `mode = "abonnement"` restaure les commandes antérieures. L
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ou saut normal ; les codes internes 11 (quota Claude),
 12 (déjà fait), 128 (non lancée après un arrêt antérieur), 129 (aucun lot dû) et 130 (quota Codex épuisé) restent dans
-`Issue.code` mais la ligne de journal porte 0 et le motif dans sa dernière colonne. 10, 13, 14 ou 15 arrêtée par la garde ;
+`Issue.code` mais la ligne de journal porte 0 et une cause commençant exactement par `saut:` dans sa dernière colonne.
+Une réussite réelle a une cause vide ou sans ce préfixe. 10, 13, 14 ou 15 arrêtée par la garde ;
 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 0 est un avertissement (refus non
 fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
@@ -103,6 +104,10 @@ CODE_VALIDATION = 131    # l'étape a réussi mais `valider.py` échoue sur l'ar
 CODE_RESEAU = 132        # échec réseau persistant : relances épuisées ou interdites en fin de fenêtre (D122)
 CODE_INCOMPLET = 133     # code 0 de l'agent mais résultat incomplet ou contradictoire (arrêt avant la fin du skill, commit manquant)
 DELAI_VALIDATION_S = 300
+LONGUEUR_RAPPORT_SUPERVISION_MIN = 100
+MARQUEUR_REFUS_SUPERVISION = re.compile(
+    r"\b(?:je ne peux pas|je ne suis pas en mesure|je n[’']ai pas acc[eè]s|"
+    r"i cannot|i can[’']t|i(?: am|[’']m) unable to)\b", re.IGNORECASE)
 SIGNATURE_QUOTA_CODEX = re.compile(r"You[’']ve hit your usage limit", re.IGNORECASE)
 REPRISE_QUOTA_CODEX = re.compile(r"try again at ([^\r\n]*?)\.?\s*$", re.IGNORECASE | re.MULTILINE)
 CODES_RESEAU_CLAUDE = re.compile(r"ENOTFOUND|ECONNREFUSED|ETIMEDOUT|ECONNRESET|EAI_AGAIN")
@@ -506,16 +511,22 @@ def selection_auto_est_sortie(chemin: str) -> bool:
 
 
 def enregistrer_rapport_supervision(racine: Path, jour: date, debut: float, stdout: str) -> bool:
-    """Enregistre le texte de résultat JSON quand la supervision a répondu sans pouvoir écrire elle-même."""
+    """Récupère un résultat JSON sans is_error : au moins 100 caractères utiles, sans marqueur de refus manifeste."""
     try:
         doc = json.loads(stdout)
-        resultat = doc.get("result") if isinstance(doc, dict) else None
-        if doc.get("is_error") or not isinstance(resultat, str) or not resultat.strip():
+        if not isinstance(doc, dict) or doc.get("is_error"):
+            return False
+        resultat = doc.get("result")
+        if not isinstance(resultat, str):
+            return False
+        resultat = resultat.strip()
+        if (len(resultat) < LONGUEUR_RAPPORT_SUPERVISION_MIN
+                or MARQUEUR_REFUS_SUPERVISION.search(re.sub(r"\s+", " ", resultat))):
             return False
         horodatage = datetime.now().astimezone().strftime("%H%M")
         chemin = racine / "rapports" / f"{jour.isoformat()}_{horodatage}-supervision.md"
         chemin.parent.mkdir(parents=True, exist_ok=True)
-        chemin.write_text(resultat.strip() + "\n", encoding="utf-8")
+        chemin.write_text(resultat + "\n", encoding="utf-8")
         return chemin.stat().st_mtime >= debut
     except (OSError, ValueError, TypeError, AttributeError):
         return False
@@ -662,7 +673,8 @@ class Chaine:
 
     def _fin(self, etape: Etape, code: int, ok: bool, arret: bool, detail: str, commit: str = "aucun") -> Issue:
         code_journal = 0 if ok else code
-        journaliser(self.racine, etape.nom, commit, code_journal, detail)
+        saut = ok and code in (*CODES_GARDE_SAUTEE, CODE_NON_LANCEE, CODE_SANS_LOT, CODE_QUOTA_EPUISE)
+        journaliser(self.racine, etape.nom, commit, code_journal, f"saut: {detail}" if saut else detail)
         issue = Issue(etape.nom, code, ok, arret, detail, commit)
         self.issues.append(issue)
         return issue

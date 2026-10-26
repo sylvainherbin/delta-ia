@@ -19,6 +19,11 @@ import selection_auto
 from conftest import RACINE
 
 JOUR = date(2026, 10, 2)
+RAPPORT_SUPERVISION = (
+    "# Supervision du passage\n\n"
+    "Les étapes de veille ont été contrôlées : les commits attendus sont présents et poussés, "
+    "et le dépôt est propre. Des permissions ont été refusées puis récupérées ; aucun arrêt ne reste à traiter."
+)
 
 FAUX_AGENT = r'''
 import json, os, subprocess, sys, time
@@ -34,8 +39,8 @@ def ecrire(chemin, texte):
 
 REFUS = {"tool_name": "Bash", "tool_use_id": "t1", "tool_input": {"command": "for l in 1 2; do sed -n \"$l p\" f; done"}}
 
-def claude_ok(denials=()):
-    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "permission_denials": list(denials), "result": "ok"}))
+def claude_ok(denials=(), resultat="ok"):
+    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "permission_denials": list(denials), "result": resultat}))
 
 def passage(dossier, fichier, pousser=True, sujet=None):
     ecrire(f"{dossier}/{fichier}", f"{fichier}\n")
@@ -117,6 +122,8 @@ elif mode == "supervision":
     ecrire("rapports/supervision-lancee.txt", "oui\n"); ecrire("rapports/2026-10-02_0420-supervision.md", "# supervision\n"); claude_ok()
 elif mode == "supervision-muette":   # la supervision sort en code 0 sans écrire son rapport
     ecrire("rapports/supervision-lancee.txt", "oui\n"); claude_ok()
+elif mode == "supervision-reponse":
+    claude_ok(resultat=sys.argv[2])
 elif mode.startswith("supervision-refus"):
     ecrire(sys.argv[2], sys.argv[3])
     if mode == "supervision-refus-sale":
@@ -272,6 +279,7 @@ def test_chaine_reussie_toutes_les_etapes_dans_l_ordre(depot, cfg):
     # le commit de chaque étape est dans la ligne du journal, la sortie dans rapports/auto/
     lignes = {l[2]: l for l in journal(depot)}
     assert lignes["delta"][4] != "aucun" and lignes["supervision"][4] == "aucun"
+    assert all(not l[6].startswith("saut:") for l in lignes.values()), "les réussites réelles ne sont pas des sauts"
     assert (depot / "rapports" / "auto" / "2026-10-02-delta.log").exists()
 
 
@@ -309,7 +317,7 @@ def test_echec_simple_code_de_sortie_et_chaine_arretee(depot, cfg):
     assert chaine(depot, cfg, etapes).executer() == 1
     assert codes(depot)["delta"] == 3, "code de sortie de l'agent, arbre remis en place"
     assert codes(depot)["codex-delta"] == 0, "étape suivante sautée, la cause primaire reste sur delta"
-    assert "non lancée" in next(l for l in journal(depot) if l[2] == "codex-delta")[6]
+    assert next(l for l in journal(depot) if l[2] == "codex-delta")[6].startswith("saut: non lancée")
     assert ahead(depot) == 0 and not (depot / "docs/data/openai/z.json").exists()
     assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision est lancée même après un échec"
 
@@ -642,7 +650,8 @@ def test_quota_claude_saute_les_etapes_claude_et_pas_codex(depot, cfg):
               etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")]
     assert chaine(depot, cfg, etapes).executer() == 0, "une étape sautée par la garde (11) n'est pas un échec"
     assert codes(depot)["delta"] == 0 and codes(depot)["codex-delta"] == 0, "le quota saute l'étape Claude sans signaler un échec"
-    assert "quota Claude" in next(l for l in journal(depot) if l[2] == "delta")[6]
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    assert cause.startswith("saut:") and "quota Claude" in cause
     assert not (depot / "docs/data/claude/a.json").exists() and (depot / "docs/data/openai/b.json").exists()
 
 
@@ -661,7 +670,8 @@ def test_quota_codex_epuise_est_saute_130_et_la_chaine_continue(depot, cfg, mode
     assert codes(depot) == {"codex-delta": 0, "delta-kb": 0, "supervision": 0, "chaine": 0}
     assert (depot / "docs/data/kb/claude/k.json").exists(), "l'étape Claude suivante est lancée"
     issue = c.issues[0]
-    assert issue.ok and not issue.arret_chaine and orc.CODE_QUOTA_EPUISE == 130
+    assert issue.ok and not issue.arret_chaine and issue.code == orc.CODE_QUOTA_EPUISE == 130
+    assert next(l for l in journal(depot) if l[2] == "codex-delta")[6].startswith("saut:")
     if reprise:
         assert reprise in issue.detail
     else:
@@ -702,7 +712,7 @@ def test_passage_du_jour_deja_fait_est_saute_code_12(depot, cfg):
     e = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")
     assert chaine(depot, cfg, [e]).executer() == 0 and codes(depot)["codex-delta"] == 0
     ligne = next(l for l in journal(depot) if l[2] == "codex-delta")
-    assert "déjà fait" in ligne[6]
+    assert ligne[6].startswith("saut:") and "déjà fait" in ligne[6]
 
 
 # --- étapes kb ----------------------------------------------------------------------------------------------------
@@ -715,7 +725,7 @@ def test_etapes_kb_sautees_sans_lot_du_ligne_a_zero(depot, cfg):
     assert not (depot / "docs/data/kb/claude/c.json").exists()
     lignes = [l for l in journal(depot) if l[1] == "orchestrateur" and l[2] != "chaine"]
     assert all(l[3] == "0 éléments (0 fort)" and l[4] == "aucun" for l in lignes)
-    assert all("aucun lot dû" in l[6] for l in lignes)
+    assert all(l[6].startswith("saut: aucun lot dû") for l in lignes)
 
 
 def test_lots_dus_lit_la_vraie_base(depot):
@@ -887,6 +897,8 @@ def test_code_5_repli_unique_journal_et_environnement(depot, cfg):
     c = chaine(depot, cfg, [e])
     assert c.executer() == 0
     assert codes(depot) == {"delta-repli-abonnement": 0, "delta": 0, "chaine": 0}
+    lignes = {l[2]: l for l in journal(depot)}
+    assert all(not l[6].startswith("saut:") for l in lignes.values())
     assert (depot / "rapports/cle-vue.txt").read_text() == "cle"
     assert (depot / "rapports/abonnement-vu.txt").read_text() == "abonnement"
     assert "repli abonnement après code 5" in c.issues[0].detail
@@ -900,6 +912,9 @@ def test_repli_code_5_recontrole_quota_abonnement(depot, cfg):
     c = chaine(depot, cfg, [etape_cle_fausse(depot)])
     assert c.executer() == 0
     assert codes(depot) == {"delta-repli-abonnement": 0, "delta": 0, "chaine": 0}
+    lignes = {l[2]: l for l in journal(depot)}
+    assert lignes["delta"][6].startswith("saut:")
+    assert not lignes["delta-repli-abonnement"][6].startswith("saut:")
     assert not (depot / "rapports/abonnement-vu.txt").exists()
 
 
@@ -1707,10 +1722,47 @@ def test_passage_normal_reste_vert(depot, cfg):
 
 
 def test_supervision_sans_rapport_est_sauvee_depuis_la_reponse(depot, cfg):
-    c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-muette", supervision=True)])
+    c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-reponse", RAPPORT_SUPERVISION, supervision=True)])
     assert c.executer() == 0 and codes(depot)["supervision"] == 0
     rapports = list((depot / "rapports").glob("2026-10-02_*-supervision.md"))
-    assert len(rapports) == 1 and rapports[0].read_text().strip() == "ok"
+    assert len(rapports) == 1 and rapports[0].read_text().strip() == RAPPORT_SUPERVISION
+    assert all(not l[6].startswith("saut:") for l in journal(depot))
+
+
+def test_supervision_sans_rapport_est_un_echec_133(depot, cfg):
+    c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-muette", supervision=True)])
+    assert c.executer() == 1 and codes(depot) == {"supervision": 133, "chaine": 1}
+    assert not c.issues[0].ok and "aucun rapport de supervision" in c.issues[0].detail
+    assert not list((depot / "rapports").glob("*-supervision.md"))
+
+
+@pytest.mark.parametrize("refus", [
+    "Je ne peux pas effectuer cette supervision.",
+    "Je ne suis pas en mesure de produire ce rapport.",
+    "Je n’ai pas accès aux fichiers de supervision.",
+    "I cannot carry out this supervision.",
+    "I can't write the requested report.",
+    "I’m unable to perform this supervision.",
+])
+def test_supervision_reponse_de_refus_est_un_echec_133(depot, cfg, refus):
+    texte = refus + " Les données nécessaires restent indisponibles ; le contrôle des étapes et des commits n'a pas été effectué."
+    c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-reponse", texte, supervision=True)])
+    assert c.executer() == 1 and codes(depot) == {"supervision": 133, "chaine": 1}
+    assert not c.issues[0].ok and "aucun rapport de supervision" in c.issues[0].detail
+    assert not list((depot / "rapports").glob("*-supervision.md"))
+
+
+@pytest.mark.parametrize("sortie", [
+    "pas du JSON", "[]", "null", "{}",
+    json.dumps({"result": None}),
+    json.dumps({"result": [RAPPORT_SUPERVISION]}),
+    json.dumps({"result": " \n\t "}),
+    json.dumps({"result": "ok"}),
+    json.dumps({"is_error": True, "result": RAPPORT_SUPERVISION}),
+])
+def test_reponse_supervision_inexploitable_ne_cree_pas_de_rapport(tmp_path, sortie):
+    assert not orc.enregistrer_rapport_supervision(tmp_path, JOUR, time.time() - 1, sortie)
+    assert not (tmp_path / "rapports").exists()
 
 
 def test_nuls_malgre_nouveautes_ne_signale_que_la_contradiction(depot):
