@@ -10,7 +10,15 @@ import passages
 
 def test_format_ligne():
     t = passages.ligne("delta-ia", "claude", 3, 1, "abc1234", 0, quand=datetime(2026, 9, 29, 7, 5))
-    assert t == "2026-09-29_0705 | delta-ia | claude | 3 éléments (1 fort) | abc1234 | 0"
+    assert t == "2026-09-29_0705 | delta-ia | claude | 3 éléments (1 fort) | abc1234 | 0 | "
+
+
+def test_cause_journalisee_et_sans_separateur():
+    t = passages.ligne("orchestrateur", "delta", 0, 0, "aucun", 0,
+                       quand=datetime(2026, 10, 26, 4, 4), cause="aucun lot dû")
+    assert t.endswith(" | 0 | aucun lot dû")
+    with pytest.raises(ValueError, match="cause"):
+        passages.ligne("orchestrateur", "delta", 0, 0, "aucun", 0, cause="x | y")
 
 
 def test_ajout_sans_reecriture(tmp_path, capsys):
@@ -20,11 +28,11 @@ def test_ajout_sans_reecriture(tmp_path, capsys):
     assert passages.main(["--racine", str(tmp_path), "--agent", "delta-ia", "--perimetre", "claude",
                           "--elements", "2", "--forts", "0", "--commit", "aucun", "--garde", "12"]) == 0
     assert passages.main(["--racine", str(tmp_path), "--agent", "codex", "--perimetre", "openai",
-                          "--elements", "1", "--forts", "1", "--commit", "0123abcd"]) == 0
+                          "--elements", "1", "--forts", "1", "--commit", "0123abcd", "--cause", "passage réussi"]) == 0
     lignes = f.read_text(encoding="utf-8").splitlines()
     assert lignes[0] == "ligne ancienne" and len(lignes) == 3
-    assert lignes[1].endswith(" | delta-ia | claude | 2 éléments (0 fort) | aucun | 12")
-    assert lignes[2].endswith(" | codex | openai | 1 éléments (1 fort) | 0123abcd | 0")
+    assert lignes[1].endswith(" | delta-ia | claude | 2 éléments (0 fort) | aucun | 12 | ")
+    assert lignes[2].endswith(" | codex | openai | 1 éléments (1 fort) | 0123abcd | 0 | passage réussi")
     assert capsys.readouterr().out.splitlines()[-1] == lignes[2]
 
 

@@ -216,6 +216,17 @@ def test_passage_deja_fait(racine, capsys):
     assert code == garde.CODE_DEJA_FAIT == 12 and "déjà fait" in out
 
 
+def test_garde_lit_le_code_historique_avec_une_colonne_cause():
+    from tempfile import TemporaryDirectory
+
+    with TemporaryDirectory() as d:
+        racine = Path(d)
+        rapport = racine / "rapports" / "passages.log"
+        rapport.parent.mkdir()
+        rapport.write_text("2026-09-25_0800 | orchestrateur | delta | 0 éléments (0 fort) | aucun | 133 | rapport absent\n")
+        assert garde.dernier_code_orchestrateur(racine, "delta", J) == 133
+
+
 def test_fichier_du_jour_d_une_autre_date(racine, capsys):
     quotidien(racine, "2026-09-20T10:00:00+00:00")
     assert lancer(racine, capsys)[0] == 0

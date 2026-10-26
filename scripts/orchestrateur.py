@@ -9,7 +9,7 @@ Chaîne, dans l'ordre, chaque étape ne démarrant qu'à la fin de la précéden
 Pour chaque étape, sans aucun LLM :
 1. garde `scripts/garde.py --etape <étape>` : code 11 (quota Claude) ou 12 (déjà fait) = étape sautée, la chaîne continue ;
    10, 13, 14, 15 ou toute autre erreur = la chaîne s'arrête (la supervision reste lancée) ;
-2. étapes kb : sautées (code 129) quand aucun lot n'est dû ;
+2. étapes kb : sautées (code interne 129) quand aucun lot n'est dû ;
 3. lancement dans son propre groupe de processus, sous délai maximal ; dépassement ou échec : SIGTERM puis SIGKILL sur tout le
    groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`) ;
 4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Le code 0 ne
@@ -50,8 +50,10 @@ Le code 5 déclenche un repli unique sur la commande abonnement, seulement si le
 réactive les quotas abonnement. L'événement `<étape>-repli-abonnement`, code 5, est ajouté au journal, avec le détail dans
 la sortie d'étape. `mode = "abonnement"` restaure les commandes antérieures. Les skills restent lues par leur chemin explicite.
 
-Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ; 10 à 15 arrêtée par la garde (11 quota Claude, 12 déjà
-fait : sautée) ; 124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 125 est un avertissement (refus non
+Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ou saut normal ; les codes internes 11 (quota Claude),
+12 (déjà fait), 128 (non lancée après un arrêt antérieur), 129 (aucun lot dû) et 130 (quota Codex épuisé) restent dans
+`Issue.code` mais la ligne de journal porte 0 et le motif dans sa dernière colonne. 10, 13, 14 ou 15 arrêtée par la garde ;
+124 délai dépassé ; 125 permission refusée (Claude), fatale ; la ligne `<étape>-refus` à 0 est un avertissement (refus non
 fatal, étape réussie avec ses commits poussés ou son rapport de supervision écrit pendant l'étape) ;
 126 état final non conforme (arbre sale, `.git/index.lock`, hooks ou config git modifiés) ;
 127 binaire introuvable ; 128 non lancée (chaîne arrêtée plus tôt) ; 129 sautée, aucun lot dû ;
@@ -466,8 +468,57 @@ def ecrire_sortie(racine: Path, cfg: dict, jour: date, etape: Etape, res: Result
     return f
 
 
-def journaliser(racine: Path, perimetre: str, commit: str, code: int) -> None:
-    passages.ajouter(racine, passages.ligne(AGENT_JOURNAL, perimetre, 0, 0, commit, code))
+def journaliser(racine: Path, perimetre: str, commit: str, code: int, cause: str = "") -> None:
+    cause = re.sub(r"[|\r\n]+", " ", cause).strip()
+    passages.ajouter(racine, passages.ligne(AGENT_JOURNAL, perimetre, 0, 0, commit, code, cause=cause))
+
+
+def publier_selection_en_attente(racine: Path, jour: date) -> str | None:
+    """Publie avant les passages les seules sorties de sélection déjà créées mais encore non publiées.
+
+    Le minuteur de sélection peut avoir écrit les deux rapports hebdomadaires avant que la chaîne ne prenne
+    son verrou. Les publier ici évite qu'ils soient pris pour des écritures étrangères par le contrôle 126.
+    Toute autre modification continue de faire échouer le contrôle strict de `selection_auto`.
+    """
+    import selection_auto
+
+    if not (racine / ".git").exists():  # appels unitaires du capteur hors dépôt Git
+        return None
+    try:
+        changements = selection_auto.chemins_git(racine, "diff", "--name-only")
+        changements |= selection_auto.chemins_git(racine, "diff", "--cached", "--name-only")
+        changements |= selection_auto.chemins_git(racine, "ls-files", "--others", "--exclude-standard")
+    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+        return f"sélection hebdomadaire en attente non vérifiable ({type(exc).__name__})"
+    if not changements:
+        return None
+    if any(not selection_auto_est_sortie(p) for p in changements):
+        return None  # l'étape ordinaire qualifiera l'arbre sale, sans publier un changement étranger
+    try:
+        selection_auto.publier(racine, jour)
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+        return f"publication de la sélection hebdomadaire impossible ({type(exc).__name__})"
+    return None
+
+
+def selection_auto_est_sortie(chemin: str) -> bool:
+    return re.fullmatch(r"rapports/selection/[0-9]{4}-W[0-9]{2}\.(?:json|md)", chemin) is not None
+
+
+def enregistrer_rapport_supervision(racine: Path, jour: date, debut: float, stdout: str) -> bool:
+    """Enregistre le texte de résultat JSON quand la supervision a répondu sans pouvoir écrire elle-même."""
+    try:
+        doc = json.loads(stdout)
+        resultat = doc.get("result") if isinstance(doc, dict) else None
+        if doc.get("is_error") or not isinstance(resultat, str) or not resultat.strip():
+            return False
+        horodatage = datetime.now().astimezone().strftime("%H%M")
+        chemin = racine / "rapports" / f"{jour.isoformat()}_{horodatage}-supervision.md"
+        chemin.parent.mkdir(parents=True, exist_ok=True)
+        chemin.write_text(resultat.strip() + "\n", encoding="utf-8")
+        return chemin.stat().st_mtime >= debut
+    except (OSError, ValueError, TypeError, AttributeError):
+        return False
 
 
 def rapport_supervision_ecrit(racine: Path, jour: date, debut: float) -> bool:
@@ -610,7 +661,8 @@ class Chaine:
         self.issues: list[Issue] = []
 
     def _fin(self, etape: Etape, code: int, ok: bool, arret: bool, detail: str, commit: str = "aucun") -> Issue:
-        journaliser(self.racine, etape.nom, commit, code)
+        code_journal = 0 if ok else code
+        journaliser(self.racine, etape.nom, commit, code_journal, detail)
         issue = Issue(etape.nom, code, ok, arret, detail, commit)
         self.issues.append(issue)
         return issue
@@ -653,7 +705,7 @@ class Chaine:
                     return res, code, "code 5 : repli abonnement refusé, résultat ou dépôt déjà modifié"
                 repli = "repli abonnement après code 5 de claude-cle"
                 ecrire_sortie(self.racine, self.cfg, self.jour, etape, res, 5, repli, [])
-                journaliser(self.racine, f"{etape.nom}-repli-abonnement", "aucun", 5)
+                journaliser(self.racine, f"{etape.nom}-repli-abonnement", "aucun", 0, "repli abonnement après code 5 de claude-cle")
                 etape = replace(etape, commande=etape.commande_abonnement, commande_abonnement=[])
                 env["DELTA_CLAUDE_MODE"] = "abonnement"
                 if etape.garde:
@@ -690,7 +742,7 @@ class Chaine:
         if etape.garde:
             code, motif = garde(racine, etape, self.jour, env)
             if code in CODES_GARDE_SAUTEE:
-                return self._fin(etape, code, True, False, f"sautée par la garde (code {code}) : {motif}")
+                return self._fin(etape, code, True, False, f"sautée par la garde : {motif}")
             if code != 0:
                 return self._fin(etape, code, False, True, f"arrêtée par la garde (code {code}) : {motif}")
         if etape.kb and self.compte_lots(racine, etape.kb) == 0:
@@ -703,6 +755,8 @@ class Chaine:
         if res.garde_abonnement and code in CODES_GARDE_SAUTEE:  # garde abonnement, sans lancement de l'agent
             ecrire_sortie(racine, self.cfg, self.jour, etape, res, code, detail, [], version)
             return self._fin(etape, code, True, False, detail)
+        if etape.supervision and code == 0 and not refus_permission(res) and not rapport_supervision_ecrit(racine, self.jour, debut):
+            enregistrer_rapport_supervision(racine, self.jour, debut, res.stdout)
         refus = refus_permission(res) if etape.agent == "claude" else []
         if refus and code != 0:  # étape déjà en échec : le refus s'ajoute à la cause, il reste fatal
             detail = f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(refus[:5]) + f" ; {detail}"
@@ -770,7 +824,8 @@ class Chaine:
         apres = tete_courte(racine)
         issue = self._fin(etape, code, code in (0, CODE_QUOTA_EPUISE), stop, detail, apres if apres != avant else "aucun")
         if avertissement and code == 0:  # avertissement journalisé : la supervision le relève, la chaîne continue
-            journaliser(racine, f"{etape.nom}-refus", "aucun", CODE_PERMISSION)
+            journaliser(racine, f"{etape.nom}-refus", "aucun", 0,
+                        "permission refusée, résultat conforme et dépôt propre")
         return issue
 
     def releve_x(self) -> None:
@@ -791,11 +846,12 @@ class Chaine:
             code = res.returncode
         except Exception:   # y compris le délai : le passage continue sans la liste X
             code = 124
-        journaliser(self.racine, "capteur-x", "aucun", code)
+        journaliser(self.racine, "capteur-x", "aucun", code,
+                    "relevé réussi" if code == 0 else f"processus de relevé en échec (code {code})")
         if code == 0:
             publication, commit, message = capteur_x.publier_ids(self.racine)
             print(f"capteur X : {message}", flush=True)
-            journaliser(self.racine, "capteur-x-publication", commit, publication)
+            journaliser(self.racine, "capteur-x-publication", commit, publication, message)
 
     def purge_x(self) -> None:
         """Fin de chaîne : purge du texte dans raw/ ; les seuls IDs publics restent (décisions des 22 et 23/10/2026)."""
@@ -803,9 +859,12 @@ class Chaine:
             try:
                 capteur_x.purger(self.racine)
             except Exception:
-                journaliser(self.racine, "capteur-x-purge", "aucun", 1)
+                journaliser(self.racine, "capteur-x-purge", "aucun", 1, "purge du texte X impossible")
 
     def executer(self) -> int:
+        erreur_selection = publier_selection_en_attente(self.racine, self.jour)
+        if erreur_selection:
+            journaliser(self.racine, "selection-publication", "aucun", 1, erreur_selection)
         self.releve_x()
         arret_par: str | None = None
         for etape in [e for e in self.etapes if not e.supervision]:
@@ -819,7 +878,8 @@ class Chaine:
             self.executer_etape(etape)
         self.purge_x()
         echec = any(not i.ok for i in self.issues)
-        journaliser(self.racine, "chaine", "aucun", 1 if echec else 0)
+        journaliser(self.racine, "chaine", "aucun", 1 if echec else 0,
+                    "au moins une étape en échec" if echec else "toutes les étapes terminées sans échec")
         return 1 if echec else 0
 
 

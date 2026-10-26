@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 import orchestrateur as orc
+import selection_auto
 from conftest import RACINE
 
 JOUR = date(2026, 10, 2)
@@ -211,6 +212,31 @@ def chaine(depot, cfg, etapes, **kw):
     return orc.Chaine(depot, cfg, etapes, jour=JOUR, **kw)
 
 
+def test_sorties_selection_en_attente_sont_publiees_avant_la_chaine(depot, monkeypatch):
+    (depot / ".gitignore").write_text("rapports/*\n!rapports/selection/\nrapports/selection/*\n"
+                                       "!rapports/selection/*.json\n!rapports/selection/*.md\n"
+                                       "raw/\n__pycache__/\n.venv/\n")
+    depot.sh("git", "add", ".gitignore")
+    depot.sh("git", "commit", "-qm", "suivre les sorties de sélection")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    selection = depot / "rapports" / "selection"
+    selection.mkdir(parents=True)
+    fichiers = [selection / "2026-W40.json", selection / "2026-W40.md"]
+    for f in fichiers:
+        f.write_text("sortie en attente\n")
+    appels = []
+
+    def publier(racine, jour):
+        appels.append((racine, jour))
+        for f in fichiers:
+            f.unlink()
+
+    monkeypatch.setattr(selection_auto, "publier", publier)
+    assert orc.publier_selection_en_attente(depot, JOUR) is None
+    assert appels == [(depot, JOUR)]
+    assert not depot.sh("git", "status", "--porcelain").stdout
+
+
 def journal(depot):
     f = depot / "rapports" / "passages.log"
     return [l.split(" | ") for l in f.read_text(encoding="utf-8").splitlines()] if f.exists() else []
@@ -282,7 +308,8 @@ def test_echec_simple_code_de_sortie_et_chaine_arretee(depot, cfg):
     etapes = [e1, e2, etape(depot, "supervision", "supervision", supervision=True)]
     assert chaine(depot, cfg, etapes).executer() == 1
     assert codes(depot)["delta"] == 3, "code de sortie de l'agent, arbre remis en place"
-    assert codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE, "chaîne arrêtée : étape suivante non lancée"
+    assert codes(depot)["codex-delta"] == 0, "étape suivante sautée, la cause primaire reste sur delta"
+    assert "non lancée" in next(l for l in journal(depot) if l[2] == "codex-delta")[6]
     assert ahead(depot) == 0 and not (depot / "docs/data/openai/z.json").exists()
     assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision est lancée même après un échec"
 
@@ -356,7 +383,7 @@ def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fich
         (depot / ".git" / "hooks" / "pre-push").write_text("#!/bin/sh\n")  # hook préexistant
     assert chaine_deux_etapes_puis_supervision(depot, cfg, mode) == 1
     assert codes(depot)["delta"] == orc.CODE_ETAT == 126
-    assert codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE, "la chaîne s'arrête"
+    assert codes(depot)["codex-delta"] == 0, "la chaîne s'arrête sur delta"
     assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
     log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
     assert "hooks ou config git modifiés" in log and fichier in log and "rien n'est rétabli" in log
@@ -444,7 +471,8 @@ def test_refus_supervision_avec_rapport_ecrit_pendant_etape_est_un_avertissement
         os.utime(rapport, (ancien, ancien))
     e = etape(depot, "supervision", "supervision-refus", str(rapport), "RAS\n", supervision=True)
     assert chaine(depot, cfg, [e]).executer() == 0
-    assert codes(depot) == {"supervision": 0, "supervision-refus": 125, "chaine": 0}
+    assert codes(depot) == {"supervision": 0, "supervision-refus": 0, "chaine": 0}
+    assert "permission refusée, résultat conforme" in next(l for l in journal(depot) if l[2] == "supervision-refus")[6]
     assert [l[2] for l in journal(depot)] == ["supervision", "supervision-refus", "chaine"]
     assert all(l[4] == "aucun" for l in journal(depot)), "la supervision ne commite jamais"
     assert rapport.read_text() == "RAS\n"
@@ -506,7 +534,8 @@ def test_refus_sans_commit_reste_fatal_code_125(depot, cfg):
 def test_refus_avec_commit_attendu_pousse_est_un_avertissement(depot, cfg):
     e = etape(depot, "delta", "refus-commit", "docs/data/claude", "a.json", attendus=ATTENDUS)
     assert chaine(depot, cfg, [e, etape(depot, "supervision", "supervision", supervision=True)]).executer() == 0
-    assert codes(depot) == {"delta": 0, "delta-refus": 125, "supervision": 0, "chaine": 0}, "ligne d'avertissement, chaîne sans échec"
+    assert codes(depot) == {"delta": 0, "delta-refus": 0, "supervision": 0, "chaine": 0}, "ligne d'avertissement, chaîne sans échec"
+    assert "permission refusée, résultat conforme" in next(l for l in journal(depot) if l[2] == "delta-refus")[6]
     lignes = {l[2]: l for l in journal(depot)}
     assert lignes["delta"][4] != "aucun" and lignes["delta-refus"][4] == "aucun"
     log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
@@ -579,7 +608,7 @@ def test_commit_non_pousse_arrete_la_chaine_code_15(depot, cfg):
               etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta"),
               etape(depot, "supervision", "supervision", supervision=True)]
     assert chaine(depot, cfg, etapes).executer() == 1
-    assert codes(depot)["delta"] == 15 and codes(depot)["codex-delta"] == orc.CODE_NON_LANCEE
+    assert codes(depot)["delta"] == 15 and codes(depot)["codex-delta"] == 0
     assert ahead(depot) == 1, "l'orchestrateur ne pousse jamais : le commit reste local"
     assert (depot / "rapports" / "supervision-lancee.txt").exists()
 
@@ -612,7 +641,8 @@ def test_quota_claude_saute_les_etapes_claude_et_pas_codex(depot, cfg):
     etapes = [etape(depot, "delta", "ok", "docs/data/claude", "a.json"),
               etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")]
     assert chaine(depot, cfg, etapes).executer() == 0, "une étape sautée par la garde (11) n'est pas un échec"
-    assert codes(depot)["delta"] == 11 and codes(depot)["codex-delta"] == 0, "aucun arrêt Codex sur seuil, même à 100 %"
+    assert codes(depot)["delta"] == 0 and codes(depot)["codex-delta"] == 0, "le quota saute l'étape Claude sans signaler un échec"
+    assert "quota Claude" in next(l for l in journal(depot) if l[2] == "delta")[6]
     assert not (depot / "docs/data/claude/a.json").exists() and (depot / "docs/data/openai/b.json").exists()
 
 
@@ -628,7 +658,7 @@ def codex_puis_claude(depot, mode_codex, mode_claude="ok"):
 def test_quota_codex_epuise_est_saute_130_et_la_chaine_continue(depot, cfg, mode, reprise):
     c = chaine(depot, cfg, codex_puis_claude(depot, mode))
     assert c.executer() == 0
-    assert codes(depot) == {"codex-delta": orc.CODE_QUOTA_EPUISE, "delta-kb": 0, "supervision": 0, "chaine": 0}
+    assert codes(depot) == {"codex-delta": 0, "delta-kb": 0, "supervision": 0, "chaine": 0}
     assert (depot / "docs/data/kb/claude/k.json").exists(), "l'étape Claude suivante est lancée"
     issue = c.issues[0]
     assert issue.ok and not issue.arret_chaine and orc.CODE_QUOTA_EPUISE == 130
@@ -643,14 +673,14 @@ def test_quota_codex_epuise_est_saute_130_et_la_chaine_continue(depot, cfg, mode
 def test_quota_codex_avec_arbre_sale_ou_commit_en_avance_reste_un_echec(depot, cfg, mode, code):
     assert chaine(depot, cfg, codex_puis_claude(depot, mode)).executer() == 1
     c = codes(depot)
-    assert c["codex-delta"] == code and c["delta-kb"] == orc.CODE_NON_LANCEE and c["chaine"] == 1
+    assert c["codex-delta"] == code and c["delta-kb"] == 0 and c["chaine"] == 1
 
 
 def test_texte_de_quota_sur_une_etape_claude_n_est_pas_concerne(depot, cfg):
     etapes = [etape(depot, "delta", "quota", garde=None), etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
               etape(depot, "supervision", "supervision", supervision=True)]
     assert chaine(depot, cfg, etapes).executer() == 1
-    assert codes(depot)["delta"] == 1 and codes(depot)["delta-kb"] == orc.CODE_NON_LANCEE
+    assert codes(depot)["delta"] == 1 and codes(depot)["delta-kb"] == 0
 
 
 def test_codex_en_echec_sans_message_de_quota_arrete_la_chaine(depot, cfg):
@@ -660,7 +690,7 @@ def test_codex_en_echec_sans_message_de_quota_arrete_la_chaine(depot, cfg):
               etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "k.json", garde=None),
               etape(depot, "supervision", "supervision", supervision=True)]
     assert chaine(depot, cfg, etapes).executer() == 1
-    assert codes(depot)["codex-delta"] == 3 and codes(depot)["delta-kb"] == orc.CODE_NON_LANCEE
+    assert codes(depot)["codex-delta"] == 3 and codes(depot)["delta-kb"] == 0
 
 
 def test_passage_du_jour_deja_fait_est_saute_code_12(depot, cfg):
@@ -670,7 +700,9 @@ def test_passage_du_jour_deja_fait_est_saute_code_12(depot, cfg):
     depot.sh("git", "commit", "-qm", "openai du jour")
     depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
     e = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "b.json", agent="codex", garde="codex-delta")
-    assert chaine(depot, cfg, [e]).executer() == 0 and codes(depot)["codex-delta"] == 12
+    assert chaine(depot, cfg, [e]).executer() == 0 and codes(depot)["codex-delta"] == 0
+    ligne = next(l for l in journal(depot) if l[2] == "codex-delta")
+    assert "déjà fait" in ligne[6]
 
 
 # --- étapes kb ----------------------------------------------------------------------------------------------------
@@ -679,10 +711,11 @@ def test_etapes_kb_sautees_sans_lot_du_ligne_a_zero(depot, cfg):
     etapes = [etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"),
               etape(depot, "codex-delta-kb", "ok-codex", "docs/data/kb/openai", "d.json", agent="codex", garde="codex-delta-kb", kb="openai")]
     assert chaine(depot, cfg, etapes, compte_lots=lambda r, p: 0).executer() == 0
-    assert codes(depot) == {"delta-kb": orc.CODE_SANS_LOT, "codex-delta-kb": orc.CODE_SANS_LOT, "chaine": 0}
+    assert codes(depot) == {"delta-kb": 0, "codex-delta-kb": 0, "chaine": 0}
     assert not (depot / "docs/data/kb/claude/c.json").exists()
     lignes = [l for l in journal(depot) if l[1] == "orchestrateur" and l[2] != "chaine"]
     assert all(l[3] == "0 éléments (0 fort)" and l[4] == "aucun" for l in lignes)
+    assert all("aucun lot dû" in l[6] for l in lignes)
 
 
 def test_lots_dus_lit_la_vraie_base(depot):
@@ -701,7 +734,7 @@ def test_journal_format_et_ajout_seulement(depot, cfg):
     assert lignes[0] == "2026-10-01_0707 | delta-ia | claude | 1 éléments (0 fort) | 6876aea | 0", "jamais réécrit"
     for l in lignes[1:]:
         champs = l.split(" | ")
-        assert len(champs) == 6 and champs[1] == "orchestrateur" and champs[3] == "0 éléments (0 fort)"
+        assert len(champs) == 7 and champs[1] == "orchestrateur" and champs[3] == "0 éléments (0 fort)"
     assert [l.split(" | ")[2] for l in lignes[1:]] == ["delta", "chaine"]
 
 
@@ -853,7 +886,7 @@ def test_code_5_repli_unique_journal_et_environnement(depot, cfg):
     e = etape_cle_fausse(depot)
     c = chaine(depot, cfg, [e])
     assert c.executer() == 0
-    assert codes(depot) == {"delta-repli-abonnement": 5, "delta": 0, "chaine": 0}
+    assert codes(depot) == {"delta-repli-abonnement": 0, "delta": 0, "chaine": 0}
     assert (depot / "rapports/cle-vue.txt").read_text() == "cle"
     assert (depot / "rapports/abonnement-vu.txt").read_text() == "abonnement"
     assert "repli abonnement après code 5" in c.issues[0].detail
@@ -866,7 +899,7 @@ def test_repli_code_5_recontrole_quota_abonnement(depot, cfg):
     (depot / "rapports/usage.json").write_text(json.dumps({"claude": {"session_5h": {"pct": 100}, "semaine": {"pct": 100}}}))
     c = chaine(depot, cfg, [etape_cle_fausse(depot)])
     assert c.executer() == 0
-    assert codes(depot) == {"delta-repli-abonnement": 5, "delta": 11, "chaine": 0}
+    assert codes(depot) == {"delta-repli-abonnement": 0, "delta": 0, "chaine": 0}
     assert not (depot / "rapports/abonnement-vu.txt").exists()
 
 
@@ -897,7 +930,7 @@ def test_supervision_repli_code_5_sans_garde(depot, cfg):
     e.nom, e.supervision, e.garde = "supervision", True, None
     e.commande_abonnement = [sys.executable, str(depot.faux), "supervision"]
     assert chaine(depot, cfg, [e]).executer() == 0
-    assert codes(depot) == {"supervision-repli-abonnement": 5, "supervision": 0, "chaine": 0}
+    assert codes(depot) == {"supervision-repli-abonnement": 0, "supervision": 0, "chaine": 0}
 
 
 def test_mode_et_identifiants_api_du_parent_ne_sont_pas_herites(cfg, monkeypatch):
@@ -1319,7 +1352,7 @@ def test_valider_n_est_pas_relance_apres_un_echec_ou_une_etape_sautee(depot, cfg
     (depot / "rapports" / "passages.log").unlink()
     sans_lot = avec_valider(etape(depot, "delta-kb", "ok", "docs/data/kb/claude", "c.json", garde="delta-kb", kb="claude"), kb=True)
     assert chaine(depot, cfg, [sans_lot], compte_lots=lambda r, p: 0).executer() == 0
-    assert codes(depot)["delta-kb"] == 129 and faux_valider() == []
+    assert codes(depot)["delta-kb"] == 0 and faux_valider() == []
 
 
 def test_commande_valider_est_seule_sans_tube_et_acceptee_par_le_vrai_valider(tmp_path):
@@ -1442,7 +1475,7 @@ def test_trois_echecs_de_relance_puis_abandon_code_132(depot, cfg):
     c.etapes.insert(1, suite)
     assert c.executer() == 1
     assert tentatives(compteur) == 4, "la tentative initiale et trois relances, pas une de plus"
-    assert orc.CODE_RESEAU == 132 and codes(depot) == {"delta": 132, "codex-delta": orc.CODE_NON_LANCEE, "supervision": 0, "chaine": 1}
+    assert orc.CODE_RESEAU == 132 and codes(depot) == {"delta": 132, "codex-delta": 0, "supervision": 0, "chaine": 1}
     assert "abandonnée après 4 tentatives (ENOTFOUND)" in c.issues[0].detail and c.issues[0].arret_chaine
     assert (depot / DOSSIER_CLAUDE / "index.json").read_text() == "{}\n" and not depot.sh("git", "status", "--porcelain").stdout
     log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text(encoding="utf-8")
@@ -1673,9 +1706,11 @@ def test_passage_normal_reste_vert(depot, cfg):
     assert c.issues[0].ok and c.issues[0].commit != "aucun"
 
 
-def test_supervision_sans_rapport_est_un_echec_133(depot, cfg):
+def test_supervision_sans_rapport_est_sauvee_depuis_la_reponse(depot, cfg):
     c = chaine(depot, cfg, [etape(depot, "supervision", "supervision-muette", supervision=True)])
-    assert c.executer() == 1 and codes(depot)["supervision"] == 133 and "aucun rapport de supervision" in c.issues[0].detail
+    assert c.executer() == 0 and codes(depot)["supervision"] == 0
+    rapports = list((depot / "rapports").glob("2026-10-02_*-supervision.md"))
+    assert len(rapports) == 1 and rapports[0].read_text().strip() == "ok"
 
 
 def test_nuls_malgre_nouveautes_ne_signale_que_la_contradiction(depot):

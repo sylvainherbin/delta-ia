@@ -137,7 +137,7 @@ def dernier_code_orchestrateur(racine: Path, etape: str, jour: date) -> int | No
     code = None
     for l in lignes:
         c = l.split(" | ")
-        if len(c) == 6 and c[0].startswith(jour.isoformat()) and c[1] == "orchestrateur" and c[2] == etape and c[5].strip().isdigit():
+        if len(c) >= 6 and c[0].startswith(jour.isoformat()) and c[1] == "orchestrateur" and c[2] == etape and c[5].strip().isdigit():
             code = int(c[5])
     return code
 
