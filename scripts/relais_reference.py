@@ -370,7 +370,7 @@ class Relais(BaseHTTPRequestHandler):
             self.deja.liberer(ident, reserve)
             minutes = -(-attente // 60)
             return self._repondre(429, {"ok": False, "etape": "plafond", "detail":
-                                        f"{self.limiteur.maxi} envois par heure déjà faits ; réessaie dans {minutes} min"},
+                                        f"{self.limiteur.maxi} envois par heure déjà faits ; réessayez dans {minutes} min"},
                                   {"Retry-After": str(attente)})
         r = remettre(self.idee, texte_idee(e))
         if r.get("ok") is not True:
