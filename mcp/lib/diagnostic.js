@@ -6,7 +6,8 @@ export const CAUSES_ERREURS = new Set([
 ]);
 
 export function causeErreur(e) {
-  if (!(e instanceof ErreurTexte)) return "interne";
+  // Le module partagé des modèles porte aussi une clé contrôlée, sans dépendre d'ErreurTexte.
+  if (typeof e?.cle !== "string") return "interne";
   const raison = e.cle === "lecture.message" && e.vars.raison instanceof ErreurTexte ? e.vars.raison : e;
   return CAUSES_ERREURS.has(raison.cle) ? raison.cle : "interne";
 }

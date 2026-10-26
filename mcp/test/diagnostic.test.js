@@ -31,8 +31,11 @@ test("diagnostic : erreur de lecture contrôlée, erreur interne et succès rest
   const journal = [];
   t.mock.method(console, "log", s => journal.push(JSON.parse(s)));
   const { ErreurTexte } = await import("../lib/textes.js");
+  const { ErreurModeles } = await import("../lib/modeles.js");
   for (const [erreur, attendu] of [
     [new ErreurTexte("couche.empreinte", { chemin: "prive" }), "couche.empreinte"],
+    [new ErreurTexte("lecture.message", { chemin: "prive", raison: new ErreurTexte("lecture.http", { statut: 503 }) }), "lecture.http"],
+    [new ErreurModeles("modeles.absent", { modele: "prive" }), "modeles.absent"],
     [new Error("prive"), "interne"],
   ]) {
     const ctx = { langue: "fr", source: "local", local: { blocDonnees() { throw erreur; } } };
