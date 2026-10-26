@@ -44,7 +44,7 @@ def test_cumul_de_la_semaine_et_de_la_precedente():
 def test_rapport_compare_et_signale_le_signal_prioritaire():
     texte = m.rapport(STATS, "2026-W41", AUJOURDHUI)
     compact = re.sub(r" +", " ", texte)
-    assert texte.splitlines()[0] == "Serveur MCP Delta — semaine 2026-W41 (05/10 au 11/10), comparée à 2026-W40"
+    assert texte.splitlines()[0] == "Serveur MCP ORQYRA AI — semaine 2026-W41 (05/10 au 11/10), comparée à 2026-W40"
     assert "Appels d'outils : 14 (préc. 7, +7)" in texte
     assert "chercher_reference 10 (préc. 4, +6)" in compact
     assert "resume_du_jour 0 (préc. 2, -2)" in compact
@@ -152,3 +152,33 @@ def test_main_refuse_une_semaine_mal_formee(capsys):
     with pytest.raises(SystemExit) as e:
         m.main(["--url", "https://h", "--semaine", "2026-41"], AUJOURDHUI)
     assert e.value.code == 2
+
+
+def test_audit_six_outils_et_causes_historiques_inconnues():
+    stats = {"statut": "ok", "genere_le": "2026-10-26T10:13:53.907Z", "jours": [
+        {"jour": "2026-10-25", "outils": {"chercher_reference": 186}, "erreurs": {"chercher_reference": 32},
+         "zero": {"chercher_reference": 11}, "causes_erreurs": {"chercher_reference/param.produit": 2}}
+    ]}
+    texte = m.rapport(stats, "2026-W43", date(2026, 10, 26))
+    outils = texte.split("Appels par outil :")[1].split("Recherches à zéro résultat")[0]
+    for outil in m.OUTILS:
+        assert re.search(rf"\b{outil}\s+\d+ \(préc\.", outils)
+    assert "cause instrumentée pour 2/32 ; cause historique inconnue pour 30" in texte
+    assert "2026-10-26T10:13:53.907Z" in texte
+    assert "ne mesure pas la pertinence" in texte
+
+
+def test_main_rejoue_un_instantane_sans_reseau(monkeypatch, tmp_path, capsys):
+    def interdit(*a, **k):
+        raise AssertionError("aucun réseau pour --fichier")
+    monkeypatch.setattr(m.requests, "get", interdit)
+    fichier = tmp_path / "stats.json"
+    fichier.write_text(FIXTURE.read_text(encoding="utf-8"), encoding="utf-8")
+    assert m.main(["--fichier", str(fichier), "--semaine", "2026-W41"], AUJOURDHUI) == 0
+    assert "Appels d'outils : 14" in capsys.readouterr().out
+    fichier.write_text("[]", encoding="utf-8")
+    assert m.main(["--fichier", str(fichier)], AUJOURDHUI) == 1
+    assert "structure inattendue" in capsys.readouterr().err
+    fichier.write_text("{", encoding="utf-8")
+    assert m.main(["--fichier", str(fichier)], AUJOURDHUI) == 1
+    assert "illisible" in capsys.readouterr().err

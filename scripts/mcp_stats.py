@@ -15,6 +15,7 @@ Code de sortie : 0 relevé imprimé, 1 compteur inactif, illisible ou injoignabl
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -25,7 +26,9 @@ import requests
 RACINE = Path(__file__).resolve().parent.parent
 DELAI = 20
 GROUPES = (("req", "Requêtes par méthode"), ("outils", "Appels par outil"),
-           ("zero", "Recherches à zéro résultat"), ("erreurs", "Erreurs"), ("clients", "Clients (initialize)"))
+           ("zero", "Recherches à zéro résultat"), ("erreurs", "Erreurs"), ("clients", "Clients (initialize)"),
+           ("causes_erreurs", "Causes des erreurs d'outil (codes sans arguments)"))
+OUTILS = ("resume_du_jour", "chercher_reference", "fiche_reference", "etat_versions", "a_tester", "nouveautes_base")
 # Champs `erreur:<nom>` qui sont la réponse -32601 du serveur à une méthode qu'il ne déclare pas (resources, prompts,
 # méthode inconnue) : pas une panne. `autre` vaut -32601 aussi pour les jours comptés avant 0.2.2, où une requête ou un
 # JSON invalide (-32600, -32700) y figurait ; depuis, ceux-ci sont comptés sous `invalide`.
@@ -50,7 +53,7 @@ def url_de_base(option: str | None, racine: Path = RACINE) -> str:
     except OSError:
         hote = None
     if not hote:
-        raise Indisponible("hôte du serveur MCP introuvable dans CONTEXTE.md : passe --url")
+        raise Indisponible("hôte du serveur MCP introuvable dans CONTEXTE.md : utilisez --url")
     return hote
 
 
@@ -132,7 +135,8 @@ def rapport(stats: dict, semaine: str, aujourdhui: date) -> str:
     precedent = lundi - timedelta(days=7)
     cette, avant = cumuler(stats, lundi), cumuler(stats, precedent)
     fin = lundi + timedelta(days=6)
-    lignes = [f"Serveur MCP Delta — semaine {semaine} ({lundi:%d/%m} au {fin:%d/%m}), comparée à {nom_semaine(precedent)}"]
+    lignes = [f"Serveur MCP ORQYRA AI — semaine {semaine} ({lundi:%d/%m} au {fin:%d/%m}), comparée à {nom_semaine(precedent)}",
+              f"Date du compteur (UTC) : {stats.get('genere_le') or 'inconnue'}"]
     if cette["jours_lus"] < 7 or avant["jours_lus"] < 7:
         lignes.append(f"! Jours absents de la réponse : {7 - cette['jours_lus']} sur la semaine, {7 - avant['jours_lus']} sur la précédente")
     if fin >= aujourdhui:
@@ -143,7 +147,8 @@ def rapport(stats: dict, semaine: str, aujourdhui: date) -> str:
         if g == "erreurs":
             lignes.extend(_erreurs(cette, avant))
             continue
-        cles = sorted(set(cette[g]) | set(avant[g]), key=lambda c: (-cette[g].get(c, 0), -avant[g].get(c, 0), c))
+        cles = sorted(set(cette[g]) | set(avant[g]) | (set(OUTILS) if g == "outils" else set()),
+                      key=lambda c: (-cette[g].get(c, 0), -avant[g].get(c, 0), c))
         lignes.append(f"{titre} :" + ("" if cles else " aucun"))
         for c in cles:
             lignes.append(f"  {c:<26} {_delta(cette[g].get(c, 0), avant[g].get(c, 0))}")
@@ -151,19 +156,33 @@ def rapport(stats: dict, semaine: str, aujourdhui: date) -> str:
     zero = cette["zero"].get("chercher_reference", 0)
     if recherches:
         lignes.append(f"Signal prioritaire D66 : chercher_reference sans résultat {zero} fois sur {recherches} ({round(100 * zero / recherches)} %)")
+        erreurs = cette["erreurs"].get("chercher_reference", 0)
+        expliquees = sum(n for c, n in cette["causes_erreurs"].items() if c.startswith("chercher_reference/"))
+        lignes.append(f"chercher_reference : {erreurs} erreurs ; cause instrumentée pour {expliquees}/{erreurs} ; "
+                      f"cause historique inconnue pour {max(0, erreurs - expliquees)}")
+    lignes.append("Le taux de zéro résultat ne mesure pas la pertinence : rejouez mcp/mesurer.js sur le corpus étiqueté.")
     return "\n".join(lignes)
 
 
 def main(argv: list[str] | None = None, aujourdhui: date | None = None) -> int:
-    p = argparse.ArgumentParser(description="Relevé hebdomadaire de l'usage du serveur MCP Delta (lecture de /stats).")
+    p = argparse.ArgumentParser(description="Relevé hebdomadaire de l'usage du serveur MCP ORQYRA AI (lecture de /stats).")
     p.add_argument("--semaine", help="semaine ISO AAAA-Www (défaut : la semaine écoulée)")
     p.add_argument("--url", help="URL de base du serveur MCP (défaut : lue dans CONTEXTE.md)")
+    p.add_argument("--fichier", type=Path, help="rejouer un instantané JSON de /stats, sans réseau")
     a = p.parse_args(argv)
     aujourdhui = aujourdhui or datetime.now(timezone.utc).date()
     try:
         semaine = a.semaine or semaine_ecoulee(aujourdhui)
         lundi = lundi_de(semaine)
-        stats = lire_stats(url_de_base(a.url), jours_a_lire(lundi, aujourdhui))
+        if a.fichier:
+            try:
+                stats = json.loads(a.fichier.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                raise Indisponible("instantané /stats illisible") from None
+            if not isinstance(stats, dict) or stats.get("statut") != "ok" or not isinstance(stats.get("jours"), list):
+                raise Indisponible("instantané /stats : structure inattendue")
+        else:
+            stats = lire_stats(url_de_base(a.url), jours_a_lire(lundi, aujourdhui))
     except ValueError as e:
         p.error(str(e))
     except Indisponible as e:

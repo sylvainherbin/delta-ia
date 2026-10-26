@@ -693,7 +693,7 @@ test("compteur : incréments pour initialize, tools/call avec et sans résultat,
     assert.deepEqual(h, {
       "req:initialize": 1, "client:claude-ai": 1,
       "req:tools/call": 4, "outil:chercher_reference": 2, "zero:chercher_reference": 1,
-      "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id": 1, "outil:inconnu": 1, "erreur:inconnu": 1,
+      "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id_inconnu": 1, "outil:inconnu": 1, "erreur:inconnu": 1,
       "req:ping": 1 });
     assert.equal(appels.length, 6, "un appel pipeline par requête MCP");
     for (const a of appels) {
@@ -729,7 +729,7 @@ test("compteur : méthodes nommées, notifications comptées, erreurs réelles d
       "req:notifications/initialized": 1, "req:notifications/cancelled": 1, "req:notification": 1,
       "req:resources/list": 1, "erreur:resources/list": 1, "req:resources/templates/list": 1, "erreur:resources/templates/list": 1,
       "req:prompts/list": 1, "erreur:prompts/list": 1, "req:autre": 3, "erreur:autre": 1, "erreur:invalide": 2,
-      "req:tools/call": 1, "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id": 1 });
+      "req:tools/call": 1, "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id_inconnu": 1 });
   });
 });
 
