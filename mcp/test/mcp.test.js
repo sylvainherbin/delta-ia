@@ -131,7 +131,7 @@ test("erreurs JSON-RPC", async () => {
 });
 
 // ---------------------------------------------------------------------------------------------- D66 : journal
-const CLES_JOURNAL = ["methode", "outil", "client", "duree_ms", "statut", "demarrage_froid", "nb_resultats"];
+const CLES_JOURNAL = ["methode", "outil", "client", "duree_ms", "statut", "demarrage_froid", "nb_resultats", "cause_erreur"];
 
 async function journal(t, fn) {
   const lignes = [];
@@ -641,7 +641,7 @@ test("compteur D100 et journal D66 couvrent nouveautes_base et a_tester sans cha
     assert.deepEqual(lignes.map((l) => [l.outil, l.statut]), [["nouveautes_base", "ok"], ["nouveautes_base", "erreur_outil"], ["a_tester", "ok"]]);
     assert.ok(!JSON.stringify(lignes).includes("\"jours\""), "aucun argument dans le journal");
     const h = Object.fromEntries(hash.get(`mcp:j:${jourCourant()}`));
-    assert.deepEqual(h, { "req:tools/call": 3, "outil:nouveautes_base": 2, "erreur:nouveautes_base": 1, "outil:a_tester": 1 });
+    assert.deepEqual(h, { "req:tools/call": 3, "outil:nouveautes_base": 2, "erreur:nouveautes_base": 1, "cause:nouveautes_base/param.jours": 1, "outil:a_tester": 1 });
     assert.ok(!Object.keys(h).some((k) => k.includes("jours") || k.includes("99")));
   });
 });
@@ -693,7 +693,7 @@ test("compteur : incréments pour initialize, tools/call avec et sans résultat,
     assert.deepEqual(h, {
       "req:initialize": 1, "client:claude-ai": 1,
       "req:tools/call": 4, "outil:chercher_reference": 2, "zero:chercher_reference": 1,
-      "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "outil:inconnu": 1, "erreur:inconnu": 1,
+      "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id": 1, "outil:inconnu": 1, "erreur:inconnu": 1,
       "req:ping": 1 });
     assert.equal(appels.length, 6, "un appel pipeline par requête MCP");
     for (const a of appels) {
@@ -729,7 +729,7 @@ test("compteur : méthodes nommées, notifications comptées, erreurs réelles d
       "req:notifications/initialized": 1, "req:notifications/cancelled": 1, "req:notification": 1,
       "req:resources/list": 1, "erreur:resources/list": 1, "req:resources/templates/list": 1, "erreur:resources/templates/list": 1,
       "req:prompts/list": 1, "erreur:prompts/list": 1, "req:autre": 3, "erreur:autre": 1, "erreur:invalide": 2,
-      "req:tools/call": 1, "outil:fiche_reference": 1, "erreur:fiche_reference": 1 });
+      "req:tools/call": 1, "outil:fiche_reference": 1, "erreur:fiche_reference": 1, "cause:fiche_reference/param.id": 1 });
   });
 });
 
@@ -747,7 +747,7 @@ test("compteur : aucun argument, requête, IP, User-Agent, session ni version da
     const champsEcrits = appels.flatMap((a) => a.commandes).filter((c) => c[0] === "HINCRBY").map((c) => c[2]);
     const client = champsEcrits.find((c) => c.startsWith("client:"));
     assert.ok(client.length <= "client:".length + 40, client);
-    for (const c of champsEcrits) assert.match(c, /^(req|outil|zero|erreur|client):[A-Za-z0-9._ \/-]+$/);
+    for (const c of champsEcrits) assert.match(c, /^(req|outil|zero|erreur|client|cause):[A-Za-z0-9._ \/-]+$/);
   });
 });
 
@@ -811,7 +811,7 @@ test("/stats : agrégats par jour, total, bornes de jours, CORS et cache", async
     assert.equal(r.corps.statut, "ok");
     assert.equal(r.corps.jours.length, 3);
     assert.equal(r.corps.jours.at(-1).jour, jourCourant());
-    assert.deepEqual(Object.keys(r.corps.jours[0]), ["jour", "req", "outils", "zero", "erreurs", "clients"]);
+    assert.deepEqual(Object.keys(r.corps.jours[0]), ["jour", "req", "outils", "zero", "erreurs", "clients", "causes_erreurs"]);
     assert.deepEqual(r.corps.jours[0].req, {});
     const auj = r.corps.jours.at(-1);
     assert.deepEqual(auj.req, { initialize: 1, "tools/call": 2 });

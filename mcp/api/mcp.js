@@ -23,6 +23,7 @@ import { LANGUES, t, ErreurTexte, texteErreur } from "../lib/textes.js";
 import { SOURCES, sourceDefaut, lireRoute, lireCommun, blocDonnees, raisonLecture, erreurFormat, texteBilingue, generationCommune, fraicheur } from "../lib/couches.js";
 
 import { compter } from "../lib/compteur.js";
+import { causeErreur } from "../lib/diagnostic.js";
 
 const PROTOCOLE = "2025-06-18";
 const PERIMETRES = ["claude", "openai", "actu"];
@@ -693,7 +694,7 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
       return ok(id, { tools: Object.entries(outils(ctx.langue, ctx.source)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
-      const o = SCHEMAS[params.name];
+      const o = Object.hasOwn(SCHEMAS, params.name) ? SCHEMAS[params.name] : null;
       if (!o) return erreur(id, -32602, t(ctx.langue, "rpc.outil_inconnu", { nom: params.name }));
       const { langue, ...args } = params.arguments || {};
       let c = ctx;
@@ -705,6 +706,7 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
         if (params.name === "a_tester") mesure.nb_resultats = Number.isInteger(r.affichees) ? r.affichees : r.detail || r.fiche ? 1 : null;
         return ok(id, { content: [{ type: "text", text: JSON.stringify(r, null, 1) }], structuredContent: r, isError: false });
       } catch (e) {
+        mesure.cause_erreur = causeErreur(e);
         const cle = e instanceof ErreurParametre ? "erreur.parametre" : c.source === "local" ? "erreur.local" : c.source === "commun" ? "erreur.commun" : "erreur.donnees";
         return ok(id, { content: [{ type: "text", text: t(c.langue, cle, { message: texteErreur(e, c.langue) }) }], isError: true });
       }
@@ -732,12 +734,12 @@ function ligneJournal(msg, reponse, mesure, duree) {
     : sansId && msg.method.startsWith("notifications/") ? "notification" : "autre";
   const texte = (v) => (typeof v === "string" ? v.slice(0, 80) : null);
   const info = methode === "initialize" && msg.params && typeof msg.params.clientInfo === "object" ? msg.params.clientInfo : null;
-  const outil = methode === "tools/call" && msg.params && typeof msg.params.name === "string" && OUTILS[msg.params.name] ? msg.params.name
+  const outil = methode === "tools/call" && msg.params && typeof msg.params.name === "string" && Object.hasOwn(OUTILS, msg.params.name) ? msg.params.name
     : methode === "tools/call" ? "inconnu" : null;
   const l = { methode, outil, client: info ? { name: texte(info.name), version: texte(info.version) } : null,
     // erreur JSON-RPC : son code ; outil qui répond isError (paramètre invalide, données indisponibles) : "erreur_outil"
     duree_ms: Math.round(duree), statut: reponse && reponse.error ? reponse.error.code : reponse && reponse.result && reponse.result.isError ? "erreur_outil" : "ok",
-    demarrage_froid: froid, nb_resultats: mesure.nb_resultats ?? null };
+    demarrage_froid: froid, nb_resultats: mesure.nb_resultats ?? null, cause_erreur: mesure.cause_erreur ?? null };
   froid = false;
   return l;
 }

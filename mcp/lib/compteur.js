@@ -2,6 +2,7 @@
 // Seuls des comptes par jour UTC : jamais d'argument, de requête de recherche, d'adresse IP, de User-Agent, de session
 // ni de version de client. Sans KV_REST_API_URL et KV_REST_API_TOKEN, rien n'est compté et /stats répond « inactif ».
 // Aucune dépendance : un simple fetch.
+import { CAUSES_ERREURS } from "./diagnostic.js";
 
 const DELAI_MS = 500;
 const EXPIRATION_S = 400 * 86400;
@@ -28,6 +29,8 @@ export function champs(ligne) {
   if (ligne.outil) f.push(`outil:${ligne.outil}`);
   if (ligne.outil && ligne.nb_resultats === 0) f.push(`zero:${ligne.outil}`);
   if (ligne.statut !== "ok") f.push(`erreur:${nom}`);
+  if (ligne.statut === "erreur_outil" && ligne.outil && CAUSES_ERREURS.has(ligne.cause_erreur))
+    f.push(`cause:${ligne.outil}/${ligne.cause_erreur}`);
   const client = ligne.client ? nomClient(ligne.client.name) : "";
   if (client) f.push(`client:${client}`);
   return f;
@@ -63,9 +66,9 @@ export function compter(lignes, maintenant = new Date()) {
 
 // ---------------------------------------------------------------------------------------------- lecture
 
-const GROUPES = { req: "req", outil: "outils", zero: "zero", erreur: "erreurs", client: "clients" };
+const GROUPES = { req: "req", outil: "outils", zero: "zero", erreur: "erreurs", client: "clients", cause: "causes_erreurs" };
 // objets sans prototype : un nom de client comme « __proto__ » reste une simple clé
-const vide = () => ({ req: Object.create(null), outils: Object.create(null), zero: Object.create(null), erreurs: Object.create(null), clients: Object.create(null) });
+const vide = () => Object.fromEntries(Object.values(GROUPES).map(g => [g, Object.create(null)]));
 
 function aplatir(r) {  // HGETALL REST : tableau [champ, valeur, ...] (ou objet selon le format)
   if (Array.isArray(r)) { const o = {}; for (let i = 0; i + 1 < r.length; i += 2) o[r[i]] = r[i + 1]; return o; }
