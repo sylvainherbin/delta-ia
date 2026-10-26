@@ -695,7 +695,7 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
       const o = typeof params.name === "string" && Object.hasOwn(SCHEMAS, params.name) ? SCHEMAS[params.name] : null;
-      if (!o) return erreur(id, -32602, t(ctx.langue, "rpc.outil_inconnu", { nom: params.name }));
+      if (!o) return erreur(id, -32602, t(ctx.langue, "rpc.outil_inconnu", { nom: typeof params.name === "string" ? params.name : "?" }));
       const { langue, ...args } = params.arguments || {};
       let c = ctx;
       try {
