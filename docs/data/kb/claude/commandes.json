@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 133,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -4644,16 +4644,16 @@
    "categorie": "commandes",
    "nom": "/effort",
    "gabarit": "complet",
-   "description": "Règle le niveau d'effort de la session (`low` à `xhigh`, `max` ou `auto`) ; `/effort status` affiche le niveau en vigueur. Depuis la 2.1.284, `ultracode` devient une bascule indépendante (`/effort ultracode on|off`) qui garde le niveau courant au lieu de forcer `xhigh`. `max` ne vaut que pour la session ; lancée pendant une réponse, la commande s'applique à la requête suivante du même tour.",
+   "description": "Règle le niveau d'effort (`low` à `xhigh`, `max` ou `auto`) ; `/effort status` affiche le niveau en vigueur. `/effort ultracode` (ou `ultracode on`) active ultracode pour la session et `ultracode off` le coupe, sans changer le niveau d'effort depuis la 2.1.284 ; la clé de réglage `ultracode`, elle, persiste. Un niveau tapé après `/effort` devient le défaut des sessions suivantes, sauf `max`, limité à la session.",
    "description_source": "Set the effort level: low to xhigh, max, or auto; status prints it. ultracode or ultracode on turns ultracode on for the session, and ultracode off turns it off; the ultracode key persists. max is session-only. The on and off arguments require Claude Code v2.1.284 or later. If you run /effort while Claude is working, see when the new level starts. Works in -p on v2.1.205 or later",
    "usage": "/effort [level|auto|status|ultracode [on|off]]",
    "usage_nature": "syntaxe",
-   "exemple": "/effort medium",
+   "exemple": "/effort status",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tes services fixent un effort par rôle au lancement (par exemple `--effort medium` pour le chef) ; `/effort status` le vérifie depuis l'iPhone et `/effort <niveau>` l'ajuste pour une seule mission, ce qui étale les limites hebdomadaires (piste 11). Effet de bord : la clé `ultracode` persiste d'une session à l'autre ; `max` ne vaut que pour la session courante."
+    "pourquoi": "Tes services fixent un effort par rôle au lancement (`--effort medium` pour le chef) : `/effort status` le vérifie, et baisser l'effort d'une session pour une tâche simple étale les limites hebdomadaires (piste 11). Effet de bord : un niveau tapé après `/effort` est enregistré comme défaut des sessions suivantes ; pour la seule session, choisis-le avec `s` dans le curseur ou depuis le contrôle d'effort de l'iPhone (Remote Control)."
    },
    "sources": [
     {
@@ -4662,7 +4662,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4807,20 +4807,56 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
-     "pourquoi": "Selon le rôle, chaque session a un modèle et un effort propres, par exemple `--model opus --effort medium` pour le chef."
+     "pourquoi": "Chaque session a un modèle et un effort propres selon le rôle, par exemple --model opus --effort medium pour le chef ; pilotage par Remote Control."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge des limites."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/effort` règle le niveau d'effort (`low` à `xhigh`, `max` ou `auto`) et `status` l'affiche ; `ultracode on|off` active ou coupe ultracode pour la session (2.1.284 ou plus) ; `max` ne vaut que pour la session.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La syntaxe de `/effort` change ou la commande disparaît de la documentation."
+    },
+    {
+     "affirmation": "Un niveau tapé après `/effort` ou validé par Entrée est enregistré comme défaut des sessions suivantes ; `s` dans le curseur ne l'applique qu'à la session ; un niveau choisi depuis un téléphone connecté par Remote Control ne vaut que pour cette session.",
+     "source": "https://code.claude.com/docs/en/model-config",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation change la portée d'un niveau tapé, de `s` ou du contrôle Remote Control."
+    },
+    {
+     "affirmation": "Activer ou couper ultracode avec `/effort` laisse le niveau d'effort inchangé depuis la 2.1.284 ; avant, activer ultracode passait la session en `xhigh`.",
+     "source": "https://code.claude.com/docs/en/model-config",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le comportement d'ultracode vis-à-vis du niveau d'effort change."
+    },
+    {
+     "affirmation": "Chaque session Claude Code durable a, selon son rôle, un modèle et un effort propres au lancement, par exemple `--model opus --effort medium` pour le chef ; elles sont pilotées depuis l'iPhone par Remote Control.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Les sessions cessent de fixer un effort par rôle au lancement."
+    },
+    {
+     "affirmation": "La piste 11 propose de choisir le modèle et le niveau d'effort par session pour étaler la charge des limites hebdomadaires.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La piste 11 est retirée de CONTEXTE.md."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-exit",
