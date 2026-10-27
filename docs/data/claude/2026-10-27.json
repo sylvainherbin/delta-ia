@@ -1,0 +1,141 @@
+{
+ "date": "2026-10-27",
+ "perimetre": "claude",
+ "agent": "claude-code",
+ "genere_le": "2026-10-27T03:04:28+00:00",
+ "synthese": "Compte et quotas : aucune page d'aide, aucun tarif ni aucune fiche de la base sur ce sujet ne change aujourd'hui, et aucun quota n'atteint le seuil D71 de 80 %. Relevé du 27/10 à 03 h UTC : Claude session 5 h à 3 % (remise à zéro à 06 h 10 UTC), semaine à 44 % (remise à zéro le 01/11 à 16 h UTC), semaine Fable à 0 %, ChatGPT semaine à 71 % (remise à zéro le 02/11 vers 06 h UTC). Claude Code 2.1.311 est installée et à jour : une session à contexte standard qui s'arrêtait sur « Usage credits required for 1M context » compacte désormais et continue, `/usage` liste les gros ratés de cache de prompt qui pèsent sur la limite, et deux correctifs Remote Control touchent tes sessions durables. Le reste du jour est sans effet sur ton usage : notes de la plateforme déplacées (Claude Tag API, Enterprise), plugin pour associations et dépôt S-1 d'Anthropic écartés.",
+ "sources_en_echec": [],
+ "elements": [
+  {
+   "id": "claude-code-2.1.311",
+   "ids_bruts": [
+    "claude-code-2.1.311"
+   ],
+   "produit": "claude-code",
+   "titre": "Claude Code 2.1.311 : plus d'arrêt « Usage credits required for 1M context » (compaction à la place), `/usage` montre les gros ratés de cache, `ultrathink` à l'effort xhigh, correctifs Remote Control",
+   "version": "2.1.311",
+   "date_publication": "2026-10-26",
+   "type": "correction",
+   "resume": "Limites et crédits : une session à contexte standard ne s'arrête plus sur « Usage credits required for 1M context » quand une requête dépasse 200 000 jetons ; Claude Code compacte la conversation et continue. `/usage` affiche enfin les gros ratés de cache de prompt sous « What's contributing to your limits usage? », et `/effort` avertit d'un raté de cache en mode plan quand le modèle du plan diffère de celui de la session. `ultrathink` passe en interactif à l'effort xhigh sur Opus 5.5, Sonnet 5.5, Haiku 5.5 et Fable 5.1 (API Anthropic) ; tapé pendant une réponse, il relève le reste du tour. Remote Control : une session ne reste plus environ deux minutes sur « Connecting » quand un proxy bloque une requête de démarrage, et les messages que Claude envoie à une session cloud ou Remote Control ne s'affichent plus comme les tiens dans les apps mobiles. Autres correctifs : gels au démarrage et après lecture ou édition avec un CLAUDE.md à très longue liste, `SubagentStop` exécuté environ deux fois par minute par sous-agent en cours, outils MCP indisponibles pour un sous-agent dont le serveur finit de se connecter après son démarrage, `claude mcp add`, `claude mcp remove` et `/mcp` qui nommaient le dossier courant au lieu de l'entrée du projet de `~/.claude.json` sous la racine d'un dépôt, transcriptions de `claude -p` enregistrées dans le désordre, worktree isolé d'un sous-agent retiré pendant qu'un sous-agent d'arrière-plan y travaillait. Changements : `DISABLE_COMPACT` ne peut plus que couper la compaction (pas la rétablir), noms de modèles sans le suffixe `[1m]` quand il est sans effet, démarrage plus rapide pour les comptes Pro et Max. Ajout `--hold-idle-file` et `--max-hold-min` pour `self-hosted-runner`, plusieurs changements VS Code, sessions cloud, Claude Tag et Code Review.",
+   "sources": [
+    {
+     "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21311",
+     "libelle": "Claude Code 2.1.311",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "fort",
+   "pour_toi": "Tes limites ne changent pas, mais le comportement à la frontière des 200 000 jetons change : tu es sur Max 20x à l'essai, et une session qui s'arrêtait sur « Usage credits required for 1M context » compacte désormais et continue (effet immédiat, sans remise à zéro). Priorité « alléger les limites hebdomadaires » : le correctif de `/usage` te donne enfin la liste des gros ratés de cache de prompt qui consomment ta limite, et `ultrathink` à l'effort xhigh coûterait plus de limite sur tes sessions Opus 5.5 si tu le tapes (déduit, non mesuré). Tes sessions durables sont lancées avec `claude --resume <id> --remote-control <nom>` et pilotées depuis l'iPhone : les deux correctifs Remote Control (« Connecting » derrière un proxy, messages de Claude affichés comme les tiens dans l'app mobile) les concernent, et la version installée est déjà la 2.1.311 (`versions.json`). La chaîne de nuit D70 lance `/delta` et `/delta-kb` en `claude -p` : l'ordre des messages de transcription corrigé s'y applique. Pour tes serveurs MCP en portée locale, le correctif de `claude mcp add` ne joue que si tu les gères depuis un sous-dossier d'un dépôt ; CONTEXTE.md décrit `~/projets/delta-ia` comme dossier de travail. Aucun hook `SubagentStop` n'est décrit dans CONTEXTE.md (un seul hook, `PermissionDenied`), `DISABLE_COMPACT` n'y figure pas, et le runner auto-hébergé, VS Code, Claude Tag et Code Review ne sont pas décrits comme utilisés.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Tester le diagnostic `/usage` corrigé sur ta limite hebdomadaire et contrôler la version des sessions durables ; revérifier le 2026-10-30, aucune échéance publiée.",
+    "etapes": [
+     "Dans la session du chef delta-ia (`claude-session@<nom>`), tape `/status` ; résultat attendu : `2.1.311`, sinon cette session garde l'ancien binaire (sans les correctifs Remote Control) jusqu'à sa prochaine relance.",
+     "Dans la même session, tape `/usage` et lis la rubrique « What's contributing to your limits usage? » (calculée sur l'activité de la session, non sur une jauge) ; résultat attendu : les gros ratés de cache de prompt y sont listés, ce qui désigne les reprises de session longues à éviter ou à compacter avec `/compact`."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [
+    "claude-code-commandes-usage",
+    "claude-code-commandes-status",
+    "claude-code-commandes-effort",
+    "claude-code-parametres-disable-compact",
+    "claude-code-commandes-mcp"
+   ],
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max 20x à l'essai : limites hebdomadaires et crédits concernés."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables Remote Control pilotées depuis l'iPhone."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes /delta et /delta-kb lancées en `claude -p`."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP en portée locale rattachés au dossier de travail."
+    }
+   }
+  },
+  {
+   "id": "claude-platform-notes-2026-10-20",
+   "ids_bruts": [
+    "claude-platform-notes-2026-10-20",
+    "claude-platform-notes-2026-10-23"
+   ],
+   "produit": "claude",
+   "titre": "Claude Platform — 20/10 et 23/10 (révision) : l'annonce de la Claude Tag API passe de la note du 20/10 à une note datée du 23/10",
+   "version": null,
+   "date_publication": "2026-10-23",
+   "type": "nouveaute",
+   "revision": true,
+   "resume": "Révision de la note du 20/10 : quatre phrases sur la Claude Tag API (bêta pour les organisations Claude Enterprise, en-tête bêta `experimental-claude-tag-2026-10-21`, clé Admin API avec la portée `read:claude_tag` ou `write:claude_tag`, indisponible pour les organisations Claude Platform) sont retirées de cette note et reparaissent telles quelles dans une nouvelle note datée du 23/10. Aucun autre point de la note du 20/10 ne change (inference hooks, profils utilisateurs, webhooks d'organisation, web fetch désactivable par l'organisation, dont les endpoints `/v1/user_profiles` pris en charge par le SDK et la CLI `ant`).",
+   "sources": [
+    {
+     "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+     "libelle": "Claude Platform — notes de version",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  },
+  {
+   "id": "kb-claude-code-mcp-elicitation-modes-claude-code-declares",
+   "ids_bruts": [
+    "kb-claude-code-mcp-elicitation-modes-claude-code-declares"
+   ],
+   "produit": "claude-code",
+   "titre": "Base : ajout de la fiche « Elicitation modes Claude Code declares » (MCP)",
+   "version": null,
+   "date_publication": null,
+   "type": "nouveaute",
+   "resume": "Nouvelle fiche de la base, catégorie mcp : la page MCP de Claude Code précise que Claude Code annonce `elicitation: {form: {}, url: {}}` à la connexion, donc qu'un serveur MCP peut demander une saisie par formulaire ou par URL. Elle s'adresse à qui écrit un serveur MCP.",
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#elicitation-modes-claude-code-declares",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [
+    "claude-code-mcp-elicitation-modes-claude-code-declares"
+   ],
+   "contexte_sections": {}
+  }
+ ],
+ "ecartes": [
+  {
+   "id": "x-2114780227465338985",
+   "raison": "post X sans rapport : plugin Claude pour associations, application sectorielle (D24)"
+  },
+  {
+   "id": "https://claude.com/blog/expanding-claude-for-nonprofits",
+   "raison": "application sectorielle (plugin Claude for Nonprofits), sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"
+  },
+  {
+   "id": "x-2114705042817110293",
+   "raison": "post X sans rapport : dépôt d'un S-1 pour une introduction en bourse, information financière (D24)"
+  },
+  {
+   "id": "https://www.anthropic.com/news/s1-sec",
+   "raison": "information financière (dépôt S-1 d'Anthropic), sans effet sur les modèles, les outils, les prix ni les quotas (D24)"
+  }
+ ],
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

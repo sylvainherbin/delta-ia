@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-26",
+ "maj_le": "2026-10-27",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 134,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -4645,7 +4645,7 @@
    "nom": "/effort",
    "gabarit": "complet",
    "description": "Règle le niveau d'effort de la session (`low` à `xhigh`, `max` ou `auto`) ; `/effort status` affiche le niveau en vigueur. Depuis la 2.1.284, `ultracode` devient une bascule indépendante (`/effort ultracode on|off`) qui garde le niveau courant au lieu de forcer `xhigh`. `max` ne vaut que pour la session ; lancée pendant une réponse, la commande s'applique à la requête suivante du même tour.",
-   "description_source": "Set the effort level: low to xhigh, max, or auto; status prints it. ultracode or ultracode on turns ultracode on for the session at the current level, and ultracode off turns it off; the ultracode key persists. max is session-only. The on and off arguments and keeping the current level require Claude Code v2.1.284 or later. Before v2.1.284, /effort ultracode set the session to xhigh, and /effort ultracode off failed with Invalid argument. Run it while Claude is responding and, once you confirm the cache warning, if Claude Code shows one, Claude Code applies the new level to the next request in that turn. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Works in -p",
+   "description_source": "Set the effort level: low to xhigh, max, or auto; status prints it. ultracode or ultracode on turns ultracode on for the session, and ultracode off turns it off; the ultracode key persists. max is session-only. The on and off arguments require Claude Code v2.1.284 or later. If you run /effort while Claude is working, see when the new level starts. Works in -p on v2.1.205 or later",
    "usage": "/effort [level|auto|status|ultracode [on|off]]",
    "usage_nature": "syntaxe",
    "exemple": "/effort medium",
@@ -4662,11 +4662,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4776,6 +4776,37 @@
     {
      "date": "2026-10-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set the effort level: low to xhigh, max, or auto; status prints it. ultracode or ultracode on turns ultracode on for the session at the current level, and ultracode off turns it off; the ultracode key persists. max is session-only. The on and off arguments and keeping the current level require Claude Code v2.1.284 or later. Before v2.1.284, /effort ultracode set the session to xhigh, and /effort ultracode off failed with Invalid argument. Run it while Claude is responding and, once you confirm the cache warning, if Claude Code shows one, Claude Code applies the new level to the next request in that turn. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Works in -p",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/effort` règle l'effort (low à xhigh, max ou auto) et `status` l'affiche ; `max` ne vaut que pour la session et la clé `ultracode` persiste.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-24",
+       "caduc_si": "les niveaux, `status` ou la persistance d'`ultracode` changent dans la documentation"
+      },
+      {
+       "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement, par exemple `--model opus --effort medium` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-24",
+       "caduc_si": "l'effort n'est plus fixé par rôle au lancement"
+      },
+      {
+       "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge des limites hebdomadaires.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la piste 11 est close ou abandonnée"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -4789,27 +4820,7 @@
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge des limites."
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "`/effort` règle l'effort (low à xhigh, max ou auto) et `status` l'affiche ; `max` ne vaut que pour la session et la clé `ultracode` persiste.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-24",
-     "caduc_si": "les niveaux, `status` ou la persistance d'`ultracode` changent dans la documentation"
-    },
-    {
-     "affirmation": "Chaque rôle a un modèle et un effort fixés au lancement, par exemple `--model opus --effort medium` pour le chef.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-24",
-     "caduc_si": "l'effort n'est plus fixé par rôle au lancement"
-    },
-    {
-     "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge des limites hebdomadaires.",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-24",
-     "caduc_si": "la piste 11 est close ou abandonnée"
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-exit",

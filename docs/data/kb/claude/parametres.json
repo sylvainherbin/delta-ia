@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-25",
+ "maj_le": "2026-10-27",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 669,
- "commentees": 628,
+ "commentees": 627,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -7362,7 +7362,7 @@
    "nom": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "gabarit": "court",
    "description": "Variable qui arrête les commandes shell, workflows dynamiques et (depuis la v2.1.198) sous-agents d'arrière-plan d'une session de fond quand son superviseur l'arrête, la redémarre ou la met à jour, au lieu de les transmettre au processus suivant ; `← ` ou `/background` transmettent toujours le travail en cours.",
-   "description_source": "Set to 1 to stop a background session's in-flight work when the supervisor stops, restarts, or updates that session's process, instead of handing it to the session's next process. That work is the session's running background shell commands and dynamic workflows, plus background subagents as of v2.1.198. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over. Requires Claude Code v2.1.196 or later",
+   "description_source": "Set to 1 to stop a background session's in-flight work when the supervisor stops, restarts, or updates that session's process, instead of handing it to the session's next process. That work is the session's running background shell commands, plus background subagents as of v2.1.198. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over. Requires Claude Code v2.1.196 or later",
    "usage": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7383,7 +7383,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7403,6 +7403,10 @@
     },
     {
      "date": "2026-10-21",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-27",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -7634,7 +7638,7 @@
    "nom": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
    "gabarit": "court",
    "description": "Variable qui supprime le délai de 2 minutes des demandes de suppression sur un chemin critique : en mode auto, la suppression passe alors au classificateur.",
-   "description_source": "Set to 1 to turn off the time limit on critical-path removal prompts. In auto mode Claude Code then sends these removals to the classifier instead, and in bypassPermissions mode the prompt waits for your answer. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later",
+   "description_source": "Set to 1 to turn off the auto and bypassPermissions time limit and denials on critical-path removals. These removals then go to the classifier in auto mode, and get an untimed prompt in bypassPermissions mode wherever Claude Code can show one. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later",
    "usage": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7651,7 +7655,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
@@ -7662,7 +7666,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-26",
@@ -7675,6 +7679,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -30793,7 +30801,7 @@
    "gabarit": "court",
    "description": "Réglage macOS des services XPC et Mach que le bac à sable peut consulter.",
    "description_source": "List additional XPC and Mach service names the macOS sandbox may look up. Tools that communicate over XPC, such as the iOS Simulator or Playwright, need their services listed here.",
-   "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowMachLookup\": [\"com.apple.coresimulator.*\"]\n    }\n  }\n}",
+   "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowMachLookup\": [\"com.apple.CoreSimulator.*\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -30813,7 +30821,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30826,13 +30834,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Machine de développement sous Linux (K8 Plus) et HP Beta : aucun macOS décrit."
     }
    }
   },
@@ -34730,7 +34746,7 @@
    "gabarit": "court",
    "description": "Réglage qui ne récupère que certains dossiers dans chaque worktree, par sparse-checkout.",
    "description_source": "Check out only the listed directories in each worktree through git sparse-checkout. Claude Code writes only those directories plus root-level files to disk, which is faster in large monorepos; see Check out only the directories you need.",
-   "usage": "{\n  \"worktree\": {\n    \"sparsePaths\": [\"packages/my-app\", \"shared/utils\"]\n  }\n}",
+   "usage": "{\n  \"worktree\": {\n    \"sparsePaths\": [\".claude\", \"packages/my-app\", \"shared/utils\"]\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -34750,7 +34766,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34763,9 +34779,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
