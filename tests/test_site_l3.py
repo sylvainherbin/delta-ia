@@ -376,8 +376,30 @@ def test_vue_compatible_sans_etat_prive_reste_consultable_et_pas_faussement_vide
         assert "impact ?" not in texte and d["nul.afficher"].split("(")[0] not in texte
         # quotas absents sans erreur ; installée inconnue, aucune comparaison « à jour »
         assert d["comptes.titre_haut"] not in texte
-        assert d["outils.inconnue"] in texte and d["version.a_jour"] not in texte
+        tableau = tableau_outils(texte, langue)
+        assert d["outils.inconnue"] in tableau and d["version.a_jour"] not in tableau
         assert "data/etat.json" in r["lus"]
+
+
+def tableau_outils(texte, langue):
+    """Le texte de la vue jusqu'au titre des éléments : les statuts des outils s'y lisent, pas le texte libre des éléments
+    (une « mise à jour » dans un titre du jour contient « à jour »)."""
+    marque = TEXTES[langue]["elements.titre"].split("{n}")[0]
+    assert marque in texte, texte[:200]
+    return texte.split(marque, 1)[0]
+
+
+def test_temoin_a_jour_reste_lu_dans_le_tableau_des_outils_et_pas_dans_le_texte_libre():
+    remplacer = vue_compatible()
+    remplacer["data/versions.json"] = [{"pertinent_pour_profil": True, "outil": "Claude Code", "version": "2.1.311",
+                                        "detectee_le": "2026-10-27T03:00:27+00:00", "derniere_publiee": "2.1.311",
+                                        "source_derniere": "claude-code-changelog", "statut": "a_jour"}]
+    for langue in ("en", "fr"):
+        d = TEXTES[langue]
+        r = executer(langue=langue, ancres=["#aujourdhui"], absents=["data/etat.json"], remplacer=remplacer)
+        assert d["version.a_jour"] in tableau_outils(r["etapes"][0]["texte"], langue), "l'assertion de la vue compatible ne verrait plus « à jour »"
+        libre = "x " + d["elements.titre"].replace("{n}", "1") + " mise à jour du système, hors des outils suivis"
+        assert d["version.a_jour"] not in tableau_outils(libre, langue)
 
 
 def test_textes_bilingues_d_une_fiche_suivent_la_langue_de_la_page():
