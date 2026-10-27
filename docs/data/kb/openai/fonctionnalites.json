@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-25",
+ "maj_le": "2026-10-27",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -4252,16 +4252,16 @@
    "categorie": "fonctionnalites",
    "nom": "Models",
    "gabarit": "complet",
-   "description": "La page Models présente les modèles et la sélection par interface. Le retrait de GPT-5.5, effectif le 14 octobre 2026 à 19:00 UTC, concerne Codex avec connexion ChatGPT ; les sessions par clé API et l’API restent hors de ce retrait.",
-   "description_source": "Effective October 14, 2026, at noon PDT (19:00 UTC), GPT-5.5 retires from Codex for users signed in with ChatGPT. The OpenAI API and Codex sessions authenticated with an API key aren't affected.",
+   "description": "La page Models décrit les modèles de Work et Codex et leur sélection selon l’interface. GPT-6.1 Terra est proposé pour la rédaction, l’analyse visuelle et l’usage d’applications ; la CLI exige la version 0.159.0 ou ultérieure et accepte codex -m gpt-6.1-terra.",
+   "description_source": "Choosing a model is about finding the right balance of speed, cost, and capability for your task. Sometimes you need a quick first draft. Other times, a complex problem calls for more careful reasoning. This guide introduces our latest models, shows where each one shines, and helps you find a starting point for your work.",
    "usage": "codex --model gpt-6.1-sol",
    "usage_nature": "syntaxe",
-   "exemple": "codex --model gpt-6.1-sol",
-   "disponibilite": null,
+   "exemple": "codex -m gpt-6.1-terra",
+   "disponibilite": "ChatGPT Work et Codex ; GPT-6.1 Terra en CLI à partir de 0.159.0.",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Pour tes audits sous tmux, consulter Models avant un changement de modèle ; le relevé actuel donne gpt-6.1-sol par défaut, gpt-6-sol pour audit et rapide, et Daybreak Blue pour securite, sans GPT-5.5."
+    "pourquoi": "Pour choisir le modèle de tes audits Codex sous tmux, utilise cette référence avant un changement ; tes profils audit, rapide et securite sont employés au quotidien, et mission-codex fixe explicitement modèle et effort. Pour explorer Terra, ouvre une session d’essai avec codex -m gpt-6.1-terra sur delta-ia et demande une synthèse sourcée d’un fichier de veille ; résultat attendu : un texte fidèle au fichier, à comparer au même travail avec Sol."
    },
    "sources": [
     {
@@ -4274,7 +4274,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4313,32 +4313,81 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Effective October 14, 2026, at noon PDT (19:00 UTC), GPT-5.5 retires from Codex for users signed in with ChatGPT. The OpenAI API and Codex sessions authenticated with an API key aren't affected.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La page recommande GPT-6.1 Sol quand disponible et documente codex --model gpt-6.1-sol.",
+       "source": "https://learn.chatgpt.com/docs/models",
+       "releve_le": "2026-10-15",
+       "caduc_si": "La syntaxe ou les remplacements recommandés changent."
+      },
+      {
+       "affirmation": "Sylvain audite le travail de Claude avec la CLI Codex sous tmux.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-15",
+       "caduc_si": "L’interface ou le rôle de Codex change."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Audits par la CLI sous tmux."
+     "pourquoi": "Codex sous tmux est utilisé pour auditer le travail de Claude."
     },
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Profils audit, rapide et securite utilisés au quotidien."
+     "pourquoi": "Les profils audit, rapide et securite sont utilisés quotidiennement."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "mission-codex passe explicitement modèle et effort."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Sylvain souhaite découvrir les nouvelles fonctionnalités de Codex."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La page recommande GPT-6.1 Sol quand disponible et documente codex --model gpt-6.1-sol.",
+     "affirmation": "La page Models présente la sélection par interface et exige Codex CLI 0.159.0 ou ultérieur pour codex -m gpt-6.1-terra.",
      "source": "https://learn.chatgpt.com/docs/models",
-     "releve_le": "2026-10-15",
-     "caduc_si": "La syntaxe ou les remplacements recommandés changent."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La syntaxe, le modèle disponible ou la version minimale indiquée changent."
     },
     {
-     "affirmation": "Sylvain audite le travail de Claude avec la CLI Codex sous tmux.",
+     "affirmation": "Codex sous tmux sert principalement à auditer le travail de Claude.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-15",
-     "caduc_si": "L’interface ou le rôle de Codex change."
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le rôle ou le mode d’utilisation de Codex change."
+    },
+    {
+     "affirmation": "Les profils audit, rapide et securite sont utilisés au quotidien.",
+     "source": "contexte:config.codex.profils",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Un de ces profils est abandonné."
+    },
+    {
+     "affirmation": "mission-codex passe toujours modèle et effort explicitement sans hériter de config.toml.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le lanceur hérite désormais du modèle ou de l’effort global."
     }
    ]
   },
