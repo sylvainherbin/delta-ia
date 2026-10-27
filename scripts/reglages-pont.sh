@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Delta — mise à jour hebdomadaire des constats internes des fiches de modèles depuis le bilan OPÉRER des réglages.
+# Delta — mise à jour hebdomadaire des constats internes des fiches de modèles depuis le bilan des réglages.
 # Lancé par le timer systemd utilisateur delta-reglages-pont (lundi 10 h 30). Travaille dans un worktree et une branche à lui
 # (reglages-pont/AAAA-MM-JJ), jamais dans le dépôt principal : collecte les bilans (scripts/reglages_pont.py tout), régénère
-# docs/data/kb/modeles.json, passe valider.py et les tests des fiches, commite sur la branche, puis prévient le chef Delta-IA
-# (operer message, de dev-delta) avec la branche et le hash. Aucun push, aucune fusion : le chef relit avant publication (site public).
+# docs/data/kb/modeles.json, passe valider.py et les tests des fiches, commite sur la branche, puis prévient le chef dev
+# par sa boîte de fichiers avec la branche et le hash. Aucun push, aucune fusion : le chef relit avant publication (site public).
 # Le même passage range les ajustements proposés (lot 4) dans la couche personnelle, hors dépôt ; un nouvel ajustement est dit
 # au chef même sans constat à changer. Rien n'est appliqué : Delta Lab qualifie sur le K8 avant tout lot.
 #
 # Fenêtre sans commit 03 h 30 – 08 h 00 : en cas de lancement dans la fenêtre (rattrapage au démarrage), attend 08 h 05.
 # Tient .git/delta-passage.lock sans attendre pendant tout le travail (une chaîne de nuit en cours : rien n'est fait, code 14).
-# Variables d'essai : DELTA_PONT_SANS_MESSAGE=1 (affiche le message au lieu de l'envoyer), DELTA_PONT_HEURE=HHMM (heure simulée),
+# Variables d'essai : DELTA_PONT_BOITE=<dossier> (boîte du chef dev, défaut ~/.local/state/chef-dev/boite),
+# DELTA_PONT_SANS_MESSAGE=1 (affiche le message sans écrire dans la boîte), DELTA_PONT_HEURE=HHMM (heure simulée),
 # DELTA_PONT_BASE=<branche> (base de la branche de travail, défaut main), DELTA_PONT_PYTHON (interpréteur, défaut .venv du dépôt).
 #
 # Codes : 0 fait (constats prêts, ou rien à changer) ; 1 échec (message au chef) ; 3 fait, mais une source du bilan est en échec
@@ -47,7 +48,24 @@ mkdir -p "$DOSSIER"
 prevenir() {
     local texte="[PONT RÉGLAGES] $1"
     if [ -n "${DELTA_PONT_SANS_MESSAGE:-}" ]; then echo "$texte"; return 0; fi
-    operer message envoyer --de dev-delta --maintenant delta "$texte" >/dev/null || echo "reglages-pont : message au chef non remis" >&2
+    local boite="${DELTA_PONT_BOITE:-$HOME/.local/state/chef-dev/boite}"
+    local temporaire fichier hash
+    mkdir -p -- "$boite" || return 1
+    temporaire="$(mktemp "$boite/.reglages-pont.XXXXXX")" || return 1
+    fichier="$boite/$(date +%Y-%m-%d_%H%M%S)-reglages-pont.md"
+    hash="$(git -C "$WT" rev-parse HEAD 2>/dev/null || git rev-parse "${DELTA_PONT_BASE:-main}")" \
+        || { rm -f -- "$temporaire"; return 1; }
+    # Le verrou du passage sérialise les envois ; conserve aussi deux messages de la même seconde.
+    while [ -e "$fichier" ]; do
+        sleep 1
+        fichier="$boite/$(date +%Y-%m-%d_%H%M%S)-reglages-pont.md"
+    done
+    if ! printf '%s\n\nBranche : %s\nHash : %s\nWorktree : %s\n' "$texte" "$BRANCHE" "$hash" "$WT" > "$temporaire" \
+        || ! mv -- "$temporaire" "$fichier"; then
+        rm -f -- "$temporaire"
+        echo "reglages-pont : message au chef dev non écrit dans $boite" >&2
+        return 1
+    fi
 }
 echec() { prevenir "Échec de la mise à jour hebdomadaire : $1. Branche $BRANCHE, worktree $WT conservés pour examen."; exit 1; }
 

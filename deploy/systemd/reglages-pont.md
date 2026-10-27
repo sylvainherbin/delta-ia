@@ -3,8 +3,10 @@
 `scripts/reglages_pont.py` transforme `operer reglages bilan --json` (poste principal et instance d'essai) en constats datés dans
 `kb-modeles/*.yaml` (clé `cle_auto`, propre au YAML). `scripts/reglages-pont.sh` l'enchaîne sur une branche dédiée
 (`reglages-pont/AAAA-MM-JJ`, worktree `~/projets/.worktrees/delta-ia/reglages-pont-AAAA-MM-JJ`), avec `catalogue.py modeles`,
-`valider.py --perimetre claude --kb` et les tests des fiches, puis prévient le chef (`operer message`, de `dev-delta`) avec la branche
-et le hash. Pas de push : le chef relit, fusionne et pousse.
+`valider.py --perimetre claude --kb` et les tests des fiches, puis dépose un message dans la boîte du chef dev, hors OPÉRER :
+`~/.local/state/chef-dev/boite/AAAA-MM-JJ_HHMMSS-reglages-pont.md`. Le fichier contient le texte, la branche, le hash et le worktree ;
+il est écrit dans un fichier temporaire du même dossier, puis renommé atomiquement. `DELTA_PONT_BOITE` redéfinit ce dossier.
+Pas de push : le chef relit, fusionne et pousse.
 
 Installation (après la fusion de la mission) :
 

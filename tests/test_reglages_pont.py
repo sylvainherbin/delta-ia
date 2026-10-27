@@ -269,13 +269,19 @@ def test_collecter_source_non_configuree_est_un_echec_pas_un_vide(tmp_path):
 
 
 def test_cli_code_3_quand_une_source_echoue(depot, capsys):
+    # Le lot des ajustements est actif par défaut : ni la politique ni le stockage
+    # personnels de la machine ne doivent intervenir dans le verdict des sources.
+    options = ["--racine", str(depot), "--politique", str(politique(depot)),
+               "--ajustements", str(depot / "perso/ajustements.json")]
     ok = ecrire(depot, export(groupe(six_missions())), "ok.json")
-    assert rp.main(["maj", "--racine", str(depot), "--export", f"principal={ok}"]) == 0
+    assert rp.main(["maj", *options, "--export", f"principal={ok}"]) == 0
+    assert "ajustements proposés :" in capsys.readouterr().out
     casse = depot / "casse.json"
     casse.write_text("x", encoding="utf-8")
-    assert rp.main(["maj", "--racine", str(depot), "--export", f"principal={ok}", "--export", f"essai={casse}"]) == 3
-    assert "source essai : echec" in capsys.readouterr().out
-    assert rp.main(["maj", "--racine", str(depot)]) == 2
+    assert rp.main(["maj", *options, "--export", f"principal={ok}", "--export", f"essai={casse}"]) == 3
+    sortie = capsys.readouterr().out
+    assert "source essai : echec" in sortie and "ajustements proposés :" in sortie
+    assert rp.main(["maj", *options]) == 2
 
 
 def test_dry_run_n_ecrit_rien(depot):
