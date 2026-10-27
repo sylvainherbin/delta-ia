@@ -57,6 +57,16 @@ def test_carte_faite_sans_opacite():
         assert "opacity" not in decl, sel.strip()
 
 
+def test_chaines_longues_coupees_dans_les_blocs_de_texte():
+    # 27/10/2026 : une variable ou une commande sans espace (CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS=600000)
+    # élargissait la page Changelogs à 608 px sur un écran de 390 : le téléphone dézoomait et le texte sortait des cartes.
+    import re
+    css = (DOCS / "assets" / "style.css").read_text(encoding="utf-8")
+    for selecteur in (".carte", ".ligne-semaine", ".ecartes, .actions-faites"):
+        regle = re.search(r"(?m)^" + re.escape(selecteur) + r" \{([^}]*)\}", css)
+        assert regle and "overflow-wrap: anywhere" in regle.group(1), selecteur
+
+
 def test_manifeste_relatif():
     # L3 : un manifeste par langue (racine anglaise, /fr/ française), icônes partagées par chemin relatif
     for dossier, nom in ((DOCS, EN["manifeste.nom"]), (DOCS / "fr", FR["manifeste.nom"])):

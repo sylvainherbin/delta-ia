@@ -237,7 +237,8 @@ code { font-family: var(--mesure); font-size: .86em; color: var(--code-texte); b
 
 /* ---------- cartes ---------- */
 .liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.carte { position: relative; background: var(--surface); border: 1px solid var(--trait); border-radius: 2px; padding: 18px 18px 16px; min-width: 0; }
+/* une chaîne sans espace (variable, commande, chemin) se coupe plutôt que d'élargir la page : sans cela, le téléphone dézoome */
+.carte { position: relative; background: var(--surface); border: 1px solid var(--trait); border-radius: 2px; padding: 18px 18px 16px; min-width: 0; overflow-wrap: anywhere; }
 /* la carte suit aussi la lumière de son impact : fort porte le filet de lumière sur le bord haut, comme la plaque d'un
    élément du ciel ; nul n'a plus de plaque et son titre passe en doux */
 .carte.impact-fort, .ligne-semaine.impact-fort { border-color: var(--trait-fort); }
@@ -301,7 +302,7 @@ code { font-family: var(--mesure); font-size: .86em; color: var(--code-texte); b
 .sources { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; }
 .sources li { min-width: 0; overflow-wrap: anywhere; }
 .sources .off::after { content: " ✓"; color: var(--cyan); }
-.ecartes, .actions-faites { margin-top: 24px; font-size: 14px; color: var(--doux); }
+.ecartes, .actions-faites { margin-top: 24px; font-size: 14px; color: var(--doux); overflow-wrap: anywhere; }
 .ecartes summary, .actions-faites summary { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; list-style: none; color: var(--encre); }
 .ecartes summary::-webkit-details-marker, .actions-faites summary::-webkit-details-marker { display: none; }
 .ecartes summary::after, .actions-faites summary::after { content: "›"; color: var(--cyan); transition: transform .2s; }
@@ -420,7 +421,7 @@ button.envoi-delta:disabled { cursor: default; opacity: .6; }
 /* ---------- Semaine (D98) ---------- */
 .bloc-semaine { margin: 32px 0; }
 .bloc-semaine .liste { gap: 10px; }
-.ligne-semaine { position: relative; background: var(--surface); border: 1px solid var(--trait); border-radius: 2px; padding: 14px 18px; }
+.ligne-semaine { position: relative; background: var(--surface); border: 1px solid var(--trait); border-radius: 2px; padding: 14px 18px; overflow-wrap: anywhere; }
 .ligne-semaine h4 { margin: 0 0 4px; font: 400 16px/1.4 var(--texte); }
 .ligne-semaine .meta { font: 400 11px/1.5 var(--mesure); color: var(--faible); margin-bottom: 8px; }
 .action-courte { margin: 0; font-size: 14.5px; line-height: 1.6; overflow-wrap: anywhere; }
