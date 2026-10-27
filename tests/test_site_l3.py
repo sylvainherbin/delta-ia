@@ -398,7 +398,7 @@ def test_temoin_a_jour_reste_lu_dans_le_tableau_des_outils_et_pas_dans_le_texte_
         d = TEXTES[langue]
         r = executer(langue=langue, ancres=["#aujourdhui"], absents=["data/etat.json"], remplacer=remplacer)
         assert d["version.a_jour"] in tableau_outils(r["etapes"][0]["texte"], langue), "l'assertion de la vue compatible ne verrait plus « à jour »"
-        libre = "x " + d["elements.titre"].replace("{n}", "1") + " mise à jour du système, hors des outils suivis"
+        libre = "x " + d["elements.titre"].replace("{n}", "1") + f" système {d['version.a_jour']}, hors des outils suivis"
         assert d["version.a_jour"] not in tableau_outils(libre, langue)
 
 
