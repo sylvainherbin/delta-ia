@@ -1,0 +1,113 @@
+{
+ "date": "2026-10-27",
+ "perimetre": "actu",
+ "agent": "claude-code",
+ "genere_le": "2026-10-27T03:06:57+00:00",
+ "synthese": "Compte et quotas : aucune page d'aide ni aucun tarif de forfait ne change aujourd'hui ; relevé du 27/10 à 03 h UTC : Claude semaine à 44 % (remise à zéro le 01/11 à 16 h UTC), ChatGPT semaine à 71 % (remise à zéro le 02/11 vers 06 h UTC), aucun quota au seuil D71 de 80 %. OpenAI présente GPT-6.1 Terra, un modèle intermédiaire (rapporté par Simon Willison, pas encore confirmé par une source officielle de la veille) : à voir dans le sélecteur de Codex avant d'envisager un palier de plus dans le barème de `mission-codex`. Le reste de l'actualité (une lettre de recherche, une mise à jour d'iOS, faits divers) est sans effet sur tes outils.",
+ "sources_en_echec": [],
+ "elements": [
+  {
+   "id": "https://simonwillison.net/2026/Oct/26/gpt-61-terra/",
+   "ids_bruts": [
+    "https://simonwillison.net/2026/Oct/26/gpt-61-terra/"
+   ],
+   "produit": "actu",
+   "titre": "GPT-6.1 Terra : modèle intermédiaire d'OpenAI, vision et usage d'ordinateur, 1 $ / 5 $ par million de jetons",
+   "version": null,
+   "date_publication": "2026-10-26",
+   "type": "nouveaute",
+   "resume": "OpenAI présente GPT-6.1 Terra, un modèle rapide et économique qui met en avant le raisonnement visuel et l'usage d'ordinateur, « un net progrès » sur GPT-5.6 Terra selon l'annonce citée par Simon Willison. Son prix API serait de 1 $ par million de jetons en entrée et 5 $ en sortie, soit près de la moitié de GPT-5.6 Terra et de GPT-6.1 Sol et environ dix fois GPT-6 Luna (chiffres du billet). Un ingénieur d'OpenAI cité par le billet le juge meilleur qu'Astra et Sol pour la communication technique, comparable en vision et usage d'ordinateur mais plus rapide, un peu en retrait sur le reste ; pour les abonnés, « pas une bombe », avec une éventuelle aide si les limites d'usage sont atteintes. Le billet ne dit pas si Terra est proposé dans Codex ni dans quels forfaits ChatGPT.",
+   "sources": [
+    {
+     "url": "https://simonwillison.net/2026/Oct/26/gpt-61-terra/",
+     "libelle": "Simon Willison — GPT-6.1 Terra",
+     "officielle": false
+    }
+   ],
+   "certitude": "rapporte",
+   "impact": "moyen",
+   "pour_toi": "Tes sessions Codex et `mission-codex` choisissent le modèle explicitement : `gpt-6-luna` pour le mécanique, `gpt-6.1-sol` pour le code et les correctifs (barème de `discipline`), et le profil `rapide` tourne sur `gpt-6-sol` ; Terra serait un palier entre les deux, mais le billet ne dit pas qu'il est disponible dans Codex ni pour ton forfait Pro (100). Sur ta priorité « alléger les limites hebdomadaires » (ChatGPT à 71 % au relevé de 03 h UTC), le seul avis cité est hypothétique (« peut-être ») : à ne pas compter avant d'avoir vu Terra dans ton sélecteur. Pour les audits, le même avis le place en retrait de Sol sur « la plupart des autres choses », donc pas un remplaçant du profil `audit`.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Voir si GPT-6.1 Terra est proposé à ton compte dans Codex ; revérifier le 2026-10-29, aucune échéance publiée.",
+    "etapes": [
+     "Dans la session Codex du chef veille-shopify (tmux `codex-veille-shopify`), tape `/model` (syntaxe de la fiche `codex-commandes-model`) ; résultat attendu : le sélecteur liste les modèles accessibles à ton compte, et dit si GPT-6.1 Terra y figure ; s'il n'y figure pas, rien à changer.",
+     "Si Terra figure dans la liste, ne change aucun défaut : note son identifiant exact tel qu'affiché, pour le soumettre au chef delta-ia comme palier possible du barème `codex_modeles.py` de `discipline` ; résultat attendu : un identifiant lu à l'écran, jamais déduit du nom du billet."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [],
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Barème de `mission-codex` : luna pour le mécanique, sol pour le code, modèle toujours passé explicitement."
+    },
+    "config.codex.profils": {
+     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+     "pourquoi": "Profils `audit`, `rapide`, `securite` : modèles et efforts relevés dans etat.json."
+    },
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "ChatGPT Pro (100) ; priorité d'alléger les limites hebdomadaires."
+    }
+   }
+  },
+  {
+   "id": "https://importai.substack.com/p/import-ai-478-math-for-alignment",
+   "ids_bruts": [
+    "https://importai.substack.com/p/import-ai-478-math-for-alignment"
+   ],
+   "produit": "actu",
+   "titre": "Import AI 478 : mathématiques pour l'alignement, ProgramBench (Claude Opus 5.5 à 18,5 %), sécurité d'un environnement d'entraînement OpenAI",
+   "version": null,
+   "date_publication": "2026-10-26",
+   "type": "nouveaute",
+   "resume": "Lettre de recherche : formalisation automatique par agents d'un résultat de théorie de l'apprentissage statistique, score de Claude Opus 5.5 (xhigh) de 18,5 % de tâches entièrement résolues (70,5 % presque résolues) sur ProgramBench, où le meilleur système, Claude Opus 4.7, était à 0 % à la parution en mai, et résumé d'un billet d'OpenAI sur des échappements trouvés par ses agents dans son propre environnement d'entraînement. Aucune commande ni aucun réglage d'outil.",
+   "sources": [
+    {
+     "url": "https://importai.substack.com/p/import-ai-478-math-for-alignment",
+     "libelle": "Import AI 478",
+     "officielle": false
+    }
+   ],
+   "certitude": "rapporte",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  }
+ ],
+ "ecartes": [
+  {
+   "id": "https://simonwillison.net/2026/Oct/26/webframe-evaluation/",
+   "raison": "outil de développement tiers (webframe) évalué par un agent, sans lien avec les outils IA de Sylvain ni leurs conditions d'usage (D24)"
+  },
+  {
+   "id": "https://simonwillison.net/2026/Oct/26/jason-koebler/",
+   "raison": "citation de presse sur les renvois de ChatGPT vers un média, sans effet sur l'usage des outils (D24)"
+  },
+  {
+   "id": "https://arstechnica.com/tech-policy/2026/10/highway-thieves-are-spoofing-gps-to-steal-millions-in-data-center-bound-cargo/",
+   "raison": "fait divers (vols de fret), post/article sans rapport avec les modèles, les outils IA ni leurs conditions d'usage (D24)"
+  },
+  {
+   "id": "https://arstechnica.com/cars/2026/10/tesla-wants-ai-and-software-to-be-its-next-profit-engine/",
+   "raison": "stratégie d'un constructeur automobile, post/article sans rapport avec les modèles, les outils IA ni leurs conditions d'usage (D24)"
+  },
+  {
+   "id": "https://arstechnica.com/apple/2026/10/apple-releases-ios-and-macos-27-2-with-new-siri-ai-features-new-music-logo/",
+   "raison": "mise à jour d'un système d'exploitation grand public (Siri), hors des outils suivis (D24)"
+  },
+  {
+   "id": "https://arstechnica.com/ai/2026/10/boston-dynamics-employees-want-to-block-sale-of-robot-dogs-to-ice/",
+   "raison": "robotique et politique, post/article sans rapport avec les modèles, les outils IA ni leurs conditions d'usage (D24)"
+  },
+  {
+   "id": "https://simonwillison.net/2026/Oct/25/seam-cutter/",
+   "raison": "petit outil web de recadrage d'images, post/article sans rapport avec les modèles, les outils IA ni leurs conditions d'usage (D24)"
+  }
+ ],
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
