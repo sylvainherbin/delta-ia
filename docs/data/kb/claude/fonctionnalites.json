@@ -332,16 +332,16 @@
    "categorie": "fonctionnalites",
    "nom": "Share session output as artifacts",
    "gabarit": "complet",
-   "description": "Claude Code publie un résultat de session sous forme de page web interactive sur claude.ai, privée par défaut, mise à jour sur place au fil de la session et partageable par lien. Utile pour une revue de diff annotée, un tableau de bord ou une chronologie d'enquête ; la publication passe par le mode de permission (en mode auto, le classificateur décide sans demander).",
+   "description": "Claude Code publie un résultat de session en page web interactive sur claude.ai, mise à jour sur place au fil de la session ; sur Pro et Max, elle reste privée tant qu'on ne la partage pas. Un artefact demandé dans un prompt tapé est publié sans demande de permission. Pour couper la fonction, il faut `Artifact` dans `permissions.deny` : une règle `WebFetch` sans domaine ne la bloque pas.",
    "description_source": "Artifacts turn Claude Code's work into live, interactive pages on claude.ai that you can keep private, share with your organization, or publish to a public link.",
    "usage": "Make an artifact that walks through this PR with the diff annotated inline.",
    "usage_nature": "syntaxe",
-   "exemple": "Build a dashboard artifact of last week's deploy failures by service and keep it updated as you investigate.",
+   "exemple": "Make an artifact that walks through this PR with the diff annotated inline.",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sylvain utilise déjà les artefacts dans l'app Claude et pilote depuis l'iPhone : un rapport de campagne trading-sim publié en artefact privé se lirait sur le téléphone ; vérifie d'abord que la politique de capacités du projet (qui interdit les connecteurs claude.ai) ne l'empêche pas."
+    "pourquoi": "Tu utilises déjà les artefacts dans Claude et pilotes depuis l'iPhone : dans une session delta-ia, demande un artefact privé qui présente le diff annoté d'une mission, à lire sur le téléphone avant l'OK du chef. Sur trading-sim, le `deny` de WebFetch ne bloque pas les artefacts : si Work veut les exclure, il faut `Artifact` dans `permissions.deny`."
    },
    "sources": [
     {
@@ -354,7 +354,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -375,61 +375,128 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les Artifacts transforment le travail de Claude Code en pages interactives sur claude.ai, que l'on peut garder privées, partager avec son organisation ou publier par un lien public.",
+       "source": "https://code.claude.com/docs/en/artifacts",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire les Artifacts de Claude Code ou supprime l'option de les garder privés."
+      },
+      {
+       "affirmation": "La documentation donne comme exemple d'usage la demande « Make an artifact that walks through this PR with the diff annotated inline. »",
+       "source": "https://code.claude.com/docs/en/artifacts",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Cet exemple disparaît de la documentation ou la création d'artefact par simple demande n'est plus possible."
+      },
+      {
+       "affirmation": "Dans Claude, Sylvain utilise les artefacts, les connecteurs et les skills.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus l'usage des artefacts par Sylvain."
+      },
+      {
+       "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push) ; il préfère recevoir un résultat livré plutôt qu'une consigne à recopier.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale de pilotage."
+      },
+      {
+       "affirmation": "Sylvain désigne trading-sim comme sa priorité.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique une autre priorité que trading-sim."
+      },
+      {
+       "affirmation": "Sur trading-sim, .claude/settings.json interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…).",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La politique de capacités de trading-sim est assouplie ou CONTEXTE.md ne la décrit plus."
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sylvain utilise déjà les artefacts dans l'app Claude et pilote depuis l'iPhone : un rapport de campagne trading-sim publié en artefact privé se lirait sur le téléphone ; vérifie d'abord que la politique de capacités du projet (qui interdit les connecteurs claude.ai) ne l'empêche pas."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "utilise déjà les artefacts de claude.ai"
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Sylvain utilise déjà les artefacts de Claude."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "l'iPhone est l'interface principale"
+     "pourquoi": "L'iPhone est l'interface principale."
+    },
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Le chef relit le résultat d'une mission et donne l'OK de fusion."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "connecteurs claude.ai refusés dans .claude/settings.json"
+     "pourquoi": "settings.json interdit WebFetch et les connecteurs claude.ai, sans mention des artefacts."
     }
    },
    "provenance": [
     {
-     "affirmation": "Les Artifacts transforment le travail de Claude Code en pages interactives sur claude.ai, que l'on peut garder privées, partager avec son organisation ou publier par un lien public.",
+     "affirmation": "Un artefact est une page web interactive que Claude Code publie depuis la session sur claude.ai et met à jour sur place ; sur Pro et Max, il reste privé tant qu'on ne le partage pas.",
      "source": "https://code.claude.com/docs/en/artifacts",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire les Artifacts de Claude Code ou supprime l'option de les garder privés."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation retire les artefacts de Claude Code ou change leur visibilité par défaut."
     },
     {
-     "affirmation": "La documentation donne comme exemple d'usage la demande « Make an artifact that walks through this PR with the diff annotated inline. »",
+     "affirmation": "Un nouvel artefact publié en réponse à un prompt tapé passe sans demande de permission ni revue du classificateur.",
      "source": "https://code.claude.com/docs/en/artifacts",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Cet exemple disparaît de la documentation ou la création d'artefact par simple demande n'est plus possible."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La publication passe sous une demande de permission."
+    },
+    {
+     "affirmation": "Une règle `WebFetch` en deny sans partie `domain:` ne coupe pas les artefacts ; la règle de permission qui les coupe est `Artifact` dans `permissions.deny`.",
+     "source": "https://code.claude.com/docs/en/artifacts",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation change la règle qui désactive les artefacts."
     },
     {
      "affirmation": "Dans Claude, Sylvain utilise les artefacts, les connecteurs et les skills.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage des artefacts par Sylvain."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage des artefacts."
     },
     {
-     "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push) ; il préfère recevoir un résultat livré plutôt qu'une consigne à recopier.",
+     "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push).",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale de pilotage."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale."
     },
     {
-     "affirmation": "Sylvain désigne trading-sim comme sa priorité.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique une autre priorité que trading-sim."
+     "affirmation": "Le chef d'un projet relit le résultat d'une mission et donne l'OK de fusion ; le dev fusionne et pousse après cet OK.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La relecture des missions par les chefs disparaît."
     },
     {
-     "affirmation": "Sur trading-sim, .claude/settings.json interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…).",
+     "affirmation": "Sur trading-sim, `.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai.",
      "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La politique de capacités de trading-sim est assouplie ou CONTEXTE.md ne la décrit plus."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La politique de capacités de trading-sim change ou mentionne les artefacts."
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-auto-mode-config",
@@ -1290,7 +1357,7 @@
    "categorie": "fonctionnalites",
    "nom": "Let Claude coordinate ongoing work with Projects",
    "gabarit": "complet",
-   "description": "Un projet est une conversation au long cours où Claude coordonne un flux de tâches liées : il lance un fil par tâche, en général une session cloud qui part des dépôts GitHub, des instructions et de la mémoire du projet, et le volet Overview montre les fils prêts, en cours ou en attente. Un fil peut tourner sur ta machine via Remote Control ; les fils cloud ne reprennent ni skills, ni `.claude/settings.json`, ni `.mcp.json`. Un projet use les mêmes limites du forfait que les autres sessions, plus vite, et un fil arrêté par la limite reprend seul à la remise à zéro.",
+   "description": "Un projet est une conversation au long cours où Claude coordonne un flux de tâches liées : un fil par tâche, en général une session cloud qui part des dépôts GitHub, des instructions et de la mémoire du projet. Un fil peut tourner sur ta machine via Remote Control ; les fils cloud lisent le `CLAUDE.md` des dépôts, mais ni leurs skills, ni `.claude/settings.json`, ni `.mcp.json`. Un projet use les mêmes limites du forfait, plus vite, et ne les dépasse que si les crédits d'usage sont activés.",
    "description_source": "Hand Claude a stream of related tasks in one conversation and let it run them as parallel cloud sessions that share repositories, instructions, and memory.",
    "usage": "This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.\n\n- Branch from main and open one draft pull request per thread.\n- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.\n- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.\n- Don't merge, force-push, or change CI configuration without asking me in the thread.",
    "usage_nature": "syntaxe",
@@ -1299,7 +1366,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie que « Projects » apparaît dans claude.ai/code (bêta publique en déploiement progressif), puis confie-lui une seule tâche. Sans crédit cloud depuis le 21/10, les fils puisent dans ton Max (20x) et reprennent seuls à la remise à zéro : à compter dans le bilan d'avant le 03/11."
+    "pourquoi": "Essai possible sur carnet (dépôt GitHub) : cherche « Projects » dans claude.ai/code, au besoin sous More (la bêta part des comptes sans projet claude.ai ni Cowork, et tu en as trois), puis confie-lui une seule tâche. Sans crédits (décision du 21/10), les fils puisent dans le Max (20x) sans le dépasser : compte-les dans le bilan d'essai à préparer avant le 07/11."
    },
    "sources": [
     {
@@ -1312,7 +1379,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1413,48 +1480,105 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Projects est en bêta publique sur Pro et Max, déployé progressivement ; s'il n'apparaît ni dans la barre latérale ni sous More, le déploiement n'a pas atteint le compte.",
+       "source": "https://code.claude.com/docs/en/claude-projects",
+       "releve_le": "2026-10-23",
+       "caduc_si": "Projects sort de bêta, change de forfaits ou d'accès"
+      },
+      {
+       "affirmation": "Un projet puise dans les mêmes limites que les autres sessions Claude Code, plus vite ; un fil arrêté par la limite attend et reprend seul à la remise à zéro.",
+       "source": "https://code.claude.com/docs/en/claude-projects",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la page change le décompte de l'usage ou la reprise automatique"
+      },
+      {
+       "affirmation": "carnet est le projet le plus actif ; son dépôt est public sur GitHub.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-23",
+       "caduc_si": "carnet cesse d'être hébergé sur GitHub ou devient privé"
+      },
+      {
+       "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-23",
+       "caduc_si": "un crédit cloud est repris ou le forfait change",
+       "revoir_le": "2026-11-03"
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Essai possible sur carnet (dépôt public sur GitHub) depuis l'iPhone : vérifie que « Projects » apparaît dans claude.ai/code (bêta publique en déploiement progressif), puis confie-lui une seule tâche. Sans crédit cloud depuis le 21/10, les fils puisent dans ton Max (20x) et reprennent seuls à la remise à zéro : à compter dans le bilan d'avant le 03/11."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "Dépôt public sur GitHub, projet le plus actif, candidat à des fils cloud."
+     "pourquoi": "Dépôt GitHub, projet le plus actif, candidat à des fils cloud."
     },
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Projets en profondeur à explorer ; app iPhone pour piloter."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Projets claude.ai : 3 existants ; Projets en profondeur à explorer."
     },
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Max (20x) à l'essai, bilan avant le 07/11 ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
    "exemple_impossible": "Usage = instructions d'un projet fictif (payments-api) ; rien d'exécutable, et un projet de Sylvain serait inventé",
    "provenance": [
     {
-     "affirmation": "Projects est en bêta publique sur Pro et Max, déployé progressivement ; s'il n'apparaît ni dans la barre latérale ni sous More, le déploiement n'a pas atteint le compte.",
+     "affirmation": "Projects est en bêta publique sur Pro et Max, déployée progressivement, d'abord aux comptes qui ont utilisé des sessions cloud et n'ont pas de projet dans claude.ai chat ou Cowork ; sinon, regarder sous More.",
      "source": "https://code.claude.com/docs/en/claude-projects",
-     "releve_le": "2026-10-23",
-     "caduc_si": "Projects sort de bêta, change de forfaits ou d'accès"
+     "releve_le": "2026-10-27",
+     "caduc_si": "Projects sort de bêta ou change de forfaits ou d'accès."
     },
     {
-     "affirmation": "Un projet puise dans les mêmes limites que les autres sessions Claude Code, plus vite ; un fil arrêté par la limite attend et reprend seul à la remise à zéro.",
+     "affirmation": "Un projet puise dans les mêmes limites que les autres sessions Claude Code, plus vite ; il ne dépasse les limites du forfait que si les crédits d'usage sont activés.",
      "source": "https://code.claude.com/docs/en/claude-projects",
-     "releve_le": "2026-10-23",
-     "caduc_si": "la page change le décompte de l'usage ou la reprise automatique"
+     "releve_le": "2026-10-27",
+     "caduc_si": "La page change le décompte de l'usage."
     },
     {
-     "affirmation": "carnet est le projet le plus actif ; son dépôt est public sur GitHub.",
+     "affirmation": "Les fils cloud chargent le `CLAUDE.md` de chaque dépôt, mais ni ses skills, ni `.mcp.json`, ni `.claude/settings.json`.",
+     "source": "https://code.claude.com/docs/en/claude-projects",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Les fils cloud se mettent à lire les skills ou les réglages des dépôts."
+    },
+    {
+     "affirmation": "carnet est le projet le plus actif ; son dépôt est sur GitHub.",
      "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-23",
-     "caduc_si": "carnet cesse d'être hébergé sur GitHub ou devient privé"
+     "releve_le": "2026-10-27",
+     "caduc_si": "carnet quitte GitHub."
     },
     {
-     "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+     "affirmation": "Sylvain a trois Projets claude.ai ; les Projets en profondeur figurent parmi les fonctions à explorer.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md change le nombre de projets claude.ai ou retire cette exploration."
+    },
+    {
+     "affirmation": "Aucun crédit Claude Code cloud (décision du 21/10) ; Max (20x) à l'essai, bilan d'usage à préparer avant le 07/11.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-23",
-     "caduc_si": "un crédit cloud est repris ou le forfait change",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Un crédit cloud est repris ou le forfait change.",
      "revoir_le": "2026-11-03"
     }
    ]
@@ -1618,7 +1742,7 @@
    "categorie": "fonctionnalites",
    "nom": "Configure cloud environments",
    "gabarit": "complet",
-   "description": "Configure l'environnement des sessions cloud : niveau d'accès réseau (le Default, en Trusted, n'atteint que les registres de paquets et des domaines autorisés), variables d'environnement, secrets réseau que la session utilise sans les voir, script d'installation lancé en root sur Ubuntu 24.04 avant Claude, et cache de l'environnement. On le choisit dans claude.ai/code ou l'app, ou par `/remote-env` depuis la CLI.",
+   "description": "Configure l'environnement des sessions cloud : niveau d'accès réseau (Trusted par défaut, qui n'atteint que les registres de paquets et des domaines autorisés), variables d'environnement, secrets réseau, script d'installation lancé en root sur Ubuntu 24.04 avant Claude Code, et cache de l'environnement. L'environnement Default n'a ni variables ni script.",
    "description_source": "Configure cloud environments for Claude Code cloud sessions: network access levels, environment variables, setup scripts, and environment caching.",
    "usage": "NODE_ENV=development\nLOG_LEVEL=debug\nDATABASE_URL=postgres://localhost:5432/myapp",
    "usage_nature": "syntaxe",
@@ -1627,7 +1751,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour les missions `code` qu'OPÉRER confie à `claude-cloud` sur delta-ia, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait d'y lancer `.venv/bin/pytest -q`, que le Default n'installe pas. Les variables sont lisibles par tout utilisateur de l'environnement : une clé passe par un secret réseau, jamais en clair."
+    "pourquoi": "Pour les missions `code` qu'OPÉRER confie à `claude-cloud` sur delta-ia, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait d'y lancer `.venv/bin/pytest -q`, absent du Default. Les variables sont lisibles par tout utilisateur de l'environnement : une clé passe par un secret réseau, jamais en clair."
    },
    "sources": [
     {
@@ -1640,7 +1764,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1699,44 +1823,88 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Un environnement cloud règle l'accès réseau, les variables d'environnement, des secrets réseau et un script d'installation lancé avant Claude ; le Default n'a ni variables ni script.",
+       "source": "https://code.claude.com/docs/en/cloud-environments",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la documentation retire les scripts d'installation ou change le Default"
+      },
+      {
+       "affirmation": "Le script d'installation s'exécute en root sur Ubuntu 24.04 ; les valeurs des variables sont lisibles par quiconque utilise l'environnement, d'où les secrets réseau pour les clés.",
+       "source": "https://code.claude.com/docs/en/cloud-environments",
+       "releve_le": "2026-10-23",
+       "caduc_si": "le système des sessions cloud ou la visibilité des variables change"
+      },
+      {
+       "affirmation": "OPÉRER confie des missions de nature `code` et `mecanique` à l'exécutant `claude-cloud`.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-23",
+       "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+      },
+      {
+       "affirmation": "pytest est absent du système de Sylvain et présent seulement dans delta-ia/.venv.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-23",
+       "caduc_si": "pytest est installé au niveau système ou delta-ia change d'outil de test"
+      }
+     ],
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour les missions `code` qu'OPÉRER confie à `claude-cloud` sur delta-ia, un script d'installation (`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`) permettrait d'y lancer `.venv/bin/pytest -q`, que le Default n'installe pas. Les variables sont lisibles par tout utilisateur de l'environnement : une clé passe par un secret réseau, jamais en clair."
+     },
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
      "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
-     "pourquoi": "Allocation des missions vers Claude cloud, natures `code` et `mecanique`."
+     "pourquoi": "Allocation des missions vers Claude cloud, natures code et mecanique."
     },
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
      "pourquoi": "pytest absent du système, présent seulement dans delta-ia/.venv."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Un environnement cloud règle l'accès réseau, les variables d'environnement, des secrets réseau et un script d'installation lancé avant Claude ; le Default n'a ni variables ni script.",
+     "affirmation": "L'environnement Default a l'accès réseau Trusted (registres de paquets et domaines autorisés) et ne définit ni variables ni script d'installation.",
      "source": "https://code.claude.com/docs/en/cloud-environments",
-     "releve_le": "2026-10-23",
-     "caduc_si": "la documentation retire les scripts d'installation ou change le Default"
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation change le Default."
     },
     {
-     "affirmation": "Le script d'installation s'exécute en root sur Ubuntu 24.04 ; les valeurs des variables sont lisibles par quiconque utilise l'environnement, d'où les secrets réseau pour les clés.",
+     "affirmation": "Le script d'installation est un script Bash lancé en root sur Ubuntu 24.04 avant Claude Code, puis mis en cache ; les valeurs des variables sont lisibles par quiconque utilise l'environnement, d'où les secrets réseau pour les clés.",
      "source": "https://code.claude.com/docs/en/cloud-environments",
-     "releve_le": "2026-10-23",
-     "caduc_si": "le système des sessions cloud ou la visibilité des variables change"
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le système des sessions cloud ou la visibilité des variables change."
     },
     {
      "affirmation": "OPÉRER confie des missions de nature `code` et `mecanique` à l'exécutant `claude-cloud`.",
      "source": "contexte:methode.operer",
-     "releve_le": "2026-10-23",
-     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+     "releve_le": "2026-10-27",
+     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud."
     },
     {
      "affirmation": "pytest est absent du système de Sylvain et présent seulement dans delta-ia/.venv.",
      "source": "contexte:env.machine",
-     "releve_le": "2026-10-23",
-     "caduc_si": "pytest est installé au niveau système ou delta-ia change d'outil de test"
+     "releve_le": "2026-10-27",
+     "caduc_si": "pytest est installé au niveau système ou delta-ia change d'outil de test."
     }
    ]
   },
@@ -2273,7 +2441,7 @@
    "categorie": "fonctionnalites",
    "nom": "Desktop application",
    "gabarit": "complet",
-   "description": "Référence de l'onglet Code de Claude Desktop : sessions parallèles isolées par git, panneaux de diff, de terminal, d'éditeur et de navigateur pour prévisualiser l'app, questions annexes sans dérailler la session, suivi de PR, connecteurs et Dispatch depuis le téléphone. La prévisualisation se configure dans un fichier de lancement (`configurations`, commande, port).",
+   "description": "Référence de l'onglet Code de Claude Desktop : sessions parallèles isolées par git, panneaux de diff, de terminal, d'éditeur et de navigateur pour prévisualiser l'app, questions annexes, suivi de PR, connecteurs et Dispatch depuis le téléphone. La prévisualisation se configure dans `.claude/launch.json` (`configurations`, commande, port) ; sous Linux, l'app est en bêta et s'installe par apt.",
    "description_source": "Get more out of Claude Code Desktop: parallel sessions with Git isolation, drag-and-drop pane layout, integrated terminal and file editor, side chats, computer use, Dispatch sessions from your phone, visual diff review, app previews, PR monitoring, connectors, and enterprise configuration.",
    "usage": "{\n  \"version\": \"0.0.1\",\n  \"configurations\": [\n    {\n      \"name\": \"my-app\",\n      \"runtimeExecutable\": \"npm\",\n      \"runtimeArgs\": [\"run\", \"dev\"],\n      \"port\": 3000\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
@@ -2282,7 +2450,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sylvain utilise Claude Desktop en mode Claude Code (Claude Design) et veut en exploiter toutes les fonctions utiles ; le panneau de prévisualisation (`launch.json`, `npm run dev`) permettrait de voir la console `carnet-console` (React/Vite) pendant que la session la modifie."
+    "pourquoi": "Tu utilises Claude Desktop en mode Claude Code (Claude Design) et veux en exploiter toutes les fonctions utiles : dans la session qui modifie `carnet-console` (React/Vite), le panneau Browser doit afficher l'app une fois `.claude/launch.json` réglé sur sa commande de dev. L'app Linux étant en bêta, vérifie d'abord que le panneau y est proposé."
    },
    "sources": [
     {
@@ -2295,7 +2463,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2320,62 +2488,126 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Claude Code Desktop propose des sessions parallèles isolées par Git, un terminal et un éditeur de fichiers intégrés, une revue visuelle des diffs, des prévisualisations d'application (app previews) et un suivi des PR.",
+       "source": "https://code.claude.com/docs/en/desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation Desktop ne mentionne plus les app previews ou ces panneaux intégrés."
+      },
+      {
+       "affirmation": "La prévisualisation se décrit dans une liste `configurations` : chaque entrée porte un `name`, un `runtimeExecutable` (`npm`), des `runtimeArgs` (`run`, `dev`) et un `port` (3000 dans l'exemple).",
+       "source": "https://code.claude.com/docs/en/desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le format de configuration de prévisualisation change de clés ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "Claude Code Desktop permet de lancer des sessions via Dispatch depuis le téléphone.",
+       "source": "https://code.claude.com/docs/en/desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Dispatch disparaît de la page Desktop de la documentation."
+      },
+      {
+       "affirmation": "Sylvain déclare vouloir utiliser toutes les fonctionnalités de l'app Claude Desktop utiles au développement de ses projets.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne rapporte plus cette volonté d'exploiter toutes les fonctions utiles de Claude Desktop."
+      },
+      {
+       "affirmation": "Son irritant déclaré est la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal ; il attend des alertes sur les nouvelles fonctionnalités.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire cet irritant ou cette attente de la veille."
+      },
+      {
+       "affirmation": "`carnet-console` est une console web en dépôt privé, jointe depuis l'iPhone, projet OPÉRER FULL_AUTO dont le dev est la session Design.",
+       "source": "contexte:projet.delta-desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus carnet-console ou ne la confie plus à la session Design."
+      },
+      {
+       "affirmation": "La session Design (Claude Design) construit le bureau Delta de Sylvain dans `~/projets/delta-desktop`.",
+       "source": "contexte:projet.delta-desktop",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus la session Design comme constructrice de delta-desktop."
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sylvain utilise Claude Desktop en mode Claude Code (Claude Design) et veut en exploiter toutes les fonctions utiles ; le panneau de prévisualisation (`launch.json`, `npm run dev`) permettrait de voir la console `carnet-console` (React/Vite) pendant que la session la modifie."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "veut utiliser toutes les fonctions utiles de Claude Desktop"
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Veut utiliser toutes les fonctions de Claude Desktop utiles au développement."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop en mode Claude Code ; Console en React/Vite."
     },
     "projet.delta-desktop": {
      "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
-     "pourquoi": "console carnet-console en React construite par la session Design"
+     "pourquoi": "Console carnet-console construite par la session Design."
+    },
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Desktop installé en paquet Debian."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Claude Code Desktop propose des sessions parallèles isolées par Git, un terminal et un éditeur de fichiers intégrés, une revue visuelle des diffs, des prévisualisations d'application (app previews) et un suivi des PR.",
+     "affirmation": "Claude peut lancer un serveur de développement et l'ouvrir dans le panneau Browser pour vérifier ses changements ; une commande de dev particulière se règle dans `.claude/launch.json`.",
      "source": "https://code.claude.com/docs/en/desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation Desktop ne mentionne plus les app previews ou ces panneaux intégrés."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation retire la prévisualisation ou change le fichier de configuration."
     },
     {
-     "affirmation": "La prévisualisation se décrit dans une liste `configurations` : chaque entrée porte un `name`, un `runtimeExecutable` (`npm`), des `runtimeArgs` (`run`, `dev`) et un `port` (3000 dans l'exemple).",
+     "affirmation": "Claude Desktop pour Linux est en bêta et s'installe avec apt.",
      "source": "https://code.claude.com/docs/en/desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le format de configuration de prévisualisation change de clés ou disparaît de la documentation."
+     "releve_le": "2026-10-27",
+     "caduc_si": "L'app Linux sort de bêta ou change de mode d'installation."
     },
     {
-     "affirmation": "Claude Code Desktop permet de lancer des sessions via Dispatch depuis le téléphone.",
-     "source": "https://code.claude.com/docs/en/desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Dispatch disparaît de la page Desktop de la documentation."
-    },
-    {
-     "affirmation": "Sylvain déclare vouloir utiliser toutes les fonctionnalités de l'app Claude Desktop utiles au développement de ses projets.",
+     "affirmation": "Sylvain veut utiliser toutes les fonctionnalités de Claude Desktop utiles au développement de ses projets.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne rapporte plus cette volonté d'exploiter toutes les fonctions utiles de Claude Desktop."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md retire cette volonté."
     },
     {
-     "affirmation": "Son irritant déclaré est la méconnaissance des commandes et fonctionnalités, d'où un usage sous-optimal ; il attend des alertes sur les nouvelles fonctionnalités.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire cet irritant ou cette attente de la veille."
+     "affirmation": "Sylvain utilise intensivement Claude Design depuis Claude Desktop en mode Claude Code ; la Console de pilotage est en React avec Vite.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne décrit plus cet usage ou la Console change de pile."
     },
     {
-     "affirmation": "`carnet-console` est une console web en dépôt privé, jointe depuis l'iPhone, projet OPÉRER FULL_AUTO dont le dev est la session Design.",
+     "affirmation": "`carnet-console` est une console web en dépôt privé, projet OPÉRER FULL_AUTO dont le dev est la session Design.",
      "source": "contexte:projet.delta-desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus carnet-console ou ne la confie plus à la session Design."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne confie plus carnet-console à la session Design."
     },
     {
-     "affirmation": "La session Design (Claude Design) construit le bureau Delta de Sylvain dans `~/projets/delta-desktop`.",
-     "source": "contexte:projet.delta-desktop",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus la session Design comme constructrice de delta-desktop."
+     "affirmation": "Claude Desktop et ChatGPT Desktop sont installés en paquets Debian.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Claude Desktop est désinstallé ou installé autrement."
     }
    ]
   },
@@ -2669,16 +2901,16 @@
    "categorie": "fonctionnalites",
    "nom": "Fullscreen rendering",
    "gabarit": "complet",
-   "description": "Mode de rendu de Claude Code plus fluide et sans scintillement, avec prise en charge de la souris et une consommation mémoire stable dans les longues conversations. Il s'active au lancement avec la variable d'environnement `CLAUDE_CODE_NO_FLICKER=1 claude`.",
+   "description": "Mode de rendu sans scintillement, avec souris et mémoire stable dans les longues conversations, en aperçu de recherche. `CLAUDE_CODE_NO_FLICKER=1 claude` l'active pour un lancement ; `/tui fullscreen` l'enregistre dans le réglage `tui` et relance la conversation.",
    "description_source": "Enable a smoother, flicker-free rendering mode with mouse support and stable memory usage in long conversations.",
    "usage": "CLAUDE_CODE_NO_FLICKER=1 claude",
    "usage_nature": "syntaxe",
-   "exemple": "/tui fullscreen",
+   "exemple": "CLAUDE_CODE_NO_FLICKER=1 claude",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` dans des sessions tmux, et la machine est assez limitée en RAM pour que des sessions soient lancées à la demande. Essaie `CLAUDE_CODE_NO_FLICKER=1` sur une seule session et compare sa mémoire au fil d'une longue conversation avant de l'ajouter au lanceur."
+    "pourquoi": "Tes sessions durables tournent sous tmux, où la page signale le gain le plus net, et des sessions sont lancées à la demande pour économiser la RAM : lance une seule session avec `CLAUDE_CODE_NO_FLICKER=1` et compare sa mémoire au fil d'une longue conversation. `/tui fullscreen` enregistre le réglage pour la suite ; sous tmux, la molette exige le mode souris, et les versions jusqu'à 3.6 scintillent davantage."
    },
    "sources": [
     {
@@ -2691,7 +2923,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2723,45 +2955,86 @@
      "changement": "description corrigée",
      "avant": "Autre moteur de rendu du CLI qui dessine l'interface sur tout le terminal, comme `vim` : plus de scintillement, mémoire stable dans les longues conversations et prise en charge de la souris. Le gain est le plus net dans les terminaux lents à rafraîchir, dont tmux. Aperçu de recherche.",
      "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus que sur ce que dit la source (rendu sans scintillement, mémoire stable) et sur les sections env.multi-sessions et env.machine citées ; tmux, `/tui ful"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le mode fullscreen offre un rendu sans scintillement, la prise en charge de la souris et une mémoire stable dans les longues conversations ; il s'active par `CLAUDE_CODE_NO_FLICKER=1 claude`.",
+       "source": "https://code.claude.com/docs/en/fullscreen",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page retire ce mode, change la variable d'activation ou ne promet plus une mémoire stable."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus reprises par `claude --resume`."
+      },
+      {
+       "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande pour économiser environ 300 Mio de RAM chacune.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Toutes les sessions redémarrent automatiquement, sans contrainte de mémoire."
+      },
+      {
+       "affirmation": "La machine est un portable HP avec 14 Gio de RAM, jugée modeste.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Changement de machine ou ajout important de mémoire."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` dans des sessions tmux, et la machine est assez limitée en RAM pour que des sessions soient lancées à la demande. Essaie `CLAUDE_CODE_NO_FLICKER=1` sur une seule session et compare sa mémoire au fil d'une longue conversation avant de l'ajouter au lanceur."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions Claude Code durables reprises sous tmux, et sessions peu utilisées lancées à la demande pour économiser de la RAM."
-    },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Machine modeste (14 Gio de RAM), donc une mémoire stable dans les longues conversations a un intérêt concret."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous tmux ; sessions peu utilisées lancées à la demande pour économiser environ 300 Mio de RAM."
     }
    },
    "provenance": [
     {
-     "affirmation": "Le mode fullscreen offre un rendu sans scintillement, la prise en charge de la souris et une mémoire stable dans les longues conversations ; il s'active par `CLAUDE_CODE_NO_FLICKER=1 claude`.",
+     "affirmation": "Le rendu fullscreen supprime le scintillement, ajoute la souris et garde la mémoire constante quelle que soit la longueur de la conversation ; `CLAUDE_CODE_NO_FLICKER=1 claude` l'active.",
      "source": "https://code.claude.com/docs/en/fullscreen",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page retire ce mode, change la variable d'activation ou ne promet plus une mémoire stable."
+     "releve_le": "2026-10-27",
+     "caduc_si": "La page retire ce mode, change la variable ou ne promet plus une mémoire stable."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+     "affirmation": "`/tui fullscreen` enregistre le réglage `tui` et relance la conversation intacte ; le mode est en aperçu de recherche.",
+     "source": "https://code.claude.com/docs/en/fullscreen",
+     "releve_le": "2026-10-27",
+     "caduc_si": "`/tui` cesse d'enregistrer le réglage ou le mode sort d'aperçu."
+    },
+    {
+     "affirmation": "Sous tmux, la molette exige le mode souris de tmux, et les versions jusqu'à la série 3.6 n'ont pas la sortie synchronisée, d'où plus de scintillement.",
+     "source": "https://code.claude.com/docs/en/fullscreen",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation retire ces réserves sur tmux."
+    },
+    {
+     "affirmation": "Chaque session durable est un service `claude-session@<nom>` qui exécute `claude --resume` dans une session tmux dédiée ; les sessions peu utilisées se lancent à la demande pour économiser environ 300 Mio de RAM chacune.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus reprises par `claude --resume`."
-    },
-    {
-     "affirmation": "Les sessions peu utilisées (`dev`, `school`) se lancent à la demande pour économiser environ 300 Mio de RAM chacune.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Toutes les sessions redémarrent automatiquement, sans contrainte de mémoire."
-    },
-    {
-     "affirmation": "La machine est un portable HP avec 14 Gio de RAM, jugée modeste.",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Changement de machine ou ajout important de mémoire."
+     "releve_le": "2026-10-27",
+     "caduc_si": "Les sessions durables quittent tmux ou toutes redémarrent automatiquement."
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-github-actions",

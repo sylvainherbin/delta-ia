@@ -7583,7 +7583,7 @@
    "categorie": "commandes",
    "nom": "/recap",
    "gabarit": "complet",
-   "description": "Génère à la demande un résumé d'une ligne de la session courante ; un récapitulatif automatique existe aussi après une absence.",
+   "description": "Génère à la demande un résumé d'une ligne de la session courante. Un récapitulatif automatique (Session recap) s'affiche aussi quand on revient après une absence.",
    "description_source": "Generate a one-line summary of the current session on demand. See Session recap for the automatic recap that appears after you've been away",
    "usage": "/recap",
    "usage_nature": "syntaxe",
@@ -7592,7 +7592,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "À la reprise d'une session durable depuis l'iPhone (`--resume`, Remote Control) après une nuit, `/recap` donne en une ligne où en est la session ; résultat attendu : une phrase sur l'état courant, sans relire l'historique."
+    "pourquoi": "À la reprise depuis l'iPhone d'une session durable (`claude --resume <id> --remote-control <nom>`), tape `/recap` : résultat attendu, une phrase sur l'état de la session, sans remonter l'historique."
    },
    "sources": [
     {
@@ -7605,7 +7605,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7630,56 +7630,94 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande `/recap` génère à la demande un résumé d'une ligne de la session courante.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `/recap` change de comportement ou disparaît de la documentation des commandes."
+      },
+      {
+       "affirmation": "La documentation renvoie aussi à « Session recap », un récapitulatif automatique qui apparaît quand l'utilisateur revient après une absence.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne mentionne plus le récapitulatif automatique après une absence."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance dans tmux `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées par `claude --resume` avec `--remote-control`."
+      },
+      {
+       "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le pilotage des sessions depuis l'iPhone par Remote Control."
+      },
+      {
+       "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push) ; il préfère recevoir un résultat livré plutôt qu'une consigne à recopier.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne présente plus l'iPhone comme interface principale ni cette préférence pour un résultat livré."
+      },
+      {
+       "affirmation": "Sylvain travaille en sessions tardives, avec une activité régulière après minuit, et par vagues de plusieurs jours.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce rythme de sessions tardives et de travail par vagues."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "À la reprise d'une session durable depuis l'iPhone (`--resume`, Remote Control) après une nuit, `/recap` donne en une ligne où en est la session ; résultat attendu : une phrase sur l'état courant, sans relire l'historique."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions durables reprises par --resume, pilotées par Remote Control"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables systemd reprises par claude --resume et pilotées par Remote Control depuis l'iPhone."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "l'iPhone est l'interface principale"
+     "pourquoi": "L'iPhone est l'interface principale ; Sylvain préfère un résultat livré."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La commande `/recap` génère à la demande un résumé d'une ligne de la session courante.",
+     "affirmation": "La commande `/recap` génère à la demande un résumé d'une ligne de la session courante ; la documentation renvoie aussi au récapitulatif automatique qui apparaît après une absence.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "La commande `/recap` change de comportement ou disparaît de la documentation des commandes."
     },
     {
-     "affirmation": "La documentation renvoie aussi à « Session recap », un récapitulatif automatique qui apparaît quand l'utilisateur revient après une absence.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne mentionne plus le récapitulatif automatique après une absence."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance dans tmux `claude --resume <id> --remote-control <nom>`.",
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute dans tmux `claude --resume <id> --remote-control <nom>`, pilotée depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées par `claude --resume` avec `--remote-control`."
-    },
-    {
-     "affirmation": "Les sessions durables sont pilotées depuis l'iPhone par Remote Control.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le pilotage des sessions depuis l'iPhone par Remote Control."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables reprises par `claude --resume` et pilotées par Remote Control."
     },
     {
      "affirmation": "L'iPhone est l'interface principale de Sylvain (Remote Control, notifications push) ; il préfère recevoir un résultat livré plutôt qu'une consigne à recopier.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne présente plus l'iPhone comme interface principale ni cette préférence pour un résultat livré."
-    },
-    {
-     "affirmation": "Sylvain travaille en sessions tardives, avec une activité régulière après minuit, et par vagues de plusieurs jours.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce rythme de sessions tardives et de travail par vagues."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne présente plus l'iPhone comme interface principale."
     }
    ]
   },
@@ -7792,7 +7830,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions Claude Code durables tournent en continu comme services systemd (`claude --resume`), et tu as des skills perso dont `latex-manuscrit` et `verif-numerique`, jamais invoqués et à revoir. Après une retouche d'un skill, `/reload-skills` permettrait de l'essayer tout de suite dans la session ouverte, sans la relancer."
+    "pourquoi": "Tes sessions durables tournent en continu (`claude --resume` sous systemd) et les skills dormants `latex-manuscrit` et `verif-numerique` sont à revoir : après une retouche de l'un d'eux, `/reload-skills` doit annoncer un skill modifié et le rendre essayable dans la session ouverte, sans la relancer."
    },
    "sources": [
     {
@@ -7805,7 +7843,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7841,47 +7879,91 @@
      "changement": "description corrigée",
      "avant": "Réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session, et indique combien ont été ajoutés ou retirés.",
      "raison": "recommentaire D128 : L'ancien pourquoi citait des skills `delta`/`delta-kb` modifiés et un redémarrage de service sans section fondatrice ; le verdict `tester` est désormais fondé sur les sessions sys"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/reload-skills` réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande est retirée ou son comportement change dans la documentation officielle."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables cessent d'être des services systemd persistants."
+      },
+      {
+       "affirmation": "Les skills perso sont `maintenance-mint`, `deploy-site`, `latex-manuscrit` et `verif-numerique` ; `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Ces skills sont supprimés ou ne sont plus maintenus sur le disque."
+      },
+      {
+       "affirmation": "Les skills dormants `latex-manuscrit` et `verif-numerique` sont à revoir, à supprimer ou à rendre déclenchables sur trading-sim.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Cette piste est close, les skills ayant été supprimés ou déjà révisés."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions Claude Code durables tournent en continu comme services systemd (`claude --resume`), et tu as des skills perso dont `latex-manuscrit` et `verif-numerique`, jamais invoqués et à revoir. Après une retouche d'un skill, `/reload-skills` permettrait de l'essayer tout de suite dans la session ouverte, sans la relancer."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions durables sont des services systemd `claude-session@<nom>` relancés par `claude --resume` : un redémarrage interrompt la session."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables systemd relancées par claude --resume : un redémarrage interrompt la session."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Liste les skills perso de Sylvain, dont deux jamais invoqués."
+     "pourquoi": "Skills perso de Sylvain, dont latex-manuscrit et verif-numerique jamais invoqués."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "La piste 4 propose de revoir ou de rendre déclenchables les skills dormants : une retouche de skill est donc prévue."
+     "pourquoi": "Piste 4 : revoir ou rendre déclenchables les skills dormants, donc une retouche est prévue."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "`/reload-skills` réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session.",
+     "affirmation": "`/reload-skills` réanalyse les dossiers de skills et de commandes pour rendre disponibles, sans redémarrer, les skills ajoutés ou modifiés pendant la session, et indique combien ont été ajoutés ou retirés.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "La commande est retirée ou son comportement change dans la documentation officielle."
     },
     {
      "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "Les sessions durables cessent d'être des services systemd persistants."
     },
     {
      "affirmation": "Les skills perso sont `maintenance-mint`, `deploy-site`, `latex-manuscrit` et `verif-numerique` ; `latex-manuscrit` et `verif-numerique` n'ont jamais été invoqués.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "Ces skills sont supprimés ou ne sont plus maintenus sur le disque."
     },
     {
      "affirmation": "Les skills dormants `latex-manuscrit` et `verif-numerique` sont à revoir, à supprimer ou à rendre déclenchables sur trading-sim.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "Cette piste est close, les skills ayant été supprimés ou déjà révisés."
     }
    ]
@@ -8405,7 +8487,7 @@
    "categorie": "commandes",
    "nom": "/sandbox",
    "gabarit": "complet",
-   "description": "Active ou coupe le mode sandbox, sur les plateformes prises en charge seulement.",
+   "description": "Ouvre le panneau du mode sandbox, qui isole les commandes Bash ; il n'existe que sur les plateformes prises en charge (macOS, Linux, WSL2). Sous Linux, il repose sur `bubblewrap` et `socat`, et le panneau signale un paquet manquant.",
    "description_source": "Toggle sandbox mode. Available on supported platforms only",
    "usage": "/sandbox",
    "usage_nature": "syntaxe",
@@ -8414,7 +8496,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "trading-sim a déjà une politique de capacités stricte dans `.claude/settings.json` ; `/sandbox` pourrait la compléter en bornant Bash, si la plateforme Linux Mint est prise en charge (à vérifier dans la session) ; le réglage du projet dépend de Work."
+    "pourquoi": "La session trading reste hors du régime `bypassPermissions` et trading-sim borne déjà ses capacités dans `.claude/settings.json` : dans cette session, `/sandbox` doit montrer si `bubblewrap` et `socat` manquent, puis bornerait Bash. Le réglage du projet reste à faire valider par Work, qui arbitre trading-sim."
    },
    "sources": [
     {
@@ -8427,7 +8509,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8452,50 +8534,114 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande `/sandbox` active ou coupe le mode sandbox (« Toggle sandbox mode »).",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `/sandbox` change de rôle ou disparaît de la documentation des commandes."
+      },
+      {
+       "affirmation": "La documentation précise que `/sandbox` n'est disponible que sur les plateformes prises en charge (« Available on supported platforms only »).",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire cette restriction de plateforme ou la commande disparaît."
+      },
+      {
+       "affirmation": "La machine de Sylvain tourne sous Linux Mint 22.1 (base Ubuntu 24.04), bureau Cinnamon.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique un autre système d'exploitation pour la machine."
+      },
+      {
+       "affirmation": "Claude Code est installé sur la machine en installation native.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Claude Code comme installé nativement sur la machine."
+      },
+      {
+       "affirmation": "Dans le projet trading-sim, `.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…).",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou cette politique de capacités dans `.claude/settings.json`."
+      }
+     ],
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "trading-sim a déjà une politique de capacités stricte dans `.claude/settings.json` ; `/sandbox` pourrait la compléter en bornant Bash, si la plateforme Linux Mint est prise en charge (à vérifier dans la session) ; le réglage du projet dépend de Work."
+     },
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "politique de capacités restrictive dans .claude/settings.json"
+     "pourquoi": "Politique de capacités restrictive dans .claude/settings.json (WebFetch, WebSearch, navigateur, connecteurs)."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Toutes les sessions locales en bypassPermissions sauf trading."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Work est l'architecte et l'arbitre de trading-sim."
     },
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1, plateforme à vérifier"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Apps installées en paquets Debian : machine Linux, où /sandbox dépend de bubblewrap et socat."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La commande `/sandbox` active ou coupe le mode sandbox (« Toggle sandbox mode »).",
+     "affirmation": "La commande `/sandbox` active ou coupe le mode sandbox et n'est disponible que sur les plateformes prises en charge.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-27",
      "caduc_si": "La commande `/sandbox` change de rôle ou disparaît de la documentation des commandes."
     },
     {
-     "affirmation": "La documentation précise que `/sandbox` n'est disponible que sur les plateformes prises en charge (« Available on supported platforms only »).",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire cette restriction de plateforme ou la commande disparaît."
+     "affirmation": "Le sandbox fonctionne sur macOS, Linux et WSL2 ; sous Linux il dépend de `bubblewrap` et `socat`, et `/sandbox` ouvre un panneau qui signale ce qui manque.",
+     "source": "https://code.claude.com/docs/en/sandboxing",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La documentation change les plateformes prises en charge ou les dépendances Linux."
     },
     {
-     "affirmation": "La machine de Sylvain tourne sous Linux Mint 22.1 (base Ubuntu 24.04), bureau Cinnamon.",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique un autre système d'exploitation pour la machine."
-    },
-    {
-     "affirmation": "Claude Code est installé sur la machine en installation native.",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Claude Code comme installé nativement sur la machine."
-    },
-    {
-     "affirmation": "Dans le projet trading-sim, `.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai (Gmail, Drive, Notion…).",
+     "affirmation": "Sur trading-sim, `.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et tous les connecteurs claude.ai.",
      "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou cette politique de capacités dans `.claude/settings.json`."
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md ne décrit plus cette politique de capacités."
+    },
+    {
+     "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+     "source": "contexte:config.claude-code.mode-auto",
+     "releve_le": "2026-10-27",
+     "caduc_si": "La session trading passe elle aussi en bypassPermissions ou le régime change."
+    },
+    {
+     "affirmation": "Sur trading-sim, ChatGPT (« Work ») est l'architecte et l'arbitre.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Work cesse d'arbitrer trading-sim."
+    },
+    {
+     "affirmation": "Claude Desktop et ChatGPT Desktop sont installés en paquets Debian.",
+     "source": "contexte:env.machine",
+     "releve_le": "2026-10-27",
+     "caduc_si": "CONTEXTE.md décrit un autre mode d'installation ou un autre système."
     }
    ]
   },
@@ -8514,7 +8660,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les routines planifiées sont sur ta liste à explorer : essaie `/schedule` sur carnet (résumé hebdomadaire des commits), qui tourne dans le cloud sans machine allumée. Sans crédit d'usage, une exécution qui atteint la limite de ton Max (20x) est rejetée jusqu'à la remise à zéro : vérifie dans le bilan d'avant le 03/11 ce qu'elle a consommé."
+    "pourquoi": "Les routines planifiées sont sur ta liste à explorer : essaie `/schedule` sur carnet (résumé hebdomadaire des commits), qui tourne dans le cloud sans machine allumée. Sans crédits d'usage, une exécution au-delà de la limite du Max (20x) est rejetée jusqu'à la remise à zéro : compte ce qu'elle consomme dans le bilan d'essai à préparer avant le 07/11."
    },
    "sources": [
     {
@@ -8527,7 +8673,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8605,20 +8751,65 @@
     {
      "date": "2026-10-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/schedule` crée, modifie, liste ou lance des tâches planifiées cloud (anciennement routines), par la conversation ; alias `/routines`.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la commande change de nom, de fonction ou disparaît de la documentation"
+      },
+      {
+       "affirmation": "Les tâches planifiées sont en aperçu de recherche, sur Pro, Max, Team et Enterprise ; sans crédits d'usage, les exécutions au-delà de la limite d'abonnement sont rejetées jusqu'à la remise à zéro.",
+       "source": "https://code.claude.com/docs/en/routines",
+       "releve_le": "2026-10-23",
+       "caduc_si": "les forfaits, le statut d'aperçu ou le comportement à la limite changent"
+      },
+      {
+       "affirmation": "Les routines planifiées figurent parmi les fonctions de Claude à explorer.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-23",
+       "caduc_si": "Sylvain adopte ou écarte les routines planifiées"
+      },
+      {
+       "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-23",
+       "caduc_si": "un crédit est repris ou le forfait change",
+       "revoir_le": "2026-11-03"
+      }
+     ],
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les routines planifiées sont sur ta liste à explorer : essaie `/schedule` sur carnet (résumé hebdomadaire des commits), qui tourne dans le cloud sans machine allumée. Sans crédit d'usage, une exécution qui atteint la limite de ton Max (20x) est rejetée jusqu'à la remise à zéro : vérifie dans le bilan d'avant le 03/11 ce qu'elle a consommé."
+     },
+     "raison": "section:usage.hors-machine"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "Routines planifiées citées parmi les fonctions à explorer."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Routines planifiées citées parmi les fonctions de Claude à explorer."
     },
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
      "pourquoi": "Dépôt GitHub public et actif sur lequel la tâche tournerait."
     },
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Max (20x) à l'essai, bilan avant le 07/11 ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
@@ -8627,26 +8818,32 @@
     {
      "affirmation": "`/schedule` crée, modifie, liste ou lance des tâches planifiées cloud (anciennement routines), par la conversation ; alias `/routines`.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-23",
-     "caduc_si": "la commande change de nom, de fonction ou disparaît de la documentation"
+     "releve_le": "2026-10-27",
+     "caduc_si": "La commande change de nom, de fonction ou disparaît de la documentation."
     },
     {
      "affirmation": "Les tâches planifiées sont en aperçu de recherche, sur Pro, Max, Team et Enterprise ; sans crédits d'usage, les exécutions au-delà de la limite d'abonnement sont rejetées jusqu'à la remise à zéro.",
      "source": "https://code.claude.com/docs/en/routines",
-     "releve_le": "2026-10-23",
-     "caduc_si": "les forfaits, le statut d'aperçu ou le comportement à la limite changent"
+     "releve_le": "2026-10-27",
+     "caduc_si": "Les forfaits, le statut d'aperçu ou le comportement à la limite changent."
     },
     {
      "affirmation": "Les routines planifiées figurent parmi les fonctions de Claude à explorer.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-23",
-     "caduc_si": "Sylvain adopte ou écarte les routines planifiées"
+     "releve_le": "2026-10-27",
+     "caduc_si": "Sylvain adopte ou écarte les routines planifiées."
     },
     {
-     "affirmation": "Aucun crédit Claude Code cloud (21/10) ; Max (20x) à l'essai, bilan avant le 07/11.",
+     "affirmation": "carnet est le projet le plus actif ; son dépôt est sur GitHub et doit rester sans secret.",
+     "source": "contexte:projet.carnet",
+     "releve_le": "2026-10-27",
+     "caduc_si": "carnet quitte GitHub ou cesse d'être actif."
+    },
+    {
+     "affirmation": "Aucun crédit Claude Code cloud (décision du 21/10) ; Max (20x) à l'essai, bilan d'usage à préparer avant le 07/11.",
      "source": "contexte:profil",
-     "releve_le": "2026-10-23",
-     "caduc_si": "un crédit est repris ou le forfait change",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Un crédit est repris ou le forfait change.",
      "revoir_le": "2026-11-03"
     }
    ]
@@ -9814,7 +10011,7 @@
    "categorie": "commandes",
    "nom": "/ultrareview",
    "gabarit": "complet",
-   "description": "Lance une revue de code approfondie multi-agents dans un bac à sable cloud ; une PR en argument la cible, une branche ou un commit change la base de comparaison. La forme recommandée est `/code-review ultra`. Trois exécutions gratuites sur Pro et Max, uniques par compte, puis facturation en crédits d'usage.",
+   "description": "Lance une revue de code multi-agents dans un bac à sable cloud ; un numéro de PR cible cette PR, une branche ou un commit change la base de comparaison. La forme recommandée est `/code-review ultra`. Trois exécutions gratuites sur Pro et Max, uniques par compte, puis facturation en crédits d'usage ; sans crédits activés, le lancement payant est bloqué.",
    "description_source": "Run a deep, multi-agent code review in a cloud sandbox with ultrareview. Pass a PR reference to review that pull request, or a base branch or commit to change the comparison base. The preferred invocation is /code-review ultra, and /ultrareview is an alias. Includes 3 free runs on Pro and Max, then requires usage credits",
    "usage": "/ultrareview [PR or branch]",
    "usage_nature": "syntaxe",
@@ -9823,7 +10020,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur une PR de trading-sim, une revue cloud multi-agents se comparerait à l'audit Codex (audits croisés) : la boîte de lancement montre les exécutions gratuites restantes et le coût estimé, puis chaque revue coûte en général 5 à 25 $ de crédits d'usage. En mode PR, le dépôt privé est cloné dans le cloud : à faire valider par Work, qui arbitre trading-sim."
+    "pourquoi": "Après les trois exécutions gratuites du Max, chaque revue exige des crédits d'usage activés (5 à 25 $ en général), sinon le lancement est bloqué ; avec ta décision du 21/10 (aucun crédit Claude Code cloud), réserve une gratuite à une PR de trading-sim pour comparer sa revue à l'audit Codex. En mode PR, le dépôt privé est cloné dans le cloud depuis github.com : à faire valider d'abord par Work."
    },
    "sources": [
     {
@@ -9836,7 +10033,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-27",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9923,48 +10120,105 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/ultrareview lance une revue multi-agents dans un bac à sable cloud ; une PR en argument cible cette PR, une branche ou un commit change la base ; `/code-review ultra` est la forme recommandée.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la commande change de syntaxe ou disparaît de la documentation"
+      },
+      {
+       "affirmation": "Ultrareview est facturé en crédits d'usage hors forfait ; 3 exécutions gratuites sur Pro et Max, uniques par compte, puis en général 5 à 25 $ par revue ; la boîte de lancement montre les exécutions gratuites restantes et le coût estimé.",
+       "source": "https://code.claude.com/docs/en/ultrareview",
+       "releve_le": "2026-10-23",
+       "caduc_si": "la tarification, le nombre d'exécutions gratuites ou la boîte de lancement changent"
+      },
+      {
+       "affirmation": "En mode PR, le bac à sable clone la pull request depuis github.com avec le compte GitHub relié au compte Claude.",
+       "source": "https://code.claude.com/docs/en/ultrareview",
+       "releve_le": "2026-10-23",
+       "caduc_si": "le mode PR cesse de cloner depuis github.com"
+      },
+      {
+       "affirmation": "Sur trading-sim, Work arbitre et Codex fait l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-23",
+       "caduc_si": "l'organisation des rôles sur trading-sim change"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur une PR de trading-sim, une revue cloud multi-agents se comparerait à l'audit Codex (audits croisés) : la boîte de lancement montre les exécutions gratuites restantes et le coût estimé, puis chaque revue coûte en général 5 à 25 $ de crédits d'usage. En mode PR, le dépôt privé est cloné dans le cloud : à faire valider par Work, qui arbitre trading-sim."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-27",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Dépôt privé, PR et 17 audits Codex dans docs/audits/."
+     "pourquoi": "Dépôt privé, 17 rapports d'audit Codex dans docs/audits/."
     },
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Work arbitre trading-sim, Codex fait l'audit adversarial."
     },
     "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
-     "pourquoi": "Forfait Max (20x) : exécutions gratuites incluses, puis crédits d'usage."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Max (20x) : exécutions gratuites incluses ; aucun crédit Claude Code cloud depuis le 21/10."
     }
    },
    "exemple_origine": "compose",
    "provenance": [
     {
-     "affirmation": "/ultrareview lance une revue multi-agents dans un bac à sable cloud ; une PR en argument cible cette PR, une branche ou un commit change la base ; `/code-review ultra` est la forme recommandée.",
+     "affirmation": "`/ultrareview` lance une revue multi-agents dans un bac à sable cloud ; une PR en argument cible cette PR, une branche ou un commit change la base ; `/code-review ultra` est la forme recommandée.",
      "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-23",
-     "caduc_si": "la commande change de syntaxe ou disparaît de la documentation"
+     "releve_le": "2026-10-27",
+     "caduc_si": "La commande change de syntaxe ou disparaît de la documentation."
     },
     {
-     "affirmation": "Ultrareview est facturé en crédits d'usage hors forfait ; 3 exécutions gratuites sur Pro et Max, uniques par compte, puis en général 5 à 25 $ par revue ; la boîte de lancement montre les exécutions gratuites restantes et le coût estimé.",
+     "affirmation": "Ultrareview est facturé en crédits d'usage hors forfait : 3 exécutions gratuites sur Pro et Max, uniques par compte, puis en général 5 à 25 $ par revue ; sans crédits activés, Claude Code bloque le lancement payant.",
      "source": "https://code.claude.com/docs/en/ultrareview",
-     "releve_le": "2026-10-23",
-     "caduc_si": "la tarification, le nombre d'exécutions gratuites ou la boîte de lancement changent"
+     "releve_le": "2026-10-27",
+     "caduc_si": "La tarification, le nombre d'exécutions gratuites ou le blocage sans crédits changent."
     },
     {
-     "affirmation": "En mode PR, le bac à sable clone la pull request depuis github.com avec le compte GitHub relié au compte Claude.",
+     "affirmation": "En mode PR, le bac à sable cloud clone la pull request depuis github.com avec le compte GitHub relié au compte Claude.",
      "source": "https://code.claude.com/docs/en/ultrareview",
-     "releve_le": "2026-10-23",
-     "caduc_si": "le mode PR cesse de cloner depuis github.com"
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le mode PR cesse de cloner depuis github.com."
+    },
+    {
+     "affirmation": "trading-sim est un dépôt privé, et 17 rapports d'audit Codex sont dans `docs/audits/`.",
+     "source": "contexte:projet.trading-sim",
+     "releve_le": "2026-10-27",
+     "caduc_si": "trading-sim devient public ou cesse les audits Codex."
     },
     {
      "affirmation": "Sur trading-sim, Work arbitre et Codex fait l'audit adversarial.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-23",
-     "caduc_si": "l'organisation des rôles sur trading-sim change"
+     "releve_le": "2026-10-27",
+     "caduc_si": "L'organisation des rôles sur trading-sim change."
+    },
+    {
+     "affirmation": "Abonnement Claude Max (20x) à l'essai jusqu'au 07/11 ; aucun crédit Claude Code cloud (décision du 21/10).",
+     "source": "contexte:profil",
+     "releve_le": "2026-10-27",
+     "caduc_si": "Le forfait change ou des crédits sont activés.",
+     "revoir_le": "2026-11-03"
     }
    ]
   },
