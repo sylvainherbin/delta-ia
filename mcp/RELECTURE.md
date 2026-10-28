@@ -290,7 +290,7 @@ aussi sur les descriptions complètes de niveau outil, avec la seule adaptation 
 pour fiche_reference sur la surface reference ; les noms sont tirés du catalogue historique.
 
 `preuve-p15d.sh <copie-neuve-absolue>` sous verrou dev au premier plan rejoue les quatre témoins
-rouges figés au commit `8a513c88` sur la base P15c, puis la suite MCP courante (108 tests depuis P15e),
+rouges figés au commit `8a513c88` sur la base P15c, puis la suite MCP courante (total lu du rapport, plus figé : 108 à P15e, 110 avec `preuve-p15c.test.js`),
 l'identité octet par octet des textes et réponses de découverte à 3, et une mutation de
 description sans nom d'outil. L'instantané historique suivi reste inchangé. R172 reste PARTIEL :
 aucun déploiement ni client installé qualifié.

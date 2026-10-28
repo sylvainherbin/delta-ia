@@ -22,10 +22,17 @@ verdict() {
   "$noeud" --input-type=module - "$1" "$2" "$3" <<'JS'
 import fs from "node:fs";
 import assert from "node:assert/strict";
-const [fichier, tests, echecs] = process.argv.slice(2);
+const [fichier, attendus, echecs] = process.argv.slice(2);
 const log = fs.readFileSync(fichier, "utf8");
+// « suite » : le total est lu du rapport (la suite grandit à chaque preuve ajoutée), jamais figé ici.
+const lu = log.match(/^# tests (\d+)$/m);
+const tests = attendus === "suite" ? (lu && Number(lu[1]) > 0 ? lu[1] : assert.fail("aucun total de tests lisible")) : attendus;
 assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
+if (attendus === "suite") {
+  assert.match(log, new RegExp(`^# pass ${tests}$`, "m"));
+  for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
+}
 console.log(`${fichier}: ${tests} tests, ${echecs} échecs`);
 JS
 }
@@ -36,7 +43,7 @@ code=0
 verdict "$copie/rouge-5a66288.log" 4 4
 
 "$noeud" --test --test-reporter=tap mcp/test/*.test.js > "$copie/verts.log" 2>&1 || { cat "$copie/verts.log"; exit 1; }
-verdict "$copie/verts.log" 108 0
+verdict "$copie/verts.log" suite 0
 
 # Tous les dictionnaires et les réponses de découverte réelles, avec le défaut à 3 : comparaison octet par octet.
 cat > "$copie/surface.mjs" <<'JS'
