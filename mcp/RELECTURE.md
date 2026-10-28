@@ -229,3 +229,34 @@ Retenu, avec son test :
   plutôt que de garder un résultat qu'aucune version n'invaliderait. Les lectures HTTP restent celles du cache de
   10 minutes de `lib/couches.js`.
 - `outputSchema` : même raison qu'en L3 et L4.
+
+## P15 : noms par service, surface de référence et signal (28/10/2026)
+
+Source relue : `tool-design.md` au chemin de la section Source, sans installation. Le repérage Delta-IA
+(`claude-code-plugins-mcp-server-dev`) a été recoupé avec ce fichier local ; les tests portent sur le serveur du dépôt.
+
+Retenu, avec des témoins rouges sur l'archive de main `78030f81` et verts sur la branche :
+
+- Noms de 64 caractères au plus, descriptions qui distinguent les usages : `?surface=service` expose six noms
+  `orqyra_ai_*` avec les mêmes schémas et annotations ; les noms historiques restent appelables. Test
+  « P15 R172 : six noms de service, mêmes schémas, anciens appels et erreurs compatibles ».
+- Coût du catalogue : `?surface=reference` expose recherche, fiche et versions pour la consultation de faits.
+  Les douze recherches et leurs fiches, ainsi que les versions, gardent leurs réponses. Test
+  « P15 R176 : trois outils de référence, corpus inchangé et anciens outils encore appelables ».
+- Réponses courtes avec identifiants de suivi : couper une consultation conserve le préfixe de la liste par
+  défaut, sans remplacer une cible documentaire par un modèle du fait du quota de diversité. Test
+  « P15 R178 : la consultation conserve les premières cibles de liste8 avant de raccourcir » ; mesure réelle
+  sur le corpus scellé dans `mesures/2026-10-28-surface.json` (octets, syntaxes et sources conservées).
+- Erreurs contrôlées et série statistique compatible : alias résolus avant journalisation, sans arguments.
+  Test « P15 R172 : les alias alimentent les compteurs canoniques sans arguments » ; les tests existants
+  continuent à vérifier les annotations, les erreurs JSON-RPC et `isError`.
+
+Écarté, avec la raison :
+
+- Supprimer les trois outils absents de la surface de référence : ils portent la veille et les essais, hors de
+  ce profil ; cette surface réduit la découverte, pas les autorisations. R176 reste partiel sur l'usage installé.
+- Déduire un minimum en jetons des octets : aucun tokenizer de modèle ni rendu natif du client mesuré.
+  Les six variantes bornent seulement le minimum en octets sur douze questions (R178 partiel).
+- `outputSchema` ou changement de protocole : aucune anomalie liée à P15 ne le justifie ; hors de ce contrat.
+
+Recette complète : `mesures/2026-10-28-p15.md`, par le verrou dev au premier plan. Ni déploiement ni pose cliente.
