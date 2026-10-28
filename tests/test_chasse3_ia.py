@@ -84,9 +84,7 @@ def test_chasse3_p15d_phase_rouge_avec_son_temoin_historique(tmp_path):
     assert "hookFailed" not in log
 
 
-# 60b742ed ajoute un prérequis absent de 5a66288 et un cinquième test, mais P15d
-# copie toujours le fichier courant et exige encore quatre échecs. La recette s'arrête.
-@pytest.mark.xfail(strict=True, raises=PhaseRougeIncompatible, reason="9i-F1 : P15d incompatible avec les témoins P15e")
+# Régression 9i-F1 : le rejeu doit survivre à l'évolution des témoins courants.
 def test_chasse3_p15d_phase_rouge_rejouable_sur_la_tete(tmp_path):
     retour, log = phase_rouge_p15d(tmp_path)
     if retour.returncode != 0:
@@ -128,9 +126,8 @@ def test_chasse3_horloge_temoin_avec_passages_alignes(tmp_path, monkeypatch):
     site.test_horloge_fixee_decide_de_la_banniere_de_fraicheur()
 
 
-# d9dac06 fige l'heure sur le passage le plus récent mais exige l'absence de
-# bannière pour tous les agents. Un périmètre âgé de 49 h doit pourtant l'afficher.
-@pytest.mark.xfail(strict=True, raises=TemoinFraicheurInvalide, reason="9i-F2 : horloge fondée sur des index non synchronisés")
+# Régression 9i-F2 : l'alerte réelle à 49 h reste visible, et le scénario
+# frais/tardif possède ses propres passages, même si les index sont décalés.
 def test_chasse3_horloge_temoin_avec_passages_desynchronises(tmp_path, monkeypatch):
     preparer_horloge(tmp_path, monkeypatch, desynchronisee=True)
     texte = site.executer(langue="fr", ancres=["#aujourdhui"], horloge=site.horloge_des_donnees())["etapes"][0]["texte"]

@@ -11,9 +11,12 @@ copie="${1:?dossier de preuve neuf requis}"
 mkdir -p "$copie"/{avant,description}
 instantane_avant="$(sha256sum mcp/mesures/2026-10-28-surface.json)"
 git archive "$base" mcp | tar -x -C "$copie/avant"
-cp mcp/test/textes.test.js "$copie/avant/mcp/test/"
+# Les quatre témoins P15d restent compatibles avec cette base ; les mutations
+# P15e du fichier courant exigent une constante absente de P15c.
+git show 8a513c88a6895050b496379826b36d4705a3fac3:mcp/test/textes.test.js \
+  > "$copie/avant/mcp/test/textes.test.js"
 sha256sum mcp/api/mcp.js mcp/lib/{consultation,textes}.js mcp/test/{mcp,textes}.test.js \
-  mcp/preuve-p15{c,d}.sh > "$copie/code.sha256"
+  mcp/preuve-p15{c,d}.sh "$copie/avant/mcp/test/textes.test.js" > "$copie/code.sha256"
 
 verdict() {
   "$noeud" --input-type=module - "$1" "$2" "$3" <<'JS'
@@ -33,7 +36,7 @@ code=0
 verdict "$copie/rouge-5a66288.log" 4 4
 
 "$noeud" --test --test-reporter=tap mcp/test/*.test.js > "$copie/verts.log" 2>&1 || { cat "$copie/verts.log"; exit 1; }
-verdict "$copie/verts.log" 107 0
+verdict "$copie/verts.log" 108 0
 
 # Tous les dictionnaires et les réponses de découverte réelles, avec le défaut à 3 : comparaison octet par octet.
 cat > "$copie/surface.mjs" <<'JS'

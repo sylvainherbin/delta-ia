@@ -289,7 +289,8 @@ ainsi que l'aide du Bureau en fr/en, suivent cette constante. Les témoins `text
 aussi sur les descriptions complètes de niveau outil, avec la seule adaptation d'origine prévue
 pour fiche_reference sur la surface reference ; les noms sont tirés du catalogue historique.
 
-`preuve-p15d.sh <copie-neuve-absolue>` sous verrou dev au premier plan rejoue les témoins, la suite
-MCP, l'identité octet par octet des textes et réponses de découverte à 3, et une mutation de
+`preuve-p15d.sh <copie-neuve-absolue>` sous verrou dev au premier plan rejoue les quatre témoins
+rouges figés au commit `8a513c88` sur la base P15c, puis la suite MCP courante (108 tests depuis P15e),
+l'identité octet par octet des textes et réponses de découverte à 3, et une mutation de
 description sans nom d'outil. L'instantané historique suivi reste inchangé. R172 reste PARTIEL :
 aucun déploiement ni client installé qualifié.

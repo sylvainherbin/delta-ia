@@ -27,6 +27,7 @@ RACINE = Path(__file__).resolve().parent.parent
 DOCS = RACINE / "docs"
 APP = (DOCS / "assets" / "app.js").read_text(encoding="utf-8")
 GENERATION = json.loads((DOCS / "commun" / "v1" / "index.json").read_text(encoding="utf-8"))["generation"]
+PASSAGE_FIXE = "2026-10-28T09:00:00+00:00"
 
 
 # ---------------------------------------------------------------- dictionnaires
@@ -312,7 +313,18 @@ def test_manifestes_par_langue():
 
 # ---------------------------------------------------------------- exécution réelle d'app.js
 
-def executer(**entree):
+def executer(*, maj_passages=None, **entree):
+    # Le scénario de fraîcheur fixe aussi les passages, indépendamment des dates
+    # publiées. Conserver les autres champs et les éventuels remplacements du test.
+    if maj_passages is not None:
+        remplacer = dict(entree.get("remplacer", {}))
+        for p in ("claude", "openai", "actu"):
+            rel = f"data/{p}/index.json"
+            index = remplacer.get(rel)
+            if index is None:
+                index = json.loads((DOCS / rel).read_text(encoding="utf-8"))
+            remplacer[rel] = dict(index, maj_le=maj_passages)
+        entree["remplacer"] = remplacer
     node = trouver_node()
     if not node:
         assert not os.environ.get("CI"), "Node est nécessaire aux tests du site"
@@ -338,18 +350,20 @@ def horloge_des_donnees():
 
 
 def test_horloge_fixee_decide_de_la_banniere_de_fraicheur():
-    """Témoin : à 1 h du dernier passage, pas de bannière ; 40 h plus tard, la bannière précède « Aujourd'hui »."""
-    frais = horloge_des_donnees()
+    """Témoin : passages à 1 h, pas de bannière ; à 41 h, elle précède « Aujourd'hui »."""
+    frais = (datetime.fromisoformat(PASSAGE_FIXE) + timedelta(hours=1)).isoformat()
     tard = (datetime.fromisoformat(frais) + timedelta(hours=40)).isoformat()
-    assert executer(langue="fr", ancres=["#aujourdhui"], horloge=frais)["etapes"][0]["texte"].startswith(FR["onglet.aujourdhui"])
-    en_retard = executer(langue="fr", ancres=["#aujourdhui"], horloge=tard)["etapes"][0]["texte"]
+    assert executer(langue="fr", ancres=["#aujourdhui"], horloge=frais, maj_passages=PASSAGE_FIXE)["etapes"][0]["texte"].startswith(FR["onglet.aujourdhui"])
+    en_retard = executer(langue="fr", ancres=["#aujourdhui"], horloge=tard, maj_passages=PASSAGE_FIXE)["etapes"][0]["texte"]
     assert en_retard.startswith("Claude Code n'a pas tourné depuis ") and not en_retard.startswith(FR["onglet.aujourdhui"])
+    assert "Claude Code n'a pas tourné depuis 41 h" in en_retard
+    assert "Codex n'a pas tourné depuis 41 h" in en_retard
 
 
 def test_ancienne_route_reelle_en_anglais_et_en_francais():
-    horloge = horloge_des_donnees()
+    horloge = (datetime.fromisoformat(PASSAGE_FIXE) + timedelta(hours=1)).isoformat()
     for langue, attendu in (("en", "Today"), ("fr", "Aujourd'hui")):
-        r = executer(langue=langue, ancres=["#aujourdhui"], horloge=horloge)
+        r = executer(langue=langue, ancres=["#aujourdhui"], horloge=horloge, maj_passages=PASSAGE_FIXE)
         texte = r["etapes"][0]["texte"]
         assert texte.startswith(attendu), texte[:80]
         assert TEXTES[langue]["couche.ancienne"] in r["etapes"][0]["couche"]
@@ -491,7 +505,8 @@ def test_ancienne_route_illisible_bascule_sur_la_reference_commune():
 def test_anciennes_ancres_fonctionnent():
     semaine = json.loads((DOCS / "data" / "semaine" / "index.json").read_text(encoding="utf-8"))["semaines"][0]["semaine"]
     d = dernier_jour("claude")
-    r = executer(langue="fr", horloge=horloge_des_donnees(),
+    r = executer(langue="fr", horloge=(datetime.fromisoformat(PASSAGE_FIXE) + timedelta(hours=1)).isoformat(),
+                 maj_passages=PASSAGE_FIXE,
                  ancres=[f"#archives/{d}", f"#semaine/{semaine}", "#reference?q=/add-dir", "#archives?q=worktree",
                          "#reference?recent=7", "#console="])
     e = [x["texte"] for x in r["etapes"]]
