@@ -125,8 +125,6 @@ def test_chasse6_commentaire_capture_avant_le_premier_rouge_accepte(tap, famille
 # établit que console.error d'une erreur traitée n'est pas un échec d'import.
 # fcd6050 borne le diagnostic par les résultats suivants, sans retirer leurs
 # commentaires PRÉCÉDANT le résultat. Deux vraies assertions deviennent refusées.
-@pytest.mark.xfail(strict=True, raises=DiagnosticDuTemoinSuivant,
-                   reason="02q-F1 : commentaire du second test attribué au premier rouge")
 @pytest.mark.parametrize("famille", ["import", "exports"])
 def test_chasse6_commentaire_capture_du_second_rouge_accepte(tap, famille):
     r = produire_tap(tap, famille, 1)
