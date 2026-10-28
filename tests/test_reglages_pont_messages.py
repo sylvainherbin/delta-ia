@@ -78,6 +78,28 @@ def test_deux_messages_conservent_deux_fichiers(pont, tmp_path):
     assert fichiers[0].read_bytes() == fichiers[1].read_bytes()
 
 
+def test_collisions_de_nom_sont_bornees_et_explicites(pont, tmp_path):
+    lancer, _, _, env = pont
+    binaires = tmp_path / "bin"
+    date = binaires / "date"
+    date.write_text("#!/bin/sh\necho 2026-10-28_180000\n")
+    date.chmod(0o755)
+    dormir = binaires / "sleep"
+    dormir.write_text('#!/bin/sh\necho attente >> "$ATTENTES"\n')
+    dormir.chmod(0o755)
+    boite = tmp_path / "boite"
+    boite.mkdir()
+    message = boite / "2026-10-28_180000-reglages-pont.md"
+    message.write_text("message à conserver\n")
+    attentes = tmp_path / "attentes"
+    resultat = lancer(DELTA_PONT_BOITE=str(boite), ATTENTES=str(attentes), PATH=env["PATH"])
+    assert resultat.returncode == 1
+    assert "après 5 noms occupés" in resultat.stderr
+    assert attentes.read_text().splitlines() == ["attente"] * 4
+    assert list(boite.iterdir()) == [message]
+    assert message.read_text() == "message à conserver\n"
+
+
 def test_script_et_unites_sans_routage_operer():
     chemins = [RACINE / "scripts/reglages-pont.sh", *(RACINE / "deploy/systemd").glob("*reglages-pont.*.exemple")]
     for chemin in chemins:

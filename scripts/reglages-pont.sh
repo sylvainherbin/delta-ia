@@ -13,7 +13,7 @@
 # DELTA_PONT_SANS_MESSAGE=1 (affiche le message sans écrire dans la boîte), DELTA_PONT_HEURE=HHMM (heure simulée),
 # DELTA_PONT_BASE=<branche> (base de la branche de travail, défaut main), DELTA_PONT_PYTHON (interpréteur, défaut .venv du dépôt).
 #
-# Codes : 0 fait (constats prêts, ou rien à changer) ; 1 échec (message au chef) ; 3 fait, mais une source du bilan est en échec
+# Codes : 0 fait (constats prêts, ou rien à changer) ; 1 échec (traitement ou notification) ; 3 fait, mais une source du bilan est en échec
 # (dite dans le message) ; 14 chaîne en cours ; 16 environnement illisible.
 set -uo pipefail
 
@@ -49,23 +49,44 @@ prevenir() {
     local texte="[PONT RÉGLAGES] $1"
     if [ -n "${DELTA_PONT_SANS_MESSAGE:-}" ]; then echo "$texte"; return 0; fi
     local boite="${DELTA_PONT_BOITE:-$HOME/.local/state/chef-dev/boite}"
-    local temporaire fichier hash
+    local temporaire fichier hash essai
     mkdir -p -- "$boite" || return 1
     temporaire="$(mktemp "$boite/.reglages-pont.XXXXXX")" || return 1
     fichier="$boite/$(date +%Y-%m-%d_%H%M%S)-reglages-pont.md"
     hash="$(git -C "$WT" rev-parse HEAD 2>/dev/null || git rev-parse "${DELTA_PONT_BASE:-main}")" \
         || { rm -f -- "$temporaire"; return 1; }
     # Le verrou du passage sérialise les envois ; conserve aussi deux messages de la même seconde.
-    while [ -e "$fichier" ]; do
+    for essai in 1 2 3 4 5; do
+        [ ! -e "$fichier" ] && break
+        if [ "$essai" -eq 5 ]; then
+            rm -f -- "$temporaire"
+            echo "reglages-pont : notification impossible après 5 noms occupés dans $boite" >&2
+            return 1
+        fi
         sleep 1
         fichier="$boite/$(date +%Y-%m-%d_%H%M%S)-reglages-pont.md"
     done
     if ! printf '%s\n\nBranche : %s\nHash : %s\nWorktree : %s\n' "$texte" "$BRANCHE" "$hash" "$WT" > "$temporaire" \
-        || ! mv -- "$temporaire" "$fichier"; then
+        || ! "${PYTHON:-python3}" - "$temporaire" "$fichier" <<'PY'
+import os, sys
+
+with open(sys.argv[1], "rb") as message:
+    os.fsync(message.fileno())
+# Publication exclusive : une collision de dernière seconde ne perd aucun autre message.
+os.link(sys.argv[1], sys.argv[2])
+os.unlink(sys.argv[1])
+dossier = os.open(os.path.dirname(sys.argv[2]), os.O_RDONLY | os.O_DIRECTORY)
+try:
+    os.fsync(dossier)
+finally:
+    os.close(dossier)
+PY
+    then
         rm -f -- "$temporaire"
-        echo "reglages-pont : message au chef dev non écrit dans $boite" >&2
+        echo "reglages-pont : dépôt durable du message au chef dev non confirmé dans $boite" >&2
         return 1
     fi
+    echo "reglages-pont : notification mise en file et synchronisée : $fichier"
 }
 echec() { prevenir "Échec de la mise à jour hebdomadaire : $1. Branche $BRANCHE, worktree $WT conservés pour examen."; exit 1; }
 
@@ -97,8 +118,13 @@ PY
 
 nouveaux="$("$PYTHON" -B -c 'import json, sys; print(len((json.load(open(sys.argv[1], encoding="utf-8")).get("ajustements") or {}).get("nouveaux") or []))' "$rapport")"
 if [ -z "$(git status --porcelain -- kb-modeles)" ]; then
+    if [ "$code" -eq 3 ] || [ "${nouveaux:-0}" -gt 0 ]; then
+        prevenir "Mise à jour hebdomadaire : aucun constat à changer. $resume" || {
+            echo "reglages-pont : notification en échec ; branche $BRANCHE, worktree $WT conservés." >&2
+            exit 1
+        }
+    fi
     cd "$RACINE" && git worktree remove --force "$WT" && git branch -D "$BRANCHE" >/dev/null
-    { [ "$code" -eq 3 ] || [ "${nouveaux:-0}" -gt 0 ]; } && prevenir "Mise à jour hebdomadaire : aucun constat à changer. $resume"
     echo "reglages-pont : aucun constat à changer. $resume"
     exit "$code"
 fi
@@ -111,6 +137,9 @@ mapfile -t fichiers < <(git diff --name-only -- kb-modeles docs/data/kb/modeles.
 git add -- "${fichiers[@]}"
 git commit -q -m "reglages-pont: constats internes automatiques $JOUR — $(echo "$resume" | cut -d' ' -f1) constats" || echec "commit"
 hash="$(git rev-parse --short HEAD)"
-prevenir "Constats internes automatiques à relire avant publication (site public) : branche $BRANCHE, commit $hash, worktree $WT. $resume. Pas de push ; fusion et push à ton OK."
+prevenir "Constats internes automatiques à relire avant publication (site public) : branche $BRANCHE, commit $hash, worktree $WT. $resume. Pas de push ; fusion et push à ton OK." || {
+    echo "reglages-pont : notification en échec ; branche $BRANCHE, worktree $WT conservés." >&2
+    exit 1
+}
 echo "reglages-pont : branche $BRANCHE, commit $hash. $resume"
 exit "$code"

@@ -79,15 +79,18 @@ import json
 import os
 import pwd
 import re
+import secrets
 import signal
 import socket
+import stat
 import subprocess
 import sys
 import tomllib
+from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 from datetime import date, datetime, time as heure, timedelta
 from pathlib import Path
-from time import sleep
+from time import sleep, time_ns
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -520,6 +523,32 @@ def selection_auto_est_sortie(chemin: str) -> bool:
     return re.fullmatch(r"rapports/selection/[0-9]{4}-W[0-9]{2}\.(?:json|md)", chemin) is not None
 
 
+@contextmanager
+def dossier_rapports_supervision(racine: Path, *, creer: bool = False):
+    """Ancre chaque composant par descripteur, sans résoudre le moindre lien."""
+    racine = racine.absolute()  # resolve() suivrait précisément les liens à refuser
+    if ".." in racine.parts:
+        raise ValueError("racine de supervision contenant '..'")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    fd = os.open(racine.anchor, flags)
+    try:
+        for composant in racine.parts[1:]:
+            suivant = os.open(composant, flags, dir_fd=fd)
+            os.close(fd)
+            fd = suivant
+        if creer:
+            try:
+                os.mkdir("rapports", dir_fd=fd)
+            except FileExistsError:
+                pass  # l'ouverture ci-dessous refuse aussi les liens apparus entre-temps
+        suivant = os.open("rapports", flags, dir_fd=fd)
+        os.close(fd)
+        fd = suivant
+        yield fd
+    finally:
+        os.close(fd)
+
+
 def enregistrer_rapport_supervision(racine: Path, jour: date, debut: float, stdout: str) -> bool:
     """Récupère un résultat JSON sans is_error : au moins 100 caractères utiles, sans marqueur de refus manifeste."""
     try:
@@ -534,24 +563,49 @@ def enregistrer_rapport_supervision(racine: Path, jour: date, debut: float, stdo
                 or MARQUEUR_REFUS_SUPERVISION.search(re.sub(r"\s+", " ", resultat))):
             return False
         horodatage = datetime.now().astimezone().strftime("%H%M")
-        chemin = racine / "rapports" / f"{jour.isoformat()}_{horodatage}-supervision.md"
-        chemin.parent.mkdir(parents=True, exist_ok=True)
-        chemin.write_text(resultat + "\n", encoding="utf-8")
-        return chemin.stat().st_mtime >= debut
+        nom = f"{jour.isoformat()}_{horodatage}-supervision.md"
+        with dossier_rapports_supervision(racine, creer=True) as dossier:
+            temporaire = f".supervision-{secrets.token_hex(16)}.tmp"
+            fd = os.open(temporaire, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                         0o600, dir_fd=dossier)
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as fichier:
+                    fichier.write(resultat + "\n")
+                    fichier.flush()
+                    # Le mtime automatique peut précéder debut d'un tic d'horloge du noyau.
+                    # Seul le fichier neuf, encore ouvert exclusivement, est horodaté.
+                    etat = os.fstat(fichier.fileno())
+                    os.utime(fichier.fileno(), ns=(etat.st_atime_ns, time_ns()))
+                    os.fsync(fichier.fileno())
+                    etat = os.fstat(fichier.fileno())
+                # Remplace l'entrée seule : ni un lien ni un lien physique préexistant n'est ouvert.
+                os.replace(temporaire, nom, src_dir_fd=dossier, dst_dir_fd=dossier)
+                os.fsync(dossier)
+                return etat.st_mtime >= debut
+            finally:
+                try:
+                    os.unlink(temporaire, dir_fd=dossier)
+                except FileNotFoundError:
+                    pass
     except (OSError, ValueError, TypeError, AttributeError):
         return False
 
 
 def rapport_supervision_ecrit(racine: Path, jour: date, debut: float) -> bool:
     """Au moins un rapport du jour, non vide, créé ou modifié depuis le début de l'étape."""
-    for rapport in (racine / "rapports").glob(f"{jour.isoformat()}_[0-9][0-9][0-9][0-9]-supervision.md"):
-        try:
-            if rapport.is_file():
-                etat = rapport.stat()
-                if etat.st_size > 0 and etat.st_mtime >= debut:
-                    return True
-        except OSError:
-            continue
+    try:
+        with dossier_rapports_supervision(racine) as dossier:
+            for nom in os.listdir(dossier):
+                if not re.fullmatch(rf"{jour.isoformat()}_[0-9]{{4}}-supervision\.md", nom):
+                    continue
+                try:
+                    etat = os.stat(nom, dir_fd=dossier, follow_symlinks=False)
+                    if stat.S_ISREG(etat.st_mode) and etat.st_size > 0 and etat.st_mtime >= debut:
+                        return True
+                except OSError:
+                    continue
+    except (OSError, ValueError):
+        pass
     return False
 
 
