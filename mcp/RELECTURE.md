@@ -273,5 +273,9 @@ sur la référence commune suit aussi ce contrat (`couches.test.js` et `local.te
 le Bureau rend 3 fiches par défaut et accepte `--limite` de 1 à 5 ; test « P15b R178 : Bureau consulter… ».
 
 R172 reste PARTIEL : défaut historique conservé, surfaces optionnelles sans déploiement ni client qualifié.
-La mesure de signal reste descriptive ; ses chiffres ne sont pas un garde-fou de régression. Recette locale :
-`preuve-p15b.sh` sous verrou dev au premier plan ; la preuve écrit la mesure dans `rapports/`, ignoré par git.
+La mesure de signal reste descriptive ; ses chiffres ne sont pas un garde-fou de régression. Recette actuelle :
+`preuve-p15c.sh <copie-neuve-absolue>` sous verrou dev au premier plan ; archives, mutations, journaux et mesure
+restent dans la copie, sans écriture dans `rapports/` du worktree. L'instantané suivi est rafraîchi explicitement
+après succès. P15c compare aussi le texte complet des paramètres en fr/en ; une dérive sans nom d'outil est
+détectée. Les erreurs d'essais de `reference` renvoient à un outil de son catalogue et à `?surface=service`.
+Le défaut du Bureau suit la constante importée de l'API : mutation à 4 verte, réintroduction d'un 3 local rouge.
