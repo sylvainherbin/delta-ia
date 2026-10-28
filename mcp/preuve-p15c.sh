@@ -36,7 +36,7 @@ assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"))
 for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
 // Le type dans le diagnostic distingue describe d'un test parent avec sous-tests.
 const resultats = [...log.matchAll(/^( *)(ok|not ok) \d+ - ([^\n]+)\n\1  ---\n([\s\S]*?)^\1  \.\.\.$/gm)]
-  .filter(r => /^ *type: 'test'$/m.test(r[4]));
+  .filter(r => r[4].split('\n').includes(`${r[1]}  type: 'test'`));
 assert.equal(resultats.length, Number(tests));
 assert.equal(resultats.filter(r => r[2] === "not ok").length, Number(echecs));
 assert.ok(noms.length > 0, "noms exacts des témoins requis");
@@ -50,8 +50,11 @@ for (const nom of noms) {
     const diagnostic = resultat[4];
     assert.ok(diagnostic, nom);
     assert.doesNotMatch(diagnostic, erreurChargement);
-    assert.match(diagnostic, /^ *failureType: 'testCodeFailure'$/m, nom);
-    assert.match(diagnostic, /^ *code: 'ERR_ASSERTION'$/m, nom);
+    // Les clés du diagnostic sont à deux espaces du résultat TAP : une
+    // indentation supérieure appartient à un scalaire ou à un champ imbriqué.
+    const lignes = diagnostic.split('\n');
+    assert.ok(lignes.includes(`${resultat[1]}  failureType: 'testCodeFailure'`), nom);
+    assert.ok(lignes.includes(`${resultat[1]}  code: 'ERR_ASSERTION'`), nom);
   }
 }
 console.log(`${fichier}: ${tests} tests, ${echecs} échecs`);

@@ -25,10 +25,6 @@ NOMS = [
 PARENT_CORRECTIF = "77afdb7"
 
 
-class TexteDiagnosticPrisPourAssertion(AssertionError):
-    """04h-F1 : des lignes dans error: |- remplacent le code d'assertion."""
-
-
 @pytest.fixture
 def tap(tmp_path):
     noeud = shutil.which("node")
@@ -152,19 +148,12 @@ def test_chasse8_erreurs_ordinaires_refusees(tap, lettre, variante):
     assert resultat.returncode != 0, resultat.stdout
 
 
-# 1ba06b8 élargit /^  code:/ à /^ *code:/ : le contenu du scalaire
-# error: |- remplace désormais les véritables champs. Le parent et P15d
-# refusent le même TAP natif ; seul le verdict à tort déclenche le xfail.
+# Le parent, P15d et P15c refusent les clés contenues dans le scalaire.
 @pytest.mark.parametrize("variante", ["message", "hook-message"])
-@pytest.mark.xfail(strict=True, raises=TexteDiagnosticPrisPourAssertion, reason="04h-F1 : P15c lit les clés contenues dans le texte multiligne de l'erreur")
 def test_chasse8_p15c_refuse_des_cles_dans_un_message(tap, variante):
     retour = produire(tap, variante)
     for lettre in ("parent", "d"):
         resultat = valider(tap, lettre, retour)
         assert resultat.returncode != 0, resultat.stdout
     resultat = valider(tap, "c", retour)
-    if resultat.returncode == 0:
-        raise TexteDiagnosticPrisPourAssertion(
-            f"04h-F1 ({variante}) : aucune assertion en échec dans le diagnostic réel ; "
-            "P15c certifie deux rouges d'assertion en lisant le texte sous error: |-\n"
-            + resultat.stdout)
+    assert resultat.returncode != 0, resultat.stdout
