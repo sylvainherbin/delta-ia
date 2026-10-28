@@ -110,7 +110,11 @@ def produire(contexte, variante):
     fichiers = [str(fixture)]
     if variante == "sans-corps":
         fichiers.append(str(cible))  # vrai module chargé, sans aucun appel à test()
-    retour = lancer([node, "--test", "--test-reporter=tap", "--test-concurrency=1", *fichiers])
+    events = dossier / "natif.tap.events"
+    reporter = RACINE / "mcp/rapporteur-p15d.mjs"
+    retour = lancer([node, "--test", "--test-reporter=tap", f"--test-reporter={reporter}",
+                     "--test-reporter-destination=stdout", f"--test-reporter-destination={events}",
+                     "--test-concurrency=1", *fichiers])
     assert retour.returncode == 0, retour.stdout + retour.stderr
     assert retour.stderr == "", retour.stderr
     nombre = 5 if nom or variante == "sans-corps" else 4
@@ -152,8 +156,6 @@ def test_chasse9_p15d_refuse_un_module_sans_corps_en_plus_des_temoins(contexte):
 
 
 @pytest.mark.parametrize("variante", ["posix", "windows"])
-@pytest.mark.xfail(strict=True, raises=VraiTestPrisPourFichier,
-                   reason="082-F1 : un nom de chemin ne prouve pas l'absence de corps")
 def test_chasse9_p15d_accepte_un_vrai_test_nomme_par_un_chemin(contexte, variante):
     journal, nombre = produire(contexte, variante)
     for lettre in ("parent", "c"):

@@ -77,7 +77,10 @@ def produire(contexte, source):
     dossier, node, _, _ = contexte
     fichier = dossier / "fixture.test.mjs"
     fichier.write_text(source, encoding="utf-8")
-    retour = lancer(contexte, [node, "--test", "--test-reporter=tap", str(fichier)])
+    reporter = RACINE / "mcp/rapporteur-p15d.mjs"
+    events = dossier / "natif.tap.events"
+    retour = lancer(contexte, [node, "--test", "--test-reporter=tap", f"--test-reporter={reporter}",
+                               "--test-reporter-destination=stdout", f"--test-reporter-destination={events}", str(fichier)])
     journal = dossier / "natif.tap"
     journal.write_text(retour.stdout + retour.stderr, encoding="utf-8")
     return retour

@@ -36,12 +36,22 @@ if (attendus === "suite") {
   const resultats = [...log.matchAll(/^( *)(ok|not ok) \d+ - ([^\n]+)\n\1  ---\n([\s\S]*?)^\1  \.\.\.$/gm)]
     .filter(r => /^ *type: 'test'$/m.test(r[4]));
   assert.equal(resultats.length, Number(tests), "nombre de tests réels incohérent");
-  assert.ok(resultats.every(r => r[2] === "ok" && !/^(?:\/|[A-Za-z]:[\\/]).*\.(?:[cm]?js)$/.test(r[3])),
+  assert.ok(resultats.every(r => r[2] === "ok"), "résultat de fichier ou test non vert");
+  // Les événements proviennent du même lancement que le TAP. Un résultat
+  // synthétique de fichier n'a pas d'entryFile, contrairement à un test
+  // enregistré dans un fichier, même si son nom ressemble à un chemin.
+  const evenements = fs.readFileSync(`${fichier}.events`, "utf8").trim().split("\n").map(JSON.parse)
+    .filter(e => e.data?.details?.type === "test");
+  assert.equal(evenements.length, Number(tests), "nombre d'événements de test incohérent");
+  assert.ok(evenements.every(e => e.type === "test:pass" && typeof e.data.entryFile === "string"
+    && e.data.entryFile.length > 0 && typeof e.data.file === "string"
+    && Number.isInteger(e.data.line) && Number.isInteger(e.data.column)),
     "résultat de fichier ou test non vert");
   for (const nom of noms) {
     const trouves = resultats.filter(r => r[3] === nom);
     assert.equal(trouves.length, 1, nom);
     assert.equal(trouves[0][2], "ok", nom);
+    assert.equal(evenements.filter(e => e.data.name === nom).length, 1, `${nom} : provenance absente ou ambiguë`);
   }
 }
 if (Number(echecs)) {
@@ -75,7 +85,9 @@ code=0
 [[ "$code" = 1 ]] || { cat "$copie/rouge-5a66288.log"; exit 1; }
 verdict "$copie/rouge-5a66288.log" 4 4
 
-"$noeud" --test --test-reporter=tap mcp/test/*.test.js > "$copie/verts.log" 2>&1 || { cat "$copie/verts.log"; exit 1; }
+"$noeud" --test --test-reporter=tap --test-reporter-destination="$copie/verts.log" \
+  --test-reporter="$racine/mcp/rapporteur-p15d.mjs" --test-reporter-destination="$copie/verts.log.events" \
+  mcp/test/*.test.js > /dev/null 2>&1 || { cat "$copie/verts.log"; exit 1; }
 verdict "$copie/verts.log" suite 0 \
   'P15d : descriptions servies avec la constante à 4 en fr' \
   'P15d : aide du Bureau avec la constante à 4 en fr' \

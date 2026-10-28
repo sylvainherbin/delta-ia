@@ -31,7 +31,7 @@ def phase_rouge_p15d(tmp_path, *, temoin_historique=False):
     """Exécute le début exact de P15d, en s'arrêtant avant sa suite MCP complète."""
     script = RACINE / "mcp/preuve-p15d.sh"
     source = script.read_text(encoding="utf-8")
-    borne = '\n"$noeud" --test --test-reporter=tap mcp/test/*.test.js'
+    borne = '\n"$noeud" --test --test-reporter=tap --test-reporter-destination="$copie/verts.log"'
     assert source.count(borne) == 1
     prefixe = source.split(borne, 1)[0]
     racine = tmp_path / "racine"
