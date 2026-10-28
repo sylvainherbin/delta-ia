@@ -391,6 +391,16 @@ def refus_permission(res: Resultat) -> list[str]:
             for r in refus if isinstance(r, dict)]
 
 
+def cause_sans_json(res: Resultat) -> str:
+    """Détail d'une sortie de Claude sans JSON : le code de sortie et ce que dit le lanceur (première ligne utile de stderr), pour que
+    `passages.log` donne la cause. Stdout vide : Claude n'a rien rendu (lanceur ou Claude arrêté avant tout résultat)."""
+    erreur = next((" ".join(l.split()) for l in res.stderr.splitlines() if l.strip()), "")[:200]
+    sortie = " ".join(res.stdout.split())[:120]
+    if not sortie:
+        return f"aucune sortie de Claude (code {res.code})" + (f" : {erreur}" if erreur else "")
+    return (f"sortie Claude illisible (JSON attendu, code {res.code}) : {sortie}" + (f" ; stderr : {erreur}" if erreur else ""))
+
+
 def evaluer_claude(res: Resultat) -> tuple[int, str]:
     """(code, détail) : 0 seulement si exit 0, JSON lisible, subtype success, is_error faux. Les refus de permission se jugent
     à part (`refus_permission`, voir `Chaine.executer_etape`) : fatals sauf étape complète avec ses commits poussés
@@ -398,7 +408,7 @@ def evaluer_claude(res: Resultat) -> tuple[int, str]:
     try:
         d = json.loads(res.stdout)
     except ValueError:
-        return (res.code if res.code else 1), "sortie Claude illisible (JSON attendu)"
+        return (res.code if res.code else 1), cause_sans_json(res)
     if res.code != 0:
         return res.code, f"code de sortie {res.code}"
     if d.get("is_error") or d.get("subtype") != "success":
