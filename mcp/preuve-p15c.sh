@@ -10,7 +10,7 @@ copie="${1:?dossier de copie neuf requis}"
 mkdir -p "$copie"/{tete,avant}
 instantane_avant="$(sha256sum mcp/mesures/2026-10-28-surface.json)"
 git rev-parse HEAD > "$copie/tete.txt"
-git archive HEAD mcp docs/data docs/commun | tar -x -C "$copie/tete"
+git archive HEAD mcp docs/data docs/commun docs/assets/kb-modeles.mjs scripts/deltalib/couches/bootstrap.json | tar -x -C "$copie/tete"
 git archive "$base" mcp docs/data docs/commun | tar -x -C "$copie/avant"
 cp "$copie/tete/mcp/test/"{mcp,local}.test.js "$copie/avant/mcp/test/"
 
