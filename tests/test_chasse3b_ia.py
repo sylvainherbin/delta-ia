@@ -38,11 +38,6 @@ def modes_ancetre():
         pytest.param(
             0o111,
             id="ancetre-traversable",
-            marks=pytest.mark.xfail(
-                strict=True,
-                raises=LectureAncetreImposee,
-                reason="00q-F1 (672dde53) : ouverture O_RDONLY des ancêtres au lieu du seul droit de traversée",
-            ),
         ),
     ]
 

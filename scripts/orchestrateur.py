@@ -525,15 +525,15 @@ def selection_auto_est_sortie(chemin: str) -> bool:
 
 @contextmanager
 def dossier_rapports_supervision(racine: Path, *, creer: bool = False):
-    """Ancre chaque composant par descripteur, sans résoudre le moindre lien."""
+    """Ancre chaque composant sans suivre de lien ni exiger la lecture des ancêtres."""
     racine = racine.absolute()  # resolve() suivrait précisément les liens à refuser
     if ".." in racine.parts:
         raise ValueError("racine de supervision contenant '..'")
-    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
-    fd = os.open(racine.anchor, flags)
+    flags = os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    fd = os.open(racine.anchor, os.O_PATH | flags)
     try:
         for composant in racine.parts[1:]:
-            suivant = os.open(composant, flags, dir_fd=fd)
+            suivant = os.open(composant, os.O_PATH | flags, dir_fd=fd)
             os.close(fd)
             fd = suivant
         if creer:
@@ -541,7 +541,8 @@ def dossier_rapports_supervision(racine: Path, *, creer: bool = False):
                 os.mkdir("rapports", dir_fd=fd)
             except FileExistsError:
                 pass  # l'ouverture ci-dessous refuse aussi les liens apparus entre-temps
-        suivant = os.open("rapports", flags, dir_fd=fd)
+        # listdir() et fsync() nécessitent un descripteur lisible du dossier final.
+        suivant = os.open("rapports", os.O_RDONLY | flags, dir_fd=fd)
         os.close(fd)
         fd = suivant
         yield fd
