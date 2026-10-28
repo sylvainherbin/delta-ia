@@ -19,19 +19,40 @@ sha256sum mcp/api/mcp.js mcp/lib/{consultation,textes}.js mcp/test/{mcp,textes}.
   mcp/preuve-p15{c,d}.sh "$copie/avant/mcp/test/textes.test.js" > "$copie/code.sha256"
 
 verdict() {
-  "$noeud" --input-type=module - "$1" "$2" "$3" <<'JS'
+  "$noeud" --input-type=module - "$@" <<'JS'
 import fs from "node:fs";
 import assert from "node:assert/strict";
-const [fichier, attendus, echecs] = process.argv.slice(2);
+const [fichier, attendus, echecs, ...noms] = process.argv.slice(2);
 const log = fs.readFileSync(fichier, "utf8");
+assert.doesNotMatch(log, /^Bail out!/m, "preuve refusée : abandon TAP");
 // « suite » : le total est lu du rapport (la suite grandit à chaque preuve ajoutée), jamais figé ici.
 const lu = log.match(/^# tests (\d+)$/m);
 const tests = attendus === "suite" ? (lu && Number(lu[1]) > 0 ? lu[1] : assert.fail("aucun total de tests lisible")) : attendus;
 assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
-if (attendus === "suite") {
-  assert.match(log, new RegExp(`^# pass ${tests}$`, "m"));
-  for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
+assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"));
+for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
+if (Number(echecs)) {
+  // Les quatre témoins historiques sont aussi le contrat des appels sans noms.
+  if (!noms.length) for (const langue of ["fr", "en"]) noms.push(
+    `P15d : descriptions servies avec la constante à 4 en ${langue}`,
+    `P15d : aide du Bureau avec la constante à 4 en ${langue}`);
+  assert.equal(noms.length, Number(tests), "noms exacts des témoins rouges requis");
+  assert.equal(new Set(noms).size, noms.length, "noms des témoins rouges uniques requis");
+  const resultats = [...log.matchAll(/^(ok|not ok) \d+ - (.+)$/gm)];
+  assert.equal(resultats.length, Number(tests), "nombre de résultats rouges incohérent");
+  for (const nom of noms) {
+    const trouves = resultats.filter(r => r[2] === nom);
+    assert.equal(trouves.length, 1, nom);
+    const resultat = trouves[0], suivant = resultats[resultats.indexOf(resultat) + 1];
+    assert.equal(resultat[1], "not ok", nom);
+    const diagnostic = log.slice(resultat.index, suivant?.index ?? log.length);
+    // Lire le diagnostic du témoin ; les commentaires peuvent décrire une erreur capturée.
+    assert.match(diagnostic, /^  failureType: 'testCodeFailure'$/m,
+      `${nom} : rouge refusé, échec de préparation ou de chargement`);
+    assert.match(diagnostic, /^  code: 'ERR_ASSERTION'$/m,
+      `${nom} : rouge refusé, aucune assertion en échec`);
+  }
 }
 console.log(`${fichier}: ${tests} tests, ${echecs} échecs`);
 JS
@@ -83,6 +104,7 @@ code=0
 "$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R172' \
   "$copie/description/mcp/test/mcp.test.js" > "$copie/mutation-description.log" 2>&1 || code=$?
 [[ "$code" = 1 ]] || { cat "$copie/mutation-description.log"; exit 1; }
-verdict "$copie/mutation-description.log" 2 2
+verdict "$copie/mutation-description.log" 2 2 \
+  'P15c R172 : descriptions complètes des outils et paramètres en fr' 'P15c R172 : descriptions complètes des outils et paramètres en en'
 [[ "$instantane_avant" = "$(sha256sum mcp/mesures/2026-10-28-surface.json)" ]]
 printf '%s\n' "$instantane_avant" "P15d : rouge, vert, identité des textes et mutation de description vérifiés."

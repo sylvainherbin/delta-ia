@@ -110,10 +110,6 @@ def test_chasse5_p15d_accepte_les_quatre_assertions_historiques(tmp_path, execut
 
 
 @pytest.mark.parametrize("dependance", ["bureau.js", "lib/textes.js"])
-@pytest.mark.xfail(
-    strict=True, raises=RougeSansAssertionAccepte,
-    reason="02a-F1 : P15d accepte 4 hookFailed sans assertion comme ses 4 témoins rouges",
-)
 def test_chasse5_p15d_refuse_un_rouge_sans_assertion(tmp_path, execution_isolee, dependance):
     verdict, tap = phase_rouge(tmp_path, execution_isolee, dependance_absente=dependance)
     assert tap.count("failureType: 'hookFailed'") == 4, tap
