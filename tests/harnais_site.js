@@ -12,6 +12,13 @@ const { pathToFileURL } = require("node:url");
 const DOCS = path.resolve(__dirname, "..", "docs");
 const entree = JSON.parse(fs.readFileSync(0, "utf8"));
 const langue = entree.langue || "en";
+// `horloge` (ISO) fige l'heure vue par le site : les bannières de fraîcheur des passages ne dépendent plus du jour du test.
+const HORLOGE = entree.horloge ? Date.parse(entree.horloge) : null;
+if (HORLOGE !== null && Number.isNaN(HORLOGE)) throw new Error(`horloge invalide : ${entree.horloge}`);
+class DateFixe extends Date {
+  constructor(...a) { super(...(a.length ? a : [HORLOGE])); }
+  static now() { return HORLOGE; }
+}
 
 class Noeud {
   constructor(tag, texte) {
@@ -104,7 +111,7 @@ async function fetchSimule(url) {
 }
 const window = { addEventListener: (type, cb) => { ecouteursFenetre[type] = cb; }, scrollTo() {}, open: () => null };
 const contexte = vm.createContext({
-  window, document, location, fetch: fetchSimule, URL, URLSearchParams, Intl, Date, Promise, Math, JSON, Object, Array, Set, Map, Number, String, RegExp, Error,
+  window, document, location, fetch: fetchSimule, URL, URLSearchParams, Intl, Date: HORLOGE === null ? Date : DateFixe, Promise, Math, JSON, Object, Array, Set, Map, Number, String, RegExp, Error,
   history: { replaceState() {} },
   localStorage: { getItem: (k) => (stockage.has(k) ? stockage.get(k) : null), setItem: (k, v) => stockage.set(k, String(v)), removeItem: (k) => stockage.delete(k) },
   matchMedia: () => ({ matches: false, addEventListener() {} }),

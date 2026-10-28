@@ -13,6 +13,7 @@ import json
 import os
 import re
 import subprocess
+from datetime import datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -329,9 +330,26 @@ def dernier_jour(p):
     return sorted(j["date"] for j in idx["jours"])[-1]
 
 
+def horloge_des_donnees():
+    """Une heure après le dernier passage publié : la bannière « n'a pas tourné depuis N h » ne dépend plus du jour du test."""
+    maj = [datetime.fromisoformat(json.loads((DOCS / "data" / p / "index.json").read_text(encoding="utf-8"))["maj_le"])
+           for p in ("claude", "openai", "actu")]
+    return (max(maj) + timedelta(hours=1)).isoformat()
+
+
+def test_horloge_fixee_decide_de_la_banniere_de_fraicheur():
+    """Témoin : à 1 h du dernier passage, pas de bannière ; 40 h plus tard, la bannière précède « Aujourd'hui »."""
+    frais = horloge_des_donnees()
+    tard = (datetime.fromisoformat(frais) + timedelta(hours=40)).isoformat()
+    assert executer(langue="fr", ancres=["#aujourdhui"], horloge=frais)["etapes"][0]["texte"].startswith(FR["onglet.aujourdhui"])
+    en_retard = executer(langue="fr", ancres=["#aujourdhui"], horloge=tard)["etapes"][0]["texte"]
+    assert en_retard.startswith("Claude Code n'a pas tourné depuis ") and not en_retard.startswith(FR["onglet.aujourdhui"])
+
+
 def test_ancienne_route_reelle_en_anglais_et_en_francais():
+    horloge = horloge_des_donnees()
     for langue, attendu in (("en", "Today"), ("fr", "Aujourd'hui")):
-        r = executer(langue=langue, ancres=["#aujourdhui"])
+        r = executer(langue=langue, ancres=["#aujourdhui"], horloge=horloge)
         texte = r["etapes"][0]["texte"]
         assert texte.startswith(attendu), texte[:80]
         assert TEXTES[langue]["couche.ancienne"] in r["etapes"][0]["couche"]
@@ -473,8 +491,9 @@ def test_ancienne_route_illisible_bascule_sur_la_reference_commune():
 def test_anciennes_ancres_fonctionnent():
     semaine = json.loads((DOCS / "data" / "semaine" / "index.json").read_text(encoding="utf-8"))["semaines"][0]["semaine"]
     d = dernier_jour("claude")
-    r = executer(langue="fr", ancres=[f"#archives/{d}", f"#semaine/{semaine}", "#reference?q=/add-dir", "#archives?q=worktree",
-                                      "#reference?recent=7", "#console="])
+    r = executer(langue="fr", horloge=horloge_des_donnees(),
+                 ancres=[f"#archives/{d}", f"#semaine/{semaine}", "#reference?q=/add-dir", "#archives?q=worktree",
+                         "#reference?recent=7", "#console="])
     e = [x["texte"] for x in r["etapes"]]
     assert FR["archives.retour"] in e[0]
     assert semaine in e[1] and FR["comptes.titre"] in e[1]
