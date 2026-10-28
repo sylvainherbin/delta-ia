@@ -555,3 +555,38 @@ test("lot 2 — Bureau : vue utile, consultation et cases « fait » partagées 
     assert.equal(t.sortie.essais_base.entrees.some((x) => x.id in faits), false);
   } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });
+
+test("P15b R178 : Bureau consulter, défaut 3 et limite explicite entière de 1 à 5", async () => {
+  const i = instanceLot2();
+  try {
+    const debut = ["--instance", i.profil, "--langue", "fr", "consulter", "contexte"];
+    const reference = await donnees("chercher_reference", { requete: "contexte", forme: "consultation", limite: 5 }, ctxLocal(i, "fr"));
+    assert.equal(reference.affichees, 5, "assez de résultats pour éprouver les bornes");
+    const defaut = await bureau.executer(debut);
+    assert.equal(defaut.code, 0);
+    assert.equal(defaut.sortie.affichees, 3);
+    assert.deepEqual(defaut.sortie.resultats.map(f => f.id), reference.resultats.slice(0, 3).map(f => f.id));
+    for (const limite of [1, 2, 3, 4, 5]) {
+      const r = await bureau.executer([...debut, "--limite", String(limite)]);
+      assert.equal(r.code, 0);
+      assert.equal(r.sortie.affichees, limite);
+      assert.deepEqual(r.sortie.resultats.map(f => f.id), reference.resultats.slice(0, limite).map(f => f.id));
+    }
+    for (const valeur of ["0", "-1", "6", "1.5", "3x", "NaN", "Infinity", ""])
+      await assert.rejects(() => bureau.executer([...debut, "--limite", valeur]), e => e.cle === "local.limite_consultation", valeur);
+    for (const suite of [["--limite"], ["--autre", "4"], ["--limite", "4", "surplus"]])
+      await assert.rejects(() => bureau.executer([...debut, ...suite]), e => e.cle === "local.usage");
+    const cli = spawnSync(process.execPath, [path.join(ICI, "../bureau.js"), ...debut, "--limite", "4"], { encoding: "utf8" });
+    assert.equal(cli.status, 0, cli.stderr);
+    assert.equal(JSON.parse(cli.stdout).affichees, 4);
+    for (const langue of ["fr", "en"]) for (const surface of ["service", "reference", "compatible"]) {
+      const ctx = { ...ctxLocal(i, langue), surface };
+      const n = await donnees("orqyra_ai_nouveautes_base", {}, ctx);
+      assert.match(n.avis, surface === "compatible" ? /\bchercher_reference\b/ : /\borqyra_ai_chercher_reference\b/);
+      const liste = await mcp.traiter({ jsonrpc: "2.0", id: 1, method: "tools/list" }, {}, ctx);
+      const nom = surface === "compatible" ? "nouveautes_base" : "orqyra_ai_nouveautes_base";
+      if (surface !== "reference") assert.match(liste.result.tools.find(o => o.name === nom).description,
+        surface === "compatible" ? /\bfiche_reference\b/ : /\borqyra_ai_fiche_reference\b/);
+    }
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+});

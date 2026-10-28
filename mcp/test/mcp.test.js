@@ -1076,7 +1076,12 @@ test("P15 R172 : six noms de service, mêmes schémas, anciens appels et erreurs
       assert.deepEqual(outil.annotations, historique[i].annotations);
       assert.equal(outil.inputSchema.additionalProperties, false);
       assert.ok(outil.name.length <= 64);
-      if (langue === "fr") assert.deepEqual(outil.inputSchema, historique[i].inputSchema);
+      if (langue === "fr") {
+        // Les contraintes restent identiques ; seule l'aide peut nommer les alias de la surface.
+        const contraintes = (schema) => ({ ...schema, properties: Object.fromEntries(Object.entries(schema.properties)
+          .map(([nom, { description, ...reste }]) => [nom, reste])) });
+        assert.deepEqual(contraintes(outil.inputSchema), contraintes(historique[i].inputSchema));
+      }
       const nom = historique[i].name;
       const ancien = await rpcSurface("service", messageOutil(nom, exemples[nom]), langue);
       assert.deepEqual(await rpcSurface("service", messageOutil(outil.name, exemples[nom]), langue), ancien, nom);
@@ -1135,6 +1140,64 @@ test("P15 R178 : la consultation conserve les premières cibles de liste8 avant 
       const r = (await appel("chercher_reference", { ...args, forme: "consultation", limite })).corps.result;
       assert.equal(r.isError, false);
       assert.deepEqual(r.structuredContent.resultats.map(e => e.id), liste.resultats.slice(0, limite).map(e => e.id), `${args.requete}, limite=${limite}`);
+    }
+  }
+});
+
+for (const langue of ["fr", "en"]) test(`P15b R172 : descriptions et paramètres préfixés en ${langue}`, async () => {
+  const renvois = {
+    orqyra_ai_resume_du_jour: ["orqyra_ai_nouveautes_base"],
+    orqyra_ai_chercher_reference: ["orqyra_ai_fiche_reference"],
+    orqyra_ai_fiche_reference: ["orqyra_ai_a_tester", "orqyra_ai_chercher_reference", "orqyra_ai_nouveautes_base"],
+    orqyra_ai_etat_versions: [],
+    orqyra_ai_a_tester: ["orqyra_ai_fiche_reference"],
+    orqyra_ai_nouveautes_base: ["orqyra_ai_fiche_reference"],
+  };
+  const noms = /\b(?:orqyra_ai_)?(?:resume_du_jour|chercher_reference|fiche_reference|etat_versions|a_tester|nouveautes_base)\b/g;
+  for (const surface of ["service", "reference"]) {
+    const outils = (await rpcSurface(surface, messageListe, langue)).result.tools;
+    for (const outil of outils) {
+      const attendus = surface === "reference" && outil.name === "orqyra_ai_fiche_reference"
+        ? ["orqyra_ai_chercher_reference"] : renvois[outil.name];
+      assert.deepEqual([...new Set(outil.description.match(noms) || [])].sort(), attendus, `${surface} ${outil.name}`);
+      assert.match(outil.description, langue === "fr" ? /À appeler/ : /Call it/);
+      for (const parametre of Object.values(outil.inputSchema.properties))
+        assert.ok((parametre.description.match(noms) || []).every(n => n.startsWith("orqyra_ai_")), parametre.description);
+    }
+    const fiche = outils.find(o => o.name === "orqyra_ai_fiche_reference");
+    if (surface === "reference") assert.match(fiche.description, /\?surface=service/);
+    else assert.match(outils.find(o => o.name === "orqyra_ai_a_tester").inputSchema.properties.id.description, /orqyra_ai_a_tester/);
+  }
+});
+
+test("P15b R172 : erreurs et suite citent les noms de la surface sans réécrire les données", async () => {
+  const erreurs = [
+    ["fiche_reference", { id: "inexistant-p15b" }, "chercher_reference"],
+    ["a_tester", { curseur: "../x" }, "a_tester"],
+    ["a_tester", { curseur: "v1:0000000000000000:1" }, "a_tester"],
+    ["a_tester", { id: "../x" }, "a_tester"],
+    ["a_tester", { id: "inexistant-p15b" }, "a_tester"],
+  ];
+  for (const langue of ["fr", "en"]) {
+    for (const surface of ["service", "reference", "compatible", "inconnue"]) {
+      const prefixe = ["service", "reference"].includes(surface) ? "orqyra_ai_" : "";
+      for (const [outil, args, renvoi] of erreurs) {
+        const ancien = await rpcSurface(surface, messageOutil(outil, args), langue);
+        assert.equal(ancien.result.isError, true);
+        assert.deepEqual(await rpcSurface(surface, messageOutil(`orqyra_ai_${outil}`, args), langue), ancien);
+        const texte = ancien.result.content[0].text;
+        assert.match(texte, new RegExp(`\\b${prefixe}${renvoi}\\b`));
+        if (prefixe) assert.doesNotMatch(texte, new RegExp(`\\b${renvoi}\\b`));
+      }
+      const c = (await rpcSurface(surface, messageOutil("orqyra_ai_chercher_reference", { requete: "/model", forme: "consultation" }), langue)).result;
+      assert.equal(c.isError, false);
+      assert.match(c.structuredContent.suite, new RegExp(`\\b${prefixe}fiche_reference\\b`));
+      assert.match(c.structuredContent.suite, new RegExp(`\\b${prefixe}chercher_reference\\b`));
+      assert.deepEqual(JSON.parse(c.content[0].text), c.structuredContent);
+      // Cet id est aussi un ancien nom d'outil : seul le renvoi d'aide doit changer.
+      const erreur = (await rpcSurface(surface, messageOutil("fiche_reference", { id: "chercher_reference" }), langue)).result;
+      assert.match(erreur.content[0].text, /(?:entrée|entry) chercher_reference/);
+      assert.match(erreur.content[0].text, new RegExp(`(?:avec|with) ${prefixe}chercher_reference`));
     }
   }
 });

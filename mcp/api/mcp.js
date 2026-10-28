@@ -428,7 +428,7 @@ async function consulterReference(args, ctx) {
   }
   const out = { ...tete, forme: "consultation", catalogue: { source: ctx.source === "local" ? "local" : ctx.source, version: v?.generation ?? null, publie_le: v?.publie_le ?? null },
     cache: { cle, statut: !cle ? "sans_version" : reutilise ? "reutilise" : "calcule" }, total: c.total, affichees: c.resultats.length,
-    resultats: c.resultats, suite: t(ctx.langue, "consultation.suite") };
+    resultats: c.resultats, suite: texteSurface(ctx, "consultation.suite") };
   if (c.categories_non_lues.length) out.categories_non_lues = c.categories_non_lues;
   const avis = [c.avis, cle ? null : t(ctx.langue, "consultation.sans_cache")].filter(Boolean).join(" ; ");
   if (avis) out.avis = avis;
@@ -530,7 +530,7 @@ async function nouveautesBase({ jours = 7 } = {}, ctx) {
   const tete = await entete(ctx);
   // la génération commune ne publie pas encore de date d'ajout : réponse explicite, jamais une liste vide présentée comme complète
   if (formatCommun(ctx)) return { ...tete, jours, disponible: false, total: null, affichees: 0, entrees: [],
-    avis: t(ctx.langue, "nouveautes.indisponible", { generation: estLocal(ctx) ? tete.donnees.commun.generation ?? "?" : tete.donnees.generation }) };
+    avis: texteSurface(ctx, "nouveautes.indisponible", { generation: estLocal(ctx) ? tete.donnees.commun.generation ?? "?" : tete.donnees.generation }) };
   const d = await fichierLeger("kb/recent.json", ctx);
   const depuis = new Date(Date.now() - jours * 864e5).toISOString().slice(0, 10);
   const fenetre = d.entrees.filter((e) => typeof e.date_ajout === "string" && e.date_ajout >= depuis);
@@ -672,16 +672,21 @@ const nomCanonique = (nom) => {
   const canonique = nom.startsWith(PREFIXE_SERVICE) ? nom.slice(PREFIXE_SERVICE.length) : nom;
   return Object.hasOwn(SCHEMAS, canonique) ? canonique : null;
 };
+const NOMS_DANS_TEXTE = new RegExp(`\\b(${Object.keys(SCHEMAS).join("|")})\\b`, "g");
+const prefixee = (surface) => surface === "service" || surface === "reference";
+const texteSurface = (ctx, cle, vars = {}) => t(ctx.langue, cle, vars, (texte) => prefixee(ctx.surface)
+  ? texte.replace(NOMS_DANS_TEXTE, (nom) => PREFIXE_SERVICE + nom) : texte);
 function outils(langue, source, surface = "compatible") {
-  const prefixer = surface === "service" || surface === "reference";
+  const prefixer = prefixee(surface), ctx = { langue, surface };
   return Object.fromEntries(Object.entries(SCHEMAS).filter(([nom]) => surface !== "reference" || REFERENCE.has(nom)).map(([nom, o]) => {
-    const properties = Object.fromEntries(Object.entries(o.proprietes).map(([p, s]) => [p, { ...s, description: t(langue, `outil.${nom}.${p}`) }]));
+    const properties = Object.fromEntries(Object.entries(o.proprietes).map(([p, s]) => [p, { ...s, description: texteSurface(ctx, `outil.${nom}.${p}`) }]));
     // paramètre de langue commun aux six outils (décision du 22/10) : défaut = langue du serveur ou de son adresse
     properties.langue = { type: "string", enum: LANGUES, default: langue, description: t(langue, "outil.langue") };
     const inputSchema = { type: "object", ...(o.requis ? { required: o.requis } : {}), properties, additionalProperties: false };
     // local : la description dit ce que rend la couche personnelle de cette instance
-    let description = t(langue, `outil.${nom}.description`) + (source === "local" ? t(langue, `outil.${nom}.local`) : "");
-    if (prefixer) for (const n of Object.keys(SCHEMAS)) description = description.replaceAll(n, PREFIXE_SERVICE + n);
+    const origine = texteSurface(ctx, `outil.fiche_reference.origine${surface === "reference" ? "_reference" : ""}`);
+    const description = texteSurface(ctx, `outil.${nom}.description`, { origine })
+      + (source === "local" ? texteSurface(ctx, `outil.${nom}.local`) : "");
     return [prefixer ? PREFIXE_SERVICE + nom : nom, { f: o.f, titre: t(langue, `outil.${nom}.titre`), description, inputSchema }];
   }));
 }
@@ -725,7 +730,8 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
       } catch (e) {
         mesure.cause_erreur = causeErreur(e);
         const cle = e instanceof ErreurParametre ? "erreur.parametre" : c.source === "local" ? "erreur.local" : c.source === "commun" ? "erreur.commun" : "erreur.donnees";
-        return ok(id, { content: [{ type: "text", text: t(c.langue, cle, { message: texteErreur(e, c.langue) }) }], isError: true });
+        const message = e instanceof ErreurParametre ? texteSurface(c, e.cle, e.vars) : texteErreur(e, c.langue);
+        return ok(id, { content: [{ type: "text", text: t(c.langue, cle, { message }) }], isError: true });
       }
     }
     default:

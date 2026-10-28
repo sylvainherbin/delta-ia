@@ -168,6 +168,12 @@ test("référence commune : modèles sans constats ni recommandation OPÉRER, ve
   const c = await donnees("chercher_reference", { requete: "/add-dir" });
   assert.equal(c.resultats[0].id, "claude-code-commandes-add-dir");
   assert.equal(c.avis, undefined);
+  for (const langue of ["fr", "en"]) for (const surface of ["service", "reference", "compatible"]) {
+    const n = await donnees("orqyra_ai_nouveautes_base", {}, { langue, source: "commun", surface });
+    assert.equal(n.disponible, false);
+    assert.match(n.avis, surface === "compatible" ? /\bchercher_reference\b/ : /\borqyra_ai_chercher_reference\b/);
+    assert.equal(n.donnees.generation, GEN);
+  }
 });
 
 test("couche commune illisible : erreur de couche explicite, jamais de repli sur l'ancienne route", async () => {

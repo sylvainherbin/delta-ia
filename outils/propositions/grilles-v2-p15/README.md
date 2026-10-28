@@ -14,6 +14,22 @@ de main devient rouge, puis le serveur de la branche est exercé en boucle local
 valides sur les trois surfaces ; le catalogue réduit conserve les résultats des douze recherches, leurs fiches
 complètes et les versions. Il ne couvre pas la découverte des outils de veille, essais ou ajouts récents.
 
+La grille P15 retient **R172 : PARTIEL** : les surfaces préfixées sont optionnelles ; `/mcp` conserve le catalogue
+historique, aucun déploiement ni client installé utilisant ces adresses n'est qualifié. Les tests du dépôt
+ne suffisent pas à passer cette ligne à FAIT.
+
+Après P15b, les descriptions et paramètres des surfaces `service` et `reference` sont éprouvés en français et
+en anglais, ainsi que les erreurs et le renvoi de consultation (`P15b R172` dans `mcp/test/mcp.test.js`). Les
+descriptions de `reference` renvoient au catalogue complet pour les fonctions absentes. Le Bureau garde
+3 fiches par défaut ; `consulter <texte> --limite N` accepte explicitement un entier de 1 à 5.
+
+`mcp/mesurer-surface.js` est une **mesure descriptive, pas un garde-fou de régression** : aucun seuil de 10/12 ni
+zéro perte à quatre fiches n'est imposé par son code de retour. Les tests de l'instrument et de conservation du
+préfixe de `liste8` ont des assertions ; les chiffres de signal restent des observations sur le corpus fermé.
+La recette écrit la nouvelle mesure dans `rapports/grilles-v2-p15/surface.json`, ignoré par git ; les instantanés
+suivis restent historiques. La recette P15b est `bash mcp/preuve-p15b.sh`, sous le verrou dev avec un délai
+d'au moins 3 600 secondes : quatre témoins rouges sur `5675a43e`, mutation détectée fr/en, puis tests ciblés verts.
+
 Avant toute pose, le chef devra choisir le client concerné et contrôler son catalogue natif après reconnexion.
 La recette HTTP suivante pourra seulement confirmer le catalogue du serveur déployé, sans appel de modèle :
 

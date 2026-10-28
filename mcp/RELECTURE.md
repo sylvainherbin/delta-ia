@@ -260,3 +260,18 @@ Retenu, avec des témoins rouges sur l'archive de main `78030f81` et verts sur l
 - `outputSchema` ou changement de protocole : aucune anomalie liée à P15 ne le justifie ; hors de ce contrat.
 
 Recette complète : `mesures/2026-10-28-p15.md`, par le verrou dev au premier plan. Ni déploiement ni pose cliente.
+
+## P15b : corrections après la relecture de 5675a43e (28/10/2026)
+
+Même référence locale `tool-design.md`, relue sans installation après repérage Delta-IA (donnée secondaire).
+Remarques applicables : « The description is the contract », « Disambiguate siblings » et « Describe every
+parameter » : descriptions et paramètres adaptés à la surface en fr/en, et renvoi au catalogue complet pour
+les outils absents ; tests « P15b R172 : descriptions et paramètres préfixés en fr/en », avec mutation qui
+retire l'adaptation des descriptions. « Errors » : erreurs et suite de consultation citent le nom de la surface,
+les ids interpolés restent intacts ; test « P15b R172 : erreurs et suite… ». L'avis d'indisponibilité des ajouts
+sur la référence commune suit aussi ce contrat (`couches.test.js` et `local.test.js`). « Tight schemas » :
+le Bureau rend 3 fiches par défaut et accepte `--limite` de 1 à 5 ; test « P15b R178 : Bureau consulter… ».
+
+R172 reste PARTIEL : défaut historique conservé, surfaces optionnelles sans déploiement ni client qualifié.
+La mesure de signal reste descriptive ; ses chiffres ne sont pas un garde-fou de régression. Recette locale :
+`preuve-p15b.sh` sous verrou dev au premier plan ; la preuve écrit la mesure dans `rapports/`, ignoré par git.

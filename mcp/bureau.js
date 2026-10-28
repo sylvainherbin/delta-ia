@@ -5,12 +5,13 @@
 // ceux d'OBSERVATORY (le Bureau les lit déjà) ; le bilan OPÉRER vient de l'instantané partagé avec le pilote des réserves.
 //
 // Usage : node bureau.js (--historique | --instance <profil.json>) [--langue en|fr]
-//   (etat | versions | fiche <id> | chercher <texte> | utile <id> | consulter <texte> | a-tester)
+//   (etat | versions | fiche <id> | chercher <texte> | utile <id> | consulter <texte> [--limite 1..5] | a-tester)
 // Contrat `etat` : { schema: "delta.personnel", schema_version: 1, vue: "bureau", lu_le, langue, commun, personnel,
 //   site_public_url, outils } ; `personnel.instance` résume l'instance lue (profil d'hôte de P1, réglages courants).
 // `versions`, `fiche`, `chercher` rendent le `structuredContent` de l'outil MCP correspondant ; `consulter` la forme
-// courte de `chercher_reference` (lot 2) ; `utile <id>` la vue « Utile pour mon ORQYRA » de la fiche, avec l'en-tête des
-// couches ; `a-tester` la page locale d'`a_tester` et les cases « fait » partagées (essais déclarés, `faits`).
+// courte de `chercher_reference` (lot 2), 3 fiches par défaut, --limite de 1 à 5 ; `utile <id>` la vue « Utile pour mon
+// ORQYRA » de la fiche, avec l'en-tête des couches ; `a-tester` la page locale d'`a_tester` et les cases « fait » partagées
+// (essais déclarés, `faits`).
 // Codes : 0 réponse ; 1 outil en erreur (réponse JSON avec `erreur`) ; 2 usage ou racines non désignées.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -20,7 +21,7 @@ import { contexteLocal, langueDemandee, options } from "./stdio.js";
 import CONFIG from "./lib/config.js";
 
 const COMMANDES = { versions: ["etat_versions", () => ({})], fiche: ["fiche_reference", (x) => ({ id: x })],
-  chercher: ["chercher_reference", (x) => ({ requete: x })], consulter: ["chercher_reference", (x) => ({ requete: x, forme: "consultation" })],
+  chercher: ["chercher_reference", (x) => ({ requete: x })], consulter: ["chercher_reference", (x, limite = 3) => ({ requete: x, forme: "consultation", limite })],
   utile: ["fiche_reference", (x) => ({ id: x })], "a-tester": ["a_tester", () => ({ limite: 20 })] };
 
 export async function etat(ctx, maintenant = new Date()) {
@@ -42,8 +43,15 @@ export async function executer(argv) {
   const ctx = contexteLocal(options(argv.slice(0, i)));
   if (commande === "etat") return { code: 0, sortie: await etat(ctx) };
   const [outil, args] = COMMANDES[commande];
+  let limite;
+  if (commande === "consulter" && reste.length > 1) {
+    if (reste.length !== 3 || reste[1] !== "--limite") throw new ErreurTexte("local.usage", { option: reste.slice(1).join(" ") });
+    limite = Number(reste[2]);
+    if (!Number.isInteger(limite) || limite < 1 || limite > 5) throw new ErreurTexte("local.limite_consultation");
+    reste.splice(1);
+  }
   if (reste.length !== args.length) throw new ErreurTexte("local.usage", { option: commande });
-  const r = (await traiter({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: outil, arguments: args(reste[0]) } }, {}, ctx)).result;
+  const r = (await traiter({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: outil, arguments: args(reste[0], limite) } }, {}, ctx)).result;
   if (r.isError) return { code: 1, sortie: { erreur: r.content[0].text } };
   const sc = r.structuredContent;
   // vue seule : en-tête des couches, fiche désignée, raisons ; sans miroir commun, la réponse personnelle telle quelle

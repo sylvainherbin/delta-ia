@@ -86,6 +86,7 @@ export const TEXTES = {
     "local.personnel_seul": "common reference unavailable on this instance: only this instance's personal layer is shown, without the common entry; opinions are marked to review",
     "modeles.format": "unexpected model file format",
     "modeles.absent": "model missing: {modele}",
+    "local.limite_consultation": "consulter: --limite must be an integer from 1 to 5 (default 3)",
     "local.usage": "usage: (--historique | --instance <profile.json>) [--langue en|fr]; unexpected option {option}",
     "outil.resume_du_jour.titre": "Daily digest",
     "outil.resume_du_jour.description": "ORQYRA AI digest for today (or a given date) for Claude Code, ChatGPT/Codex and AI news. Former data route: summary and items of strong and medium impact, what they change for Sylvain, suggested action; when no item carries a personal impact, every item of the day is listed. Common reference: the day's factual items (product, version, type, certainty, sources, linked reference entries), without personal impact. Call it to know what changed today or on a given date; for additions to the reference base, use nouveautes_base.",
@@ -99,8 +100,10 @@ export const TEXTES = {
     "outil.chercher_reference.statut": "restrict to a usage status: utilise, non_utilise or inconnu (former data route only); all by default",
     "outil.chercher_reference.limite": "number of entries returned, 8 by default; `total` says how many match (consultation: 3 by default, 5 at most)",
     "outil.chercher_reference.forme": "liste (default): full summaries; consultation: short summaries, validity, references and catalogue version, kept in cache for that version",
+    "outil.fiche_reference.origine": "given by chercher_reference, nouveautes_base or a_tester",
+    "outil.fiche_reference.origine_reference": "given by chercher_reference; for recent additions and trials, use ?surface=service",
     "outil.fiche_reference.titre": "Reference entry",
-    "outil.fiche_reference.description": "Full entry of ORQYRA AI's reference base, by identifier or model × effort alias (given by chercher_reference, nouveautes_base or a_tester): syntax, description in the requested language (English fallback flagged), example and its origin, availability and systems, or full details of a model × effort pair (API prices, effort levels, benchmarks, dated sources). Internal findings and OPÉRER recommendations are never returned. On the former data route it includes validite, perimee, sections_perimees and verifie_le of the personal comment; on the common reference the personal opinion is marked unavailable. Call it when the chercher_reference summary is not enough.",
+    "outil.fiche_reference.description": "Full entry of ORQYRA AI's reference base, by identifier or model × effort alias ({origine}): syntax, description in the requested language (English fallback flagged), example and its origin, availability and systems, or full details of a model × effort pair (API prices, effort levels, benchmarks, dated sources). Internal findings and OPÉRER recommendations are never returned. On the former data route it includes validite, perimee, sections_perimees and verifie_le of the personal comment; on the common reference the personal opinion is marked unavailable. Call it when the chercher_reference summary is not enough.",
     "outil.fiche_reference.id": "entry identifier (e.g. claude-code-commandes-model, modele-claude-haiku-5-5-medium or alias claude-haiku-5-5:medium)",
     "outil.etat_versions.titre": "Version status",
     "outil.etat_versions.description": "Latest published version known to ORQYRA AI for Claude Code, Codex in the ChatGPT app, standalone Codex CLI, ChatGPT Desktop and Claude Desktop, with the version installed on Sylvain's machine on the former data route (status up to date, behind, unknown or bundled). On the common reference the installed version is unknown (null) and nothing is compared. Call it before recommending a feature that depends on a version, or to know whether an update is pending.",
@@ -205,6 +208,7 @@ export const TEXTES = {
     "local.personnel_seul": "référence commune indisponible sur cette instance : seule la couche personnelle de cette instance est rendue, sans fiche commune ; les avis sont marqués à revoir",
     "modeles.format": "format du fichier des modèles inattendu",
     "modeles.absent": "modèle absent : {modele}",
+    "local.limite_consultation": "consulter : --limite doit être un entier de 1 à 5 (défaut 3)",
     "local.usage": "usage : (--historique | --instance <profil.json>) [--langue en|fr] ; option inattendue {option}",
     "outil.resume_du_jour.titre": "Résumé du jour",
     "outil.resume_du_jour.description": "Synthèse ORQYRA AI du jour (ou d'une date) pour Claude Code, ChatGPT/Codex et l'actu IA. Ancienne route des données : synthèse et éléments d'impact fort et moyen, ce qu'ils changent pour Sylvain, action proposée ; quand aucun élément ne porte d'impact personnel, tous les éléments du jour. Référence commune : éléments factuels du jour (produit, version, type, certitude, sources, fiches liées), sans impact personnel. À appeler pour savoir ce qui a changé aujourd'hui ou à une date donnée ; pour les ajouts de la base de référence, utiliser nouveautes_base.",
@@ -218,8 +222,10 @@ export const TEXTES = {
     "outil.chercher_reference.statut": "restreindre au statut d’usage : utilise, non_utilise ou inconnu (ancienne route seulement) ; tous par défaut",
     "outil.chercher_reference.limite": "nombre de fiches rendues, 8 par défaut ; `total` dit combien correspondent (consultation : 3 par défaut, 5 au plus)",
     "outil.chercher_reference.forme": "liste (défaut) : résumés complets ; consultation : résumés courts, validité, références et version du catalogue, gardés en cache pour cette version",
+    "outil.fiche_reference.origine": "donné par chercher_reference, nouveautes_base ou a_tester",
+    "outil.fiche_reference.origine_reference": "donné par chercher_reference ; pour les ajouts récents et les essais, utiliser ?surface=service",
     "outil.fiche_reference.titre": "Fiche de référence",
-    "outil.fiche_reference.description": "Fiche complète d'une entrée de la base de référence ORQYRA AI, par identifiant ou alias de modèle × effort (donné par chercher_reference, nouveautes_base ou a_tester) : syntaxe, description dans la langue demandée (repli anglais signalé), exemple et son origine, disponibilité et systèmes, ou détail complet d'un couple modèle × effort (prix API, niveaux d'effort, benchmarks, sources datées). Constats internes et recommandations OPÉRER ne sont jamais rendus. Sur l'ancienne route, inclut validite, perimee, sections_perimees et verifie_le du commentaire personnalisé ; sur la référence commune, l'avis personnel est marqué indisponible. À appeler quand le résumé de chercher_reference ne suffit pas.",
+    "outil.fiche_reference.description": "Fiche complète d'une entrée de la base de référence ORQYRA AI, par identifiant ou alias de modèle × effort ({origine}) : syntaxe, description dans la langue demandée (repli anglais signalé), exemple et son origine, disponibilité et systèmes, ou détail complet d'un couple modèle × effort (prix API, niveaux d'effort, benchmarks, sources datées). Constats internes et recommandations OPÉRER ne sont jamais rendus. Sur l'ancienne route, inclut validite, perimee, sections_perimees et verifie_le du commentaire personnalisé ; sur la référence commune, l'avis personnel est marqué indisponible. À appeler quand le résumé de chercher_reference ne suffit pas.",
     "outil.fiche_reference.id": "identifiant d'entrée (ex. claude-code-commandes-model, modele-claude-haiku-5-5-medium ou alias claude-haiku-5-5:medium)",
     "outil.etat_versions.titre": "État des versions",
     "outil.etat_versions.description": "Dernière version publiée connue d'ORQYRA AI pour Claude Code, le Codex de l'app ChatGPT, la Codex CLI autonome, ChatGPT Desktop et Claude Desktop, avec, sur l'ancienne route, la version installée sur la machine de Sylvain (statut à jour, en retard, inconnu ou embarqué). Sur la référence commune, la version installée est inconnue (null) et rien n'est comparé. À appeler avant de conseiller une fonctionnalité qui dépend d'une version, ou pour savoir si une mise à jour est en attente.",
@@ -244,9 +250,10 @@ export const TEXTES = {
   },
 };
 
-export function t(langue, cle, vars = {}) {
+export function t(langue, cle, vars = {}, adapter = (texte) => texte) {
   const dico = TEXTES[langue] || TEXTES.en;
-  const modele = Object.hasOwn(dico, cle) ? dico[cle] : cle;
+  // Adapter le modèle avant les variables : un id, une URL ou un texte fourni reste intact.
+  const modele = adapter(Object.hasOwn(dico, cle) ? dico[cle] : cle);
   return modele.replace(/\{(\w+)\}/g, (m, nom) => (Object.hasOwn(vars, nom) ? String(vars[nom]) : m));
 }
 
