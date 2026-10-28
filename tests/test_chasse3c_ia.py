@@ -95,8 +95,6 @@ def test_chasse3c_verdict_accepte_un_import_refuse_et_capture(contexte):
 # panne rejetée ne constitue pas lui-même une panne de chargement ».
 # c275785 ne respecte ce contrat que pour le message simplifié du test
 # voisin ; le format natif de console.error(erreur) produit un faux rejet.
-@pytest.mark.xfail(strict=True, raises=DiagnosticAttenduRejete,
-                   reason="00u-F1 : verdict confond diagnostic capturé et import en échec")
 def test_chasse3c_verdict_accepte_le_diagnostic_natif_dun_import_capture(contexte):
     r = import_capture(contexte, journaliser=True)
     assert re.search(r"^# Error \[ERR_MODULE_NOT_FOUND\]:", r.stdout, re.MULTILINE), r.stdout

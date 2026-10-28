@@ -91,6 +91,16 @@ test("M76 : verdict P15c refuse deux erreurs de chargement sans assertion exécu
   assert.notEqual(valider(vert.stdout.replace(" - " + NOMS[0], " - autre témoin"), 0).status, 0);
   assert.notEqual(valider(vert.stdout.replace(/^ok /m, "not ok "), 0).status, 0, "ok exigé malgré les totaux verts");
   assert.notEqual(valider(vert.stdout.replace(/^# tests 2$/m, "# tests 3"), 0).status, 0);
+  assert.notEqual(valider(assertions.stdout, 0).status, 0, "un TAP rouge ne vaut jamais un vert");
+  for (const tap of [vert.stdout, assertions.stdout]) {
+    const echecs = tap === vert.stdout ? 0 : 2;
+    for (const total of ["tests", "pass", "fail", "cancelled", "skipped", "todo"]) {
+      const ligne = new RegExp(`^# ${total} \\d+\\n`, "m");
+      assert.notEqual(valider(tap.replace(ligne, ""), echecs).status, 0, `${total} manquant : TAP tronqué`);
+    }
+    assert.notEqual(valider(tap.slice(0, tap.indexOf("\n1..")), echecs).status, 0, "résumé tronqué");
+    assert.notEqual(valider(tap + "Bail out! abandon\n", echecs).status, 0, "abandon malgré les totaux");
+  }
   console.log("M86 preuve : noms exacts, assertions individuelles et ok verts contrôlés");
 });
 

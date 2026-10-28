@@ -25,7 +25,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 const [fichier, tests, echecs, ...noms] = process.argv.slice(2);
 const log = fs.readFileSync(fichier, "utf8");
-assert.doesNotMatch(log, /^(?:# .*?\[|  code: ')(?:MODULE_NOT_FOUND|ERR_[A-Z_]*(?:MODULE|IMPORT|PACKAGE)[A-Z_]*)(?:\]|')|^Bail out!/m);
+assert.doesNotMatch(log, /^Bail out!/m);
 assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
 assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"));
@@ -41,6 +41,8 @@ for (const nom of noms) {
   assert.equal(resultat[1], Number(echecs) ? "not ok" : "ok", nom);
   if (Number(echecs)) {
     const diagnostic = log.slice(resultat.index, suivant?.index ?? log.length);
+    // Les commentaires d'un test réussi peuvent journaliser une exception capturée.
+    assert.doesNotMatch(diagnostic, /^(?:# .*?\[|  code: ')(?:MODULE_NOT_FOUND|ERR_[A-Z_]*(?:MODULE|IMPORT|PACKAGE)[A-Z_]*)(?:\]|')/m);
     assert.match(diagnostic, /^  failureType: 'testCodeFailure'$/m, nom);
     assert.match(diagnostic, /^  code: 'ERR_ASSERTION'$/m, nom);
   }
