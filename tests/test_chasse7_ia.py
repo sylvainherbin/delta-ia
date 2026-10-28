@@ -147,7 +147,6 @@ def test_chasse7_p15d_accepte_une_suite_executant_ses_assertions(contexte_tap, s
 
 # Résiduel hérité de c275785 : le total Node inclut les tests imbriqués,
 # tandis que /^ok/ ne voit que le résultat englobant. 16b26fc le conserve.
-@pytest.mark.xfail(strict=True, raises=SousTestsValidesRejetes)
 @pytest.mark.parametrize("structure", ["suite", "sous-test"])
 def test_chasse7_p15c_accepte_deux_assertions_vertes_imbriquees(contexte_tap, structure):
     retour = deux_assertions(contexte_tap, structure)
@@ -163,7 +162,6 @@ def test_chasse7_p15c_accepte_deux_assertions_vertes_imbriquees(contexte_tap, st
 
 # Résiduel de la phase verte dynamique dd6a8e8 : 9483341 a renforcé les
 # rouges, mais la phase « suite 0 » accepte encore un pseudo-test de fichier.
-@pytest.mark.xfail(strict=True, raises=SuiteSansCorpsAcceptee)
 @pytest.mark.parametrize("variante", ["aucun-test", "sortie-avant-corps"])
 def test_chasse7_p15d_refuse_une_suite_sans_corps_execute(contexte_tap, variante):
     dossier, _, _, _ = contexte_tap

@@ -34,23 +34,24 @@ assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
 assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"));
 for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
-const resultats = [...log.matchAll(/^(ok|not ok) \d+ - (.+)$/gm)];
+// Le type dans le diagnostic distingue describe d'un test parent avec sous-tests.
+const resultats = [...log.matchAll(/^( *)(ok|not ok) \d+ - ([^\n]+)\n\1  ---\n([\s\S]*?)^\1  \.\.\.$/gm)]
+  .filter(r => /^ *type: 'test'$/m.test(r[4]));
 assert.equal(resultats.length, Number(tests));
-assert.equal(resultats.filter(r => r[1] === "not ok").length, Number(echecs));
+assert.equal(resultats.filter(r => r[2] === "not ok").length, Number(echecs));
 assert.ok(noms.length > 0, "noms exacts des témoins requis");
 for (const nom of noms) {
-  const trouves = resultats.filter(r => r[2] === nom);
+  const trouves = resultats.filter(r => r[3] === nom);
   assert.equal(trouves.length, 1, nom);
-  const resultat = trouves[0], suivant = resultats[resultats.indexOf(resultat) + 1];
-  assert.equal(resultat[1], Number(echecs) ? "not ok" : "ok", nom);
+  const resultat = trouves[0];
+  assert.equal(resultat[2], Number(echecs) ? "not ok" : "ok", nom);
   if (Number(echecs)) {
     // Seul le bloc YAML appartient au résultat ; les commentaires suivants peuvent venir du prochain test.
-    const diagnostic = log.slice(resultat.index, suivant?.index ?? log.length)
-      .match(/^  ---\n[\s\S]*?^  \.\.\.$/m)?.[0];
+    const diagnostic = resultat[4];
     assert.ok(diagnostic, nom);
     assert.doesNotMatch(diagnostic, erreurChargement);
-    assert.match(diagnostic, /^  failureType: 'testCodeFailure'$/m, nom);
-    assert.match(diagnostic, /^  code: 'ERR_ASSERTION'$/m, nom);
+    assert.match(diagnostic, /^ *failureType: 'testCodeFailure'$/m, nom);
+    assert.match(diagnostic, /^ *code: 'ERR_ASSERTION'$/m, nom);
   }
 }
 console.log(`${fichier}: ${tests} tests, ${echecs} échecs`);

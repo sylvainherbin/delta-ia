@@ -32,6 +32,18 @@ assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
 assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"));
 for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
+if (attendus === "suite") {
+  const resultats = [...log.matchAll(/^( *)(ok|not ok) \d+ - ([^\n]+)\n\1  ---\n([\s\S]*?)^\1  \.\.\.$/gm)]
+    .filter(r => /^ *type: 'test'$/m.test(r[4]));
+  assert.equal(resultats.length, Number(tests), "nombre de tests réels incohérent");
+  assert.ok(resultats.every(r => r[2] === "ok" && !/^(?:\/|[A-Za-z]:[\\/]).*\.(?:[cm]?js)$/.test(r[3])),
+    "résultat de fichier ou test non vert");
+  for (const nom of noms) {
+    const trouves = resultats.filter(r => r[3] === nom);
+    assert.equal(trouves.length, 1, nom);
+    assert.equal(trouves[0][2], "ok", nom);
+  }
+}
 if (Number(echecs)) {
   // Les quatre témoins historiques sont aussi le contrat des appels sans noms.
   if (!noms.length) for (const langue of ["fr", "en"]) noms.push(
@@ -64,7 +76,11 @@ code=0
 verdict "$copie/rouge-5a66288.log" 4 4
 
 "$noeud" --test --test-reporter=tap mcp/test/*.test.js > "$copie/verts.log" 2>&1 || { cat "$copie/verts.log"; exit 1; }
-verdict "$copie/verts.log" suite 0
+verdict "$copie/verts.log" suite 0 \
+  'P15d : descriptions servies avec la constante à 4 en fr' \
+  'P15d : aide du Bureau avec la constante à 4 en fr' \
+  'P15d : descriptions servies avec la constante à 4 en en' \
+  'P15d : aide du Bureau avec la constante à 4 en en'
 
 # Tous les dictionnaires et les réponses de découverte réelles, avec le défaut à 3 : comparaison octet par octet.
 cat > "$copie/surface.mjs" <<'JS'
