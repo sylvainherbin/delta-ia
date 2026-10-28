@@ -556,6 +556,23 @@ test("lot 2 — Bureau : vue utile, consultation et cases « fait » partagées 
   } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
 });
 
+test("P15c R178 : Bureau suit la constante de consultation", async () => {
+  const i = instanceLot2();
+  try {
+    assert.ok(Number.isInteger(mcp.LIMITE_CONSULTATION) && mcp.LIMITE_CONSULTATION >= 1 && mcp.LIMITE_CONSULTATION <= 5);
+    const args = ["--instance", i.profil, "--langue", "fr", "consulter", "contexte"];
+    const api = await donnees("chercher_reference", { requete: "contexte", forme: "consultation" }, ctxLocal(i, "fr"));
+    const defaut = await bureau.executer(args);
+    assert.equal(defaut.code, 0);
+    assert.equal(api.affichees, mcp.LIMITE_CONSULTATION);
+    assert.equal(defaut.sortie.affichees, mcp.LIMITE_CONSULTATION);
+    assert.deepEqual(defaut.sortie.resultats.map(f => f.id), api.resultats.map(f => f.id));
+    const cli = spawnSync(process.execPath, [path.join(ICI, "../bureau.js"), ...args], { encoding: "utf8" });
+    assert.equal(cli.status, 0, cli.stderr);
+    assert.equal(JSON.parse(cli.stdout).affichees, mcp.LIMITE_CONSULTATION);
+  } finally { fs.rmSync(i.home, { recursive: true, force: true }); }
+});
+
 test("P15b R178 : Bureau consulter, défaut 3 et limite explicite entière de 1 à 5", async () => {
   const i = instanceLot2();
   try {
@@ -564,8 +581,8 @@ test("P15b R178 : Bureau consulter, défaut 3 et limite explicite entière de 1 
     assert.equal(reference.affichees, 5, "assez de résultats pour éprouver les bornes");
     const defaut = await bureau.executer(debut);
     assert.equal(defaut.code, 0);
-    assert.equal(defaut.sortie.affichees, 3);
-    assert.deepEqual(defaut.sortie.resultats.map(f => f.id), reference.resultats.slice(0, 3).map(f => f.id));
+    assert.equal(defaut.sortie.affichees, mcp.LIMITE_CONSULTATION);
+    assert.deepEqual(defaut.sortie.resultats.map(f => f.id), reference.resultats.slice(0, mcp.LIMITE_CONSULTATION).map(f => f.id));
     for (const limite of [1, 2, 3, 4, 5]) {
       const r = await bureau.executer([...debut, "--limite", String(limite)]);
       assert.equal(r.code, 0);

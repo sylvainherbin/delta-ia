@@ -374,7 +374,8 @@ async function chercherReference(args = {}, ctx) {
 }
 
 // ---- consultation courte (lot 2) : à la demande d'un agent, jamais systématique ; quelques résumés, validité, références
-const LIMITE_CONSULTATION = 3, MAX_CONSULTATION = 5, MAX_CACHE_CONSULTATIONS = 64;
+export const LIMITE_CONSULTATION = 3;
+const MAX_CONSULTATION = 5, MAX_CACHE_CONSULTATIONS = 64;
 const consultations = new Map();  // clé (qui porte la version du catalogue) → résultats ; les plus anciennes sortent d'abord
 
 // Version du catalogue lu : identifiant de la génération commune (tiré de son contenu), publiée ou du miroir local.
@@ -674,7 +675,9 @@ const nomCanonique = (nom) => {
 };
 const NOMS_DANS_TEXTE = new RegExp(`\\b(${Object.keys(SCHEMAS).join("|")})\\b`, "g");
 const prefixee = (surface) => surface === "service" || surface === "reference";
-const texteSurface = (ctx, cle, vars = {}) => t(ctx.langue, cle, vars, (texte) => prefixee(ctx.surface)
+const ERREURS_ESSAIS_REFERENCE = new Set(["param.curseur", "param.curseur_perime", "param.id_a_tester", "param.id_a_tester_inconnu"]);
+const texteSurface = (ctx, cle, vars = {}) => t(ctx.langue,
+  ctx.surface === "reference" && ERREURS_ESSAIS_REFERENCE.has(cle) ? `${cle}.reference` : cle, vars, (texte) => prefixee(ctx.surface)
   ? texte.replace(NOMS_DANS_TEXTE, (nom) => PREFIXE_SERVICE + nom) : texte);
 function outils(langue, source, surface = "compatible") {
   const prefixer = prefixee(surface), ctx = { langue, surface };

@@ -1064,6 +1064,42 @@ const rpcSurface = async (surface, corps, langue = "fr") => {
 };
 const messageOutil = (name, args = {}) => ({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name, arguments: args } });
 const messageListe = { jsonrpc: "2.0", id: 2, method: "tools/list" };
+// Oracle indépendant : le schéma complet doit rester identique, hors préfixe des noms dans l'aide.
+const schemaPrefixe = (schema) => ({ ...schema, properties: Object.fromEntries(Object.entries(schema.properties)
+  .map(([nom, propriete]) => [nom, { ...propriete, description: propriete.description.replace(
+    /\b(resume_du_jour|chercher_reference|fiche_reference|etat_versions|a_tester|nouveautes_base)\b/g,
+    "orqyra_ai_$1") }])) });
+
+for (const langue of ["fr", "en"]) test(`P15c R172 : descriptions complètes des paramètres en ${langue}`, async () => {
+  const historique = (await rpcSurface("compatible", messageListe, langue)).result.tools;
+  for (const surface of ["service", "reference"]) {
+    const outils = (await rpcSurface(surface, messageListe, langue)).result.tools;
+    for (const outil of outils) {
+      const origine = historique.find(o => `orqyra_ai_${o.name}` === outil.name);
+      assert.ok(origine, outil.name);
+      assert.deepEqual(outil.inputSchema, schemaPrefixe(origine.inputSchema), `${surface} ${outil.name} : texte et contraintes complets`);
+    }
+  }
+});
+
+test("P15c R176 : erreurs des essais orientées vers le catalogue de référence", async () => {
+  const cas = [{ curseur: "../x" }, { curseur: "v1:0000000000000000:1" }, { id: "../x" }, { id: "inexistant-p15c" }];
+  for (const langue of ["fr", "en"]) {
+    const catalogue = (await rpcSurface("reference", messageListe, langue)).result.tools.map(o => o.name);
+    assert.equal(catalogue.includes("orqyra_ai_a_tester"), false);
+    for (const outil of ["a_tester", "orqyra_ai_a_tester"]) for (const args of cas) {
+      // La langue de l'appel prime aussi sur celle de l'adresse.
+      const r = (await rpcSurface("reference", messageOutil(outil, { ...args, langue }), langue === "fr" ? "en" : "fr")).result;
+      assert.equal(r.isError, true);
+      const texte = r.content[0].text;
+      assert.match(texte, /\borqyra_ai_chercher_reference\b/);
+      assert.match(texte, /\?surface=service/);
+      assert.doesNotMatch(texte, /\b(?:orqyra_ai_)?a_tester\b/);
+      for (const nom of texte.match(/\borqyra_ai_[a-z_]+\b/g) || []) assert.ok(catalogue.includes(nom), nom);
+      assert.match(texte, langue === "fr" ? /(?:consulter la référence|identifiants de référence)/ : /(?:search the reference|reference identifiers)/);
+    }
+  }
+});
 
 test("P15 R172 : six noms de service, mêmes schémas, anciens appels et erreurs compatibles", async () => {
   const historique = (await rpc(messageListe)).corps.result.tools;
@@ -1077,10 +1113,7 @@ test("P15 R172 : six noms de service, mêmes schémas, anciens appels et erreurs
       assert.equal(outil.inputSchema.additionalProperties, false);
       assert.ok(outil.name.length <= 64);
       if (langue === "fr") {
-        // Les contraintes restent identiques ; seule l'aide peut nommer les alias de la surface.
-        const contraintes = (schema) => ({ ...schema, properties: Object.fromEntries(Object.entries(schema.properties)
-          .map(([nom, { description, ...reste }]) => [nom, reste])) });
-        assert.deepEqual(contraintes(outil.inputSchema), contraintes(historique[i].inputSchema));
+        assert.deepEqual(outil.inputSchema, schemaPrefixe(historique[i].inputSchema));
       }
       const nom = historique[i].name;
       const ancien = await rpcSurface("service", messageOutil(nom, exemples[nom]), langue);
@@ -1186,7 +1219,8 @@ test("P15b R172 : erreurs et suite citent les noms de la surface sans réécrire
         assert.equal(ancien.result.isError, true);
         assert.deepEqual(await rpcSurface(surface, messageOutil(`orqyra_ai_${outil}`, args), langue), ancien);
         const texte = ancien.result.content[0].text;
-        assert.match(texte, new RegExp(`\\b${prefixe}${renvoi}\\b`));
+        const cible = surface === "reference" && outil === "a_tester" ? "chercher_reference" : renvoi;
+        assert.match(texte, new RegExp(`\\b${prefixe}${cible}\\b`));
         if (prefixe) assert.doesNotMatch(texte, new RegExp(`\\b${renvoi}\\b`));
       }
       const c = (await rpcSurface(surface, messageOutil("orqyra_ai_chercher_reference", { requete: "/model", forme: "consultation" }), langue)).result;

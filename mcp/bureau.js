@@ -15,13 +15,13 @@
 // Codes : 0 réponse ; 1 outil en erreur (réponse JSON avec `erreur`) ; 2 usage ou racines non désignées.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { traiter } from "./api/mcp.js";
+import { traiter, LIMITE_CONSULTATION } from "./api/mcp.js";
 import { ErreurTexte, texteErreur } from "./lib/textes.js";
 import { contexteLocal, langueDemandee, options } from "./stdio.js";
 import CONFIG from "./lib/config.js";
 
 const COMMANDES = { versions: ["etat_versions", () => ({})], fiche: ["fiche_reference", (x) => ({ id: x })],
-  chercher: ["chercher_reference", (x) => ({ requete: x })], consulter: ["chercher_reference", (x, limite = 3) => ({ requete: x, forme: "consultation", limite })],
+  chercher: ["chercher_reference", (x) => ({ requete: x })], consulter: ["chercher_reference", (x, limite = LIMITE_CONSULTATION) => ({ requete: x, forme: "consultation", limite })],
   utile: ["fiche_reference", (x) => ({ id: x })], "a-tester": ["a_tester", () => ({ limite: 20 })] };
 
 export async function etat(ctx, maintenant = new Date()) {
