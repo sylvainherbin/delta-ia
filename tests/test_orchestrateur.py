@@ -102,6 +102,8 @@ elif mode == "refus-echec":
     print(json.dumps({"type": "result", "subtype": "error_max_turns", "is_error": False, "permission_denials": [REFUS]}))
 elif mode == "pas-json":
     print("ceci n'est pas du JSON")
+elif mode == "refus-lanceur":   # D76b : le lanceur s'arrête avant Claude, code 2, rien sur stdout
+    print("claude-cle : claude : --permission-mode bypassPermissions refusé en mode non interactif", file=sys.stderr); sys.exit(2)
 elif mode == "verrou-git":
     ecrire(".git/index.lock", ""); claude_ok()
 elif mode == "dort":
@@ -608,6 +610,44 @@ def test_refus_permission_lit_les_commandes_et_les_fichiers():
 def test_sortie_claude_illisible_fait_echouer_l_etape(depot, cfg):
     assert chaine(depot, cfg, [etape(depot, "delta", "pas-json")]).executer() == 1
     assert codes(depot)["delta"] != 0
+
+
+REFUS_LANCEUR = "claude-cle : claude : --permission-mode bypassPermissions refusé en mode non interactif\n"
+
+
+def test_d76b_stdout_vide_dit_le_code_et_la_cause_du_lanceur():
+    # Passage de 04:00 du 28/10 : claude-cle refuse la commande (code 2) avant tout résultat ; le journal disait « illisible ».
+    code, detail = orc.evaluer_claude(orc.Resultat(2, "", REFUS_LANCEUR, False, 0.1))
+    assert code == 2
+    assert detail.startswith("aucune sortie de Claude (code 2) : ") and "bypassPermissions refusé" in detail
+    assert "illisible" not in detail
+    code, detail = orc.evaluer_claude(orc.Resultat(0, "  \n", "", False, 0.1))   # code 0 sans rien : échec, code 1
+    assert code == 1 and detail == "aucune sortie de Claude (code 0)"
+
+
+def test_d76b_sortie_non_json_garde_le_libelle_et_ajoute_le_code_et_le_debut():
+    code, detail = orc.evaluer_claude(orc.Resultat(0, "ceci n'est pas du JSON\nsuite", "avertissement\n", False, 1))
+    assert code == 1
+    assert detail.startswith("sortie Claude illisible (JSON attendu, code 0)")
+    assert "ceci n'est pas du JSON suite" in detail and "avertissement" in detail
+
+
+def test_d76b_la_cause_est_bornee_sur_une_ligne():
+    long = "x" * 500 + " | fin\n"
+    detail = orc.evaluer_claude(orc.Resultat(2, "", "\n\n" + long + "deuxième ligne\n", False, 1))[1]
+    assert "\n" not in detail and len(detail) < 300 and "deuxième" not in detail
+
+
+def test_d76b_json_lisible_ne_change_pas():
+    assert orc.evaluer_claude(orc.Resultat(3, json.dumps({"subtype": "success", "is_error": False}), "bruit", False, 1)) == (3, "code de sortie 3")
+
+
+def test_d76b_le_refus_du_lanceur_remonte_dans_le_journal_du_passage(depot, cfg):
+    assert chaine(depot, cfg, [etape(depot, "delta", "refus-lanceur")]).executer() == 1
+    assert codes(depot)["delta"] == 2
+    ligne = next(l for l in journal(depot) if l[1] == "orchestrateur" and l[2] == "delta")
+    assert "aucune sortie de Claude (code 2)" in ligne[-1] and "bypassPermissions refusé" in ligne[-1]
+    assert "illisible" not in ligne[-1]
 
 
 def test_evaluer_claude_exige_success_et_aucun_is_error():
