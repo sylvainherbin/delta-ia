@@ -8,6 +8,11 @@ base=389bf95a068cd43e369d14b3a47a7e136e85eb30
 copie="${1:?dossier de copie neuf requis}"
 [[ "$copie" = /* && ! -e "$copie" ]] || { echo "Copie absolue neuve requise" >&2; exit 2; }
 mkdir -p "$copie"/{tete,avant}
+export TMPDIR="$copie/tmp"
+mkdir "$TMPDIR"
+trap 'rm -rf -- "$copie/tmp"' EXIT
+r176='P15c R176 : erreurs des essais orientées vers le catalogue de référence'
+r178='P15c R178 : Bureau suit la constante de consultation'
 instantane_avant="$(sha256sum mcp/mesures/2026-10-28-surface.json)"
 git rev-parse HEAD > "$copie/tete.txt"
 git archive HEAD mcp docs/data docs/commun docs/assets scripts/deltalib/couches/bootstrap.json | tar -x -C "$copie/tete"
@@ -15,23 +20,41 @@ git archive "$base" mcp docs/data docs/commun | tar -x -C "$copie/avant"
 cp "$copie/tete/mcp/test/"{mcp,local}.test.js "$copie/avant/mcp/test/"
 
 verdict() {
-  "$noeud" --input-type=module - "$1" "$2" "$3" <<'JS'
+  "$noeud" --input-type=module - "$@" <<'JS'
 import fs from "node:fs";
 import assert from "node:assert/strict";
-const [fichier, tests, echecs] = process.argv.slice(2);
+const [fichier, tests, echecs, ...noms] = process.argv.slice(2);
 const log = fs.readFileSync(fichier, "utf8");
+assert.doesNotMatch(log, /^(?:# .*?\[|  code: ')(?:MODULE_NOT_FOUND|ERR_[A-Z_]*(?:MODULE|IMPORT|PACKAGE)[A-Z_]*)(?:\]|')|^Bail out!/m);
 assert.match(log, new RegExp(`^# tests ${tests}$`, "m"));
 assert.match(log, new RegExp(`^# fail ${echecs}$`, "m"));
+assert.match(log, new RegExp(`^# pass ${Number(tests) - Number(echecs)}$`, "m"));
+for (const total of ["cancelled", "skipped", "todo"]) assert.match(log, new RegExp(`^# ${total} 0$`, "m"));
+const resultats = [...log.matchAll(/^(ok|not ok) \d+ - (.+)$/gm)];
+assert.equal(resultats.length, Number(tests));
+assert.equal(resultats.filter(r => r[1] === "not ok").length, Number(echecs));
+assert.ok(noms.length > 0, "noms exacts des témoins requis");
+for (const nom of noms) {
+  const trouves = resultats.filter(r => r[2] === nom);
+  assert.equal(trouves.length, 1, nom);
+  const resultat = trouves[0], suivant = resultats[resultats.indexOf(resultat) + 1];
+  assert.equal(resultat[1], Number(echecs) ? "not ok" : "ok", nom);
+  if (Number(echecs)) {
+    const diagnostic = log.slice(resultat.index, suivant?.index ?? log.length);
+    assert.match(diagnostic, /^  failureType: 'testCodeFailure'$/m, nom);
+    assert.match(diagnostic, /^  code: 'ERR_ASSERTION'$/m, nom);
+  }
+}
 console.log(`${fichier}: ${tests} tests, ${echecs} échecs`);
 JS
 }
 
 # Deux défauts reproduits sur P15b avec les seules assertions nouvelles.
 code=0
-"$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R(176|178)' \
+"$noeud" --test --test-reporter=tap --test-timeout=120000 --test-name-pattern='^P15c R(176|178)' \
   "$copie/avant/mcp/test/mcp.test.js" "$copie/avant/mcp/test/local.test.js" > "$copie/rouge-389bf95.log" 2>&1 || code=$?
 [[ "$code" = 1 ]] || { cat "$copie/rouge-389bf95.log"; exit 1; }
-verdict "$copie/rouge-389bf95.log" 2 2
+verdict "$copie/rouge-389bf95.log" 2 2 "$r176" "$r178"
 
 for variante in parametres constante; do
   mkdir "$copie/$variante"
@@ -54,15 +77,16 @@ remplacer(`${copie}/parametres/mcp/api/mcp.js`, description,
 remplacer(`${copie}/constante/mcp/lib/consultation.js`, 'export const LIMITE_CONSULTATION = 3;', 'export const LIMITE_CONSULTATION = 4;');
 JS
 code=0
-"$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R172' \
+"$noeud" --test --test-reporter=tap --test-timeout=120000 --test-name-pattern='^P15c R172' \
   "$copie/parametres/mcp/test/mcp.test.js" > "$copie/mutation-parametres.log" 2>&1 || code=$?
 [[ "$code" = 1 ]] || { cat "$copie/mutation-parametres.log"; exit 1; }
-verdict "$copie/mutation-parametres.log" 2 2
+verdict "$copie/mutation-parametres.log" 2 2 \
+  'P15c R172 : descriptions complètes des paramètres en fr' 'P15c R172 : descriptions complètes des paramètres en en'
 
 # Changer la constante seule doit modifier le défaut réel (API, Bureau et CLI) et rester vert.
-"$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R178' \
+"$noeud" --test --test-reporter=tap --test-timeout=120000 --test-name-pattern='^P15c R178' \
   "$copie/constante/mcp/test/local.test.js" > "$copie/constante-4.log" 2>&1
-verdict "$copie/constante-4.log" 1 0
+verdict "$copie/constante-4.log" 1 0 "$r178"
 "$noeud" --input-type=module - "$copie/constante/mcp/bureau.js" <<'JS'
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -71,13 +95,13 @@ assert.equal(texte.split('limite = LIMITE_CONSULTATION').length, 2);
 fs.writeFileSync(fichier, texte.replace('limite = LIMITE_CONSULTATION', 'limite = 3'));
 JS
 code=0
-"$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R178' \
+"$noeud" --test --test-reporter=tap --test-timeout=120000 --test-name-pattern='^P15c R178' \
   "$copie/constante/mcp/test/local.test.js" > "$copie/mutation-bureau-3.log" 2>&1 || code=$?
 [[ "$code" = 1 ]] || { cat "$copie/mutation-bureau-3.log"; exit 1; }
-verdict "$copie/mutation-bureau-3.log" 1 1
+verdict "$copie/mutation-bureau-3.log" 1 1 "$r178"
 
-"$noeud" --test --test-reporter=tap "$copie/tete/mcp/test/"*.test.js > "$copie/verts.log" 2>&1
-verdict "$copie/verts.log" 107 0
+"$noeud" --test --test-reporter=tap --test-timeout=120000 "$copie/tete/mcp/test/"*.test.js > "$copie/verts.log" 2>&1
+verdict "$copie/verts.log" 110 0 "$r176" "$r178"
 "$noeud" "$copie/tete/mcp/mesurer-surface.js" > "$copie/surface.json"
 "$noeud" --input-type=module - "$copie" <<'JS'
 import fs from "node:fs";
