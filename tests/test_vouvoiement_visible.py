@@ -6,13 +6,20 @@ connecteur (mcp/lib/textes.js). Sont hors champ, volontairement : docs/data/ (do
 (app.js, relais_reference.py, adoptions.py : changée d'un seul bloc ultérieurement) et les identifiants techniques."""
 
 import ast
+import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
+
+import pytest
 
 from textes_site import FR
 
 RACINE = Path(__file__).resolve().parent.parent
 DOCS = RACINE / "docs"
+# 124 clés françaises dans la base 5a66288 : toute perte de couverture doit échouer.
+NOMBRE_CLES_FR_MCP = 124
 
 # Pronoms et possessifs de la 2e personne du singulier.
 PRONOMS = re.compile(r"(?<![\w-])(?:tu|toi|te|ton|ta|tes)(?![\w-])|(?<![\w])t'", re.IGNORECASE)
@@ -81,17 +88,59 @@ def test_gabarits_de_scripts_vouvoient():
 
 
 def dictionnaire_fr_du_connecteur() -> dict[str, str]:
-    source = (RACINE / "mcp" / "lib" / "textes.js").read_text(encoding="utf-8")
-    fr = source[source.index("fr: {"):]
-    fr = fr[: fr.index("\n};")]
-    return {m.group(1): m.group(2) for m in re.finditer(r'^\s*"([^"]+)":\s*"((?:[^"\\]|\\.)*)",?\s*$', fr, re.MULTILINE)}
+    node_nvm = Path.home() / ".nvm" / "current" / "bin" / "node"
+    node = str(node_nvm) if node_nvm.is_file() else shutil.which("node")
+    assert node, "Node est nécessaire à la garde de vouvoiement du connecteur"
+    module = (RACINE / "mcp" / "lib" / "textes.js").as_uri()
+    rendu = subprocess.run(
+        [node, "--input-type=module", "--eval",
+         "const { TEXTES } = await import(process.argv[1]); process.stdout.write(JSON.stringify(TEXTES.fr));", module],
+        check=True, capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    return json.loads(rendu.stdout)
 
 
 def test_connecteur_mcp_fr_vouvoie():
     dico = dictionnaire_fr_du_connecteur()
-    assert len(dico) > 100, "dictionnaire français du connecteur introuvable"
+    assert len(dico) == NOMBRE_CLES_FR_MCP, f"{NOMBRE_CLES_FR_MCP} clés françaises attendues, {len(dico)} lues"
     for cle, valeur in dico.items():
+        assert isinstance(valeur, str), (cle, valeur)
         assert not trouver("mcp", valeur, cle), (cle, valeur)
+
+
+@pytest.fixture
+def copie_connecteur(tmp_path, monkeypatch):
+    lib = tmp_path / "mcp" / "lib"
+    lib.mkdir(parents=True)
+    for nom in ("textes.js", "consultation.js"):
+        shutil.copy2(RACINE / "mcp" / "lib" / nom, lib / nom)
+    shutil.copy2(RACINE / "mcp" / "package.json", lib.parent / "package.json")
+    monkeypatch.setitem(globals(), "RACINE", tmp_path)
+    return lib / "textes.js"
+
+
+@pytest.mark.parametrize("cle", [
+    "local.limite_consultation",
+    "outil.chercher_reference.description",
+    "outil.chercher_reference.limite",
+])
+def test_garde_mcp_detecte_un_gabarit_tutoye(copie_connecteur, cle):
+    source = copie_connecteur.read_text(encoding="utf-8")
+    # La clé française seule est mutée ; les constantes et les backticks échappés restent évalués par Node.
+    en, fr = source.split("  fr: {", 1)
+    motif = rf'(^\s*"{re.escape(cle)}":\s*`.*)(`,\s*$)'
+    fr, nombre = re.subn(motif, r"\1 Tu peux continuer.\2", fr, flags=re.MULTILINE)
+    assert nombre == 1
+    copie_connecteur.write_text(en + "  fr: {" + fr, encoding="utf-8")
+    with pytest.raises(AssertionError, match=re.escape(cle)):
+        test_connecteur_mcp_fr_vouvoie()
+
+
+def test_garde_mcp_refuse_une_cle_manquante(copie_connecteur):
+    with copie_connecteur.open("a", encoding="utf-8") as fichier:
+        fichier.write('\ndelete TEXTES.fr["local.limite_consultation"];\n')
+    with pytest.raises(AssertionError, match="124 clés françaises attendues, 123 lues"):
+        test_connecteur_mcp_fr_vouvoie()
 
 
 def test_detecteur_attrape_un_tutoiement():

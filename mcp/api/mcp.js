@@ -14,7 +14,7 @@
 // version du catalogue lu (génération commune) ; en local, `fiche_reference` ajoute la vue « Utile pour mon ORQYRA ».
 
 import CONFIG from "../lib/config.js";
-import { LIMITE_CONSULTATION } from "../lib/consultation.js";
+import { LIMITE_CONSULTATION, MAX_REFERENCES_CONSULTATION } from "../lib/consultation.js";
 export { LIMITE_CONSULTATION } from "../lib/consultation.js";
 import { developperModeles } from "../lib/modeles.js";
 
@@ -400,7 +400,7 @@ function resumeConsultation(e, ctx) {
     categorie: e.categorie, syntaxe: court(e.usage, 200), resume: court(b?.texte ?? e.description_source ?? e.description ?? null, 280),
     ...(b ? { resume_langue: b.langue, resume_repli: b.repli } : {}),
     validite: v.validite, perimee: v.perimee, verifie_le: v.verifie_le,
-    references: (e.sources || []).slice(0, 3).map((s) => ({ url: s.url ?? null, libelle: court(s.libelle ?? null, 120), officielle: s.officielle === true })),
+    references: (e.sources || []).slice(0, MAX_REFERENCES_CONSULTATION).map((s) => ({ url: s.url ?? null, libelle: court(s.libelle ?? null, 120), officielle: s.officielle === true })),
     // monde KNOW (JUGER) : copie factuelle des fichiers kb/ ; son filtre peut écarter une fiche, l'emplacement reste attendu
     know_world: e._chemin ? { fichier: e._chemin.replace(/^kb\//, ""), id: e.id } : null };
   if (estLocal(ctx)) {
