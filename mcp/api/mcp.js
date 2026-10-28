@@ -339,17 +339,20 @@ async function rechercher({ requete, produit, categorie, statut, limite, forme =
   classer(scores);
   let selection = scores;
   if (!categorie && scores.some(([, e]) => e.categorie !== "modeles") && scores.some(([, e]) => e.categorie === "modeles")) {
-    const plafondModeles = Math.ceil(n / 2);
-    if (n === 1) selection = scores.slice(0, 1);
+    // La forme courte coupe la sélection de liste8 : raccourcir ne doit pas remplacer une cible documentaire
+    // par une fiche modèle sous l'effet du quota de diversité (P15, corpus inchangé).
+    const horizon = forme === "consultation" ? 8 : n;
+    const plafondModeles = Math.ceil(horizon / 2);
+    if (horizon === 1) selection = scores.slice(0, 1);
     else {
       const documentation = scores.filter(([, e]) => e.categorie !== "modeles");
       const modeles = scores.filter(([, e]) => e.categorie === "modeles");
-      const kD = Math.min(documentation.length, n - Math.min(modeles.length, plafondModeles));
-      const kM = Math.min(modeles.length, n - kD);
+      const kD = Math.min(documentation.length, horizon - Math.min(modeles.length, plafondModeles));
+      const kM = Math.min(modeles.length, horizon - kD);
       selection = [...documentation.slice(0, kD), ...modeles.slice(0, kM)];
       classer(selection);
     }
-    if (scores.length > selection.length && !exacts.size) avis = [avis, t(ctx.langue, "avis.mixte", { affiches: selection.length, total: scores.length, plafond: plafondModeles })].filter(Boolean).join(" ; ");
+    if (scores.length > selection.length && !exacts.size) avis = [avis, t(ctx.langue, "avis.mixte", { affiches: Math.min(n, selection.length), total: scores.length, plafond: plafondModeles })].filter(Boolean).join(" ; ");
   }
   return { tete, total: scores.length, entrees: selection.slice(0, n).map(([, e]) => e), avis, categories_non_lues };
 }
@@ -644,6 +647,11 @@ async function aTesterLocal({ limite, curseur, id }, ctx, tete) {
 }
 
 const LECTURE = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+// P15 : surfaces HTTP choisies par le client, sans doubler le catalogue ni retirer un ancien nom appelable.
+// `reference` ne couvre que la consultation de faits ; la veille et les essais restent sur la surface complète.
+const SURFACES = ["compatible", "service", "reference"];
+const REFERENCE = new Set(["chercher_reference", "fiche_reference", "etat_versions"]);
+const PREFIXE_SERVICE = "orqyra_ai_";
 // Schémas des six outils ; titres et descriptions viennent du dictionnaire de la langue demandée (lib/textes.js).
 const SCHEMAS = {
   resume_du_jour: { f: resumeDuJour, proprietes: {
@@ -659,15 +667,22 @@ const SCHEMAS = {
     id: { type: "string", pattern: RE_ID_FICHE.source } } },
   nouveautes_base: { f: nouveautesBase, proprietes: { jours: { type: "integer", minimum: 1, maximum: 30, default: 7 } } },
 };
-function outils(langue, source) {
-  return Object.fromEntries(Object.entries(SCHEMAS).map(([nom, o]) => {
+const nomCanonique = (nom) => {
+  if (typeof nom !== "string") return null;
+  const canonique = nom.startsWith(PREFIXE_SERVICE) ? nom.slice(PREFIXE_SERVICE.length) : nom;
+  return Object.hasOwn(SCHEMAS, canonique) ? canonique : null;
+};
+function outils(langue, source, surface = "compatible") {
+  const prefixer = surface === "service" || surface === "reference";
+  return Object.fromEntries(Object.entries(SCHEMAS).filter(([nom]) => surface !== "reference" || REFERENCE.has(nom)).map(([nom, o]) => {
     const properties = Object.fromEntries(Object.entries(o.proprietes).map(([p, s]) => [p, { ...s, description: t(langue, `outil.${nom}.${p}`) }]));
     // paramètre de langue commun aux six outils (décision du 22/10) : défaut = langue du serveur ou de son adresse
     properties.langue = { type: "string", enum: LANGUES, default: langue, description: t(langue, "outil.langue") };
     const inputSchema = { type: "object", ...(o.requis ? { required: o.requis } : {}), properties, additionalProperties: false };
     // local : la description dit ce que rend la couche personnelle de cette instance
-    const description = t(langue, `outil.${nom}.description`) + (source === "local" ? t(langue, `outil.${nom}.local`) : "");
-    return [nom, { f: o.f, titre: t(langue, `outil.${nom}.titre`), description, inputSchema }];
+    let description = t(langue, `outil.${nom}.description`) + (source === "local" ? t(langue, `outil.${nom}.local`) : "");
+    if (prefixer) for (const n of Object.keys(SCHEMAS)) description = description.replaceAll(n, PREFIXE_SERVICE + n);
+    return [prefixer ? PREFIXE_SERVICE + nom : nom, { f: o.f, titre: t(langue, `outil.${nom}.titre`), description, inputSchema }];
   }));
 }
 const OUTILS = outils("fr");
@@ -686,15 +701,17 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
       return ok(id, { protocolVersion: typeof params.protocolVersion === "string" ? params.protocolVersion : PROTOCOLE,
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "delta", title: t(ctx.langue, "init.titre"), version: VERSION },
-        instructions: ctx.source === "local" ? t(ctx.langue, "init.instructions_local", { site: CONFIG.site_public_url })
-          : t(ctx.langue, "init.instructions", { site: CONFIG.site_public_url, source: ctx.source }) });
+        instructions: (ctx.source === "local" ? t(ctx.langue, "init.instructions_local", { site: CONFIG.site_public_url })
+          : t(ctx.langue, "init.instructions", { site: CONFIG.site_public_url, source: ctx.source }))
+          + (["service", "reference"].includes(ctx.surface) ? t(ctx.langue, `init.surface.${ctx.surface}`) : "") });
     case "ping":
       return ok(id, {});
     case "tools/list":
-      return ok(id, { tools: Object.entries(outils(ctx.langue, ctx.source)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
+      return ok(id, { tools: Object.entries(outils(ctx.langue, ctx.source, ctx.surface)).map(([name, o]) => ({ name, title: o.titre, description: o.description,
         inputSchema: o.inputSchema, annotations: LECTURE })) });
     case "tools/call": {
-      const o = typeof params.name === "string" && Object.hasOwn(SCHEMAS, params.name) ? SCHEMAS[params.name] : null;
+      const nom = nomCanonique(params.name);
+      const o = nom ? SCHEMAS[nom] : null;
       if (!o) return erreur(id, -32602, t(ctx.langue, "rpc.outil_inconnu", { nom: typeof params.name === "string" ? params.name : "?" }));
       const { langue, ...args } = params.arguments || {};
       let c = ctx;
@@ -702,8 +719,8 @@ async function traiter(msg, mesure = {}, ctx = contexteDefaut()) {
         if (langue !== undefined && !LANGUES.includes(langue)) throw new ErreurParametre("param.langue");
         c = { ...ctx, langue: langue ?? ctx.langue };
         const r = await o.f(args, c);
-        if (params.name === "chercher_reference") mesure.nb_resultats = typeof r.total === "number" ? r.total : null;
-        if (params.name === "a_tester") mesure.nb_resultats = Number.isInteger(r.affichees) ? r.affichees : r.detail || r.fiche ? 1 : null;
+        if (nom === "chercher_reference") mesure.nb_resultats = typeof r.total === "number" ? r.total : null;
+        if (nom === "a_tester") mesure.nb_resultats = Number.isInteger(r.affichees) ? r.affichees : r.detail || r.fiche ? 1 : null;
         return ok(id, { content: [{ type: "text", text: JSON.stringify(r, null, 1) }], structuredContent: r, isError: false });
       } catch (e) {
         mesure.cause_erreur = causeErreur(e);
@@ -734,8 +751,7 @@ function ligneJournal(msg, reponse, mesure, duree) {
     : sansId && msg.method.startsWith("notifications/") ? "notification" : "autre";
   const texte = (v) => (typeof v === "string" ? v.slice(0, 80) : null);
   const info = methode === "initialize" && msg.params && typeof msg.params.clientInfo === "object" ? msg.params.clientInfo : null;
-  const outil = methode === "tools/call" && msg.params && typeof msg.params.name === "string" && Object.hasOwn(OUTILS, msg.params.name) ? msg.params.name
-    : methode === "tools/call" ? "inconnu" : null;
+  const outil = methode === "tools/call" ? nomCanonique(msg.params?.name) ?? "inconnu" : null;
   const l = { methode, outil, client: info ? { name: texte(info.name), version: texte(info.version) } : null,
     // erreur JSON-RPC : son code ; outil qui répond isError (paramètre invalide, données indisponibles) : "erreur_outil"
     duree_ms: Math.round(duree), statut: reponse && reponse.error ? reponse.error.code : reponse && reponse.result && reponse.result.isError ? "erreur_outil" : "ok",
@@ -775,6 +791,7 @@ function contexteRequete(req) {
   const langue = q.get("langue") || q.get("lang");
   if (LANGUES.includes(langue)) ctx.langue = langue;
   if (SOURCES.includes(q.get("source"))) ctx.source = q.get("source");
+  if (SURFACES.includes(q.get("surface"))) ctx.surface = q.get("surface");
   return ctx;
 }
 

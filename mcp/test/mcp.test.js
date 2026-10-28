@@ -1055,3 +1055,86 @@ test("consultation courte sur l'ancienne route : sans cache, résumés courts, r
   if (brut.commentee && brut.description) assert.equal(f.resume.startsWith(brut.description.slice(0, 40)), false, "pas le commentaire personnel");
   assert.equal("personnel" in f, false);
 });
+
+// P15 : le catalogue exposé et les noms appelables sont deux contrats distincts.
+const rpcSurface = async (surface, corps, langue = "fr") => {
+  const r = await fetch(`${url}?surface=${surface}&langue=${langue}`, { method: "POST",
+    headers: { "content-type": "application/json" }, body: JSON.stringify(corps) });
+  return r.json();
+};
+const messageOutil = (name, args = {}) => ({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name, arguments: args } });
+const messageListe = { jsonrpc: "2.0", id: 2, method: "tools/list" };
+
+test("P15 R172 : six noms de service, mêmes schémas, anciens appels et erreurs compatibles", async () => {
+  const historique = (await rpc(messageListe)).corps.result.tools;
+  const exemples = { resume_du_jour: { date: "2026-10-11" }, chercher_reference: { requete: "/model", produit: "claude-code" },
+    fiche_reference: { id: "claude-code-commandes-model" }, etat_versions: {}, a_tester: {}, nouveautes_base: { jours: 7 } };
+  for (const langue of ["fr", "en"]) {
+    const service = (await rpcSurface("service", messageListe, langue)).result.tools;
+    assert.deepEqual(service.map(t => t.name), historique.map(t => `orqyra_ai_${t.name}`));
+    for (const [i, outil] of service.entries()) {
+      assert.deepEqual(outil.annotations, historique[i].annotations);
+      assert.equal(outil.inputSchema.additionalProperties, false);
+      assert.ok(outil.name.length <= 64);
+      if (langue === "fr") assert.deepEqual(outil.inputSchema, historique[i].inputSchema);
+      const nom = historique[i].name;
+      const ancien = await rpcSurface("service", messageOutil(nom, exemples[nom]), langue);
+      assert.deepEqual(await rpcSurface("service", messageOutil(outil.name, exemples[nom]), langue), ancien, nom);
+      assert.equal(ancien.result.isError, false, nom);
+    }
+    for (const surface of ["service", "reference", "compatible"]) {
+      const ancien = await rpcSurface(surface, messageOutil("chercher_reference", { requete: "" }), langue);
+      assert.equal(ancien.result.isError, true);
+      assert.deepEqual(await rpcSurface(surface, messageOutil("orqyra_ai_chercher_reference", { requete: "" }), langue), ancien);
+      for (const nom of ["orqyra_ai_constructor", "orqyra_ai___proto__", "orqyra_ai_toString", "orqyra_ai_lancer_delta", 7, null])
+        assert.equal((await rpcSurface(surface, messageOutil(nom), langue)).error.code, -32602);
+    }
+  }
+  assert.deepEqual((await rpcSurface("inconnue", messageListe)).result.tools, historique);
+  assert.deepEqual((await rpc(messageListe)).corps.result.tools, historique);
+});
+
+test("P15 R176 : trois outils de référence, corpus inchangé et anciens outils encore appelables", async () => {
+  const outils = (await rpcSurface("reference", messageListe)).result.tools;
+  assert.deepEqual(outils.map(t => t.name), ["orqyra_ai_chercher_reference", "orqyra_ai_fiche_reference", "orqyra_ai_etat_versions"]);
+  for (const { attendus, ...args } of lireDonnee("../../mcp/test/requetes-reelles.json")) {
+    const ancien = (await appel("chercher_reference", args)).corps;
+    assert.deepEqual(await rpcSurface("reference", messageOutil("orqyra_ai_chercher_reference", args)), ancien, args.requete);
+    for (const id of attendus) {
+      const detail = (await appel("fiche_reference", { id })).corps;
+      assert.equal(detail.result.isError, false);
+      assert.deepEqual(await rpcSurface("reference", messageOutil("orqyra_ai_fiche_reference", { id })), detail, id);
+    }
+  }
+  assert.deepEqual(await rpcSurface("reference", messageOutil("orqyra_ai_etat_versions")), (await appel("etat_versions")).corps);
+  const init = await rpcSurface("reference", { jsonrpc: "2.0", id: 1, method: "initialize" });
+  assert.match(init.result.instructions, /surface=service/);
+  for (const nom of ["resume_du_jour", "a_tester", "nouveautes_base"]) {
+    const ancien = await rpcSurface("reference", messageOutil(nom));
+    assert.equal(ancien.result.isError, false);
+    assert.deepEqual(await rpcSurface("reference", messageOutil(`orqyra_ai_${nom}`)), ancien);
+  }
+});
+
+test("P15 R172 : les alias alimentent les compteurs canoniques sans arguments", async (t) => {
+  const lignes = await journal(t, async () => {
+    await rpcSurface("reference", messageOutil("orqyra_ai_chercher_reference", { requete: "terme-factice-p15-absent" }));
+    await rpcSurface("service", messageOutil("orqyra_ai_fiche_reference", { id: "inexistant-p15" }));
+    await rpcSurface("service", messageOutil("orqyra_ai_constructor"));
+  });
+  assert.deepEqual(lignes.map(l => [l.outil, l.statut, l.nb_resultats]), [
+    ["chercher_reference", "ok", 0], ["fiche_reference", "erreur_outil", null], ["inconnu", -32602, null] ]);
+  assert.equal(lignes[1].cause_erreur, "param.id_inconnu");
+  assert.ok(!JSON.stringify(lignes).includes("terme-factice-p15-absent"));
+});
+
+test("P15 R178 : la consultation conserve les premières cibles de liste8 avant de raccourcir", async () => {
+  for (const { attendus, ...args } of lireDonnee("../../mcp/test/requetes-reelles.json")) {
+    const liste = (await appel("chercher_reference", { ...args, limite: 8 })).corps.result.structuredContent;
+    for (const limite of [1, 2, 3, 4, 5]) {
+      const r = (await appel("chercher_reference", { ...args, forme: "consultation", limite })).corps.result;
+      assert.equal(r.isError, false);
+      assert.deepEqual(r.structuredContent.resultats.map(e => e.id), liste.resultats.slice(0, limite).map(e => e.id), `${args.requete}, limite=${limite}`);
+    }
+  }
+});

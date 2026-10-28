@@ -1,0 +1,175 @@
+{
+  "base": "78030f81e0aa4d731d78a53b36ae5660ea6c3735",
+  "origine": "mcp/test/requetes-reelles.json, antérieur à P15 ; mêmes questions et cibles, sans retrait des échecs",
+  "origine_sha256": "9f03954c4a7407f107f186008e23fd3081d283dce3bb0eb515470c5b97307249",
+  "portee": "Transmission fidèle de la syntaxe et de la première source du checkout ; aucune validation native de ces commandes, aucun jugement LLM.",
+  "questions": [
+    {
+      "requete": "réduire contexte mission",
+      "attendus": [
+        "claude-code-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-compact",
+          "syntaxe": "/compact [instructions]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ]
+    },
+    {
+      "requete": "compacter conversation",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-compact",
+          "syntaxe": "/compact",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ]
+    },
+    {
+      "requete": "analyser consommation contexte",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-context"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-context",
+          "syntaxe": "/context [all]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ]
+    },
+    {
+      "requete": "isoler travail worktree",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-parametres-worktree"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-parametres-worktree",
+          "syntaxe": "--worktree, -w",
+          "source": "https://code.claude.com/docs/en/cli-reference"
+        }
+      ]
+    },
+    {
+      "requete": "reprendre session précédente",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-resume"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-resume",
+          "syntaxe": "/resume",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ]
+    },
+    {
+      "requete": "mémoire projet",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-memory"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-memory",
+          "syntaxe": "/memory",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ]
+    },
+    {
+      "requete": "exécution non interactive",
+      "produit": "codex",
+      "attendus": [
+        "codex-fonctionnalites-page-non-interactive-mode"
+      ],
+      "faits": [
+        {
+          "id": "codex-fonctionnalites-page-non-interactive-mode",
+          "syntaxe": "codex exec \"summarize the repository structure and list the top 5 risky areas\"",
+          "source": "https://learn.chatgpt.com/docs/non-interactive-mode"
+        }
+      ]
+    },
+    {
+      "requete": "/compact",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-compact",
+          "syntaxe": "/compact",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ]
+    },
+    {
+      "requete": "/model",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-model"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-model",
+          "syntaxe": "/model [model]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ]
+    },
+    {
+      "requete": "--add-dir",
+      "produit": "codex",
+      "attendus": [
+        "codex-parametres-codex-add-dir"
+      ],
+      "faits": [
+        {
+          "id": "codex-parametres-codex-add-dir",
+          "syntaxe": "codex --add-dir",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags"
+        }
+      ]
+    },
+    {
+      "requete": "model effort",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-model"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-model",
+          "syntaxe": "/model [model]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ]
+    },
+    {
+      "requete": "config.toml model",
+      "produit": "codex",
+      "attendus": [
+        "codex-parametres-model"
+      ],
+      "faits": [
+        {
+          "id": "codex-parametres-model",
+          "syntaxe": "model",
+          "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1596 @@
+{
+  "releve_le": "2026-10-28T12:16:25.098Z",
+  "source": "docs/data du checkout servi en boucle locale ; appels au traitement MCP réel sans journal ni compteur",
+  "corpus_sha256": "edcdf3b0bbbf21da15776dcaae98b0c266d70512d1f3a6970b638449b16a8679",
+  "code_sha256": {
+    "mcp/api/mcp.js": "67a1564c4ed93f530eeaa1ce8b90c724cb25e8aba54a3a70081c146663cb3e1a",
+    "mcp/lib/textes.js": "03f34f69a11852e36ff9dbc67a7e196dc5aeb3e41e954db92e56501a240f2aaa",
+    "mcp/mesurer-surface.js": "5cc7b65f272569382538eeee7c122dd8c5a044823b7d9b9ff4f013025b5f2ec7"
+  },
+  "fichiers_sha256": {
+    "kb/claude/commandes.json": "26c0fe2a22c95d79ab57aaeb3e5107d64fea7ce5a24d2f47bf0f6aea39f7622e",
+    "kb/claude/fonctionnalites.json": "a358944d84129d6d4a4daba57209757528d8d76aa0e727fcd8a7c96997ae2b61",
+    "kb/claude/mcp.json": "3c8229389258d5f807c668c309312bf6f876814b2e05342686aa180e3e6dcaaf",
+    "kb/claude/parametres.json": "5309765fd2cc5c2c72223964998ae2733b5f7d271f3f5a6172145f63791fa02b",
+    "kb/claude/plugins.json": "a0273bed63fb5eac1d81b0d2ad330cd0ee85b4a09394e1cc75f659b0190dfa0c",
+    "kb/claude/raccourcis.json": "7d0fe14beef22ab6f919b6c03b03ee504a283f2544d62cf27a06b6e2c04a6640",
+    "kb/claude/skills.json": "91a998e7334514e5b5f776a4e59fc02e32bf72195e35a7075b52faecc34173cf",
+    "kb/methodes.json": "d482940ab2ceaebf88c3fe2c628e4d152db73813ba88f1ddd013ac919a2512b7",
+    "kb/modeles.json": "44bce26eb139075c18479e03fe4d5d3ec575d00707e1fc47aec2bf8707b3b578",
+    "kb/noms.json": "aa11596de6db0434686dca77462827061dbbf6db865131d8dd09e2d3158d6ab1",
+    "kb/openai/commandes.json": "c44c8f49c22fc81a9060b78d53c1b85d5519e0e7f1f232e6da40799163063cd6",
+    "kb/openai/fonctionnalites.json": "c1ba7a0881ec1bc9396e7d01cb48b7e0e18e948ed70f25706d4c5c08dbbfadbf",
+    "kb/openai/mcp.json": "8cd13e565177cf927b126d82aba78ee50d38592f1cef3108d2e035dbdd19f414",
+    "kb/openai/parametres.json": "b49fedaf7395e31c73254fbae0186c0fc22764c6ec0d5089e4e207f99e46f7dd",
+    "kb/openai/plugins.json": "ac518ee7d30032855ddd3bf3ef8492043fd460448d180eb9be273ad5673f2e3f",
+    "kb/openai/raccourcis.json": "ce4091bfac8ffb036cb19ad8163b66faf030f1ef24d9320f00a9c2fa52943c02",
+    "kb/openai/skills.json": "8439e42d463457bc0a8091f6af5e0a15203a7eb97ae3504f586973ad537851c4"
+  },
+  "donnees_sha256": "fcf45cb87dda0c6b6dccd23b48805c9e6962cee863eb2a62bfad7ca2fcd9f1a0",
+  "catalogues": {
+    "compatible": {
+      "noms": [
+        "resume_du_jour",
+        "chercher_reference",
+        "fiche_reference",
+        "etat_versions",
+        "a_tester",
+        "nouveautes_base"
+      ],
+      "outils": 6,
+      "reponse_octets": 9572,
+      "jetons": null
+    },
+    "service": {
+      "noms": [
+        "orqyra_ai_resume_du_jour",
+        "orqyra_ai_chercher_reference",
+        "orqyra_ai_fiche_reference",
+        "orqyra_ai_etat_versions",
+        "orqyra_ai_a_tester",
+        "orqyra_ai_nouveautes_base"
+      ],
+      "outils": 6,
+      "reponse_octets": 9712,
+      "jetons": null
+    },
+    "reference": {
+      "noms": [
+        "orqyra_ai_chercher_reference",
+        "orqyra_ai_fiche_reference",
+        "orqyra_ai_etat_versions"
+      ],
+      "outils": 3,
+      "reponse_octets": 5707,
+      "jetons": null
+    }
+  },
+  "definition": "Utile = une cible du corpus avec syntaxe exacte, première source et champs de validité, sans erreur ni catégorie non lue. Conserver le signal exige de conserver chaque question utile de liste8, pas seulement le même taux.",
+  "jetons": null,
+  "limite": "Octets JSON-RPC (texte et structuredContent), sans tokenizer. Minimum borné aux six variantes et aux questions du corpus ; aucune optimalité générale ni qualité factuelle/native déduite.",
+  "minimum_octets_sans_perte": "liste8",
+  "mesures": {
+    "liste8": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 10,
+      "utiles": 10,
+      "pertes": [],
+      "gains": [],
+      "conserve_signal_liste8": true,
+      "reponse_octets_total": 160902,
+      "texte_octets_total": 80393,
+      "jetons": null
+    },
+    "consultation1": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 5,
+      "utiles": 5,
+      "pertes": [
+        "réduire contexte mission",
+        "compacter conversation",
+        "reprendre session précédente",
+        "mémoire projet",
+        "exécution non interactive"
+      ],
+      "gains": [],
+      "conserve_signal_liste8": false,
+      "reponse_octets_total": 40721,
+      "texte_octets_total": 19897,
+      "jetons": null
+    },
+    "consultation2": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 5,
+      "utiles": 5,
+      "pertes": [
+        "réduire contexte mission",
+        "compacter conversation",
+        "reprendre session précédente",
+        "mémoire projet",
+        "exécution non interactive"
+      ],
+      "gains": [],
+      "conserve_signal_liste8": false,
+      "reponse_octets_total": 57107,
+      "texte_octets_total": 28312,
+      "jetons": null
+    },
+    "consultation3": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 5,
+      "utiles": 5,
+      "pertes": [
+        "réduire contexte mission",
+        "compacter conversation",
+        "reprendre session précédente",
+        "mémoire projet",
+        "exécution non interactive"
+      ],
+      "gains": [],
+      "conserve_signal_liste8": false,
+      "reponse_octets_total": 72831,
+      "texte_octets_total": 36398,
+      "jetons": null
+    },
+    "consultation4": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 7,
+      "utiles": 7,
+      "pertes": [
+        "réduire contexte mission",
+        "compacter conversation",
+        "mémoire projet"
+      ],
+      "gains": [],
+      "conserve_signal_liste8": false,
+      "reponse_octets_total": 85085,
+      "texte_octets_total": 42683,
+      "jetons": null
+    },
+    "consultation5": {
+      "questions": 12,
+      "erreurs": 0,
+      "incompletes": 0,
+      "cibles": 7,
+      "utiles": 7,
+      "pertes": [
+        "réduire contexte mission",
+        "compacter conversation",
+        "mémoire projet"
+      ],
+      "gains": [],
+      "conserve_signal_liste8": false,
+      "reponse_octets_total": 99181,
+      "texte_octets_total": 49933,
+      "jetons": null
+    }
+  },
+  "questions": [
+    {
+      "requete": "réduire contexte mission",
+      "attendus": [
+        "claude-code-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-compact",
+          "syntaxe": "/compact [instructions]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 3,
+          "ids": [
+            "claude-code-commandes-context",
+            "codex-parametres-hook-precompact",
+            "claude-code-commandes-compact",
+            "claude-code-fonctionnalites-page-checkpointing",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-xhigh",
+            "modele-claude-fable-5-max"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 19488,
+          "texte_octets": 9769,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-commandes-context"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3647,
+          "texte_octets": 1785,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-commandes-context",
+            "modele-claude-fable-5-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5699,
+          "texte_octets": 2845,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-commandes-context",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 7787,
+          "texte_octets": 3923,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-commandes-context",
+            "codex-parametres-hook-precompact",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 9055,
+          "texte_octets": 4575,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-commandes-context",
+            "codex-parametres-hook-precompact",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-xhigh"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 11205,
+          "texte_octets": 5684,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "compacter conversation",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-compact",
+          "syntaxe": "/compact",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 3,
+          "ids": [
+            "codex-parametres-hook-precompact",
+            "codex-parametres-hook-postcompact",
+            "codex-commandes-compact",
+            "codex-parametres-ide-chat-fontsize",
+            "modele-gpt-6-1-sol-medium",
+            "modele-gpt-6-1-sol-high",
+            "modele-gpt-6-1-sol-max",
+            "modele-gpt-6-1-sol-xhigh"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 17438,
+          "texte_octets": 8737,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-hook-precompact"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3325,
+          "texte_octets": 1624,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-hook-precompact",
+            "modele-gpt-6-1-sol-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5283,
+          "texte_octets": 2635,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-hook-precompact",
+            "modele-gpt-6-1-sol-medium",
+            "modele-gpt-6-1-sol-high"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 7245,
+          "texte_octets": 3648,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-hook-precompact",
+            "codex-parametres-hook-postcompact",
+            "modele-gpt-6-1-sol-medium",
+            "modele-gpt-6-1-sol-high"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 8523,
+          "texte_octets": 4305,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-hook-precompact",
+            "codex-parametres-hook-postcompact",
+            "modele-gpt-6-1-sol-medium",
+            "modele-gpt-6-1-sol-high",
+            "modele-gpt-6-1-sol-max"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 10479,
+          "texte_octets": 5315,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "analyser consommation contexte",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-context"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-context",
+          "syntaxe": "/context [all]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-high",
+            "modele-claude-fable-5-xhigh",
+            "modele-claude-fable-5-max",
+            "modele-claude-fable-5-1-medium",
+            "modele-claude-fable-5-1-high",
+            "modele-claude-fable-5-1-low"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 21910,
+          "texte_octets": 11031,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3911,
+          "texte_octets": 1933,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5999,
+          "texte_octets": 3011,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-high"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 8121,
+          "texte_octets": 4106,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-high",
+            "modele-claude-fable-5-xhigh"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 10271,
+          "texte_octets": 5215,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-high",
+            "modele-claude-fable-5-xhigh",
+            "modele-claude-fable-5-max"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 12391,
+          "texte_octets": 6309,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "isoler travail worktree",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-parametres-worktree"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-parametres-worktree",
+          "syntaxe": "--worktree, -w",
+          "source": "https://code.claude.com/docs/en/cli-reference"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree",
+            "claude-code-parametres-worktree-bgisolation",
+            "claude-code-skills-batch"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 6607,
+          "texte_octets": 3239,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3572,
+          "texte_octets": 1735,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree",
+            "claude-code-parametres-worktree-bgisolation"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5448,
+          "texte_octets": 2681,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree",
+            "claude-code-parametres-worktree-bgisolation",
+            "claude-code-skills-batch"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 7018,
+          "texte_octets": 3484,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree",
+            "claude-code-parametres-worktree-bgisolation",
+            "claude-code-skills-batch"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 7018,
+          "texte_octets": 3484,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-agents-sessions-and-worktrees-worktree",
+            "claude-code-parametres-worktree-bgisolation",
+            "claude-code-skills-batch"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 7018,
+          "texte_octets": 3484,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "reprendre session précédente",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-resume"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-resume",
+          "syntaxe": "/resume",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 4,
+          "ids": [
+            "codex-commandes-codex-resume",
+            "codex-parametres-codex-resume-session-id",
+            "codex-parametres-codex-resume-last",
+            "codex-commandes-resume",
+            "codex-parametres-codex-resume-all",
+            "codex-parametres-codex-resume-include-non-interactive",
+            "codex-parametres-codex-exec-resume-subcommand",
+            "codex-parametres-codex-exec-session-id"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 13034,
+          "texte_octets": 6493,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-commandes-codex-resume"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3191,
+          "texte_octets": 1557,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-commandes-codex-resume",
+            "codex-parametres-codex-resume-session-id"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 4625,
+          "texte_octets": 2292,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-commandes-codex-resume",
+            "codex-parametres-codex-resume-session-id",
+            "codex-parametres-codex-resume-last"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5989,
+          "texte_octets": 2992,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 4,
+          "ids": [
+            "codex-commandes-codex-resume",
+            "codex-parametres-codex-resume-session-id",
+            "codex-parametres-codex-resume-last",
+            "codex-commandes-resume"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 7293,
+          "texte_octets": 3662,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 4,
+          "ids": [
+            "codex-commandes-codex-resume",
+            "codex-parametres-codex-resume-session-id",
+            "codex-parametres-codex-resume-last",
+            "codex-commandes-resume",
+            "codex-parametres-codex-resume-all"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 8681,
+          "texte_octets": 4374,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "mémoire projet",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-memory"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-memory",
+          "syntaxe": "/memory",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 3,
+          "ids": [
+            "claude-code-parametres-automemorydirectory",
+            "claude-code-plugins-claude-md-management",
+            "claude-code-commandes-memory",
+            "claude-code-parametres-automemoryenabled",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium",
+            "modele-qwen3-5-9b-reflexion",
+            "modele-qwen3-5-4b-reflexion"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 18256,
+          "texte_octets": 9142,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-automemorydirectory"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3489,
+          "texte_octets": 1701,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-automemorydirectory",
+            "modele-gpt-oss-20b-high"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 4987,
+          "texte_octets": 2468,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-automemorydirectory",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 6505,
+          "texte_octets": 3245,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-automemorydirectory",
+            "claude-code-plugins-claude-md-management",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 8055,
+          "texte_octets": 4038,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "claude-code-parametres-automemorydirectory",
+            "claude-code-plugins-claude-md-management",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium",
+            "modele-qwen3-5-9b-reflexion"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 9459,
+          "texte_octets": 4756,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "exécution non interactive",
+      "produit": "codex",
+      "attendus": [
+        "codex-fonctionnalites-page-non-interactive-mode"
+      ],
+      "faits": [
+        {
+          "id": "codex-fonctionnalites-page-non-interactive-mode",
+          "syntaxe": "codex exec \"summarize the repository structure and list the top 5 risky areas\"",
+          "source": "https://learn.chatgpt.com/docs/non-interactive-mode"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 2,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive",
+            "codex-fonctionnalites-page-non-interactive-mode",
+            "codex-parametres-codex-exec-profile-p",
+            "codex-parametres-codex-exec-c-config",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium",
+            "modele-qwen3-5-9b-reflexion",
+            "modele-qwen3-5-4b-reflexion"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 18586,
+          "texte_octets": 9309,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 3539,
+          "texte_octets": 1731,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive",
+            "modele-gpt-oss-20b-high"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 5037,
+          "texte_octets": 2498,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": null,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium"
+          ],
+          "syntaxe": false,
+          "source": false,
+          "validite": false,
+          "utile": false,
+          "reponse_octets": 6555,
+          "texte_octets": 3275,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 2,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive",
+            "codex-fonctionnalites-page-non-interactive-mode",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 8207,
+          "texte_octets": 4117,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 2,
+          "ids": [
+            "codex-parametres-codex-resume-include-non-interactive",
+            "codex-fonctionnalites-page-non-interactive-mode",
+            "modele-gpt-oss-20b-high",
+            "modele-gpt-oss-20b-medium",
+            "modele-qwen3-5-9b-reflexion"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 9611,
+          "texte_octets": 4835,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "/compact",
+      "produit": "codex",
+      "attendus": [
+        "codex-commandes-compact"
+      ],
+      "faits": [
+        {
+          "id": "codex-commandes-compact",
+          "syntaxe": "/compact",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2620,
+          "texte_octets": 1259,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2987,
+          "texte_octets": 1455,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2987,
+          "texte_octets": 1455,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2987,
+          "texte_octets": 1455,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2987,
+          "texte_octets": 1455,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-commandes-compact"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2987,
+          "texte_octets": 1455,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "/model",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-model"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-model",
+          "syntaxe": "/model [model]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2756,
+          "texte_octets": 1327,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3221,
+          "texte_octets": 1572,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3221,
+          "texte_octets": 1572,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3221,
+          "texte_octets": 1572,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3221,
+          "texte_octets": 1572,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3221,
+          "texte_octets": 1572,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "--add-dir",
+      "produit": "codex",
+      "attendus": [
+        "codex-parametres-codex-add-dir"
+      ],
+      "faits": [
+        {
+          "id": "codex-parametres-codex-add-dir",
+          "syntaxe": "codex --add-dir",
+          "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 2218,
+          "texte_octets": 1058,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3005,
+          "texte_octets": 1464,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3005,
+          "texte_octets": 1464,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3005,
+          "texte_octets": 1464,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3005,
+          "texte_octets": 1464,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-codex-add-dir"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3005,
+          "texte_octets": 1464,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "model effort",
+      "produit": "claude-code",
+      "attendus": [
+        "claude-code-commandes-model"
+      ],
+      "faits": [
+        {
+          "id": "claude-code-commandes-model",
+          "syntaxe": "/model [model]",
+          "source": "https://code.claude.com/docs/en/commands"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model",
+            "claude-code-commandes-effort",
+            "claude-code-parametres-model-and-responses-model",
+            "claude-code-parametres-effortlevel",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-xhigh",
+            "modele-claude-fable-5-max"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 19733,
+          "texte_octets": 9877,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3639,
+          "texte_octets": 1781,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model",
+            "modele-claude-fable-5-medium"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 5691,
+          "texte_octets": 2841,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 7779,
+          "texte_octets": 3919,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model",
+            "claude-code-commandes-effort",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 9431,
+          "texte_octets": 4763,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "claude-code-commandes-model",
+            "claude-code-commandes-effort",
+            "modele-claude-fable-5-medium",
+            "modele-claude-fable-5-low",
+            "modele-claude-fable-5-xhigh"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 11581,
+          "texte_octets": 5872,
+          "jetons": null
+        }
+      }
+    },
+    {
+      "requete": "config.toml model",
+      "produit": "codex",
+      "attendus": [
+        "codex-parametres-model"
+      ],
+      "faits": [
+        {
+          "id": "codex-parametres-model",
+          "syntaxe": "model",
+          "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+        }
+      ],
+      "variantes": {
+        "liste8": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model",
+            "codex-parametres-tui-model-availability-nux-model",
+            "codex-parametres-model-context-window",
+            "codex-parametres-review-model",
+            "modele-gpt-oss-120b-medium",
+            "modele-gemini-4-argon-low",
+            "modele-gemini-4-argon-medium",
+            "modele-gpt-6-1-sol-medium"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 18256,
+          "texte_octets": 9152,
+          "jetons": null
+        },
+        "consultation1": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 3195,
+          "texte_octets": 1559,
+          "jetons": null
+        },
+        "consultation2": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model",
+            "modele-gpt-oss-120b-medium"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 5125,
+          "texte_octets": 2550,
+          "jetons": null
+        },
+        "consultation3": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model",
+            "modele-gpt-oss-120b-medium",
+            "modele-gemini-4-argon-low"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 6619,
+          "texte_octets": 3315,
+          "jetons": null
+        },
+        "consultation4": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model",
+            "codex-parametres-tui-model-availability-nux-model",
+            "modele-gpt-oss-120b-medium",
+            "modele-gemini-4-argon-low"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 8019,
+          "texte_octets": 4033,
+          "jetons": null
+        },
+        "consultation5": {
+          "erreur": false,
+          "incomplet": false,
+          "rang": 1,
+          "ids": [
+            "codex-parametres-model",
+            "codex-parametres-tui-model-availability-nux-model",
+            "modele-gpt-oss-120b-medium",
+            "modele-gemini-4-argon-low",
+            "modele-gemini-4-argon-medium"
+          ],
+          "syntaxe": true,
+          "source": true,
+          "validite": true,
+          "utile": true,
+          "reponse_octets": 9543,
+          "texte_octets": 4813,
+          "jetons": null
+        }
+      }
+    }
+  ]
+}
