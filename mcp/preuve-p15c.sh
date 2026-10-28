@@ -81,7 +81,7 @@ code=0
   "$copie/parametres/mcp/test/mcp.test.js" > "$copie/mutation-parametres.log" 2>&1 || code=$?
 [[ "$code" = 1 ]] || { cat "$copie/mutation-parametres.log"; exit 1; }
 verdict "$copie/mutation-parametres.log" 2 2 \
-  'P15c R172 : descriptions complètes des paramètres en fr' 'P15c R172 : descriptions complètes des paramètres en en'
+  'P15c R172 : descriptions complètes des outils et paramètres en fr' 'P15c R172 : descriptions complètes des outils et paramètres en en'
 
 # Changer la constante seule doit modifier le défaut réel (API, Bureau et CLI) et rester vert.
 "$noeud" --test --test-reporter=tap --test-timeout=120000 --test-name-pattern='^P15c R178' \
