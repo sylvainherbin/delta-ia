@@ -279,3 +279,17 @@ restent dans la copie, sans écriture dans `rapports/` du worktree. L'instantan�
 après succès. P15c compare aussi le texte complet des paramètres en fr/en ; une dérive sans nom d'outil est
 détectée. Les erreurs d'essais de `reference` renvoient à un outil de son catalogue et à `?surface=service`.
 Le défaut du Bureau suit la constante importée de l'API : mutation à 4 verte, réintroduction d'un 3 local rouge.
+
+## P15d : défaut de consultation et textes publics (28/10/2026)
+
+`lib/consultation.js` porte le défaut partagé par l'API et les dictionnaires, sans import circulaire ;
+l'API le réexporte pour préserver les imports du Bureau. Descriptions de l'outil et du paramètre,
+ainsi que l'aide du Bureau en fr/en, suivent cette constante. Les témoins `textes.test.js` la passent
+à 4 dans une copie isolée : ils sont rouges sur P15c et verts sur P15d. La comparaison R172 porte
+aussi sur les descriptions complètes de niveau outil, avec la seule adaptation d'origine prévue
+pour fiche_reference sur la surface reference ; les noms sont tirés du catalogue historique.
+
+`preuve-p15d.sh <copie-neuve-absolue>` sous verrou dev au premier plan rejoue les témoins, la suite
+MCP, l'identité octet par octet des textes et réponses de découverte à 3, et une mutation de
+description sans nom d'outil. L'instantané historique suivi reste inchangé. R172 reste PARTIEL :
+aucun déploiement ni client installé qualifié.

@@ -51,7 +51,7 @@ function remplacer(fichier, avant, apres) {
 const description = 'description: texteSurface(ctx, `outil.${nom}.${p}`)';
 remplacer(`${copie}/parametres/mcp/api/mcp.js`, description,
   description + ' + (p === "requete" && surface !== "compatible" ? " P15c dérive." : "")');
-remplacer(`${copie}/constante/mcp/api/mcp.js`, 'export const LIMITE_CONSULTATION = 3;', 'export const LIMITE_CONSULTATION = 4;');
+remplacer(`${copie}/constante/mcp/lib/consultation.js`, 'export const LIMITE_CONSULTATION = 3;', 'export const LIMITE_CONSULTATION = 4;');
 JS
 code=0
 "$noeud" --test --test-reporter=tap --test-name-pattern='^P15c R172' \
@@ -77,7 +77,7 @@ code=0
 verdict "$copie/mutation-bureau-3.log" 1 1
 
 "$noeud" --test --test-reporter=tap "$copie/tete/mcp/test/"*.test.js > "$copie/verts.log" 2>&1
-verdict "$copie/verts.log" 103 0
+verdict "$copie/verts.log" 107 0
 "$noeud" "$copie/tete/mcp/mesurer-surface.js" > "$copie/surface.json"
 "$noeud" --input-type=module - "$copie" <<'JS'
 import fs from "node:fs";

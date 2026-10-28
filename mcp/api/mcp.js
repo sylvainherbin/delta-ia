@@ -14,6 +14,8 @@
 // version du catalogue lu (génération commune) ; en local, `fiche_reference` ajoute la vue « Utile pour mon ORQYRA ».
 
 import CONFIG from "../lib/config.js";
+import { LIMITE_CONSULTATION } from "../lib/consultation.js";
+export { LIMITE_CONSULTATION } from "../lib/consultation.js";
 import { developperModeles } from "../lib/modeles.js";
 
 import { createHash } from "node:crypto";
@@ -374,7 +376,6 @@ async function chercherReference(args = {}, ctx) {
 }
 
 // ---- consultation courte (lot 2) : à la demande d'un agent, jamais systématique ; quelques résumés, validité, références
-export const LIMITE_CONSULTATION = 3;
 const MAX_CONSULTATION = 5, MAX_CACHE_CONSULTATIONS = 64;
 const consultations = new Map();  // clé (qui porte la version du catalogue) → résultats ; les plus anciennes sortent d'abord
 

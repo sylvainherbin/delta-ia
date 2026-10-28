@@ -1064,13 +1064,12 @@ const rpcSurface = async (surface, corps, langue = "fr") => {
 };
 const messageOutil = (name, args = {}) => ({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name, arguments: args } });
 const messageListe = { jsonrpc: "2.0", id: 2, method: "tools/list" };
-// Oracle indépendant : le schéma complet doit rester identique, hors préfixe des noms dans l'aide.
+// Oracle indépendant : seuls les noms d'outils et l'origine de fiche_reference sur reference changent.
+const textePrefixe = (texte) => texte.replace(new RegExp(`\\b(${Object.keys(OUTILS).join("|")})\\b`, "g"), "orqyra_ai_$1");
 const schemaPrefixe = (schema) => ({ ...schema, properties: Object.fromEntries(Object.entries(schema.properties)
-  .map(([nom, propriete]) => [nom, { ...propriete, description: propriete.description.replace(
-    /\b(resume_du_jour|chercher_reference|fiche_reference|etat_versions|a_tester|nouveautes_base)\b/g,
-    "orqyra_ai_$1") }])) });
+  .map(([nom, propriete]) => [nom, { ...propriete, description: textePrefixe(propriete.description) }])) });
 
-for (const langue of ["fr", "en"]) test(`P15c R172 : descriptions complètes des paramètres en ${langue}`, async () => {
+for (const langue of ["fr", "en"]) test(`P15c R172 : descriptions complètes des outils et paramètres en ${langue}`, async () => {
   const historique = (await rpcSurface("compatible", messageListe, langue)).result.tools;
   for (const surface of ["service", "reference"]) {
     const outils = (await rpcSurface(surface, messageListe, langue)).result.tools;
@@ -1078,6 +1077,12 @@ for (const langue of ["fr", "en"]) test(`P15c R172 : descriptions complètes des
       const origine = historique.find(o => `orqyra_ai_${o.name}` === outil.name);
       assert.ok(origine, outil.name);
       assert.deepEqual(outil.inputSchema, schemaPrefixe(origine.inputSchema), `${surface} ${outil.name} : texte et contraintes complets`);
+      let description = origine.description;
+      if (surface === "reference" && origine.name === "fiche_reference") description = description.replace(
+        langue === "fr" ? "donné par chercher_reference, nouveautes_base ou a_tester" : "given by chercher_reference, nouveautes_base or a_tester",
+        langue === "fr" ? "donné par chercher_reference ; pour les ajouts récents et les essais, utiliser ?surface=service"
+          : "given by chercher_reference; for recent additions and trials, use ?surface=service");
+      assert.equal(outil.description, textePrefixe(description), `${surface} ${outil.name} : description complète de l'outil`);
     }
   }
 });
