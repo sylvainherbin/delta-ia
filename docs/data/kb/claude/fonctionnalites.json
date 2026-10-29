@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-27",
+ "maj_le": "2026-10-29",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -5074,7 +5074,7 @@
    "categorie": "fonctionnalites",
    "nom": "Run prompts on a schedule",
    "gabarit": "complet",
-   "description": "Dans une session Claude Code, `/loop` et les outils de planification cron relancent un prompt à intervalle régulier, interrogent l'état d'une tâche (un déploiement, par exemple) ou programment un rappel ponctuel. Exemple d'usage : `/loop 5m check if the deployment finished and tell me what happened`.",
+   "description": "Dans une session Claude Code ouverte, `/loop` relance un prompt à intervalle fixe (`/loop 5m …`, converti en cron) ou à un intervalle que Claude choisit entre une minute et une heure, et les outils cron posent aussi des rappels ponctuels. Les tâches sont liées à la session et expirent au bout de sept jours ; une reprise par `--resume` restaure les tâches à intervalle fixe, mais pas un `/loop` à intervalle libre, qu'il faut relancer.",
    "description_source": "Use /loop and the cron scheduling tools to run prompts repeatedly, poll for status, or set one-time reminders within a Claude Code session.",
    "usage": "/loop 5m check if the deployment finished and tell me what happened",
    "usage_nature": "syntaxe",
@@ -5083,7 +5083,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les campagnes exhaustives de trading-sim sont lentes, car elles sont bridées dans `calculs.slice` : un `/loop` lancé dans la session qui exécute le calcul peut en vérifier l'avancement et signaler la fin. Les sessions durables tournent déjà en continu comme services systemd sous tmux, ce qui se prête à ce suivi. À essayer sur une campagne, pour voir ce que cela ajoute au suivi actuel."
+    "pourquoi": "Sur trading-sim, dont les campagnes exhaustives sont longues, un `/loop 15m` lancé dans la session qui exécute la campagne en suivrait l'avancement et signalerait la fin. Tes sessions durables étant reprises par `claude --resume`, préfère un intervalle fixe : un `/loop` sans intervalle n'est pas restauré à la reprise."
    },
    "sources": [
     {
@@ -5096,7 +5096,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5128,49 +5128,94 @@
      "changement": "description corrigée",
      "avant": "`/loop` relance un prompt à intervalle fixe dans la session courante (surveiller un build, une PR, un déploiement) et les outils cron programment des rappels ponctuels. Les tâches appartiennent à la conversation : elles s'arrêtent avec elle et reviennent au `--resume` si elles n'ont pas expiré.",
      "raison": "recommentaire D128 : Le pourquoi s'appuie désormais sur les sections citées (trading-sim, `calculs.slice`, sessions systemd durables) au lieu du nom herbin-trading, qu'aucune source fournie ne fondait"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/loop` et les outils de planification cron relancent un prompt de façon répétée, interrogent un état ou posent un rappel ponctuel, à l'intérieur d'une session Claude Code.",
+       "source": "https://code.claude.com/docs/en/scheduled-tasks",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire `/loop` ou limite la planification à l'extérieur d'une session."
+      },
+      {
+       "affirmation": "Parmi les difficultés de trading-sim figure une machine lente pour les campagnes exhaustives.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les campagnes de trading-sim deviennent rapides ou passent sur une autre machine."
+      },
+      {
+       "affirmation": "Les calculs lourds (campagnes de simulation) sont bridés dans la tranche systemd `calculs.slice` (CPUWeight 20, MemoryMax 9G).",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La tranche `calculs.slice` est supprimée ou ne bride plus les campagnes."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions Claude Code cessent de tourner comme services systemd durables sous tmux."
+      }
+     ],
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les campagnes exhaustives de trading-sim sont lentes, car elles sont bridées dans `calculs.slice` : un `/loop` lancé dans la session qui exécute le calcul peut en vérifier l'avancement et signaler la fin. Les sessions durables tournent déjà en continu comme services systemd sous tmux, ce qui se prête à ce suivi. À essayer sur une campagne, pour voir ce que cela ajoute au suivi actuel."
+     },
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Projet prioritaire dont les campagnes exhaustives sont longues sur une machine lente : un suivi périodique de leur état y sert."
-    },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Les calculs lourds sont bridés dans `calculs.slice`, ce qui allonge les campagnes à surveiller."
+     "pourquoi": "Projet prioritaire dont les campagnes exhaustives sont longues : un suivi périodique de leur état y sert."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions Claude Code durables sont des services systemd sous tmux qui restent ouverts, condition pour qu'une boucle de session tourne."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables relancées par `claude --resume` sous systemd et tmux : seules les tâches à intervalle fixe survivent à la reprise."
     }
    },
    "provenance": [
     {
-     "affirmation": "`/loop` et les outils de planification cron relancent un prompt de façon répétée, interrogent un état ou posent un rappel ponctuel, à l'intérieur d'une session Claude Code.",
+     "affirmation": "`/loop` relance un prompt tant que la session reste ouverte, à intervalle fixe converti en cron ou à un intervalle choisi par Claude ; les tâches expirent après sept jours.",
      "source": "https://code.claude.com/docs/en/scheduled-tasks",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire `/loop` ou limite la planification à l'extérieur d'une session."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation retire `/loop`, change son fonctionnement par intervalle ou la durée d'expiration."
     },
     {
-     "affirmation": "Parmi les difficultés de trading-sim figure une machine lente pour les campagnes exhaustives.",
+     "affirmation": "À la reprise par `claude --resume`, Claude Code restaure les tâches planifiées non expirées, sauf un `/loop` à intervalle libre, qu'il faut relancer.",
+     "source": "https://code.claude.com/docs/en/scheduled-tasks",
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation change ce qui est restauré à la reprise d'une session."
+    },
+    {
+     "affirmation": "Parmi les difficultés visibles de trading-sim figure une machine lente pour les campagnes exhaustives.",
      "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les campagnes de trading-sim deviennent rapides ou passent sur une autre machine."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md ne décrit plus de campagnes longues sur trading-sim."
     },
     {
-     "affirmation": "Les calculs lourds (campagnes de simulation) sont bridés dans la tranche systemd `calculs.slice` (CPUWeight 20, MemoryMax 9G).",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La tranche `calculs.slice` est supprimée ou ne bride plus les campagnes."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance une session tmux exécutant `claude --resume <id> --remote-control <nom>`.",
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions Claude Code cessent de tourner comme services systemd durables sous tmux."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables cessent d'être reprises par `claude --resume`."
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-security-guidance",
@@ -5434,7 +5479,7 @@
    "categorie": "fonctionnalites",
    "nom": "Customize your status line",
    "gabarit": "complet",
-   "description": "La ligne d'état est une barre en bas de Claude Code qui exécute un script : elle reçoit en JSON les données de la session (modèle, contexte utilisé, coût, dossier) et affiche ce que le script imprime. `/statusline <description>` fait générer le script par Claude.",
+   "description": "La ligne d'état est une barre en bas de Claude Code qui exécute un script : elle reçoit en JSON les données de la session (modèle, contexte utilisé, coût, dossier) et affiche ce que le script imprime. `/statusline <description>` fait écrire ce script par Claude ; on peut aussi poser soi-même un champ `statusLine` dans les réglages utilisateur ou de projet.",
    "description_source": "Configure a custom status bar to monitor context window usage, costs, and git status in Claude Code",
    "usage": "/statusline show model name and context percentage with a progress bar",
    "usage_nature": "syntaxe",
@@ -5443,7 +5488,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Afficher modèle et pourcentage de contexte dans les sessions durables sous tmux aiderait à surveiller la consommation des limites et à les distinguer ; `/statusline` génère le script, à poser dans `~/.claude/settings.json`."
+    "pourquoi": "Afficher modèle et pourcentage de contexte dans tes sessions durables sous tmux, qui ont chacune leur modèle, aiderait à suivre la consommation des limites d'usage. Effet de bord : `/statusline` écrit un script dans `~/.claude/` et modifie les réglages utilisateur, donc toutes les sessions ; pour l'essayer sur un seul projet, pose `statusLine` à la main dans son `.claude/settings.json`."
    },
    "sources": [
     {
@@ -5456,7 +5501,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5477,51 +5522,100 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande `/statusline` accepte une description en langage naturel de la ligne d'état voulue, par exemple « show model name and context percentage with a progress bar ».",
+       "source": "https://code.claude.com/docs/en/statusline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `/statusline` disparaît de la documentation ou n'accepte plus de description en argument."
+      },
+      {
+       "affirmation": "La ligne d'état personnalisée de Claude Code sert à surveiller l'usage de la fenêtre de contexte, les coûts et l'état git.",
+       "source": "https://code.claude.com/docs/en/statusline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne présente plus la ligne d'état comme moyen de suivre le contexte, les coûts ou l'état git."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur `claude-session@<nom>` qui lance une session tmux dédiée (`tmux -L <nom>`) exécutant `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées sous tmux par un service systemd."
+      },
+      {
+       "affirmation": "Selon le rôle, chaque session durable a un modèle, un effort et des réglages de lancement propres, par exemple `--model opus --effort medium` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'indique plus de modèle ou de réglages distincts par rôle de session."
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire les limites d'usage de la liste des frictions récurrentes."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Afficher modèle et pourcentage de contexte dans les sessions durables sous tmux aiderait à surveiller la consommation des limites et à les distinguer ; `/statusline` génère le script, à poser dans `~/.claude/settings.json`."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions durables sous tmux, une par rôle"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous tmux, avec un modèle et un effort propres à chaque rôle."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "limites d'usage parmi les frictions récurrentes"
+     "pourquoi": "Les limites d'usage figurent parmi les frictions récurrentes."
     }
    },
    "provenance": [
     {
-     "affirmation": "La commande `/statusline` accepte une description en langage naturel de la ligne d'état voulue, par exemple « show model name and context percentage with a progress bar ».",
+     "affirmation": "La commande `/statusline` accepte une description en langage naturel ; Claude Code génère un script dans `~/.claude/` et met à jour les réglages automatiquement.",
      "source": "https://code.claude.com/docs/en/statusline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande `/statusline` disparaît de la documentation ou n'accepte plus de description en argument."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La commande `/statusline` disparaît ou n'écrit plus dans `~/.claude/`."
     },
     {
-     "affirmation": "La ligne d'état personnalisée de Claude Code sert à surveiller l'usage de la fenêtre de contexte, les coûts et l'état git.",
+     "affirmation": "Le champ `statusLine` se pose à la main dans les réglages utilisateur (`~/.claude/settings.json`) ou de projet ; `command` peut être une commande en ligne, par exemple avec `jq` pour afficher modèle et pourcentage de contexte.",
      "source": "https://code.claude.com/docs/en/statusline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne présente plus la ligne d'état comme moyen de suivre le contexte, les coûts ou l'état git."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation change le format du champ `statusLine` ou ses portées."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur `claude-session@<nom>` qui lance une session tmux dédiée (`tmux -L <nom>`) exécutant `claude --resume <id> --remote-control <nom>`.",
+     "affirmation": "Chaque session Claude Code durable tourne sous tmux, avec selon le rôle un modèle, un effort et des réglages de lancement propres.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées sous tmux par un service systemd."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md ne décrit plus de sessions durables sous tmux avec un modèle par rôle."
     },
     {
-     "affirmation": "Selon le rôle, chaque session durable a un modèle, un effort et des réglages de lancement propres, par exemple `--model opus --effort medium` pour le chef.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'indique plus de modèle ou de réglages distincts par rôle de session."
-    },
-    {
-     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées de Sylvain.",
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire les limites d'usage de la liste des frictions récurrentes."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
     }
-   ]
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-fonctionnalites-page-sub-agents",
@@ -5696,7 +5790,7 @@
    "categorie": "fonctionnalites",
    "nom": "Configure your terminal for Claude Code",
    "gabarit": "complet",
-   "description": "Page de dépannage du terminal, classée par symptôme : Maj+Entrée qui envoie au lieu d'aller à la ligne (`Ctrl+J` ou `\\` puis Entrée marchent partout), signal sonore ou notification en fin de tâche (`preferredNotifChannel`), configuration de tmux, scintillement et touches Vim dans la saisie.",
+   "description": "Page de dépannage du terminal, classée par symptôme : Maj+Entrée qui envoie au lieu d'aller à la ligne, signal sonore ou notification en fin de tâche (`preferredNotifChannel`), configuration de tmux, thème de couleurs et mode Vim. Sous tmux, quatre lignes de `~/.tmux.conf` (`allow-passthrough`, `focus-events`, `extended-keys`) laissent passer Maj+Entrée, les notifications et la barre de progression.",
    "description_source": "Fix Shift+Enter for newlines, get a terminal bell when Claude finishes, configure tmux, match the color theme, and enable Vim mode in the Claude Code CLI.",
    "usage": "{\n  \"preferredNotifChannel\": \"terminal_bell\"\n}",
    "usage_nature": "syntaxe",
@@ -5705,7 +5799,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les sessions durables tournent sous tmux (`claude-session@<nom>`) : la section tmux dit quoi régler si touches ou notifications n'y passent pas, en complément des notifications push déjà actives."
+    "pourquoi": "Tes sessions durables tournent sous `tmux -L <nom>` : si tu t'y attaches sur la machine et que Maj+Entrée envoie le message, ajoute les lignes de la section tmux à `~/.tmux.conf` puis vérifie que le saut de ligne fonctionne. Les notifications push que tu reçois sur l'iPhone ne dépendent pas de ce réglage du terminal."
    },
    "sources": [
     {
@@ -5718,7 +5812,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5743,44 +5837,92 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La page de documentation couvre la configuration de tmux pour le CLI Claude Code, ainsi que la correction de Shift+Enter pour les sauts de ligne et le signal sonore du terminal quand Claude termine.",
+       "source": "https://code.claude.com/docs/en/terminal-config",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page terminal-config disparaît ou ne traite plus de tmux."
+      },
+      {
+       "affirmation": "Le réglage \"preferredNotifChannel\": \"terminal_bell\" permet d'obtenir un signal sonore du terminal quand Claude termine.",
+       "source": "https://code.claude.com/docs/en/terminal-config",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option preferredNotifChannel ou la valeur terminal_bell change de nom ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur modèle claude-session@<nom> qui lance une session tmux dédiée (tmux -L <nom>) exécutant claude --resume <id> --remote-control <nom>.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées sous tmux via claude-session@<nom>."
+      },
+      {
+       "affirmation": "Le settings.json de Claude Code de Sylvain active déjà les notifications push des agents.",
+       "source": "contexte:config.claude-code.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'indique plus que les notifications push des agents sont actives dans settings.json."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les sessions durables tournent sous tmux (`claude-session@<nom>`) : la section tmux dit quoi régler si touches ou notifications n'y passent pas, en complément des notifications push déjà actives."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions Claude Code sous tmux -L <nom>"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions Claude Code lancées dans des serveurs `tmux -L <nom>` et pilotées depuis l'iPhone."
     },
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "notifications push des agents déjà actives"
+     "pourquoi": "Notifications push des agents déjà actives dans settings.json."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La page de documentation couvre la configuration de tmux pour le CLI Claude Code, ainsi que la correction de Shift+Enter pour les sauts de ligne et le signal sonore du terminal quand Claude termine.",
+     "affirmation": "Sous tmux, Maj+Entrée envoie par défaut au lieu d'insérer un saut de ligne, et les notifications et la barre de progression n'atteignent pas le terminal extérieur ; la page donne les lignes de `~/.tmux.conf` qui corrigent cela.",
      "source": "https://code.claude.com/docs/en/terminal-config",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page terminal-config disparaît ou ne traite plus de tmux."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La section tmux de la page disparaît ou ses lignes de configuration changent."
     },
     {
-     "affirmation": "Le réglage \"preferredNotifChannel\": \"terminal_bell\" permet d'obtenir un signal sonore du terminal quand Claude termine.",
+     "affirmation": "Le réglage `\"preferredNotifChannel\": \"terminal_bell\"` fait sonner le terminal à la place d'une notification de bureau.",
      "source": "https://code.claude.com/docs/en/terminal-config",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option preferredNotifChannel ou la valeur terminal_bell change de nom ou disparaît de la documentation."
+     "releve_le": "2026-10-29",
+     "caduc_si": "L'option `preferredNotifChannel` ou la valeur `terminal_bell` change ou disparaît."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur modèle claude-session@<nom> qui lance une session tmux dédiée (tmux -L <nom>) exécutant claude --resume <id> --remote-control <nom>.",
+     "affirmation": "Chaque session Claude Code durable tourne dans une session tmux dédiée (`tmux -L <nom>`) et est pilotée depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées sous tmux via claude-session@<nom>."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables cessent de tourner sous tmux."
     },
     {
-     "affirmation": "Le settings.json de Claude Code de Sylvain active déjà les notifications push des agents.",
+     "affirmation": "Le settings.json de Claude Code de Sylvain active les notifications push des agents.",
      "source": "contexte:config.claude-code.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'indique plus que les notifications push des agents sont actives dans settings.json."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md n'indique plus de notifications push actives."
     }
    ]
   },

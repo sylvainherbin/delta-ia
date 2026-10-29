@@ -92,7 +92,7 @@
    "categorie": "parametres",
    "nom": "--advisor <model>",
    "gabarit": "court",
-   "description": "Option de lancement de Claude Code qui active l'outil advisor côté serveur pour la session, avec un alias de modèle (fable, opus, sonnet) ou un identifiant complet. Elle prime sur le réglage `advisorModel` pour cette session ; fable exige un accès Fable. Exemple : `claude --advisor opus`.",
+   "description": "Option de lancement qui active l'outil advisor côté serveur pour la seule session, avec un alias (`fable`, `opus`, `sonnet`) ou un identifiant complet de modèle ; elle prime sur le réglage `advisorModel` pour cette session, et `fable` exige un accès Fable.",
    "description_source": "Enable the server-side advisor tool for this session with a model alias, fable, opus, or sonnet, or a full model ID. Takes precedence over the advisorModel setting for the session. fable requires Fable access — claude --advisor opus",
    "usage": "--advisor <model>",
    "usage_nature": "syntaxe",
@@ -101,7 +101,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le conseiller Opus est aujourd'hui réactivé avant chaque mission, puis `advisorModel` est retiré des réglages globaux. Placé dans la ligne de lancement d'une session (`claude --resume … --remote-control`), `--advisor opus` le limiterait à cette session. Reste à vérifier s'il tient après un `/clear`."
+    "pourquoi": "Le conseiller Opus est aujourd'hui réglé avant chaque mission par `regler-advisor` puis `advisorModel` est retiré des réglages globaux : `claude --advisor opus` dans la ligne de lancement d'une session durable le limiterait à elle, reste à vérifier s'il tient après le `/clear` de `mission-dev`."
    },
    "sources": [
     {
@@ -114,7 +114,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -142,47 +142,95 @@
      "changement": "description corrigée",
      "avant": "Option de lancement qui active pour la session l'outil advisor avec le modèle choisi (fable, opus, sonnet ou identifiant complet), prioritaire sur le réglage `advisorModel`.",
      "raison": "recommentaire D128 : L'ancien pourquoi invoquait herbin-trading et la limite Fable sans section citée ; le verdict tester s'appuie maintenant sur la gestion documentée du conseiller (optimisation.pist"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "--advisor active l'outil advisor côté serveur pour la session et prime sur le réglage advisorModel pour cette session ; fable exige un accès Fable.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La référence CLI retire l'option ou change sa priorité sur advisorModel."
+      },
+      {
+       "affirmation": "La formule validée pour les missions de construction de trading-sim est Sonnet avec Opus en conseiller ; herbin-mint réactive le conseiller avant chaque mission puis retire advisorModel des réglages globaux.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La formule Sonnet + conseiller Opus est abandonnée ou la gestion de advisorModel change."
+      },
+      {
+       "affirmation": "Le conseiller ne survit pas à un /clear : mission-dev --advisor et regler-advisor le règlent avant chaque mission.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le conseiller persiste après /clear ou mission-dev ne règle plus le conseiller."
+      },
+      {
+       "affirmation": "Chaque session durable exécute claude --resume <id> --remote-control <nom> avec un modèle, un effort et des réglages de lancement propres à son rôle.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions ne sont plus lancées par le service claude-session@<nom> avec une ligne de commande propre."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Le conseiller Opus est aujourd'hui réactivé avant chaque mission, puis `advisorModel` est retiré des réglages globaux. Placé dans la ligne de lancement d'une session (`claude --resume … --remote-control`), `--advisor opus` le limiterait à cette session. Reste à vérifier s'il tient après un `/clear`."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Formule Sonnet + conseiller Opus validée ; le conseiller est réactivé avant chaque mission, puis advisorModel est retiré des réglages globaux."
+     "pourquoi": "Formule Sonnet + conseiller Opus ; conseiller réactivé avant chaque mission, puis advisorModel retiré des réglages globaux."
     },
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "mission-dev --advisor et regler-advisor règlent le conseiller avant chaque mission, car il ne survit pas à /clear."
+     "pourquoi": "mission-dev vide le contexte par /clear et règle le conseiller, qui ne survit pas à /clear."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions durables sont lancées par une ligne claude --resume … --remote-control avec des réglages propres à chaque rôle."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées par `claude --resume … --remote-control` avec des réglages propres à chaque rôle."
     }
    },
    "provenance": [
     {
-     "affirmation": "--advisor active l'outil advisor côté serveur pour la session et prime sur le réglage advisorModel pour cette session ; fable exige un accès Fable.",
+     "affirmation": "`--advisor <model>` active l'outil advisor côté serveur pour la session et prime sur le réglage `advisorModel` pour cette session ; `fable` exige un accès Fable.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La référence CLI retire l'option ou change sa priorité sur advisorModel."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La référence CLI retire l'option ou change sa priorité sur `advisorModel`."
     },
     {
-     "affirmation": "La formule validée pour les missions de construction de trading-sim est Sonnet avec Opus en conseiller ; herbin-mint réactive le conseiller avant chaque mission puis retire advisorModel des réglages globaux.",
+     "affirmation": "La formule validée pour les missions de construction de trading-sim est Sonnet avec Opus en conseiller ; le conseiller est réactivé avant chaque mission puis `advisorModel` est retiré des réglages globaux.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La formule Sonnet + conseiller Opus est abandonnée ou la gestion de advisorModel change."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La formule Sonnet + conseiller Opus est abandonnée ou `advisorModel` n'est plus géré ainsi."
     },
     {
-     "affirmation": "Le conseiller ne survit pas à un /clear : mission-dev --advisor et regler-advisor le règlent avant chaque mission.",
+     "affirmation": "`mission-dev` vide le contexte du dev par `/clear` et règle le conseiller, qui ne survit pas à un `/clear`.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le conseiller persiste après /clear ou mission-dev ne règle plus le conseiller."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Le conseiller survit à `/clear` ou `mission-dev` ne règle plus le conseiller."
     },
     {
-     "affirmation": "Chaque session durable exécute claude --resume <id> --remote-control <nom> avec un modèle, un effort et des réglages de lancement propres à son rôle.",
+     "affirmation": "Chaque session durable exécute `claude --resume <id> --remote-control <nom>` avec un modèle, un effort et des réglages de lancement propres à son rôle.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions ne sont plus lancées par le service claude-session@<nom> avec une ligne de commande propre."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables ne sont plus lancées par une ligne de commande propre à chaque rôle."
     }
    ]
   },
@@ -2982,7 +3030,7 @@
    "categorie": "parametres",
    "nom": "attribution.sessionUrl",
    "gabarit": "court",
-   "description": "Sous-clé qui décide si Claude Code ajoute le lien de la session claude.ai (ligne `Claude-Session`) aux commits et PR faits depuis une session cloud ou Remote Control.",
+   "description": "Sous-clé qui décide si Claude Code ajoute le lien de la session claude.ai (ligne `Claude-Session` dans les commits, lien dans les PR) quand il commite depuis une session cloud ou Remote Control ; vaut `true` par défaut.",
    "description_source": "Choose whether Claude Code appends the claude.ai session link when it commits or opens a pull request from a cloud or Remote Control session. Claude Code adds the link as a Claude-Session trailer on commits and as a link in pull request descriptions. Set it to false to omit the link.",
    "usage": "{\n  \"attribution\": {\n    \"sessionUrl\": false\n  }\n}",
    "usage_nature": "syntaxe",
@@ -2991,7 +3039,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "carnet est un dépôt public et ses sessions tournent avec Remote Control : `{\"attribution\": {\"sessionUrl\": false}}` dans `~/projets/carnet/.claude/settings.json` retirerait le lien de session des commits ; vérifie qu'un commit suivant n'a plus de ligne `Claude-Session`."
+    "pourquoi": "carnet est un dépôt public et tes sessions tournent avec Remote Control : `{\"attribution\": {\"sessionUrl\": false}}` dans `~/projets/carnet/.claude/settings.json` retirerait le lien de session de ses commits ; vérifie qu'un commit suivant n'a plus de ligne `Claude-Session`."
    },
    "sources": [
     {
@@ -3004,7 +3052,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Git and attribution",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3025,56 +3073,104 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le paramètre attribution.sessionUrl décide si Claude Code ajoute le lien de la session claude.ai lorsqu'il fait un commit ou ouvre une pull request depuis une session cloud ou Remote Control.",
+       "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La clé attribution.sessionUrl change de nom ou de portée, ou disparaît de la documentation des settings."
+      },
+      {
+       "affirmation": "Claude Code ajoute ce lien sous la forme d'un trailer Claude-Session sur les commits et d'un lien dans la description des pull requests.",
+       "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus le trailer Claude-Session ni le lien dans les pull requests."
+      },
+      {
+       "affirmation": "Mettre attribution.sessionUrl à false omet ce lien de session.",
+       "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La valeur false ne supprime plus le lien ou la syntaxe du réglage change."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` ; ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions durables avec --remote-control ni leur pilotage par Remote Control."
+      },
+      {
+       "affirmation": "carnet est un dépôt public qui ne doit contenir aucun secret ni donnée personnelle, d'après AGENTS.md.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus carnet comme un dépôt public, ou ne décrit plus ce projet."
+      },
+      {
+       "affirmation": "Sur carnet, Claude Code sert au développement et au coach ; la session Claude « coach » écrit les fichiers plan/AAAA-MM-JJ.json dans le dépôt.",
+       "source": "contexte:projet.carnet",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code pour le développement et le coach de carnet."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "carnet est un dépôt public et ses sessions tournent avec Remote Control : `{\"attribution\": {\"sessionUrl\": false}}` dans `~/projets/carnet/.claude/settings.json` retirerait le lien de session des commits ; vérifie qu'un commit suivant n'a plus de ligne `Claude-Session`."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.carnet": {
      "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
-     "pourquoi": "dépôt public, sessions pilotées par Remote Control"
+     "pourquoi": "Dépôt public, sans secret ni donnée personnelle ; Claude Code y développe et y commite."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions lancées avec --remote-control"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées avec `--remote-control <nom>`."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Le paramètre attribution.sessionUrl décide si Claude Code ajoute le lien de la session claude.ai lorsqu'il fait un commit ou ouvre une pull request depuis une session cloud ou Remote Control.",
+     "affirmation": "`attribution.sessionUrl` décide si Claude Code ajoute le lien de session claude.ai lorsqu'il commite ou ouvre une pull request depuis une session cloud ou Remote Control ; défaut `true`, `false` omet le lien.",
      "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La clé attribution.sessionUrl change de nom ou de portée, ou disparaît de la documentation des settings."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La clé change de nom, de portée ou de valeur par défaut, ou disparaît de la référence des settings."
     },
     {
-     "affirmation": "Claude Code ajoute ce lien sous la forme d'un trailer Claude-Session sur les commits et d'un lien dans la description des pull requests.",
+     "affirmation": "Le lien est ajouté comme trailer `Claude-Session` sur les commits et comme lien dans la description des pull requests.",
      "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus le trailer Claude-Session ni le lien dans les pull requests."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation ne décrit plus le trailer `Claude-Session`."
     },
     {
-     "affirmation": "Mettre attribution.sessionUrl à false omet ce lien de session.",
-     "source": "https://code.claude.com/docs/en/settings-reference#attributionsessionurl",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La valeur false ne supprime plus le lien ou la syntaxe du réglage change."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable de Sylvain est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` ; ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "affirmation": "Les sessions Claude Code durables exécutent `claude --resume <id> --remote-control <nom>` et sont pilotées depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions durables avec --remote-control ni leur pilotage par Remote Control."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md ne décrit plus de sessions durables lancées avec Remote Control."
     },
     {
-     "affirmation": "carnet est un dépôt public qui ne doit contenir aucun secret ni donnée personnelle, d'après AGENTS.md.",
+     "affirmation": "carnet est un dépôt public qui ne doit contenir aucun secret ni donnée personnelle ; Claude Code y sert au développement et au coach.",
      "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus carnet comme un dépôt public, ou ne décrit plus ce projet."
-    },
-    {
-     "affirmation": "Sur carnet, Claude Code sert au développement et au coach ; la session Claude « coach » écrit les fichiers plan/AAAA-MM-JJ.json dans le dépôt.",
-     "source": "contexte:projet.carnet",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'indique plus l'usage de Claude Code pour le développement et le coach de carnet."
+     "releve_le": "2026-10-29",
+     "caduc_si": "carnet n'est plus public ou Claude Code n'y commite plus."
     }
    ]
   },
@@ -3084,7 +3180,7 @@
    "categorie": "parametres",
    "nom": "--autocompact <auto|tokens>",
    "gabarit": "court",
-   "description": "Option de lancement de Claude Code qui fixe la fenêtre d'auto-compaction pour la seule session lancée, sans modifier les réglages enregistrés. Elle accepte les mêmes valeurs que `/autocompact` (par exemple `claude --autocompact 500k`) et demande Claude Code v2.1.221 ou plus récent.",
+   "description": "Option de lancement qui fixe la fenêtre d'auto-compaction pour la seule session lancée, sans modifier les réglages enregistrés ; elle accepte les mêmes valeurs que `/autocompact` (par exemple `claude --autocompact 500k`) et demande Claude Code v2.1.221 ou plus récent.",
    "description_source": "Set the auto-compact window for this session without changing your saved settings. Accepts the same values as /autocompact; that section covers the value forms and what overrides the flag. Requires Claude Code v2.1.221 or later — claude --autocompact 500k",
    "usage": "--autocompact <auto|tokens>",
    "usage_nature": "syntaxe",
@@ -3093,7 +3189,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des réglages de lancement propres à chaque rôle : `--autocompact` peut s'y ajouter pour une seule session, sans toucher aux réglages globaux. Tu tapes aussi `/compact` à la main : à essayer sur une session pour comparer."
+    "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des options de lancement par rôle et tu tapes `/compact` à la main : ajouter `--autocompact` à la ligne d'une seule session permet de comparer, sans toucher aux réglages globaux."
    },
    "sources": [
     {
@@ -3106,7 +3202,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3134,37 +3230,79 @@
      "changement": "description corrigée",
      "avant": "Option de lancement qui fixe la fenêtre d'auto-compaction pour la seule session, sans toucher aux réglages enregistrés.",
      "raison": "recommentaire D128 : Le pourquoi ne cite plus herbin-trading ni l'idée non fondée d'une fenêtre plus basse : il s'appuie désormais sur les lanceurs de session par rôle et l'usage de `/compact`, décrit"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--autocompact` fixe la fenêtre d'auto-compaction pour la session sans changer les réglages enregistrés, accepte les valeurs de `/autocompact` et demande Claude Code v2.1.221 ou plus récent.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option est retirée ou renommée dans la référence CLI, ou son comportement par session change."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables ne sont plus lancées par ce service modèle ou n'ont plus de réglages de lancement par rôle."
+      },
+      {
+       "affirmation": "Parmi les commandes tapées relevées le 25/09 figurent `/btw`, `/remote-control` et `/compact`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des réglages de lancement propres à chaque rôle : `--autocompact` peut s'y ajouter pour une seule session, sans toucher aux réglages globaux. Tu tapes aussi `/compact` à la main : à essayer sur une session pour comparer."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions durables sont lancées par un service avec des options de lancement propres à chaque rôle, là où l'option s'insère."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées par un service, avec des options de lancement propres à chaque rôle."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Le relevé d'usage montre que `/compact` est tapé à la main, donc que la compaction du contexte fait partie des gestes courants."
+     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées."
     }
    },
    "provenance": [
     {
      "affirmation": "`--autocompact` fixe la fenêtre d'auto-compaction pour la session sans changer les réglages enregistrés, accepte les valeurs de `/autocompact` et demande Claude Code v2.1.221 ou plus récent.",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option est retirée ou renommée dans la référence CLI, ou son comportement par session change."
+     "releve_le": "2026-10-29",
+     "caduc_si": "L'option est retirée ou renommée, ou son effet limité à la session change."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
+     "affirmation": "Chaque session Claude Code durable est un service `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` avec des réglages de lancement propres à son rôle.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables ne sont plus lancées par ce service modèle ou n'ont plus de réglages de lancement par rôle."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables n'ont plus de ligne de lancement propre à chaque rôle."
     },
     {
-     "affirmation": "Parmi les commandes tapées relevées le 25/09 figurent `/btw`, `/remote-control` et `/compact`.",
+     "affirmation": "Les commandes tapées relevées le 25/09 comprennent `/btw`, `/remote-control` et `/compact`.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Un nouveau relevé d'usage ne montre plus `/compact` parmi les commandes tapées."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Un nouveau relevé ne montre plus `/compact` parmi les commandes tapées."
     }
    ]
   },
@@ -3216,7 +3354,7 @@
    "categorie": "parametres",
    "nom": "autoCompactWindow",
    "gabarit": "court",
-   "description": "Réglage de Claude Code qui fixe jusqu'où la fenêtre de contexte se remplit avant que Claude Code ne compacte automatiquement la conversation. L'exemple de la documentation lui donne la valeur 500000.",
+   "description": "Réglage qui fixe, en jetons (de 100000 à 1000000, plafonné à la fenêtre du modèle), jusqu'où le contexte se remplit avant la compaction automatique ; non défini par défaut, Claude Code prend une fenêtre adaptée au modèle, et `--autocompact` ou `/autocompact` (rangé sous `modelSettings`) priment sur lui.",
    "description_source": "Set how full the context window gets before Claude Code compacts automatically.",
    "usage": "{\n  \"autoCompactWindow\": 500000\n}",
    "usage_nature": "syntaxe",
@@ -3225,7 +3363,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` sous systemd et tmux, et tu tapes `/compact` à la main. Essaie une valeur sur une session pour choisir toi-même quand la compaction automatique se déclenche."
+    "pourquoi": "Tes sessions durables sont reprises par `claude --resume` et tu compactes à la main avec `/compact` : poser une valeur dans le `.claude/settings.json` d'un projet permettrait de choisir quand la compaction automatique se déclenche, sans toucher aux autres projets."
    },
    "sources": [
     {
@@ -3238,7 +3376,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3270,38 +3408,80 @@
      "changement": "description corrigée",
      "avant": "Réglage qui fixe le remplissage du contexte à partir duquel Claude Code compacte automatiquement.",
      "raison": "recommentaire D128 : Le verdict tester est conservé, mais le gain en jetons, absent de la documentation, est retiré : le pourquoi s'appuie désormais sur les sessions reprises par `claude --resume` et"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "autoCompactWindow fixe le niveau de remplissage de la fenêtre de contexte avant que Claude Code ne compacte automatiquement.",
+       "source": "https://code.claude.com/docs/en/settings-reference#autocompactwindow",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le réglage est retiré ou renommé dans la référence des settings de Claude Code."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables cessent d'être reprises par `claude --resume` ou sont abandonnées."
+      },
+      {
+       "affirmation": "Les commandes tapées relevées le 25/09 comprennent `/btw`, `/remote-control` et `/compact`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions Claude Code durables sont reprises par `claude --resume` sous systemd et tmux, et tu tapes `/compact` à la main. Essaie une valeur sur une session pour choisir toi-même quand la compaction automatique se déclenche."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions Claude Code durables, services systemd qui relancent `claude --resume`, où le contexte s'accumule."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables reprises par `claude --resume`, où le contexte s'accumule."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées : la compaction est déjà gérée à la main."
+     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "autoCompactWindow fixe le niveau de remplissage de la fenêtre de contexte avant que Claude Code ne compacte automatiquement.",
+     "affirmation": "`autoCompactWindow` fixe, de 100000 à 1000000 jetons, le remplissage du contexte avant la compaction automatique ; portée : tout fichier de réglages ; `--autocompact` prime sur lui pour une session.",
      "source": "https://code.claude.com/docs/en/settings-reference#autocompactwindow",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le réglage est retiré ou renommé dans la référence des settings de Claude Code."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Le réglage est retiré ou renommé, ou ses bornes et priorités changent."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
+     "affirmation": "Chaque session Claude Code durable est un service systemd qui exécute `claude --resume <id> --remote-control <nom>` dans une session tmux dédiée.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables cessent d'être reprises par `claude --resume` ou sont abandonnées."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables cessent d'être reprises par `claude --resume`."
     },
     {
-     "affirmation": "Les commandes tapées relevées le 25/09 comprennent `/btw`, `/remote-control` et `/compact`.",
+     "affirmation": "Les commandes tapées relevées le 25/09 comprennent `/compact`.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Un nouveau relevé montre que `/compact` n'est plus utilisé."
     }
    ]
   },
@@ -3353,7 +3533,7 @@
    "categorie": "parametres",
    "nom": "autoContinueAtUsageLimit",
    "gabarit": "court",
-   "description": "Réglage de Claude Code : quand une limite d'usage claude.ai arrête la session, celle-ci reste ouverte, attend la réinitialisation puis reprend la tâche automatiquement. L'exemple de la documentation le met à false pour désactiver cette reprise. Il demande Claude Code v2.1.234 ou plus récent.",
+   "description": "Réglage utilisateur (`true` par défaut) : quand une limite d'usage claude.ai arrête la session, celle-ci reste ouverte, attend la remise à zéro et reprend la tâche seule ; il n'est lu que dans les réglages utilisateur, `--settings` ou gérés, et un réglage de projet qui le pose le désactive. Il demande Claude Code v2.1.234 ou plus récent.",
    "description_source": "After a claude.ai usage limit stops your session, wait in the open session and continue the task automatically after the reset. See Turn automatic continue off. Requires Claude Code v2.1.234 or later.",
    "usage": "{\n  \"autoContinueAtUsageLimit\": false\n}",
    "usage_nature": "syntaxe",
@@ -3362,7 +3542,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les limites d'usage reviennent souvent dans tes frictions. Tes sessions Claude Code durables tournent sous tmux et tu les pilotes depuis l'iPhone : une session arrêtée par la limite reprendrait seule à la réinitialisation. Vérifie si le réglage est actif sur ta version."
+    "pourquoi": "Compte et quotas : tes sessions durables reprendraient seules à la remise à zéro et entameraient aussitôt la nouvelle fenêtre ; vérifie la ligne « Continue automatically at usage limit » de `/config`."
    },
    "sources": [
     {
@@ -3375,7 +3555,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3407,38 +3587,95 @@
      "changement": "description corrigée",
      "avant": "Réglage qui fait attendre la session ouverte après une limite d'usage claude.ai, puis reprendre la tâche seule à la réinitialisation (v2.1.234 ou plus).",
      "raison": "recommentaire D128 : L'ancien pourquoi s'appuyait sur des faits non sourcés (herbin-trading, usage sur l'iPhone sans section citée) ; le verdict tester repose désormais sur les sections methode.travai"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Après l'arrêt d'une session par une limite d'usage claude.ai, le réglage fait attendre la session ouverte et reprend la tâche automatiquement après la réinitialisation ; il demande Claude Code v2.1.234 ou plus récent.",
+       "source": "https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire ce réglage ou change son comportement ou la version requise."
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) font partie des frictions récurrentes observées.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire les limites d'usage de la liste des frictions récurrentes."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance tmux et claude --resume avec Remote Control, piloté depuis l'iPhone.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus pilotées à distance."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les limites d'usage reviennent souvent dans tes frictions. Tes sessions Claude Code durables tournent sous tmux et tu les pilotes depuis l'iPhone : une session arrêtée par la limite reprendrait seule à la réinitialisation. Vérifie si le réglage est actif sur ta version."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Compte et quotas : tes sessions durables, arrêtées par la limite, reprendraient seules à la remise à zéro et consommeraient aussitôt la nouvelle fenêtre ; vérifie dans `/config` la ligne « Continue automatically at usage limit » et qu'aucun `.claude/settings.json` de projet ne pose la clé, ce qui la couperait sans le dire."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées."
+     "pourquoi": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Les sessions Claude Code durables tournent sous tmux comme services systemd et sont pilotées depuis l'iPhone."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous tmux, pilotées depuis l'iPhone : une reprise automatique s'y ferait sans témoin."
     }
    },
    "exemple_origine": "compose",
    "provenance": [
     {
-     "affirmation": "Après l'arrêt d'une session par une limite d'usage claude.ai, le réglage fait attendre la session ouverte et reprend la tâche automatiquement après la réinitialisation ; il demande Claude Code v2.1.234 ou plus récent.",
+     "affirmation": "Avec `true` (défaut), après l'arrêt d'une session par une limite d'usage claude.ai, Claude Code attend dans la session ouverte et reprend la tâche après la remise à zéro ; v2.1.234 ou plus récent.",
      "source": "https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire ce réglage ou change son comportement ou la version requise."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation change le comportement, la valeur par défaut ou la version requise."
+    },
+    {
+     "affirmation": "La clé n'est lue que dans les réglages utilisateur, `--settings` et gérés ; un fichier de projet ou local qui la pose désactive la fonction ; elle apparaît dans `/config` comme « Continue automatically at usage limit ».",
+     "source": "https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit",
+     "releve_le": "2026-10-29",
+     "caduc_si": "La portée de la clé ou son libellé dans `/config` change."
     },
     {
      "affirmation": "Les limites d'usage (hebdomadaire et Fable) font partie des frictions récurrentes observées.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire les limites d'usage de la liste des frictions récurrentes."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md retire les limites d'usage des frictions récurrentes."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance tmux et claude --resume avec Remote Control, piloté depuis l'iPhone.",
+     "affirmation": "Les sessions Claude Code durables tournent sous tmux comme services systemd et sont pilotées depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions durables cessent de tourner sous tmux ou ne sont plus pilotées à distance."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Les sessions durables cessent de tourner sous tmux ou d'être pilotées à distance."
     }
    ]
   },
@@ -3775,7 +4012,7 @@
    "categorie": "parametres",
    "nom": "autoUpdatesChannel",
    "gabarit": "court",
-   "description": "Réglage de settings.json qui choisit le canal suivi par les mises à jour automatiques en arrière-plan et par `claude update` : `stable`, une version en général vieille d'environ une semaine qui écarte les versions à régressions majeures, ou `latest`, la plus récente.",
+   "description": "Réglage qui choisit le canal suivi par les mises à jour automatiques et par `claude update` : `latest` par défaut (la plus récente) ou `stable` (en général vieille d'environ une semaine, sans les versions à régression majeure).",
    "description_source": "Choose which release channel background auto-updates and claude update follow. Set \"stable\" for a version that is typically about one week old and skips releases with major regressions, or \"latest\" for the most recent release.",
    "usage": "{\n  \"autoUpdatesChannel\": \"stable\"\n}",
    "usage_nature": "syntaxe",
@@ -3784,7 +4021,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tu mets Claude Code à jour avec `claude update` alors que `autoUpdates` est à `false`. Le réglage s'applique aussi à cette commande : `stable` éviterait d'installer une version à régression sur tes sessions durables `claude-session@<nom>`."
+    "pourquoi": "Tu mets Claude Code à jour avec `claude update`, qui suit ce canal : `stable` éviterait qu'une version à régression touche d'un coup tes sessions durables et la chaîne de nuit D70. Effet de bord : passer à `stable` dans `/config` demande d'accepter un retour en arrière ou fixe `minimumVersion`."
    },
    "sources": [
     {
@@ -3797,7 +4034,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Updates and versioning",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3829,38 +4066,96 @@
      "changement": "description corrigée",
      "avant": "Réglage qui choisit le canal des mises à jour : `stable`, en général une semaine de retard sans les régressions majeures, ou `latest`.",
      "raison": "recommentaire D128 : Le motif disait qu'aucune section de CONTEXTE.md n'était fournie ; la recommandation `tester` est maintenant fondée sur les sections config.claude-code.interface et env.multi-sess"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "autoUpdatesChannel choisit le canal suivi par les mises à jour automatiques en arrière-plan et par `claude update` : `stable` (version d'environ une semaine, sans régressions majeures) ou `latest`.",
+       "source": "https://code.claude.com/docs/en/settings-reference#autoupdateschannel",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire ce réglage ou change les canaux proposés."
+      },
+      {
+       "affirmation": "`~/.claude.json` contient `autoUpdates: false`, mais les mises à jour natives se font depuis le 22/09 par `claude update` ; le mécanisme exact est inconnu.",
+       "source": "contexte:config.claude-code.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Sylvain change de méthode de mise à jour ou le relevé de `~/.claude.json` change."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance `claude --resume` sous tmux, avec démarrage automatique.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables cessent de tourner en services systemd."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tu mets Claude Code à jour avec `claude update` alors que `autoUpdates` est à `false`. Le réglage s'applique aussi à cette commande : `stable` éviterait d'installer une version à régression sur tes sessions durables `claude-session@<nom>`."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "Mises à jour par `claude update` malgré `autoUpdates: false`, mécanisme exact inconnu : le canal suivi par cette commande compte."
+     "pourquoi": "Mises à jour par `claude update` malgré `autoUpdates: false` ; le canal suivi par cette commande compte."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions Claude Code durables en services systemd, pilotées depuis l'iPhone : une régression les toucherait toutes."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions Claude Code durables en services systemd : une régression les toucherait toutes."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "La chaîne D70 lance les étapes Claude Code chaque nuit à 04:00 sur la version installée."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "autoUpdatesChannel choisit le canal suivi par les mises à jour automatiques en arrière-plan et par `claude update` : `stable` (version d'environ une semaine, sans régressions majeures) ou `latest`.",
+     "affirmation": "`autoUpdatesChannel` choisit le canal des mises à jour automatiques et de `claude update` : `latest` par défaut, ou `stable`, version d'environ une semaine sans régression majeure.",
      "source": "https://code.claude.com/docs/en/settings-reference#autoupdateschannel",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire ce réglage ou change les canaux proposés."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La documentation retire ce réglage ou change les canaux ou le défaut."
     },
     {
-     "affirmation": "`~/.claude.json` contient `autoUpdates: false`, mais les mises à jour natives se font depuis le 22/09 par `claude update` ; le mécanisme exact est inconnu.",
+     "affirmation": "Passer de `latest` à `stable` dans `/config` demande d'autoriser un retour en arrière ou de rester sur la version courante, ce qui pose `minimumVersion`.",
+     "source": "https://code.claude.com/docs/en/settings-reference#autoupdateschannel",
+     "releve_le": "2026-10-29",
+     "caduc_si": "Le changement de canal dans `/config` ne pose plus cette question."
+    },
+    {
+     "affirmation": "`~/.claude.json` contient `autoUpdates: false`, mais Claude Code est mis à jour par `claude update` ; le mécanisme exact est inconnu.",
      "source": "contexte:config.claude-code.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Sylvain change de méthode de mise à jour ou le relevé de `~/.claude.json` change."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Sylvain change de méthode de mise à jour."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` qui lance `claude --resume` sous tmux, avec démarrage automatique.",
+     "affirmation": "Chaque session Claude Code durable est un service systemd `claude-session@<nom>` à démarrage automatique.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-29",
      "caduc_si": "Les sessions durables cessent de tourner en services systemd."
+    },
+    {
+     "affirmation": "Le timer `delta-passage.timer` lance chaque jour à 04:00 la chaîne D70, dont les étapes `/delta` et `/delta-kb` passent par Claude Code.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-29",
+     "caduc_si": "La chaîne de nuit n'utilise plus Claude Code ou est arrêtée."
     }
    ]
   },
@@ -6342,7 +6637,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_BRIDGE_SESSION_ID",
    "gabarit": "court",
-   "description": "Variable posée automatiquement dans les sous-processus des outils Bash et des hooks pendant une connexion Remote Control, avec l'identifiant de la session (le même que dans l'URL claude.ai/code), puis retirée à la fin de la connexion.",
+   "description": "Variable posée automatiquement dans les sous-processus de l'outil Bash et des hooks pendant une connexion Remote Control, avec l'identifiant `session_…` de la session (celui de son URL claude.ai/code), puis retirée à la fin de la connexion ; v2.1.199 ou plus récent.",
    "description_source": "Set automatically in Bash tool and hook command subprocesses while the session has an active Remote Control connection, and removed when the connection ends. The value is the session's ID in session_ form, the same identifier that appears in the session's claude.ai/code URL, so a script can link back to the session that ran it. Requires Claude Code v2.1.199 or later. In cloud sessions, read CLAUDE_CODE_REMOTE_SESSION_ID instead",
    "usage": "CLAUDE_CODE_BRIDGE_SESSION_ID",
    "usage_nature": "syntaxe",
@@ -6351,7 +6646,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Toutes tes sessions durables tournent en Remote Control : dans le hook `PermissionDenied` (`operer refus`), lire `$CLAUDE_CODE_BRIDGE_SESSION_ID` permettrait de rattacher un refus à l'URL de sa session ; vérifie d'abord avec `printenv CLAUDE_CODE_BRIDGE_SESSION_ID` dans un appel Bash d'une session."
+    "pourquoi": "Tes sessions durables tournent en Remote Control : `operer refus`, lancé par le hook `PermissionDenied`, pourrait lire `$CLAUDE_CODE_BRIDGE_SESSION_ID` pour rattacher chaque refus à sa session ; vérifie d'abord avec `printenv CLAUDE_CODE_BRIDGE_SESSION_ID` dans un appel Bash d'une session."
    },
    "sources": [
     {
@@ -6364,7 +6659,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6381,55 +6676,97 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "CLAUDE_CODE_BRIDGE_SESSION_ID est posée automatiquement dans les sous-processus de l'outil Bash et des commandes de hooks tant que la session a une connexion Remote Control active ; elle est retirée quand la connexion se termine.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La variable disparaît de la documentation ou n'est plus posée dans les sous-processus des hooks ou de Bash."
+      },
+      {
+       "affirmation": "Sa valeur est l'ID de la session sous la forme session_, le même identifiant que dans l'URL claude.ai/code de la session, pour qu'un script puisse renvoyer à la session qui l'a lancé.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change le format de la valeur ou ne la relie plus à l'URL claude.ai/code."
+      },
+      {
+       "affirmation": "La variable requiert Claude Code v2.1.199 ou ultérieur ; dans les sessions cloud, il faut lire CLAUDE_CODE_REMOTE_SESSION_ID à la place.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation modifie la version minimale ou la variable à lire en session cloud."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` dans tmux, et ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées avec --remote-control."
+      },
+      {
+       "affirmation": "Le seul hook actuel est `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` pour consigner les refus de permission dans OPÉRER, sans modèle.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus ce hook PermissionDenied ou il ne lance plus `operer refus`."
+      },
+      {
+       "affirmation": "Bash est l'outil très dominant de Sylvain, avec environ 2 900 appels au relevé du 25/09.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne présente plus Bash comme l'outil dominant dans l'usage réel."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Toutes tes sessions durables tournent en Remote Control : dans le hook `PermissionDenied` (`operer refus`), lire `$CLAUDE_CODE_BRIDGE_SESSION_ID` permettrait de rattacher un refus à l'URL de sa session ; vérifie d'abord avec `printenv CLAUDE_CODE_BRIDGE_SESSION_ID` dans un appel Bash d'une session."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions lancées avec `--remote-control <nom>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées avec `--remote-control <nom>`."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Hook PermissionDenied qui lance `operer refus`."
+     "pourquoi": "Seul hook : `PermissionDenied`, qui lance `operer refus`."
     }
    },
    "provenance": [
     {
-     "affirmation": "CLAUDE_CODE_BRIDGE_SESSION_ID est posée automatiquement dans les sous-processus de l'outil Bash et des commandes de hooks tant que la session a une connexion Remote Control active ; elle est retirée quand la connexion se termine.",
+     "affirmation": "`CLAUDE_CODE_BRIDGE_SESSION_ID` est posée dans les sous-processus de Bash et des hooks tant que la session a une connexion Remote Control active, avec l'ID `session_` de son URL claude.ai/code ; v2.1.199 ou plus récent.",
      "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La variable disparaît de la documentation ou n'est plus posée dans les sous-processus des hooks ou de Bash."
+     "releve_le": "2026-10-29",
+     "caduc_si": "La variable disparaît de la documentation ou n'est plus posée dans les hooks."
     },
     {
-     "affirmation": "Sa valeur est l'ID de la session sous la forme session_, le même identifiant que dans l'URL claude.ai/code de la session, pour qu'un script puisse renvoyer à la session qui l'a lancé.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change le format de la valeur ou ne la relie plus à l'URL claude.ai/code."
-    },
-    {
-     "affirmation": "La variable requiert Claude Code v2.1.199 ou ultérieur ; dans les sessions cloud, il faut lire CLAUDE_CODE_REMOTE_SESSION_ID à la place.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation modifie la version minimale ou la variable à lire en session cloud."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` dans tmux, et ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+     "affirmation": "Chaque session Claude Code durable exécute `claude --resume <id> --remote-control <nom>` et est pilotée depuis l'iPhone par Remote Control.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables lancées avec --remote-control."
+     "releve_le": "2026-10-29",
+     "caduc_si": "CONTEXTE.md ne décrit plus de sessions durables lancées avec Remote Control."
     },
     {
-     "affirmation": "Le seul hook actuel est `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` pour consigner les refus de permission dans OPÉRER, sans modèle.",
+     "affirmation": "Le seul hook actuel est `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus` pour consigner les refus dans OPÉRER.",
      "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus ce hook PermissionDenied ou il ne lance plus `operer refus`."
-    },
-    {
-     "affirmation": "Bash est l'outil très dominant de Sylvain, avec environ 2 900 appels au relevé du 25/09.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne présente plus Bash comme l'outil dominant dans l'usage réel."
+     "releve_le": "2026-10-29",
+     "caduc_si": "Ce hook est retiré ou ne lance plus `operer refus`."
     }
    ]
   },
