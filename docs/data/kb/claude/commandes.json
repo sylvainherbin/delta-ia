@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-27",
+ "maj_le": "2026-10-29",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 134,
- "commentees": 134,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -369,7 +369,7 @@
    "nom": "/artifacts",
    "gabarit": "complet",
    "description": "Liste les artefacts que tu possèdes ou qui te sont partagés, puis permet d'en attacher un à la session, de l'ouvrir dans le navigateur ou de copier son lien. Disponible là où les artefacts le sont ; demande Claude Code v2.1.208 au moins, et v2.1.216 pour attacher avec Entrée.",
-   "description_source": "List the artifacts you own or that are shared with you, then attach one to the session, open it in your browser, or copy its link. Available where artifacts are. Requires Claude Code v2.1.208 or later; attaching with Enter requires v2.1.216",
+   "description_source": "List the artifacts you own or that are shared with you, then attach one to the session, open it in your browser, or copy its link. Available where artifacts are",
    "usage": "/artifacts",
    "usage_nature": "syntaxe",
    "exemple": "/artifacts",
@@ -386,11 +386,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-26",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -482,6 +482,49 @@
     {
      "date": "2026-10-26",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "List the artifacts you own or that are shared with you, then attach one to the session, open it in your browser, or copy its link. Available where artifacts are. Requires Claude Code v2.1.208 or later; attaching with Enter requires v2.1.216",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/artifacts` liste les artefacts que l'utilisateur possède ou qui lui sont partagés, puis permet d'en attacher un à la session, de l'ouvrir dans le navigateur ou de copier son lien.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-26",
+       "caduc_si": "La commande `/artifacts` disparaît de la documentation ou perd la fonction d'attacher un artefact à la session."
+      },
+      {
+       "affirmation": "`/artifacts` demande Claude Code v2.1.208 au moins ; attacher avec Entrée demande v2.1.216, et la commande n'existe que là où les artefacts sont disponibles.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-26",
+       "caduc_si": "La documentation modifie les versions requises ou la touche utilisée pour attacher un artefact."
+      },
+      {
+       "affirmation": "Design (Claude Design dans Claude Desktop, et session Design sous tmux) construit les interfaces du bureau Delta (`delta-desktop`) et de la console ; il livre sur une branche.",
+       "source": "contexte:methode.juger-design",
+       "releve_le": "2026-10-26",
+       "caduc_si": "CONTEXTE.md ne décrit plus de session Design sous tmux chargée des interfaces Delta."
+      },
+      {
+       "affirmation": "Sylvain utilise Claude Design intensivement et veut en découvrir toutes les possibilités.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-26",
+       "caduc_si": "CONTEXTE.md ne mentionne plus l'usage intensif de Claude Design."
+      },
+      {
+       "affirmation": "Côté Claude, Sylvain utilise les artefacts, les connecteurs et les skills.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-26",
+       "caduc_si": "CONTEXTE.md n'indique plus que Sylvain utilise les artefacts de Claude."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -499,39 +542,7 @@
      "pourquoi": "Claude Design utilisé intensivement pour les interfaces Delta ; souhait d'en découvrir toutes les possibilités."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "`/artifacts` liste les artefacts que l'utilisateur possède ou qui lui sont partagés, puis permet d'en attacher un à la session, de l'ouvrir dans le navigateur ou de copier son lien.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-26",
-     "caduc_si": "La commande `/artifacts` disparaît de la documentation ou perd la fonction d'attacher un artefact à la session."
-    },
-    {
-     "affirmation": "`/artifacts` demande Claude Code v2.1.208 au moins ; attacher avec Entrée demande v2.1.216, et la commande n'existe que là où les artefacts sont disponibles.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-26",
-     "caduc_si": "La documentation modifie les versions requises ou la touche utilisée pour attacher un artefact."
-    },
-    {
-     "affirmation": "Design (Claude Design dans Claude Desktop, et session Design sous tmux) construit les interfaces du bureau Delta (`delta-desktop`) et de la console ; il livre sur une branche.",
-     "source": "contexte:methode.juger-design",
-     "releve_le": "2026-10-26",
-     "caduc_si": "CONTEXTE.md ne décrit plus de session Design sous tmux chargée des interfaces Delta."
-    },
-    {
-     "affirmation": "Sylvain utilise Claude Design intensivement et veut en découvrir toutes les possibilités.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-26",
-     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage intensif de Claude Design."
-    },
-    {
-     "affirmation": "Côté Claude, Sylvain utilise les artefacts, les connecteurs et les skills.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-26",
-     "caduc_si": "CONTEXTE.md n'indique plus que Sylvain utilise les artefacts de Claude."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-auto-mode-setup",

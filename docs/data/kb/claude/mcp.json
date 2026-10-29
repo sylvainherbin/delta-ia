@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-27",
+ "maj_le": "2026-10-29",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 49,
- "commentees": 40,
+ "total": 51,
+ "commentees": 41,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -2328,6 +2328,57 @@
    "exemple_origine": "source"
   },
   {
+   "id": "claude-code-mcp-tools-whose-input-schema-the-api-refuses",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Tools whose input schema the API refuses",
+   "gabarit": "complet",
+   "description": "Si le journal de débogage contient « the API refused this tool's input schema », la ligne nomme un outil MCP dont le schéma d'entrée a été rejeté par l'API. Claude Code renvoie alors la requête avec cet outil déclaré sans paramètres.",
+   "description_source": "If a line in the debug log contains the API refused this tool's input schema, it names a tool whose schema the API rejected in a request. Claude Code resends that request with the tool declared without parameters.",
+   "usage": "the API refused this tool's input schema",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Entrée de diagnostic : aucun refus de schéma sur le serveur MCP delta-ia ou sur un connecteur n'est décrit dans CONTEXTE.md ; à relire seulement si un outil MCP perd ses paramètres."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#tools-whose-input-schema-the-api-refuses",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveur MCP delta-ia et connecteurs de compte ; aucun refus de schéma signalé."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Tools with invalid input schemas",
+   "maj_le": "2026-10-29",
+   "historique": [
+    {
+     "date": "2026-10-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-mcp-use-a-fixed-oauth-callback-port",
    "produit": "claude-code",
    "categorie": "mcp",
@@ -2381,7 +2432,7 @@
    "nom": "Use dynamic headers for custom authentication",
    "gabarit": "complet",
    "description": "`headersHelper` lance une commande à la connexion et fusionne sa sortie dans les en-têtes, pour les authentifications autres qu'OAuth (Kerberos, jetons courts, SSO interne).",
-   "description_source": "If your MCP server uses an authentication scheme other than OAuth, such as Kerberos, short-lived tokens, or an internal SSO, use headersHelper to generate request headers at connection time. Claude Code runs the command and merges its output into the connection headers.",
+   "description_source": "When authentication such as Kerberos, short-lived tokens, or internal SSO needs headers generated at connection time, set the server's headersHelper to a command. Claude Code runs it when connecting and merges its output into the headers it sends. This example uses a script:",
    "usage": "{\n  \"mcpServers\": {\n    \"internal-api\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.internal.example.com\",\n      \"headersHelper\": \"/opt/bin/get-mcp-auth-headers.sh\"\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"mcpServers\": {\n    \"internal-api\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.internal.example.com\",\n      \"headersHelper\": \"/opt/bin/get-mcp-auth-headers.sh\"\n    }\n  }\n}",
@@ -2398,11 +2449,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2415,11 +2466,66 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null,
    "exemple_origine": "source"
+  },
+  {
+   "id": "claude-code-mcp-use-oauth-with-a-server-behind-an-authenticating-proxy",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Use OAuth with a server behind an authenticating proxy",
+   "gabarit": "complet",
+   "description": "Pour un serveur MCP protégé par OAuth derrière un proxy ou une passerelle qui exige son propre en-tête, la connexion échoue si les requêtes OAuth arrivent sans cet en-tête. Claude Code 2.1.299 ou plus permet de configurer l'en-tête avec `--header` et la connexion par le proxy.",
+   "description_source": "If your MCP server uses OAuth behind a proxy or gateway that checks a header of its own, sign-in fails when the OAuth requests arrive without that header. Signing in through the proxy requires Claude Code v2.1.299 or later, with the header and the sign-in both configured:",
+   "usage": "--header",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le seul serveur MCP décrit dans CONTEXTE.md est delta-ia, en HTTP sans proxy d'authentification ; aucun serveur OAuth derrière une passerelle n'est cité."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#use-oauth-with-a-server-behind-an-authenticating-proxy",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur MCP delta-ia en HTTP, ajouté en portée locale ; aucun serveur OAuth derrière un proxy."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Authenticate with remote MCP servers",
+   "maj_le": "2026-10-29",
+   "historique": [
+    {
+     "date": "2026-10-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-use-pre-configured-oauth-credentials",

@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-27",
+ "maj_le": "2026-10-29",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 669,
- "commentees": 627,
+ "total": 671,
+ "commentees": 625,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -7316,7 +7316,7 @@
    "nom": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "gabarit": "court",
    "description": "Variable qui désactive toutes les tâches d'arrière-plan, y compris Ctrl+B.",
-   "description_source": "Set to 1 to remove the run_in_background parameter from the Bash, PowerShell, and subagent tools and to turn off the Ctrl+B shortcut and background runs of forked skills. Claude Code then also stops moving subagents, long MCP tool calls, and timed-out shell commands to the background automatically. MCP tasks and the Monitor tool still run in the background",
+   "description_source": "Set to 1 to remove the run_in_background parameter from the Bash, PowerShell, and subagent tools and to turn off the Ctrl+B shortcut and background runs of forked skills. Claude Code then also stops moving subagents, long MCP tool calls, and timed-out shell commands to the background automatically. MCP tasks and the Monitor tool still run in the background. To turn off background sessions too, set CLAUDE_CODE_DISABLE_AGENT_VIEW to 1",
    "usage": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7337,7 +7337,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7349,6 +7349,10 @@
     },
     {
      "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-29",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -9136,7 +9140,7 @@
    "nom": "CLAUDE_CODE_EFFORT_LEVEL",
    "gabarit": "court",
    "description": "Variable qui fixe le niveau d'effort (low à max, ou auto) et l'emporte sur `--effort`, `/effort` et les réglages par modèle.",
-   "description_source": "Set the effort level for supported models. Values: low, medium, high, xhigh, max, or auto to use the model default. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. A maxEffortLevel cap still applies. See Adjust effort level",
+   "description_source": "Set the effort level for supported models. Values: low, medium, high, xhigh, or max. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. A maxEffortLevel cap still applies. Set it to auto or unset to have Claude Code send no effort level, so that the API applies its own default for the model. See Adjust effort level",
    "usage": "CLAUDE_CODE_EFFORT_LEVEL",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9153,11 +9157,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9170,6 +9174,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -9730,6 +9738,57 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-even-more-dangerously-skip-permissions",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS",
+   "gabarit": "court",
+   "description": "Variable d'environnement à 1 : en mode bypassPermissions, les commandes `rm` dangereuses s'exécutent sans demande de confirmation, ce qui retire une sécurité sur les suppressions destructrices. À définir dans l'environnement qui lance Claude Code (ignorée dans le bloc `env` de settings.json) ; exige Claude Code 2.1.311 ou plus.",
+   "description_source": "Set to 1 to run dangerous rm commands with no prompt in bypassPermissions mode, which removes a safety prompt for destructive deletes. The linked section lists where it has no effect. Set it in the environment that launches Claude Code, because Claude Code ignores it in a settings env block. Requires Claude Code v2.1.311 or later",
+   "usage": "CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions locales tournent en bypassPermissions depuis le 06/10 (sauf trading), mais aucun blocage sur un `rm` n'est décrit dans CONTEXTE.md ; retirer une sécurité de suppression sans cas à résoudre n'apporte rien, et trading-sim reste hors de ce régime."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading ; un blocage est traité comme un problème d'exécution."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-29",
+   "historique": [
+    {
+     "date": "2026-10-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-exit-after-stop-delay",
@@ -13044,6 +13103,57 @@
    ],
    "contexte_empreinte": "789fff5e880e374b22b04c6d23ab18aa32035e7e",
    "contexte_sections": {}
+  },
+  {
+   "id": "claude-code-parametres-claude-code-resume-shows-cut-off-calls",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS",
+   "gabarit": "court",
+   "description": "Variable d'environnement à 1 : les appels d'outils interrompus, marqués « cut off », sont gardés dans un tour que `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` fait reprendre ; sans elle, ils sont retirés. Les appels aux sous-agents, skills et workflows restent retirés. Exige Claude Code 2.1.309 ou plus.",
+   "description_source": "Set to 1 to keep interrupted tool calls, marked as cut off, in a turn that CLAUDE_CODE_RESUME_INTERRUPTED_TURN continues. When unset, those calls are dropped before the turn continues. Some calls stay dropped, such as calls to subagents, skills, workflows, and tools that wait on a person. For the VS Code chat panel, see Continue conversations after a reload. Requires Claude Code v2.1.309 or later",
+   "usage": "CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions durables reprennent avec `claude --resume <id>`, mais CONTEXTE.md ne décrit ni tour interrompu à la reprise ni usage de `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` ; sans ce besoin, pas de scénario d'essai nommé."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées par `claude --resume <id> --remote-control <nom>` sous systemd et tmux."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-10-29",
+   "historique": [
+    {
+     "date": "2026-10-29",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-retry-watchdog",
@@ -21474,7 +21584,7 @@
    "nom": "forceLoginMethod",
    "gabarit": "court",
    "description": "Réglage qui restreint le type de compte de connexion : `claudeai`, `console` ou `gateway`.",
-   "description_source": "Restrict which kind of account people can log in with. Set \"claudeai\" to allow only claude.ai accounts, \"console\" to allow only Claude Console accounts, or \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization. If you set it to \"claudeai\" or \"console\" in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to.",
+   "description_source": "Restrict which kind of account people can log in with. Set \"claudeai\" to allow only claude.ai accounts, \"console\" to allow only Claude Console accounts, or \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization.",
    "usage": "{\n  \"forceLoginMethod\": \"claudeai\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21491,11 +21601,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21512,6 +21622,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -30470,7 +30584,7 @@
    "nom": "sandbox.filesystem.disabled",
    "gabarit": "court",
    "description": "Réglage qui garde l'isolation réseau du bac à sable mais lève celle du système de fichiers.",
-   "description_source": "Skip filesystem isolation while keeping network isolation. Sandboxed commands get unrestricted read and write access to the host filesystem, and their network egress stays confined to network.allowedDomains. Use it when you sandbox to control where commands connect rather than what they write. Requires Claude Code v2.1.216 or later.",
+   "description_source": "Skip filesystem isolation while keeping network isolation. Sandboxed commands get unrestricted read and write access to the host filesystem, and their network egress stays confined to network.allowedDomains. Use it when you sandbox to control where commands connect rather than what they write.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"filesystem\": {\n      \"disabled\": true\n    },\n    \"network\": {\n      \"allowedDomains\": [\"github.com\", \"*.npmjs.org\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -30487,11 +30601,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30508,6 +30622,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -34427,7 +34545,7 @@
    "nom": "workflowSizeGuideline",
    "gabarit": "court",
    "description": "Réglage du nombre d'agents visé par Claude dans ses workflows, transmis comme conseil : `small` (moins de 5), `medium` (moins de 10), `large` (moins de 50).",
-   "description_source": "Set the agent count Claude aims for in the dynamic workflows it writes. Claude Code sends the value to Claude as advice, not an enforced cap: \"small\" asks for fewer than 5 agents, \"medium\" fewer than 10, and \"large\" fewer than 50. Choose \"small\" when you want to bound what a workflow spends. Requires Claude Code v2.1.219 or later.",
+   "description_source": "Set the agent count Claude aims for in the dynamic workflows it writes. Claude Code sends the value to Claude as advice, not an enforced cap: \"small\" asks for fewer than 5 agents, \"medium\" fewer than 10, and \"large\" fewer than 50. Choose \"small\" when you want to bound what a workflow spends.",
    "usage": "{\n  \"workflowSizeGuideline\": \"small\"\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"workflowSizeGuideline\": \"small\"\n}",
@@ -34444,11 +34562,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Hooks and automation",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-29",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34481,6 +34599,55 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set the agent count Claude aims for in the dynamic workflows it writes. Claude Code sends the value to Claude as advice, not an enforced cap: \"small\" asks for fewer than 5 agents, \"medium\" fewer than 10, and \"large\" fewer than 50. Choose \"small\" when you want to bound what a workflow spends. Requires Claude Code v2.1.219 or later.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-29",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le paramètre workflowSizeGuideline fixe le nombre d'agents que Claude vise dans les workflows dynamiques qu'il écrit ; la valeur est transmise à Claude comme conseil, pas comme plafond imposé.",
+       "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le paramètre disparaît de la documentation ou devient une limite imposée."
+      },
+      {
+       "affirmation": "La valeur \"small\" demande moins de 5 agents, \"medium\" moins de 10 et \"large\" moins de 50.",
+       "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change les valeurs acceptées ou les seuils d'agents associés."
+      },
+      {
+       "affirmation": "La documentation conseille de choisir \"small\" pour borner ce qu'un workflow dépense.",
+       "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire cette recommandation sur \"small\"."
+      },
+      {
+       "affirmation": "Le paramètre exige Claude Code v2.1.219 ou ultérieure.",
+       "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation modifie la version minimale requise."
+      },
+      {
+       "affirmation": "Selon la consigne de Sylvain du 04/10, les workflows multi-agents (outil Workflow) ne se lancent que sur son accord.",
+       "source": "contexte:config.claude-code.sous-agents",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus cette consigne ou autorise les workflows sans accord."
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées dans le travail de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage parmi les frictions récurrentes."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -34494,45 +34661,7 @@
      "pourquoi": "Limites d'usage parmi les frictions récurrentes."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "Le paramètre workflowSizeGuideline fixe le nombre d'agents que Claude vise dans les workflows dynamiques qu'il écrit ; la valeur est transmise à Claude comme conseil, pas comme plafond imposé.",
-     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le paramètre disparaît de la documentation ou devient une limite imposée."
-    },
-    {
-     "affirmation": "La valeur \"small\" demande moins de 5 agents, \"medium\" moins de 10 et \"large\" moins de 50.",
-     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change les valeurs acceptées ou les seuils d'agents associés."
-    },
-    {
-     "affirmation": "La documentation conseille de choisir \"small\" pour borner ce qu'un workflow dépense.",
-     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire cette recommandation sur \"small\"."
-    },
-    {
-     "affirmation": "Le paramètre exige Claude Code v2.1.219 ou ultérieure.",
-     "source": "https://code.claude.com/docs/en/settings-reference#workflowsizeguideline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation modifie la version minimale requise."
-    },
-    {
-     "affirmation": "Selon la consigne de Sylvain du 04/10, les workflows multi-agents (outil Workflow) ne se lancent que sur son accord.",
-     "source": "contexte:config.claude-code.sous-agents",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus cette consigne ou autorise les workflows sans accord."
-    },
-    {
-     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes observées dans le travail de Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage parmi les frictions récurrentes."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-worktree",

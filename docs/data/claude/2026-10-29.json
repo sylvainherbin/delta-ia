@@ -1,0 +1,541 @@
+{
+  "date": "2026-10-29",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-29T03:10:00+00:00",
+  "synthese": "Compte et quotas : deux pages d'aide suivies changent de texte, sans modifier tes limites : la page Agent SDK reformule ce que couvrent les crédits API mensuels de Max (`claude -p` avec ton forfait puise toujours dans les limites de l'abonnement) et les pages Claude Code avec Pro ou Max passent à un parcours centré sur Claude Desktop ; Claude Code 2.1.312 rebaptise la fenêtre de 5 heures « 5-hour limit » dans ses messages, sans changer sa durée. Relevé du 29/10 à 03 h UTC : Claude session 5 h à 10 % (remise à zéro à 03 h 10 UTC), semaine à 78 % (remise à zéro le 01/11 à 16 h UTC), semaine Fable à 0 %, ChatGPT semaine à 11 % (remise à zéro le 04/11 vers 19 h UTC) ; aucun quota n'atteint le seuil D71 de 80 %. Claude Code 2.1.312 est déjà installée et à jour : elle corrige `claude -p` sans sortie quand un nom de commande est invalide (chaîne de nuit D70) et un affichage Remote Control erroné (sessions durables pilotées depuis l'iPhone). Le reste du jour est sans effet sur ton usage : quatre incidents résolus sur les connecteurs Gmail et Calendar et sur Sonnet 5.5, deux billets Enterprise et Google Cloud, et des annonces sectorielles écartées ; 107 notes de la plateforme ont été réécrites seulement dans leur typographie et sont écartées. Le passage du 28/10 n'a pas abouti (journal : « sortie Claude illisible ») : celui-ci reprend aussi les nouveautés du 28/10, dont aucune ne touche aux limites, aux crédits ni aux tarifs.",
+  "sources_en_echec": [],
+  "elements": [
+    {
+      "id": "claude-aide-agent-sdk-forfait-article",
+      "ids_bruts": [
+        "claude-aide-agent-sdk-forfait-article"
+      ],
+      "produit": "claude",
+      "titre": "Aide Agent SDK avec le forfait Claude : la mise à jour du 07/10 est reformulée, les crédits API mensuels de Max couvrent `claude -p` seulement avec une clé de l'organisation Console liée",
+      "version": null,
+      "date_publication": null,
+      "type": "amelioration",
+      "revision": true,
+      "resume": "La mise à jour du 07/10 de la page d'aide « Use the Claude Agent SDK with your Claude plan » est réécrite. Les crédits API mensuels de Max et Team couvrent l'API Claude, Claude Managed Agents, ainsi que l'Agent SDK et `claude -p` lancés avec une clé API de l'organisation Console liée ; ajoutée : « Nothing changes for your plan: when you're signed in with your Claude plan, the Claude Agent SDK and claude -p still draw from your subscription limits » ; retirée : la phrase qui citait aussi les applications tierces parmi les usages avec les limites de l'abonnement. Le paragraphe du 15/06 (changements suspendus ; Agent SDK, `claude -p` et applications tierces puisent toujours dans les limites de l'abonnement) reste sur la page. Aucune date, aucun chiffre nouveau.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan#use-the-claude-agent-sdk-with-your-claude-plan",
+          "libelle": "Claude Agent SDK avec le forfait Claude — page d'aide",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tes limites ne changent pas : la page reformule ce que couvrent les crédits API mensuels de Max et redit que `claude -p` connecté avec ton forfait puise dans les limites de l'abonnement. Tu es sur Max (20x) à l'essai jusqu'au 07/11 ; la chaîne de nuit D70 (étapes Claude lancées par `claude -p`) et JUGER (rôles LLM appelés par `claude -p`) pèsent donc sur tes limites hebdomadaires, la semaine Claude étant à 78 % le 29/10 à 03 h UTC, sous le seuil D71 de 80 %. Les crédits API mensuels ne couvrent `claude -p` que lancé avec une clé API de l'organisation Console liée, jamais avec la connexion à ton forfait ; la mention des applications tierces a quitté la mise à jour du 07/10 mais figure toujours dans le paragraphe du 15/06.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun geste de compte pour cette reformulation ; revérifier le 2026-11-05 (aucune échéance publiée) la page Agent SDK, avant le bilan d'usage de ton essai Max (20x) du 07/11.",
+        "etapes": [
+          "Le 2026-11-05, ouvre la page d'aide Agent SDK (URL de la source) et relis la phrase « Nothing changes for your plan… » ; résultat attendu : elle dit toujours que `claude -p` connecté avec ton forfait puise dans les limites de l'abonnement, donc `scripts/passage-auto.sh` reste inchangé."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Max 20x à l'essai jusqu'au 07/11, bilan d'usage à préparer ; forfait concerné par la page."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes /delta et /delta-kb lancées en `claude -p` sur l'abonnement."
+        }
+      }
+    },
+    {
+      "id": "claude-aide-claude-code-pro-max-article",
+      "ids_bruts": [
+        "claude-aide-claude-code-pro-max-article",
+        "claude-aide-limites-claude-code-article"
+      ],
+      "produit": "claude",
+      "titre": "Aides Claude Code (forfait Pro ou Max, modèles et limites) : parcours centré sur Claude Desktop, authentification limitée au terminal et à l'IDE, limites inchangées",
+      "version": null,
+      "date_publication": null,
+      "type": "amelioration",
+      "revision": true,
+      "resume": "Page « Use Claude Code with your Pro or Max plan » réécrite : Claude Code est « included in Claude Desktop » ; chemin recommandé = télécharger Claude Desktop, se connecter avec le forfait et ouvrir l'onglet « Code » (rien d'autre à installer) ; l'installation dans le terminal devient l'alternative ; l'étape d'authentification est marquée « terminal and IDE only » ; la connexion IDE se fait avec les identifiants de Claude Desktop ou du terminal. Les sections sur la limite de 5 heures, la limite hebdomadaire et la limite Fable hebdomadaire, partagées entre Claude et Claude Code, ne changent pas. Page « Models, usage, and limits in Claude Code » : deux libellés changent (siège Claude Enterprise connecté « through Claude Desktop, or /login in the terminal » ; test de `/clear` : « brand-new session » au lieu de « brand-new terminal »). Aucune date, aucun chiffre nouveau.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan#use-claude-code-with-your-pro-or-max-plan",
+          "libelle": "Claude Code avec un plan Pro ou Max — page d'aide",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code#models-usage-and-limits-in-claude-code",
+          "libelle": "Modèles, usage et limites dans Claude Code — page d'aide",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tes limites ne changent pas : les sections sur la limite de 5 heures, la limite hebdomadaire et la limite Fable hebdomadaire, communes à Claude et à Claude Code, sont inchangées. Tu utilises déjà Claude Code en installation native dans le terminal et Claude Desktop en mode Claude Code pour Claude Design (CONTEXTE.md) : la page recommande désormais ce second chemin et réserve l'étape d'authentification explicite au terminal et à l'IDE. La ligne sur les sièges Enterprise ne te concerne pas, ton forfait étant Max (20x) à l'essai jusqu'au 07/11.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun geste de compte pour ces deux pages ; revérifier le 2026-11-05 (aucune échéance publiée) la section sur les limites de la page Claude Code avec Pro ou Max, avant le bilan d'usage de ton essai Max (20x) du 07/11.",
+        "etapes": [
+          "Le 2026-11-05, ouvre la page d'aide « Use Claude Code with your Pro or Max plan » (URL de la première source) et relis la section « What happens when you hit usage limits » ; résultat attendu : la limite de 5 heures, la limite hebdomadaire et la limite Fable hebdomadaire restent communes à Claude et à Claude Code."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Max 20x à l'essai jusqu'au 07/11 ; forfait concerné par les deux pages."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Desktop en mode Claude Code utilisé intensivement pour Claude Design."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.312",
+      "ids_bruts": [
+        "claude-code-2.1.312"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.312 : « 5-hour limit » dans les messages de limite, `claude -p` sans sortie corrigé, correctif Remote Control, écrasement d'un très gros CLAUDE.md évité",
+      "version": "2.1.312",
+      "date_publication": "2026-10-27",
+      "type": "correction",
+      "resume": "Limites : les messages de limite appellent la fenêtre de 5 heures « 5-hour limit » au lieu de « session limit » (aussi dans VS Code, avec l'heure de remise à zéro) ; aucun quota ne change. Correctifs : un nom de commande invalide ne bloque plus le chargement de toutes les commandes, ce qui pouvait laisser `claude -p` sans sortie ; Claude n'écrase plus un très gros CLAUDE.md, fichier de règles ou fichier inclus par @ d'un sous-dossier après n'en avoir vu que le début (Write demande de le lire en entier ou de le modifier sur place) ; les skills par dossier et `paths:` sont trouvés après un `cd` dans un sous-dossier d'un dépôt ; une session Remote Control désarchivée s'affiche « idle » au lieu de « working » tant qu'un ordinateur ne s'est pas reconnecté ; le spinner, les valeurs OpenTelemetry `effort` et les transcriptions nomment le niveau d'effort en vigueur, pas celui choisi pendant une tâche. Changements : au plus 24 hooks de prompt et d'agent en parallèle par session, `autoCompactWindow` d'un sous-agent abaisse `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (effet nul avant), bascule automatique de modèle après un message signalé étendue aux noms de modèle inconnus (`CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1` la coupe), prompt système court pour les noms de modèle inconnus sur Bedrock, Vertex, Foundry et Mantle (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` garde le prompt complet), fin de l'événement OpenTelemetry `claude_code.safety_event`. Ajouts : `oidc.user_id_claim` pour la passerelle des apps Claude, clic sur « to send now » en plein écran ; plusieurs points VS Code, sessions cloud, Claude Tag et Code Review.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21312",
+          "libelle": "Claude Code 2.1.312",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Tes limites ne changent pas : seul le libellé du message de limite de 5 heures change (« 5-hour limit »). Tes sessions durables sont lancées avec `claude --resume <id> --remote-control <nom>` et pilotées depuis l'iPhone : le correctif de l'état « working » d'une session Remote Control désarchivée les concerne, et la version installée est déjà la 2.1.312 (`versions.json`). La chaîne de nuit D70 lance `/delta` et `/delta-kb` en `claude -p` : le correctif d'un nom de commande invalide qui pouvait laisser `claude -p` sans sortie ne joue que pour un fichier de commande de ce genre, et CONTEXTE.md ne décrit aucune commande slash perso. L'écrasement d'un très gros CLAUDE.md ou fichier de règles d'un sous-dossier ne touche que ce cas précis, que CONTEXTE.md ne décrit pas. Un seul hook est décrit chez toi (`PermissionDenied`), très loin des 24 hooks parallèles, et ni la passerelle des apps Claude, ni Bedrock, Vertex, Foundry, VS Code, Claude Tag ou Code Review ne sont décrits comme utilisés ; tu n'as aucun crédit Claude Code cloud (décision du 21/10).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Contrôler la version des sessions durables ; revérifier le 2026-10-30, aucune échéance publiée, le libellé « 5-hour limit » dans un message de limite.",
+        "etapes": [
+          "Dans la session du chef delta-ia (`claude-session@<nom>`), tape `/status` ; résultat attendu : `2.1.312`, sinon cette session garde l'ancien binaire (sans le correctif Remote Control) jusqu'à sa prochaine relance."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-status",
+        "claude-code-commandes-usage",
+        "claude-code-commandes-remote-control",
+        "claude-code-parametres-claude-code-disable-refusal-fallback",
+        "claude-code-parametres-claude-code-simple-system-prompt",
+        "claude-code-parametres-claude-code-auto-compact-window"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Max 20x à l'essai : fenêtre de 5 heures et limites hebdomadaires concernées."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables Remote Control pilotées depuis l'iPhone."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes /delta et /delta-kb lancées en `claude -p`."
+        }
+      }
+    },
+    {
+      "id": "anthropic-status-0q89dylg9vjk",
+      "ids_bruts": [
+        "anthropic-status-0q89dylg9vjk"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Sonnet 5.5 (27/10, environ 40 minutes)",
+      "version": null,
+      "date_publication": "2026-10-27",
+      "type": "nouveaute",
+      "resume": "Un incident d'impact « major » a produit des erreurs élevées sur les requêtes vers Claude Sonnet 5.5 le 27/10, ouvert à 09 h 14 UTC, correctif déployé à 09 h 38 UTC et marqué résolu à 09 h 56 UTC. Composants touchés : claude.ai, l'API Claude, Claude Code et Claude Cowork. La page de statut ne donne pas la cause.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/0q89dylg9vjk",
+          "libelle": "Claude status — Elevated errors for Claude Sonnet 5.5",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-lqhknfdjrcst",
+      "ids_bruts": [
+        "anthropic-status-lqhknfdjrcst"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Sonnet 5.5 (27/10, 35 minutes d'impact)",
+      "version": null,
+      "date_publication": "2026-10-27",
+      "type": "nouveaute",
+      "resume": "Un second incident d'impact « major » a produit des erreurs élevées sur les requêtes vers Claude Sonnet 5.5 le 27/10, de 14 h 42 à 15 h 17 UTC (ouvert à 15 h 09 UTC, résolu à 15 h 50 UTC). Composants touchés : claude.ai, l'API Claude, Claude Code et Claude Cowork. La page de statut ne donne pas la cause.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/lqhknfdjrcst",
+          "libelle": "Claude status — Elevated errors for Claude Sonnet 5.5",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-9ftx658xtd5z",
+      "ids_bruts": [
+        "anthropic-status-9ftx658xtd5z"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur le connecteur Gmail (27/10 au 28/10, environ 6 heures)",
+      "version": null,
+      "date_publication": "2026-10-28",
+      "type": "nouveaute",
+      "resume": "Un incident d'impact « minor » a produit des erreurs élevées à la recherche et à la lecture de courriels par le connecteur Gmail, de 23 h 00 UTC le 27/10 à 05 h 29 UTC le 28/10 ; les autres connecteurs n'étaient pas touchés. Composants touchés : claude.ai, Claude Code et Claude Cowork. Résolu à 05 h 48 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/9ftx658xtd5z",
+          "libelle": "Claude status — Elevated errors affecting the Gmail connector",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-phg1y2yh07n2",
+      "ids_bruts": [
+        "anthropic-status-phg1y2yh07n2"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur le connecteur Google Calendar (26/10 au 28/10, environ 2 jours)",
+      "version": null,
+      "date_publication": "2026-10-28",
+      "type": "nouveaute",
+      "resume": "Un incident d'impact « minor » a fait échouer une partie des requêtes de liste et de recherche d'événements du connecteur Google Calendar, de 11 h 07 UTC le 26/10 à 18 h 52 UTC le 28/10 ; l'incident a été ouvert le 28/10 à 16 h 19 UTC, avec un fournisseur en amont, et résolu à 20 h 05 UTC. Composants touchés : claude.ai, Claude Code et Claude Cowork.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/phg1y2yh07n2",
+          "libelle": "Claude status — Elevated errors affecting the Google Calendar connector",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/smart-reports-surveys-pooled-budgets",
+      "ids_bruts": [
+        "https://claude.com/blog/smart-reports-surveys-pooled-budgets"
+      ],
+      "produit": "claude",
+      "titre": "Claude Enterprise : rapports intelligents, enquêtes intégrées et budgets de groupe mutualisés, en disponibilité générale",
+      "version": null,
+      "date_publication": "2026-10-28",
+      "type": "actu",
+      "resume": "Trois fonctions deviennent disponibles pour Claude Enterprise : des rapports qui analysent un échantillon des conversations d'une équipe et en chiffrent le coût, des enquêtes dans l'application et un budget partagé par équipe fixé par les administrateurs. Elles s'adressent aux administrateurs d'une organisation Enterprise ; le billet ne donne aucun changement de limite ni de tarif pour les forfaits individuels.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/smart-reports-surveys-pooled-budgets",
+          "libelle": "Smart reports, surveys, and pooled group budgets for Claude Enterprise",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/how-to-manage-costs-and-demonstrate-roi-for-claude-code-on-google-cloud",
+      "ids_bruts": [
+        "https://claude.com/blog/how-to-manage-costs-and-demonstrate-roi-for-claude-code-on-google-cloud"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code sur Google Cloud : maîtriser les coûts et démontrer le retour sur investissement (contrôler, suivre, prouver)",
+      "version": null,
+      "date_publication": "2026-10-27",
+      "type": "actu",
+      "resume": "Billet de bonnes pratiques de 17 minutes pour les organisations qui déploient Claude Code sur Google Cloud : budgets et alertes par projet, plafonds de dépense en préversion, quotas par famille de modèle, débit provisionné, et suivi par la passerelle des apps Claude, un service auto-hébergé livré dans le binaire `claude`. Il s'adresse aux équipes plateforme ; aucun changement de limite ni de tarif pour les forfaits individuels.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/how-to-manage-costs-and-demonstrate-roi-for-claude-code-on-google-cloud",
+          "libelle": "Manage costs and demonstrate ROI for Claude Code on Google Cloud",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-even-more-dangerously-skip-permissions",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-even-more-dangerously-skip-permissions"
+      ],
+      "produit": "claude-code",
+      "titre": "Base : ajout de la fiche « CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS » (paramètres)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle fiche de la base, catégorie paramètres : la variable d'environnement `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1` fait exécuter sans demande de confirmation les commandes `rm` dangereuses en mode bypassPermissions ; elle se définit dans l'environnement qui lance Claude Code, pas dans le bloc `env` de settings.json, et exige Claude Code 2.1.311 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-even-more-dangerously-skip-permissions"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-resume-shows-cut-off-calls",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-resume-shows-cut-off-calls"
+      ],
+      "produit": "claude-code",
+      "titre": "Base : ajout de la fiche « CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS » (paramètres)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle fiche de la base, catégorie paramètres : la variable d'environnement `CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS=1` garde, marqués « cut off », les appels d'outils interrompus dans un tour que `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` fait reprendre ; sans elle, ces appels sont retirés avant la reprise. Exige Claude Code 2.1.309 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-resume-shows-cut-off-calls"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-use-oauth-with-a-server-behind-an-authenticating-proxy",
+      "ids_bruts": [
+        "kb-claude-code-mcp-use-oauth-with-a-server-behind-an-authenticating-proxy"
+      ],
+      "produit": "claude-code",
+      "titre": "Base : ajout de la fiche « Use OAuth with a server behind an authenticating proxy » (MCP)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle fiche de la base, catégorie mcp : pour un serveur MCP en OAuth derrière un proxy qui exige son propre en-tête, Claude Code 2.1.299 ou plus permet de configurer cet en-tête (`--header`) et la connexion par le proxy. Elle s'adresse à qui connecte un serveur MCP protégé de cette façon.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#use-oauth-with-a-server-behind-an-authenticating-proxy",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-use-oauth-with-a-server-behind-an-authenticating-proxy"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-tools-whose-input-schema-the-api-refuses",
+      "ids_bruts": [
+        "kb-claude-code-mcp-tools-whose-input-schema-the-api-refuses"
+      ],
+      "produit": "claude-code",
+      "titre": "Base : ajout de la fiche « Tools whose input schema the API refuses » (MCP)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Nouvelle fiche de la base, catégorie mcp : une ligne « the API refused this tool's input schema » dans le journal de débogage nomme un outil MCP dont le schéma d'entrée a été rejeté par l'API ; Claude Code renvoie alors la requête avec l'outil déclaré sans paramètres.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#tools-whose-input-schema-the-api-refuses",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-tools-whose-input-schema-the-api-refuses"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {"id": "anthropic-deprecations-preavis", "raison": "révision de forme (apostrophe typographique), sans changement de fond"},
+    {"id": "x-2115467193626571174", "raison": "post X sans rapport : lien vers l'annonce Claude for Legal, application sectorielle (D24)"},
+    {"id": "x-2115467192276025500", "raison": "post X sans rapport : galerie d'artefacts de Claude for Legal, application sectorielle (D24)"},
+    {"id": "https://claude.com/blog/introducing-artifacts-for-legal-work", "raison": "application sectorielle (artefacts de Claude for Legal), sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"},
+    {"id": "https://claude.com/blog/idc-brings-quanta-into-claude-and-adopts-claude-across-the-company", "raison": "témoignage client d'une entreprise, sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"},
+    {"id": "https://www.anthropic.com/news/ai-for-science-expands-foundations-research-institutions", "raison": "programme sectoriel pour la recherche scientifique, sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"},
+    {"id": "x-2115207004293853358", "raison": "post X sans rapport : remise de 40 % réservée aux administrations américaines, offre sectorielle (D24)"},
+    {"id": "https://www.anthropic.com/news/expanding-partnership-gsa", "raison": "partenariat et offre pour les administrations américaines, sans effet sur les forfaits individuels ni les outils de Sylvain (D24)"},
+    {"id": "https://claude.com/blog/claude-for-financial-advisors", "raison": "application sectorielle (Claude for Financial Advisors), sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"},
+    {"id": "x-2115178675050307942", "raison": "post X sans rapport : recherche en découverte de médicaments, application sectorielle (D24)"},
+    {"id": "https://www.anthropic.com/research/early-progress-drug-development", "raison": "recherche sectorielle (développement de médicaments), sans effet sur les outils ni les conditions d'usage de Sylvain (D24)"},
+    {"id": "claude-platform-notes-2026-10-22", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-21", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-20", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-15", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-14", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-09", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-07", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-06", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-10-01", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-28", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-22", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-18", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-14", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-09", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-09-01", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-26", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-20", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-19", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-11", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-07", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-08-03", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-22", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-14", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-08", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-02", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-07-01", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-30", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-29", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-26", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-25", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-18", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-15", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-09", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-06-02", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-05-28", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-05-19", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-05-13", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-05-11", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-05-04", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-30", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-29", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-20", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-16", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-09", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-04-08", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-03-30", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-03-18", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-03-16", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-03-13", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-02-19", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-02-17", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-02-07", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-02-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2026-01-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-11-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-11-19", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-11-18", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-11-14", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-10-28", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-10-16", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-10-15", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-29", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-17", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-16", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-03", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-09-02", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-08-26", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-08-18", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-08-12", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-08-05", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-07-28", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-07-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-07-21", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-07-17", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-07-03", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-06-11", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-05-22", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-05-07", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-03-31", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-02-27", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-02-24", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-02-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-01-31", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-01-23", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-01-15", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2025-01-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-12-19", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-12-04", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-11-21", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-11-20", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-11-13", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-11-06", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-11-01", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-10-22", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-10-08", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-10-03", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-09-10", "raison": "révision de forme (typographie), sans changement de fond"},
+    {"id": "claude-platform-notes-2024-08-22", "raison": "révision de forme (typographie), sans changement de fond"}
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
