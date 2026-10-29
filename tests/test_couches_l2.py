@@ -21,7 +21,7 @@ from deltalib.couches.generateur import LectureRefusee, LecteurBorne, generer
 from deltalib.couches.lecteur import Lecteur
 from deltalib.couches.projection import ImportImpossible, importer
 from deltalib.couches.sentinelles import Detecteur
-from test_couches import RACINE, _json, depot, instance  # noqa: F401 (fixtures)
+from test_couches import MAINTENANT_FIXTURE, RACINE, _json, depot, instance  # noqa: F401 (fixtures)
 
 SENTINELLE = "sentinelle" + "-privee-l2-7f3a"
 PAGE = """# Commands
@@ -220,7 +220,7 @@ def test_enveloppe_validee_et_hors_empreinte(depot2, instance, tmp_path):
     assert erreurs(lambda f: f["textes"]["description"].update(de={"texte": "x"}))
     assert erreurs(lambda f: f["textes"].update(exemple={"en": {}}))
     # Lecteur : français demandé, sinon repli anglais annoncé ; un avis importé n'est pas périmé par la traduction.
-    lecteur = Lecteur(instance, langue="fr")
+    lecteur = Lecteur(instance, langue="fr", maintenant=MAINTENANT_FIXTURE)
     bloc = lecteur.fiche("kb:claude:claude-code-commandes-a")
     assert bloc["commun"]["textes"]["description"]["langue"] == "fr"
     assert bloc["personnel"]["statut"] == "importe"
@@ -299,21 +299,22 @@ def test_publication_route_versionnee(depot2, instance, tmp_path):
 def test_miroir_hors_ligne_echec_reseau_et_304(depot2, instance, tmp_path, serveur):
     route, url, httpd = serveur
     importer(depot2, instance, detecteur=Detecteur())
-    publication.publier(instance, route)
+    t = MAINTENANT_FIXTURE
+    publication.publier(instance, route, maintenant=t)
     lectrice = _lectrice(tmp_path)
-    assert publication.synchroniser(lectrice, url)["statut"] == "nouvelle"
-    assert publication.synchroniser(lectrice, url)["statut"] == "inchange"  # 304 sur If-Modified-Since
+    assert publication.synchroniser(lectrice, url, maintenant=t)["statut"] == "nouvelle"
+    assert publication.synchroniser(lectrice, url, maintenant=t)["statut"] == "inchange"  # 304 sur If-Modified-Since
     httpd.shutdown()
     httpd.server_close()
-    lecteur = Lecteur(lectrice, personnel=True)
+    lecteur = Lecteur(lectrice, personnel=True, maintenant=t)
     bloc = lecteur.fiche("claude-code-commandes-winonly")
     assert bloc["commun"]["statut"] == "disponible" and bloc["commun"]["fraicheur"] == "recente"
     assert bloc["personnel"]["statut"] == "non_personnalise"  # instance neuve : aucun avis hérité
     actif = lectrice.commun_actif.read_bytes()
-    echec = publication.synchroniser(lectrice, url)
+    echec = publication.synchroniser(lectrice, url, maintenant=t)
     assert echec["statut"] == "echec" and "réseau" in echec["erreur"]
     assert lectrice.commun_actif.read_bytes() == actif
-    lecteur = Lecteur(lectrice)
+    lecteur = Lecteur(lectrice, maintenant=t)
     assert lecteur.commun_statut == "disponible" and lecteur.fiche("/winonly")["commun"]["derniere_erreur_synchro"]
 
 
@@ -358,6 +359,9 @@ def test_fraicheur_avis_et_surveillance():
     assert publication.fraicheur(t, iso(1), iso(30)) == "ancienne"
     assert publication.fraicheur(t, iso(200), iso(2)) == "tres_ancienne"
     assert publication.fraicheur(t, None, None, "2026-10-23") == "recente"
+    limite = datetime(2026, 10, 28, 23, 59, 59, tzinfo=timezone.utc)
+    assert publication.fraicheur(limite, None, None, "2026-10-21") == "ancienne"
+    assert publication.fraicheur(limite + timedelta(seconds=1), None, None, "2026-10-21") == "tres_ancienne"
     assert publication.fraicheur(t, None, None, None) is None
     index = {"schema": "delta.manifest", "schema_version": 1, "vue": "publication", "generation": "g-" + "0" * 16,
              "manifest_sha256": "0" * 64, "publie_le": iso(2), "precedente": None, "cycle_attendu_h": 24,

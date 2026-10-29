@@ -240,11 +240,12 @@ def test_lecteur_python_memes_regles_que_le_lecteur_local(depot, instance):
 
     from deltalib.couches.lecteur import Lecteur
     from deltalib.couches.projection import importer
+    from test_couches import MAINTENANT_FIXTURE
 
     importer(depot, instance)
     ident = "kb:claude:claude-code-commandes-a"
-    assert Lecteur(instance).fiche(ident)["personnel"]["statut"] == "importe"
-    tard = datetime.now(timezone.utc) + timedelta(days=60)
+    assert Lecteur(instance, maintenant=MAINTENANT_FIXTURE).fiche(ident)["personnel"]["statut"] == "importe"
+    tard = MAINTENANT_FIXTURE + timedelta(days=8)
     p = Lecteur(instance, maintenant=tard).fiche(ident)["personnel"]
     assert (p["statut"], p["motif"]) == ("a_revoir", "commun_tres_ancien")
     instance.commun_actif.unlink()

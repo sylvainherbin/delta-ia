@@ -142,12 +142,13 @@ def test_lecteur_python_avis_a_revoir_en_precedent(depot, instance):
 
     from deltalib.couches.lecteur import Lecteur
     from deltalib.couches.projection import importer
+    from test_couches import MAINTENANT_FIXTURE
 
     importer(depot, instance)
     ident = "kb:claude:claude-code-commandes-a"
-    p = Lecteur(instance).fiche(ident)["personnel"]
+    p = Lecteur(instance, maintenant=MAINTENANT_FIXTURE).fiche(ident)["personnel"]
     assert p["statut"] == "importe" and p["avis"]["recommandation"] and "avis_precedent" not in p
-    p = Lecteur(instance, maintenant=datetime.now(timezone.utc) + timedelta(days=60)).fiche(ident)["personnel"]
+    p = Lecteur(instance, maintenant=MAINTENANT_FIXTURE + timedelta(days=8)).fiche(ident)["personnel"]
     assert p["statut"] == "a_revoir" and p["avis"] is None and p["avis_precedent"]["recommandation"]
 
 

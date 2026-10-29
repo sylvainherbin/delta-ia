@@ -3,6 +3,7 @@
 import hashlib
 import json
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,7 @@ CHEMIN = "/home/" + "sentinelle/projets/secret"
 MISSION = "m-" + "0123456789ab"
 PROJET = "projet-sentinelle"
 ID_URL = "https://exemple.org/2026/oct/billet"  # id de veille actu : une URL, qui contient « : »
+MAINTENANT_FIXTURE = datetime(2026, 10, 22, 12, tzinfo=timezone.utc)  # données du 21 octobre
 
 
 def _json(chemin: Path, doc) -> None:
@@ -206,7 +208,7 @@ def test_import_separe_les_couches(depot, instance):
 
 def test_import_retrouve_avis_et_essais(depot, instance):
     importer(depot, instance, _detecteur())
-    bloc = Lecteur(instance).fiche("claude-code-commandes-a")["personnel"]
+    bloc = Lecteur(instance, maintenant=MAINTENANT_FIXTURE).fiche("claude-code-commandes-a")["personnel"]
     assert bloc["statut"] == "importe"
     assert bloc["avis"]["recommandation"] == {"verdict": "tester", "pourquoi": "Pour ton projet."}
     assert bloc["essais"] == [{"date": "2026-10-21", "par": MISSION, "rapport": "rapports/x.md", "source": "kb-essais.yaml"}]
