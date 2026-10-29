@@ -11,7 +11,11 @@ Pour chaque étape, sans aucun LLM :
    10, 13, 14, 15 ou toute autre erreur = la chaîne s'arrête (la supervision reste lancée) ;
 2. étapes kb : sautées (code interne 129) quand aucun lot n'est dû ;
 3. lancement dans son propre groupe de processus, sous délai maximal ; dépassement ou échec : SIGTERM puis SIGKILL sur tout le
-   groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`) ;
+   groupe (un enfant ne survit pas), puis arrêt propre limité aux chemins de l'étape (`git checkout --` et `git clean -f --`).
+   Exception Claude, hors supervision : délai dépassé ou résultat illisible après livraison de TOUS les commits attendus
+   dans origin/main, arbre déjà propre AVANT nettoyage, intégrité git et comptes conformes : « livrée sans retour »,
+   code 0 avec le diagnostic du transport conservé ; les validations habituelles tournent et la chaîne continue.
+   Un commit manquant (dont delta(actu)) reste nommé dans l'échec ; aucune livraison partielle n'est promue en succès ;
 4. succès d'une étape Claude : code 0, JSON lisible, `subtype` success, `is_error` faux ; étape Codex : code 0. Le code 0 ne
    suffit jamais (`codex exec` rend 0 même quand l'agent s'arrête sur une erreur) : le résultat produit doit être conforme
    (`resultat_incomplet`, code 133 sinon) : chaque commit attendu présent, arbre propre, aucun compte d'éléments nul alors que le
@@ -204,7 +208,10 @@ def commande_claude(cfg: dict, e: dict, racine: Path, prompt: str, *, mode: str 
     mode = mode or cfg["claude"].get("mode", "abonnement")
     if mode not in ("cle", "abonnement"):
         raise ValueError(f"claude.mode inconnu : {mode!r} (cle ou abonnement attendu)")
-    c = ([_chemin(cfg["claude"]["bin_cle"]), "--usage", e["usage"]] if mode == "cle"
+    # Le lanceur commun a un défaut de 600 s destiné aux appels courts. L'orchestrateur possède le délai
+    # de l'étape : le garde-fou interne reste borné mais expire après notre arrêt du groupe.
+    c = ([_chemin(cfg["claude"]["bin_cle"]), "--usage", e["usage"], "--delai",
+          str(e["delai_min"] * 60 + cfg["chaine"]["arret_delai_s"] + 1)] if mode == "cle"
          else [_chemin(cfg["claude"]["bin"])])
     c += ["-p", prompt, "--permission-mode", "bypassPermissions",
          "--strict-mcp-config", "--output-format", "json"]
@@ -412,11 +419,30 @@ def evaluer_claude(res: Resultat) -> tuple[int, str]:
         d = json.loads(res.stdout)
     except ValueError:
         return (res.code if res.code else 1), cause_sans_json(res)
+    if not isinstance(d, dict):
+        return (res.code if res.code else 1), cause_sans_json(res)
     if res.code != 0:
         return res.code, f"code de sortie {res.code}"
     if d.get("is_error") or d.get("subtype") != "success":
         return 1, f"résultat Claude en erreur (subtype {d.get('subtype')!r}, is_error {d.get('is_error')!r})"
     return 0, "ok"
+
+
+def sans_retour_claude(res: Resultat) -> bool:
+    """Transport interrompu ou résultat illisible ; une erreur structurée ou un refus du lanceur reste fatal.
+
+    Le vieux lanceur rend 2, stderr TimeoutExpired et stdout vide, sans positionner delai_depasse.
+    Un JSON success reçu avant un délai (enfant gardant un tube ouvert) peut aussi être récupéré.
+    Ce prédicat ne vaut jamais preuve de livraison : tous les contrôles portent ensuite sur le dépôt.
+    """
+    try:
+        doc = json.loads(res.stdout)
+    except ValueError:
+        doc = None
+    if isinstance(doc, dict) and ("subtype" in doc or "is_error" in doc):
+        return res.delai_depasse and doc.get("subtype") == "success" and not doc.get("is_error")
+    return (res.delai_depasse or res.code == 0 or bool(res.stdout.strip())
+            or (res.code == 2 and res.stderr.strip() == "claude-cle : claude : appel impossible (TimeoutExpired)"))
 
 
 def evaluer(etape: Etape, res: Resultat) -> tuple[int, str]:
@@ -840,6 +866,17 @@ class Chaine:
             code = CODE_PERMISSION
         jouees: list[str] = []
         etat = etat_depot(racine, self.distant)
+        # Avant tout checkout/clean : un nettoyage ne doit pas transformer un travail inachevé en livraison.
+        if etape.agent == "claude" and not etape.supervision and code != 0 and sans_retour_claude(res):
+            cause = resultat_incomplet(racine, etape, self.jour, avant, debut, etat)
+            if not etape.commits_attendus:
+                cause = "aucun commit attendu déclaré pour cette étape"
+            elif etat["en_avance"] != 0:
+                cause = (cause + " ; " if cause else "") + "commits non poussés ou origin/main illisible"
+            if cause:
+                detail += " ; livraison non conforme : " + cause
+            elif not refus:
+                code, detail = 0, "livrée sans retour : " + detail + " ; tous les commits attendus poussés, arbre propre"
         stop = False
         if etat["index_lock"]:  # D21 : jamais supprimé par l'orchestrateur
             code, detail, stop = CODE_ETAT, ".git/index.lock présent après l'étape : non supprimé (D21)", True

@@ -106,6 +106,41 @@ elif mode == "refus-lanceur":   # D76b : le lanceur s'arrête avant Claude, code
     print("claude-cle : claude : --permission-mode bypassPermissions refusé en mode non interactif", file=sys.stderr); sys.exit(2)
 elif mode == "verrou-git":
     ecrire(".git/index.lock", ""); claude_ok()
+elif mode == "livraison-130":
+    sortie, etat = sys.argv[2:4]
+    if etat != "sans-commit":
+        passage("docs/data/claude", "livre.json", pousser=etat != "non-pousse",
+                sujet="delta(claude): 2026-10-02 — 1 éléments (0 fort)")
+        if etat != "partiel":
+            passage("docs/data/actu", "livre.json", pousser=etat != "non-pousse",
+                    sujet="delta(actu): 2026-10-02 — 1 éléments (0 fort)")
+    if etat in ("sale", "sale-nettoyable"):
+        ecrire("notes.txt" if etat == "sale" else "docs/data/claude/index.json", "non commité\n")
+    elif etat == "config":
+        open(".git/config", "a").write("[alias]\n\tci = !echo piège\n")
+    elif etat == "hook":
+        ecrire(".git/hooks/pre-commit", "#!/bin/sh\nexit 0\n")
+    elif etat == "verrou":
+        ecrire(".git/index.lock", "")
+    elif etat == "sans-origin":
+        git("update-ref", "-d", "refs/remotes/origin/main")
+    elif etat == "nul":
+        ecrire("raw/claude-nouveautes.json", json.dumps({"nouveautes": 13}))
+        ecrire("docs/data/claude/2026-10-02.json", json.dumps({"elements": [], "ecartes": []}))
+        git("add", "docs/data/claude"); git("commit", "-qm", "compte nul contradictoire")
+        git("push", "-q", "origin", "HEAD:refs/heads/main")
+    if sortie == "delai":
+        time.sleep(60)
+    elif sortie == "timeout-lanceur":
+        print("claude-cle : claude : appel impossible (TimeoutExpired)", file=sys.stderr); sys.exit(2)
+    elif sortie == "illisible":
+        print("sortie tronquée de Claude"); sys.exit(2)
+    elif sortie == "scalaire":
+        print("[]")
+    elif sortie == "erreur-json":
+        print(json.dumps({"subtype": "error_max_turns", "is_error": True}))
+    elif sortie == "refus-lanceur":
+        print("claude-cle : claude : --permission-mode bypassPermissions refusé en mode non interactif", file=sys.stderr); sys.exit(2)
 elif mode == "dort":
     subprocess.Popen([sys.executable, "-c", "import os, time; open(sys.argv[1] + '.pid', 'w').write(str(os.getpid())); time.sleep(4); open(sys.argv[1], 'w').write('survivant')", sys.argv[2]])
     time.sleep(60)
@@ -612,6 +647,78 @@ def test_sortie_claude_illisible_fait_echouer_l_etape(depot, cfg):
     assert codes(depot)["delta"] != 0
 
 
+# Fiche 130 : faux claude-cle, origin local, tous les fichiers sous tmp_path.
+def livraison_130(depot, cfg, sortie, etat="complet", *, attendus=("delta(claude):", "delta(actu):"), distant=True):
+    faux = depot.parent / "claude-cle"
+    faux.write_text(f"#!{sys.executable}\n" + FAUX_AGENT)
+    faux.chmod(0o755)
+    e = etape(depot, "delta", "livraison-130", sortie, etat, delai=2, attendus=attendus,
+              checkout=["docs/data/claude", "docs/data/actu"], clean=["docs/data/claude", "docs/data/actu"])
+    e.commande = [str(faux), "livraison-130", sortie, etat]
+    e.valider = ["claude", "actu"]
+    # La validation réellement exécutée écrit seulement son témoin dans le dépôt temporaire.
+    (depot / "scripts/valider.py").write_text(
+        "import pathlib, sys\np = sys.argv[sys.argv.index('--perimetre') + 1]\n"
+        "pathlib.Path('rapports/valide-' + p).write_text('oui')\n"
+        "sys.exit(1 if pathlib.Path('rapports/invalide').exists() else 0)\n")
+    depot.sh("git", "add", "scripts/valider.py")
+    depot.sh("git", "commit", "-qm", "validation de test")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    suivant = etape(depot, "codex-delta", "ok-codex", "docs/data/openai", "suite.json", agent="codex", garde="codex-delta")
+    controle = etape(depot, "supervision", "supervision", supervision=True)
+    return chaine(depot, cfg, [e, suivant, controle], distant=distant)
+
+
+@pytest.mark.parametrize("sortie", ["delai", "timeout-lanceur", "illisible", "scalaire"])
+def test_130_livree_sans_retour_continue_et_valide(depot, cfg, sortie):
+    c = livraison_130(depot, cfg, sortie)
+    assert c.executer() == 0
+    assert codes(depot)["delta"] == codes(depot)["codex-delta"] == codes(depot)["supervision"] == 0
+    assert "livrée sans retour" in c.issues[0].detail
+    assert "livrée sans retour" in (depot / "rapports/auto/2026-10-02-delta.log").read_text()
+    assert (depot / "rapports/valide-claude").exists() and (depot / "rapports/valide-actu").exists()
+    assert (depot / "docs/data/openai/suite.json").exists() and ahead(depot) == 0
+
+
+@pytest.mark.parametrize("sortie", ["delai", "timeout-lanceur", "illisible"])
+@pytest.mark.parametrize("etat", ["sans-commit", "partiel"])
+def test_130_sans_livraison_complete_arrete_et_nomme_actu(depot, cfg, sortie, etat):
+    c = livraison_130(depot, cfg, sortie, etat)
+    assert c.executer() == 1 and c.issues[0].arret_chaine
+    assert c.issues[1].code == orc.CODE_NON_LANCEE and c.issues[2].ok
+    assert "delta(actu):" in c.issues[0].detail
+    assert "livrée sans retour" not in c.issues[0].detail
+    if sortie == "delai":
+        assert c.issues[0].code == orc.CODE_DELAI
+
+
+@pytest.mark.parametrize("etat", ["non-pousse", "sale", "sale-nettoyable", "config", "hook", "verrou", "sans-origin", "nul"])
+def test_130_livraison_ne_masque_aucune_non_conformite(depot, cfg, etat):
+    c = livraison_130(depot, cfg, "timeout-lanceur", etat, distant=etat != "sans-origin")
+    assert c.executer() == 1 and c.issues[0].arret_chaine
+    assert "livrée sans retour" not in c.issues[0].detail
+    assert c.issues[1].code == orc.CODE_NON_LANCEE
+
+
+def test_130_sans_attendus_declares_ne_recupere_pas(depot, cfg):
+    c = livraison_130(depot, cfg, "timeout-lanceur", attendus=())
+    assert c.executer() == 1 and c.issues[0].arret_chaine
+
+
+@pytest.mark.parametrize("sortie", ["erreur-json", "refus-lanceur"])
+def test_130_erreur_explicite_reste_fatale_meme_apres_livraison(depot, cfg, sortie):
+    c = livraison_130(depot, cfg, sortie)
+    assert c.executer() == 1 and c.issues[0].arret_chaine
+
+
+def test_130_validation_echouee_apres_livraison_continue_en_echec(depot, cfg):
+    c = livraison_130(depot, cfg, "timeout-lanceur")
+    (depot / "rapports/invalide").touch()
+    assert c.executer() == 1
+    assert c.issues[0].code == orc.CODE_VALIDATION and not c.issues[0].arret_chaine
+    assert codes(depot)["codex-delta"] == 0
+
+
 REFUS_LANCEUR = "claude-cle : claude : --permission-mode bypassPermissions refusé en mode non interactif\n"
 
 
@@ -860,7 +967,8 @@ def test_commande_cle_exacte_et_repli_abonnement(nom, usage):
     prompt = (RACINE / e["prompt_fichier"]).read_text() if "prompt_fichier" in e else e["prompt"]
     permissions = json.loads((RACINE / (e["settings"] if nom == "supervision" else ".claude/settings.json")).read_text())["permissions"]
     contexte = "\n\n".join(f"# {f}\n{(RACINE / f).read_text()}" for f in ("CLAUDE.md", "REGLES.md"))
-    attendu = [os.path.expanduser("~/.local/bin/claude-cle"), "--usage", usage, "-p", prompt,
+    attendu = [os.path.expanduser("~/.local/bin/claude-cle"), "--usage", usage,
+               "--delai", str(e["delai_min"] * 60 + cfg["chaine"]["arret_delai_s"] + 1), "-p", prompt,
                "--permission-mode", "bypassPermissions", "--strict-mcp-config", "--output-format", "json",
                "--model", e["modele"], "--effort", e["effort"],
                "--setting-sources", "" if nom == "supervision" else "project",

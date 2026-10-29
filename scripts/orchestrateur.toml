@@ -30,6 +30,10 @@ bin_cle = "~/.local/bin/claude-cle"
 # (project ignore allow dans une copie non approuvée). Supervision : mêmes listes CLI, aucune source project,
 # sans --settings (réservé à apiKeyHelper). Code 5 : repli unique sur abonnement après nouvelle garde complète,
 # journal <étape>-repli-abonnement, code 5 ; les quotas abonnement redeviennent applicables.
+# Nécessite claude-cle avec --delai (source versionnée : discipline/outils/lanceurs/claude-cle).
+# Son délai interne reçoit delai_min * 60 + arret_delai_s + 1 : seule la borne de l'orchestrateur pilote l'arrêt du groupe.
+# Les étapes réussies du 20 au 27/10 durent 368 à 789 s ; le défaut interne de 600 s coupait encore actu le 29.
+# La borne existante de 45 min est conservée, jamais remplacée par un appel sans limite.
 # Chaque étape Claude : -p ... --permission-mode bypassPermissions (D83, décision de Sylvain du 06/10/2026) --strict-mcp-config --output-format json,
 # stdin fermé. Les étapes /delta et /delta-kb ne chargent que les réglages du projet (.claude/settings.json, dont la liste
 # `allow`) ; la supervision n'en charge aucun et reçoit sa propre liste (.claude/supervision.settings.json).
