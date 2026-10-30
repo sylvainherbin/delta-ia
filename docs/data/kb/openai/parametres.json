@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-25",
+ "maj_le": "2026-10-30",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1105,7 +1105,7 @@
    "categorie": "parametres",
    "nom": "agents.max_concurrent_threads_per_session",
    "gabarit": "court",
-   "description": "Borne le nombre de fils de sous-agents ouverts simultanément, hors fil principal, avec un défaut choisi par Codex quand la clé est absente.",
+   "description": "Limite le nombre de fils de sous-agents ouverts simultanément, hors fil principal ; si la clé est absente, Codex choisit la valeur par défaut.",
    "description_source": "Type : number. Maximum number of spawned-agent threads that can be open concurrently, excluding the primary thread. When unset, Codex chooses the default.",
    "usage": "agents.max_concurrent_threads_per_session",
    "usage_nature": "syntaxe",
@@ -1114,7 +1114,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La machine est modeste, mais aucune saturation due aux sous-agents Codex n'est décrite pour justifier une limite persistante."
+    "pourquoi": "Les usages Codex décrits ne donnent aucun problème de concurrence de sous-agents ni scénario d’essai précis qui justifierait ce réglage persistant."
    },
    "sources": [
     {
@@ -1127,7 +1127,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1144,13 +1144,17 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "La machine est modeste et les campagnes lourdes sont bridées par une tranche systemd."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Les usages décrits sont les sessions CLI sous tmux, les audits et les missions non interactives."
     }
    }
   },
