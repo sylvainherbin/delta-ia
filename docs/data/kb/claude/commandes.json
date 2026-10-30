@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -6659,7 +6659,7 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante ; en mode `-p`, l'argument ne vaut que pour la session et n'est pas enregistré.",
+   "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Sans argument, ouvre un sélecteur où `s` sur une ligne ne change que la session courante ; avec `-p`, l'argument de modèle n'est pas enregistré comme défaut (Claude Code 2.1.205 ou plus).",
    "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when the new model starts. Before v2.1.242, it could wait. With -p, pass a model argument, which isn't saved as your default; requires v2.1.205 or later",
    "usage": "/model [model]",
    "usage_nature": "syntaxe",
@@ -6677,7 +6677,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -6814,6 +6814,10 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -6827,7 +6831,27 @@
      "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; sans argument il ouvre un sélecteur où `s` ne change que la session courante ; avec `-p`, l'argument n'est pas enregistré comme défaut.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-30",
+     "caduc_si": "`/model` n'enregistre plus le défaut, la touche `s` disparaît ou le comportement avec `-p` change."
+    },
+    {
+     "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-10-30",
+     "caduc_si": "Sylvain change de modèle par défaut."
+    },
+    {
+     "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service (par exemple `--model opus` pour le chef).",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-30",
+     "caduc_si": "Le modèle n'est plus fixé par rôle au lancement."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-output-style",
