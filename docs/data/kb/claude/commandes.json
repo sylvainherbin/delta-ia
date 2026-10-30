@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-29",
+ "maj_le": "2026-10-30",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,7 +41,7 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 134,
+ "total": 135,
  "commentees": 134,
  "entrees": [
   {
@@ -6660,7 +6660,7 @@
    "nom": "/model",
    "gabarit": "complet",
    "description": "Change de modèle et l'enregistre comme défaut des nouvelles sessions ; les flèches gauche et droite ajustent l'effort quand le modèle le permet. Dans le sélecteur, `s` change seulement pour la session courante ; en mode `-p`, l'argument ne vaut que pour la session et n'est pas enregistré.",
-   "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when Claude Code asks you to confirm the switch. Once you confirm the switch, if Claude Code asks, Claude Code applies the change without waiting for the current response to finish. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Also available in non-interactive mode (-p) with a model argument instead of the picker, where it applies to the current session only and isn't saved as your default; requires Claude Code v2.1.205 or later",
+   "description_source": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when the new model starts. Before v2.1.242, it could wait. With -p, pass a model argument, which isn't saved as your default; requires v2.1.205 or later",
    "usage": "/model [model]",
    "usage_nature": "syntaxe",
    "exemple": "/model opus",
@@ -6677,11 +6677,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6783,6 +6783,37 @@
     {
      "date": "2026-10-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Switch the AI model and save it as your default for new sessions. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press s on a row to switch for the current session only. See when Claude Code asks you to confirm the switch. Once you confirm the switch, if Claude Code asks, Claude Code applies the change without waiting for the current response to finish. Before v2.1.242, Claude Code decided from a feature flag it fetched from Anthropic whether to run the command mid-turn or queue it until the turn finished, and always queued it in a session that doesn't fetch feature flags, such as on a third-party provider. Also available in non-interactive mode (-p) with a model argument instead of the picker, where it applies to the current session only and isn't saved as your default; requires Claude Code v2.1.205 or later",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; `s` dans le sélecteur ne change que la session courante.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-24",
+       "caduc_si": "`/model` n'enregistre plus le défaut ou la touche `s` disparaît"
+      },
+      {
+       "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-24",
+       "caduc_si": "Sylvain change de modèle par défaut"
+      },
+      {
+       "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-24",
+       "caduc_si": "le modèle n'est plus fixé par rôle au lancement"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -6796,27 +6827,7 @@
      "pourquoi": "Modèle propre à chaque rôle, fixé au lancement du service."
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "`/model [model]` change de modèle et l'enregistre comme défaut des nouvelles sessions ; `s` dans le sélecteur ne change que la session courante.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-24",
-     "caduc_si": "`/model` n'enregistre plus le défaut ou la touche `s` disparaît"
-    },
-    {
-     "affirmation": "Le modèle par défaut Sonnet est voulu par Sylvain (30/09).",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-24",
-     "caduc_si": "Sylvain change de modèle par défaut"
-    },
-    {
-     "affirmation": "Chaque rôle a un modèle propre fixé au lancement du service.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-24",
-     "caduc_si": "le modèle n'est plus fixé par rôle au lancement"
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-output-style",
@@ -8326,6 +8337,78 @@
     }
    },
    "exemple_origine": "source"
+  },
+  {
+   "id": "claude-code-commandes-restart",
+   "produit": "claude-code",
+   "categorie": "commandes",
+   "nom": "/restart",
+   "gabarit": "complet",
+   "description": "Redémarre Claude Code et reprend la session en cours, ce qui applique une mise à jour déjà installée ; à lancer quand le pied de page le propose après l'installation d'une mise à jour. Exige un forfait Pro ou Max et une installation native sur macOS ou Linux (pas WSL), Claude Code 2.1.288 ou plus ; alias : `/update`.",
+   "description_source": "Restart Claude Code and resume this session, which applies an installed update. Run it when the footer offers it after an update installs. Requires a Pro or Max plan and a native install on macOS or Linux, not WSL. Requires Claude Code v2.1.288 or later. Alias: /update",
+   "usage": "/restart",
+   "usage_nature": "syntaxe",
+   "exemple": "/restart",
+   "disponibilite": "Pro et Max ; installation native sur macOS ou Linux, pas WSL",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tes sessions durables mettent Claude Code à jour avec `claude update` (installation native, Max 20x) : après une mise à jour, `/restart` dans la session du chef delta-ia doit reprendre la même session sans la fermer à la main ; à vérifier que le pilotage Remote Control depuis l'iPhone reste connecté après le redémarrage."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.interface": {
+     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+     "pourquoi": "Mises à jour natives suivies avec `claude update` ; installation native de Claude Code."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` pilotées depuis l'iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-10-30",
+   "historique": [
+    {
+     "date": "2026-10-30",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/restart` redémarre Claude Code, reprend la session et applique une mise à jour installée ; il exige un forfait Pro ou Max, une installation native sur macOS ou Linux et Claude Code 2.1.288 ou plus ; alias `/update`.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-10-30",
+     "caduc_si": "La syntaxe, l'alias ou les prérequis de `/restart` changent dans la documentation."
+    },
+    {
+     "affirmation": "Claude Code est une installation native mise à jour avec `claude update` (autoUpdates à false).",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'installation native ni les mises à jour par `claude update`."
+    },
+    {
+     "affirmation": "Les sessions durables sont lancées par `claude --resume <id> --remote-control <nom>` et pilotées depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md change le lancement des sessions durables ou le pilotage à distance."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-resume",

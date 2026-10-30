@@ -1,0 +1,267 @@
+{
+  "date": "2026-10-30",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-10-30T03:10:00+00:00",
+  "synthese": "Compte et quotas : ta semaine Claude est à 91 %, au-dessus du seuil D71 (remise à zéro le 01/11 à 16 h UTC) : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Relevé du 30/10 à 03 h UTC : session 5 h à 2 % (remise à zéro à 04 h 20 UTC), semaine Fable à 0 %, ChatGPT semaine à 46 % (remise à zéro le 04/11 vers 19 h UTC) ; aucune page d'aide, offre ou tarif suivi n'a changé aujourd'hui, et le bilan de ton essai Max (20x) reste à préparer avant le 07/11. Claude Code 2.1.314, déjà installée et à jour, ajoute une clé qui fait refuser à Write et Edit les chemins hors des dossiers de travail même en bypassPermissions, et fait sortir `claude -p` en code 1 quand le démarrage échoue (chaîne D70, JUGER) ; elle corrige aussi des défauts de `claude remote-control` et un verrou d'index git pris par le rafraîchissement des diffs. Le reste du jour est sans effet sur ton usage : API de la plateforme (requêtes jusqu'à 128 Mo, API Usage and Cost Analytics) et annonces d'apps mobiles ; la newsroom Anthropic est en échec de lecture.",
+  "sources_en_echec": [
+    {
+      "id": "anthropic-newsroom",
+      "url": "https://www.anthropic.com/news",
+      "erreur": "FormatInattendu: balises <time> hors footer/header sans entrée reconnue : gabarit changé ?",
+      "partiel": false
+    }
+  ],
+  "elements": [
+    {
+      "id": "claude-code-2.1.314",
+      "ids_bruts": [
+        "claude-code-2.1.314"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.314 : clé `permissions.blockWritesOutsideWorkingDirectories`, compaction à l'inactivité (Claude Desktop, VS Code), `claude -p` en code 1 si le démarrage échoue, correctifs Remote Control et verrou d'index git",
+      "version": "2.1.314",
+      "date_publication": "2026-10-30",
+      "type": "nouveaute",
+      "resume": "Ajouts : `permissions.blockWritesOutsideWorkingDirectories` fait refuser à Write, Edit et NotebookEdit les chemins hors des dossiers de travail dans tous les modes de permission ; compaction à l'inactivité dans VS Code et l'onglet Code de Claude Desktop (une conversation de plus de 200 000 jetons laissée inactive est résumée, et le résumé sert au message suivant si le cache de prompt a expiré) ; une liste `groups` et `guardrail_trace` pour la passerelle d'apps Claude (entreprise). Correctifs : `claude -p` sort en code 1 avec l'erreur au lieu de code 0 sans sortie quand le démarrage échoue ; `claude remote-control` réessaie l'enregistrement du worker quand le service de sessions est lent ; les changements de modèle par Remote Control de plus de 8 secondes ne donnent plus d'erreur « still pending » ; les rafraîchissements de diff en arrière-plan ne prennent plus brièvement le verrou d'index git (erreur « Unable to create '.git/index.lock' ») ; « Continue automatically at usage limit » ne continue plus plus de trois fois sans ton accord quand une tâche se relance seule. Changements : les hooks `if` du type `Monitor(tail *)` correspondent aux commandes shell de l'outil Monitor comme `Bash(tail *)` à celles de Bash, le prompt de `/design-sync` montre le dossier, le projet et les fichiers envoyés ou supprimés, `--resume` est plus rapide sur les transcriptions abîmées. Le reste (Bedrock, Vertex, Foundry, Claude Tag, runner auto-hébergé, vim, macOS) ne touche pas ta configuration.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21314",
+          "libelle": "Claude Code 2.1.314",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tes sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading : la clé `permissions.blockWritesOutsideWorkingDirectories` ajoute un garde-fou d'écriture qui vaut aussi dans ce mode, pour Write, Edit et NotebookEdit ; le changelog ne dit rien des écritures par Bash. Elle pourrait cadrer les sessions de développement et la chaîne de nuit D70 sur le dossier de leur dépôt (périmètre d'écriture déjà exigé par D83) sans rétablir les demandes de confirmation ; pour trading-sim, dont le `.claude/settings.json` relève de Work, ce serait une proposition à lui soumettre, pas un réglage à poser ici. Priorité « alléger les limites hebdomadaires » : la compaction à l'inactivité de Claude Desktop (onglet Code, celui de tes sessions Claude Design) remplace le rechargement de plus de 200 000 jetons par un résumé quand le cache a expiré, effet non mesuré et aucun réglage cité ; elle ne couvre ni tes sessions CLI sous tmux, ni `claude -p`. La chaîne D70 et JUGER lancent `claude -p` : un démarrage en échec sort désormais en code 1 avec un message, au lieu de code 0 sans sortie. Tes sessions durables sont lancées par `claude --resume <id> --remote-control <nom>` : les correctifs de `claude remote-control` (enregistrement du worker, changement de modèle de plus de 8 secondes) et la reprise plus rapide de `--resume` leur profitent. Plusieurs sessions et worktrees travaillent sur le même dépôt : le verrou d'index pris par les rafraîchissements de diff pouvait y faire échouer un `git` lancé au même instant, ce qui est corrigé. Tu tapes `/btw` : deux correctifs le concernent (réponse depuis la conversation principale quand il est lancé dans le transcript d'un sous-agent, Esc qui interrompait aussi le sous-agent). `/design-sync` (Console `carnet-console`, en React) affiche mieux ce qu'il envoie ou supprime. Les hooks sur Monitor ne te concernent pas (un seul hook, `PermissionDenied`). Les tâches planifiées cloud chargent désormais les plugins activés sur ton compte claude.ai ; CONTEXTE.md n'en cite aucun.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer `permissions.blockWritesOutsideWorkingDirectories` sur delta-ia une fois sa syntaxe lue dans la base de référence : le changelog ne donne ni valeur ni exemple et la base ne reprend pas encore la clé ; revérifier le 2026-11-02 (aucune échéance publiée), après le prochain passage /delta-kb.",
+        "etapes": [
+          "Le 2026-11-02, lance `grep -n 'blockWritesOutsideWorkingDirectories' docs/data/kb/claude/parametres.json` dans `~/projets/delta-ia` pour lire la syntaxe exacte ; sans fiche, n'écris rien dans un `settings.json`.",
+          "Avec la fiche, ajoute la clé dans `~/projets/delta-ia/.claude/settings.json` ; essai : demande à la session du chef delta-ia d'écrire un fichier de test dans `~/projets/discipline` ; résultat attendu : l'écriture est refusée malgré bypassPermissions, tandis que `raw/` et `docs/data/` du dépôt restent inscriptibles pour la chaîne D70."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-skills-design-sync",
+        "claude-code-commandes-btw",
+        "claude-code-commandes-claude-remote-control",
+        "claude-code-parametres-resume"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading ; seules les limites d'Anthropic s'appliquent."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes Claude de la chaîne D70 lancées en `claude -p`, sous bypassPermissions."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` pilotées depuis l'iPhone."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design dans Claude Desktop (mode Code), `/design-sync` pertinent ; commande `/btw` tapée ; un seul hook."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Une branche et un worktree par mission, plusieurs missions en parallèle sur le même dépôt."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Politique de capacités de trading-sim dans son `.claude/settings.json`, gouvernée par Work."
+        },
+        "methode.juger-design": {
+          "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+          "pourquoi": "Les rôles LLM de JUGER sont appelés par `claude -p`."
+        }
+      }
+    },
+    {
+      "id": "x-2115923971279614171",
+      "ids_bruts": [
+        "x-2115923971279614171",
+        "x-2115923973188034637",
+        "claude-platform-notes-2026-10-28"
+      ],
+      "produit": "claude",
+      "titre": "API Claude : taille maximale d'une requête Messages et Token Counting portée de 32 Mo à 128 Mo",
+      "version": null,
+      "date_publication": "2026-10-28",
+      "type": "amelioration",
+      "resume": "La taille maximale d'une requête vers l'API Messages et l'API Token Counting passe de 32 Mo à 128 Mo sur l'API Claude directe ; via les plateformes cloud, la limite reste entre 20 et 32 Mo. Pour les requêtes de plus de 20 images, la limite par image monte de 2000 px à 3000 px. Notes de la plateforme du 28/10, reprises par @ClaudeDevs le 29/10 (la limite par image ne figure que dans les posts).",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2115923971279614171",
+          "libelle": "@ClaudeDevs — post du 2026-10-29 21:49 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2115923973188034637",
+          "libelle": "@ClaudeDevs — post du 2026-10-29 21:49 UTC (suite)",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-29",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-29"
+      ],
+      "produit": "claude",
+      "titre": "API Usage and Cost Analytics en bêta ; l'API Usage and Cost et les rapports d'usage de l'API Analytics Enterprise passent en « legacy »",
+      "version": null,
+      "date_publication": "2026-10-29",
+      "type": "nouveaute",
+      "resume": "L'API Usage and Cost Analytics est lancée en bêta avec l'en-tête `analytics-usage-cost-2026-08-24` : ses points d'accès `/v1/organizations/analytics/usage` et `/v1/organizations/analytics/cost` rapportent l'usage en jetons et le coût des organisations Claude Console et Claude Enterprise, filtrables par modèle, espace de travail, clé API, utilisateur ou compte de service. L'API Usage and Cost et les points d'accès `usage_report`, `cost_report`, `user_usage_report` et `user_cost_report` de l'API Analytics Enterprise deviennent « legacy » mais restent supportés ; des guides de migration existent.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "x-2115859390075113836",
+      "ids_bruts": [
+        "x-2115859390075113836"
+      ],
+      "produit": "claude",
+      "titre": "App Claude sur iPhone et iPad : recherche par glissement vers le bas annoncée « bientôt »",
+      "version": null,
+      "date_publication": "2026-10-29",
+      "type": "nouveaute",
+      "resume": "@claudeai annonce, pour l'app Claude sur iPhone et iPad, une recherche par glissement vers le bas : retrouver une conversation ou un projet passés, atteindre un réglage ou agir sur une conversation depuis les résultats. Annoncé sur X, pas encore confirmé par la documentation ; la publication est marquée « coming soon », sans date.",
+      "sources": [
+        {
+          "url": "https://x.com/claudeai/status/2115859390075113836",
+          "libelle": "@claudeai — post du 2026-10-29 17:32 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu pilotes tes sessions Claude Code depuis l'app Claude sur iPhone (Remote Control) : la recherche par glissement pourrait t'y faire retrouver une session ou un réglage depuis la liste (déduit, non vérifié, la fonction n'est pas encore là). Aucun réglage à poser avant son arrivée.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 2026-11-06 (aucune échéance publiée) si la recherche par glissement est arrivée dans l'app Claude iOS ; aucun geste de compte.",
+        "etapes": [
+          "Le 2026-11-06, sur l'iPhone, tire la liste des conversations de l'app Claude vers le bas ; résultat attendu : un champ de recherche apparaît et retrouve une session Remote Control par son nom (`--remote-control <nom>`) ; sans champ, la fonction n'est pas encore déployée."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "env.machine": {
+          "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+          "pourquoi": "iPhone : pilote le PC à distance (Remote Control de Claude Code, app Claude iOS)."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-commandes-restart",
+      "ids_bruts": [
+        "kb-claude-code-commandes-restart"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : nouvelle commande `/restart` (redémarre Claude Code et reprend la session pour appliquer une mise à jour installée)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La documentation des commandes ajoute `/restart` (alias `/update`) : elle redémarre Claude Code et reprend la session, ce qui applique une mise à jour installée ; à lancer quand le pied de page le propose après l'installation d'une mise à jour. Disponible avec Pro ou Max, pour une installation native sur macOS ou Linux (pas WSL), à partir de Claude Code 2.1.288.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Commandes de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu mets Claude Code à jour avec `claude update` (installation native) et tes sessions durables tournent sous `claude --resume <id> --remote-control <nom>` : `/restart` relancerait la session après une mise à jour sans la fermer à la main. La page ne dit pas si le lien Remote Control avec l'iPhone survit au redémarrage, d'où l'essai.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer `/restart` après la prochaine mise à jour de Claude Code ; aucun geste de compte.",
+        "etapes": [
+          "Après `claude update`, quand le pied de page propose le redémarrage, tape `/restart` dans la session du chef delta-ia ; résultat attendu : la même session reprend avec la nouvelle version (`claude --version` dans un terminal l'affiche) ; vérifie aussi si elle reste pilotable depuis l'iPhone par Remote Control, ce que la page ne dit pas."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-restart"
+      ],
+      "contexte_sections": {
+        "config.claude-code.interface": {
+          "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+          "pourquoi": "Installation native de Claude Code, mises à jour suivies avec `claude update`."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` pilotées depuis l'iPhone."
+        }
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2115871889549865429",
+      "raison": "post X sans rapport : technique interne d'Anthropic d'auto-évaluation pour repérer les mésusages, sans effet sur les outils ni les conditions d'usage de Sylvain"
+    },
+    {
+      "id": "x-2115859391627039210",
+      "raison": "post X sans rapport : question d'engagement de @claudeai, sans information"
+    },
+    {
+      "id": "x-2115859388191912193",
+      "raison": "post X sans rapport : mode vocal iPhone avec CarPlay ; CONTEXTE.md ne décrit aucun usage vocal de l'app Claude"
+    },
+    {
+      "id": "x-2115859386224832956",
+      "raison": "post X sans rapport : améliorations du mode vocal iOS et Android ; aucun usage vocal décrit dans CONTEXTE.md"
+    },
+    {
+      "id": "x-2115859384110915893",
+      "raison": "post X sans rapport : 24 langues de plus dans l'app Claude ; Sylvain travaille en français, déjà pris en charge"
+    },
+    {
+      "id": "x-2115859382152122787",
+      "raison": "post X sans rapport : Claude sur Android en mode ordinateur (Chromebook, pliables) ; Sylvain utilise un iPhone et Claude Desktop"
+    },
+    {
+      "id": "x-2115859380143030507",
+      "raison": "post X sans rapport : plusieurs comptes connectés dans l'app mobile ; CONTEXTE.md ne décrit qu'un abonnement Claude"
+    },
+    {
+      "id": "x-2115859377488072879",
+      "raison": "post X sans rapport : affichage latéral des créations sur iPad et iPhone Duo ; Sylvain n'utilise ni l'un ni l'autre"
+    },
+    {
+      "id": "x-2115825653539025142",
+      "raison": "post X sans rapport : extension du programme AI for Science (application sectorielle, D24)"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
