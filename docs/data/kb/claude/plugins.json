@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-10-23",
+ "maj_le": "2026-10-30",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -2422,7 +2422,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Sur trading-sim, ta priorité, les changements passent par une PR que Codex audite : essaie ces agents sur une seule PR (tests, gestion des erreurs) et compare leurs constats à l'audit Codex. L'essai reste limité à une PR, car tu préfères optimiser l'existant et les audits coûtent déjà cher en jetons."
+    "pourquoi": "Sur trading-sim, les changements passent par une PR que Codex audite : essaie ces agents sur une seule PR (tests, gestion des erreurs) et compare leurs constats à l'audit Codex. Essai limité à une PR, car tu préfères optimiser l'existant et les audits coûtent déjà cher en jetons."
    },
    "sources": [
     {
@@ -2435,7 +2435,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2525,9 +2525,47 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "pr-review-toolkit, d'Anthropic, regroupe des agents de relecture de PR spécialisés dans les commentaires, les tests, la gestion des erreurs, la conception des types, la qualité et la simplification du code.",
+       "source": "https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json",
+       "releve_le": "2026-10-23",
+       "caduc_si": "le plugin est retiré du marketplace ou ses agents changent de spécialités"
+      },
+      {
+       "affirmation": "Sur trading-sim, les commits sont rares et formels et passent par une PR.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-23",
+       "caduc_si": "trading-sim cesse de passer ses changements par des pull requests"
+      },
+      {
+       "affirmation": "Sur trading-sim, Claude Code exécute et Codex fait l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-23",
+       "caduc_si": "Codex cesse d'auditer trading-sim"
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Sur trading-sim, ta priorité, les changements passent par une PR que Codex audite : essaie ces agents sur une seule PR (tests, gestion des erreurs) et compare leurs constats à l'audit Codex. L'essai reste limité à une PR, car tu préfères optimiser l'existant et les audits coûtent déjà cher en jetons."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -2536,10 +2574,6 @@
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Codex fait l'audit adversarial sur trading-sim ; le plugin serait une relecture complémentaire."
-    },
-    "profil": {
-     "sha1": "44514141d0cfc91514e18feff928d71b96be3ba9",
-     "pourquoi": "trading-sim est la priorité déclarée."
     },
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
@@ -2550,20 +2584,20 @@
     {
      "affirmation": "pr-review-toolkit, d'Anthropic, regroupe des agents de relecture de PR spécialisés dans les commentaires, les tests, la gestion des erreurs, la conception des types, la qualité et la simplification du code.",
      "source": "https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json",
-     "releve_le": "2026-10-23",
-     "caduc_si": "le plugin est retiré du marketplace ou ses agents changent de spécialités"
+     "releve_le": "2026-10-30",
+     "caduc_si": "Le plugin est retiré du marketplace ou ses agents changent de spécialités."
     },
     {
      "affirmation": "Sur trading-sim, les commits sont rares et formels et passent par une PR.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-23",
-     "caduc_si": "trading-sim cesse de passer ses changements par des pull requests"
+     "releve_le": "2026-10-30",
+     "caduc_si": "trading-sim cesse de passer ses changements par des pull requests."
     },
     {
      "affirmation": "Sur trading-sim, Claude Code exécute et Codex fait l'audit adversarial.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-23",
-     "caduc_si": "Codex cesse d'auditer trading-sim"
+     "releve_le": "2026-10-30",
+     "caduc_si": "Codex cesse d'auditer trading-sim."
     }
    ]
   },
@@ -2633,7 +2667,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "trading-sim est en Python 3.12 : Claude verrait les erreurs de type dès l'édition, sans lancer les tests `unittest` ; un serveur de langage de plus pèserait toutefois sur une machine modeste."
+    "pourquoi": "trading-sim est en Python 3.12 avec la bibliothèque standard : installe le plugin, fais modifier un module par Claude et vérifie qu'il signale les erreurs de type dès l'édition, avant les tests `unittest`."
    },
    "sources": [
     {
@@ -2646,7 +2680,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2679,44 +2713,72 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le plugin pyright-lsp fournit le serveur de langage Python Pyright pour la vérification des types et l'intelligence de code.",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la description du plugin change ou le plugin disparaît du dépôt claude-plugins-official"
+      },
+      {
+       "affirmation": "Le plugin s'installe avec la commande `/plugin install pyright-lsp@claude-plugins-official`.",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la commande d'installation change de syntaxe ou le plugin est retiré de la place de marché officielle"
+      },
+      {
+       "affirmation": "Le projet trading-sim est écrit en Python 3.12 avec la bibliothèque standard et des tests `unittest`.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou sa stack ne repose plus sur Python ou unittest"
+      },
+      {
+       "affirmation": "La machine de Sylvain est un portable HP avec un AMD A10-7300 à 4 cœurs et 14 Gio de RAM, décrite comme modeste.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md décrit une autre machine ou ne la qualifie plus de modeste"
+      }
+     ],
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "trading-sim est en Python 3.12 : Claude verrait les erreurs de type dès l'édition, sans lancer les tests `unittest` ; un serveur de langage de plus pèserait toutefois sur une machine modeste."
+     },
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
      "pourquoi": "Python 3.12, bibliothèque standard, tests unittest."
-    },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Machine modeste : 4 cœurs, 14 Gio de RAM."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
      "affirmation": "Le plugin pyright-lsp fournit le serveur de langage Python Pyright pour la vérification des types et l'intelligence de code.",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la description du plugin change ou le plugin disparaît du dépôt claude-plugins-official"
+     "source": "https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json",
+     "releve_le": "2026-10-30",
+     "caduc_si": "La description du plugin change ou le plugin disparaît du marketplace claude-plugins-official."
     },
     {
-     "affirmation": "Le plugin s'installe avec la commande `/plugin install pyright-lsp@claude-plugins-official`.",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/pyright-lsp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la commande d'installation change de syntaxe ou le plugin est retiré de la place de marché officielle"
-    },
-    {
-     "affirmation": "Le projet trading-sim est écrit en Python 3.12 avec la bibliothèque standard et des tests `unittest`.",
+     "affirmation": "trading-sim est écrit en Python 3.12 avec la bibliothèque standard et des tests `unittest`.",
      "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce projet ou sa stack ne repose plus sur Python ou unittest"
-    },
-    {
-     "affirmation": "La machine de Sylvain est un portable HP avec un AMD A10-7300 à 4 cœurs et 14 Gio de RAM, décrite comme modeste.",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md décrit une autre machine ou ne la qualifie plus de modeste"
+     "releve_le": "2026-10-30",
+     "caduc_si": "La stack de trading-sim ne repose plus sur Python ou unittest."
     }
    ]
   },
@@ -3110,7 +3172,7 @@
    "categorie": "plugins",
    "nom": "session-report",
    "gabarit": "complet",
-   "description": "Plugin qui génère un rapport HTML explorable de l'usage des sessions Claude Code : jetons, efficacité du cache, sous-agents, skills et prompts les plus coûteux, à partir des transcripts locaux.",
+   "description": "Plugin qui génère un rapport HTML explorable de l'usage des sessions Claude Code : jetons, efficacité du cache, sous-agents, skills et prompts les plus coûteux, à partir des transcripts locaux de `~/.claude/projects`.",
    "description_source": "Generate an explorable HTML report of Claude Code session usage — tokens, cache efficiency, subagents, skills, and the most expensive prompts — from local ~/.claude/projects transcripts.",
    "usage": "/plugin install session-report@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -3119,7 +3181,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour le bilan d'usage du Max (20x) à l'essai, à préparer avant le 03/11 (renouvellement le 07/11) : générer le rapport et vérifier quelles sessions et quels prompts consomment le plus, pour décider du forfait et des modèles par rôle."
+    "pourquoi": "Bilan du Max (20x) à l'essai à préparer avant le 03/11 (renouvellement le 07/11) : installe le plugin et génère le rapport d'ici là pour voir quelles sessions et quels prompts consomment le plus, et décider du forfait et des modèles par rôle."
    },
    "sources": [
     {
@@ -3129,10 +3191,10 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Max (20x) à l'essai depuis le 07/10, bilan d'usage avant le 07/11 (date du 03/11 venue de Delta)."
     },
     "methode.travail": {
@@ -3147,7 +3209,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-26",
@@ -3176,45 +3238,90 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le plugin session-report génère un rapport HTML explorable de l'usage des sessions Claude Code : tokens, cache efficiency, subagents, skills et les prompts les plus coûteux (most expensive prompts).",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La description du plugin ne mentionne plus ces métriques ou le plugin disparaît du dépôt claude-plugins-official."
+      },
+      {
+       "affirmation": "Le rapport est construit à partir des transcripts locaux situés dans ~/.claude/projects.",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le plugin change de source de données ou ne lit plus les transcripts de ~/.claude/projects."
+      },
+      {
+       "affirmation": "Le plugin s'installe avec la commande /plugin install session-report@claude-plugins-official.",
+       "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le plugin est renommé, retiré de la marketplace claude-plugins-official ou la syntaxe d'installation change."
+      },
+      {
+       "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois, renouvellement le 07/11, avec un bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'essai du Max (20x) ou le bilan d'usage a été fait ou abandonné."
+      },
+      {
+       "affirmation": "Les limites d'usage (hebdomadaire et Fable) et le coût en jetons des prompts d'audit très longs figurent parmi les frictions récurrentes de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage ni le coût en jetons des prompts d'audit parmi les frictions."
+      },
+      {
+       "affirmation": "La consommation Fable/Opus approche les plafonds hebdomadaires ; le choix du modèle et du niveau d'effort par session (Sonnet pour les tâches machine simples) pourrait étaler la charge.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La piste 11 sur la limite Fable est retirée ou la consommation n'approche plus les plafonds."
+      }
+     ],
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour le bilan d'usage du Max (20x) à l'essai, à préparer avant le 03/11 (renouvellement le 07/11) : générer le rapport et vérifier quelles sessions et quels prompts consomment le plus, pour décider du forfait et des modèles par rôle."
+     },
+     "raison": "section:profil"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Le plugin session-report génère un rapport HTML explorable de l'usage des sessions Claude Code : tokens, cache efficiency, subagents, skills et les prompts les plus coûteux (most expensive prompts).",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La description du plugin ne mentionne plus ces métriques ou le plugin disparaît du dépôt claude-plugins-official."
+     "affirmation": "Le plugin session-report génère un rapport HTML explorable de l'usage des sessions Claude Code (jetons, efficacité du cache, sous-agents, skills, prompts les plus coûteux) à partir des transcripts locaux de ~/.claude/projects.",
+     "source": "https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/.claude-plugin/marketplace.json",
+     "releve_le": "2026-10-30",
+     "caduc_si": "La description du plugin change ou le plugin disparaît du marketplace claude-plugins-official."
     },
     {
-     "affirmation": "Le rapport est construit à partir des transcripts locaux situés dans ~/.claude/projects.",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le plugin change de source de données ou ne lit plus les transcripts de ~/.claude/projects."
-    },
-    {
-     "affirmation": "Le plugin s'installe avec la commande /plugin install session-report@claude-plugins-official.",
-     "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le plugin est renommé, retiré de la marketplace claude-plugins-official ou la syntaxe d'installation change."
-    },
-    {
-     "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois, renouvellement le 07/11, avec un bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
+     "affirmation": "Abonnement Claude Max (20x) pris le 07/10/2026 à l'essai d'un mois, renouvellement le 07/11, bilan d'usage à préparer avant le 07/11 (date du 03/11 venue de Delta).",
      "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'essai du Max (20x) ou le bilan d'usage a été fait ou abandonné."
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne décrit plus l'essai du Max (20x) ou le bilan est fait.",
+     "revoir_le": "2026-11-03"
     },
     {
-     "affirmation": "Les limites d'usage (hebdomadaire et Fable) et le coût en jetons des prompts d'audit très longs figurent parmi les frictions récurrentes de Sylvain.",
+     "affirmation": "Les limites d'usage (hebdomadaire et Fable) figurent parmi les frictions récurrentes de Sylvain.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage ni le coût en jetons des prompts d'audit parmi les frictions."
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne liste plus les limites d'usage parmi les frictions."
     },
     {
-     "affirmation": "La consommation Fable/Opus approche les plafonds hebdomadaires ; le choix du modèle et du niveau d'effort par session (Sonnet pour les tâches machine simples) pourrait étaler la charge.",
+     "affirmation": "Piste 11 : la consommation approche les plafonds hebdomadaires ; le choix du modèle et de l'effort par session pourrait étaler la charge.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La piste 11 sur la limite Fable est retirée ou la consommation n'approche plus les plafonds."
+     "releve_le": "2026-10-30",
+     "caduc_si": "La piste 11 est retirée de CONTEXTE.md."
     }
    ]
   },

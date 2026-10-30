@@ -7390,7 +7390,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions Claude Code durables tournent chacune dans une session tmux dédiée. Si le rendu plein écran te gêne pour remonter ou copier une conversation, essaie cette variable sur une session pour retrouver le mode copie de tmux."
+    "pourquoi": "Tes sessions durables tournent chacune dans un tmux dédié : si le plein écran te gêne pour remonter ou copier, lance une session avec `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` et vérifie que le mode copie de tmux retrouve tout l'historique."
    },
    "sources": [
     {
@@ -7403,7 +7403,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7431,12 +7431,63 @@
      "changement": "description corrigée",
      "avant": "Variable qui coupe le rendu plein écran au profit du rendu classique, pour garder le défilement natif du terminal et le mode copie de tmux.",
      "raison": "recommentaire D128 : La recommandation tester est maintenue, mais elle s'appuie désormais sur la section env.multi-sessions de CONTEXTE.md, qui atteste que les sessions Claude Code tournent sous tmux,"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Réglée à 1, CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN désactive le rendu plein écran et garde la conversation dans le défilement natif du terminal, où le mode copie de tmux fonctionne.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire cette variable ou change son effet sur le défilement natif."
+      },
+      {
+       "affirmation": "La variable ne s'applique pas aux sessions d'arrière-plan ouvertes depuis agent view, qui restent en plein écran.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation étend la variable aux sessions d'arrière-plan d'agent view."
+      },
+      {
+       "affirmation": "Les sessions Claude Code durables sont des services `claude-session@<nom>` qui lancent une session tmux dédiée exécutant `claude --resume <id> --remote-control <nom>`.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions Claude Code cessent de tourner sous tmux."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions Claude Code durables tournent chacune dans une session tmux dédiée. Si le rendu plein écran te gêne pour remonter ou copier une conversation, essaie cette variable sur une session pour retrouver le mode copie de tmux."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions Claude Code durables tournent chacune dans une session tmux dédiée : si le plein écran te gêne pour remonter ou copier une conversation, lance une session avec `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` et vérifie que le mode copie de tmux retrouve tout l'historique (sans effet sur les sessions d'arrière-plan d'agent view)."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Chaque session Claude Code durable s'exécute dans une session tmux dédiée (`tmux -L <nom>`) lancée par `claude-session@<nom>`."
     }
    },
@@ -7444,19 +7495,19 @@
     {
      "affirmation": "Réglée à 1, CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN désactive le rendu plein écran et garde la conversation dans le défilement natif du terminal, où le mode copie de tmux fonctionne.",
      "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "La documentation retire cette variable ou change son effet sur le défilement natif."
     },
     {
      "affirmation": "La variable ne s'applique pas aux sessions d'arrière-plan ouvertes depuis agent view, qui restent en plein écran.",
      "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "La documentation étend la variable aux sessions d'arrière-plan d'agent view."
     },
     {
      "affirmation": "Les sessions Claude Code durables sont des services `claude-session@<nom>` qui lancent une session tmux dédiée exécutant `claude --resume <id> --remote-control <nom>`.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "Les sessions Claude Code cessent de tourner sous tmux."
     }
    ]
@@ -15538,16 +15589,16 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_WARN_MEMORY_FREE_GIB",
    "gabarit": "court",
-   "description": "Linux et WSL : nombre entier de Gio (par exemple 4) ; Claude reçoit un rappel système quand la mémoire disponible passe sous ce seuil. Sans effet si absent, à 0 ou non numérique. À définir dans l'environnement de lancement, pas dans `env`. Demande Claude Code 2.1.304 ou plus.",
+   "description": "Linux et WSL : nombre entier de Gio (par exemple 4) ; Claude reçoit un rappel système quand la mémoire disponible passe sous ce seuil. Sans effet si absente, à 0 ou non numérique ; à définir dans l'environnement de lancement, pas dans le bloc `env` des settings ; demande Claude Code 2.1.304 ou plus.",
    "description_source": "On Linux and WSL, set to a whole number of GiB such as 4 to have Claude Code warn Claude when available memory falls below that amount. The warning is a system reminder saying how much is available. The reminder is off when the variable is unset, 0, or not plain digits. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.304 or later",
    "usage": "CLAUDE_CODE_WARN_MEMORY_FREE_GIB",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Linux, WSL",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Machine de 14 Gio, campagnes de trading-sim bridées à 9 Go sans swap. Essai : `CLAUDE_CODE_WARN_MEMORY_FREE_GIB=3 claude` dans trading-sim pendant une campagne ; attendu : un rappel système sous 3 Gio."
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit plus de contrainte de mémoire sur la machine de développement (le K8 Plus) : sans manque de mémoire constaté, ce rappel n'a pas d'usage identifié."
    },
    "sources": [
     {
@@ -15557,21 +15608,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "14 Gio de RAM, `calculs.slice` (MemoryMax 9G, pas de swap) pour les campagnes de simulation."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Priorité de Sylvain ; campagnes exhaustives sur une machine lente."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Le K8 Plus est la machine de développement ; aucune limite de mémoire n'y est plus décrite."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-10-23",
@@ -15593,26 +15640,44 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
-    }
-   ],
-   "provenance": [
-    {
-     "affirmation": "La variable fait avertir Claude, par un rappel système, quand la mémoire disponible passe sous le nombre de Gio donné (Linux et WSL) ; elle exige Claude Code 2.1.304 ou plus et se définit dans l'environnement de lancement, pas dans un bloc env de settings.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-23",
-     "caduc_si": "La page des variables d'environnement change le comportement, la version minimale ou l'endroit où définir la variable."
     },
     {
-     "affirmation": "La machine a 14 Gio de RAM ; les calculs lourds sont bridés dans `calculs.slice` (MemoryMax 9G, pas de swap).",
-     "source": "contexte:env.machine",
-     "releve_le": "2026-10-23",
-     "caduc_si": "CONTEXTE.md décrit une autre quantité de RAM ou une autre limite pour les calculs lourds."
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La variable fait avertir Claude, par un rappel système, quand la mémoire disponible passe sous le nombre de Gio donné (Linux et WSL) ; elle exige Claude Code 2.1.304 ou plus et se définit dans l'environnement de lancement, pas dans un bloc env de settings.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-23",
+       "caduc_si": "La page des variables d'environnement change le comportement, la version minimale ou l'endroit où définir la variable."
+      },
+      {
+       "affirmation": "La machine a 14 Gio de RAM ; les calculs lourds sont bridés dans `calculs.slice` (MemoryMax 9G, pas de swap).",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-23",
+       "caduc_si": "CONTEXTE.md décrit une autre quantité de RAM ou une autre limite pour les calculs lourds."
+      },
+      {
+       "affirmation": "trading-sim est la priorité actuelle de Sylvain et ses campagnes de simulation sont lentes sur cette machine.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-23",
+       "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme priorité ou ses campagnes comme lourdes."
+      }
+     ],
+     "raison": "verdict passé à ignorer"
     },
     {
-     "affirmation": "trading-sim est la priorité actuelle de Sylvain et ses campagnes de simulation sont lentes sur cette machine.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-23",
-     "caduc_si": "CONTEXTE.md ne décrit plus trading-sim comme priorité ou ses campagnes comme lourdes."
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Machine de 14 Gio, campagnes de trading-sim bridées à 9 Go sans swap. Essai : `CLAUDE_CODE_WARN_MEMORY_FREE_GIB=3 claude` dans trading-sim pendant une campagne ; attendu : un rappel système sous 3 Gio."
+     },
+     "raison": "section:env.machine"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -16699,7 +16764,7 @@
    "categorie": "parametres",
    "nom": "cleanupPeriodDays",
    "gabarit": "court",
-   "description": "Réglage qui fixe combien de jours Claude Code garde les transcripts et autres données avant de les supprimer sans message ; une session inutilisée plus longtemps disparaît du sélecteur `/resume`.",
+   "description": "Réglage qui fixe combien de jours Claude Code garde les transcripts et autres données avant de les supprimer sans message (30 par défaut, minimum 1) ; une session inutilisée plus longtemps disparaît du sélecteur `/resume`.",
    "description_source": "Set how many days Claude Code keeps session transcripts and other application data before deleting them. Claude Code runs the deletion as a background sweep after a session starts, as long as it can safely determine the retention period. The sweep deletes transcripts without showing a message, so a session you haven't used for longer than the retention period no longer appears in the /resume picker.",
    "usage": "{\n  \"cleanupPeriodDays\": 20\n}",
    "usage_nature": "syntaxe",
@@ -16708,7 +16773,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les services relancent chaque session par `claude --resume <id>` et `dev` et `school` ne démarrent qu'à la demande : lis la valeur en vigueur dans `/config` et vérifie qu'elle dépasse leur plus longue période d'inactivité, sinon leur reprise échouerait."
+    "pourquoi": "Tes services relancent chaque session par `claude --resume <id>` et `dev` et `school` ne démarrent qu'à la demande : lis la valeur en vigueur dans `/config` et vérifie qu'elle dépasse leur plus longue inactivité, sinon leur transcript serait effacé sans message et la reprise échouerait."
    },
    "sources": [
     {
@@ -16721,7 +16786,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16750,46 +16815,84 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le réglage cleanupPeriodDays fixe le nombre de jours pendant lesquels Claude Code conserve les transcripts de session et d'autres données d'application avant de les supprimer.",
+       "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+       "releve_le": "2026-10-16",
+       "caduc_si": "le réglage cleanupPeriodDays change de rôle ou disparaît de la documentation des settings"
+      },
+      {
+       "affirmation": "La suppression s'exécute en tâche de fond après le démarrage d'une session, sans afficher de message.",
+       "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation indique que la suppression affiche un avertissement ou ne se fait plus au démarrage d'une session"
+      },
+      {
+       "affirmation": "Une session inutilisée depuis plus longtemps que la période de rétention n'apparaît plus dans le sélecteur /resume.",
+       "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
+       "releve_le": "2026-10-16",
+       "caduc_si": "la documentation ne lie plus la suppression des transcripts à la disparition des sessions du sélecteur /resume"
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur claude-session@<nom> qui lance une session tmux exécutant claude --resume <id> --remote-control <nom>.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables comme des services relancés par claude --resume <id>"
+      },
+      {
+       "affirmation": "Seules les sessions peu utilisées dev et school se lancent à la demande, pour économiser environ 300 Mio de RAM chacune.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que dev et school démarrent automatiquement ou ne sont plus des sessions durables"
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les services relancent chaque session par `claude --resume <id>` et `dev` et `school` ne démarrent qu'à la demande : lis la valeur en vigueur dans `/config` et vérifie qu'elle dépasse leur plus longue période d'inactivité, sinon leur reprise échouerait."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services claude-session@<nom> lancés par `claude --resume <id>` ; dev et school démarrés à la demande."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Le réglage cleanupPeriodDays fixe le nombre de jours pendant lesquels Claude Code conserve les transcripts de session et d'autres données d'application avant de les supprimer.",
+     "affirmation": "cleanupPeriodDays fixe le nombre de jours pendant lesquels Claude Code garde les transcripts et d'autres données avant de les supprimer ; défaut 30, minimum 1.",
      "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
-     "releve_le": "2026-10-16",
-     "caduc_si": "le réglage cleanupPeriodDays change de rôle ou disparaît de la documentation des settings"
+     "releve_le": "2026-10-30",
+     "caduc_si": "Le réglage change de rôle, de défaut ou disparaît de la documentation des settings."
     },
     {
-     "affirmation": "La suppression s'exécute en tâche de fond après le démarrage d'une session, sans afficher de message.",
+     "affirmation": "La suppression tourne en tâche de fond après le démarrage d'une session, sans message ; une session inutilisée plus longtemps que la rétention n'apparaît plus dans `/resume`.",
      "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation indique que la suppression affiche un avertissement ou ne se fait plus au démarrage d'une session"
+     "releve_le": "2026-10-30",
+     "caduc_si": "La documentation annonce un avertissement avant suppression ou ne lie plus la suppression à `/resume`."
     },
     {
-     "affirmation": "Une session inutilisée depuis plus longtemps que la période de rétention n'apparaît plus dans le sélecteur /resume.",
-     "source": "https://code.claude.com/docs/en/settings-reference#cleanupperioddays",
-     "releve_le": "2026-10-16",
-     "caduc_si": "la documentation ne lie plus la suppression des transcripts à la disparition des sessions du sélecteur /resume"
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur claude-session@<nom> qui lance une session tmux exécutant claude --resume <id> --remote-control <nom>.",
+     "affirmation": "Chaque session Claude Code durable est un service claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>` ; dev et school se lancent à la demande.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les sessions durables comme des services relancés par claude --resume <id>"
-    },
-    {
-     "affirmation": "Seules les sessions peu utilisées dev et school se lancent à la demande, pour économiser environ 300 Mio de RAM chacune.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que dev et school démarrent automatiquement ou ne sont plus des sessions durables"
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne décrit plus la reprise par `claude --resume <id>` ou le lancement à la demande de dev et school."
     }
    ]
   },
@@ -17039,7 +17142,7 @@
    "categorie": "parametres",
    "nom": "crossSessionInbound",
    "gabarit": "court",
-   "description": "Paramètre de settings qui choisit ce que fait une session des messages arrivant de tes autres sessions Claude Code, par exemple `hold` pour les retenir. Sans valeur applicable, Claude Code décide message par message selon les classes de mode de permission des deux sessions.",
+   "description": "Réglage qui choisit ce que fait une session des messages venus de tes autres sessions Claude Code : `accept` (les remettre), `hold` (afficher un avis sans les remettre) ou `refuse` (les rejeter). Sans valeur, Claude Code décide message par message selon les classes de mode de permission des deux sessions ; demande Claude Code 2.1.224 ou plus.",
    "description_source": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later.",
    "usage": "{\n  \"crossSessionInbound\": \"hold\"\n}",
    "usage_nature": "syntaxe",
@@ -17048,7 +17151,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions se parlent par `SendMessage`, et toutes tournent en bypassPermissions sauf trading, qui reste en validations à chaque jalon. Essaie `hold` sur la session de trading-sim pour retenir les messages venus des autres sessions au lieu de laisser le défaut en décider."
+    "pourquoi": "Tes sessions se parlent par `SendMessage`, toutes en bypassPermissions sauf trading, validée par jalon : mets `\"crossSessionInbound\": \"hold\"` dans le `.claude/settings.json` de trading-sim et vérifie qu'un message d'une autre session n'y arrive plus qu'en avis."
    },
    "sources": [
     {
@@ -17061,7 +17164,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17093,17 +17196,74 @@
      "changement": "description corrigée",
      "avant": "Réglage qui décide ce que fait une session des messages venant de tes autres sessions Claude Code (par exemple les retenir avec `hold`).",
      "raison": "recommentaire D128 : Le jugement est désormais fondé sur les sections citées (SendMessage entre sessions, régime de permissions à part pour trading-sim) au lieu d'affirmations non sourcées, et la prom"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "crossSessionInbound choisit ce que fait la session des messages venant des autres sessions Claude Code ; sans valeur applicable, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
+       "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire le paramètre ou change le comportement par défaut."
+      },
+      {
+       "affirmation": "Les sessions Claude Code de Sylvain se parlent via SendMessage / ListAgents.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions cessent d'échanger par SendMessage."
+      },
+      {
+       "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La session trading passe elle aussi en bypassPermissions, ou le régime global change."
+      },
+      {
+       "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "trading-sim passe en FULL_AUTO."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions se parlent par `SendMessage`, et toutes tournent en bypassPermissions sauf trading, qui reste en validations à chaque jalon. Essaie `hold` sur la session de trading-sim pour retenir les messages venus des autres sessions au lieu de laisser le défaut en décider."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions se parlent par `SendMessage` et toutes tournent en bypassPermissions sauf trading, seul projet en validations par jalon. Essai : `\"crossSessionInbound\": \"hold\"` dans le `.claude/settings.json` de trading-sim (une valeur de projet s'applique si elle est plus stricte que celle des réglages utilisateur), puis vérifier qu'un message d'une autre session n'y apparaît plus qu'en avis."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Atteste que les sessions Claude Code durables se parlent via SendMessage / ListAgents."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Les sessions Claude Code durables se parlent via SendMessage / ListAgents."
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Toutes les sessions locales sont en bypassPermissions sauf trading : les classes de mode diffèrent, ce qui pèse sur le défaut."
+     "pourquoi": "Toutes les sessions locales en bypassPermissions sauf trading : les classes de mode diffèrent."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -17113,27 +17273,33 @@
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "crossSessionInbound choisit ce que fait la session des messages venant des autres sessions Claude Code ; sans valeur applicable, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
+     "affirmation": "crossSessionInbound accepte `accept`, `hold` (avis sans remise) ou `refuse` ; sans valeur, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
      "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire le paramètre ou change le comportement par défaut."
+     "releve_le": "2026-10-30",
+     "caduc_si": "La documentation retire le réglage ou change ses valeurs ou son comportement par défaut."
+    },
+    {
+     "affirmation": "Une valeur de projet ou locale ne s'applique que si elle est plus stricte que celle des réglages gérés, de `--settings` ou des réglages utilisateur ; un `hold` de projet s'applique quand aucune source de confiance ne fixe de valeur.",
+     "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
+     "releve_le": "2026-10-30",
+     "caduc_si": "La documentation change l'ordre de priorité entre réglages de projet et réglages utilisateur pour cette clé."
     },
     {
      "affirmation": "Les sessions Claude Code de Sylvain se parlent via SendMessage / ListAgents.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "Les sessions cessent d'échanger par SendMessage."
     },
     {
      "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
      "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "La session trading passe elle aussi en bypassPermissions, ou le régime global change."
     },
     {
      "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-30",
      "caduc_si": "trading-sim passe en FULL_AUTO."
     }
    ]
@@ -20107,7 +20273,7 @@
    "categorie": "parametres",
    "nom": "effortLevel",
    "gabarit": "court",
-   "description": "Réglage de l'effort par défaut des modèles pour lesquels aucun niveau n'a été enregistré.",
+   "description": "Réglage de l'effort par défaut des modèles pour lesquels aucun niveau n'a été enregistré (`low`, `medium`, `high` ou `xhigh`). Dans `~/.claude/settings.json`, Opus 5.5 et les modèles plus récents l'ignorent ; en réglage de projet ou local, il vaut pour tous les modèles.",
    "description_source": "Set a default effort level for models you haven't saved a level for. Lower levels are faster and cheaper on straightforward tasks, and higher levels reason more deeply on complex problems.",
    "usage": "{\n  \"effortLevel\": \"xhigh\"\n}",
    "usage_nature": "syntaxe",
@@ -20116,7 +20282,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Les services qui passent `--effort` l'ignorent ; fixer `\"effortLevel\": \"medium\"` dans `~/.claude/settings.json` puis lancer `dev` ou une session ouverte à la main sans `--effort` et vérifier avec `/effort` que ce niveau s'applique, au profit des limites hebdomadaires (piste 11)."
+    "pourquoi": "Tes services passent `--effort`, qui l'emporte : essaie `\"effortLevel\": \"medium\"` dans le `.claude/settings.local.json` d'un dossier ouvert sans `--effort` (piste 11). Effet de bord : la clé toucherait aussi les `claude -p` de ce dossier, donc pas delta-ia (chaîne de nuit)."
    },
    "sources": [
     {
@@ -20129,7 +20295,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20178,60 +20344,123 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le réglage effortLevel fixe un niveau d'effort par défaut pour les modèles dont aucun niveau n'a été enregistré.",
+       "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le réglage effortLevel change de rôle ou disparaît de la documentation des settings."
+      },
+      {
+       "affirmation": "Selon la documentation, les niveaux bas sont plus rapides et moins coûteux sur les tâches simples, et les niveaux hauts raisonnent plus en profondeur sur les problèmes complexes.",
+       "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus ce compromis entre vitesse, coût et profondeur selon le niveau d'effort."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance claude avec, selon le rôle, un modèle, un effort et des réglages de lancement propres (par exemple --model opus --effort medium pour le chef).",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions avec un effort propre au rôle passé en option."
+      },
+      {
+       "affirmation": "Les sessions peu utilisées dev et school se lancent à la demande plutôt qu'au démarrage automatique.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus dev comme une session lancée à la demande."
+      },
+      {
+       "affirmation": "Piste 11 : la consommation Fable/Opus approche les plafonds hebdomadaires, et le choix du modèle et du niveau d'effort par session pourrait étaler la charge.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La piste 11 est retirée de CONTEXTE.md ou ne mentionne plus le niveau d'effort face aux limites hebdomadaires."
+      },
+      {
+       "affirmation": "Le modèle et l'effort par défaut de Claude Code sont relevés automatiquement dans docs/data/etat.json à chaque passage delta-ia.",
+       "source": "contexte:config.claude-code",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne renvoie plus à etat.json pour l'effort par défaut de Claude Code."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Les services qui passent `--effort` l'ignorent ; fixer `\"effortLevel\": \"medium\"` dans `~/.claude/settings.json` puis lancer `dev` ou une session ouverte à la main sans `--effort` et vérifier avec `/effort` que ce niveau s'applique, au profit des limites hebdomadaires (piste 11)."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes services passent `--effort`, qui l'emporte sur cette clé : essaie `\"effortLevel\": \"medium\"` dans le `.claude/settings.local.json` d'un dossier où tu ouvres une session sans `--effort`, au profit des limites hebdomadaires (piste 11). Effet de bord : la clé s'appliquerait aussi aux `claude -p` lancés dans ce dossier, d'où un dossier sans chaîne de nuit."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "config.claude-code": {
-     "sha1": "e32384f8fd8cbc79900681e800d92559daeb3072",
-     "pourquoi": "Modèle et effort par défaut relevés dans etat.json."
-    },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services lancés avec un effort propre au rôle ; dev et school démarrés à la demande."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services lancés avec un modèle et un effort propres au rôle (`--effort`) ; dev et school démarrés à la demande."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : effort choisi par session pour étaler la charge sur les limites hebdomadaires."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "La chaîne D70 lance des étapes `claude -p` dans delta-ia, qu'une clé de projet toucherait."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Le réglage effortLevel fixe un niveau d'effort par défaut pour les modèles dont aucun niveau n'a été enregistré.",
+     "affirmation": "effortLevel fixe l'effort par défaut des modèles sans niveau enregistré ; `--effort` l'emporte pour une session et CLAUDE_CODE_EFFORT_LEVEL l'emporte sur les deux.",
      "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le réglage effortLevel change de rôle ou disparaît de la documentation des settings."
+     "releve_le": "2026-10-30",
+     "caduc_si": "La documentation change le rôle de la clé ou l'ordre de priorité avec `--effort`."
     },
     {
-     "affirmation": "Selon la documentation, les niveaux bas sont plus rapides et moins coûteux sur les tâches simples, et les niveaux hauts raisonnent plus en profondeur sur les problèmes complexes.",
+     "affirmation": "Dans ~/.claude/settings.json, Opus 5.5 et les modèles plus récents ignorent cette clé ; en réglages de projet, locaux, gérés ou avec `--settings`, elle s'applique à tous les modèles.",
      "source": "https://code.claude.com/docs/en/settings-reference#effortlevel",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus ce compromis entre vitesse, coût et profondeur selon le niveau d'effort."
+     "releve_le": "2026-10-30",
+     "caduc_si": "La documentation rétablit la clé utilisateur pour les modèles récents ou change sa portée en réglage de projet."
     },
     {
-     "affirmation": "Chaque session Claude Code durable est un service systemd claude-session@<nom> qui lance claude avec, selon le rôle, un modèle, un effort et des réglages de lancement propres (par exemple --model opus --effort medium pour le chef).",
+     "affirmation": "Chaque session durable est lancée avec un modèle, un effort et des réglages propres au rôle (par exemple `--model opus --effort medium` pour le chef) ; dev et school se lancent à la demande.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions avec un effort propre au rôle passé en option."
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne décrit plus d'effort passé au lancement des services."
     },
     {
-     "affirmation": "Les sessions peu utilisées dev et school se lancent à la demande plutôt qu'au démarrage automatique.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus dev comme une session lancée à la demande."
-    },
-    {
-     "affirmation": "Piste 11 : la consommation Fable/Opus approche les plafonds hebdomadaires, et le choix du modèle et du niveau d'effort par session pourrait étaler la charge.",
+     "affirmation": "Piste 11 : la consommation approche les plafonds hebdomadaires ; le choix du modèle et de l'effort par session pourrait étaler la charge.",
      "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La piste 11 est retirée de CONTEXTE.md ou ne mentionne plus le niveau d'effort face aux limites hebdomadaires."
+     "releve_le": "2026-10-30",
+     "caduc_si": "La piste 11 est retirée de CONTEXTE.md."
     },
     {
-     "affirmation": "Le modèle et l'effort par défaut de Claude Code sont relevés automatiquement dans docs/data/etat.json à chaque passage delta-ia.",
-     "source": "contexte:config.claude-code",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne renvoie plus à etat.json pour l'effort par défaut de Claude Code."
+     "affirmation": "La chaîne de nuit D70 exécute des étapes Claude Code non interactives depuis delta-ia.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-10-30",
+     "caduc_si": "La chaîne de nuit ne lance plus d'étapes Claude Code dans delta-ia."
     }
    ]
   },
@@ -22051,7 +22280,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour explorer à part la conversation d'une session de service (le chef delta-ia, par exemple) sans toucher à l'ID que relance son service : `claude --resume <id> --fork-session`, puis vérifier que le service repart sur l'ancien fil."
+    "pourquoi": "Pour explorer à part la conversation d'une session de service sans toucher à l'ID que relance son service : `claude --resume <id> --fork-session`, puis vérifier que le service repart sur l'ancien fil."
    },
    "sources": [
     {
@@ -22064,7 +22293,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-30",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22085,45 +22314,77 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'option --fork-session, lors d'une reprise, crée un nouvel identifiant de session au lieu de réutiliser l'original ; elle s'emploie avec --resume ou --continue.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option --fork-session disparaît de la documentation ou ne crée plus de nouvel ID de session à la reprise."
+      },
+      {
+       "affirmation": "La documentation donne l'exemple d'usage : claude --resume abc123 --fork-session.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La syntaxe de l'exemple change ou l'exemple est retiré de la documentation."
+      },
+      {
+       "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur modèle claude-session@<nom> qui lance une session tmux dédiée exécutant claude --resume <id> --remote-control <nom>.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions par claude --resume <id> via le service claude-session@<nom>."
+      },
+      {
+       "affirmation": "Selon le rôle, chaque session a ses propres réglages de lancement, par exemple --model opus --effort medium pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus de session chef ni de réglages de lancement propres par rôle."
+      },
+      {
+       "affirmation": "Ces sessions sont pilotées depuis l'iPhone par Remote Control.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le pilotage des sessions depuis l'iPhone par Remote Control."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Pour explorer à part la conversation d'une session de service (le chef delta-ia, par exemple) sans toucher à l'ID que relance son service : `claude --resume <id> --fork-session`, puis vérifier que le service repart sur l'ancien fil."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-30",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Chaque service relance sa session par `claude --resume <id>`."
     }
    },
    "provenance": [
     {
-     "affirmation": "L'option --fork-session, lors d'une reprise, crée un nouvel identifiant de session au lieu de réutiliser l'original ; elle s'emploie avec --resume ou --continue.",
+     "affirmation": "--fork-session, à la reprise, crée un nouvel identifiant de session au lieu de réutiliser l'original ; s'emploie avec --resume ou --continue (exemple : `claude --resume abc123 --fork-session`).",
      "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option --fork-session disparaît de la documentation ou ne crée plus de nouvel ID de session à la reprise."
+     "releve_le": "2026-10-30",
+     "caduc_si": "L'option disparaît de la documentation ou ne crée plus de nouvel ID à la reprise."
     },
     {
-     "affirmation": "La documentation donne l'exemple d'usage : claude --resume abc123 --fork-session.",
-     "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La syntaxe de l'exemple change ou l'exemple est retiré de la documentation."
-    },
-    {
-     "affirmation": "Chaque session Claude Code durable est un service systemd utilisateur modèle claude-session@<nom> qui lance une session tmux dédiée exécutant claude --resume <id> --remote-control <nom>.",
+     "affirmation": "Chaque session Claude Code durable est un service claude-session@<nom> qui exécute `claude --resume <id> --remote-control <nom>`.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le lancement des sessions par claude --resume <id> via le service claude-session@<nom>."
-    },
-    {
-     "affirmation": "Selon le rôle, chaque session a ses propres réglages de lancement, par exemple --model opus --effort medium pour le chef.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus de session chef ni de réglages de lancement propres par rôle."
-    },
-    {
-     "affirmation": "Ces sessions sont pilotées depuis l'iPhone par Remote Control.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le pilotage des sessions depuis l'iPhone par Remote Control."
+     "releve_le": "2026-10-30",
+     "caduc_si": "CONTEXTE.md ne décrit plus la reprise des services par `claude --resume <id>`."
     }
    ]
   },
