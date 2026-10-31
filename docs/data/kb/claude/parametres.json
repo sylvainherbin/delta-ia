@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-10-30",
+ "maj_le": "2026-10-31",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 671,
- "commentees": 623,
+ "commentees": 624,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -1052,8 +1052,8 @@
    "categorie": "parametres",
    "nom": "ANTHROPIC_API_KEY",
    "gabarit": "court",
-   "description": "Variable qui fournit une clé d'API envoyée à la place de l'abonnement, même quand on est connecté.",
-   "description_source": "API key sent as X-Api-Key header. When set, this key is used instead of your Claude Pro, Max, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (-p), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run unset ANTHROPIC_API_KEY",
+   "description": "Variable qui fournit une clé d'API envoyée à la place de l'abonnement (Pro, Max, Ultra, Team ou Enterprise), même quand on est connecté ; en mode non interactif (`-p`), la clé est toujours utilisée si elle est présente, et en mode interactif Claude Code demande une fois d'approuver la clé. `unset ANTHROPIC_API_KEY` rétablit l'abonnement.",
+   "description_source": "API key sent as X-Api-Key header. When set, this key is used instead of your Claude Pro, Max, Ultra, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (-p), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run unset ANTHROPIC_API_KEY",
    "usage": "ANTHROPIC_API_KEY",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1061,7 +1061,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu utilises ton abonnement Max ; une clé d'API ferait basculer la facturation sur l'API."
+    "pourquoi": "Tu utilises ton abonnement Max (20x) ; une clé d'API ferait basculer la facturation sur l'API."
    },
    "sources": [
     {
@@ -1074,7 +1074,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1083,10 +1083,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) à l'essai ; aucun usage d'une clé d'API déclaré."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-anthropic-auth-token",
@@ -23643,16 +23656,16 @@
    "categorie": "parametres",
    "nom": "Hook PreModelSwitch",
    "gabarit": "court",
-   "description": "Événement de hook déclenché avant l'application d'un changement de modèle, pour le bloquer, demander confirmation ou afficher son coût.",
+   "description": "Événement de hook déclenché avant l'application d'un changement de modèle demandé par l'utilisateur ou un client, pour le bloquer, demander confirmation ou afficher son coût (le JSON reçu donne `from_model`, `to_model`, `context_tokens` et `prompt_cache_warm`).",
    "description_source": "Runs before Claude Code applies a model switch that you or a client requested. Use it to block a switch, require confirmation, or show what the switch will cost before it happens.",
-   "usage": "{\n  \"hooks\": {\n    \"PreModelSwitch\": [\n      {\n        \"matcher\": \"claude-opus-4-6\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"jq -e '.to_model | test(\\\"opus-4-6\\\")' > /dev/null && { echo 'Opus 4.6 is retired for this project. Use a newer model.' >&2; exit 2; }; exit 0\"\n          }\n        ]\n      }\n…",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"PreModelSwitch\",\n  \"from_model\": \"claude-sonnet-5\",\n  \"to_model\": \"claude-opus-5\",\n  \"requested_model\": \"opus\",\n  \"source\": \"command\",\n  \"context_tokens\": 182340,\n  \"prompt_cache_warm\": true,\n  \"cache_ttl\": \"5m\",\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun besoin de bloquer ou de faire confirmer un changement de modèle dans Claude Code."
+    "pourquoi": "CONTEXTE.md ne décrit aucun besoin de bloquer ou de faire confirmer un changement de modèle dans Claude Code ; le seul hook en place est `PermissionDenied`."
    },
    "sources": [
     {
@@ -23661,11 +23674,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23690,13 +23703,21 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Un seul hook : PermissionDenied, qui lance `operer refus`."
+     "pourquoi": "Un seul hook aujourd'hui (`PermissionDenied`) ; aucun besoin décrit de filtrer les changements de modèle."
     }
    }
   },

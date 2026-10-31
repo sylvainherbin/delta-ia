@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-29",
+ "maj_le": "2026-10-31",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 105,
+ "commentees": 102,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -738,7 +738,7 @@
    "gabarit": "complet",
    "description": "Un canal est un serveur MCP, installé comme plugin, qui pousse des événements (messages Telegram, Discord ou iMessage, alertes, webhooks) dans une session Claude Code déjà ouverte ; Claude peut répondre par le même canal. Aperçu de recherche, authentification claude.ai ou clé API Console requise, chaque plugin de canal exige Bun, et iMessage exige macOS.",
    "description_source": "Use channels to push messages, alerts, and webhooks into your Claude Code session from an MCP server. Forward CI results, chat messages, and monitoring events so Claude can react while you're away.",
-   "usage": "/plugin install telegram@claude-plugins-official",
+   "usage": "/plugin install fakechat@claude-plugins-official",
    "usage_nature": "syntaxe",
    "exemple": "claude --channels plugin:telegram@claude-plugins-official",
    "disponibilite": null,
@@ -758,7 +758,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -775,17 +775,21 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
-     "pourquoi": "iPhone : pilote le PC à distance par Remote Control et l'app Claude iOS."
-    },
-    "optimisation.pistes": {
-     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Piste 10 : pas de CI, les tests de carnet ne tournent qu'en local."
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER remet lui-même les messages aux sessions ; pas de canal d'événements externe."
     }
    },
    "exemple_origine": "source"
@@ -4163,7 +4167,7 @@
    "gabarit": "complet",
    "description": "Le mode de permission fixe ce que Claude fait sans demander : `default` (Manual), `acceptEdits`, `plan`, `auto` (un classifieur contrôle les actions), `dontAsk` et `bypassPermissions`, qui exécute tout sans demande. On passe de l'un à l'autre par `Maj+Tab` ; même en `bypassPermissions`, les règles `deny` bloquent, et les règles `ask`, `AskUserQuestion`, les suppressions de chemins critiques et deux garde-fous de la messagerie entre sessions demandent toujours.",
    "description_source": "Control whether Claude asks before acting. Switch permission modes with Shift+Tab in the CLI, the mode indicator in VS Code, or the mode selector in Desktop.",
-   "usage": "claude -p \"Run the test suite and fix any failures\" --permission-mode auto",
+   "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"default\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": "claude --permission-mode bypassPermissions",
    "disponibilite": null,
@@ -4183,7 +4187,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4313,54 +4317,85 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation",
+     "avant": "claude -p \"Run the test suite and fix any failures\" --permission-mode auto",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Même en `bypassPermissions`, les règles `deny` bloquent et les règles `ask`, `AskUserQuestion` et les suppressions de chemins critiques demandent toujours.",
+       "source": "https://code.claude.com/docs/en/permission-modes",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la liste des actions jamais auto-approuvées change"
+      },
+      {
+       "affirmation": "Les sessions cloud n'appliquent pas `defaultMode: \"bypassPermissions\"` des fichiers de réglages ; un `bypassPermissions` dans `.claude/settings.json` de projet n'est pas appliqué aux sessions de terminal.",
+       "source": "https://code.claude.com/docs/en/permission-modes",
+       "releve_le": "2026-10-24",
+       "caduc_si": "les sessions cloud ou les réglages de projet acceptent ce mode"
+      },
+      {
+       "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-24",
+       "caduc_si": "le régime des permissions change"
+      },
+      {
+       "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions`.",
+       "source": "contexte:methode.chaine-nuit",
+       "releve_le": "2026-10-24",
+       "caduc_si": "l'orchestrateur change de mode de permission"
+      },
+      {
+       "affirmation": "OPÉRER confie des missions à l'exécutant `claude-cloud`.",
+       "source": "contexte:methode.operer",
+       "releve_le": "2026-10-24",
+       "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Depuis le 06/10, toutes les sessions locales en bypassPermissions sauf trading ; un refus est un problème d'exécution."
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading ; seules les limites d'Anthropic s'appliquent."
     },
     "methode.chaine-nuit": {
      "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
      "pourquoi": "Étapes Claude de la chaîne D70 lancées avec `--permission-mode bypassPermissions` (D83)."
-    },
-    "methode.operer": {
-     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
-     "pourquoi": "OPÉRER confie des missions à l'exécutant Claude cloud `claude-cloud`."
     }
    },
-   "exemple_origine": "compose",
+   "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Même en `bypassPermissions`, les règles `deny` bloquent et les règles `ask`, `AskUserQuestion` et les suppressions de chemins critiques demandent toujours.",
+     "affirmation": "En `bypassPermissions`, les règles `deny` bloquent encore ; les règles `ask`, `AskUserQuestion` et les suppressions de chemins critiques demandent toujours.",
      "source": "https://code.claude.com/docs/en/permission-modes",
-     "releve_le": "2026-10-24",
-     "caduc_si": "la liste des actions jamais auto-approuvées change"
+     "releve_le": "2026-10-31",
+     "caduc_si": "la page ne décrit plus ces exceptions au mode bypassPermissions"
     },
     {
-     "affirmation": "Les sessions cloud n'appliquent pas `defaultMode: \"bypassPermissions\"` des fichiers de réglages ; un `bypassPermissions` dans `.claude/settings.json` de projet n'est pas appliqué aux sessions de terminal.",
-     "source": "https://code.claude.com/docs/en/permission-modes",
-     "releve_le": "2026-10-24",
-     "caduc_si": "les sessions cloud ou les réglages de projet acceptent ce mode"
-    },
-    {
-     "affirmation": "Toutes les sessions locales sauf trading tournent en bypassPermissions depuis le 06/10.",
+     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10/2026, sauf trading.",
      "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-24",
-     "caduc_si": "le régime des permissions change"
+     "releve_le": "2026-10-31",
+     "caduc_si": "le régime des permissions des sessions locales change"
     },
     {
-     "affirmation": "Les étapes Claude de la chaîne D70 sont lancées avec `--permission-mode bypassPermissions`.",
+     "affirmation": "Les étapes Claude de la chaîne de nuit D70 sont lancées avec `--permission-mode bypassPermissions`.",
      "source": "contexte:methode.chaine-nuit",
-     "releve_le": "2026-10-24",
-     "caduc_si": "l'orchestrateur change de mode de permission"
-    },
-    {
-     "affirmation": "OPÉRER confie des missions à l'exécutant `claude-cloud`.",
-     "source": "contexte:methode.operer",
-     "releve_le": "2026-10-24",
-     "caduc_si": "OPÉRER cesse d'allouer des missions au cloud"
+     "releve_le": "2026-10-31",
+     "caduc_si": "la chaîne de nuit change de mode de permission"
     }
    ]
   },
@@ -4640,7 +4675,7 @@
    "gabarit": "complet",
    "description": "Remote Control relie claude.ai/code ou l'app Claude mobile à une session qui tourne sur la machine locale, avec ses fichiers, ses serveurs MCP et sa configuration. La conversation est synchronisée sur tous les appareils et la session se reconnecte seule après une mise en veille ou une coupure réseau ; après environ 30 minutes de signaux de présence perdus, `/remote-control` la reconnecte.",
    "description_source": "Continue a local Claude Code session from your phone, tablet, or any browser using Remote Control. Works with claude.ai/code and the Claude mobile app.",
-   "usage": "claude remote-control",
+   "usage": "claude mcp login \"claude.ai Slack\" --no-browser",
    "usage_nature": "syntaxe",
    "exemple": "claude --remote-control \"My Project\"",
    "disponibilite": null,
@@ -4660,7 +4695,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4732,6 +4767,41 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation",
+     "avant": "claude remote-control",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La session se reconnecte seule après une veille ou une coupure réseau ; après l'erreur `could not reach the Remote Control server for about 30 minutes`, `/remote-control` la reconnecte.",
+       "source": "https://code.claude.com/docs/en/remote-control",
+       "releve_le": "2026-10-24",
+       "caduc_si": "le mécanisme de reconnexion change"
+      },
+      {
+       "affirmation": "Les services `claude-session@<nom>` lancent `claude --resume <id> --remote-control <nom>` et sont pilotés depuis l'iPhone.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-24",
+       "caduc_si": "les services ne lancent plus Remote Control"
+      },
+      {
+       "affirmation": "L'iPhone pilote le PC à distance par Remote Control.",
+       "source": "contexte:env.machine",
+       "releve_le": "2026-10-24",
+       "caduc_si": "Sylvain ne pilote plus ses sessions depuis l'iPhone"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -4750,19 +4820,19 @@
     {
      "affirmation": "La session se reconnecte seule après une veille ou une coupure réseau ; après l'erreur `could not reach the Remote Control server for about 30 minutes`, `/remote-control` la reconnecte.",
      "source": "https://code.claude.com/docs/en/remote-control",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-10-31",
      "caduc_si": "le mécanisme de reconnexion change"
     },
     {
      "affirmation": "Les services `claude-session@<nom>` lancent `claude --resume <id> --remote-control <nom>` et sont pilotés depuis l'iPhone.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-10-31",
      "caduc_si": "les services ne lancent plus Remote Control"
     },
     {
      "affirmation": "L'iPhone pilote le PC à distance par Remote Control.",
      "source": "contexte:env.machine",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-10-31",
      "caduc_si": "Sylvain ne pilote plus ses sessions depuis l'iPhone"
     }
    ]
@@ -5425,7 +5495,7 @@
    "nom": "Claude Code in Slack",
    "gabarit": "complet",
    "description": "Intégration Slack d'origine : une mention `@Claude` portant sur du code ouvre une session cloud Claude Code sous le compte de l'utilisateur, avec ses dépôts connectés et les limites de son plan. Elle ne répond plus qu'aux comptes Pro et Max, dans un espace Slack qu'aucune organisation n'a relié à Claude Tag ; sur Team et Enterprise, Claude Tag la remplace.",
-   "description_source": "Delegate coding tasks from Slack. This earlier version answers channel mentions only from Pro and Max accounts in workspaces not connected to Claude Tag.",
+   "description_source": "Delegate coding tasks from Slack. This earlier version answers mentions only from Pro, Max, and Ultra accounts in workspaces not connected to Claude Tag.",
    "usage": "1. Open the Claude app in Slack by clicking on \"Claude\" in your Apps section\n2. Open the App Home tab\n3. Click \"Connect\" to link your Slack account with your Claude account\n4. Complete the authentication flow in your browser",
    "usage_nature": "etapes",
    "exemple": null,
@@ -5442,11 +5512,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5463,6 +5533,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -6495,7 +6569,7 @@
    "nom": "Use dictation on Claude Mobile",
    "gabarit": "complet",
    "description": "Dans l'app Claude pour iOS et Android, l'icône micro transforme la parole en prompt écrit, et Claude répond par écrit ; à distinguer du mode vocal, qui est une conversation parlée. Les langues autres que l'anglais sont en bêta.",
-   "description_source": "Dictation is available to all Claude users (Free, Pro, Max, Team, and Enterprise plans). Support for languages other than English is in beta.",
+   "description_source": "Dictation is available to all Claude users (Free, Pro, Max, Ultra, Team, and Enterprise plans). Support for languages other than English is in beta.",
    "usage": "1. Open Claude for iOS or Android.\n2. Start a new chat with Claude.\n3. Tap the microphone icon on the right side of the chat input field.",
    "usage_nature": "etapes",
    "exemple": null,
@@ -6512,11 +6586,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6537,6 +6611,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -7079,11 +7157,11 @@
    "nom": "Retrieval augmented generation \\(RAG\\) for projects",
    "gabarit": "complet",
    "description": "Quand les connaissances d'un Projet approchent la limite de la fenêtre de contexte, Claude passe automatiquement en recherche documentaire (RAG) : un outil de recherche va chercher les passages utiles au lieu de tout charger, ce qui porte la capacité jusqu'à 10 fois plus de contenu.",
-   "description_source": "RAG for projects is available on paid plans (Pro, Max, Team, and Enterprise).",
-   "usage": "RAG for projects is available on paid plans (Pro, Max, Team, and Enterprise).",
+   "description_source": "RAG for projects is available on paid plans (Pro, Max, Ultra, Team, and Enterprise).",
+   "usage": "RAG for projects is available on paid plans (Pro, Max, Ultra, Team, and Enterprise).",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Pro, Max, Team et Enterprise",
+   "disponibilite": "Forfaits payants : Pro, Max, Ultra, Team et Enterprise",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -7100,7 +7178,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7109,10 +7187,27 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Trois Projets claude.ai ; la bascule RAG est automatique, sans réglage à poser."
+    }
+   }
   },
   {
    "id": "claude-fonctionnalites-page-11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
@@ -7528,11 +7623,11 @@
    "nom": "Import and export your memory from Claude",
    "gabarit": "complet",
    "description": "Importe dans Claude la mémoire d'un autre assistant (en lui demandant d'abord la liste de ce qu'il sait de l'utilisateur) ou exporte la mémoire de Claude pour sauvegarde ou migration.",
-   "description_source": "Memory imports are available for Free, Pro, Max, Team, and Enterprise plans on the web and Claude Desktop.",
-   "usage": "Memory imports are available for Free, Pro, Max, Team, and Enterprise plans on the web and Claude Desktop.",
+   "description_source": "Memory imports are available for Free, Pro, Max, Ultra, Team, and Enterprise plans on the web and Claude Desktop.",
+   "usage": "Memory imports are available for Free, Pro, Max, Ultra, Team, and Enterprise plans on the web and Claude Desktop.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Free, Pro, Max, Team et Enterprise ; web et Claude Desktop",
+   "disponibilite": "Free, Pro, Max, Ultra, Team et Enterprise, sur le web et Claude Desktop",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
@@ -7549,7 +7644,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-17",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7570,10 +7665,27 @@
     {
      "date": "2026-10-17",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
-   "contexte_sections": {}
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Orchestration à trois IA : ChatGPT, Claude Code et Codex gardent des rôles distincts."
+    }
+   }
   },
   {
    "id": "claude-fonctionnalites-page-12260368-use-incognito-chats",
@@ -9816,7 +9928,7 @@
    "nom": "How large is the context window on paid Claude plans?",
    "gabarit": "complet",
    "description": "Article d'aide qui indique la taille de la fenêtre de contexte sur les plans payants de Claude (Pro, Max, Team, Enterprise), pour le chat, Claude Code et Claude Cowork. La fiche cite l'identifiant de modèle `claude-opus-4-6[1m]` comme exemple d'usage ; l'extrait fourni ne donne pas les tailles elles-mêmes.",
-   "description_source": "This article explains how large the context window is on paid Claude plans (Pro, Max, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
+   "description_source": "This article explains how large the context window is on paid Claude plans (Pro, Max, Ultra, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
    "usage": "claude-opus-4-6[1m]",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9833,11 +9945,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9869,6 +9981,37 @@
      "changement": "description corrigée",
      "avant": "Donne la taille de la fenêtre de contexte par modèle sur les plans payants, pour le chat, Claude Code et Cowork : 1M de jetons pour Fable 5.1, Opus 5.5 et Opus 5, 500K pour Fable 5, Opus 4.8 et Opus 4.7.",
      "raison": "recommentaire D128 : Les tailles par modèle et le classement des modèles les plus utilisés, absents des sources, sont retirés ; le verdict tester repose désormais sur le plan Max et l'usage de `/compa"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "This article explains how large the context window is on paid Claude plans (Pro, Max, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'article explique la taille de la fenêtre de contexte sur les plans payants Pro, Max, Team et Enterprise, pour le chat, Claude Code et Claude Cowork.",
+       "source": "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'article est retiré ou ne couvre plus Claude Code ou le plan Max."
+      },
+      {
+       "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Sylvain ne renouvelle pas le Max et passe à un plan gratuit."
+      },
+      {
+       "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -9882,27 +10025,7 @@
      "pourquoi": "Le relevé d'usage montre que Sylvain tape `/compact`, donc il gère déjà le remplissage du contexte."
     }
    },
-   "exemple_impossible": "Usage = identifiant de modèle cité par l'article ; la source ne donne ni commande ni réglage où l'employer",
-   "provenance": [
-    {
-     "affirmation": "L'article explique la taille de la fenêtre de contexte sur les plans payants Pro, Max, Team et Enterprise, pour le chat, Claude Code et Claude Cowork.",
-     "source": "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'article est retiré ou ne couvre plus Claude Code ou le plan Max."
-    },
-    {
-     "affirmation": "Sylvain a pris un abonnement Claude Max (20x) le 07/10/2026, à l'essai d'un mois.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Sylvain ne renouvelle pas le Max et passe à un plan gratuit."
-    },
-    {
-     "affirmation": "Parmi les commandes tapées relevées le 25/09 figure `/compact`.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Un nouveau relevé d'usage montre que `/compact` n'est plus utilisé."
-    }
-   ]
+   "exemple_impossible": "Usage = identifiant de modèle cité par l'article ; la source ne donne ni commande ni réglage où l'employer"
   },
   {
    "id": "claude-fonctionnalites-page-9487310-what-are-artifacts-and-how-do-i-use-them",
@@ -10071,12 +10194,12 @@
    "categorie": "fonctionnalites",
    "nom": "What are projects?",
    "gabarit": "complet",
-   "description": "Un Projet est un espace qui regroupe un historique de conversations, des documents et des instructions communes. Une nouvelle version en bêta (un projet = une conversation qui lance des fils parallèles dans le cloud), déployée d'abord dans Claude Code, change le fonctionnement des Projets ; Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro et Max, sans rien perdre (instructions, fichiers, historique, tâches planifiées), avec un courriel préalable pour un projet utilisé dans les 30 derniers jours ; les autres projets de chat et de Cowork restent sur la version actuelle pour l'instant.",
-   "description_source": "Note: A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro and Max users to the new version. See The new version of projects (beta) below.",
-   "usage": "**Note:** A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro and Max users to the new version. See **[The new version of projects (beta)](#h_e9fb2a161e)** below.",
+   "description": "Un Projet est un espace qui regroupe un historique de conversations, des documents et des instructions communes. Une nouvelle version en bêta (un projet = une conversation qui lance des fils parallèles dans le cloud), déployée d'abord dans Claude Code, change le fonctionnement des Projets ; Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro, Max et Ultra, sans rien perdre (instructions, fichiers, historique, tâches planifiées), avec un courriel préalable pour un projet utilisé dans les 30 derniers jours ; les autres projets de chat et de Cowork restent sur la version actuelle pour l'instant.",
+   "description_source": "Note: A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro, Max, and Ultra users to the new version. See The new version of projects (beta) below.",
+   "usage": "**Note:** A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro, Max, and Ultra users to the new version. See **[The new version of projects (beta)](https://support.claude.com/en/articles/9517075-what-are-projects#h_e9fb2a161e)** below.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Pro, Max et Ultra pour la migration vers la nouvelle version (bêta, déploiement par étapes)",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
@@ -10093,7 +10216,7 @@
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-25",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10169,27 +10292,62 @@
     {
      "date": "2026-10-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation",
+     "avant": "**Note:** A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro and Max users to the new version. See **[The new version of projects (beta)](#h_e9fb2a161e)** below.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro et Max vers la nouvelle version, sans perte (instructions, fichiers, historique, tâches planifiées).",
+       "source": "https://support.claude.com/en/articles/9517075-what-are-projects",
+       "releve_le": "2026-10-25",
+       "caduc_si": "la page ne parle plus de migration des projets existants, ou la migration s'étend aux projets de chat et de Cowork"
+      },
+      {
+       "affirmation": "Sylvain a trois Projets claude.ai, dont « Web app ia » pour la veille.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-25",
+       "caduc_si": "CONTEXTE.md ne liste plus ces trois Projets"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Note: A new version of projects is now available in beta, rolling out in stages starting with Claude Code. We've started moving existing projects for some Pro and Max users to the new version. See The new version of projects (beta) below.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
      "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
-     "pourquoi": "3 Projets claude.ai, dont « Web app ia » ; Projets en profondeur à explorer."
+     "pourquoi": "Trois Projets claude.ai : « Web app ia » (la veille), un privé pour restoration-id, un pour l'activité de sous-traitance."
     }
    },
    "provenance": [
     {
-     "affirmation": "Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro et Max vers la nouvelle version, sans perte (instructions, fichiers, historique, tâches planifiées).",
+     "affirmation": "Une nouvelle version des Projets est en bêta ; Anthropic a commencé à migrer des projets existants de certains utilisateurs Pro, Max et Ultra.",
      "source": "https://support.claude.com/en/articles/9517075-what-are-projects",
-     "releve_le": "2026-10-25",
-     "caduc_si": "la page ne parle plus de migration des projets existants, ou la migration s'étend aux projets de chat et de Cowork"
+     "releve_le": "2026-10-31",
+     "caduc_si": "la page annonce la fin de la bêta ou une migration pour tous les forfaits"
     },
     {
      "affirmation": "Sylvain a trois Projets claude.ai, dont « Web app ia » pour la veille.",
      "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-25",
-     "caduc_si": "CONTEXTE.md ne liste plus ces trois Projets"
+     "releve_le": "2026-10-31",
+     "caduc_si": "les Projets claude.ai de Sylvain changent"
     }
    ]
   },

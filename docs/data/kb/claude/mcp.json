@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-10-29",
+ "maj_le": "2026-10-31",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -2543,9 +2543,9 @@
    "categorie": "mcp",
    "nom": "Use pre-configured OAuth credentials",
    "gabarit": "complet",
-   "description": "Pour un serveur sans enregistrement dynamique de client OAuth (erreur « does not support dynamic client registration »), on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe (`--callback-port`).",
+   "description": "Pour un serveur sans enregistrement dynamique de client OAuth (erreur « does not support dynamic client registration »), on passe à `claude mcp add` un identifiant et un secret client préenregistrés (`--client-id`, `--client-secret`) et un port de retour fixe (`--callback-port`). Claude Code découvre seul les serveurs qui utilisent un Client ID Metadata Document (CIMD).",
    "description_source": "Some MCP servers don't support automatic OAuth setup via Dynamic Client Registration. If you see an error like \"Incompatible auth server: does not support dynamic client registration,\" the server requires pre-configured credentials. Claude Code also supports servers that use a Client ID Metadata Document (CIMD) instead of Dynamic Client Registration, and discovers these automatically. If automatic discovery fails, register an OAuth app through the server's developer portal first, then provide the credentials when adding the server.",
-   "usage": "claude mcp add --transport http \\\n  --client-id your-client-id --client-secret --callback-port 8080 \\\n  my-server https://mcp.example.com/mcp",
+   "usage": "http://localhost:PORT/callback",
    "usage_nature": "syntaxe",
    "exemple": "claude mcp add --transport http \\\n  --client-id your-client-id --client-secret --callback-port 8080 \\\n  my-server https://mcp.example.com/mcp",
    "disponibilite": null,
@@ -2561,11 +2561,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2590,13 +2590,21 @@
     {
      "date": "2026-10-21",
      "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "delta-ia ajouté par `claude mcp add` sans authentification ; Vercel est un connecteur de compte"
+     "pourquoi": "Connecteur delta-ia sans authentification ; connecteurs de compte claude.ai, pas de serveur à identifiants préenregistrés."
     }
    },
    "exemple_origine": "source"
@@ -2798,7 +2806,7 @@
    "nom": "Get started with custom connectors using remote MCP",
    "gabarit": "complet",
    "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis. L'ajout demande de choisir le mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in ») et, avec connexion, la façon dont Claude s'identifie au serveur OAuth (identité publiée de Claude recommandée, enregistrement automatique ou client OAuth propre).",
-   "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector.",
+   "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Ultra, Team, and Enterprise plans. Free users are limited to one custom connector.",
    "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
    "usage_nature": "etapes",
    "exemple": null,
@@ -2815,11 +2823,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2848,6 +2856,31 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les connecteurs personnalisés par MCP distant existent sur Claude, Cowork et Claude Desktop pour les forfaits Free, Pro, Max, Team et Enterprise ; Free est limité à un connecteur.",
+       "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page change les forfaits ou produits concernés."
+      },
+      {
+       "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets sauf `deny` explicite ; trading-sim les reçoit faute de `deny`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le `deny` de trading-sim couvre les connecteurs de compte, ou la règle change dans CONTEXTE.md."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -2856,21 +2889,7 @@
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans deny."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "Les connecteurs personnalisés par MCP distant existent sur Claude, Cowork et Claude Desktop pour les forfaits Free, Pro, Max, Team et Enterprise ; Free est limité à un connecteur.",
-     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page change les forfaits ou produits concernés."
-    },
-    {
-     "affirmation": "Les connecteurs de compte claude.ai s'appliquent à tous les projets sauf `deny` explicite ; trading-sim les reçoit faute de `deny`.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le `deny` de trading-sim couvre les connecteurs de compte, ou la règle change dans CONTEXTE.md."
-    }
-   ]
+   }
   },
   {
    "id": "claude-mcp-page-11176164-use-connectors-to-extend-claude-s-capabilities",
