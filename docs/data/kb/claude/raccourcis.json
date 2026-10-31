@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "raccourcis",
- "maj_le": "2026-10-30",
+ "maj_le": "2026-10-31",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1035,7 +1035,7 @@
    "categorie": "raccourcis",
    "nom": "Ctrl+O",
    "gabarit": "court",
-   "description": "Ctrl+O ouvre ou ferme la vue détaillée du transcript dans Claude Code : appels d'outils et exécution, avec l'horodatage et le modèle de chaque réponse. Il déplie aussi les lignes repliées par défaut, comme les appels MCP regroupés ou les messages venus d'autres sessions, affichés en aperçu « Message from @<sender> ».",
+   "description": "Ctrl+O ouvre ou ferme la vue du transcript : détail des appels d'outils, horodatage et modèle de chaque réponse, avec dépliage des lignes repliées par défaut, comme les appels MCP groupés ou les messages des autres sessions (aperçu « Message from @<sender> »).",
    "description_source": "Toggle transcript viewer — Shows detailed tool usage and execution, with a timestamp and the model used on each assistant message. Also expands lines that collapse by default, such as MCP calls, shown as a single Called slack 3 times line, and messages from your other sessions, shown as a one-line Message from @<sender> preview",
    "usage": "Ctrl+O",
    "usage_nature": "syntaxe",
@@ -1044,7 +1044,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions durables tournent chacune avec un modèle propre (par exemple --model opus pour le chef) et reçoivent des messages d'autres sessions via SendMessage. Ctrl+O montre le modèle de chaque réponse et déplie ces messages en entier."
+    "pourquoi": "Essai dans une session durable (le chef lancé en --model opus, par exemple) : Ctrl+O doit afficher le modèle de chaque réponse et déplier en entier un message reçu par SendMessage, mais pas ceux de Codex passés par operer message, collés dans le volet tmux."
    },
    "sources": [
     {
@@ -1057,7 +1057,7 @@
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1085,39 +1085,93 @@
      "changement": "description corrigée",
      "avant": "Ouvre ou ferme la vue détaillée du transcript : appels d'outils, horodatage et modèle de chaque réponse.",
      "raison": "recommentaire D128 : Le pourquoi ne s'appuie plus sur une alternance Opus/Fable non établie, mais sur les sessions à modèle par rôle et les messages inter-sessions décrits dans env.multi-sessions, que"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Ctrl+O bascule la vue du transcript, qui montre l'usage détaillé des outils, avec l'horodatage et le modèle utilisé sur chaque message de l'assistant.",
+       "source": "https://code.claude.com/docs/en/interactive-mode",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire l'affichage du modèle ou de l'horodatage, ou réaffecte Ctrl+O à une autre action."
+      },
+      {
+       "affirmation": "La vue déplie les lignes repliées par défaut, dont les messages des autres sessions affichés en aperçu d'une ligne « Message from @<sender> ».",
+       "source": "https://code.claude.com/docs/en/interactive-mode",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation cesse de replier ou de déplier les messages des autres sessions par Ctrl+O."
+      },
+      {
+       "affirmation": "Chaque session durable lance claude --resume avec, selon le rôle, un modèle et un effort propres, par exemple --model opus --effort medium pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions durables passent toutes sur un même modèle sans réglage par rôle."
+      },
+      {
+       "affirmation": "Les sessions se parlent via SendMessage / ListAgents et OPÉRER leur remet les missions et les relances.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Les sessions cessent d'échanger des messages entre elles."
+      }
+     ],
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Tes sessions durables tournent chacune avec un modèle propre (par exemple --model opus pour le chef) et reçoivent des messages d'autres sessions via SendMessage. Ctrl+O montre le modèle de chaque réponse et déplie ces messages en entier."
+     },
+     "raison": "section:env.multi-sessions"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions Claude Code avec modèle et effort par rôle, qui échangent par SendMessage : Ctrl+O affiche le modèle par réponse et déplie ces messages."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle et effort propres à chaque rôle ; messages entre sessions Claude par SendMessage, depuis Codex par operer message."
+    },
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "La remise d'OPÉRER colle le message dans le volet tmux : ce n'est pas un message inter-sessions que Ctrl+O déplierait."
     }
    },
    "provenance": [
     {
      "affirmation": "Ctrl+O bascule la vue du transcript, qui montre l'usage détaillé des outils, avec l'horodatage et le modèle utilisé sur chaque message de l'assistant.",
      "source": "https://code.claude.com/docs/en/interactive-mode",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-31",
      "caduc_si": "La documentation retire l'affichage du modèle ou de l'horodatage, ou réaffecte Ctrl+O à une autre action."
     },
     {
-     "affirmation": "La vue déplie les lignes repliées par défaut, dont les messages des autres sessions affichés en aperçu d'une ligne « Message from @<sender> ».",
+     "affirmation": "La vue déplie les lignes repliées par défaut, dont les appels MCP groupés et les messages des autres sessions affichés en aperçu d'une ligne « Message from @<sender> ».",
      "source": "https://code.claude.com/docs/en/interactive-mode",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation cesse de replier ou de déplier les messages des autres sessions par Ctrl+O."
+     "releve_le": "2026-10-31",
+     "caduc_si": "La documentation cesse de déplier par Ctrl+O les messages des autres sessions."
     },
     {
      "affirmation": "Chaque session durable lance claude --resume avec, selon le rôle, un modèle et un effort propres, par exemple --model opus --effort medium pour le chef.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
+     "releve_le": "2026-10-31",
      "caduc_si": "Les sessions durables passent toutes sur un même modèle sans réglage par rôle."
     },
     {
-     "affirmation": "Les sessions se parlent via SendMessage / ListAgents et OPÉRER leur remet les missions et les relances.",
+     "affirmation": "Depuis une session Claude Code, les sessions se parlent via SendMessage / ListAgents ; depuis Codex, les messages aux sessions Claude passent par operer message.",
      "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Les sessions cessent d'échanger des messages entre elles."
+     "releve_le": "2026-10-31",
+     "caduc_si": "CONTEXTE.md change le canal des messages entre sessions."
+    },
+    {
+     "affirmation": "La remise d'OPÉRER colle le message dans le volet tmux de la session puis renvoie Entrée par un appel distinct.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-10-31",
+     "caduc_si": "OPÉRER remet ses messages par un autre mécanisme que le collage dans le volet tmux."
     }
    ]
   },

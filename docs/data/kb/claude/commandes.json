@@ -905,7 +905,7 @@
    "categorie": "commandes",
    "nom": "/background",
    "gabarit": "complet",
-   "description": "Détache la session courante pour qu'elle tourne comme agent d'arrière-plan et libère le terminal ; un prompt en argument envoie une dernière consigne avant le détachement. La session se suit ensuite avec `claude agents`. Alias : `/bg`.",
+   "description": "Détache la session courante pour qu'elle tourne comme agent d'arrière-plan et libère le terminal ; un prompt en argument envoie une dernière consigne avant le détachement. La session se suit ensuite avec `claude agents` ; pour copier la conversation dans une nouvelle session d'arrière-plan sans arrêter celle-ci, la page renvoie à `/fork`. Alias : `/bg`.",
    "description_source": "Detach the current session to run as a background agent and free this terminal. Pass a prompt to send one more instruction before detaching. Monitor the session with claude agents. To copy the conversation into a new background session while this one keeps running, use /fork. Alias: /bg",
    "usage": "/background [prompt]",
    "usage_nature": "syntaxe",
@@ -914,7 +914,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions sont déjà persistantes via tmux et systemd et pilotées par Remote Control ; un agent d'arrière-plan ferait doublon."
+    "pourquoi": "Tes sessions durables tournent déjà en continu sous tmux via systemd, pilotées par Remote Control, et OPÉRER assure la reprise des missions : un agent d'arrière-plan ferait doublon."
    },
    "sources": [
     {
@@ -927,7 +927,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -944,13 +944,17 @@
     {
      "date": "2026-10-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables en services systemd sous tmux, pilotées par Remote Control."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en services systemd sous tmux, pilotées par Remote Control ; OPÉRER assure la reprise des missions."
     }
    },
    "exemple_origine": "compose"
@@ -1333,16 +1337,16 @@
    "categorie": "commandes",
    "nom": "/cd",
    "gabarit": "complet",
-   "description": "Déplace la session dans un autre répertoire de travail principal en gardant la conversation, avec complétion du chemin par Tab. Contrairement à `/add-dir`, Claude Code applique aussitôt la configuration du nouveau répertoire (réglages et règles de permission, hooks, serveurs MCP de portée projet et locale, skills, sous-agents) et déconnecte les serveurs MCP de portée locale de l'ancien.",
+   "description": "Déplace la session dans un autre répertoire de travail en gardant la conversation, avec suggestions de chemins et complétion par Tab. Claude Code applique dès le déplacement la configuration du nouveau répertoire ; la page Permissions détaille ce qui change et la différence avec `/add-dir`.",
    "description_source": "Move this session to a new working directory, keeping the conversation. Type a partial path to see matching directory suggestions; press Tab to accept one. For what Claude Code applies from the new directory as soon as you move, and how /cd differs from /add-dir, see Move the session to another directory",
    "usage": "/cd <path>",
    "usage_nature": "syntaxe",
-   "exemple": "/cd ~/projets/discipline",
+   "exemple": "/cd ~/projets/trading-sim",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Chaque session durable est attachée à un dossier de travail et à un rôle ; un `/cd` de `~/projets/delta-ia` vers `~/projets/trading-sim` déconnecterait le connecteur delta-ia (portée locale) et appliquerait les règles de trading-sim, ce qui brouillerait la répartition des rôles."
+    "pourquoi": "Chaque session durable est lancée dans son dossier pour son rôle, et les serveurs MCP de portée locale suivent ce dossier : un `/cd` de `~/projets/delta-ia` vers `~/projets/trading-sim` changerait a priori les MCP et les règles appliqués, ce qui brouillerait la répartition des rôles."
    },
    "sources": [
     {
@@ -1355,7 +1359,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1376,17 +1380,21 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions durables par rôle, chacune lancée dans son dossier par un service systemd"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables par rôle, chacune lancée dans son dossier par un service systemd."
     },
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "MCP de portée locale rattachés au dossier de travail ; delta-ia absent de ~/projets/trading-sim"
+     "pourquoi": "MCP de portée locale rattachés au dossier de travail ; delta-ia absent de ~/projets/trading-sim."
     }
    },
    "exemple_origine": "compose"
@@ -1628,7 +1636,7 @@
    "categorie": "commandes",
    "nom": "claude agents",
    "gabarit": "complet",
-   "description": "Ouvre la vue agents pour surveiller et lancer des sessions d'arrière-plan en parallèle. `--cwd` filtre par répertoire, `--json` sort la liste des sessions actives pour un script ; `--model`, `--effort` ou `--permission-mode` fixent les valeurs par défaut des sessions lancées.",
+   "description": "Ouvre la vue agents pour surveiller et lancer des sessions d'arrière-plan en parallèle (terminal interactif requis). `--cwd <path>` filtre par répertoire, `--json` imprime les sessions actives pour un script (`--json --all` ajoute les terminées) ; `--permission-mode`, `--model`, `--effort` ou `--agent` fixent les valeurs par défaut des sessions lancées.",
    "description_source": "Open agent view to monitor and dispatch parallel background sessions. Use --cwd <path> to show only sessions started under that directory, or --json to print active sessions as a JSON array for scripting (--json --all also includes completed background sessions). Pass --permission-mode, --model, --effort, or --agent to set defaults for dispatched sessions. Accepts --settings, --add-dir, --plugin-dir, and --mcp-config like the top-level claude command. Opening agent view requires an interactive terminal — claude agents --json",
    "usage": "claude agents",
    "usage_nature": "syntaxe",
@@ -1637,7 +1645,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions durables sont des services systemd sous tmux, pas des sessions d'arrière-plan ; leur liste et leur état se lisent dans OPÉRER (`operer qui`)."
+    "pourquoi": "Tes sessions durables sont des services systemd sous tmux, pas des sessions d'arrière-plan, et leur liste se lit dans OPÉRER (`operer qui`) : la vue agents ferait doublon."
    },
    "sources": [
     {
@@ -1650,7 +1658,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-10-31",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1663,13 +1671,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-10-31",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables en services systemd sous tmux, listées par OPÉRER."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en services systemd sous tmux ; l'organisation réelle se lit dans OPÉRER."
     }
    },
    "exemple_origine": "source"
