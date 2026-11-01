@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 133,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -7491,16 +7491,16 @@
    "categorie": "commandes",
    "nom": "/privacy-settings",
    "gabarit": "complet",
-   "description": "Affiche et modifie tes réglages de confidentialité.",
+   "description": "Affiche et modifie tes réglages de confidentialité depuis Claude Code. La commande n'est disponible que pour les abonnés Pro, Max et Ultra.",
    "description_source": "View and update your privacy settings. Only available for Pro, Max, and Ultra plan subscribers",
    "usage": "/privacy-settings",
    "usage_nature": "syntaxe",
    "exemple": "/privacy-settings",
-   "disponibilite": "Pro et Max",
+   "disponibilite": "Pro, Max et Ultra",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun besoin identifié dans CONTEXTE ; à consulter une fois si la question de l'usage de tes données se pose."
+    "pourquoi": "CONTEXTE.md ne signale aucun besoin sur la confidentialité de tes conversations Claude Code ; à consulter une fois si la question se pose, sans scénario d'essai concret aujourd'hui."
    },
    "sources": [
     {
@@ -7509,11 +7509,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7530,10 +7530,14 @@
     {
      "date": "2026-10-31",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
    "exemple_origine": "source"
   },
   {
@@ -8464,16 +8468,16 @@
    "categorie": "commandes",
    "nom": "/restart",
    "gabarit": "complet",
-   "description": "Redémarre Claude Code et reprend la session en cours, ce qui applique une mise à jour déjà installée ; à lancer quand le pied de page le propose après l'installation d'une mise à jour. Exige un forfait Pro ou Max et une installation native sur macOS ou Linux (pas WSL), Claude Code 2.1.288 ou plus ; alias : `/update`.",
+   "description": "Redémarre Claude Code et reprend la session en cours, ce qui applique une mise à jour déjà installée ; à lancer quand le pied de page le propose après l'installation d'une mise à jour. Exige un forfait Pro, Max ou Ultra, une installation native sur macOS ou Linux (pas WSL) et Claude Code 2.1.288 ou plus ; alias : `/update`.",
    "description_source": "Restart Claude Code and resume this session, which applies an installed update. Run it when the footer offers it after an update installs. Requires a Pro, Max, or Ultra plan and a native install on macOS or Linux, not WSL. Requires Claude Code v2.1.288 or later. Alias: /update",
    "usage": "/restart",
    "usage_nature": "syntaxe",
    "exemple": "/restart",
-   "disponibilite": "Pro et Max ; installation native sur macOS ou Linux, pas WSL",
+   "disponibilite": "Pro, Max et Ultra ; installation native sur macOS ou Linux, pas WSL",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions durables mettent Claude Code à jour avec `claude update` (installation native, Max 20x) : après une mise à jour, `/restart` dans la session du chef delta-ia doit reprendre la même session sans la fermer à la main ; à vérifier que le pilotage Remote Control depuis l'iPhone reste connecté après le redémarrage."
+    "pourquoi": "Après un `claude update`, lance `/restart` dans la session du chef delta-ia : elle devrait reprendre la même conversation sans relancer son service ; vérifie que le Remote Control depuis l'iPhone et les réglages de lancement (`--model`, `--effort`) survivent au redémarrage."
    },
    "sources": [
     {
@@ -8482,22 +8486,26 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "Mises à jour natives suivies avec `claude update` ; installation native de Claude Code."
+     "pourquoi": "Mises à jour natives suivies avec `claude update`."
     },
     "env.multi-sessions": {
      "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
-     "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` pilotées depuis l'iPhone."
+     "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` sous tmux, avec modèle et effort propres, pilotées depuis l'iPhone."
+    },
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max (20x), forfait exigé par la commande, à l'essai jusqu'au 07/11."
     }
    },
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-10-30",
@@ -8537,9 +8545,40 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentée"
     }
    ],
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/restart` redémarre Claude Code et reprend la session courante, ce qui applique une mise à jour installée ; il exige Pro, Max ou Ultra, une installation native sur macOS ou Linux (pas WSL) et Claude Code v2.1.288 ou plus.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-01",
+     "caduc_si": "la commande change de comportement ou de prérequis, ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Claude Code est mis à jour par `claude update` (installation native).",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-11-01",
+     "caduc_si": "Claude Code n'est plus installé en natif ou se met à jour autrement"
+    },
+    {
+     "affirmation": "Les sessions durables tournent sous tmux via `claude --resume <id> --remote-control <nom>`, avec modèle et effort propres, et sont pilotées depuis l'iPhone.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-11-01",
+     "caduc_si": "les sessions durables ne passent plus par ce lanceur ni par Remote Control"
+    },
+    {
+     "affirmation": "Sylvain a un abonnement Claude Max (20x), à l'essai jusqu'au renouvellement du 07/11.",
+     "source": "contexte:profil",
+     "releve_le": "2026-11-01",
+     "caduc_si": "l'abonnement passe à un forfait autre que Pro, Max ou Ultra",
+     "revoir_le": "2026-11-07"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-resume",
