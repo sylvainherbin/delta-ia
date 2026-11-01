@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-10-31",
+ "maj_le": "2026-11-01",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1751,7 +1751,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions durables sont des services systemd sous tmux (`claude --resume … --remote-control`), pas des sessions d'arrière-plan de Claude Code ; aucun scénario d'essai concret."
+    "pourquoi": "Tes sessions durables sont des services systemd sous tmux (`claude --resume <id> --remote-control <nom>`), pas des sessions d'arrière-plan de Claude Code ; aucun scénario d'essai concret."
    },
    "sources": [
     {
@@ -1761,17 +1761,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables en services claude-session@<nom> sous tmux, pilotées par Remote Control."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en services claude-session@<nom> sous tmux, pilotées par Remote Control, sans session d'arrière-plan citée."
     }
    },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-10-06",
@@ -1796,6 +1796,14 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source"
@@ -1904,7 +1912,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun problème d'authentification ; seul usage plausible, un contrôle de santé scripté (code de sortie 0 ou 1) des sessions systemd, sans scénario arrêté."
+    "pourquoi": "CONTEXTE.md ne décrit aucun problème d'authentification ni de contrôle scripté de la connexion des sessions systemd ; un tel contrôle (code de sortie 0 ou 1) resterait une hypothèse sans scénario arrêté."
    },
    "sources": [
     {
@@ -1917,7 +1925,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1950,13 +1958,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions systemd durables : seul terrain d'un contrôle de santé scripté."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions systemd durables : seul terrain plausible d'un contrôle de santé scripté, non décrit."
     }
    },
    "exemple_origine": "source"
@@ -2320,7 +2336,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2337,12 +2353,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Sessions durables en services claude-session@<nom> sous tmux, sans superviseur d'arrière-plan cité."
     }
    },
@@ -2660,7 +2684,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Elle vise les sessions d'arrière-plan de `claude agents` ; tes sessions tournent sous tmux, où leur sortie se lit déjà, sans scénario d'essai concret ici."
+    "pourquoi": "Elle vise les sessions d'arrière-plan ; tes sessions tournent chacune dans sa session tmux dédiée, où leur sortie se lit déjà, sans scénario d'essai concret ici."
    },
    "sources": [
     {
@@ -2670,17 +2694,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Sessions durables en services systemd, chacune dans sa session tmux dédiée."
     }
    },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-10-06",
@@ -2697,6 +2721,14 @@
     {
      "date": "2026-10-10",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source"
@@ -3043,21 +3075,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "MCP en portée locale rattachés au dossier de travail (delta-ia dans ~/projets et ~/projets/delta-ia)"
+     "pourquoi": "MCP en portée locale rattachés au dossier de travail (delta-ia dans ~/projets et ~/projets/delta-ia)."
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions durables relancées par claude --resume <id>, qui dépend des transcriptions locales"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables relancées par claude --resume <id>, qui dépend des transcriptions locales."
     }
    },
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-10-03",
@@ -3073,6 +3105,14 @@
     },
     {
      "date": "2026-10-14",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
      "changement": "commentaire révisé"
     }
    ],
@@ -3954,7 +3994,7 @@
    "categorie": "commandes",
    "nom": "/config",
    "gabarit": "complet",
-   "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles ne peuvent pas activer un réglage qui exige une confirmation.",
+   "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles peuvent couper mais pas activer un réglage qui exige une confirmation, comme `autoContinueAtUsageLimit`. `/config --help` liste les clés acceptées ; alias : `/settings`.",
    "description_source": "Open the Settings interface to adjust theme, model, output style, and other preferences. Pass one or more key=value pairs to set a setting directly without opening the interface, for example /config thinking=false, /config theme=dark, or /config model=sonnet. The key=value form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. The key=value form can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit, though it can turn one off. Run /config --help to list the keys it accepts. Alias: /settings",
    "usage": "/config [key=value ...]",
    "usage_nature": "syntaxe",
@@ -3976,7 +4016,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4021,13 +4061,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Modèle et effort fixés au lancement de chaque service de session."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle et effort fixés au lancement de chaque service de session, selon le rôle."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
@@ -4173,7 +4221,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4190,12 +4238,20 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
      "pourquoi": "iPhone qui pilote le PC à distance (Remote Control, app Claude iOS)."
     }
    },
@@ -5099,7 +5155,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sur Max, le mode rapide se paie uniquement en crédits d'usage, hors des limites du forfait : garde-le coupé pendant l'essai Max (20x), et si tu l'actives, vérifie la dépense dans Paramètres > Utilisation, section « Usage credits »."
+    "pourquoi": "Sur Max, il se paie seulement en crédits d'usage, hors quota : garde-le coupé et vérifie avant le 07/11 que « Usage credits » (Paramètres > Utilisation) ne montre aucune dépense. Activé, il persiste entre sessions, sauf `fastModePerSessionOptIn: true`."
    },
    "sources": [
     {
@@ -5112,7 +5168,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5133,17 +5189,25 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Max (20x) à l'essai jusqu'au 07/11, bilan d'usage à préparer"
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Max (20x) à l'essai, renouvellement le 07/11, bilan d'usage à préparer avant."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "limites d'usage hebdomadaires parmi les frictions récurrentes"
+     "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
     }
    },
    "exemple_origine": "compose"
@@ -8346,7 +8410,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8375,12 +8439,20 @@
     {
      "date": "2026-10-16",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Sessions lancées par `claude --resume <id> --remote-control <nom>`, nommées à la création."
     }
    },
@@ -8497,7 +8569,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-11-01",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8526,12 +8598,20 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-01",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     },
     "methode.organisation": {
