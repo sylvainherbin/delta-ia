@@ -19,6 +19,7 @@ Usage :
   catalogue.py methodes [--dry-run]                            D121 : fiches de méthode locales (kb-methodes/*.md) → docs/data/kb/methodes.json,
                                                                sans réseau ni modèle ; hors lots, hors périmètres, jamais lancé par un passage
   catalogue.py modeles [--dry-run]                             fiches de modèles et d'efforts (kb-modeles/*.yaml) → docs/data/kb/modeles.json
+                                                               vue publique filtrée + kb-modeles/catalogue.json complet pour l'import local
                                                                sans réseau ni modèle ; hors lots, hors périmètres
   catalogue.py reevaluations --perimetre P [--depuis J]        réévaluations du journal et taux de verdicts changés
   catalogue.py rejugements [--perimetre P] [--json]            D78 : suivi du rattrapage, lecture seule, sans réseau ;

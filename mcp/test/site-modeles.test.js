@@ -7,6 +7,7 @@ import { developperModeles as developperMcp } from "../lib/modeles.js";
 import { developperModeles } from "../../docs/assets/kb-modeles.mjs";
 const app = fs.readFileSync(new URL("../../docs/assets/app.js", import.meta.url), "utf8");
 const doc = JSON.parse(fs.readFileSync(new URL("../../docs/data/kb/modeles.json", import.meta.url), "utf8"));
+const docMixte = JSON.parse(fs.readFileSync(new URL("../../kb-modeles/catalogue.json", import.meta.url), "utf8"));
 // L3 : génération commune publiée (docs/commun/v1/<génération>/kb/modeles.json), même lecteur
 const generation = JSON.parse(fs.readFileSync(new URL("../../docs/commun/v1/index.json", import.meta.url), "utf8")).generation;
 const docCommun = JSON.parse(fs.readFileSync(new URL(`../../docs/commun/v1/${generation}/kb/modeles.json`, import.meta.url), "utf8"));
@@ -96,27 +97,28 @@ test("développement : référence absente refusée, champs communs et alias de 
 
 test("lecteurs publics : sources_internes retirées du vrai modèle témoin sans modifier la source", () => {
   const id = "modele-gemini-4-argon-low";
-  const entree = doc.entrees.find((e) => e.id === id);
+  const entree = docMixte.entrees.find((e) => e.id === id);
   assert.ok(entree);
-  const sources = doc.modeles[entree.modele].sources_internes;
+  const sources = docMixte.modeles[entree.modele].sources_internes;
   assert.ok(sources.length > 0, "témoin mixte avec sources internes");
-  const avant = JSON.stringify(doc);
+  const avant = JSON.stringify(docMixte);
   for (const developper of [developperModeles, developperMcp]) {
-    const fiche = developper(doc).find((e) => e.id === id);
+    const fiche = developper(docMixte).find((e) => e.id === id);
     assert.ok(fiche);
     assert.ok(fiche.sources.length > 0, "sources publiques conservées");
     assert.equal(Object.hasOwn(fiche, "sources_internes"), false);
   }
-  assert.equal(JSON.stringify(doc) === avant, true, "observations sources conservées sans mutation");
+  assert.equal(JSON.stringify(docMixte) === avant, true, "observations sources conservées sans mutation");
 });
 
 test("L3 : aucun constat interne ni recommandation OPÉRER, ancien JSON mixte comme génération commune", () => {
-  // l'ancien JSON publié les contient encore (garde : le test verrait leur retour)
-  assert.ok(Object.values(doc.modeles).some((m) => (m.constats_internes || []).length));
-  assert.ok(doc.entrees.some((e) => e.recommandation_operer));
-  for (const [source, es] of [["ancien", developperModeles(doc)], ["commun", developperModeles(docCommun)]]) {
+  // Le témoin mixte reste hors de docs ; le fichier publié est déjà filtré à la génération.
+  assert.ok(Object.values(docMixte.modeles).some((m) => (m.constats_internes || []).length));
+  assert.ok(docMixte.entrees.some((e) => e.recommandation_operer));
+  for (const [source, brut] of [["ancien", docMixte], ["public", doc], ["commun", docCommun]]) {
+    const es = developperModeles(brut);
     assert.equal(es.length, docCommun.entrees.length, source);
-    assert.deepEqual(developperMcp(source === "ancien" ? doc : docCommun), es, source);
+    assert.deepEqual(developperMcp(brut), es, source);
     for (const e of es) {
       for (const k of ["constats_internes", "recommandation_operer", "recommandation", "sources_internes"]) assert.ok(!(k in e), `${source} ${e.id} : ${k}`);
       const d = e.description || "";

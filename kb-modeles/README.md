@@ -9,15 +9,23 @@ python scripts/catalogue.py modeles
 L’unique fichier public est `docs/data/kb/modeles.json`. Le schéma v2 contient :
 
 - `modeles`, dictionnaire des données communes par identifiant : fournisseur, forfait, prix API,
-  points forts/faibles, benchmarks, constats, sources, description commune et gabarits d’alias ;
+  points forts/faibles, benchmarks, sources publiques, description commune et gabarits d’alias ;
 - `entrees`, un enregistrement par couple modèle × effort : `modele` désigne la donnée commune ;
-  coût quota, invocation, recommandation et description propre à l’effort restent sur le couple ;
+  coût quota, invocation et description publique propre à l’effort restent sur le couple ;
 - `forfaits`, les forfaits de référence, et les compteurs `total_modeles` et `total`.
 
 Un lecteur assemble `{...doc.modeles[couple.modele], ...couple}`. Le site emploie
 `developperModeles` dans `docs/assets/kb-modeles.mjs`, qui reconstitue aussi la description et les alias.
 Le MCP garde son lecteur dans `mcp/lib/modeles.js`, dans sa racine de déploiement ; un test compare
 les deux sorties sur le catalogue public.
+
+La même commande écrit aussi `kb-modeles/catalogue.json`, catalogue complet hors de `docs/`.
+L'import local en deux couches le préfère au JSON public pour conserver les observations
+et recommandations dans le magasin personnel, avec les mêmes identités et historiques.
+Le validateur contrôle les deux sorties contre les YAML. La vue publique retire
+`sources_internes`, `constats_internes`, `recommandation_operer`, leurs recommandations
+et verdicts recopiés et leurs copies Markdown. Le dépôt Git reste public : « local »
+désigne ici une sortie qui n'est pas servie par le site, sans garantie de confidentialité Git.
 Les consommateurs programmatiques peuvent lire les données structurées sans produire les descriptions.
 `schema_version` doit être contrôlé avant la lecture. Aucun lecteur ne doit encore viser
 `docs/data/modeles.json`, supprimé car redondant.

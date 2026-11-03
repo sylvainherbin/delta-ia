@@ -19,6 +19,9 @@ from .modeles import PERIMETRE_DU_PRODUIT, STATUTS_USAGE, slug
 from ..versions_evenements import ajouter_evenements, lire_precedent
 
 DOSSIER_SOURCE = "kb-modeles"
+CATALOGUE_LOCAL = "kb-modeles/catalogue.json"
+CHAMPS_PRIVES = frozenset({"sources_internes", "constats_internes", "recommandation_operer",
+                          "recommandation", "verdict_operer"})
 CATEGORIE = "modeles"
 FAMILLES = ("claude", "codex", "antigravity", "locaux")
 VERDICTS_OPERER = ("utiliser", "tester", "ignorer")
@@ -36,6 +39,26 @@ class FicheModeleInvalide(ValueError):
 
 def chemin_kb_modeles(racine: Path) -> Path:
     return racine / "docs" / "data" / "kb" / "modeles.json"
+
+
+def publication_modeles(doc: dict) -> dict:
+    """Vue publique v2, sans les observations locales ni leurs copies Markdown.
+
+    Le document complet reste disponible pour les outils locaux et l'import personnel.
+    Ne modifie jamais le catalogue source.
+    """
+    def filtrer(valeur):
+        if isinstance(valeur, dict):
+            return {k: filtrer(v) for k, v in valeur.items() if k not in CHAMPS_PRIVES}
+        if isinstance(valeur, list):
+            return [filtrer(v) for v in valeur]
+        if isinstance(valeur, str):
+            valeur = re.sub(r"(^|\n)### Constats internes datés(\n[\s\S]*?)?(?=\n### |\Z)", "", valeur)
+            valeur = re.sub(r"(^|\n)- \*\*Recommandation OPÉRER[^\n]*", "", valeur)
+            return re.sub(r"\n{3,}", "\n\n", valeur).strip()
+        return valeur
+
+    return filtrer(doc)
 
 
 def _verifier_date_iso(valeur: object, contexte: str) -> str:
@@ -630,7 +653,7 @@ def _ecrire_json_atomique(chemin: Path, doc: dict) -> None:
 
 
 def ecrire_modeles(racine: Path) -> dict:
-    """Écrit `docs/data/kb/modeles.json` de manière atomique."""
+    """Écrit le catalogue local complet et sa vue publique (chaque fichier atomiquement)."""
     doc = construire_modeles(racine)
     precedent = lire_precedent(chemin_kb_modeles(racine))
     changements = []
@@ -642,6 +665,7 @@ def ecrire_modeles(racine: Path) -> dict:
             elif (anciens[ident].get("version") is not None and modele.get("version") is not None
                   and anciens[ident]["version"] != modele["version"]):
                 changements.append({"modele": ident, "avant": anciens[ident]["version"], "apres": modele["version"]})
-    _ecrire_json_atomique(chemin_kb_modeles(racine), doc)
+    _ecrire_json_atomique(racine / CATALOGUE_LOCAL, doc)
+    _ecrire_json_atomique(chemin_kb_modeles(racine), publication_modeles(doc))
     ajouter_evenements(racine, changements)
     return doc

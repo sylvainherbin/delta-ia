@@ -513,7 +513,7 @@ test("fiche_reference HTTP : sources_internes absentes de la réponse publique",
   const brut = lireDonnee("kb/modeles.json");
   const entree = brut.entrees.find((e) => e.id === id);
   assert.ok(entree, "modèle témoin présent dans les vraies données");
-  assert.ok(brut.modeles[entree.modele].sources_internes.length > 0, "témoin mixte avec sources internes");
+  assert.equal(Object.hasOwn(brut.modeles[entree.modele], "sources_internes"), false, "JSON publié déjà filtré");
   const r = await appel("fiche_reference", { id });
   assert.equal(r.statut, 200);
   assert.equal(r.corps.result.isError, false);
@@ -554,10 +554,10 @@ test("modèles × efforts : chercher_reference et fiche_reference couvrent les 1
   assert.equal(sonnetAgyHigh.id, "modele-antigravity-claude-sonnet-5-5-high");
   assert.equal(Object.hasOwn(sonnetAgyHigh, "sources_internes"), false);
 
-  // L3 : l'ancien JSON mixte porte encore constats internes et recommandation OPÉRER ; la réponse publique ne les rend pas.
+  // La génération filtre les observations avant même le passage par le lecteur MCP public.
   const brut = lireDonnee("kb/modeles.json");
-  assert.ok(brut.modeles["Qwen3.5-4B"].constats_internes.some((c) => c.constat.includes("Modèles locaux lents et faibles")), "fixture d'ancien format mixte");
-  assert.ok(brut.entrees.some((e) => e.recommandation_operer?.pourquoi?.includes("extraction en un seul appel")), "fixture d'ancien format mixte");
+  assert.equal(Object.hasOwn(brut.modeles["Qwen3.5-4B"], "constats_internes"), false);
+  assert.equal(brut.entrees.some((e) => Object.hasOwn(e, "recommandation_operer")), false);
   const qwenLocal = (await appel("fiche_reference", { id: "Qwen3.5-4B" })).corps.result.structuredContent.fiche;
   assert.equal(qwenLocal.id, "modele-qwen3-5-4b-sans-reflexion");
   const texte = JSON.stringify(qwenLocal);

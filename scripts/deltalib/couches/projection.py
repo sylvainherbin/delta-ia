@@ -35,6 +35,7 @@ from .racines import Racines
 from .scission import scinder_sources, textes_prives
 from .sentinelles import Detecteur, termes_instance
 from .stockage import dossier_prive, ecrire, serialiser, sha256_fichier, verrou
+from ..kb.fiches_modeles import CATALOGUE_LOCAL
 
 # Journaux privés du dépôt producteur lus par l'import (D119, rejugements), et profil dont seule l'empreinte est gardée.
 ESSAIS, REJUGEMENTS, PROFIL = "kb-essais.yaml", "kb-rejugements.yaml", "profil.yaml"
@@ -381,6 +382,8 @@ def _empreintes(depot: Path, rels) -> dict[str, str | None]:
 def lire_entrees(depot: Path) -> list[Entree]:
     rels = sorted(p.relative_to(depot).as_posix() for p in (depot / "docs" / "data").rglob("*") if p.is_file())
     rels += [r for r in (ESSAIS, REJUGEMENTS, PROFIL, SOURCES) if (depot / r).is_file()]
+    if (depot / CATALOGUE_LOCAL).is_file():
+        rels.append(CATALOGUE_LOCAL)
     rels += sorted(p.relative_to(depot).as_posix() for d in SOURCES_SCINDEES if (depot / d).is_dir()
                    for p in (depot / d).iterdir() if p.is_file() and p.suffix in (".yaml", ".md") and p.name != "README.md")
     sortie = []
@@ -396,6 +399,9 @@ def projeter(entrees: list[Entree], detecteur: Detecteur,
     p = Projection(detecteur)
     par_famille: dict[str, list[tuple[str, list]]] = {}
     inconnus = []
+    # Le catalogue complet ne se publie plus sous docs/. Même identité logique pour
+    # conserver les historiques et les lecteurs locaux ; ancien dépôt : repli public.
+    local_modeles = next((e for e in entrees if e.rel == CATALOGUE_LOCAL), None)
     for e in entrees:
         if not e.rel.startswith("docs/data/"):
             continue
@@ -405,7 +411,8 @@ def projeter(entrees: list[Entree], detecteur: Detecteur,
             if not rel.endswith(".gitkeep"):
                 inconnus.append(rel)
             continue
-        par_famille.setdefault(famille, []).append((rel, _documents(e)))
+        source = local_modeles if rel == "kb/modeles.json" and local_modeles else e
+        par_famille.setdefault(famille, []).append((rel, _documents(source)))
     for rel, docs in par_famille.get("kb_catalogue", []):
         for x in docs[0].get("entrees", []) if isinstance(docs[0], dict) else []:
             if not isinstance(x, dict) or not x.get("id"):

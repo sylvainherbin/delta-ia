@@ -1,5 +1,6 @@
 """Catalogue public factorisé : couverture, faits corrigés, provenance et validation."""
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -8,6 +9,72 @@ import pytest
 import valider
 from conftest import RACINE
 from deltalib.kb import fiches_modeles as fm
+
+
+def verifier_publication(racine):
+    # Frontière statique réelle : tous les fichiers servis, générations conservées comprises.
+    motif = re.compile(rb'"(?:sources_internes|constats_internes|recommandation_operer)"\s*:')
+    fuites = [p.relative_to(racine).as_posix() for p in (racine / "docs").rglob("*")
+              if p.is_file() and motif.search(p.read_bytes())]
+    assert not fuites, f"clés privées publiées : {fuites}"
+    texte = (racine / "docs/data/kb/modeles.json").read_text()
+    assert "### Constats internes datés" not in texte
+    assert "Recommandation OPÉRER" not in texte
+
+
+def test_aucun_fichier_publie_ne_porte_les_cles_privees():
+    verifier_publication(RACINE)
+
+
+def test_cli_ne_publie_pas_les_champs_prives(depot):
+    reel = subprocess.run([sys.executable, str(RACINE / "scripts/catalogue.py"), "modeles",
+                           "--racine", str(depot)], capture_output=True, text=True)
+    assert reel.returncode == 0, reel.stderr
+    verifier_publication(depot)
+
+
+def test_lecteur_local_retrouve_les_champs_prives(depot):
+    from deltalib.couches.lecteur import Lecteur
+    from deltalib.couches.projection import lire_entrees, projeter
+    from deltalib.couches.racines import Racines
+    from deltalib.couches.sentinelles import Detecteur
+
+    fm.ecrire_modeles(depot)
+    prive = depot / "kb-modeles/catalogue.json"
+    assert prive.is_file(), "catalogue local hors de la racine publiée"
+    complet = fm.construire_modeles(depot)
+    assert json.loads(prive.read_text()) == complet
+    _, overlay, _, _, _ = projeter(lire_entrees(depot), Detecteur())
+    for ident, modele in complet["modeles"].items():
+        champs = overlay[f"kb:delta:modeles:{ident}"]["historique_importe"][0]["champs"]
+        for cle in ("sources_internes", "constats_internes"):
+            assert champs[cle] == modele[cle]
+    for entree in complet["entrees"]:
+        champs = overlay[f"kb:delta:modeles:{entree['id']}"]["historique_importe"][0]["champs"]
+        assert champs["recommandation_operer"] == entree["recommandation_operer"]
+    racines = Racines(*(depot / "instance-essai" / k for k in ("config", "etat", "cache", "runtime")), origine="instance")
+    racines.personnel.mkdir(parents=True)
+    (racines.personnel / "overlay.json").write_text(json.dumps({
+        "schema": "delta.personnel", "schema_version": 1, "vue": "overlay",
+        "commun_generation": None, "profil_empreinte": None, "objets": overlay}))
+    lecteur = Lecteur(racines)
+    assert lecteur.personnel_statut == "disponible"
+    for ident, objet in overlay.items():
+        assert lecteur.fiche(ident)["personnel"]["historique_importe"] == objet["historique_importe"]
+    # Même magasin lu par le véritable lecteur du MCP stdio, sans instance réelle.
+    module = (RACINE / "mcp/lib/local.js").as_uri()
+    js = f'''
+      import {{ LecteurLocal }} from {json.dumps(module)};
+      const l = new LecteurLocal(JSON.parse(process.argv[1]));
+      const objets = l.personnel().objets;
+      console.log(JSON.stringify(Object.fromEntries(Object.keys(objets).map(id =>
+        [id, l.blocPersonnel(id, null, {{ complet: true }}).historique_importe]))));
+    '''
+    reel = subprocess.run(["node", "--input-type=module", "-e", js,
+                           json.dumps({k: str(getattr(racines, k)) for k in ("etat", "cache")})],
+                          capture_output=True, text=True)
+    assert reel.returncode == 0, reel.stderr
+    assert json.loads(reel.stdout) == {i: o["historique_importe"] for i, o in overlay.items()}
 
 
 @pytest.fixture
@@ -64,7 +131,7 @@ def test_faits_corriges_et_inconnus_non_inventes():
 def test_fichier_a_jour_et_sans_fuite():
     assert rapport(RACINE).ok
     contenu = fm.chemin_kb_modeles(RACINE).read_text()
-    assert json.loads(contenu) == fm.construire_modeles(RACINE)
+    assert json.loads(contenu) == fm.publication_modeles(fm.construire_modeles(RACINE))
     assert "/home/" not in contenu and "cc-socks" not in contenu
     assert "*(défaut)*" not in contenu and "*(source" not in contenu
 
@@ -87,6 +154,17 @@ def test_validation_absence_desynchronisation_fuite(depot):
 
 def test_absence_hors_catalogue_acceptee(tmp_path):
     assert rapport(tmp_path).ok
+
+
+@pytest.mark.parametrize("contenu", [None, "illisible", "{}"])
+def test_validation_du_catalogue_local(depot, contenu):
+    fm.ecrire_modeles(depot)
+    local = depot / fm.CATALOGUE_LOCAL
+    if contenu is None:
+        local.unlink()
+    else:
+        local.write_text(contenu)
+    assert any(fm.CATALOGUE_LOCAL in e for e in rapport(depot).erreurs)
 
 
 def test_commande_et_generation_deterministe(depot):

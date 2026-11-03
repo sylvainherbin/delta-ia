@@ -1040,8 +1040,16 @@ def verifier_modeles(racine: Path, r: Rapport) -> None:
     except fm.FicheModeleInvalide as err:
         r.erreur("kb-modeles", str(err))
         return
-    if attendu != doc:
+    if fm.publication_modeles(attendu) != doc:
         r.erreur(ou, f"différent de ce que tirent les fichiers {fm.DOSSIER_SOURCE}/*.yaml : lancer `catalogue.py modeles`")
+    local = racine / fm.CATALOGUE_LOCAL
+    try:
+        doc_local = json.loads(local.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        r.erreur(fm.CATALOGUE_LOCAL, "catalogue local absent ou illisible : lancer `catalogue.py modeles`")
+    else:
+        if doc_local != attendu:
+            r.erreur(fm.CATALOGUE_LOCAL, "catalogue local désynchronisé : lancer `catalogue.py modeles`")
 
 
 def verifier_noms(racine: Path, perimetre: str, ids: set[str], r: Rapport) -> None:
