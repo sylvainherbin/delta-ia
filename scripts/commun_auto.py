@@ -9,12 +9,14 @@ Appelé par delta-ia-commun.service depuis le dépôt principal après fusion, u
 3. validation de la route, commit des seuls chemins `docs/commun/v1/` et `kb-traductions/fr.json`, push.
 Les routes actuelles (`docs/data`) ne sont ni lues autrement qu'en entrée ni modifiées. Une erreur laisse les fichiers
 en place, sans reset ni rebase automatique. Sans distant, commit local seulement.
+`--diagnostic` lit seulement la route locale et l'état systemd utilisateur : aucun verrou, import, Git ni réseau.
 """
 
 from __future__ import annotations
 
 import argparse
 import fcntl
+import json
 import os
 import subprocess
 import sys
@@ -104,10 +106,47 @@ def executer(racine: Path, maintenant: datetime) -> str:
         return publier(racine, maintenant)
 
 
+def diagnostiquer(racine: Path, maintenant: datetime) -> dict:
+    """Distingue une route en retard d'un producteur absent, désactivé ou en échec, sans publier."""
+    try:
+        index = json.loads((racine / ROUTE / publication.INDEX).read_text(encoding="utf-8"))
+        bilan = publication.surveiller(index, maintenant)
+    except (OSError, ValueError) as err:
+        bilan = {"ok": False, "alertes": [f"index_illisible: {type(err).__name__}"], "age_h": None}
+    alertes = bilan["alertes"]
+    unites = {}
+    for nom in ("delta-ia-commun.timer", "delta-ia-commun.service"):
+        try:
+            res = subprocess.run(["systemctl", "--user", "show", nom,
+                                  "--property=LoadState,ActiveState,UnitFileState,Result"],
+                                 capture_output=True, text=True, timeout=10)
+            if res.returncode:
+                raise RuntimeError("état systemd indisponible")
+        except (OSError, RuntimeError, subprocess.TimeoutExpired):
+            unites[nom] = None
+            alertes.append(f"systemd_indisponible: {nom} (commande ou bus utilisateur inaccessible)")
+            continue
+        etat = dict(ligne.split("=", 1) for ligne in res.stdout.splitlines() if "=" in ligne)
+        unites[nom] = etat
+        if etat.get("LoadState") != "loaded":
+            alertes.append(f"systemd_absent: {nom} (LoadState={etat.get('LoadState', 'inconnu')})")
+        elif nom.endswith(".timer"):
+            if etat.get("UnitFileState") != "enabled" or etat.get("ActiveState") != "active":
+                alertes.append(f"systemd_minuteur_inactif: {nom} (activation permanente et état actif requis)")
+        elif etat.get("ActiveState") == "failed" or etat.get("Result") not in (None, "", "success"):
+            alertes.append(f"systemd_echec: {nom} (Result={etat.get('Result', 'inconnu')})")
+    return {**bilan, "ok": not alertes, "unites": unites}
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--racine", type=Path, default=RACINE, help=argparse.SUPPRESS)
+    parser.add_argument("--diagnostic", action="store_true", help="état local de la route et du producteur, sans publication")
     args = parser.parse_args(argv)
+    if args.diagnostic:
+        bilan = diagnostiquer(args.racine.resolve(), datetime.now(ZoneInfo("Europe/Paris")))
+        print(json.dumps(bilan, ensure_ascii=False, indent=2))
+        return 0 if bilan["ok"] else 1
     try:
         print(executer(args.racine.resolve(), datetime.now(ZoneInfo("Europe/Paris"))))
     except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as err:

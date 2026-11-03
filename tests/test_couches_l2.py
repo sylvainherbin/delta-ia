@@ -4,7 +4,10 @@ scission des sources, publication versionnée, miroir hors ligne et surveillance
 import functools
 import http.server
 import json
+import os
 import shutil
+import subprocess
+import sys
 import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -399,6 +402,75 @@ def test_commun_auto_ne_publie_que_sa_route():
     assert not commun_auto.est_publie("docs/data/versions.json")
     assert not commun_auto.est_publie("docs/commun/v1")  # le dossier lui-même n'est jamais un fichier publié
     assert not commun_auto.est_publie("profil.yaml")
+
+
+@pytest.mark.parametrize("incident", ["absent", "perime", "desactive", "inactif", "echec", "bus",
+                                      "sans_systemctl", "index_absent", "index_invalide", None])
+def test_commun_auto_diagnostic_sans_publication(tmp_path, incident):
+    """Vrai CLI, route au schéma réel, systemd simulé ; aucun accès Git, réseau ou magasin d'instance."""
+    route = tmp_path / "docs" / "commun" / "v1"
+    route.mkdir(parents=True)
+    index = json.loads((RACINE / "docs/commun/v1/index.json").read_text())
+    maintenant = datetime.now(timezone.utc)
+    index["publie_le"] = maintenant.isoformat()
+    for p in index["perimetres"].values():
+        p["dernier_jour"] = maintenant.date().isoformat()
+    if incident in ("absent", "perime"):
+        # Régression A02 : état des unités et index réellement constatés le 03/11.
+        index["publie_le"] = "2026-10-24T10:35:38+00:00"
+        for p in index["perimetres"].values():
+            p["dernier_jour"] = "2026-10-24"
+    _json(route / "index.json", index)
+    if incident == "index_absent":
+        (route / "index.json").unlink()
+    elif incident == "index_invalide":
+        _json(route / "index.json", [])
+    unites = {
+        "delta-ia-commun.timer": {"LoadState": "loaded", "ActiveState": "active", "UnitFileState": "enabled"},
+        "delta-ia-commun.service": {"LoadState": "loaded", "ActiveState": "inactive", "Result": "success"},
+    }
+    if incident == "absent":
+        for u in unites.values():
+            u.update(LoadState="not-found", ActiveState="inactive", UnitFileState="")
+    elif incident == "desactive":
+        unites["delta-ia-commun.timer"]["UnitFileState"] = "disabled"
+    elif incident == "inactif":
+        unites["delta-ia-commun.timer"]["ActiveState"] = "inactive"
+    elif incident == "echec":
+        unites["delta-ia-commun.service"].update(ActiveState="failed", Result="exit-code")
+    binaires = tmp_path / "bin"
+    binaires.mkdir()
+    if incident != "sans_systemctl":
+        systemctl = binaires / "systemctl"
+        systemctl.write_text(
+            f"#!{sys.executable}\nimport sys\n"
+            "assert sys.argv[1:3] == ['--user', 'show']\n"
+            f"unites = {unites!r}\n"
+            f"sys.exit(1) if {incident == 'bus'!r} else None\n"
+            "for k, v in unites[sys.argv[3]].items():\n    print(k + '=' + v)\n")
+        systemctl.chmod(0o755)
+    env = {**os.environ, "PATH": str(binaires), "PYTHONDONTWRITEBYTECODE": "1"}
+    for var in ("XDG_CONFIG_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "XDG_RUNTIME_DIR"):
+        env[var] = str(tmp_path / var)
+    avant = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    res = subprocess.run([sys.executable, "-B", str(RACINE / "scripts/commun_auto.py"),
+                          "--diagnostic", "--racine", str(tmp_path)],
+                         env=env, capture_output=True, text=True, timeout=30)
+    assert res.returncode == (1 if incident else 0), res.stderr
+    bilan = json.loads(res.stdout)
+    assert bilan["ok"] is (incident is None)
+    if incident in ("absent", "perime"):
+        if incident == "absent":
+            assert all(any(u in a and "not-found" in a for a in bilan["alertes"]) for u in unites)
+        assert any(a.startswith("cycle_manque:") for a in bilan["alertes"])
+        assert sum(a.startswith("perimetre_en_retard:") for a in bilan["alertes"]) == 3
+    elif incident in ("index_absent", "index_invalide"):
+        assert any(a.startswith("index_") for a in bilan["alertes"])
+    elif incident:
+        assert any("systemd" in a for a in bilan["alertes"])
+    else:
+        assert bilan["alertes"] == []  # oneshot inactif après un succès : état normal
+    assert {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()} == avant
 
 
 def test_route_publiee_du_depot_valide():

@@ -1,5 +1,16 @@
 # Génération commune quotidienne (lot L2 des deux couches)
 
+La présence des fichiers dans Git ne planifie rien : les deux unités doivent être installées et le minuteur activé.
+Diagnostic local, sans réseau, publication ni modification d'instance, depuis le dépôt ou un worktree :
+
+```sh
+.venv/bin/python -B scripts/commun_auto.py --diagnostic
+```
+
+Le code 1 distingue dans les alertes une route périmée, des unités absentes (`LoadState=not-found`), un minuteur
+désactivé/inactif, un service en échec ou un état systemd non consultable. Le service `oneshot` inactif après succès
+est normal. Le code 0 exige une route dans les délais et un producteur planifié ; il ne vérifie pas le site distant.
+
 Installer **après relecture et fusion sur main**, depuis `~/projets/delta-ia` :
 
 ```sh
@@ -10,7 +21,7 @@ systemctl --user enable --now delta-ia-commun.timer
 systemctl --user list-timers delta-ia-commun.timer --no-pager
 ```
 
-Chaque jour à 06:45 (Paris), après la chaîne de 04:00 (seul commit automatique admis dans la fenêtre 03:30-08:00, SPEC §3) : le service prend `.git/delta-passage.lock`, exige main et un
+Une fois installé et activé, chaque jour à 06:45 (Paris), après la chaîne de 04:00 (seul commit automatique admis dans la fenêtre 03:30-08:00, SPEC §3) : le service prend `.git/delta-passage.lock`, exige main et un
 arbre propre hors de la route commune, avance origin/main en avance rapide, puis lance `scripts/commun_auto.py` :
 import dans les racines de l'installation historique (`~/.local/state/delta/delta-ia/`, `~/.cache/delta/delta-ia/`),
 extraction de la base sans filtre de système depuis `raw/kb/`, génération commune isolée, publication dans
