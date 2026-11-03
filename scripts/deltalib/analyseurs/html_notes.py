@@ -25,6 +25,10 @@ from ..modeles import Element, FormatInattendu, ResultatSource
 
 _RE_H3 = re.compile(r"^###\s+(.+?)\s*$", re.M)
 _RE_GRAS_SEUL = re.compile(r"^\*\*(.+?)\*\*\s*$")
+# CSS Modules : préfixes de compilation variables, suffixes communs aux gabarits
+# de septembre et du 03/11/2026 (FeaturedGrid…__featured -> W1FydW_featured).
+_RE_CARTE_NEWSROOM = re.compile(r"_(?:summary|carousel-info-body|featured|tile)$")
+_RE_RESUME_NEWSROOM = re.compile(r"(?:_|-)(?:summary|description)$")
 _journal = logging.getLogger(__name__)
 
 
@@ -118,6 +122,7 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
         # Ancien gabarit : date, titre et lien partageaient le même <a>.
         a = t.find_parent("a")
         titre_el = None
+        carte = None
         if a is not None and a.get("href"):
             titre_el = a.find(["h1", "h2", "h3", "h4", "h5"])
             titre_el = titre_el or a.find(class_=lambda c: c and "title" in c.lower())
@@ -125,8 +130,7 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
             # Gabarit actuel : date et lien de titre sont frères dans une carte,
             # soit la grille FeaturedGrid, la ligne TableView, soit le carrousel.
             carte = next((p for p in t.parents if any(
-                isinstance(c, str) and ("__summary" in c or "__carousel-info-body" in c or
-                                        ("FeaturedGrid" in c and ("__featured" in c or "__tile" in c)))
+                isinstance(c, str) and _RE_CARTE_NEWSROOM.search(c)
                 for c in (p.get("class") or []))), None)
             if carte is None:
                 ignores += 1
@@ -144,17 +148,20 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
             continue
         titre = titre_el.get_text(" ", strip=True) if titre_el else None
         if not titre:
-            continue
+            raise FormatInattendu(f"carte {url} sans titre : gabarit changé ?")
         date_iso = analyser_date(t.get("datetime") or t.get_text(" ", strip=True))
         resume = a.find("p")
+        if resume is None and carte is not None:
+            # Table et carrousel : le résumé est frère du lien de titre.
+            resume = carte.find(class_=_RE_RESUME_NEWSROOM)
         vus.add(url)
         elements.append(Element(id=url, produit=source.produit, titre=titre, version=None, date_publication=date_iso,
                                 url=url, contenu=resume.get_text(" ", strip=True) if resume else "",
                                 source_id=source.id, officielle=source.officielle))
     if not elements and ignores_hors_chrome:
         raise FormatInattendu("balises <time> hors footer/header sans entrée reconnue : gabarit changé ?")
-    if not elements and not ignores:
-        raise FormatInattendu("balises <time> présentes mais aucun lien avec intertitre : gabarit changé ?")
+    if not elements:
+        raise FormatInattendu("balises <time> présentes mais aucune entrée reconnue : gabarit changé ?")
     if ignores:
         _journal.warning("%s : %d balise(s) <time> hors conteneur reconnu ignorée(s)", source.id, ignores)
     return elements

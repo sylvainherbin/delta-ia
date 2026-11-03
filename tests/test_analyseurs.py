@@ -195,10 +195,10 @@ def test_newsroom_carte_time_sans_lien_de_titre_est_inattendue(sources):
         html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"])
 
 
-def test_newsroom_time_hors_conteneur_est_journalisee_sans_echec_pied_de_page(sources, caplog):
+def test_newsroom_pied_de_page_seul_ne_masque_pas_un_gabarit_inconnu(sources):
     html = "<footer><time>Oct 1, 2026</time></footer>"
-    assert html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"]) == []
-    assert "1 balise(s) <time> hors conteneur reconnu ignorée(s)" in caplog.text
+    with pytest.raises(FormatInattendu, match="aucune entrée reconnue"):
+        html_notes.parser_html_time_liens(html, sources["anthropic-newsroom"])
 
 
 def test_newsroom_entree_valide_et_time_hors_conteneur(sources, caplog):
