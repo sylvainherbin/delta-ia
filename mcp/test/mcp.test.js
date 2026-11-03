@@ -241,9 +241,10 @@ const lireDonnee = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), "utf8")
 const CLES_LIGNE = ["id", "nom", "produit", "categorie", "syntaxe_ou_acces", "usage", "exemple", "verdict", "date_ajout"];
 
 // Sert la base de données avec des fichiers remplacés (`null` = 404, chaîne = corps brut) sur une instance neuve du serveur.
-async function avecDonnees(remplacements, fn) {
+async function avecDonnees(remplacements, fn, statuts = {}) {
   const src = http.createServer((req, res) => {
     const nom = decodeURIComponent(req.url.split("?")[0]).replace(/^\//, "");
+    if (statuts[nom]) { res.statusCode = statuts[nom]; return res.end(); }
     if (nom in remplacements) {
       const v = remplacements[nom];
       if (v === null) { res.statusCode = 404; return res.end(); }
@@ -261,6 +262,72 @@ async function avecDonnees(remplacements, fn) {
     await fn((nom, args = {}) => m.traiter({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: nom, arguments: args } }));
   } finally { process.env.DELTA_BASE_URL = avant; src.close(); }
 }
+
+// N01 : vrais fichiers et vrai handler HTTP ; seul le transport de la donnée ciblée est remplacé.
+async function verifierResumeIndex(t, remplacements, erreur, args = { date: "2026-11-03" }, statuts = {}) {
+  let resultat;
+  await avecDonnees(remplacements, async () => {
+    let reponse;
+    const lignes = await journal(t, async () => { reponse = await appel("resume_du_jour", args); });
+    assert.equal(reponse.statut, 200);
+    resultat = reponse.corps.result;
+    assert.equal(resultat.isError, Boolean(erreur));
+    assert.deepEqual(lignes.map((l) => [l.outil, l.statut]), [["resume_du_jour", erreur ? "erreur_outil" : "ok"]]);
+    if (erreur) {
+      assert.match(resultat.content[0].text, erreur);
+      assert.equal(resultat.structuredContent, undefined);
+    }
+  }, statuts);
+  return resultat.structuredContent;
+}
+
+for (const p of ["claude", "openai", "actu"]) test(`resume_du_jour : index ${p} HTTP 503 = erreur explicite`, async (t) => {
+  await verifierResumeIndex(t, {}, new RegExp(`${p}/index.json : HTTP 503`),
+    p === "actu" ? {} : { date: "2026-11-03" }, { [`${p}/index.json`]: 503 });
+});
+
+test("resume_du_jour : index JSON invalide = erreur explicite", async (t) => {
+  await verifierResumeIndex(t, { "claude/index.json": "{invalide" }, /claude\/index.json : JSON illisible/);
+});
+
+test("resume_du_jour : index tous HTTP 503 = erreur explicite", async (t) => {
+  await verifierResumeIndex(t, {}, /claude\/index.json : HTTP 503/, { date: "2026-11-03" },
+    Object.fromEntries(["claude", "openai", "actu"].map((p) => [`${p}/index.json`, 503])));
+});
+
+for (const [nom, index] of [
+  ["nul", "null"], ["sans jours", {}], ["jours nul", { jours: null }],
+  ["jours objet", { jours: {} }], ["jours chaîne", { jours: "2026-11-03" }],
+  ["entrée nulle", { jours: [null] }], ["date absente", { jours: [{}] }],
+  ["date numérique", { jours: [{ date: 20261103 }] }], ["date invalide", { jours: [{ date: "03/11/2026" }] }],
+]) test(`resume_du_jour : index ${nom} = erreur de format`, async (t) => {
+  await verifierResumeIndex(t, { "claude/index.json": index }, /claude\/index.json : format inattendu/);
+});
+
+test("resume_du_jour : journée réellement vide = succès sans éléments", async (t) => {
+  const s = await verifierResumeIndex(t, {}, null, { date: "2026-11-02" });
+  assert.equal(s.perimetres.length, 3);
+  for (const p of s.perimetres) {
+    assert.equal(p.date, "2026-11-02");
+    assert.equal(p.absent, undefined);
+    assert.deepEqual(p.elements, []);
+    assert.deepEqual(p.compte, { fort: 0, moyen: 0, faible: 0, nul: 0, inconnu: 0 });
+  }
+});
+
+test("resume_du_jour : date absente des index lus = succès absent", async (t) => {
+  const s = await verifierResumeIndex(t, {}, null, { date: "2000-01-01" });
+  assert.deepEqual(s.perimetres, ["claude", "openai", "actu"].map((perimetre) => ({ perimetre, date: "2000-01-01", absent: true })));
+});
+
+test("resume_du_jour : index aux listes vides = succès absent sans date", async (t) => {
+  const s = await verifierResumeIndex(t, Object.fromEntries(["claude", "openai", "actu"].map((p) => [`${p}/index.json`, { jours: [] }])), null, {});
+  assert.deepEqual(s.perimetres, ["claude", "openai", "actu"].map((perimetre) => ({ perimetre, date: null, absent: true })));
+});
+
+test("resume_du_jour : fichier quotidien HTTP 503 = erreur inchangée", async (t) => {
+  await verifierResumeIndex(t, {}, /claude\/2026-11-03.json : HTTP 503/, { date: "2026-11-03" }, { "claude/2026-11-03.json": 503 });
+});
 
 test("nouveautes_base : champs, fenêtre, plafond de 30 et défaut de 7 jours", async () => {
   const r = (await appel("nouveautes_base")).corps.result;

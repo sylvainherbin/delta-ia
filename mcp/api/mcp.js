@@ -76,7 +76,10 @@ async function resumeDuJour({ date, inclure_faibles = false } = {}, ctx) {
   const perimetres = [];
   for (const p of PERIMETRES) {
     const idx = index[p];
-    const jours = (idx && Array.isArray(idx.jours)) ? idx.jours.map((j) => j.date).sort().reverse() : [];
+    if (idx?.erreur) throw new Error(idx.erreur);
+    if (!Array.isArray(idx?.jours) || idx.jours.some((j) => !j || typeof j.date !== "string" || !RE_DATE.test(j.date)))
+      throw erreurFormat(`${p}/index.json`);
+    const jours = idx.jours.map((j) => j.date).sort().reverse();
     const d = date || jours[0];
     if (!d || !jours.includes(d)) { perimetres.push({ perimetre: p, date: d || null, absent: true }); continue; }
     const q = await lire(`${p}/${d}.json`, ctx);
