@@ -8,8 +8,9 @@ const appel = (argumentsOutil, name = "chercher_reference") => ({
   jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: argumentsOutil },
 });
 
-for (const [incident, cause] of [["HTTP 503", "lecture.http"], ["JSON invalide", "lecture.json"]]) {
-  test(`diagnostic : résumé avec index ${incident}, par HTTP et sans compteur distant`, async (t) => {
+for (const outil of ["resume_du_jour", "a_tester"])
+ for (const [incident, cause] of [["HTTP 503", "lecture.http"], ["JSON invalide", "lecture.json"]]) {
+  test(`diagnostic : ${outil} avec index ${incident}, par HTTP et sans compteur distant`, async (t) => {
     const journal = [], compteur = new Map();
     t.mock.method(console, "log", s => journal.push(JSON.parse(s)));
     // Le gestionnaire réel appelle compter ; son stockage distant reste désactivé, même si le parent est configuré.
@@ -49,7 +50,7 @@ for (const [incident, cause] of [["HTTP 503", "lecture.http"], ["JSON invalide",
       process.env.DELTA_BASE_URL = `${base}/${langue}`;
       const r = await fetch(`${url}/?source=ancienne_route&langue=${langue}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(appel({}, "resume_du_jour")),
+        body: JSON.stringify(appel({}, outil)),
       });
       assert.equal(r.status, 200);
       const texte = langue === "fr" ? "Données ORQYRA AI indisponibles" : "ORQYRA AI data unavailable";
@@ -68,8 +69,8 @@ for (const [incident, cause] of [["HTTP 503", "lecture.http"], ["JSON invalide",
     assert.deepEqual(horsBac, []);
     assert.deepEqual(journal.map(l => l.cause_erreur), [cause, cause]);
     assert.deepEqual(Object.fromEntries(compteur), {
-      "req:tools/call": 2, "outil:resume_du_jour": 2, "erreur:resume_du_jour": 2,
-      [`cause:resume_du_jour/${cause}`]: 2,
+      "req:tools/call": 2, [`outil:${outil}`]: 2, [`erreur:${outil}`]: 2,
+      [`cause:${outil}/${cause}`]: 2,
     });
   });
 }

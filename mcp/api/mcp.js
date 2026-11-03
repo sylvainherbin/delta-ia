@@ -567,7 +567,7 @@ async function aTester({ limite = LIMITE_ESSAIS, curseur, id } = {}, ctx) {
   const depuis = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
   const actions = [];
   for (const p of PERIMETRES) {
-    if (index[p]?.erreur) throw new Error(index[p].erreur);
+    if (index[p]?.erreur) throw index[p].exception ?? new Error(index[p].erreur);
     const jours = (index[p]?.jours || []).map((j) => j.date).filter((d) => d >= depuis);
     for (const d of jours) {
       const q = await lire(`${p}/${d}.json`, ctx);
