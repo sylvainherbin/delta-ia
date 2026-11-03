@@ -4614,7 +4614,7 @@
    "categorie": "parametres",
    "nom": "BASH_MAX_TIMEOUT_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe le délai maximal qu'un modèle peut donner à une commande Bash, 10 minutes par défaut.",
+   "description": "Variable qui fixe en millisecondes le délai maximal qu'un modèle peut donner à une commande Bash au premier plan (600000, soit 10 minutes, par défaut) ; au-delà de 2 heures, ce plafond borne aussi les commandes d'arrière-plan des sessions sans surveillance (v2.1.285 ou plus).",
    "description_source": "Maximum timeout the model can set for a foreground Bash or PowerShell tool command, in milliseconds (default: 600000, or 10 minutes). The effective ceiling is the larger of this and BASH_DEFAULT_TIMEOUT_MS. An effective ceiling longer than 2 hours also becomes the maximum time limit for background commands in unattended sessions. The background time limit requires Claude Code v2.1.285 or later",
    "usage": "BASH_MAX_TIMEOUT_MS",
    "usage_nature": "syntaxe",
@@ -4623,7 +4623,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Si une étape de campagne trading-sim devait tourner au premier plan plus de 10 minutes, ce plafond la couperait ; l'arrière-plan reste la voie normale."
+    "pourquoi": "CONTEXTE.md ne décrit aucune commande au premier plan coupée à 10 minutes ; les campagnes longues de trading-sim passeraient plutôt en arrière-plan."
    },
    "sources": [
     {
@@ -4636,7 +4636,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4657,17 +4657,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Campagnes de simulation exhaustives sur une machine lente."
-    },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Calculs lourds bridés dans calculs.slice."
+     "pourquoi": "Campagnes exhaustives jugées lentes, sans délai Bash dépassé décrit."
     }
    }
   },
@@ -4858,7 +4858,7 @@
    "categorie": "parametres",
    "nom": "--bg",
    "gabarit": "court",
-   "description": "Option de lancement qui démarre la session comme agent d'arrière-plan et rend la main aussitôt, en affichant son identifiant et les commandes de gestion ; elle vérifie d'abord la confiance du dossier.",
+   "description": "Option de lancement qui démarre la session comme agent d'arrière-plan et rend la main aussitôt, en affichant son identifiant et les commandes de gestion ; elle vérifie la confiance du dossier et ne se combine pas avec `-p`/`--print`.",
    "description_source": "Start the session as a background agent and return immediately. Prints the session ID and management commands. Combine with --exec to run a shell command as a background job instead of a Claude session, or with --agent to run a specific subagent. Checks workspace trust for the directory before it starts. Can't be combined with -p/--print; see the error reference — claude --bg \"investigate the flaky test\"",
    "usage": "--bg, --background",
    "usage_nature": "syntaxe",
@@ -4867,7 +4867,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tournent déjà en continu dans tmux via systemd, et les missions passent par OPÉRER."
+    "pourquoi": "Tes sessions durables tournent déjà comme services systemd sous tmux et les missions passent par OPÉRER ; `--bg` ferait doublon."
    },
    "sources": [
     {
@@ -4880,7 +4880,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4901,13 +4901,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services systemd qui lancent chaque session dans tmux."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables lancées par `claude-session@<nom>` dans tmux."
+    },
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER remet les missions aux sessions existantes."
     }
    }
   },
@@ -5969,7 +5977,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT",
    "gabarit": "court",
-   "description": "Variable qui envoie le paramètre d'effort avec chaque requête, même quand le modèle n'est pas reconnu comme compatible, derrière une passerelle LLM ou un fournisseur tiers. Les modèles dont l'API refuse ce paramètre (Opus 4.1, Sonnet 4.5, Haiku 4.5 et antérieurs) restent exclus.",
+   "description": "Variable qui envoie le paramètre d'effort avec chaque requête, même quand Claude Code ne reconnaît pas l'identifiant du modèle, derrière une passerelle LLM ou un fournisseur tiers ; les modèles dont l'API refuse ce paramètre (Opus 4.1, Sonnet 4.5, Haiku 4.5 et antérieurs) restent exclus.",
    "description_source": "Set to 1 to send the effort parameter with every request, even when Claude Code does not recognize the model ID as effort-capable. Use this when routing through an LLM gateway or third-party provider that serves models under custom identifiers. Models that reject the effort parameter at the API, including Claude Opus 4.1, Claude Sonnet 4.5, Claude Haiku 4.5, and earlier models, are still excluded so requests do not fail",
    "usage": "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT",
    "usage_nature": "syntaxe",
@@ -5978,7 +5986,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage de passerelle ou de fournisseur tiers ; CONTEXTE.md décrit un abonnement Max sans passerelle."
+    "pourquoi": "Réglage de passerelle ou de fournisseur tiers ; CONTEXTE.md décrit un abonnement Max (20x) sans passerelle."
    },
    "sources": [
     {
@@ -5991,7 +5999,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6008,13 +6016,17 @@
     {
      "date": "2026-10-13",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Claude Max (20x) : pas de passerelle ni de fournisseur tiers décrits."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x), sans passerelle ni fournisseur tiers décrits."
     }
    }
   },
@@ -7157,7 +7169,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "gabarit": "court",
-   "description": "Variable qui désactive la fenêtre de contexte de 1M et limite à 200K les sessions sur les modèles à fenêtre native de 1M, comme Sonnet 5.5 et les modèles Fable.",
+   "description": "Variable qui désactive la fenêtre de contexte de 1M : les variantes `[1m]` disparaissent du sélecteur de modèle et les modèles à fenêtre de 1M par défaut sont ramenés à 200K.",
    "description_source": "Set to 1 to turn off 1M context window support. Claude Code removes [1m] model variants from the model picker and holds models that run with the 1M window by default to a 200K window. See Turn off 1M context. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID",
    "usage": "CLAUDE_CODE_DISABLE_1M_CONTEXT",
    "usage_nature": "syntaxe",
@@ -7166,7 +7178,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Couper la fenêtre de 1M ramènerait à 200K les sessions durables sur les modèles à fenêtre native de 1M, d'où des compactions plus fréquentes ; aucune exigence de conformité n'est décrite."
+    "pourquoi": "Tes sessions durables, reprises par `claude --resume`, s'allongent : les ramener à 200K multiplierait les compactions, sans exigence de conformité décrite."
    },
    "sources": [
     {
@@ -7179,7 +7191,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7204,13 +7216,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables, reprises par `--resume`, qui s'allongent."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables relancées par `claude --resume <id>`."
     }
    }
   },
@@ -7371,7 +7387,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_AGENT_VIEW",
    "gabarit": "court",
-   "description": "Variable qui désactive les agents d'arrière-plan et la vue des agents (`claude agents`, `--bg`).",
+   "description": "Variable qui désactive les agents d'arrière-plan et la vue des agents (`claude agents`, `--bg`, `/background` et le superviseur à la demande), comme le réglage `disableAgentView`.",
    "description_source": "Set to 1 to turn off background agents and agent view: claude agents, --bg, /background, and the on-demand supervisor. Equivalent to the disableAgentView setting",
    "usage": "CLAUDE_CODE_DISABLE_AGENT_VIEW",
    "usage_nature": "syntaxe",
@@ -7380,7 +7396,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'utilises ni `claude agents` ni `--bg` ; tes sessions sont des services tmux et le comportement par défaut ne gêne rien de décrit."
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage de `claude agents` ni de `--bg` et rien qui demande de les couper ; tes sessions sont des services systemd sous tmux."
    },
    "sources": [
     {
@@ -7393,7 +7409,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7406,13 +7422,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions en services systemd sous tmux."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions en services systemd sous tmux, sans agents d'arrière-plan décrits."
     }
    }
   },
@@ -7651,7 +7671,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
    "gabarit": "court",
-   "description": "Variable d'environnement qui, à 1, fait lancer à chaque processus Claude Code sa propre commande `gcpAuthRefresh` ou `awsAuthRefresh` au lieu d'attendre qu'un autre la termine (Claude Code 2.1.286 ou plus).",
+   "description": "Variable qui, à 1, fait lancer à chaque processus Claude Code sa propre commande `gcpAuthRefresh` ou `awsAuthRefresh` au lieu d'attendre qu'un autre processus la termine (v2.1.286 ou plus).",
    "description_source": "Set to 1 to make a Claude Code process run its gcpAuthRefresh or awsAuthRefresh command itself instead of waiting while another process runs it. Requires Claude Code v2.1.286 or later",
    "usage": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
    "usage_nature": "syntaxe",
@@ -7660,7 +7680,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ne sert qu'avec une authentification Google Cloud ou AWS (Vertex, Bedrock) ; tu passes par ton abonnement Max (20x)."
+    "pourquoi": "Ne sert qu'avec une authentification Google Cloud ou AWS ; tu passes par ton abonnement Max (20x)."
    },
    "sources": [
     {
@@ -7670,17 +7690,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Claude Max (20x), pas d'accès par Vertex ni Bedrock décrit."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x), aucun accès par Google Cloud ni AWS décrit."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-10-02",
@@ -7692,6 +7712,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
      "changement": "commentaire révisé"
     }
    ]
@@ -8129,7 +8153,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS",
    "gabarit": "court",
-   "description": "Variable qui retire les en-têtes et champs bêta propres à Anthropic des requêtes, pour les passerelles qui les refusent.",
+   "description": "Variable qui retire des requêtes les en-têtes `anthropic-beta` de préversion, leurs champs associés et les champs bêta des schémas d'outils (dont la recherche d'outils MCP), pour les passerelles proxy qui les refusent.",
    "description_source": "Set to 1 to strip pre-release anthropic-beta request headers, the body fields that pair with them, and beta tool-schema fields such as defer_loading and eager_input_streaming from API requests. Use this when a proxy gateway rejects requests with an Unexpected value(s) error for the anthropic-beta header or an Extra inputs are not permitted error. Disable pre-release capabilities lists what the variable removes, including MCP tool search, and what Claude Code keeps sending",
    "usage": "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS",
    "usage_nature": "syntaxe",
@@ -8138,7 +8162,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'API, de passerelle ou de fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
+    "pourquoi": "Réglage de passerelle proxy ; tu utilises Claude Code avec ton abonnement Max (20x), sans passerelle, et tu perdrais la recherche d'outils MCP."
    },
    "sources": [
     {
@@ -8151,7 +8175,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8168,13 +8192,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max (20x) individuel, sans passerelle décrite."
     }
    }
   },
@@ -8374,7 +8402,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_FILE_MENTIONS",
    "gabarit": "court",
-   "description": "Variable (valeur 1) qui empêche Claude Code de développer les mentions `@` de fichiers et de dossiers : Claude reçoit les chemins mentionnés avec une note l'invitant à les lire avec ses outils de fichier. Ignorée dans les réglages de projet et locaux (v2.1.299 ou plus).",
+   "description": "Variable (valeur 1) qui empêche Claude Code de développer les mentions `@` de fichiers et de dossiers : Claude reçoit les chemins avec une note l'invitant à les lire avec ses outils ; ignorée dans les réglages de projet et locaux (v2.1.299 ou plus).",
    "description_source": "Set to 1 to stop Claude Code from expanding @ mentions of files and directories. Claude instead gets the mentioned paths with a note to read them using its file tools. Ignored in project and local settings. Requires Claude Code v2.1.299 or later",
    "usage": "CLAUDE_CODE_DISABLE_FILE_MENTIONS",
    "usage_nature": "syntaxe",
@@ -8383,7 +8411,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun usage des mentions `@` dans les sessions durables, dont les briefs arrivent par OPÉRER ; la variable n'allège donc pas une consommation observée."
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage des mentions `@` dans les sessions durables, dont les missions arrivent par OPÉRER ; aucun gain observé à attendre."
    },
    "sources": [
     {
@@ -8393,17 +8421,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "Les missions sont remises aux sessions par OPÉRER, sans mention de fichier `@`."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Les missions sont remises par OPÉRER dans le volet tmux, sans mention `@` décrite."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-10-15",
@@ -8412,6 +8440,10 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -8775,7 +8807,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
    "gabarit": "court",
-   "description": "Variable qui coupe le trafic réseau non essentiel : mises à jour automatiques, télémétrie, rapports d'erreur, `/feedback`…",
+   "description": "Variable qui coupe le trafic réseau non essentiel (mises à jour automatiques, télémétrie, rapports d'erreur, `/feedback`, notes de version) et la récupération des drapeaux de fonctionnalité, ce qui rend Remote Control indisponible ; même à 0 ou false elle reste active, seule sa suppression la lève.",
    "description_source": "Set to any non-empty value, such as 1, to disable nonessential network traffic: auto-updates, telemetry, error reporting, the /feedback command, Claude-drafted feedback, release notes, the PR and MR status badge checks, and availability checks such as the fast mode check. It also stops the background runs of plugin command sources, which are local commands rather than network traffic, because they can trigger dependency installs. Setting it to 0 or false still disables this traffic, unlike most on/off variables; unset the variable to allow it again. Also disables feature-flag fetching, which makes Remote Control and the other features that need feature-flag fetching unavailable. Official plugin marketplace auto-install isn't covered; disable it with CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL. Doesn't affect gateway model discovery, which has its own opt-in",
    "usage": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
    "usage_nature": "syntaxe",
@@ -8784,7 +8816,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Couperait aussi les mises à jour automatiques et d'autres services alors que `claude update` suit déjà les versions installées ; aucun gain décrit pour la machine."
+    "pourquoi": "À éviter : elle rendrait Remote Control indisponible, alors que tes sessions durables sont lancées avec `--remote-control` et pilotées depuis l'iPhone."
    },
    "sources": [
     {
@@ -8797,7 +8829,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8810,17 +8842,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "config.claude-code.interface": {
-     "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "mises à jour natives suivies par claude update"
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions lancées par `claude --resume <id> --remote-control <nom>`."
     },
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Claude Code installé en natif"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "L'iPhone pilote le PC à distance par Remote Control."
     }
    }
   },
@@ -9285,7 +9321,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_THINKING",
    "gabarit": "court",
-   "description": "Variable qui retire le paramètre de raisonnement des requêtes, pour les passerelles qui le refusent ; elle ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5 ni des modèles Fable.",
+   "description": "Variable qui retire le paramètre de raisonnement des requêtes, pour les proxys et passerelles qui le refusent ; elle ne coupe pas le raisonnement d'Opus 5.5, Sonnet 5.5, Haiku 5.5 ni des modèles Fable (sur l'API Anthropic, c'est `MAX_THINKING_TOKENS=0`).",
    "description_source": "Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5, Sonnet 5.5, Haiku 5.5, or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there",
    "usage": "CLAUDE_CODE_DISABLE_THINKING",
    "usage_nature": "syntaxe",
@@ -9294,7 +9330,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Option de compatibilité pour passerelle ou fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
+    "pourquoi": "Option de compatibilité pour passerelle ou fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max (20x), sans passerelle."
    },
    "sources": [
     {
@@ -9307,7 +9343,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9332,12 +9368,16 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Abonnement Max (20x) individuel, sans passerelle ni clé API décrites."
     }
    }
