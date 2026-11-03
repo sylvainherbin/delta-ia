@@ -199,29 +199,34 @@ test("couche commune illisible : erreur de couche explicite, jamais de repli sur
 });
 
 // Vue compatible de l'ancienne route (conception §6, L5) : mêmes chemins, champs personnels nuls, versions sans installée.
-function vueCompatible() {
-  const idx = lireJson("data/claude/index.json");
-  const jour = idx.jours.map((j) => j.date).sort().at(-1);
-  const q = lireJson(`data/claude/${jour}.json`);
-  const neutre = { ...q, synthese: null, elements: q.elements.map((e) => ({ ...e, impact: null, pour_toi: null, action: null, projets_concernes: [] })) };
+function vueCompatible(vide = false) {
+  const q = JSON.parse(fs.readFileSync(path.resolve(ICI, "../../tests/fixtures/veille_vue_compatible.json"), "utf8"));
+  const jour = q.date;
+  const neutre = { ...q, elements: vide ? [] : q.elements };
+  const idx = { perimetre: q.perimetre, agent: q.agent, maj_le: q.genere_le,
+    jours: [{ date: jour, genere_le: q.genere_le, elements: neutre.elements.length,
+      impact: { fort: 0, moyen: 0, faible: 0, nul: 0 }, ecartes: 0 }] };
   const versions = lireJson("data/versions.json").map((l) => ({ outil: l.outil, derniere_publiee: l.derniere_publiee, version: null, statut: null, detectee_le: null }));
   const cmd = lireJson("data/kb/claude/commandes.json");
   const kb = { ...cmd, entrees: cmd.entrees.map((e) => ({ ...e, commentee: false, recommandation: null, statut_usage: null, description: null,
     textes: { description: { en: { texte: e.description_source, statut: "source" }, fr: { texte: `FR ${e.nom}`, statut: "automatique" } } } })) };
-  return { jour, q, remplacements: { [`data/claude/${jour}.json`]: neutre, "data/versions.json": versions, "data/kb/claude/commandes.json": kb, "data/etat.json": null } };
+  return { jour, remplacements: { "data/claude/index.json": idx, [`data/claude/${jour}.json`]: neutre, "data/versions.json": versions, "data/kb/claude/commandes.json": kb, "data/etat.json": null } };
 }
 
-test("ancienne route en vue compatible : impacts nuls non vidés, installée inconnue, aucun avis fabriqué", async () => {
-  const { jour, q, remplacements } = vueCompatible();
+for (const vide of [false, true]) test(`ancienne route en vue compatible (${vide ? "journée vide" : "éléments neutres"}) : impacts nuls non vidés, installée inconnue, aucun avis fabriqué`, async () => {
+  const { jour, remplacements } = vueCompatible(vide);
   const ctx = { langue: "en", source: "ancienne_route" };
   await avec(remplacements, async () => {
     const claude = (await donnees("resume_du_jour", {}, ctx)).perimetres.find((p) => p.perimetre === "claude");
     assert.equal(claude.date, jour);
-    assert.equal(claude.elements.length, q.elements.length);
-    assert.equal(claude.tri, "publication");
+    assert.equal(claude.absent, undefined);
+    assert.deepEqual(claude.elements.map((e) => e.id), vide ? [] : ["temoin-recent", "temoin-ancien"]);
+    assert.equal(claude.tri, vide ? "impact" : "publication");
     assert.ok(claude.elements.every((e) => e.impact === null && e.pour_toi === null));
-    assert.equal(claude.compte.inconnu, q.elements.length);
-    assert.match(claude.avis, /no personal impact/);
+    assert.deepEqual(claude.compte, { fort: 0, moyen: 0, faible: 0, nul: 0, inconnu: vide ? 0 : 2 });
+    assert.equal(claude.synthese, null);
+    if (vide) assert.equal(claude.avis, undefined);
+    else assert.match(claude.avis, /no personal impact/);
     const v = await donnees("etat_versions", {}, ctx);
     for (const o of v.outils) { assert.equal(o.installee, null); assert.equal(o.statut, "inconnu"); assert.match(o.note, /installed version not recorded/); }
     const f = (await donnees("fiche_reference", { id: "claude-code-commandes-model", langue: "fr" }, ctx)).fiche;

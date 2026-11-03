@@ -376,16 +376,20 @@ def test_ancienne_route_reelle_en_anglais_et_en_francais():
     assert all(x.startswith("data/") for x in r["lus"]), "sous /fr/, les données se lisent à la racine du site"
 
 
-def vue_compatible():
-    """Ancienne route en vue compatible (L5 prévue) : champs personnels nuls, sans etat.json, versions sans installée."""
+def vue_compatible(*, vide=False):
+    """Vue compatible à date fixe : deux éléments neutres ou une journée vide, versions sans installée."""
+    temoin = json.loads((RACINE / "tests" / "fixtures" / "veille_vue_compatible.json").read_text(encoding="utf-8"))
     remplacer = {}
     for p in ("claude", "openai", "actu"):
-        d = dernier_jour(p)
-        q = json.loads((DOCS / "data" / p / f"{d}.json").read_text(encoding="utf-8"))
-        for e in q["elements"]:
-            e.update(impact=None, pour_toi=None, action=None, projets_concernes=[])
-        q["synthese"] = None
+        q = dict(temoin, perimetre=p, agent="codex" if p == "openai" else "claude-code",
+                 elements=[] if vide or p != "claude" else temoin["elements"])
+        d = q["date"]
         remplacer[f"data/{p}/{d}.json"] = q
+        remplacer[f"data/{p}/index.json"] = {
+            "perimetre": p, "agent": q["agent"], "maj_le": q["genere_le"],
+            "jours": [{"date": d, "genere_le": q["genere_le"], "elements": len(q["elements"]),
+                       "impact": dict.fromkeys(("fort", "moyen", "faible", "nul"), 0), "ecartes": 0}],
+        }
     versions = json.loads((DOCS / "data" / "versions.json").read_text(encoding="utf-8"))
     for v in versions:
         v.update(version=None, detectee_le=None, statut="a_jour", note=None)
@@ -393,16 +397,19 @@ def vue_compatible():
     return remplacer
 
 
-def test_vue_compatible_sans_etat_prive_reste_consultable_et_pas_faussement_vide():
-    remplacer = vue_compatible()
-    attendus = sum(len(q["elements"]) for k, q in remplacer.items() if k.count("/") == 2)
-    assert attendus > 0
+@pytest.mark.parametrize("vide", [False, True], ids=["elements-neutres", "journee-vide"])
+def test_vue_compatible_sans_etat_prive_reste_consultable_et_pas_faussement_vide(vide):
+    remplacer = vue_compatible(vide=vide)
+    attendus = 0 if vide else 2
     for langue in ("en", "fr"):
         r = executer(langue=langue, ancres=["#aujourdhui"], absents=["data/etat.json"], remplacer=remplacer)
         texte = r["etapes"][0]["texte"]
         d = TEXTES[langue]
         # éléments à impact inconnu affichés, aucun impact fabriqué, aucune bascule « sans impact »
         assert d["elements.titre"].replace("{n}", str(attendus)) in texte
+        for titre in ("Élément témoin ancien", "Élément témoin récent"):
+            assert (titre in texte) is not vide
+        assert (d["elements.vide_filtre"] in texte) is vide
         for niveau in ("fort", "moyen", "faible", "nul"):
             assert d[f"impact.{niveau}"] not in texte
         assert "impact ?" not in texte and d["nul.afficher"].split("(")[0] not in texte
@@ -411,6 +418,8 @@ def test_vue_compatible_sans_etat_prive_reste_consultable_et_pas_faussement_vide
         tableau = tableau_outils(texte, langue)
         assert d["outils.inconnue"] in tableau and d["version.a_jour"] not in tableau
         assert "data/etat.json" in r["lus"]
+        for p in ("claude", "openai", "actu"):
+            assert f"data/{p}/2026-11-02.json" in r["lus"]
 
 
 def tableau_outils(texte, langue):
@@ -421,8 +430,9 @@ def tableau_outils(texte, langue):
     return texte.split(marque, 1)[0]
 
 
-def test_temoin_a_jour_reste_lu_dans_le_tableau_des_outils_et_pas_dans_le_texte_libre():
-    remplacer = vue_compatible()
+@pytest.mark.parametrize("vide", [False, True], ids=["elements-neutres", "journee-vide"])
+def test_temoin_a_jour_reste_lu_dans_le_tableau_des_outils_et_pas_dans_le_texte_libre(vide):
+    remplacer = vue_compatible(vide=vide)
     remplacer["data/versions.json"] = [{"pertinent_pour_profil": True, "outil": "Claude Code", "version": "2.1.311",
                                         "detectee_le": "2026-10-27T03:00:27+00:00", "derniere_publiee": "2.1.311",
                                         "source_derniere": "claude-code-changelog", "statut": "a_jour"}]
