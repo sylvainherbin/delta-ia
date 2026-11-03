@@ -94,6 +94,22 @@ test("développement : référence absente refusée, champs communs et alias de 
   assert.throws(() => developperModeles({...doc, schema_version: 1}), (e) => e.cle === "modeles.format");
 });
 
+test("lecteurs publics : sources_internes retirées du vrai modèle témoin sans modifier la source", () => {
+  const id = "modele-gemini-4-argon-low";
+  const entree = doc.entrees.find((e) => e.id === id);
+  assert.ok(entree);
+  const sources = doc.modeles[entree.modele].sources_internes;
+  assert.ok(sources.length > 0, "témoin mixte avec sources internes");
+  const avant = JSON.stringify(doc);
+  for (const developper of [developperModeles, developperMcp]) {
+    const fiche = developper(doc).find((e) => e.id === id);
+    assert.ok(fiche);
+    assert.ok(fiche.sources.length > 0, "sources publiques conservées");
+    assert.equal(Object.hasOwn(fiche, "sources_internes"), false);
+  }
+  assert.equal(JSON.stringify(doc) === avant, true, "observations sources conservées sans mutation");
+});
+
 test("L3 : aucun constat interne ni recommandation OPÉRER, ancien JSON mixte comme génération commune", () => {
   // l'ancien JSON publié les contient encore (garde : le test verrait leur retour)
   assert.ok(Object.values(doc.modeles).some((m) => (m.constats_internes || []).length));
@@ -102,7 +118,7 @@ test("L3 : aucun constat interne ni recommandation OPÉRER, ancien JSON mixte co
     assert.equal(es.length, docCommun.entrees.length, source);
     assert.deepEqual(developperMcp(source === "ancien" ? doc : docCommun), es, source);
     for (const e of es) {
-      for (const k of ["constats_internes", "recommandation_operer", "recommandation"]) assert.ok(!(k in e), `${source} ${e.id} : ${k}`);
+      for (const k of ["constats_internes", "recommandation_operer", "recommandation", "sources_internes"]) assert.ok(!(k in e), `${source} ${e.id} : ${k}`);
       const d = e.description || "";
       assert.ok(!d.includes("Constats internes datés") && !d.includes("Recommandation OPÉRER"), `${source} ${e.id}`);
     }

@@ -197,7 +197,6 @@ function ficheModele(e, complete, ctx) {
       effort_defaut_modele: e.effort_defaut_modele ?? null,
       effort_defaut_detail: e.effort_defaut_detail ?? null,
       effort_defaut_portee: e.effort_defaut_portee ?? null,
-      sources_internes: e.sources_internes ?? [],
       sources_champs: e.sources_champs ?? {},
       niveaux_effort_disponibles: e.niveaux_effort_disponibles ?? [],
       date_sortie: e.date_sortie ?? null,

@@ -508,6 +508,22 @@ test("chercher_reference : sans kb/noms.json, plein texte seul et avis (jamais m
   }
 });
 
+test("fiche_reference HTTP : sources_internes absentes de la réponse publique", async () => {
+  const id = "modele-gemini-4-argon-low";
+  const brut = lireDonnee("kb/modeles.json");
+  const entree = brut.entrees.find((e) => e.id === id);
+  assert.ok(entree, "modèle témoin présent dans les vraies données");
+  assert.ok(brut.modeles[entree.modele].sources_internes.length > 0, "témoin mixte avec sources internes");
+  const r = await appel("fiche_reference", { id });
+  assert.equal(r.statut, 200);
+  assert.equal(r.corps.result.isError, false);
+  const fiche = r.corps.result.structuredContent.fiche;
+  assert.equal(fiche.id, id);
+  assert.ok(fiche.sources.length > 0, "sources publiques conservées");
+  assert.equal(Object.hasOwn(fiche, "sources_internes"), false);
+  assert.equal(r.corps.result.content.some((c) => c.text?.includes('"sources_internes"')), false);
+});
+
 test("modèles × efforts : chercher_reference et fiche_reference couvrent les 17 modèles et résolvent les alias", async () => {
   const enum_ = OUTILS.chercher_reference.inputSchema.properties.categorie.enum;
   assert.ok(enum_.includes("modeles"));
@@ -536,7 +552,7 @@ test("modèles × efforts : chercher_reference et fiche_reference couvrent les 1
 
   const sonnetAgyHigh = (await appel("fiche_reference", { id: "antigravity:claude-sonnet-5-5:high" })).corps.result.structuredContent.fiche;
   assert.equal(sonnetAgyHigh.id, "modele-antigravity-claude-sonnet-5-5-high");
-  assert.ok(sonnetAgyHigh.sources_internes.some((c) => c.date === "2026-10-19" && c.constat.includes("21 min")));
+  assert.equal(Object.hasOwn(sonnetAgyHigh, "sources_internes"), false);
 
   // L3 : l'ancien JSON mixte porte encore constats internes et recommandation OPÉRER ; la réponse publique ne les rend pas.
   const brut = lireDonnee("kb/modeles.json");

@@ -2,8 +2,8 @@
 // Lecture pure partagée par le site et le MCP ; aucun HTML ni requête réseau.
 // Deux formats lus : l'ancienne route (`schema_version: 2`, encore mixte) et la génération commune (`delta.commun` v1,
 // `version_source: 2`, sans textes rédigés). L3 : la sortie publique ne porte ni constats internes ni recommandation
-// OPÉRER, même lus dans un ancien JSON mixte (champs retirés, section et ligne retirées des descriptions).
-export const CHAMPS_PRIVES_MODELE = ["constats_internes", "recommandation_operer"];
+// OPÉRER, ni sources internes, même lus dans un ancien JSON mixte (champs retirés, section et ligne retirées des descriptions).
+export const CHAMPS_PRIVES_MODELE = ["constats_internes", "recommandation_operer", "sources_internes"];
 const SECTION_CONSTATS = /(^|\n)### Constats internes datés(\n[\s\S]*?)?(?=\n### |$)/g;
 const LIGNE_OPERER = /(^|\n)- \*\*Recommandation OPÉRER[^\n]*/g;
 
