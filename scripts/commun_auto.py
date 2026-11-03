@@ -35,13 +35,13 @@ ROUTE = Path("docs/commun/v1")
 CACHE = Path("kb-traductions/fr.json")
 
 
-def git(racine: Path, *args: str) -> str:
+def git(racine: Path, *args: str, brut: bool = False) -> str:
     env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
     env.setdefault("GIT_SSH_COMMAND", "ssh -o BatchMode=yes")
     res = subprocess.run(["git", *args], cwd=racine, env=env, capture_output=True, text=True, timeout=300)
     if res.returncode:
         raise RuntimeError(f"git {' '.join(args)} : {res.stderr.strip() or res.stdout.strip()}")
-    return res.stdout.strip()
+    return res.stdout if brut else res.stdout.strip()
 
 
 def est_publie(chemin: str) -> bool:
@@ -50,7 +50,7 @@ def est_publie(chemin: str) -> bool:
 
 
 def changements(racine: Path) -> set[str]:
-    sortie = set(filter(None, git(racine, "status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all").split("\0")))
+    sortie = set(filter(None, git(racine, "status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all", brut=True).split("\0")))
     return {ligne[3:] for ligne in sortie if len(ligne) > 3}
 
 

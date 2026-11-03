@@ -472,6 +472,29 @@ def test_commun_auto_diagnostic_sans_publication(tmp_path, incident):
         assert bilan["alertes"] == []  # oneshot inactif après un succès : état normal
     assert {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()} == avant
 
+def test_commun_auto_statut_porcelain(tmp_path):
+    import subprocess
+
+    def g(*args):
+        return subprocess.run(["git", *args], cwd=tmp_path, capture_output=True, text=True, check=True).stdout
+
+    g("init", "-q")
+    index = tmp_path / "docs/commun/v1/index.json"
+    index.parent.mkdir(parents=True)
+    index.write_text("initial", encoding="utf-8")
+    g("add", "docs/commun/v1/index.json")
+    g("-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-qm", "base")
+    index.write_text("modifié", encoding="utf-8")
+    nouveau = tmp_path / "docs/commun/v1/nouveau.json"
+    nouveau.write_text("nouveau", encoding="utf-8")
+    statut = g("status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all")
+    assert statut.startswith(" M docs/commun/v1/index.json\0")
+    assert commun_auto.changements(tmp_path) == {"docs/commun/v1/index.json", "docs/commun/v1/nouveau.json"}
+    commun_auto.verifier_arbre(tmp_path)
+    (tmp_path / "hors-route.txt").write_text("hors route", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="hors de la route"):
+        commun_auto.verifier_arbre(tmp_path)
+
 
 def test_route_publiee_du_depot_valide():
     route = RACINE / "docs" / "commun" / "v1"
