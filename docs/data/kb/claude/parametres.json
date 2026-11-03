@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-02",
+ "maj_le": "2026-11-03",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 671,
- "commentees": 624,
+ "total": 672,
+ "commentees": 616,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -7937,7 +7937,7 @@
    "nom": "CLAUDE_CODE_DISABLE_CFC_PROMPT",
    "gabarit": "court",
    "description": "Variable qui garde les outils Claude in Chrome tout en retirant leur section du prompt système, pour les hôtes qui fournissent la leur.",
-   "description_source": "Set to 1 to keep the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and the /claude-in-chrome bundled skill. For hosts that embed Claude Code and supply their own browser guidance. Requires Claude Code v2.1.257 or later",
+   "description_source": "For hosts that embed Claude Code and supply their own browser guidance. Set to 1 to keep the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and the /claude-in-chrome bundled skill. In VS Code, the extension at v2.1.314 or later also leaves the Claude in Chrome instructions out of a session's messages. Requires Claude Code v2.1.257 or later",
    "usage": "CLAUDE_CODE_DISABLE_CFC_PROMPT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -7954,11 +7954,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7971,6 +7971,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -10836,7 +10840,7 @@
    "nom": "CLAUDE_CODE_GLOB_TIMEOUT_SECONDS",
    "gabarit": "court",
    "description": "Variable qui fixe le délai de recherche de fichiers de l'outil Glob, 20 secondes par défaut sous Linux.",
-   "description_source": "Timeout in seconds for Glob tool file discovery. Defaults to 20 seconds on most platforms and 60 seconds on WSL",
+   "description_source": "Timeout in seconds for Glob and Grep tool searches. Defaults to 20 seconds on most platforms and 60 seconds on WSL",
    "usage": "CLAUDE_CODE_GLOB_TIMEOUT_SECONDS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -10853,11 +10857,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10866,6 +10870,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -12245,7 +12253,7 @@
    "nom": "CLAUDE_CODE_OAUTH_REFRESH_TOKEN",
    "gabarit": "court",
    "description": "Variable qui fournit un jeton de rafraîchissement OAuth claude.ai pour se connecter sans navigateur, avec `CLAUDE_CODE_OAUTH_SCOPES`.",
-   "description_source": "OAuth refresh token for Claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. Useful for provisioning authentication in automated environments",
+   "description_source": "OAuth refresh token for claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. Useful for provisioning authentication in automated environments. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_OAUTH_REFRESH_TOKEN",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12262,11 +12270,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12279,6 +12287,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -12296,7 +12308,7 @@
    "nom": "CLAUDE_CODE_OAUTH_SCOPES",
    "gabarit": "court",
    "description": "Variable qui liste les autorisations OAuth du jeton de rafraîchissement, obligatoire avec `CLAUDE_CODE_OAUTH_REFRESH_TOKEN`.",
-   "description_source": "Space-separated OAuth scopes the refresh token was issued with, such as \"user:profile user:inference user:sessions:claude_code\". Required when CLAUDE_CODE_OAUTH_REFRESH_TOKEN is set",
+   "description_source": "Space-separated OAuth scopes the refresh token was issued with, such as \"user:profile user:inference user:sessions:claude_code\". Required when CLAUDE_CODE_OAUTH_REFRESH_TOKEN is set. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_OAUTH_SCOPES",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12313,11 +12325,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12330,6 +12342,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -12347,7 +12363,7 @@
    "nom": "CLAUDE_CODE_OAUTH_TOKEN",
    "gabarit": "court",
    "description": "Variable qui fournit un jeton d'accès OAuth claude.ai, alternative à `/login` pour le SDK et l'automatisation.",
-   "description_source": "OAuth access token for claude.ai authentication. Alternative to /login for SDK and automated environments. Takes precedence over keychain-stored credentials. Generate one with claude setup-token. Unless you run /login, Claude Code uses the token you set for the whole session. To replace an expired token, generate a new one and restart",
+   "description_source": "OAuth access token for claude.ai authentication. Alternative to /login for SDK and automated environments. Ignored in project and local settings. Takes precedence over keychain-stored credentials. Generate one with claude setup-token. Unless you run /login, Claude Code uses the token you set for the whole session. To replace an expired token, generate a new one and restart",
    "usage": "CLAUDE_CODE_OAUTH_TOKEN",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12364,11 +12380,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12381,6 +12397,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -22064,7 +22084,7 @@
    "nom": "FORCE_HYPERLINK",
    "gabarit": "court",
    "description": "Variable qui force (`1`) ou coupe (`0`) les liens OSC 8 cliquables ; la valeur est lue comme un nombre, donc `false` les active.",
-   "description_source": "Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected, or 0 to disable them. When unset, Claude Code enables hyperlinks only when it detects terminal support. Claude Code parses this value as a number, not a Boolean, so a value such as false, no, or off enables hyperlinks rather than disabling them. The footer PR or merge request badge renders as a hyperlink even when Claude Code can't detect terminal support, such as over SSH. Set 0 to render the badge as plain text",
+   "description_source": "Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected. When unset, Claude Code enables most hyperlinks only when it detects terminal support. The footer PR or merge request badge and long sign-in URLs are links either way. Set 0, false, no, or off to render all of them as plain text. Before v2.1.314, false, no, and off enabled hyperlinks instead",
    "usage": "FORCE_HYPERLINK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22081,11 +22101,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22094,6 +22114,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25296,7 +25320,7 @@
    "nom": "--input-format",
    "gabarit": "court",
    "description": "Option CLI du format d'entrée en mode `-p` : `text` ou `stream-json`.",
-   "description_source": "Specify input format for print mode (options: text, stream-json) — claude -p --output-format json --input-format stream-json",
+   "description_source": "Specify input format for print mode (options: text, stream-json) — claude -p --input-format stream-json --output-format stream-json --verbose",
    "usage": "--input-format",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25313,11 +25337,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25326,6 +25350,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -26132,7 +26160,7 @@
    "nom": "--max-turns",
    "gabarit": "court",
    "description": "Option CLI qui limite le nombre de tours agentiques en mode `-p` et sort en erreur à la limite.",
-   "description_source": "Limit the number of agentic turns (print mode only). Exits with an error when the limit is reached. No limit by default. With --input-format stream-json, a message still queued when the limit ends a turn stays queued and starts a new turn with its own limit — claude -p --max-turns 3 \"query\"",
+   "description_source": "Limit the number of agentic turns (print mode only). No limit by default. With --input-format stream-json, a message still queued when the limit ends a turn stays queued and starts a new turn with its own limit — claude -p --max-turns 3 \"query\"",
    "usage": "--max-turns",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -26149,11 +26177,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26162,6 +26190,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -28292,6 +28324,57 @@
      "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-permissions-blockwritesoutsideworkingdirectories",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "permissions.blockWritesOutsideWorkingDirectories",
+   "gabarit": "court",
+   "description": "Fait refuser à Write, Edit et NotebookEdit tout chemin hors des dossiers de travail, dans tous les modes, bypassPermissions compris ; ne limite ni le shell, ni MCP, ni les hooks. Demande la 2.1.314 ou plus.",
+   "description_source": "Make the Write, Edit, and NotebookEdit tools refuse paths outside your working directories in every permission mode, including bypassPermissions, apart from some of Claude Code's own files. The key doesn't limit shell commands, MCP tools, or the programs hooks run. To limit where shell commands write, turn on sandboxing. Requires Claude Code v2.1.314 or later.",
+   "usage": "{\n  \"permissions\": {\n    \"blockWritesOutsideWorkingDirectories\": true\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Toutes tes sessions locales tournent en bypassPermissions depuis le 06/10 par décision de Sylvain (sauf trading) : cette clé rétablirait des refus d'écriture que ce régime a voulu lever, sans besoin exprimé."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#permissionsblockwritesoutsideworkingdirectories",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Régime bypassPermissions pour toutes les sessions locales depuis le 06/10, sauf trading."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Permission settings",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-permissions-defaultmode",
@@ -31573,7 +31656,7 @@
    "nom": "sandbox.network.allowMachLookup",
    "gabarit": "court",
    "description": "Réglage macOS des services XPC et Mach que le bac à sable peut consulter.",
-   "description_source": "List additional XPC and Mach service names the macOS sandbox may look up. Tools that communicate over XPC, such as the iOS Simulator or Playwright, need their services listed here.",
+   "description_source": "List additional XPC and Mach service names the macOS sandbox may look up. Tools that communicate over XPC, such as the iOS Simulator or Playwright, need their services listed here. Sandboxed commands can reach outside the sandbox to each service that you list, and the sandbox doesn't confine what those services do for those commands.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowMachLookup\": [\"com.apple.CoreSimulator.*\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -31590,11 +31673,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-27",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31615,6 +31698,10 @@
     {
      "date": "2026-10-27",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",

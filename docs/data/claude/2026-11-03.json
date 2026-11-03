@@ -1,0 +1,198 @@
+{
+  "date": "2026-11-03",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-03T08:48:32+00:00",
+  "synthese": "Compte et quotas : aucune information nouvelle sur offres, tarifs ou limites aujourd'hui. Relevé d'OBSERVATORY du 03/11 à 08 h 43 UTC : semaine Claude à 13 % (remise à zéro le 08/11 à 16 h UTC), semaine Fable à 0 %, jauge de session 5 h absente ; ChatGPT semaine à 19 % (remise à zéro le 09/11 vers 09 h UTC), aucun quota au seuil D71. Ton essai Max 20x arrive à son renouvellement le 07/11 (CONTEXTE.md) : le bilan d'usage reste à préparer. Côté produit, Claude Code 2.1.317 (installée, à jour) améliore `/design-sync`, Remote Control et l'effort des sous-agents d'un autre modèle ; les message threads accélèrent les très longs contextes sans changer ta consommation. La newsroom Anthropic reste en échec de lecture.",
+  "sources_en_echec": [
+    {
+      "id": "anthropic-newsroom",
+      "url": "https://www.anthropic.com/news",
+      "erreur": "FormatInattendu: balises <time> hors footer/header sans entrée reconnue : gabarit changé ?",
+      "partiel": false
+    }
+  ],
+  "elements": [
+    {
+      "id": "claude-code-2.1.317",
+      "ids_bruts": [
+        "claude-code-2.1.317"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.317",
+      "version": "2.1.317",
+      "date_publication": "2026-11-03",
+      "type": "nouveaute",
+      "resume": "Ajouts : `onFailure: \"block\"` pour les callbacks de hooks de l'Agent SDK, variable `CLAUDE_CODE_DISABLE_NESTED_SESSION_ID`, avertissement de `/schedule` quand une tâche cloud reçoit des connecteurs non demandés, confirmation avant qu'un outil web ou shell envoie l'adresse e-mail du compte au réseau, nouveaux attributs OTel `anthropic.*`. Modifications : `/design-sync` dit d'emblée quand le design system est passé côté Claude et s'arrête avant de construire ; les sous-agents et coéquipiers d'un autre modèle que la conversation prennent l'effort enregistré de ce modèle (ou son défaut) au lieu de celui de la session ; SendMessage vers un agent d'arrière-plan en cours arrive plus tôt ; retrait du message « file unchanged since your last Read » (relire un fichier inchangé renvoie son contenu). Correctifs notables : `effortLevel` d'un projet ignoré par les sessions que l'app démarre à l'avance (onglet Code de Claude Desktop), serveurs MCP de projet qui se déconnectaient après le premier tour dans certaines sessions Desktop, message envoyé dans la minute suivant un redémarrage de `claude remote-control` resté sans réponse, `claude -p` qui sortait en 0 quand un disque plein ou un quota perdait le transcript (code 1 désormais), `/remote-control` qui répondait « Unknown command » quand `disableRemoteControl` l'éteint.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21317",
+          "libelle": "Claude Code — CHANGELOG 2.1.317",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.317 est installée et à jour (relevé `versions.json` du 03/11) : les correctifs sont déjà actifs, rien à mettre à jour. Trois points touchent tes usages. `/design-sync`, que CONTEXTE.md range parmi les commandes à recommander pour la Console React `carnet-console`, annonce désormais avant de construire que le design system est passé côté Claude, au lieu d'échouer à l'envoi. Tes sessions `claude-session@<nom>` sont pilotées depuis l'iPhone par Remote Control : le message envoyé dans la minute qui suit un redémarrage de `claude remote-control` n'est plus perdu. Tes sous-agents ont un modèle choisi dans leur définition et le chef tourne en `--effort medium` : un sous-agent d'un autre modèle que la conversation ne reprend plus l'effort de la session ; la source ne dit rien de l'effet sur la consommation. Côté Claude Desktop, où tu utilises Claude Design en mode Code, le `effortLevel` d'un projet est de nouveau respecté par les sessions préparées à l'avance. Enfin la chaîne D70 lance `claude -p` : une écriture de transcript perdue (disque plein, quota) y est maintenant un code 1 au lieu d'un 0.",
+      "projets_concernes": [
+        "delta-desktop"
+      ],
+      "action": {
+        "description": "Teste `/design-sync` selon `usage` de la fiche `claude-code-skills-design-sync` (`/design-sync [hint]`) dans la session Claude Design.",
+        "etapes": [
+          "Ouvre une session Claude Code dans Claude Desktop sur le dépôt `carnet-console` (Console React avec Vite), tape `/design-sync` ; résultat attendu : si le design system est passé côté Claude, la commande le dit avant toute construction et s'arrête, sans échec à l'envoi."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-skills-design-sync",
+        "claude-code-commandes-remote-control",
+        "claude-code-parametres-effortlevel"
+      ],
+      "contexte_sections": {
+        "projet.delta-desktop": {
+          "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+          "pourquoi": "Console `carnet-console` en React avec Vite, construite avec Claude Design."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design en mode Code ; `/design-sync` à recommander car la Console est en React."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions `claude --resume <id> --remote-control <nom>` pilotées depuis l'iPhone."
+        },
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents utilisés, modèle choisi dans leur définition."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "La chaîne D70 lance les étapes Claude en `claude -p`."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-11-02",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-02",
+        "https://claude.com/blog/message-threads",
+        "x-2117332449382510884",
+        "x-2117332452603527535",
+        "x-2117332451231956997"
+      ],
+      "produit": "claude",
+      "titre": "Message threads : l'API Messages garde la conversation côté serveur, activé par défaut dans Claude Code",
+      "version": null,
+      "date_publication": "2026-11-02",
+      "type": "nouveaute",
+      "resume": "Les message threads passent en bêta publique sur l'API Messages (paramètre `thread`, en-tête bêta `message-threads-2026-08-12`) : après la première requête, chaque tour n'envoie que les nouveaux messages et l'identifiant de la réponse précédente. Un thread expire 5 minutes après sa dernière requête ; la consommation de jetons reste la même et les limites existantes s'appliquent, au tarif standard. Dans Claude Code, la fonction est activée par défaut pour la plupart des utilisateurs : le temps médian avant le premier jeton baisse d'environ 35 % sur les requêtes de 500 000 à 1 M de jetons, et la requête médiane passe d'environ 800 Ko à 1,8 Ko dans les longues conversations.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/message-threads",
+          "libelle": "Make long-running agents faster with message threads",
+          "officielle": true
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117332449382510884",
+          "libelle": "@ClaudeDevs — post du 02/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117332452603527535",
+          "libelle": "@ClaudeDevs — post du 02/11 (usage)",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117332451231956997",
+          "libelle": "@ClaudeDevs — post du 02/11 (Claude Code)",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises Claude Code sous abonnement, avec des sessions durables et des missions longues : le gain de latence s'applique sans réglage de ta part. Il vise les contextes de 500 000 à 1 M de jetons ; CONTEXTE.md ne dit pas à quelle taille tes sessions arrivent. Il ne touche pas tes limites hebdomadaires : l'article précise que la consommation de jetons reste identique et que les limites en vigueur s'appliquent, donc ce n'est pas une piste pour alléger ta consommation. Le paramètre `thread` et l'en-tête bêta ne concernent que des appels directs à l'API Messages, dont CONTEXTE.md ne décrit aucun.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions Claude Code durables sous systemd, reprises par `--resume`."
+        },
+        "config.claude-code.interface": {
+          "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+          "pourquoi": "Claude Code sous abonnement, aucun appel direct à l'API décrit."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-permissions-blockwritesoutsideworkingdirectories",
+      "ids_bruts": [
+        "kb-claude-code-parametres-permissions-blockwritesoutsideworkingdirectories"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : réglage `permissions.blockWritesOutsideWorkingDirectories` ajouté",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Réglage de catégorie parametres : fait refuser à Write, Edit et NotebookEdit les chemins hors des dossiers de travail dans tous les modes de permission, `bypassPermissions` compris ; ne limite ni le shell, ni MCP, ni les hooks ; demande la 2.1.314 ou plus. Usage d'origine : `{\"permissions\": {\"blockWritesOutsideWorkingDirectories\": true}}`.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#permissionsblockwritesoutsideworkingdirectories",
+          "libelle": "settings-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-permissions-blockwritesoutsideworkingdirectories"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-mcp-answer-an-elicitation-request-in-a-cloud-session",
+      "ids_bruts": [
+        "kb-claude-code-mcp-answer-an-elicitation-request-in-a-cloud-session"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : fiche MCP « Answer an elicitation request in a cloud session » ajoutée",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche de catégorie mcp : quand une tâche d'une session cloud attend une réponse d'un serveur MCP (une valeur, une connexion), la demande apparaît en carte sur claude.ai/code ou dans l'onglet Code de l'app Desktop, où l'on répond directement.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/mcp#answer-an-elicitation-request-in-a-cloud-session",
+          "libelle": "mcp",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-mcp-answer-an-elicitation-request-in-a-cloud-session"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2117343929960112486",
+      "raison": "post X sans rapport : appel à candidatures du programme de résidence d'Anthropic, sans effet sur les outils ni les conditions d'usage de Sylvain"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
