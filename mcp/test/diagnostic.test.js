@@ -1,11 +1,78 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { traiter, traiterJournalise } from "../api/mcp.js";
+import http from "node:http";
+import handler, { traiter, traiterJournalise } from "../api/mcp.js";
 import { champs } from "../lib/compteur.js";
 
 const appel = (argumentsOutil, name = "chercher_reference") => ({
   jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: argumentsOutil },
 });
+
+for (const [incident, cause] of [["HTTP 503", "lecture.http"], ["JSON invalide", "lecture.json"]]) {
+  test(`diagnostic : résumé avec index ${incident}, par HTTP et sans compteur distant`, async (t) => {
+    const journal = [], compteur = new Map();
+    t.mock.method(console, "log", s => journal.push(JSON.parse(s)));
+    // Le gestionnaire réel appelle compter ; son stockage distant reste désactivé, même si le parent est configuré.
+    for (const cle of ["DELTA_BASE_URL", "KV_REST_API_URL", "KV_REST_API_TOKEN"]) {
+      const avant = process.env[cle];
+      t.after(() => { if (avant === undefined) delete process.env[cle]; else process.env[cle] = avant; });
+    }
+    process.env.KV_REST_API_URL = "";
+    process.env.KV_REST_API_TOKEN = "";
+    const requetes = [];
+    const donnees = http.createServer((req, res) => {
+      requetes.push(req.url);
+      res.setHeader("Content-Type", "application/json");
+      if (req.url.endsWith("/openai/index.json")) {
+        res.statusCode = incident === "HTTP 503" ? 503 : 200;
+        return res.end("{json-invalide");
+      }
+      res.end(JSON.stringify({ jours: [] }));
+    });
+    const mcp = http.createServer(handler);
+    for (const serveur of [donnees, mcp]) {
+      await new Promise(r => serveur.listen(0, "127.0.0.1", r));
+      t.after(() => new Promise(r => serveur.close(r)));
+    }
+    const base = `http://127.0.0.1:${donnees.address().port}`;
+    const url = `http://127.0.0.1:${mcp.address().port}`;
+    const fetchReel = globalThis.fetch, horsBac = [];
+    t.mock.method(globalThis, "fetch", (adresse, options) => {
+      if (![base, url].includes(new URL(adresse).origin)) {
+        horsBac.push(String(adresse));
+        throw new Error("accès hors du bac local interdit");
+      }
+      return fetchReel(adresse, options);
+    });
+    for (const langue of ["fr", "en"]) {
+      // Une adresse distincte isole aussi le cache du lecteur entre les langues et les incidents.
+      process.env.DELTA_BASE_URL = `${base}/${langue}`;
+      const r = await fetch(`${url}/?source=ancienne_route&langue=${langue}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(appel({}, "resume_du_jour")),
+      });
+      assert.equal(r.status, 200);
+      const texte = langue === "fr" ? "Données ORQYRA AI indisponibles" : "ORQYRA AI data unavailable";
+      const raison = incident === "HTTP 503" ? "HTTP 503" : langue === "fr" ? "JSON illisible" : "unreadable JSON";
+      const separateur = langue === "fr" ? " : " : ": ";
+      assert.deepEqual(await r.json(), { jsonrpc: "2.0", id: 1, result: {
+        content: [{ type: "text", text: `${texte}${separateur}openai/index.json${separateur}${raison}` }],
+        isError: true,
+      } });
+      assert.equal(journal.length, langue === "fr" ? 1 : 2);
+      const ligne = journal.at(-1);
+      assert.equal(ligne.statut, "erreur_outil");
+      for (const champ of champs(ligne)) compteur.set(champ, (compteur.get(champ) ?? 0) + 1);
+    }
+    assert.deepEqual(requetes.sort(), ["en", "fr"].flatMap(l => ["actu", "claude", "openai"].map(p => `/${l}/${p}/index.json`)).sort());
+    assert.deepEqual(horsBac, []);
+    assert.deepEqual(journal.map(l => l.cause_erreur), [cause, cause]);
+    assert.deepEqual(Object.fromEntries(compteur), {
+      "req:tools/call": 2, "outil:resume_du_jour": 2, "erreur:resume_du_jour": 2,
+      [`cause:resume_du_jour/${cause}`]: 2,
+    });
+  });
+}
 
 test("diagnostic : les paramètres invalides ont un code sans leurs valeurs", async (t) => {
   const secret = "contenu-prive-qui-ne-doit-pas-etre-journalise";

@@ -61,7 +61,7 @@ const court = (s, n = 600) => (typeof s === "string" && s.length > n ? s.slice(0
 async function derniersJours(ctx) {
   const res = {};
   await Promise.all(PERIMETRES.map(async (p) => {
-    try { res[p] = await lire(`${p}/index.json`, ctx); } catch (e) { res[p] = { erreur: texteErreur(e, ctx.langue) }; }
+    try { res[p] = await lire(`${p}/index.json`, ctx); } catch (e) { res[p] = { erreur: texteErreur(e, ctx.langue), exception: e }; }
   }));
   return res;
 }
@@ -76,7 +76,7 @@ async function resumeDuJour({ date, inclure_faibles = false } = {}, ctx) {
   const perimetres = [];
   for (const p of PERIMETRES) {
     const idx = index[p];
-    if (idx?.erreur) throw new Error(idx.erreur);
+    if (idx?.erreur) throw idx.exception ?? new Error(idx.erreur);
     if (!Array.isArray(idx?.jours) || idx.jours.some((j) => !j || typeof j.date !== "string" || !RE_DATE.test(j.date)))
       throw erreurFormat(`${p}/index.json`);
     const jours = idx.jours.map((j) => j.date).sort().reverse();
