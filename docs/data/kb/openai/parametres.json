@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-10-31",
+ "maj_le": "2026-11-03",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 439,
- "commentees": 439,
+ "total": 468,
+ "commentees": 468,
  "entrees": [
   {
    "id": "chatgpt-parametres-reglages-appearance",
@@ -1403,6 +1403,53 @@
    }
   },
   {
+   "id": "codex-parametres-allow-symlinked-codex-home",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "allow_symlinked_codex_home",
+   "gabarit": "court",
+   "description": "Sur macOS, autorise les racines inscriptibles du bac à sable situées sous CODEX_HOME à suivre les liens symboliques, sans ajouter de racine et en faisant confiance aux cibles même changeantes ; lu au démarrage dans config.toml de l’hôte, désactivé par défaut.",
+   "description_source": "Type : boolean. On macOS, allow writable sandbox roots at or under $CODEX_HOME to follow symlinks. Codex reads this only from the execution host's $CODEX_HOME/config.toml at startup. Enabling it trusts targets outside that directory and targets that change between commands. It grants no additional writable roots. Defaults to false.",
+   "usage": "allow_symlinked_codex_home",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "macOS",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le K8 de développement utilise Linux ; ce réglage documenté pour macOS ne concerne pas son bac à sable."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Le poste de développement utilise Linux."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-approval-policy",
    "produit": "codex",
    "categorie": "parametres",
@@ -2292,6 +2339,53 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-apps-id-omit-tools-from",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "apps.<id>.omit_tools_from",
+   "gabarit": "court",
+   "description": "Masque les outils de l’app sur les surfaces direct, deferred ou code_mode choisies, en cumulant les exclusions de l’app et de son serveur MCP.",
+   "description_source": "Type : array<string>. Omit this app's tools from the direct, deferred, or code_mode surfaces. App and MCP server omissions apply together.",
+   "usage": "apps.<id>.omit_tools_from",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de répartir les outils des connecteurs entre ces surfaces n’est déclaré."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-apps-id-open-world-enabled",
    "produit": "codex",
    "categorie": "parametres",
@@ -3161,8 +3255,8 @@
    "categorie": "parametres",
    "nom": "codex app-server --code-mode-host",
    "gabarit": "court",
-   "description": "L’hôte du mode code connecte le serveur d’application à un hôte distant en sortie.",
-   "description_source": "Connect to a remote Code Mode host instead of starting a local host. This outbound connection is shared across threads and is separate from --listen ; use wss:// for remote hosts. (valeurs : ws://HOST/PATH | wss://HOST/PATH)",
+   "description": "Partage entre fils une connexion gRPC HTTP/2 sortante vers un hôte Code Mode distant, dont l’origine HTTP ou HTTPS doit être sans identifiants, chemin, requête ni fragment.",
+   "description_source": "Share an outbound HTTP/2 gRPC connection to a remote Code Mode host across threads. Supply an HTTP or HTTPS origin without credentials, a path, a query, or a fragment. (valeurs : http://HOST[:PORT] | https://HOST[:PORT])",
    "usage": "codex app-server --code-mode-host",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3170,7 +3264,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun hôte de mode code distant n’est prévu dans l’objectif CLI et tmux."
+    "pourquoi": "Le pilotage Codex sous tmux ne décrit aucun hôte Code Mode distant à configurer."
    },
    "sources": [
     {
@@ -3183,7 +3277,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex app-server",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3192,10 +3286,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   }
   },
   {
    "id": "codex-parametres-codex-app-server-listen",
@@ -5288,6 +5395,71 @@
    }
   },
   {
+   "id": "codex-parametres-codex-doctor-network-only",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex doctor --network-only",
+   "gabarit": "court",
+   "description": "Limite le diagnostic à la configuration, à l’environnement réseau et aux connexions HTTP du fournisseur et WebSocket Responses.",
+   "description_source": "Limit checks to configuration, the network environment, provider HTTP connectivity, and Responses WebSocket connectivity. (valeurs : boolean)",
+   "usage": "codex doctor --network-only",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Essayer `codex doctor --network-only` depuis le terminal du flux Codex sous tmux ; résultat attendu : un diagnostic limité à la configuration et aux connexions réseau, sans lancer d’audit trading-sim."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-doctor",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "codex doctor",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
+   "provenance": [
+    {
+     "affirmation": "Limite le diagnostic à la configuration, à l’environnement réseau et aux connexions HTTP du fournisseur et WebSocket Responses.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-doctor",
+     "releve_le": "2026-11-03",
+     "caduc_si": "La syntaxe ou le comportement documenté change ou disparaît."
+    },
+    {
+     "affirmation": "Codex sert aux audits, notamment de trading-sim, et fonctionne sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-03",
+     "caduc_si": "Cet usage de Codex cesse ou change."
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-codex-doctor-no-color",
    "produit": "codex",
    "categorie": "parametres",
@@ -5767,6 +5939,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-codex-exec-cyber-access-program",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex exec --cyber-access-program",
+   "gabarit": "court",
+   "description": "Demande pour ce tour un programme cyber expérimental standard, daybreak_blue ou daybreak_red, réservé au fournisseur OpenAI et aux comptes et modèles éligibles ; incompatible avec review et un fork exige une consigne.",
+   "description_source": "Request a cyber access program for this turn (experimental, OpenAI provider only). Requires access for the account and model. Unavailable with review. A fork requires a prompt. (valeurs : standard | daybreak_blue | daybreak_red)",
+   "usage": "codex exec --cyber-access-program",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le profil securite ne suffit pas à établir l’éligibilité du compte à un programme cyber ; aucun changement de programme n’est justifié."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "codex exec",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-dangerously-bypass-approvals-and-sandbox-yolo",
@@ -6538,8 +6757,8 @@
    "categorie": "parametres",
    "nom": "codex exec --output-schema",
    "gabarit": "court",
-   "description": "L’option de schéma impose un format JSON au résultat final de l’exécution.",
-   "description_source": "JSON Schema file describing the expected final response shape. Codex validates tool output against it. (valeurs : path)",
+   "description": "Indique le chemin d’un JSON Schema qui contraint la réponse finale du modèle.",
+   "description_source": "Path to a JSON Schema for the model's final response. (valeurs : path)",
    "usage": "codex exec --output-schema",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6547,7 +6766,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Essayer `codex exec --output-schema <schema.json>` sur un verdict trading-sim ; vérifier que la réponse respecte les champs du schéma."
+    "pourquoi": "Essayer `codex exec --output-schema` avec un schéma de verdict sur un rapport trading-sim déjà clos ; résultat attendu : une réponse finale dont les champs satisfont le schéma, sans relancer de campagne."
    },
    "sources": [
     {
@@ -6560,7 +6779,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "codex exec",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6577,39 +6796,72 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "JSON Schema file describing the expected final response shape. Codex validates tool output against it. (valeurs : path)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'option --output-schema de codex exec prend un chemin (path) vers un fichier JSON Schema qui décrit la forme attendue de la réponse finale.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option --output-schema disparaît de la documentation de codex exec ou n'accepte plus un chemin vers un JSON Schema."
+      },
+      {
+       "affirmation": "Selon la documentation, Codex valide sa sortie au regard du schéma fourni à --output-schema.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne mentionne plus de validation de la sortie par rapport au schéma."
+      },
+      {
+       "affirmation": "Sur trading-sim, Codex fait l'audit adversarial, et le dossier contient des missions NEXT-CODEX-AUDIT-* rédigées par ChatGPT.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne confie plus l'audit adversarial de trading-sim à Codex ou ne décrit plus ce projet."
+      },
+      {
+       "affirmation": "Les verdicts de trading-sim suivent la convention de blocs CLÉ = VALEUR lisibles par machine.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md abandonne la convention des verdicts en blocs CLÉ = VALEUR lisibles par machine."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Les verdicts utilisent déjà des blocs lisibles par machine."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
     }
    },
    "provenance": [
     {
-     "affirmation": "L'option --output-schema de codex exec prend un chemin (path) vers un fichier JSON Schema qui décrit la forme attendue de la réponse finale.",
+     "affirmation": "Indique le chemin d’un JSON Schema qui contraint la réponse finale du modèle.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option --output-schema disparaît de la documentation de codex exec ou n'accepte plus un chemin vers un JSON Schema."
+     "releve_le": "2026-11-03",
+     "caduc_si": "La syntaxe ou le comportement documenté change ou disparaît."
     },
     {
-     "affirmation": "Selon la documentation, Codex valide sa sortie au regard du schéma fourni à --output-schema.",
-     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne mentionne plus de validation de la sortie par rapport au schéma."
-    },
-    {
-     "affirmation": "Sur trading-sim, Codex fait l'audit adversarial, et le dossier contient des missions NEXT-CODEX-AUDIT-* rédigées par ChatGPT.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne confie plus l'audit adversarial de trading-sim à Codex ou ne décrit plus ce projet."
-    },
-    {
-     "affirmation": "Les verdicts de trading-sim suivent la convention de blocs CLÉ = VALEUR lisibles par machine.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md abandonne la convention des verdicts en blocs CLÉ = VALEUR lisibles par machine."
+     "affirmation": "Codex sert aux audits, notamment de trading-sim, et fonctionne sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-03",
+     "caduc_si": "Cet usage de Codex cesse ou change."
     }
    ]
   },
@@ -6969,6 +7221,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-codex-exec-thread-source",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex exec --thread-source",
+   "gabarit": "court",
+   "description": "Définit l’étiquette de provenance d’un fil nouveau ou bifurqué ; une reprise conserve l’étiquette d’origine.",
+   "description_source": "Set the source label for a new or forked thread. Resuming a thread keeps its original label. (valeurs : SOURCE)",
+   "usage": "codex exec --thread-source",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "OPÉRER suit déjà les missions ; aucun besoin déclaré d’une nouvelle étiquette de provenance Codex n’est établi."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "codex exec",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-codex-exec-worktree",
@@ -11319,8 +11618,8 @@
    "categorie": "parametres",
    "nom": "features.network_proxy",
    "gabarit": "court",
-   "description": "Le proxy expérimental filtre le réseau des commandes locales, sans couvrir la recherche web ni les connecteurs.",
-   "description_source": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed experimental_network requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools.",
+   "description": "Active le proxy réseau expérimental des commandes du bac à sable, nécessaire aux règles de domaines des profils sauf exigence administrée équivalente, sans filtrer la recherche web, les apps, MCP ni les outils hébergés.",
+   "description_source": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed network_proxy requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools.",
    "usage": "features.network_proxy",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11328,7 +11627,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La politique de trading-sim exclut le web ; ce proxy expérimental ne filtre pas la recherche, les apps ou MCP et ne suffit pas à imposer cette règle."
+    "pourquoi": "La politique sans web de trading-sim exige un contrôle qui couvre aussi les connecteurs ; ce proxy ne couvre pas ces outils."
    },
    "sources": [
     {
@@ -11341,7 +11640,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11358,13 +11657,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "La restriction web du projet est explicite côté Claude ; aucune politique réseau Codex complète n'est décrite."
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
     }
    }
   },
@@ -12147,8 +12458,8 @@
    "categorie": "parametres",
    "nom": "features.rollout_budget.enabled",
    "gabarit": "court",
-   "description": "Le suivi expérimental active un budget de jetons pour une exécution.",
-   "description_source": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, features.rollout_budget.limit_tokens is required.",
+   "description": "Active un suivi de budget en développement, désactivé par défaut, qui exige limit_tokens et reminder_at_remaining_tokens.",
+   "description_source": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, set both limit_tokens and reminder_at_remaining_tokens.",
    "usage": "features.rollout_budget.enabled",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12156,7 +12467,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ce suivi de budget est en développement et aucun essai Codex ciblé n'est défini pour réduire le coût des audits."
+    "pourquoi": "Aucun budget de jetons validé ni essai borné de ce mécanisme en développement n’est défini pour les audits trading-sim."
    },
    "sources": [
     {
@@ -12169,7 +12480,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-25",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12186,13 +12497,25 @@
     {
      "date": "2026-09-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "be15960c18e06a115ab8212d86eb1a8781f73bf5",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le coût des audits est réel, mais cette option ne documente pas une économie."
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
     }
    }
   },
@@ -12281,6 +12604,57 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-features-rollout-budget-reminder-at-remaining-tokens",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "features.rollout_budget.reminder_at_remaining_tokens",
+   "gabarit": "court",
+   "description": "Envoie un rappel à chaque seuil du budget pondéré restant ; les seuils doivent être positifs, inférieurs à limit_tokens et fournis lorsque le suivi est activé.",
+   "description_source": "Type : array<integer>. Send a reminder as the remaining weighted token budget crosses each threshold. Supply the list when rollout budget tracking is enabled. Each value must be positive and below limit_tokens.",
+   "usage": "features.rollout_budget.reminder_at_remaining_tokens",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun budget de jetons validé ni seuil de rappel n’est défini pour les audits trading-sim."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-features-rollout-budget-reminder-interval-tokens",
    "produit": "codex",
    "categorie": "parametres",
@@ -12305,10 +12679,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12317,6 +12691,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -12631,6 +13009,53 @@
    }
   },
   {
+   "id": "codex-parametres-features-view-image",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "features.view_image",
+   "gabarit": "court",
+   "description": "Active l’outil intégré view_image pour ouvrir les images locales, activé par défaut.",
+   "description_source": "Type : boolean. Enable the built-in view_image tool for opening local images. Defaults to true.",
+   "usage": "features.view_image",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de modifier l’activation par défaut du lecteur d’images n’est déclaré dans les audits."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-features-web-search",
    "produit": "codex",
    "categorie": "parametres",
@@ -12923,6 +13348,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-goals-max-goal-token-budget",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "goals.max_goal_token_budget",
+   "gabarit": "court",
+   "description": "Fixe à la fois le budget par défaut des nouveaux objectifs et le budget maximal qu’ils peuvent demander ; omis, aucun plafond n’est configuré.",
+   "description_source": "Type : integer (positive). Set the default token budget for new goals and the largest budget a goal can request. Omit to leave goals without a configured limit.",
+   "usage": "goals.max_goal_token_budget",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le workflow de missions OPÉRER ne décrit pas l’usage des objectifs Codex ni un budget à leur imposer."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-hide-agent-reasoning",
@@ -13402,6 +13874,53 @@
      "pourquoi": "Les pistes de contrôle concernent SHA-256, PYTHONDONTWRITEBYTECODE et les worktrees."
     }
    }
+  },
+  {
+   "id": "codex-parametres-hook-premodelrequest-and-postmodelrequest",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "Hook PreModelRequest and PostModelRequest",
+   "gabarit": "court",
+   "description": "Journalise chaque tentative de requête modèle, y compris les reprises, avec modèle, tour et informations d’agent disponibles ; les sorties sont diagnostiques et ne peuvent ni bloquer la requête ni changer son contexte.",
+   "description_source": "Use these hooks to log model requests, including retries within the same turn. PreModelRequest runs before each attempt. PostModelRequest reports the outcome. Both receive the model and turn_id, plus agent_id and agent_type when available. Hook output is diagnostic only. It can't change the model's context or block a request.",
+   "usage": "PreModelRequest",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun journal de requêtes Codex supplémentaire n’est demandé pour OPÉRER ; ces hooks ne remplacent pas les contrôles d’un audit."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/hooks#premodelrequest-and-postmodelrequest",
+     "libelle": "hooks",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-hooks",
+   "groupe": "Hooks",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-hook-pretooluse",
@@ -13931,16 +14450,16 @@
    "categorie": "parametres",
    "nom": "hooks.<Event>",
    "gabarit": "court",
-   "description": "La liste `hooks.<Event>` regroupe les groupes de correspondance associés à un événement de hook.",
-   "description_source": "Type : array<table>. Matcher groups for hook events such as PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt.",
+   "description": "Définit les groupes de matchers d’un événement de hook, notamment PreModelRequest, PostModelRequest, PreToolUse, PermissionRequest, Stop ou Interrupt.",
+   "description_source": "Type : array<table>. Matcher groups for hook events such as PreModelRequest, PostModelRequest, PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt.",
    "usage": "hooks.<Event>",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
-   "statut_usage": "non_utilise",
+   "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les pistes de contrôles manuels ne définissent aucun événement Codex à configurer dans cette clé générique."
+    "pourquoi": "Aucun hook Codex précis n’est adopté dans le workflow décrit ; la simple disponibilité d’événements ne justifie pas leur ajout."
    },
    "sources": [
     {
@@ -13953,7 +14472,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13986,17 +14505,21 @@
     {
      "date": "2026-10-15",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "config.claude-code.skills": {
-     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Le contexte constate l'absence de hook Codex."
-    },
-    "optimisation.pistes": {
-     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Les pistes de contrôle concernent SHA-256, PYTHONDONTWRITEBYTECODE et les worktrees."
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
     }
    }
   },
@@ -15551,6 +16074,53 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-mcp-servers-id-environment-id",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "mcp_servers.<id>.environment_id",
+   "gabarit": "court",
+   "description": "Sélectionne l’environnement d’exécution d’un serveur MCP, local par défaut, ou l’identifiant d’un exécuteur configuré pour stdio ou HTTP diffusé.",
+   "description_source": "Type : string. Execution environment for the MCP server. Defaults to local. Use the ID of a configured executor to run a stdio server or connect to a streamable HTTP server there.",
+   "usage": "mcp_servers.<id>.environment_id",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le connecteur Delta-IA décrit ne requiert aucun déport d’exécution de serveur MCP."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-mcp-servers-id-experimental-environment",
    "produit": "codex",
    "categorie": "parametres",
@@ -15575,10 +16145,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15587,6 +16157,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -15892,13 +16466,64 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-mcp-servers-id-omit-tools-from",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "mcp_servers.<id>.omit_tools_from",
+   "gabarit": "court",
+   "description": "Masque les outils du serveur dans direct, deferred ou code_mode ; disabled_tools bloque réellement un outil et une liste vide efface les exclusions héritées.",
+   "description_source": "Type : array<string>. Omit this server’s tools from selected model-facing surfaces. Choose direct (initial tools), deferred (tool search), or code_mode (Code Mode scripts). Use disabled_tools to block a tool. An empty list clears inherited omissions.",
+   "usage": "mcp_servers.<id>.omit_tools_from",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le retrait d’une surface ne bloque pas un outil ; ce réglage ne suffit pas à imposer les exclusions web de trading-sim."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-mcp-servers-id-required",
    "produit": "codex",
    "categorie": "parametres",
    "nom": "mcp_servers.<id>.required",
    "gabarit": "court",
-   "description": "Le réglage `required` bloque le démarrage ou la reprise si le serveur MCP activé échoue.",
-   "description_source": "Type : boolean. When true, fail startup/resume if this enabled MCP server cannot initialize.",
+   "description": "Déclare une valeur booléenne pour la clé required d’un serveur MCP.",
+   "description_source": "Type : boolean.",
    "usage": "mcp_servers.<id>.required",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15906,7 +16531,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Delta-IA n’est pas déclaré comme MCP Codex requis et bloquer les audits sur son indisponibilité serait prématuré."
+    "pourquoi": "Aucun besoin de rendre un serveur MCP obligatoire au démarrage n’est établi dans la configuration décrite."
    },
    "sources": [
     {
@@ -15919,7 +16544,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15928,10 +16553,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   }
   },
   {
    "id": "codex-parametres-mcp-servers-id-scopes",
@@ -15939,8 +16577,8 @@
    "categorie": "parametres",
    "nom": "mcp_servers.<id>.scopes",
    "gabarit": "court",
-   "description": "La liste des scopes précise les droits OAuth demandés au serveur MCP.",
-   "description_source": "Type : array<string>. OAuth scopes to request when authenticating to that MCP server.",
+   "description": "Fixe les scopes OAuth demandés à la connexion ; sans liste, Codex reprend ceux du défi d’authentification initial ou, à défaut, les métadonnées de la ressource protégée.",
+   "description_source": "Type : array<string>. OAuth scopes to request at login. If omitted, Codex uses the initial authentication challenge's scopes, falling back to the protected resource's metadata.",
    "usage": "mcp_servers.<id>.scopes",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15948,7 +16586,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun serveur MCP Codex nécessitant des scopes OAuth personnalisés n’est décrit."
+    "pourquoi": "Le connecteur Delta-IA public ne demande pas de compte OAuth ; aucun scope particulier n’est à définir pour lui."
    },
    "sources": [
     {
@@ -15961,7 +16599,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15970,10 +16608,70 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   }
+  },
+  {
+   "id": "codex-parametres-mcp-servers-id-startup-readiness",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "mcp_servers.<id>.startup_readiness",
+   "gabarit": "court",
+   "description": "Utilise par défaut une connexion effective pour déclarer le serveur prêt, ou un catalogue d’outils en cache valide avec catalog ; l’appel d’un outil exige toujours une connexion effective.",
+   "description_source": "Type : connection | catalog. Use a live connection to establish startup readiness (connection, the default), or let a valid cached tool catalog satisfy startup while the connection opens (catalog). Calling a tool still requires a live connection.",
+   "usage": "mcp_servers.<id>.startup_readiness",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun retard de démarrage attribué au catalogue MCP n’est documenté pour le flux Codex sous tmux."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-mcp-servers-id-startup-timeout-ms",
@@ -16058,6 +16756,100 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-mcp-servers-id-supports-parallel-tool-calls",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "mcp_servers.<id>.supports_parallel_tool_calls",
+   "gabarit": "court",
+   "description": "Déclare tous les outils du serveur sûrs pour des appels parallèles, uniquement si le serveur supporte cette concurrence pour chacun d’eux ; faux par défaut.",
+   "description_source": "Type : boolean. Mark every tool on this server as safe to run in parallel. Enable only when the server can handle concurrent calls to all its tools. Defaults to false.",
+   "usage": "mcp_servers.<id>.supports_parallel_tool_calls",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune vérification de concurrence de tous les outils d’un serveur Codex n’est fournie ; conserver son comportement par défaut."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-mcp-servers-id-tool-input-schema-max-bytes",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "mcp_servers.<id>.tool_input_schema_max_bytes",
+   "gabarit": "court",
+   "description": "Compacte le schéma d’entrée d’un outil MCP ordinaire au-delà du seuil UTF-8 indiqué, de 5 000 octets par défaut ; Code Mode reprend aussi une valeur explicite pour ses types d’entrée.",
+   "description_source": "Type : integer (positive). Compact each ordinary MCP tool's input schema when it exceeds this many UTF-8 bytes. The default is 5,000 bytes. Code Mode also uses an explicit value when rendering tool input types.",
+   "usage": "mcp_servers.<id>.tool_input_schema_max_bytes",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun schéma MCP trop volumineux n’est identifié comme cause d’un échec d’audit."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-mcp-servers-id-tool-timeout-sec",
@@ -16297,6 +17089,53 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-memories-consolidation-service-tier",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "memories.consolidation_service_tier",
+   "gabarit": "court",
+   "description": "Choisit le niveau de service de la consolidation globale des mémoires, default correspondant à Standard par défaut.",
+   "description_source": "Type : string. Service tier for global memory consolidation. Defaults to default (Standard).",
+   "usage": "memories.consolidation_service_tier",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de modifier le niveau de service des mémoires Codex n’est établi."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-memories-disable-on-external-context",
    "produit": "codex",
    "categorie": "parametres",
@@ -16337,6 +17176,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-memories-dual-write",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "memories.dual_write",
+   "gabarit": "court",
+   "description": "Avec v1, permet de produire les deux magasins tout en continuant à lire v1 ; avec v2, Codex écrit uniquement v2.",
+   "description_source": "Type : boolean. With v1 selected, set to true to generate both stores while continuing to read v1. With v2 selected, Codex writes only v2.",
+   "usage": "memories.dual_write",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune migration de mémoires Codex n’est demandée ; la mémoire automatique décrite concerne surtout Claude Code."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-memories-extract-model",
@@ -16717,6 +17603,53 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-memories-version",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "memories.version",
+   "gabarit": "court",
+   "description": "Choisit le magasin local v1 ou v2 : mémoires actives, v2 vaut par défaut pour un nouveau dossier, v1 si CODEX_HOME/memories existe, et dual_write explicitement faux conserve le défaut v1.",
+   "description_source": "Type : v1 | v2. Select the local memory store. With memories enabled, Codex defaults to v2 for a fresh home and v1 if $CODEX_HOME/memories/ exists. Explicitly setting dual_write = false keeps the default at v1.",
+   "usage": "memories.version",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune migration de magasin Codex n’est décidée pour les profils audit, rapide et securite."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-model",
    "produit": "codex",
    "categorie": "parametres",
@@ -17066,6 +17999,57 @@
    }
   },
   {
+   "id": "codex-parametres-model-post-turn-compact-threshold-percent",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_post_turn_compact_threshold_percent",
+   "gabarit": "court",
+   "description": "Déclenche la compaction après une réponse finale au pourcentage indiqué de la fenêtre utilisable, de 0 à 100 ; omis ou nul, ce mécanisme est désactivé et les limites usuelles d’autocompaction restent actives.",
+   "description_source": "Type : integer (0–100). Compact history after a final response when active context reaches this percentage of the usable context window. Omit or set to 0 to disable turn-end compaction. The usual auto-compaction limits still apply.",
+   "usage": "model_post_turn_compact_threshold_percent",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits trading-sim exigent des preuves disponibles ; aucun seuil de compaction supplémentaire n’est qualifié pour eux."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-model-provider",
    "produit": "codex",
    "categorie": "parametres",
@@ -17106,6 +18090,174 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "codex-parametres-model-providers-gcp-base-url",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.gcp.base_url",
+   "gabarit": "court",
+   "description": "Remplace l’endpoint Vertex AI intégré, normalement construit à partir du projet Google Cloud et de sa localisation.",
+   "description_source": "Type : string. Override the built-in Google Cloud Vertex AI endpoint. Otherwise, Codex builds it from the project ID and location.",
+   "usage": "model_providers.gcp.base_url",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les fournisseurs cloud sont exclus du profil de la base ; aucune intégration Vertex AI n’est déclarée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-model-providers-gcp-credential-file",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.gcp.credential_file",
+   "gabarit": "court",
+   "description": "Indique le chemin absolu d’un fichier ADC Google, prioritaire sur GOOGLE_APPLICATION_CREDENTIALS pour la seule commande d’authentification du fournisseur.",
+   "description_source": "Type : string (absolute path). Path to a Google Application Default Credentials (ADC) file. Overrides GOOGLE_APPLICATION_CREDENTIALS only for the provider’s authentication command.",
+   "usage": "model_providers.gcp.credential_file",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les fournisseurs cloud sont exclus du profil de la base ; aucune intégration Vertex AI n’est déclarée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-model-providers-gcp-location",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.gcp.location",
+   "gabarit": "court",
+   "description": "Choisit la localisation de l’endpoint Vertex AI, prioritaire sur GOOGLE_CLOUD_LOCATION et égale à global par défaut.",
+   "description_source": "Type : string. Google Cloud location for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_LOCATION. Defaults to global.",
+   "usage": "model_providers.gcp.location",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les fournisseurs cloud sont exclus du profil de la base ; aucune intégration Vertex AI n’est déclarée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-model-providers-gcp-project-id",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.gcp.project_id",
+   "gabarit": "court",
+   "description": "Fixe l’identifiant du projet Google Cloud utilisé pour l’endpoint Vertex AI, prioritaire sur GOOGLE_CLOUD_PROJECT.",
+   "description_source": "Type : string. Google Cloud project ID for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_PROJECT.",
+   "usage": "model_providers.gcp.project_id",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les fournisseurs cloud sont exclus du profil de la base ; aucune intégration Vertex AI n’est déclarée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-model-providers-id",
@@ -18325,10 +19477,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18337,6 +19489,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -19905,6 +21061,57 @@
    "contexte_sections": {}
   },
   {
+   "id": "codex-parametres-plugins-default-enabled",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "plugins._default.enabled",
+   "gabarit": "court",
+   "description": "Fixe l’activation par défaut des plugins installés, surchargeable par plugins.<plugin>.enabled pour les plugins activables par leur source ; sans cette table, les réglages de source ou de compte sont conservés.",
+   "description_source": "Type : boolean. Set the default activation state for installed plugins. An explicit plugins.<plugin>.enabled overrides this default for plugins their source enables. Omit the table to keep the source or account activation settings.",
+   "usage": "plugins._default.enabled",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Des plugins sont actifs, mais aucun besoin déclaré de changer leur activation globale ne justifie une surcharge persistante."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Skills système et plugins actifs décrits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-plugins-plugin-enabled",
    "produit": "codex",
    "categorie": "parametres",
@@ -21189,13 +22396,64 @@
    }
   },
   {
+   "id": "codex-parametres-skills-bundled-enabled",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "skills.bundled.enabled",
+   "gabarit": "court",
+   "description": "Charge les skills système livrées avec Codex par défaut ; faux dans une configuration de projet approuvée les désactive pour ce projet.",
+   "description_source": "Type : boolean. Load the system skills bundled with Codex. Defaults to true. Set to false in a trusted project configuration to disable bundled skills for that project.",
+   "usage": "skills.bundled.enabled",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le workflow Codex utilise des skills système ; aucune désactivation générale n’est demandée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Skills système et plugins actifs décrits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-skills-config",
    "produit": "codex",
    "categorie": "parametres",
    "nom": "skills.config",
    "gabarit": "court",
-   "description": "Définit des exceptions d'activation pour les skills dans `config.toml`.",
-   "description_source": "Type : array<object>. Per-skill enablement overrides stored in config.toml.",
+   "description": "Active ou désactive les skills par nom ou par chemin, la dernière règle correspondante l’emportant.",
+   "description_source": "Type : array<object>. Enable or disable skills by name or path. If several rules match a skill, the last one wins.",
    "usage": "skills.config",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21203,7 +22461,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les skills présents fonctionnent sans exception de configuration documentée."
+    "pourquoi": "Les skills décrites ne nécessitent aucune exception de chargement déclarée."
    },
    "sources": [
     {
@@ -21216,7 +22474,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21225,10 +22483,27 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Skills système et plugins actifs décrits."
+    }
+   }
   },
   {
    "id": "codex-parametres-skills-config-index-enabled",
@@ -21273,13 +22548,64 @@
    "contexte_sections": {}
   },
   {
+   "id": "codex-parametres-skills-config-index-name",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "skills.config.<index>.name",
+   "gabarit": "court",
+   "description": "Sélectionne toutes les skills portant exactement le nom indiqué ; chaque entrée doit choisir soit name, soit path.",
+   "description_source": "Type : string. Match every skill with this exact name. Specify either name or path for each entry.",
+   "usage": "skills.config.<index>.name",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune collision de noms de skills ni désactivation par nom n’est signalée."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Skills système et plugins actifs décrits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-skills-config-index-path",
    "produit": "codex",
    "categorie": "parametres",
    "nom": "skills.config.<index>.path",
    "gabarit": "court",
-   "description": "Chemin du dossier d'un skill contenant `SKILL.md`.",
-   "description_source": "Type : string (path). Path to a skill folder containing SKILL.md.",
+   "description": "Indique le chemin absolu d’un fichier SKILL.md pour une règle de configuration de skill.",
+   "description_source": "Type : string (path). Absolute path to one SKILL.md file.",
    "usage": "skills.config.<index>.path",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21287,7 +22613,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les skills présents fonctionnent sans exception de configuration documentée."
+    "pourquoi": "Aucune exception de chargement visant une skill précise n’est demandée."
    },
    "sources": [
     {
@@ -21300,7 +22626,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21309,10 +22635,74 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
-   "contexte_sections": {}
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   }
+  },
+  {
+   "id": "codex-parametres-skills-include-instructions",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "skills.include_instructions",
+   "gabarit": "court",
+   "description": "Inclut par défaut dans le contexte du modèle les instructions automatiques relatives aux skills.",
+   "description_source": "Type : boolean. Include the automatic skills instructions in the model context. Defaults to true.",
+   "usage": "skills.include_instructions",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La découverte des skills sert au workflow Codex ; aucun besoin de retirer ses instructions automatiques n’est établi."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "config.codex.skills": {
+     "sha1": "35e81dfe61dbbdb4b2a2eca81104908981acc8ce",
+     "pourquoi": "Skills système et plugins actifs décrits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-skills-max-context-tokens",
@@ -21481,6 +22871,53 @@
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
    "contexte_sections": {}
+  },
+  {
+   "id": "codex-parametres-thread-unload-delay-secs",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "thread_unload_delay_secs",
+   "gabarit": "court",
+   "description": "Attend 60 secondes par défaut avant de décharger un fil inactif sans abonné ; zéro le décharge dès que ces deux conditions sont remplies.",
+   "description_source": "Type : integer (nonnegative). Seconds the app server waits before unloading an inactive thread with no subscribers. Set to 0 to unload it as soon as it meets both conditions. Defaults to 60 seconds.",
+   "usage": "thread_unload_delay_secs",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune mesure de mémoire de l’app-server ne justifie de changer ce délai dans le flux remote control."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-tool-output-token-limit",
@@ -21667,10 +23104,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21683,6 +23120,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -22307,6 +23748,118 @@
      "pourquoi": "Codex est utilisé en CLI sous tmux avec pilotage depuis l'iPhone."
     }
    }
+  },
+  {
+   "id": "codex-parametres-tui-presets-digit-input",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "tui.presets.<digit>.input",
+   "gabarit": "court",
+   "description": "Enregistre une consigne ou une commande slash non vide dans l’un des dix emplacements 0 à 9 de /presets, jusqu’à 8 000 octets UTF-8, sans commandes shell commençant par !.",
+   "description_source": "Type : string. Save a prompt or slash command in one of the ten slots (0–9) shown by /presets. Use up to 8,000 UTF-8 bytes of nonempty text. Shell commands beginning with ! are unsupported.",
+   "usage": "tui.presets.<digit>.input",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Essayer `/presets` pour enregistrer une consigne de revue en lecture seule de trading-sim ; résultat attendu : rappel de la consigne par son numéro, avec vérification avant exécution."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Audits contradictoires avec des rapports et des preuves vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
+   "provenance": [
+    {
+     "affirmation": "Enregistre une consigne ou une commande slash non vide dans l’un des dix emplacements 0 à 9 de /presets, jusqu’à 8 000 octets UTF-8, sans commandes shell commençant par !.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-11-03",
+     "caduc_si": "La syntaxe ou le comportement documenté change ou disparaît."
+    },
+    {
+     "affirmation": "Codex sert aux audits, notamment de trading-sim, et fonctionne sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-03",
+     "caduc_si": "Cet usage de Codex cesse ou change."
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-tui-presets-digit-label",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "tui.presets.<digit>.label",
+   "gabarit": "court",
+   "description": "Donne un nom facultatif au préréglage dans le sélecteur et les indications de raccourcis.",
+   "description_source": "Type : string. Optional name for the preset in the picker and shortcut hints.",
+   "usage": "tui.presets.<digit>.label",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun besoin de modifier directement les libellés TOML n’est établi ; l’essai de /presets couvre la découverte des emplacements."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-tui-raw-output-mode",

@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-10-24",
+ "maj_le": "2026-11-03",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 119,
- "commentees": 119,
+ "total": 123,
+ "commentees": 123,
  "entrees": [
   {
    "id": "chatgpt-commandes-codex-automations",
@@ -4035,13 +4035,79 @@
    ]
   },
   {
+   "id": "codex-commandes-config",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/config",
+   "gabarit": "complet",
+   "description": "Ouvre les préférences du terminal : thème, notifications, raccourcis et sélection de texte. Les modifications sont enregistrées automatiquement.",
+   "description_source": "Search and change terminal preferences. — Adjust the theme, notifications, keyboard shortcuts, or text selection.",
+   "usage": "/config",
+   "usage_nature": "syntaxe",
+   "exemple": "/config",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans le flux Codex sous tmux de trading-sim, ouvrir `/config` et parcourir les préférences sans les modifier ; résultat attendu : repérer les notifications et raccourcis, toute modification étant sauvegardée automatiquement."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est piloté sous tmux via remote control."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les rapports d’audit doivent rester vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Ouvre les préférences du terminal : thème, notifications, raccourcis et sélection de texte. Les modifications sont enregistrées automatiquement.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "releve_le": "2026-11-03",
+     "caduc_si": "La syntaxe ou le comportement documenté change ou disparaît."
+    },
+    {
+     "affirmation": "Codex sert aux audits, notamment de trading-sim, et fonctionne sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-03",
+     "caduc_si": "Cet usage de Codex cesse ou change."
+    }
+   ]
+  },
+  {
    "id": "codex-commandes-copy",
    "produit": "codex",
    "categorie": "commandes",
    "nom": "/copy",
    "gabarit": "complet",
-   "description": "Copie la dernière réponse ou le dernier plan terminé dans une session CLI Codex. Le raccourci `Ctrl+O` déclenche la même action sans sélectionner manuellement le texte.",
-   "description_source": "Copy the latest completed Codex output. — Grab the latest finished response or plan text without manually selecting it. You can also press Ctrl+O .",
+   "description": "Ouvre le choix d’une réponse, d’un bloc de code ou d’une citation à copier. Ctrl+O copie directement la dernière réponse terminée.",
+   "description_source": "Copy a response, code block, or quote. — Use Ctrl + O to copy the latest completed response without using the menu.",
    "usage": "/copy",
    "usage_nature": "syntaxe",
    "exemple": "/copy",
@@ -4049,7 +4115,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les audits trading-sim sont transmis comme fichiers horodatés ; aucun transfert de sortie du TUI par presse-papiers n’est décrit."
+    "pourquoi": "Les rapports d’audit trading-sim se transmettent comme fichiers ; aucun transfert par presse-papiers n’est décrit."
    },
    "sources": [
     {
@@ -4062,7 +4128,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4087,17 +4153,25 @@
     {
      "date": "2026-10-12",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex est utilisé dans la CLI sous tmux, avec pilotage depuis l’iPhone."
+     "pourquoi": "Codex est piloté sous tmux via remote control."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Les audits conservent des preuves dans des rapports et utilisent le dépôt local."
+     "pourquoi": "Les rapports d’audit doivent rester vérifiables."
     }
    },
    "exemple_origine": "source"
@@ -4185,6 +4259,54 @@
      "caduc_si": "CONTEXTE.md ne décrit plus les services `codex-session@<nom>` sous tmux"
     }
    ]
+  },
+  {
+   "id": "codex-commandes-daybreak",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/daybreak",
+   "gabarit": "complet",
+   "description": "Active ou désactive Daybreak lorsque le compte et le modèle disposent d’un programme cyber approuvé chez OpenAI. Le choix s’applique au fil actuel et devient le défaut des futurs fils.",
+   "description_source": "Toggle Daybreak when your account and model are eligible. — Use an approved cyber access program for a chat.",
+   "usage": "/daybreak",
+   "usage_nature": "syntaxe",
+   "exemple": "/daybreak",
+   "disponibilite": "Compte et modèle éligibles Daybreak",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le profil securite ne prouve pas l’éligibilité Daybreak ; la commande enregistre aussi un défaut pour les futurs fils, sans besoin de changement déclaré."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est piloté sous tmux via remote control."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source"
   },
   {
    "id": "codex-commandes-debug-config",
@@ -6358,10 +6480,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "oa-cli",
    "groupe": "Available slash commands",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-03",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6382,6 +6504,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -6623,6 +6749,72 @@
     }
    },
    "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-presets",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/presets",
+   "gabarit": "complet",
+   "description": "Enregistre et rappelle des consignes ou commandes slash par emplacements numérotés. Depuis le menu, n crée un texte et s reprend le modèle, les permissions, le titre ou la ligne d’état actuels.",
+   "description_source": "Save and run prompts or slash commands. — Recall a command or prompt you use frequently.",
+   "usage": "/presets",
+   "usage_nature": "syntaxe",
+   "exemple": "/presets",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Sur trading-sim, ouvrir `/presets`, utiliser n pour enregistrer une consigne de revue en lecture seule puis rappeler son numéro ; résultat attendu : réutiliser la consigne en vérifiant son contenu avant exécution."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est piloté sous tmux via remote control."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Les rapports d’audit doivent rester vérifiables."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Enregistre et rappelle des consignes ou commandes slash par emplacements numérotés. Depuis le menu, n crée un texte et s reprend le modèle, les permissions, le titre ou la ligne d’état actuels.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "releve_le": "2026-11-03",
+     "caduc_si": "La syntaxe ou le comportement documenté change ou disparaît."
+    },
+    {
+     "affirmation": "Codex sert aux audits, notamment de trading-sim, et fonctionne sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-03",
+     "caduc_si": "Cet usage de Codex cesse ou change."
+    }
+   ]
   },
   {
    "id": "codex-commandes-project",
@@ -8377,6 +8569,54 @@
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
    "contexte_sections": null,
+   "exemple_origine": "source"
+  },
+  {
+   "id": "codex-commandes-voice",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/voice",
+   "gabarit": "complet",
+   "description": "Démarre ou arrête une conversation vocale dans les versions et sessions du terminal compatibles. /voice mute règle le microphone, /voice stop termine la conversation et /voice settings choisit la voix des futures conversations.",
+   "description_source": "Start or stop a voice conversation when available. — Speak to Codex in a terminal build that supports voice.",
+   "usage": "/voice",
+   "usage_nature": "syntaxe",
+   "exemple": "/voice",
+   "disponibilite": "Versions et sessions CLI compatibles avec Voice",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le pilotage décrit se fait surtout depuis l’iPhone par remote control ; aucun usage vocal du terminal n’est établi."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est piloté sous tmux via remote control."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "Built-in slash commands",
+   "maj_le": "2026-11-03",
+   "historique": [
+    {
+     "date": "2026-11-03",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-03",
+     "changement": "commentée"
+    }
+   ],
    "exemple_origine": "source"
   },
   {
