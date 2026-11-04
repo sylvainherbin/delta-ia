@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-04",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 103,
+ "commentees": 105,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -6596,16 +6596,16 @@
    "categorie": "fonctionnalites",
    "nom": "Use dictation on Claude Mobile",
    "gabarit": "complet",
-   "description": "Dans l'app Claude pour iOS et Android, l'icône micro transforme la parole en prompt écrit, et Claude répond par écrit ; à distinguer du mode vocal, qui est une conversation parlée. Les langues autres que l'anglais sont en bêta.",
+   "description": "Dans l'app Claude pour iOS et Android, l'icône micro du champ de saisie transforme la parole en prompt écrit, envoyé par la flèche, et Claude répond par écrit, à la différence du mode vocal. Le français fait partie des langues prises en charge (les langues autres que l'anglais sont en bêta) et l'enregistrement audio est supprimé après la transcription.",
    "description_source": "Dictation is available to all Claude users (Free, Pro, Max, Ultra, Team, and Enterprise plans). Support for languages other than English is in beta.",
    "usage": "1. Open Claude for iOS or Android.\n2. Start a new chat with Claude.\n3. Tap the microphone icon on the right side of the chat input field.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "Free, Pro, Max, Ultra, Team et Enterprise ; iOS et Android",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Rien dans CONTEXTE ne signale une gêne à la saisie sur l'iPhone ; la page vise les conversations de l'app."
+    "pourquoi": "La page vise une nouvelle conversation de l'app, alors que tu te sers de l'iPhone surtout pour piloter tes sessions Claude Code ; rien dans CONTEXTE.md ne signale une gêne à la saisie."
    },
    "sources": [
     {
@@ -6614,11 +6614,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6643,13 +6643,21 @@
     {
      "date": "2026-10-31",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
-     "pourquoi": "App iPhone surtout pour piloter les sessions Claude Code."
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "App Claude sur iPhone : sert surtout à piloter les sessions Claude Code à distance."
+    },
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "iPhone utilisé pour piloter le PC à distance (Remote Control, app Claude iOS)."
     }
    }
   },
@@ -10144,16 +10152,16 @@
    "categorie": "fonctionnalites",
    "nom": "How large is the context window on paid Claude plans?",
    "gabarit": "complet",
-   "description": "Article d'aide qui indique la taille de la fenêtre de contexte sur les plans payants de Claude (Pro, Max, Team, Enterprise), pour le chat, Claude Code et Claude Cowork. La fiche cite l'identifiant de modèle `claude-opus-4-6[1m]` comme exemple d'usage ; l'extrait fourni ne donne pas les tailles elles-mêmes.",
+   "description": "Article d'aide qui donne la fenêtre de contexte par modèle sur les plans payants, pour le chat, Claude Code et Cowork : dans Claude Code, 1M de jetons pour tous les modèles listés, les variantes 1M d'Opus 4.6 et de Sonnet 4.6 se choisissant avec `/model` (`claude-opus-4-6[1m]`, `claude-sonnet-4-6[1m]`). La variante Sonnet 4.6 exige des crédits d'usage activés, celle d'Opus 4.6 seulement sur Pro. Dans le chat, la gestion automatique du contexte résume les anciens messages, et ces longues conversations consomment davantage de la limite d'usage.",
    "description_source": "This article explains how large the context window is on paid Claude plans (Pro, Max, Ultra, Team, Enterprise) when you chat with Claude, or use Claude Code or Claude Cowork.",
    "usage": "claude-opus-4-6[1m]",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": "Pro, Max, Team et Enterprise",
+   "disponibilite": "Pro, Max, Ultra, Team et Enterprise",
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Sylvain a un abonnement Max et fait tourner des sessions Claude Code durables où il tape déjà `/compact`. Lire cet article lui permet de connaître la fenêtre réelle des modèles qu'il emploie, et donc de savoir quand compacter ou repartir d'une session vidée."
+    "verdict": "ignorer",
+    "pourquoi": "Dans Claude Code, Opus 5.5 et les modèles 5.x ont déjà 1M de jetons : la variante `claude-opus-4-6[1m]` ne t'apporte rien, et la variante Sonnet 4.6 en 1M demanderait d'activer des crédits d'usage, sans motif dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -10162,11 +10170,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10229,17 +10237,21 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Claude Max en cours : c'est l'un des plans payants couverts par l'article."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) à l'essai : plan payant couvert par l'article."
     },
-    "config.claude-code.skills": {
-     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Le relevé d'usage montre que Sylvain tape `/compact`, donc il gère déjà le remplissage du contexte."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente, que les crédits d'usage ne règlent pas ici."
     }
    },
    "exemple_impossible": "Usage = identifiant de modèle cité par l'article ; la source ne donne ni commande ni réglage où l'employer"
