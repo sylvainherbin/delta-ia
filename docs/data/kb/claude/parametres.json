@@ -10315,7 +10315,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
    "gabarit": "court",
-   "description": "Variable qui active les équipes d'agents, expérimentales et coupées par défaut.",
+   "description": "Variable qui, à 1, active les équipes d'agents, expérimentales et coupées par défaut.",
    "description_source": "Set to 1 to enable agent teams. Agent teams are experimental and disabled by default",
    "usage": "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
    "usage_nature": "syntaxe",
@@ -10324,7 +10324,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "OPÉRER et `SendMessage` coordonnent déjà tes sessions ; une équipe d'agents ajouterait de la consommation alors que les limites hebdomadaires sont ta friction principale."
+    "pourquoi": "OPÉRER remet déjà missions et messages à tes sessions, et les workflows multi-agents demandent ton accord ; une équipe d'agents ajouterait de la consommation sur des limites hebdomadaires déjà tendues."
    },
    "sources": [
     {
@@ -10337,7 +10337,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10350,13 +10350,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "OPÉRER distribue missions et messages entre sessions."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER remet missions et messages aux sessions et suit un rythme de consommation."
+    },
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Workflows multi-agents seulement sur accord de Sylvain."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
@@ -10980,7 +10988,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ne sert que derrière un proxy qui inspecte le TLS ; CONTEXTE.md ne décrit aucun proxy, seulement une connexion Wi-Fi directe à la box."
+    "pourquoi": "Ne sert que derrière un proxy qui inspecte le TLS ; CONTEXTE.md n'en décrit aucun, seulement une connexion directe à la box."
    },
    "sources": [
     {
@@ -10990,17 +10998,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Réseau décrit : Wi-Fi direct à la box, aucun proxy mentionné."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Réseau : connexion directe à la box depuis le 01/10, aucun proxy décrit."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-07",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-10-07",
@@ -11009,6 +11017,10 @@
     {
      "date": "2026-10-07",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -11190,7 +11202,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
    "gabarit": "court",
-   "description": "Variable qui fixe la taille de contexte, en jetons, à partir de laquelle la compaction à l'inactivité s'applique (200 000 par défaut ; toute valeur inférieure à 100 000 est relevée à 100 000, et une valeur non entière est ignorée).",
+   "description": "Variable qui fixe la taille de contexte, en jetons, à partir de laquelle la compaction à l'inactivité s'applique (200 000 par défaut, toute valeur inférieure relevée à 100 000, une valeur non entière ignorée).",
    "description_source": "Context size, in tokens, at which idle compaction applies to a conversation (default: 200000). Accepts a positive whole number, and anything else is ignored. Values below 100000 are raised to 100000, the lowest threshold. Idle compaction is on by default for conversations that meet its conditions. To turn it off, set idleCompaction to false. Requires Claude Code v2.1.290 or later",
    "usage": "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS",
    "usage_nature": "syntaxe",
@@ -11199,7 +11211,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le seuil par défaut suffit tant que la compaction à l'inactivité n'a pas été observée sur une session durable (voir `idleCompaction`)."
+    "pourquoi": "Le seuil par défaut suffit tant que la compaction à l'inactivité n'a pas été observée sur tes sessions durables (voir `idleCompaction`)."
    },
    "sources": [
     {
@@ -11209,17 +11221,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions durables concernées par la compaction à l'inactivité."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous systemd, concernées par la compaction à l'inactivité."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-10-14",
@@ -11232,6 +11244,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -11241,7 +11257,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
    "gabarit": "court",
-   "description": "Variable qui fixe combien de sous-agents peuvent tourner à la fois dans une session, 20 par défaut.",
+   "description": "Variable qui fixe combien de sous-agents peuvent tourner à la fois dans une session avant que l'outil Agent refuse d'en lancer un autre, 20 par défaut.",
    "description_source": "How many subagents can be running in one session before the Agent tool refuses to spawn another (default: 20). Accepts a positive whole number in plain digits; anything else is ignored, so the variable can adjust the cap but can't disable it. Requires Claude Code v2.1.217 or later",
    "usage": "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
    "usage_nature": "syntaxe",
@@ -11250,7 +11266,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Si une mission lançait trop de sous-agents en parallèle sur ta machine de 4 cœurs et 14 Gio, l'abaisser la freinerait ; rien ne le signale dans CONTEXTE.md."
+    "pourquoi": "Tes sessions lancent quelques sous-agents à la fois (31 appels en cinq jours au 04/10), loin du plafond de 20 ; rien dans CONTEXTE.md ne signale un excès à freiner."
    },
    "sources": [
     {
@@ -11263,7 +11279,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11276,17 +11292,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Portable à 4 cœurs, 14 Gio de RAM, calculs lourds bridés."
-    },
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
-     "pourquoi": "31 appels Agent le 04/10 (17 general-purpose, 11 Explore) ; Explore à garder et optimiser."
+     "pourquoi": "31 appels Agent en cinq jours au 04/10 ; vérifications en parallèle voulues."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Machine lente pour les calculs, sans saturation par les sous-agents décrite."
     }
    }
   },
@@ -12245,7 +12265,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES",
    "gabarit": "court",
-   "description": "Limite le nombre de réémissions d'une requête sans streaming qui expire ; à 0, elle échoue dès le premier délai. Non défini par défaut : `CLAUDE_CODE_MAX_RETRIES` limite alors ces réémissions. Demande Claude Code 2.1.285 ou plus.",
+   "description": "Variable qui limite le nombre de réémissions d'une requête sans streaming qui expire (à 0, elle échoue dès le premier délai), à partir de Claude Code 2.1.285.",
    "description_source": "Limit how many times Claude Code re-sends a non-streaming request that times out. With 0, the request fails on the first timeout. See Tune retry behavior for the timeout. Requires Claude Code v2.1.285 or later",
    "usage": "CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES",
    "usage_nature": "syntaxe",
@@ -12254,7 +12274,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun scénario d'essai nommé : le Wi-Fi fragile de CONTEXTE.md n'établit pas que des requêtes sans streaming expirent chez toi."
+    "pourquoi": "Aucun scénario d'essai nommé : CONTEXTE.md dit les pannes Wi-Fi résolues depuis le 01/10 et ne signale aucune requête sans streaming qui expire."
    },
    "sources": [
     {
@@ -12264,17 +12284,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Wi-Fi seul en 5 GHz direct à la box, décrochages cessés."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Wi-Fi fragile jusqu'au 01/10, résolu par la connexion directe à la box."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-10-03",
@@ -12291,6 +12311,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -12844,7 +12868,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun plugin propre, et rien dans CONTEXTE.md ne signale un clonage de marketplace trop lent ; le Wi-Fi ne décroche plus depuis la connexion directe à la box."
+    "pourquoi": "Aucun plugin propre, un seul plugin en essai, et aucun clonage de marketplace trop lent signalé depuis la connexion directe à la box."
    },
    "sources": [
     {
@@ -12857,7 +12881,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12886,17 +12910,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Marketplace claude-plugins-official déclarée, un seul plugin installé."
+     "pourquoi": "Marketplace claude-plugins-official déclarée, frontend-design en essai non adopté."
     },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Wi-Fi en 5 GHz direct à la box, décrochages cessés."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Wi-Fi fragile jusqu'au 01/10, résolu par la connexion directe à la box."
     }
    }
   },
@@ -13444,7 +13472,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN",
    "gabarit": "court",
-   "description": "Variable qui reprend automatiquement un tour interrompu à la reprise d'une session, en mode SDK.",
+   "description": "Variable qui, à 1, reprend automatiquement un tour interrompu quand la session précédente s'est arrêtée en cours de tour, en mode SDK.",
    "description_source": "Set to 1 to automatically resume if the previous session ended mid-turn. Used in SDK mode so the model continues without requiring the SDK to re-send the prompt. To turn this off, unset the variable or set it to 0. For the VS Code chat panel, see Continue conversations after a reload",
    "usage": "CLAUDE_CODE_RESUME_INTERRUPTED_TURN",
    "usage_nature": "syntaxe",
@@ -13453,7 +13481,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservée au mode SDK ; tes services reprennent leur conversation par `claude --resume`, sans SDK décrit."
+    "pourquoi": "Réservée au mode SDK ; tes services reprennent leur conversation par `claude --resume <id>`, et CONTEXTE.md ne décrit aucun usage du SDK."
    },
    "sources": [
     {
@@ -13466,7 +13494,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -13483,13 +13511,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services lancés avec `claude --resume <id>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     }
    }
   },
@@ -14157,7 +14189,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_SIMPLE",
    "gabarit": "court",
-   "description": "Variable qui lance Claude Code avec un prompt système minimal et seulement Bash, la lecture et l'édition de fichiers, sans skills, hooks, mémoire ni CLAUDE.md ; l'authentification doit alors venir d'une clé d'API.",
+   "description": "Variable qui, à 1, lance Claude Code avec un prompt système minimal et seulement Bash, la lecture et l'édition de fichiers, sans hooks, skills, mémoire automatique ni CLAUDE.md, et sans lire les jetons OAuth (équivalent de `--bare`).",
    "description_source": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
    "usage": "CLAUDE_CODE_SIMPLE",
    "usage_nature": "syntaxe",
@@ -14166,7 +14198,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Même effet que `--bare` : ni skills, ni hooks, ni mémoire, ni CLAUDE.md, et les jetons OAuth ne sont pas lus. Tes sessions ont besoin de leurs mémoires et tu t'authentifies par ton abonnement Max, pas par une clé d'API."
+    "pourquoi": "Tes sessions s'appuient sur la mémoire automatique et sur le hook `PermissionDenied`, et CONTEXTE.md décrit un abonnement Max, sans clé d'API, que ce mode ne sait pas utiliser."
    },
    "sources": [
     {
@@ -14179,7 +14211,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14200,17 +14232,25 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x), sans clé API décrite."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) à l'essai, aucune clé d'API décrite."
     },
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
      "pourquoi": "Mémoire automatique très utilisée, que ce mode ne charge pas."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Hook PermissionDenied vers `operer refus`, désactivé par ce mode."
     }
    }
   },
@@ -14713,7 +14753,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL",
    "gabarit": "court",
-   "description": "Variable qui choisit la durée du cache de prompt des requêtes hors conversation principale (sous-agents, workflows).",
+   "description": "Variable qui choisit la durée du cache de prompt, `5m` ou `1h`, des requêtes hors conversation principale (sous-agents, workflows, travail en arrière-plan).",
    "description_source": "Set 5m or 1h, the only values Claude Code accepts, to choose the prompt cache TTL for requests outside the main conversation, such as subagents, workflows, and background work. Takes precedence over the subagentPromptCacheTtl setting and over ENABLE_PROMPT_CACHING_1H, and FORCE_PROMPT_CACHING_5M overrides it. The API bills 1-hour cache writes at a higher rate. Requires Claude Code v2.1.242 or later",
    "usage": "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL",
    "usage_nature": "syntaxe",
@@ -14722,7 +14762,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La page parle de facturation à l'écriture de cache d'une heure, notion d'API ; sur ton abonnement Max, rien dans CONTEXTE.md ne motive de choisir la durée du cache des sous-agents."
+    "pourquoi": "La page ne parle que de la facturation API des écritures de cache d'une heure ; sur ton abonnement Max, elle ne dit rien d'un effet sur les limites hebdomadaires."
    },
    "sources": [
     {
@@ -14735,7 +14775,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14748,13 +14788,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x), sans clé API décrite."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) à l'essai, aucune clé d'API décrite."
+    },
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés (Explore, general-purpose), concernés par ce cache."
     }
    }
   },
@@ -15647,7 +15695,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_WARN_DISK_FREE_GIB",
    "gabarit": "court",
-   "description": "Nombre entier de Gio (par exemple 10) : Claude reçoit un rappel système quand l'espace libre du dossier de travail passe sous ce seuil ; sans effet si absent, à 0 ou non numérique. À définir dans l'environnement de lancement, pas dans `env`. Demande Claude Code 2.1.304 ou plus.",
+   "description": "Variable en Gio entiers (par exemple 10) qui fait recevoir à Claude un rappel système quand l'espace libre du dossier de travail passe sous ce seuil, à définir dans l'environnement de lancement et non dans un bloc `env` de réglages.",
    "description_source": "Set to a whole number of GiB, such as 10, to have Claude Code warn Claude when free space on the working directory's filesystem falls below that amount. The warning is a system reminder saying how much is free. The reminder is off when the variable is unset, 0, or not plain digits. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.304 or later",
    "usage": "CLAUDE_CODE_WARN_DISK_FREE_GIB",
    "usage_nature": "syntaxe",
@@ -15656,7 +15704,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne signale aucun manque de place sur le disque interne (~954 Go) ni d'incident de disque plein : sans besoin décrit, l'avertissement n'apporte rien."
+    "pourquoi": "CONTEXTE.md ne signale ni manque de place ni incident de disque plein sur le K8 Plus : sans besoin décrit, l'avertissement n'apporte rien."
    },
    "sources": [
     {
@@ -15666,17 +15714,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Disque interne ~954 Go et disque USB de sauvegardes ; aucun incident de disque plein décrit."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "K8 Plus machine de développement ; aucune contrainte de disque décrite."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-10-23",
@@ -15688,6 +15736,10 @@
     },
     {
      "date": "2026-10-23",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
      "changement": "commentaire révisé"
     }
    ]
