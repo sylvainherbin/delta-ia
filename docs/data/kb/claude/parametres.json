@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-04",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 672,
- "commentees": 616,
+ "commentees": 611,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -3711,7 +3711,7 @@
    "nom": "autoInstallIdeExtension",
    "gabarit": "court",
    "description": "Réglage qui installe automatiquement l'extension IDE de Claude Code quand on le lance depuis le terminal de VS Code.",
-   "description_source": "Install the Claude Code IDE extension automatically when you run Claude Code from a VS Code terminal. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
+   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
    "usage": "{\n  \"autoInstallIdeExtension\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3728,11 +3728,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3741,6 +3741,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -11099,7 +11103,7 @@
    "nom": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
    "gabarit": "court",
    "description": "Variable qui empêche l'installation automatique des extensions IDE.",
-   "description_source": "Set to 1 to skip auto-installation of IDE extensions. Equivalent to setting autoInstallIdeExtension to false",
+   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false",
    "usage": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11116,11 +11120,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11129,6 +11133,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -20235,7 +20243,7 @@
    "nom": "--effort",
    "gabarit": "court",
    "description": "Option CLI qui fixe le niveau d'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), en priorité sur `modelSettings` et `effortLevel`, sans rien enregistrer.",
-   "description_source": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. Overrides the modelSettings and effortLevel settings for this session and does not persist — claude --effort high",
+   "description_source": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. On the main conversation's model, overrides the modelSettings and effortLevel settings for this session and doesn't persist — claude --effort high",
    "usage": "--effort",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -20252,11 +20260,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-25",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20334,6 +20342,37 @@
     {
      "date": "2026-10-25",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. Overrides the modelSettings and effortLevel settings for this session and does not persist — claude --effort high",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`--effort` fixe l'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), prime sur `modelSettings` et `effortLevel` et ne persiste pas.",
+       "source": "https://code.claude.com/docs/en/cli-reference",
+       "releve_le": "2026-10-25",
+       "caduc_si": "L'option change de valeurs, de priorité ou devient persistante."
+      },
+      {
+       "affirmation": "Chaque service de session est lancé avec un modèle et un effort propres au rôle, par exemple `--model opus --effort medium` pour le chef.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-25",
+       "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge sur les limites hebdomadaires.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-25",
+       "caduc_si": "La piste 11 est close ou retirée."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -20346,27 +20385,7 @@
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
      "pourquoi": "Piste 11 : choix du modèle et de l'effort par session pour étaler la charge sur les limites hebdomadaires."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "`--effort` fixe l'effort de la session (`low`, `medium`, `high`, `xhigh`, `max` ou `ultracode`), prime sur `modelSettings` et `effortLevel` et ne persiste pas.",
-     "source": "https://code.claude.com/docs/en/cli-reference",
-     "releve_le": "2026-10-25",
-     "caduc_si": "L'option change de valeurs, de priorité ou devient persistante."
-    },
-    {
-     "affirmation": "Chaque service de session est lancé avec un modèle et un effort propres au rôle, par exemple `--model opus --effort medium` pour le chef.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-25",
-     "caduc_si": "Les lignes de lancement des services changent dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Piste 11 : choisir modèle et effort par session pourrait étaler la charge sur les limites hebdomadaires.",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-25",
-     "caduc_si": "La piste 11 est close ou retirée."
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-parametres-effortlevel",
@@ -31008,7 +31027,7 @@
    "nom": "sandbox.failIfUnavailable",
    "gabarit": "court",
    "description": "Réglage qui fait échouer le démarrage si le bac à sable activé ne peut pas démarrer.",
-   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start, because a dependency is missing or the platform is unsupported. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting.",
+   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start because the platform doesn't support it or the dependency check fails. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"failIfUnavailable\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -31025,11 +31044,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31050,6 +31069,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -33154,7 +33177,7 @@
    "nom": "sshHostCommands",
    "gabarit": "court",
    "description": "Clé de réglage : ajoute au sélecteur d'environnement de Claude Desktop des connexions SSH dont l'hôte est affiché par une commande, exécutée sur l'ordinateur à la création de la connexion ou au remplacement de l'hôte.",
-   "description_source": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account.",
+   "description_source": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or create another machine for it, Desktop runs the entry's command on your computer and connects to the host that the command prints.",
    "usage": "{\n  \"sshHostCommands\": [\n    {\n      \"id\": \"devbox\",\n      \"name\": \"Dev box\",\n      \"command\": \"acme-dev create\"\n    }\n  ]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -33171,7 +33194,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
@@ -33182,7 +33205,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-04",
    "historique": [
     {
      "date": "2026-10-24",
@@ -33191,6 +33214,10 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },

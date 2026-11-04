@@ -1,0 +1,233 @@
+{
+  "date": "2026-11-04",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-04T03:05:54+00:00",
+  "synthese": "Compte et quotas : aucune information nouvelle sur offres, tarifs ou limites dans les sources du jour. Relevé d'OBSERVATORY du 04/11 à 03 h UTC : semaine Claude à 32 % (remise à zéro le 08/11 à 16 h UTC), semaine Fable à 0 %, jauge de session 5 h absente ; ChatGPT semaine à 93 % (remise à zéro le 09/11 à 09 h UTC), au-dessus du seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Ton essai Max 20x (devenu Ultra le 30/10 d'après @claudeai) arrive à son renouvellement le 07/11 (CONTEXTE.md) : le bilan d'usage reste à préparer. Côté produit, Claude Code 2.1.318 (installée, à jour) ajoute la date de fin de la connexion claude.ai stockée à `claude auth status` et à `claude -p`, utile à la chaîne de 04 h ; le récapitulatif d'octobre de @ClaudeDevs reprend surtout des fonctions déjà couvertes, avec quatre posts coupés dont un sur la reprise des sessions Pro et Max. La newsroom Anthropic reste en échec de lecture.",
+  "sources_en_echec": [
+    {
+      "id": "anthropic-newsroom",
+      "url": "https://www.anthropic.com/news",
+      "erreur": "FormatInattendu: balises <time> hors footer/header sans entrée reconnue : gabarit changé ?",
+      "partiel": false
+    }
+  ],
+  "elements": [
+    {
+      "id": "claude-code-2.1.318",
+      "ids_bruts": [
+        "claude-code-2.1.318"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.318",
+      "version": "2.1.318",
+      "date_publication": "2026-11-04",
+      "type": "nouveaute",
+      "resume": "Ajouts : `claude auth status` affiche la date de fin de la connexion claude.ai stockée (`loginExpiresAt`), le JSON de `claude -p` la reprend (`credential_expires_at`) et la sortie texte de `claude -p` écrit un avertissement sur stderr dans les 10 derniers jours ; option `effort` dans le `$.model.fork` d'un mod ; `assume_role` pour les amonts `mantle` de la passerelle d'apps Claude. Modifications : les entrées `deniedMcpServers` par URL bloquent aussi les serveurs fournis par Anthropic et les connecteurs des sessions cloud (sinon, refuser un connecteur par son nom) ; les sous-agents d'arrière-plan passent une commande shell en arrière-plan après 3 minutes sur tous les fournisseurs ; Claude Code n'installe plus l'extension IDE au démarrage dans un terminal d'IDE ; `~/.claude.json`, les réglages et la connexion résistent mieux aux sauvegardes sur un répertoire personnel réseau, et `claude -p` ne réécrit plus `~/.claude.json` quand rien n'a changé. Correctifs : `--continue` qui perdait la conversation précédente (régression 2.1.314), `claude remote-control` et le démon qui ne pouvaient plus lancer de session (`spawn ENOENT`) après qu'une mise à jour a supprimé le binaire d'un processus encore actif, `/remote-control` qui montrait une session disponible après un échec de connexion, compaction à l'inactivité qui remplaçait la conversation par une réponse qui n'était pas un résumé, Workflows qui relançaient des agents terminés à la reprise après une limite d'usage, `~/.claude.json` invalide remplacé par des valeurs par défaut au lancement non interactif (le lancement échoue désormais en disant comment restaurer le fichier). Le reste (passerelle, runner auto-hébergé, VS Code, sessions cloud, Claude Tag, Code Review, macOS) ne touche pas ta configuration.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21318",
+          "libelle": "Claude Code — CHANGELOG 2.1.318",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "La 2.1.318 est installée et à jour (`versions.json`, relevé du 04/11) : ses correctifs sont déjà actifs. La chaîne de nuit D70 lance `/delta` et `/delta-kb` en `claude -p` : la 2.1.318 expose la date de fin de la connexion claude.ai stockée (`claude auth status`, `credential_expires_at`) et prévient 10 jours avant, ce qui permet d'anticiper une connexion échue avant un passage de 04 h ; la source ne dit pas quand une connexion se termine, d'où l'essai ci-dessous. Tes sessions `claude-session@<nom>` tournent en continu et tu mets Claude Code à jour par `claude update` : le correctif du `spawn ENOENT` de `claude remote-control` après une mise à jour qui supprime le binaire d'un processus encore actif les concerne, comme celui de `/remote-control` qui montrait une session disponible après un échec de connexion. La compaction à l'inactivité, active par défaut depuis la 2.1.290 (fiche `claude-code-parametres-idlecompaction`), ne remplace plus la conversation par une réponse qui n'est pas un résumé. Sur trading-sim, qui reçoit les connecteurs de compte malgré sa règle « aucun accès web » (écart ouvert chez Work, CONTEXTE.md), `deniedMcpServers` bloque désormais aussi par URL les serveurs fournis par Anthropic et les connecteurs de sessions cloud ; la fiche `claude-code-parametres-deniedmcpservers` laisse la décision à Work.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Lis la date de fin de la connexion stockée avec `claude auth status` (fiche `claude-code-commandes-claude-auth-status`, exemple `claude auth status`).",
+        "etapes": [
+          "Dans une session du chef delta-ia sur le K8, lance `claude auth status` ; essai : relève la date de fin pour la chaîne de nuit D70 (`claude -p` à 04 h) et note-la près du renouvellement du 07/11 ; résultat attendu : le JSON contient `loginExpiresAt` avec une date quand `authMethod` vaut `claude.ai` (la source ne décrit cette clé que pour une connexion claude.ai stockée ; avec un autre `authMethod`, la clé peut être absente)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-auth-status",
+        "claude-code-parametres-idlecompaction",
+        "claude-code-parametres-deniedmcpservers",
+        "claude-code-commandes-remote-control"
+      ],
+      "contexte_sections": {
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "La chaîne D70 lance les étapes Claude en `claude -p` à 04 h."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables `claude --resume <id> --remote-control <nom>` sous systemd."
+        },
+        "config.claude-code.interface": {
+          "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
+          "pourquoi": "Mises à jour par `claude update`, `autoUpdates: false`."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Écart trading-sim : connecteurs de compte reçus malgré la règle sans accès web."
+        }
+      }
+    },
+    {
+      "id": "x-2117670658113155075",
+      "ids_bruts": [
+        "x-2117670658113155075",
+        "x-2117670659715375344",
+        "x-2117670661221134775",
+        "x-2117670662806675967",
+        "x-2117670664262009016",
+        "x-2117670665780363747"
+      ],
+      "produit": "claude-code",
+      "titre": "Récapitulatif d'octobre de @ClaudeDevs : compaction des sessions inactives, `ultrathink`, `rm` en mode bypass, sessions cloud (annoncé sur X)",
+      "version": null,
+      "date_publication": "2026-11-03",
+      "type": "nouveaute",
+      "resume": "Annoncé sur X par @ClaudeDevs le 03/11, pas encore confirmé par la documentation pour ce qui est nouveau ; quatre des posts sont coupés après 280 caractères dans le relevé. Fonctions déjà couvertes : compaction des longues sessions inactives juste avant l'expiration du cache de prompt (~1 h), pour que la reprise ne retraite que le résumé (`idleCompaction`, fiche de la base) ; `ultrathink`, qui monte l'effort à xhigh pour un seul tour (2.1.311, couverte le 27/10) ; variable `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1`, pour qu'en mode bypass quelques `rm` risqués ne demandent plus confirmation dans un conteneur jetable (fiche de la base, 29/10). Nouveau côté sessions cloud : la préparation démarre pendant la saisie du prompt, et un clic sur une ligne du diff laisse un commentaire envoyé avec le message suivant. Phrases coupées : « Max, Ultra and… » (cloud), « …which effort level to » (effort), « on Pro and Max, resuming… » (reprise d'une session), et la suite de la variable `rm`.",
+      "sources": [
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670658113155075",
+          "libelle": "@ClaudeDevs — récapitulatif d'octobre, 03/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670659715375344",
+          "libelle": "@ClaudeDevs — compaction des sessions inactives, 03/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670661221134775",
+          "libelle": "@ClaudeDevs — effort et ultrathink, 03/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670662806675967",
+          "libelle": "@ClaudeDevs — rm en mode bypass, 03/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670664262009016",
+          "libelle": "@ClaudeDevs — sessions cloud, 03/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2117670665780363747",
+          "libelle": "@ClaudeDevs — renvoi vers le changelog, 03/11",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tes sessions durables `claude-session@<nom>` sont reprises par `claude --resume <id> --remote-control <nom>` (CONTEXTE.md) et ta priorité est d'alléger les limites hebdomadaires. La compaction à l'inactivité du post est la fonction que décrit déjà la fiche `claude-code-parametres-idlecompaction` (active par défaut depuis la 2.1.290, à partir de 200 000 jetons) : le post n'apporte aucun réglage nouveau, et sa dernière phrase (« on Pro and Max, resuming… ») est coupée dans le relevé ; ni la documentation ni les autres sources du jour ne la complètent, donc Delta ne sait pas si elle touche tes limites. `ultrathink` est couvert depuis le 27/10 ; `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS` vise un conteneur jetable, alors que tes sessions locales tournent sur le K8 en bypassPermissions : la source ne la recommande pas pour ce cas. Les deux nouveautés de sessions cloud ne servent que là où tu n'as aucun crédit Claude Code cloud (CONTEXTE.md, décision du 21/10).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lire la fin du post coupé sur la reprise des sessions et essayer la compaction à l'inactivité ; revérifier le 2026-11-05 (aucune échéance publiée) si la documentation complète le post.",
+        "etapes": [
+          "Ouvre https://x.com/ClaudeDevs/status/2117670659715375344 et lis la fin de « And on Pro and Max, resuming… » ; résultat attendu : tu sais si elle change la consommation de tes limites (Delta n'en a que le début).",
+          "Essai : laisse la session du chef delta-ia, avec un contexte de plus de 200 000 jetons, inactive environ une heure, puis reprends-la avec `claude --resume <id> --remote-control <nom>` ; résultat attendu : la ligne « Compacted while idle, before the prompt cache expired » (fiche `claude-code-parametres-idlecompaction`) s'affiche ; sinon la compaction n'a pas eu lieu (seuil non atteint ou `{\"idleCompaction\": false}`)."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-idlecompaction",
+        "claude-code-parametres-claude-code-even-more-dangerously-skip-permissions",
+        "claude-code-commandes-effort"
+      ],
+      "contexte_sections": {
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables reprises par `claude --resume <id> --remote-control <nom>`."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions sauf trading."
+        },
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Aucun crédit Claude Code cloud ; priorité aux limites hebdomadaires."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-11-03",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-03"
+      ],
+      "produit": "claude",
+      "titre": "Filigrane de texte d'Anthropic sur les textes générés par Claude Mythos 5, Opus 4.7 et Sonnet 4.6",
+      "version": null,
+      "date_publication": "2026-11-03",
+      "type": "nouveaute",
+      "resume": "Le texte généré par Claude Mythos 5, Claude Opus 4.7 et Claude Sonnet 4.6 porte le filigrane de texte d'Anthropic sur les plateformes listées dans l'article d'aide « How Claude marks AI-generated content ». Sur Sonnet 4.6, une requête qui fixe `temperature`, `top_p` ou `top_k` à une valeur non par défaut peut ne pas en porter. La documentation a une page « Text watermark » sur le sujet.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-10-07",
+      "ids_bruts": [
+        "claude-platform-notes-2026-10-07"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Claude Platform — 07/10 (révision) : les classes SDK browser use et computer use nomment leurs versions",
+      "version": null,
+      "date_publication": "2026-10-07",
+      "type": "nouveaute",
+      "resume": "Révision d'une note du 07/10, une seule phrase modifiée : « The Python and TypeScript SDKs now include classes, in beta, for the browser use tool and the computer use tool » devient « Python SDK 1.12.0 and TypeScript SDK 0.132.0 add classes, in beta, for the browser use tool and the computer use tool ». Aucune phrase ajoutée ni retirée ; le prix de lecture du cache de Sonnet 5.5, déjà signalé le 08/10, n'est pas touché.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2117710942826123294",
+      "raison": "post X sans rapport : recherche sur la vérification de l'origine d'une réponse de modèle (FlashProve), sans effet sur les outils ni les conditions d'usage de Sylvain"
+    },
+    {
+      "id": "x-2117680644230955320",
+      "raison": "post X sans rapport : appel aux développeurs de plugins, Sylvain n'en construit aucun"
+    },
+    {
+      "id": "x-2117680642217439399",
+      "raison": "post X sans rapport : auto-connexion des plugins en bêta sur Team et Enterprise, hors de l'abonnement individuel de Sylvain"
+    },
+    {
+      "id": "x-2117680640925794738",
+      "raison": "post X sans rapport : authentification gérée par l'organisation (administrateurs Team et Enterprise)"
+    },
+    {
+      "id": "x-2117680638488965129",
+      "raison": "post X sans rapport : authentification gérée par l'entreprise (EMA) pour administrateurs d'organisation"
+    },
+    {
+      "id": "x-2117680635561312732",
+      "raison": "post X sans rapport : auto-connexion des plugins côté éditeurs de serveurs MCP"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
