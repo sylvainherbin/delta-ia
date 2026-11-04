@@ -900,6 +900,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : boolean. On macOS, allow writable sandbox roots at or under $CODEX_HOME to follow symlinks. Codex reads this only from the execution host's $CODEX_HOME/config.toml at startup. Enabling it trusts targets outside that directory and targets that change between commands. It grants no additional writable roots. Defaults to false.",
+   "empreinte": "a4b4e6e8c7c43089bb8f0d1c1d9ee84ab48426efe9f87b37dcaed159b48eccb0",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-allow-symlinked-codex-home",
+   "identite": "kb:openai:codex-parametres-allow-symlinked-codex-home",
+   "nom": "allow_symlinked_codex_home",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. On macOS, allow writable sandbox roots at or under $CODEX_HOME to follow symlinks. Codex reads this only from the execution host's $CODEX_HOME/config.toml at startup. Enabling it trusts targets outside that directory and targets that change between commands. It grants no additional writable roots. Defaults to false."
+     }
+    }
+   },
+   "usage": "allow_symlinked_codex_home",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : on-request | never | { granular = { sandbox_approval = bool, rules = bool, mcp_elicitations = bool, request_permissions = bool, skill_approval = bool } }. Controls when Codex pauses for approval before executing commands. You can also use approval_policy = { granular = { ... } } to allow or auto-reject specific prompt categories while keeping other prompts interactive. untrusted is unsupported, and on-failure is deprecated; use on-request for interactive runs or never for non-interactive runs.",
    "empreinte": "53d8ecb130d41019661de784359be61b4de54ef77c211652c8f462eb07397979",
    "gabarit": "court",
@@ -1559,6 +1591,38 @@
     }
    },
    "usage": "apps.<id>.enabled",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : array<string>. Omit this app's tools from the direct, deferred, or code_mode surfaces. App and MCP server omissions apply together.",
+   "empreinte": "bf901d780b99b4a13b9bf41a89648352d5569cd8660c293bd65eb05b462f85cf",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-apps-id-omit-tools-from",
+   "identite": "kb:openai:codex-parametres-apps-id-omit-tools-from",
+   "nom": "apps.<id>.omit_tools_from",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : array<string>. Omit this app's tools from the direct, deferred, or code_mode surfaces. App and MCP server omissions apply together."
+     }
+    }
+   },
+   "usage": "apps.<id>.omit_tools_from",
    "usage_nature": "syntaxe"
   },
   {
@@ -2265,8 +2329,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Connect to a remote Code Mode host instead of starting a local host. This outbound connection is shared across threads and is separate from --listen ; use wss:// for remote hosts. (valeurs : ws://HOST/PATH | wss://HOST/PATH)",
-   "empreinte": "84f1d8dd3b51b9f42f1a8117151ea4cf067a5597fe1367ac0d971a97c836aa32",
+   "description_source": "Share an outbound HTTP/2 gRPC connection to a remote Code Mode host across threads. Supply an HTTP or HTTPS origin without credentials, a path, a query, or a fragment. (valeurs : http://HOST[:PORT] | https://HOST[:PORT])",
+   "empreinte": "d4fa2ed9abd65b225a30a3e4bfc91975d44b806da3512aa836009ec4eb923e25",
    "gabarit": "court",
    "groupe": "codex app-server",
    "id": "codex-parametres-codex-app-server-code-mode-host",
@@ -2288,14 +2352,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Connect to a remote Code Mode host instead of starting a local host. This outbound connection is shared across threads and is separate from --listen ; use wss:// for remote hosts. (valeurs : ws://HOST/PATH | wss://HOST/PATH)"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0ecb51cbb4378426effc92a339f14f5886dafe4375ea16c0fbf71d46088ccbb6",
-      "statut": "automatique",
-      "texte": "Se connecter à un hôte Code Mode distant au lieu d'en démarrer un local. Cette connexion sortante est partagée entre les threads et est distincte de --listen ; utiliser wss:// pour les hôtes distants. (valeurs : ws://HOST/PATH | wss://HOST/PATH)"
+      "texte": "Share an outbound HTTP/2 gRPC connection to a remote Code Mode host across threads. Supply an HTTP or HTTPS origin without credentials, a path, a query, or a fragment. (valeurs : http://HOST[:PORT] | https://HOST[:PORT])"
      }
     }
    },
@@ -3825,6 +3882,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Limit checks to configuration, the network environment, provider HTTP connectivity, and Responses WebSocket connectivity. (valeurs : boolean)",
+   "empreinte": "7a2f1ba106bce9178aaf8226dff2728f68e95a72d6c723453caf725a32608e16",
+   "gabarit": "court",
+   "groupe": "codex doctor",
+   "id": "codex-parametres-codex-doctor-network-only",
+   "identite": "kb:openai:codex-parametres-codex-doctor-network-only",
+   "nom": "codex doctor --network-only",
+   "origine": "oa-cli",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "developer-commands",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-doctor"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Limit checks to configuration, the network environment, provider HTTP connectivity, and Responses WebSocket connectivity. (valeurs : boolean)"
+     }
+    }
+   },
+   "usage": "codex doctor --network-only",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Disable ANSI color in human-readable output. (valeurs : boolean)",
    "empreinte": "87ad8e3c27a42de6860a97fb6b398c78e13a982f66cde86211f36e0811bc475a",
    "gabarit": "court",
@@ -4133,6 +4222,38 @@
     }
    },
    "usage": "codex exec --color",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Request a cyber access program for this turn (experimental, OpenAI provider only). Requires access for the account and model. Unavailable with review. A fork requires a prompt. (valeurs : standard | daybreak_blue | daybreak_red)",
+   "empreinte": "1ab6f7b7450e9f1c0a90ccc7052e0c32c13082045ee0c142077818f68810e91f",
+   "gabarit": "court",
+   "groupe": "codex exec",
+   "id": "codex-parametres-codex-exec-cyber-access-program",
+   "identite": "kb:openai:codex-parametres-codex-exec-cyber-access-program",
+   "nom": "codex exec --cyber-access-program",
+   "origine": "oa-cli",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "developer-commands",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Request a cyber access program for this turn (experimental, OpenAI provider only). Requires access for the account and model. Unavailable with review. A fork requires a prompt. (valeurs : standard | daybreak_blue | daybreak_red)"
+     }
+    }
+   },
+   "usage": "codex exec --cyber-access-program",
    "usage_nature": "syntaxe"
   },
   {
@@ -4644,8 +4765,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "JSON Schema file describing the expected final response shape. Codex validates tool output against it. (valeurs : path)",
-   "empreinte": "e47a134635d561e34e86c2e917416c699e2e430e388729404edd0b42c86f9e84",
+   "description_source": "Path to a JSON Schema for the model's final response. (valeurs : path)",
+   "empreinte": "fe64233e4e8b8d55a46281afa76d86c7bd4bc15f985898506736160bab6eedba",
    "gabarit": "court",
    "groupe": "codex exec",
    "id": "codex-parametres-codex-exec-output-schema",
@@ -4667,14 +4788,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "JSON Schema file describing the expected final response shape. Codex validates tool output against it. (valeurs : path)"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "cab1b4c64e5ea1708b2da127ac3623bdb2c672cd776719808d43d06934a53901",
-      "statut": "automatique",
-      "texte": "Fichier JSON Schema décrivant la forme attendue de la réponse finale. Codex valide la sortie des outils par rapport à ce schéma. (valeurs : path)"
+      "texte": "Path to a JSON Schema for the model's final response. (valeurs : path)"
      }
     }
    },
@@ -4913,6 +5027,38 @@
     }
    },
    "usage": "codex exec --skip-git-repo-check",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Set the source label for a new or forked thread. Resuming a thread keeps its original label. (valeurs : SOURCE)",
+   "empreinte": "fec3162c5d7e80076fec6d42c25ec94ddecae15d445a55837112093fc5864a88",
+   "gabarit": "court",
+   "groupe": "codex exec",
+   "id": "codex-parametres-codex-exec-thread-source",
+   "identite": "kb:openai:codex-parametres-codex-exec-thread-source",
+   "nom": "codex exec --thread-source",
+   "origine": "oa-cli",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "developer-commands",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set the source label for a new or forked thread. Resuming a thread keeps its original label. (valeurs : SOURCE)"
+     }
+    }
+   },
+   "usage": "codex exec --thread-source",
    "usage_nature": "syntaxe"
   },
   {
@@ -7803,8 +7949,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed experimental_network requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools.",
-   "empreinte": "1e38af3cde17444978812f5fcc66850190715b848d0289b43a6215dd74f48d1c",
+   "description_source": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed network_proxy requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools.",
+   "empreinte": "eba11011b426395b1bc167164f0ac3fab8801ddcbcd5bd6bb98416ff71bf90e4",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-features-network-proxy",
@@ -7826,14 +7972,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed experimental_network requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "e4d12371065bba3025197f245839b9f74f76a0f7abf30fcb2e0792c6ba9053af",
-      "statut": "automatique",
-      "texte": "Type : boolean | table. Démarrer le proxy réseau pour les commandes en bac à sable (expérimental ; désactivé par défaut). Requis pour faire appliquer les règles de domaine du profil d'autorisation, sauf si des exigences experimental_network gérées par l'administrateur démarrent le proxy. Utiliser une table pour définir des options de politique au niveau de la fonctionnalité, comme domains. Ne filtre pas la recherche web, les apps, MCP ni les autres outils hébergés."
+      "texte": "Type : boolean | table. Start the network proxy for sandboxed commands (experimental; off by default). Required to enforce permission-profile domain rules unless enabled administrator-managed network_proxy requirements start the proxy. Use a table when setting feature-level policy options such as domains. Does not filter web search, apps, MCP, or other hosted tools."
      }
     }
    },
@@ -8429,8 +8568,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, features.rollout_budget.limit_tokens is required.",
-   "empreinte": "54343e2b136f867d9892d169cd796bcf8a735cfe2966e55ad1bc8955c1e9c186",
+   "description_source": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, set both limit_tokens and reminder_at_remaining_tokens.",
+   "empreinte": "cb64069b97382018c224ab2d9287ff4ee51269e2e8ad9da9a8a76a757655e81d",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-features-rollout-budget-enabled",
@@ -8452,14 +8591,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, features.rollout_budget.limit_tokens is required."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "1438ef42964d64baa8a0c8f9178a20989088967d90d1772d89eadf0367e607f9",
-      "statut": "automatique",
-      "texte": "Type : boolean. Activer le suivi du budget de déploiement. Cette fonctionnalité est en cours de développement et désactivée par défaut. Lorsqu'elle est activée, features.rollout_budget.limit_tokens est requis."
+      "texte": "Type : boolean. Enable rollout budget tracking. This feature is under development and off by default. When enabled, set both limit_tokens and reminder_at_remaining_tokens."
      }
     }
    },
@@ -8546,8 +8678,40 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : array<integer>. Send a reminder as the remaining weighted token budget crosses each threshold. Supply the list when rollout budget tracking is enabled. Each value must be positive and below limit_tokens.",
+   "empreinte": "ee366cf5fb311935fc53e9d5745edac8d9ec759acfe1eb3fb22accf7dec4562b",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-features-rollout-budget-reminder-at-remaining-tokens",
+   "identite": "kb:openai:codex-parametres-features-rollout-budget-reminder-at-remaining-tokens",
+   "nom": "features.rollout_budget.reminder_at_remaining_tokens",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : array<integer>. Send a reminder as the remaining weighted token budget crosses each threshold. Supply the list when rollout budget tracking is enabled. Each value must be positive and below limit_tokens."
+     }
+    }
+   },
+   "usage": "features.rollout_budget.reminder_at_remaining_tokens",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : integer. Positive token interval between rollout budget reminders. Defaults to 10% of limit_tokens, with a minimum of 1 token.",
-   "empreinte": "914c3e49f6971ae761aa4b2c2d594c9a8f41ccb2d5d8a5c2baf20231820bee9c",
+   "empreinte": "fe9840902276d87c98d7580fd2ed1d86c21588cfad51f40796c3751f9aab63c4",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-features-rollout-budget-reminder-interval-tokens",
@@ -8555,7 +8719,7 @@
    "nom": "features.rollout_budget.reminder_interval_tokens",
    "origine": "oa-config",
    "produit": "codex",
-   "retiree": false,
+   "retiree": true,
    "sources": [
     {
      "libelle": "config-reference",
@@ -8815,6 +8979,38 @@
     }
    },
    "usage": "features.unified_exec",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : boolean. Enable the built-in view_image tool for opening local images. Defaults to true.",
+   "empreinte": "4cc593cde56683cbf4b65ee0caf79270089ba090f8cfb9fad6a9069e447c7ca0",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-features-view-image",
+   "identite": "kb:openai:codex-parametres-features-view-image",
+   "nom": "features.view_image",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. Enable the built-in view_image tool for opening local images. Defaults to true."
+     }
+    }
+   },
+   "usage": "features.view_image",
    "usage_nature": "syntaxe"
   },
   {
@@ -9088,6 +9284,38 @@
     }
    },
    "usage": "forced_login_method",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : integer (positive). Set the default token budget for new goals and the largest budget a goal can request. Omit to leave goals without a configured limit.",
+   "empreinte": "733dbbdbd3efb1d1651dffb90a6f9ec48561a33b53ca6a5ee557730a2cf65cf7",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-goals-max-goal-token-budget",
+   "identite": "kb:openai:codex-parametres-goals-max-goal-token-budget",
+   "nom": "goals.max_goal_token_budget",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : integer (positive). Set the default token budget for new goals and the largest budget a goal can request. Omit to leave goals without a configured limit."
+     }
+    }
+   },
+   "usage": "goals.max_goal_token_budget",
    "usage_nature": "syntaxe"
   },
   {
@@ -9404,6 +9632,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Use these hooks to log model requests, including retries within the same turn. PreModelRequest runs before each attempt. PostModelRequest reports the outcome. Both receive the model and turn_id, plus agent_id and agent_type when available. Hook output is diagnostic only. It can't change the model's context or block a request.",
+   "empreinte": "cf6f30b42321f1014e0c3bdea4db9bc4c8758afd7266e8aa7a36c972061e987b",
+   "gabarit": "court",
+   "groupe": "Hooks",
+   "id": "codex-parametres-hook-premodelrequest-and-postmodelrequest",
+   "identite": "kb:openai:codex-parametres-hook-premodelrequest-and-postmodelrequest",
+   "nom": "Hook PreModelRequest and PostModelRequest",
+   "origine": "oa-hooks",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "hooks",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/hooks#premodelrequest-and-postmodelrequest"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Use these hooks to log model requests, including retries within the same turn. PreModelRequest runs before each attempt. PostModelRequest reports the outcome. Both receive the model and turn_id, plus agent_id and agent_type when available. Hook output is diagnostic only. It can't change the model's context or block a request."
+     }
+    }
+   },
+   "usage": "PreModelRequest",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "PreToolUse can intercept Bash, file edits performed through apply_patch, MCP tool calls, and other local function tools. See Tool coverage for the supported paths and exceptions.",
    "empreinte": "f94e7663230925cbc7e935141586c1129d351bed9a7430f753b9b6933543cfca",
    "gabarit": "court",
@@ -9716,8 +9976,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : array<table>. Matcher groups for hook events such as PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt.",
-   "empreinte": "70068dc6301f1b7b31b2d3751dc2b01c19a4377861b4a8637d14a17b64fe3d1f",
+   "description_source": "Type : array<table>. Matcher groups for hook events such as PreModelRequest, PostModelRequest, PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt.",
+   "empreinte": "f0ef71c6ff85d1e71ad95f739062acb0b7938d2b0d065244b1bea2ba21df608b",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-hooks-event",
@@ -9739,14 +9999,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : array<table>. Matcher groups for hook events such as PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "2bc4c91db53d598b9bde05a2ccb889345ecad00a1f2142fb687d0dbeffc89638",
-      "statut": "automatique",
-      "texte": "Type : array<table>. Groupes de matchers pour les événements de hooks tels que PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop ou Interrupt."
+      "texte": "Type : array<table>. Matcher groups for hook events such as PreModelRequest, PostModelRequest, PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, Stop, or Interrupt."
      }
     }
    },
@@ -11081,8 +11334,40 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : string. Execution environment for the MCP server. Defaults to local. Use the ID of a configured executor to run a stdio server or connect to a streamable HTTP server there.",
+   "empreinte": "195f7fb66a1370631213c5a185e13bf52c4c5a22c8188017ec6a517d6ac24cc7",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-mcp-servers-id-environment-id",
+   "identite": "kb:openai:codex-parametres-mcp-servers-id-environment-id",
+   "nom": "mcp_servers.<id>.environment_id",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Execution environment for the MCP server. Defaults to local. Use the ID of a configured executor to run a stdio server or connect to a streamable HTTP server there."
+     }
+    }
+   },
+   "usage": "mcp_servers.<id>.environment_id",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : local | remote. Experimental placement for an MCP server. remote starts stdio servers through a remote executor environment; streamable HTTP remote placement is not implemented.",
-   "empreinte": "8ab88cca9ba253b1d6f114c07ee881aff15ed462e2932d099b1bcec4354c4f3f",
+   "empreinte": "062821d233208b833102a63c6280729fda1bf6dc8eaf132e10eb874bbb31597c",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-mcp-servers-id-experimental-environment",
@@ -11090,7 +11375,7 @@
    "nom": "mcp_servers.<id>.experimental_environment",
    "origine": "oa-config",
    "produit": "codex",
-   "retiree": false,
+   "retiree": true,
    "sources": [
     {
      "libelle": "config-reference",
@@ -11393,8 +11678,40 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : boolean. When true, fail startup/resume if this enabled MCP server cannot initialize.",
-   "empreinte": "2fd6f29f1fe31787ff61740986bb06121a023499b06afbfda172ec07d7def3f2",
+   "description_source": "Type : array<string>. Omit this server’s tools from selected model-facing surfaces. Choose direct (initial tools), deferred (tool search), or code_mode (Code Mode scripts). Use disabled_tools to block a tool. An empty list clears inherited omissions.",
+   "empreinte": "3d2a231ca10773d620eb543f974a79df489a81d060e85566977da7c8c64690d7",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-mcp-servers-id-omit-tools-from",
+   "identite": "kb:openai:codex-parametres-mcp-servers-id-omit-tools-from",
+   "nom": "mcp_servers.<id>.omit_tools_from",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : array<string>. Omit this server’s tools from selected model-facing surfaces. Choose direct (initial tools), deferred (tool search), or code_mode (Code Mode scripts). Use disabled_tools to block a tool. An empty list clears inherited omissions."
+     }
+    }
+   },
+   "usage": "mcp_servers.<id>.omit_tools_from",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : boolean.",
+   "empreinte": "2a1888231f8713b8c06dcb5dbf4b34121b5b3734747c8b034cc29462e2c9b1a7",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-mcp-servers-id-required",
@@ -11416,14 +11733,14 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : boolean. When true, fail startup/resume if this enabled MCP server cannot initialize."
+      "texte": "Type : boolean."
      },
      "fr": {
       "de": "en",
       "glossaire": "r1",
-      "source_sha256": "cd4cd8ede180ec3f28b69fe537d6df0ffec5533a8944d1826a3670e4b03caa57",
+      "source_sha256": "4ada5519517bae0a68dc2e225e30510d189b95191eedaefd8e12a45ef999312a",
       "statut": "automatique",
-      "texte": "Type : boolean. Lorsque la valeur est true, faire échouer le démarrage ou la reprise si ce serveur MCP activé ne peut pas s'initialiser."
+      "texte": "Type : boolean."
      }
     }
    },
@@ -11432,8 +11749,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : array<string>. OAuth scopes to request when authenticating to that MCP server.",
-   "empreinte": "6bdc09dc55ea1e872066089bc588501502a97407db3da2de8022493998d0bf48",
+   "description_source": "Type : array<string>. OAuth scopes to request at login. If omitted, Codex uses the initial authentication challenge's scopes, falling back to the protected resource's metadata.",
+   "empreinte": "91b13fe222774bb8643dc0c23618f73f14a2dcd59eb0b87cdd4131514d2c1454",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-mcp-servers-id-scopes",
@@ -11455,18 +11772,43 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : array<string>. OAuth scopes to request when authenticating to that MCP server."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "23772052ce544b30a5b5c26ae33195b28bc8dde57d47e0946612156a48d4a404",
-      "statut": "automatique",
-      "texte": "Type : array<string>. Scopes OAuth à demander lors de l'authentification auprès de ce serveur MCP."
+      "texte": "Type : array<string>. OAuth scopes to request at login. If omitted, Codex uses the initial authentication challenge's scopes, falling back to the protected resource's metadata."
      }
     }
    },
    "usage": "mcp_servers.<id>.scopes",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : connection | catalog. Use a live connection to establish startup readiness (connection, the default), or let a valid cached tool catalog satisfy startup while the connection opens (catalog). Calling a tool still requires a live connection.",
+   "empreinte": "70f961eabdee9447a3c0eac0744f1891a38e6351bc5c490a29f109a7fb170ba3",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-mcp-servers-id-startup-readiness",
+   "identite": "kb:openai:codex-parametres-mcp-servers-id-startup-readiness",
+   "nom": "mcp_servers.<id>.startup_readiness",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : connection | catalog. Use a live connection to establish startup readiness (connection, the default), or let a valid cached tool catalog satisfy startup while the connection opens (catalog). Calling a tool still requires a live connection."
+     }
+    }
+   },
+   "usage": "mcp_servers.<id>.startup_readiness",
    "usage_nature": "syntaxe"
   },
   {
@@ -11545,6 +11887,70 @@
     }
    },
    "usage": "mcp_servers.<id>.startup_timeout_sec",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : boolean. Mark every tool on this server as safe to run in parallel. Enable only when the server can handle concurrent calls to all its tools. Defaults to false.",
+   "empreinte": "f7f22f5489bc6a7c85c2a7ae718c1c8b940f01e27c123eb9010841cb20e49dec",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-mcp-servers-id-supports-parallel-tool-calls",
+   "identite": "kb:openai:codex-parametres-mcp-servers-id-supports-parallel-tool-calls",
+   "nom": "mcp_servers.<id>.supports_parallel_tool_calls",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. Mark every tool on this server as safe to run in parallel. Enable only when the server can handle concurrent calls to all its tools. Defaults to false."
+     }
+    }
+   },
+   "usage": "mcp_servers.<id>.supports_parallel_tool_calls",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : integer (positive). Compact each ordinary MCP tool's input schema when it exceeds this many UTF-8 bytes. The default is 5,000 bytes. Code Mode also uses an explicit value when rendering tool input types.",
+   "empreinte": "f75cb6fb81c6b5a8e1d3aff4576f70b48ae0a0b01c2e63a79c5a2e55a6d14f54",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-mcp-servers-id-tool-input-schema-max-bytes",
+   "identite": "kb:openai:codex-parametres-mcp-servers-id-tool-input-schema-max-bytes",
+   "nom": "mcp_servers.<id>.tool_input_schema_max_bytes",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : integer (positive). Compact each ordinary MCP tool's input schema when it exceeds this many UTF-8 bytes. The default is 5,000 bytes. Code Mode also uses an explicit value when rendering tool input types."
+     }
+    }
+   },
+   "usage": "mcp_servers.<id>.tool_input_schema_max_bytes",
    "usage_nature": "syntaxe"
   },
   {
@@ -11744,6 +12150,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : string. Service tier for global memory consolidation. Defaults to default (Standard).",
+   "empreinte": "298a8c1fd9754622bdea5787ee143133a1d56d15a014dda8fea792660527c72f",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-memories-consolidation-service-tier",
+   "identite": "kb:openai:codex-parametres-memories-consolidation-service-tier",
+   "nom": "memories.consolidation_service_tier",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Service tier for global memory consolidation. Defaults to default (Standard)."
+     }
+    }
+   },
+   "usage": "memories.consolidation_service_tier",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : boolean. When true, threads that use external context such as MCP tool calls, web search, or tool search are kept out of memory generation. Defaults to false. Legacy alias: memories.no_memories_if_mcp_or_web_search.",
    "empreinte": "49e0a43f7dc6fe0f96c0c6d5f2ff29af7daa9229b14db72ce0d09e6a9b83d394",
    "gabarit": "court",
@@ -11779,6 +12217,38 @@
     }
    },
    "usage": "memories.disable_on_external_context",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : boolean. With v1 selected, set to true to generate both stores while continuing to read v1. With v2 selected, Codex writes only v2.",
+   "empreinte": "2aba895809384018de63df77ed47e2d07fc7f2ab0147e8472c24af81db21e9d2",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-memories-dual-write",
+   "identite": "kb:openai:codex-parametres-memories-dual-write",
+   "nom": "memories.dual_write",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. With v1 selected, set to true to generate both stores while continuing to read v1. With v2 selected, Codex writes only v2."
+     }
+    }
+   },
+   "usage": "memories.dual_write",
    "usage_nature": "syntaxe"
   },
   {
@@ -12134,6 +12604,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : v1 | v2. Select the local memory store. With memories enabled, Codex defaults to v2 for a fresh home and v1 if $CODEX_HOME/memories/ exists. Explicitly setting dual_write = false keeps the default at v1.",
+   "empreinte": "aedfdf1bc0efe8b485c9db5f8cc12ac2770cf94415cba1b19653487c3c445a5f",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-memories-version",
+   "identite": "kb:openai:codex-parametres-memories-version",
+   "nom": "memories.version",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : v1 | v2. Select the local memory store. With memories enabled, Codex defaults to v2 for a fresh home and v1 if $CODEX_HOME/memories/ exists. Explicitly setting dual_write = false keeps the default at v1."
+     }
+    }
+   },
+   "usage": "memories.version",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : string. Model to use (e.g., gpt-6.1-sol).",
    "empreinte": "93a4b139d08832ea475a76a66d6840bb003e8883a4412ecd8b6e2f410525f47f",
    "gabarit": "court",
@@ -12368,6 +12870,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : integer (0–100). Compact history after a final response when active context reaches this percentage of the usable context window. Omit or set to 0 to disable turn-end compaction. The usual auto-compaction limits still apply.",
+   "empreinte": "d2388045ab034fdfb5352b10ca76034c96adbb28d79df04a0d96888a47448f8d",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-model-post-turn-compact-threshold-percent",
+   "identite": "kb:openai:codex-parametres-model-post-turn-compact-threshold-percent",
+   "nom": "model_post_turn_compact_threshold_percent",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : integer (0–100). Compact history after a final response when active context reaches this percentage of the usable context window. Omit or set to 0 to disable turn-end compaction. The usual auto-compaction limits still apply."
+     }
+    }
+   },
+   "usage": "model_post_turn_compact_threshold_percent",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : string. Provider id from model_providers (default: openai).",
    "empreinte": "08c8c0db12225d2923119186ea335f2e646ce11c07c575c7ec37bd1c07e73858",
    "gabarit": "court",
@@ -12403,6 +12937,134 @@
     }
    },
    "usage": "model_provider",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string. Override the built-in Google Cloud Vertex AI endpoint. Otherwise, Codex builds it from the project ID and location.",
+   "empreinte": "d3feba48ba4451b02f62614422639f1a668aceba56be47de2e8994bd0e5405a7",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-model-providers-gcp-base-url",
+   "identite": "kb:openai:codex-parametres-model-providers-gcp-base-url",
+   "nom": "model_providers.gcp.base_url",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Override the built-in Google Cloud Vertex AI endpoint. Otherwise, Codex builds it from the project ID and location."
+     }
+    }
+   },
+   "usage": "model_providers.gcp.base_url",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string (absolute path). Path to a Google Application Default Credentials (ADC) file. Overrides GOOGLE_APPLICATION_CREDENTIALS only for the provider’s authentication command.",
+   "empreinte": "023ed7396e8a0ac005ddba9e8d0ade2e2eb640288948a0eb11fa7579611ef7be",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-model-providers-gcp-credential-file",
+   "identite": "kb:openai:codex-parametres-model-providers-gcp-credential-file",
+   "nom": "model_providers.gcp.credential_file",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string (absolute path). Path to a Google Application Default Credentials (ADC) file. Overrides GOOGLE_APPLICATION_CREDENTIALS only for the provider’s authentication command."
+     }
+    }
+   },
+   "usage": "model_providers.gcp.credential_file",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string. Google Cloud location for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_LOCATION. Defaults to global.",
+   "empreinte": "d574cd24b259d620fde6d1241ee89fc3b310b79b2ec5210b499629df5c3d180e",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-model-providers-gcp-location",
+   "identite": "kb:openai:codex-parametres-model-providers-gcp-location",
+   "nom": "model_providers.gcp.location",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Google Cloud location for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_LOCATION. Defaults to global."
+     }
+    }
+   },
+   "usage": "model_providers.gcp.location",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string. Google Cloud project ID for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_PROJECT.",
+   "empreinte": "b89fdaf3a42d05692ca6426195efcdea7f6c0dc7a3dbbc37fcd0c1c029e43e8c",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-model-providers-gcp-project-id",
+   "identite": "kb:openai:codex-parametres-model-providers-gcp-project-id",
+   "nom": "model_providers.gcp.project_id",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Google Cloud project ID for the Vertex AI endpoint. Takes precedence over GOOGLE_CLOUD_PROJECT."
+     }
+    }
+   },
+   "usage": "model_providers.gcp.project_id",
    "usage_nature": "syntaxe"
   },
   {
@@ -13461,7 +14123,7 @@
   {
    "categorie": "parametres",
    "description_source": "Type : boolean. Force Codex to send or not send reasoning metadata.",
-   "empreinte": "6964360d2a4e729e6374b215eaa37bc0214e806dd5e38cdb4964cb04cf484b07",
+   "empreinte": "9cdad8c35ea61ff452b4639bc8fac4436ba9e2a6297e368fcf82588e6a517768",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-model-supports-reasoning-summaries",
@@ -13469,7 +14131,7 @@
    "nom": "model_supports_reasoning_summaries",
    "origine": "oa-config",
    "produit": "codex",
-   "retiree": false,
+   "retiree": true,
    "sources": [
     {
      "libelle": "config-reference",
@@ -14903,6 +15565,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : boolean. Set the default activation state for installed plugins. An explicit plugins.<plugin>.enabled overrides this default for plugins their source enables. Omit the table to keep the source or account activation settings.",
+   "empreinte": "416c03186ef2f7a0811602187c760275be374c4268c94f186cdb5adccc0e37e8",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-plugins-default-enabled",
+   "identite": "kb:openai:codex-parametres-plugins-default-enabled",
+   "nom": "plugins._default.enabled",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. Set the default activation state for installed plugins. An explicit plugins.<plugin>.enabled overrides this default for plugins their source enables. Omit the table to keep the source or account activation settings."
+     }
+    }
+   },
+   "usage": "plugins._default.enabled",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : boolean. Enable or disable a local-marketplace plugin using a plugin-name@marketplace-name key. Read from the effective merged config; trusted-project settings can override user, cloud-managed, and system defaults. Marketplace refresh can install or refresh configured plugins even when disabled. This does not override workspace-managed enabled states.",
    "empreinte": "0954edfa253dc7980e345fbfdef3c272f6b28499b96afe57555c901044da80b3",
    "gabarit": "court",
@@ -15917,8 +16611,40 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : array<object>. Per-skill enablement overrides stored in config.toml.",
-   "empreinte": "2a95245ee0fcee8f1d7e6b2ae3691555c4cf4f242071514def2983f63d039513",
+   "description_source": "Type : boolean. Load the system skills bundled with Codex. Defaults to true. Set to false in a trusted project configuration to disable bundled skills for that project.",
+   "empreinte": "2d0cac8b16e76a22aaaa7a5b7afc83446a3e4b6f2b34d4fb9f9198ad5ca62e7a",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-skills-bundled-enabled",
+   "identite": "kb:openai:codex-parametres-skills-bundled-enabled",
+   "nom": "skills.bundled.enabled",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. Load the system skills bundled with Codex. Defaults to true. Set to false in a trusted project configuration to disable bundled skills for that project."
+     }
+    }
+   },
+   "usage": "skills.bundled.enabled",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : array<object>. Enable or disable skills by name or path. If several rules match a skill, the last one wins.",
+   "empreinte": "110aea304108e5cee952bc23161efb1735988818cf3c37458428e87e0625c201",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-skills-config",
@@ -15940,14 +16666,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : array<object>. Per-skill enablement overrides stored in config.toml."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "b2bf33402df722aa625c4ac2ff4586f95e001966d5bd1f656eca4715bc2c2f13",
-      "statut": "automatique",
-      "texte": "Type : array<object>. Surcharges d'activation par compétence, stockées dans config.toml."
+      "texte": "Type : array<object>. Enable or disable skills by name or path. If several rules match a skill, the last one wins."
      }
     }
    },
@@ -15995,8 +16714,40 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Type : string (path). Path to a skill folder containing SKILL.md.",
-   "empreinte": "466c5d660b8f44d0518ee6a1d4d04c0423a2dccb7eaab719137df4b3d152c499",
+   "description_source": "Type : string. Match every skill with this exact name. Specify either name or path for each entry.",
+   "empreinte": "c211b6f354bfcf99ca08276b49e7bc620f6c1e2d7a16d673a0974b15d6d1dbb5",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-skills-config-index-name",
+   "identite": "kb:openai:codex-parametres-skills-config-index-name",
+   "nom": "skills.config.<index>.name",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Match every skill with this exact name. Specify either name or path for each entry."
+     }
+    }
+   },
+   "usage": "skills.config.<index>.name",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string (path). Absolute path to one SKILL.md file.",
+   "empreinte": "57a6312f168e14b973391450b16bab5011535287992704c97a425ee409d529ed",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-skills-config-index-path",
@@ -16018,18 +16769,43 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Type : string (path). Path to a skill folder containing SKILL.md."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "a22cd441a9fc131fef3cab4d1e9a76eed20bbbcc6c58e85f419ab5046bacd6df",
-      "statut": "automatique",
-      "texte": "Type : string (chemin). Chemin vers un dossier de compétence contenant SKILL.md."
+      "texte": "Type : string (path). Absolute path to one SKILL.md file."
      }
     }
    },
    "usage": "skills.config.<index>.path",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : boolean. Include the automatic skills instructions in the model context. Defaults to true.",
+   "empreinte": "2b6167ddc32d86b8768bf8ac2d15cac093c1332e4ededa3f03ff9ce1fb4fc168",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-skills-include-instructions",
+   "identite": "kb:openai:codex-parametres-skills-include-instructions",
+   "nom": "skills.include_instructions",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : boolean. Include the automatic skills instructions in the model context. Defaults to true."
+     }
+    }
+   },
+   "usage": "skills.include_instructions",
    "usage_nature": "syntaxe"
   },
   {
@@ -16190,6 +16966,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Type : integer (nonnegative). Seconds the app server waits before unloading an inactive thread with no subscribers. Set to 0 to unload it as soon as it meets both conditions. Defaults to 60 seconds.",
+   "empreinte": "0d249aab3a3ce6d0b76b704a0ef9ca95fc9da9f512161862d9dd142a667106ba",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-thread-unload-delay-secs",
+   "identite": "kb:openai:codex-parametres-thread-unload-delay-secs",
+   "nom": "thread_unload_delay_secs",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : integer (nonnegative). Seconds the app server waits before unloading an inactive thread with no subscribers. Set to 0 to unload it as soon as it meets both conditions. Defaults to 60 seconds."
+     }
+    }
+   },
+   "usage": "thread_unload_delay_secs",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Type : number. Token budget for storing individual tool/function outputs in history.",
    "empreinte": "f15871bbf60eb115ec0a59a9d9a8512cb2d43b61a8a58372566e620b498e4ec2",
    "gabarit": "court",
@@ -16308,7 +17116,7 @@
   {
    "categorie": "parametres",
    "description_source": "Type : boolean. Enable the local-image attachment tool view_image.",
-   "empreinte": "fbf28baa33dabb52699179ec61a9e43d51a99e3b3624a62c41e5e9e83da14a47",
+   "empreinte": "ba0ac31408daed5cf73d029a6c463747528bc5814d9e0ea67978bd17d772277a",
    "gabarit": "court",
    "groupe": "config.toml",
    "id": "codex-parametres-tools-view-image",
@@ -16316,7 +17124,7 @@
    "nom": "tools.view_image",
    "origine": "oa-config",
    "produit": "codex",
-   "retiree": false,
+   "retiree": true,
    "sources": [
     {
      "libelle": "config-reference",
@@ -16771,6 +17579,70 @@
     }
    },
    "usage": "tui.notifications",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string. Save a prompt or slash command in one of the ten slots (0–9) shown by /presets. Use up to 8,000 UTF-8 bytes of nonempty text. Shell commands beginning with ! are unsupported.",
+   "empreinte": "c8177ac7d0ca6b7f25214f703dd07fe384e6e497597d4088e2bc185f74366c66",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-tui-presets-digit-input",
+   "identite": "kb:openai:codex-parametres-tui-presets-digit-input",
+   "nom": "tui.presets.<digit>.input",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Save a prompt or slash command in one of the ten slots (0–9) shown by /presets. Use up to 8,000 UTF-8 bytes of nonempty text. Shell commands beginning with ! are unsupported."
+     }
+    }
+   },
+   "usage": "tui.presets.<digit>.input",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Type : string. Optional name for the preset in the picker and shortcut hints.",
+   "empreinte": "c11520f02c5b2e011c3606def1150ca8db370c96cd6e326dd2b5dff791115e3c",
+   "gabarit": "court",
+   "groupe": "config.toml",
+   "id": "codex-parametres-tui-presets-digit-label",
+   "identite": "kb:openai:codex-parametres-tui-presets-digit-label",
+   "nom": "tui.presets.<digit>.label",
+   "origine": "oa-config",
+   "produit": "codex",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "config-reference",
+     "officielle": true,
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Type : string. Optional name for the preset in the picker and shortcut hints."
+     }
+    }
+   },
+   "usage": "tui.presets.<digit>.label",
    "usage_nature": "syntaxe"
   },
   {
@@ -17486,53 +18358,12 @@
    },
    "usage": "windows.sandbox",
    "usage_nature": "syntaxe"
-  },
-  {
-   "categorie": "parametres",
-   "description_source": "Type : boolean. Track Windows onboarding acknowledgement (Windows only).",
-   "empreinte": "63aaab11d7e10cadc7d6c8168e8d8ff584faf8146159f018147987a80013ab18",
-   "gabarit": "court",
-   "groupe": "config.toml",
-   "id": "codex-parametres-windows-wsl-setup-acknowledged",
-   "identite": "kb:openai:codex-parametres-windows-wsl-setup-acknowledged",
-   "nom": "windows_wsl_setup_acknowledged",
-   "origine": "oa-config",
-   "produit": "codex",
-   "retiree": false,
-   "sources": [
-    {
-     "libelle": "config-reference",
-     "officielle": true,
-     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml"
-    }
-   ],
-   "systemes": [
-    "windows"
-   ],
-   "textes": {
-    "description": {
-     "en": {
-      "origine": "description_source",
-      "statut": "source",
-      "texte": "Type : boolean. Track Windows onboarding acknowledgement (Windows only)."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "b7fabad8fdd47f477b8c4d2fce8e15e1e31c419bd6b19ebdf6c0931d7d811f1e",
-      "statut": "automatique",
-      "texte": "Type : boolean. Suivre la confirmation de la prise en main sur Windows (Windows uniquement)."
-     }
-    }
-   },
-   "usage": "windows_wsl_setup_acknowledged",
-   "usage_nature": "syntaxe"
   }
  ],
  "famille": "kb",
- "maj_le": "2026-10-24",
+ "maj_le": "2026-11-03",
  "perimetre": "openai",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 449
+ "total": 477
 }
