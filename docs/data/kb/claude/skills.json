@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-11-04",
+ "maj_le": "2026-11-05",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 24,
- "commentees": 22,
+ "commentees": 24,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -162,7 +162,7 @@
    "categorie": "skills",
    "nom": "/batch",
    "gabarit": "complet",
-   "description": "Skill intégré qui orchestre un gros changement en parallèle : il étudie le code, découpe le travail en 5 à 30 unités indépendantes et présente un plan. Une fois le plan approuvé, il lance un sous-agent d'arrière-plan par unité, chacun dans un worktree isolé, qui implémente, teste et publie son changement. Il exige un dépôt git ou un hook WorktreeCreate (hors dépôt git : v2.1.281 ou plus).",
+   "description": "Skill intégré qui orchestre un gros changement en parallèle : il étudie le code, découpe le travail en 5 à 30 unités indépendantes et présente un plan. Une fois le plan approuvé, il lance un sous-agent d'arrière-plan par unité, chacun dans un worktree isolé, qui implémente, lance les tests puis ouvre une PR ou rend compte de ce qui s'est passé. Il exige un dépôt git ou un hook WorktreeCreate qui crée les worktrees ; hors dépôt git, il faut Claude Code v2.1.281 ou plus.",
    "description_source": "Skill. Orchestrate large-scale changes across a codebase in parallel. Researches the codebase, decomposes the work into 5 to 30 independent units, and presents a plan. Once approved, spawns one background subagent per unit in an isolated worktree. Each subagent implements its unit, runs tests, and opens a PR or reports what happened. Requires a git repository or a WorktreeCreate hook that creates the worktrees. Outside a git repository, /batch requires Claude Code v2.1.281 or later. Example: /batch migrate src/ from JavaScript to TypeScript",
    "usage": "/batch <instruction>",
    "usage_nature": "syntaxe",
@@ -171,7 +171,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Des dizaines de sous-agents en parallèle relèvent de workflows multi-agents, que tu n'autorises que sur accord explicite, et consommeraient vite les limites hebdomadaires ; aucun de tes projets n'a de migration de cette taille."
+    "pourquoi": "Lancer jusqu'à 30 sous-agents en parallèle relève des workflows multi-agents, que tu n'autorises que sur accord explicite, et pèserait sur les limites hebdomadaires ; tes missions passent déjà par un worktree par mission créé par `git worktree add` ou OPÉRER, sans hook WorktreeCreate."
    },
    "sources": [
     {
@@ -180,11 +180,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-04",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -209,9 +209,13 @@
     {
      "date": "2026-11-04",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
@@ -220,6 +224,10 @@
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Un worktree par mission, créé par git worktree add ou OPÉRER, hooks WorktreeCreate non utilisés."
     }
    },
    "exemple_origine": "source"
@@ -2185,16 +2193,16 @@
    "categorie": "skills",
    "nom": "How to create custom skills",
    "gabarit": "complet",
-   "description": "Guide de création d'un skill perso pour l'app Claude : un dossier avec un fichier skill.md dont l'en-tête YAML porte `name` et `description`, suivi des instructions, éventuellement de ressources et de scripts. L'enregistrement d'un skill à partir d'une capture d'écran n'existe que dans Cowork sur Mac.",
+   "description": "Guide de création d'un skill perso pour l'app Claude : un dossier avec un fichier skill.md dont l'en-tête porte `name` et `description`, suivi des instructions et éventuellement de ressources et de scripts, puis compressé en ZIP (le dossier à la racine) et téléversé. Les skills exigent l'exécution de code activée ; l'enregistrement d'un skill à partir d'une capture d'écran n'existe que dans Cowork de Claude for Mac (Pro, Max, Ultra, Team).",
    "description_source": "Skills are available for users on Free, Pro, Max, Ultra, Team, and Enterprise plans. This feature requires code execution to be enabled. Skills are also available in beta for Claude Code users and for all API users using the code execution tool.",
    "usage": "## Metadata\nname: Brand Guidelines\ndescription: Apply Acme Corp brand guidelines to all presentations and documents\n\n## Overview\nThis skill provides Acme Corp's official brand guidelines for creating consistent, professional materials. When creating presentations, documents, or marketing materials, apply these standards to ensure all outputs match Acme's visual identity. Claude should reference these guidelines whenever creating external-facing materials or documents that represent Acme Corp.\n\n## Brand Colors\n\nOur official brand colors are:\n- Primary: #FF6B35 (Coral)\n- Secondary: #004E89 (Navy Blue)\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": "Free, Pro, Max, Team, Enterprise ; exécution de code activée",
+   "disponibilite": "Free, Pro, Max, Ultra, Team, Enterprise ; exécution de code activée",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes skills perso servent dans Claude Code (maintenance-mint, deploy-site…) et CONTEXTE.md ne décrit aucun besoin de skill perso dans l'app Claude ; l'enregistrement par capture n'existe pas sous Linux."
+    "pourquoi": "Tes skills perso servent dans Claude Code et, côté claude.ai, tu utilises surtout red-team ; CONTEXTE.md ne décrit aucun besoin d'un nouveau skill perso dans l'app, et l'enregistrement par capture n'existe pas pour ton Claude Desktop sous Linux."
    },
    "sources": [
     {
@@ -2203,11 +2211,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2228,10 +2236,27 @@
     {
      "date": "2026-10-31",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Skills perso Claude Code (maintenance-mint, deploy-site…) et skills claude.ai synchronisés."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Skills claude.ai : surtout red-team, les autres peu ou pas."
+    },
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Desktop installé en paquet Debian, donc pas Claude for Mac."
+    }
+   },
    "exemple_impossible": "Usage = métadonnées d'une skill fictive (Acme Corp) ; aucun exemple sans fabriquer une skill"
   }
  ]
