@@ -2570,8 +2570,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Install the Claude Code IDE extension automatically when you run Claude Code from a VS Code terminal. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
-   "empreinte": "8bc67436db8f1b7c3c08d0c2598d20b3a63a118e685f2c0163856d12611480af",
+   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
+   "empreinte": "ee1f9de821d67e16ea017fdd32d0b12a8d3b786c5d17f7cdae2d433a4f29aef6",
    "gabarit": "court",
    "groupe": "Global config settings",
    "id": "claude-code-parametres-autoinstallideextension",
@@ -2593,14 +2593,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Install the Claude Code IDE extension automatically when you run Claude Code from a VS Code terminal. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "d87bdbbf0a25af83a6d07766decedd74782f44f738a62af58145f89fb147f5d8",
-      "statut": "automatique",
-      "texte": "Installer automatiquement l'extension IDE de Claude Code lorsque Claude Code est lancé depuis un terminal VS Code. Apparaît dans /config sous le nom Auto-install IDE extension lorsque Claude Code est exécuté dans un terminal VS Code ou JetBrains"
+      "texte": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal."
      }
     }
    },
@@ -5637,6 +5630,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
+   "empreinte": "0cfb8b68de4cc396582b1edfcd6e64e8f58dd65bdeabcc921df6bc841a6f8218",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-disable-bg-stable-path",
+   "identite": "kb:claude:claude-code-parametres-claude-code-disable-bg-stable-path",
+   "nom": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Set to 1 to disable the skills and workflows included with Claude Code: bundled skills and workflows are removed entirely, while built-in commands like /init stay typable but are hidden from the model. /doctor stays typable like the built-in commands; hide it with DISABLE_DOCTOR_COMMAND instead. Skills from plugins, .claude/skills/, and .claude/commands/ are unaffected. Equivalent to the disableBundledSkills setting",
    "empreinte": "57586234c300c30948320e119f6d29e1b609948726c21e9cdf3c5eef71115715",
    "gabarit": "court",
@@ -8251,8 +8276,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 to skip auto-installation of IDE extensions. Equivalent to setting autoInstallIdeExtension to false",
-   "empreinte": "02b5b150c9deb201e87aa89cab5607b54c04ab2175d1ae9e5ee44eb2cfda32ad",
+   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false",
+   "empreinte": "28d5c245f9a76490279fefa24459b2d019b70ba4aaf59ec247a5d89e29a159dc",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-ide-skip-auto-install",
@@ -8274,14 +8299,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 to skip auto-installation of IDE extensions. Equivalent to setting autoInstallIdeExtension to false"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "6b2cf88b7af6a0b26c24be0caf360e193dfaa5958b5902fe53f03ac8f53b23fa",
-      "statut": "automatique",
-      "texte": "Définir à 1 pour ignorer l'installation automatique des extensions IDE. Équivaut à définir autoInstallIdeExtension à false"
+      "texte": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false"
      }
     }
    },
@@ -15153,8 +15171,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. Overrides the modelSettings and effortLevel settings for this session and does not persist — claude --effort high",
-   "empreinte": "83d8cfad67c0ca17c93f34a8abdc838c3394f45c9f03e19ffa736177ef14045f",
+   "description_source": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. On the main conversation's model, overrides the modelSettings and effortLevel settings for this session and doesn't persist — claude --effort high",
+   "empreinte": "22223e03bba72b40ca788ac4eab83e4937f1bd77ef5ae333b53ec20fd319d653",
    "gabarit": "court",
    "groupe": "CLI flags",
    "id": "claude-code-parametres-effort",
@@ -15176,14 +15194,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. Overrides the modelSettings and effortLevel settings for this session and does not persist — claude --effort high"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "375fb5a471949b0ad9cc1e6d5e7cb2260d6371490017854c54139a05347bdc21",
-      "statut": "automatique",
-      "texte": "Définir le niveau d'effort pour la session en cours. Options : low, medium, high, xhigh, max ou ultracode. Les niveaux disponibles dépendent du modèle. ultracode demande un effort xhigh avec ultracode activé, et nécessite Claude Code v2.1.203 ou ultérieure. Remplace les paramètres modelSettings et effortLevel pour cette session et n'est pas conservé — claude --effort high"
+      "texte": "Set the effort level for the current session. Options: low, medium, high, xhigh, max, or ultracode. Available levels depend on the model. ultracode requests xhigh effort with ultracode turned on, and requires Claude Code v2.1.203 or later. On the main conversation's model, overrides the modelSettings and effortLevel settings for this session and doesn't persist — claude --effort high"
      }
     }
    },
@@ -20305,8 +20316,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object.",
-   "empreinte": "75200ca705dc4e424ade2eabf2a3997096afc42abfe9a263239a5bf2f32ef8ef",
+   "description_source": "Control which tools Claude can use without asking, which ones prompt, and which ones are blocked. Also set the default permission mode for new sessions. Every permissions.* key below nests under this object.",
+   "empreinte": "3c3c5475ea296c0424111851c0493df480641079e40d84fc12df76e7c478a596",
    "gabarit": "court",
    "groupe": "Permission settings",
    "id": "claude-code-parametres-permissions",
@@ -20328,14 +20339,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "690c0d48f691d58f9e2ec22a3a8bd068263301698b5cd9c613751fb810f8fc20",
-      "statut": "automatique",
-      "texte": "Contrôler les outils que Claude peut utiliser sans demander confirmation, ceux qui demandent toujours confirmation et ceux qui sont bloqués, et définir le mode de permission dans lequel une session démarre. Chaque clé permissions.* ci-dessous s'imbrique sous cet objet."
+      "texte": "Control which tools Claude can use without asking, which ones prompt, and which ones are blocked. Also set the default permission mode for new sessions. Every permissions.* key below nests under this object."
      }
     }
    },
@@ -20532,8 +20536,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface.",
-   "empreinte": "5f56172d21d3c749357a18b91f43b09599ee104bde342ee420d03ed5ff8c1fe3",
+   "description_source": "Set the default permission mode for new sessions. When you leave it unset, the built-in default for your surface applies.",
+   "empreinte": "d05e55ab2c56e607e0962b6fb8f852b859c2dc10ceb548b2c1843e04525e573a",
    "gabarit": "court",
    "groupe": "Permission settings",
    "id": "claude-code-parametres-permissions-defaultmode",
@@ -20555,14 +20559,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "f2c3d20dfd3bdb46fe264ea37812b45be51ddb7dcf1c08e61daa80c9e5cc3284",
-      "statut": "automatique",
-      "texte": "Définir le mode de permission dans lequel démarrent les nouvelles sessions. Si ce paramètre n'est pas défini, les sessions démarrent dans le mode par défaut intégré à la surface utilisée."
+      "texte": "Set the default permission mode for new sessions. When you leave it unset, the built-in default for your surface applies."
      }
     }
    },
@@ -22404,8 +22401,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start, because a dependency is missing or the platform is unsupported. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting.",
-   "empreinte": "863815561fbb82588d1ab2000ff75ae5f24a6267fe41b2dbad95700b73774160",
+   "description_source": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start because the platform doesn't support it or the dependency check fails. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting.",
+   "empreinte": "9c0508fd0273cd245a5f4814008a552d62ba7520d20b27eece110652088b217e",
    "gabarit": "court",
    "groupe": "Sandbox settings",
    "id": "claude-code-parametres-sandbox-failifunavailable",
@@ -22427,14 +22424,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start, because a dependency is missing or the platform is unsupported. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "56ca2cc68ed4ffc7dc67f74d78dc611f4e1915cc55feab66d79259c2559811c1",
-      "statut": "automatique",
-      "texte": "Faire quitter Claude Code avec une erreur au démarrage lorsque sandbox.enabled vaut true mais que le sandbox ne peut pas démarrer, parce qu'une dépendance manque ou que la plateforme n'est pas prise en charge. Sans cette clé, Claude Code exécute les commandes sans sandbox. Les déploiements gérés qui exigent le sandboxing comme verrou de sécurité peuvent utiliser ce paramètre."
+      "texte": "Make Claude Code exit with an error at startup when sandbox.enabled is true but the sandbox can't start because the platform doesn't support it or the dependency check fails. Without this key, Claude Code runs commands unsandboxed. Managed deployments that require sandboxing as a security gate can use this setting."
      }
     }
    },
@@ -23950,8 +23940,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account.",
-   "empreinte": "8a2ad803ec835470af092627a6c4d1a4aa670702ba08a4b999f100bc56cb48eb",
+   "description_source": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or create another machine for it, Desktop runs the entry's command on your computer and connects to the host that the command prints.",
+   "empreinte": "f495e12f428a66dae4599e2fe3972436c2eba06a95f9157d2a407914819b738f",
    "gabarit": "court",
    "groupe": "Remote, desktop, and notifications",
    "id": "claude-code-parametres-sshhostcommands",
@@ -23973,14 +23963,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0463f23d783dc59310427e800ffcbd4d50fe546726725ff8861829fb471729d2",
-      "statut": "automatique",
-      "texte": "Ajouter au sélecteur d'environnement de Desktop des connexions SSH dont l'hôte provient d'une commande. Lors de la création d'une connexion ou du remplacement de son hôte, Desktop exécute la commande de l'entrée sur l'ordinateur et se connecte à l'hôte affiché par cette commande. Nécessite Claude Desktop v3.6556.0 ou une version ultérieure sous macOS ou Linux, connecté avec un compte Claude."
+      "texte": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or create another machine for it, Desktop runs the entry's command on your computer and connects to the host that the command prints."
      }
     }
    },
@@ -26090,9 +26073,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-05",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 673
+ "total": 674
 }
