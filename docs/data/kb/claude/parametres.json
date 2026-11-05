@@ -16068,7 +16068,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS",
    "gabarit": "court",
-   "description": "Variable qui fixe combien d'agents un workflow exécute à la fois, jusqu'à 16 par défaut et moins selon les processeurs disponibles.",
+   "description": "Variable qui fixe combien d'agents un même workflow exécute à la fois (1 à 256), 16 par défaut et moins quand la machine a peu de processeurs ; chaque agent en cours garde son transcript en mémoire.",
    "description_source": "How many agents a single workflow run executes at once, from 1 to 256. By default, a run executes up to 16 agents at once, fewer when Claude Code has fewer CPUs available; queued agent() calls wait for a free slot. Each running agent's transcript stays in Claude Code's memory, so higher values raise memory use. Takes plain digits only; out-of-range values and other spellings keep the default. Requires Claude Code v2.1.269 or later",
    "usage": "CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS",
    "usage_nature": "syntaxe",
@@ -16077,7 +16077,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le défaut s'ajuste déjà aux 4 cœurs de ta machine, et les workflows ne se lancent que sur ton accord."
+    "pourquoi": "Les workflows multi-agents ne se lancent que sur ton accord et le défaut s'ajuste déjà aux processeurs disponibles ; aucun besoin de régler ce plafond n'est décrit."
    },
    "sources": [
     {
@@ -16090,7 +16090,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16103,17 +16103,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Portable à 4 cœurs, 14 Gio de RAM."
-    },
     "config.claude-code.sous-agents": {
      "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
-     "pourquoi": "Workflows (outil Workflow) seulement sur accord de Sylvain."
+     "pourquoi": "Workflows multi-agents (outil Workflow) seulement sur accord de Sylvain."
     }
    }
   },
@@ -16460,7 +16460,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_ENV_FILE",
    "gabarit": "court",
-   "description": "Variable qui désigne un script shell exécuté avant chaque commande Bash dans le même processus, pour garder par exemple un environnement virtuel activé ; les hooks SessionStart, Setup, CwdChanged et FileChanged peuvent aussi l'alimenter, et les commandes PowerShell en reçoivent les variables depuis la v2.1.296.",
+   "description": "Variable qui désigne un script shell exécuté avant chaque commande Bash dans le même processus, pour garder par exemple un environnement virtuel activé ; les hooks SessionStart, Setup, CwdChanged et FileChanged peuvent aussi l'alimenter.",
    "description_source": "Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. PowerShell commands receive its variables too, in v2.1.296 or later, under the conditions in Persisted variables in PowerShell commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks",
    "usage": "CLAUDE_ENV_FILE",
    "usage_nature": "syntaxe",
@@ -16469,7 +16469,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "trading-sim n'a pas de `.venv` et `pytest` n'existe que dans `delta-ia/.venv`, appelé par chemin explicite ; aucun environnement à activer avant chaque commande Bash n'est décrit."
+    "pourquoi": "trading-sim n'a pas de `.venv` et `pytest` n'existe que dans `delta-ia/.venv`, appelé par chemin explicite : aucun environnement à activer avant chaque commande Bash n'est décrit."
    },
    "sources": [
     {
@@ -16482,7 +16482,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -16507,17 +16507,21 @@
     {
      "date": "2026-10-12",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "pas de .venv dans ce projet"
+     "pourquoi": "Pas de .venv dans trading-sim, tests unittest de la bibliothèque standard."
     },
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "pytest seulement dans delta-ia/.venv"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "pytest absent du système, présent seulement dans delta-ia/.venv."
     }
    }
   },
@@ -17194,7 +17198,7 @@
    "categorie": "parametres",
    "nom": "--continue",
    "gabarit": "court",
-   "description": "Option de lancement qui reprend la conversation la plus récente du dossier courant.",
+   "description": "Option de lancement qui reprend la conversation la plus récente du dossier courant, en sautant les sessions créées par `claude -p`, sauf si elle est combinée à `-p`.",
    "description_source": "Load the most recent conversation in the current directory, including a background session that has finished; opening finished background sessions requires Claude Code v2.1.257 or later. Skips sessions created with claude -p or the Agent SDK, and sessions whose first prompt was /loop. claude -p --continue includes -p, SDK, and /loop sessions. Includes sessions that added this directory with /add-dir — claude --continue",
    "usage": "--continue, -c",
    "usage_nature": "syntaxe",
@@ -17203,7 +17207,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes services reprennent chaque session par son identifiant avec `--resume`, plus sûr quand plusieurs sessions partagent un dossier (`~/projets`)."
+    "pourquoi": "Tes services reprennent chaque session par son identifiant (`claude --resume <id>`), plus sûr que « la plus récente » quand plusieurs sessions partagent `~/projets`."
    },
    "sources": [
     {
@@ -17216,7 +17220,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17229,13 +17233,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services lancés avec `claude --resume <id>` ; plusieurs sessions partagent un dossier de travail."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services claude-session@<nom> lancés avec claude --resume <id> --remote-control <nom>."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Plusieurs sessions partagent un même dossier de travail (~/projets, ~/projets/delta-ia)."
     }
    }
   },
@@ -17775,7 +17787,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions démarrent toutes par `claude --resume <id>` via systemd, jamais par `claude` sans argument."
+    "pourquoi": "Tes sessions durables démarrent par `claude --resume <id>` via systemd, pas par `claude` sans argument, donc ce réglage ne changerait rien."
    },
    "sources": [
     {
@@ -17785,17 +17797,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services systemd qui lancent claude --resume <id> --remote-control."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services systemd qui lancent claude --resume <id> --remote-control <nom>."
     }
    },
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-29",
@@ -17807,6 +17819,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
      "changement": "commentaire révisé"
     }
    ]
@@ -17923,7 +17939,7 @@
    "categorie": "parametres",
    "nom": "deniedModels",
    "gabarit": "court",
-   "description": "Réglage qui bloque des modèles précis, même quand `availableModels` les autorise : ils disparaissent du sélecteur `/model`.",
+   "description": "Réglage qui bloque des modèles précis, même quand `availableModels` les autorise : ils disparaissent du sélecteur `/model` et l'option Default ne les utilise pas non plus.",
    "description_source": "Block specific models, with or without an availableModels allowlist and even when that list permits them. Claude Code hides a blocked model from the /model picker, and the model can't be selected anywhere availableModels is enforced. A session on the Default option doesn't run a blocked model either, as Block specific models or versions describes. Requires Claude Code v2.1.283 or later.",
    "usage": "{\n  \"availableModels\": [\"opus\", \"sonnet\"],\n  \"deniedModels\": [\"claude-opus-5-5\"]\n}",
    "usage_nature": "syntaxe",
@@ -17932,7 +17948,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour une organisation ; bloquer un modèle chez toi n'a pas de motif décrit dans CONTEXTE.md."
+    "pourquoi": "Pensé pour encadrer une organisation ; tu as un abonnement Max individuel et tu choisis le modèle explicitement par session, sans motif décrit pour en bloquer un."
    },
    "sources": [
     {
@@ -17942,17 +17958,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max individuel, sans organisation à administrer."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel, sans organisation à administrer."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle et effort réglés au lancement de chaque session selon son rôle."
     }
    },
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-26",
@@ -17964,6 +17984,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
      "changement": "commentaire révisé"
     }
    ]
@@ -18678,7 +18702,7 @@
    "categorie": "parametres",
    "nom": "DISABLE_INSTALLATION_CHECKS",
    "gabarit": "court",
-   "description": "Variable qui supprime les avertissements d'installation, à réserver à une installation gérée à la main.",
+   "description": "Variable qui, à 1, supprime les avertissements d'installation, à réserver à une installation dont l'emplacement est géré à la main.",
    "description_source": "Set to 1 to disable installation warnings. Use only when manually managing the installation location, as this can mask issues with standard installations",
    "usage": "DISABLE_INSTALLATION_CHECKS",
    "usage_nature": "syntaxe",
@@ -18687,7 +18711,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton Claude Code est en installation native : garder les avertissements aide à repérer un problème."
+    "pourquoi": "Ton Claude Code est en installation native : garder les avertissements aide à repérer un problème que la variable masquerait."
    },
    "sources": [
     {
@@ -18700,7 +18724,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18713,13 +18737,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Claude Code en installation native"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Claude Code en installation native."
     }
    }
   },
@@ -19344,7 +19372,7 @@
    "categorie": "parametres",
    "nom": "disableAgentView",
    "gabarit": "court",
-   "description": "Réglage qui coupe les agents d'arrière-plan et la vue agents (`claude agents`, `--bg`, `/background`).",
+   "description": "Réglage qui coupe les agents d'arrière-plan et la vue agents (`claude agents`, `--bg`, `/background`, superviseur à la demande).",
    "description_source": "Turn off background agents and agent view: claude agents, --bg, /background, and the on-demand supervisor. Set it in managed settings to enforce it for an organization.",
    "usage": "{\n  \"disableAgentView\": true\n}",
    "usage_nature": "syntaxe",
@@ -19353,7 +19381,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations ; tu n'utilises ni `claude agents` ni `--bg`, rien ne demande de les interdire."
+    "pourquoi": "Pensé pour imposer l'interdiction à une organisation ; CONTEXTE.md ne décrit aucun besoin d'interdire ces fonctions sur tes sessions systemd sous tmux."
    },
    "sources": [
     {
@@ -19366,7 +19394,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19379,13 +19407,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions en services systemd sous tmux."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en services systemd sous tmux, pilotées par Remote Control."
     }
    }
   },
@@ -20037,7 +20069,7 @@
    "categorie": "parametres",
    "nom": "disableRemoteControl",
    "gabarit": "court",
-   "description": "Réglage qui désactive Remote Control : Claude Code refuse `claude remote-control`, l'option `--remote-control` et le démarrage automatique.",
+   "description": "Réglage qui désactive Remote Control : Claude Code refuse alors `claude remote-control`, l'option `--remote-control`, le démarrage automatique et la bascule en session.",
    "description_source": "Turn off Remote Control: Claude Code then refuses claude remote-control, the --remote-control flag, auto-start, and the in-session toggle, and reports that your organization's policy disabled it. Place it in managed settings for per-device MDM enforcement.",
    "usage": "{\n  \"disableRemoteControl\": true\n}",
    "usage_nature": "syntaxe",
@@ -20046,7 +20078,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À ne jamais poser : tes sessions durables reposent sur `--remote-control`."
+    "pourquoi": "À ne jamais poser : tes sessions durables sont lancées avec `--remote-control <nom>` et pilotées depuis l'iPhone."
    },
    "sources": [
     {
@@ -20059,7 +20091,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20076,13 +20108,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions lancées avec `--remote-control <nom>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions lancées avec --remote-control <nom>, pilotées depuis l'iPhone."
     }
    }
   },
@@ -20782,7 +20818,7 @@
    "categorie": "parametres",
    "nom": "ENABLE_BETA_TRACING_DETAILED",
    "gabarit": "court",
-   "description": "Variable qui active, avec `BETA_TRACING_ENDPOINT`, un traçage bêta détaillé réservé aux organisations sur liste d'autorisation.",
+   "description": "Variable qui active, avec `BETA_TRACING_ENDPOINT`, un traçage bêta détaillé vers un collecteur OTLP/HTTP, réservé en CLI interactive aux organisations sur liste d'autorisation.",
    "description_source": "Set to 1, and set BETA_TRACING_ENDPOINT to your OTLP/HTTP collector endpoint, to turn on detailed beta tracing, which adds content-bearing span attributes and the claude_code.hook span. Interactive CLI sessions also require your organization to be allowlisted for the beta. Both variables are ignored in project and local settings",
    "usage": "ENABLE_BETA_TRACING_DETAILED",
    "usage_nature": "syntaxe",
@@ -20791,7 +20827,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensée pour les organisations sur liste d'autorisation."
+    "pourquoi": "Réservée aux organisations sur liste d'autorisation, alors que ton abonnement Max est individuel."
    },
    "sources": [
     {
@@ -20804,7 +20840,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -20821,13 +20857,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel, hors organisation."
     }
    }
   },
@@ -21065,7 +21105,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Rien à régler : laisse la valeur par défaut ; CONTEXTE.md dit que tu utilises les artefacts côté Claude."
+    "pourquoi": "Rien à régler : laisse la valeur par défaut, aucune raison de couper l'outil n'est décrite et tu utilises les artefacts côté Claude."
    },
    "sources": [
     {
@@ -21078,7 +21118,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21103,12 +21143,16 @@
     {
      "date": "2026-10-12",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
-     "sha1": "2fb306f259b2026a1abb023bab0740b6ac8c84d0",
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Sylvain utilise les artefacts de Claude."
     }
    }
