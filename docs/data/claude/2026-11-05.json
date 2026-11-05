@@ -1,0 +1,146 @@
+{
+  "date": "2026-11-05",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-05T03:08:00+00:00",
+  "synthese": "Compte et quotas : Anthropic annonce sur X que les sous-agents en arrière-plan de Claude Code consomment moins de limite (environ 5 % de limite en moins sur les sessions concernées, version 2.1.316 ou plus ; ta 2.1.318 la dépasse), et la page d'aide des limites conseille désormais de baisser l'effort plutôt que de couper la réflexion sur Opus 5.5 et Sonnet 5.5. Relevé d'OBSERVATORY du 05/11 à 03 h UTC : semaine Claude à 73 % (remise à zéro le 08/11 à 16 h UTC), semaine Fable à 22 %, jauge de session 5 h absente ; ChatGPT semaine à 34 % (remise à zéro le 11/11 à 05 h UTC) ; aucun quota au seuil D71 (80 %). Ton essai Max 20x (devenu Ultra le 30/10 d'après @claudeai) arrive à son renouvellement le 07/11 (CONTEXTE.md) : le bilan d'usage reste à préparer. Aucune nouvelle version de Claude Code aujourd'hui (2.1.318 installée, à jour) ; deux posts de recherche d'Anthropic et l'extension du Claude Marketplace pour entreprises sont écartés.",
+  "elements": [
+    {
+      "id": "x-2118063143167693011",
+      "ids_bruts": [
+        "x-2118063143167693011",
+        "x-2118063144572772627"
+      ],
+      "produit": "claude-code",
+      "titre": "Les sous-agents en arrière-plan de Claude Code consomment moins de limite : leur ligne d'état est écrite par Haiku 5.5 (annoncé sur X)",
+      "version": null,
+      "date_publication": "2026-11-04",
+      "type": "nouveaute",
+      "resume": "Annoncé sur X par @ClaudeDevs le 04/11, pas encore confirmé par la documentation ni par le changelog des sources du jour. Un sous-agent en arrière-plan met à jour sa ligne d'état toutes les 30 secondes et chaque mise à jour relisait toute sa conversation ; Haiku 5.5 la rédige maintenant à partir de courtes notes, pour un coût d'environ 99 % inférieur par mise à jour. Les sessions avec sous-agents en arrière-plan ont consommé environ 5 % de limite en moins qu'avant, soit environ 6 % de requêtes en plus à limite égale ; le sous-agent garde son propre modèle. Déployé pour la plupart des utilisateurs Pro, Max et Ultra et pour tous les comptes Team et Enterprise, avec la version 2.1.316 ou plus.",
+      "sources": [
+        {
+          "url": "https://x.com/ClaudeDevs/status/2118063143167693011",
+          "libelle": "@ClaudeDevs — sous-agents en arrière-plan, ligne d'état par Haiku 5.5, 04/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2118063144572772627",
+          "libelle": "@ClaudeDevs — environ 5 % de limite en moins, déploiement, 04/11",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "La consommation de limite baisse pour les sessions qui lancent des sous-agents en arrière-plan (environ 5 % de limite en moins d'après le post), et c'est déjà déployé côté Anthropic pour la plupart des comptes Max et Ultra ; le post dit « la plupart », donc Delta ne sait pas si ton compte en fait partie. CONTEXTE.md décrit des sous-agents réellement utilisés (31 appels `Agent` en cinq jours au relevé du 04/10, dont des `Explore`) et ta priorité d'alléger les limites hebdomadaires ; ta semaine Claude est à 73 % au relevé du 05/11 à 03 h UTC. Le gain n'existerait que pour les sessions où tes sous-agents tournent en arrière-plan, ce que les sources ne permettent pas de dire. La version installée est la 2.1.318 (`docs/data/versions.json`), au-dessus de la 2.1.316 demandée : rien à mettre à jour.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun réglage ni geste de compte : la version installée suffit. Revérifier le 2026-11-12 (aucune échéance publiée) si le changelog ou la documentation de Claude Code confirme la baisse de consommation des sous-agents en arrière-plan.",
+        "etapes": [
+          "Dans une session du chef delta-ia, tape `claude --version` si tu veux recouper `docs/data/versions.json` ; résultat attendu : 2.1.318 ou plus, donc au-dessus de la 2.1.316 demandée par le post.",
+          "Le 2026-11-12, cherche dans le changelog de Claude Code une note qui reprend « background subagents » et la ligne d'état écrite par Haiku 5.5 ; résultat attendu : l'annonce de X est confirmée par la documentation, ou elle reste sans confirmation et Delta la garde marquée « annoncée sur X »."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents utilisés (31 appels Agent en cinq jours au relevé du 04/10)."
+        },
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Abonnement Max 20x à l'essai ; limites d'usage comme friction principale."
+        }
+      }
+    },
+    {
+      "id": "claude-aide-limites-article",
+      "ids_bruts": [
+        "claude-aide-limites-article"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Page d'aide « Comment fonctionnent les limites d'usage et de longueur » (révision) : sur Opus 5.5 et Sonnet 5.5, baisser l'effort plutôt que couper la réflexion",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Révision de la page d'aide, trois phrases changent dans la liste des moyens d'économiser le contexte et la limite. Ajoutée : « Turn thinking off » sur les modèles qui offrent un interrupteur de réflexion. Ajoutée : sur les modèles où la réflexion est toujours active, « such as Claude Opus 5.5 and Sonnet 5.5 », choisir un niveau d'effort plus bas. Retirée : l'ancien conseil « Toggle extended thinking off ». Les limites elles-mêmes (session de 5 h, limites hebdomadaires, crédits d'usage) ne changent pas dans le texte.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work#how-do-usage-and-length-limits-work",
+          "libelle": "Claude — limites d'usage et de longueur (centre d'aide)",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Les limites ne changent pas : seul le conseil d'économie est réécrit, et pour Opus 5.5 et Sonnet 5.5 le levier devient l'effort, non la réflexion. `docs/data/etat.json` donne `opus` comme modèle par défaut de Claude Code, sans `effortLevel` fixé (effort par défaut du modèle), et `raw/organisation.json` indique le rôle `delta` sur Opus en effort high ; ta priorité est d'alléger les limites hebdomadaires, à 73 % au relevé du 05/11 à 03 h UTC. Si une session tourne en effort high pour des tâches de routine, la fiche `claude-code-commandes-effort` te donne la commande pour la baisser.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lire l'effort en vigueur de la session `delta` et l'abaisser pour une tâche de routine ; revérifier le 2026-11-12 (aucune échéance publiée) si la page d'aide change encore.",
+        "etapes": [
+          "Dans la session `delta`, tape `/effort status` (syntaxe de la fiche `claude-code-commandes-effort`) ; résultat attendu : le niveau en vigueur s'affiche, ce qui dit si le rôle est bien en `high`.",
+          "Essai : avant une tâche de routine (relecture d'un rapport, synchronisation git) dans cette session, tape `/effort medium` ; effet de bord, d'après la fiche : un niveau tapé après `/effort` devient le défaut des sessions suivantes ; résultat attendu : `/effort status` affiche `medium`, et tu retapes `/effort high` pour revenir au niveau de départ."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-effort"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Abonnement Max 20x à l'essai ; limites d'usage comme friction principale."
+        },
+        "methode.travail": {
+          "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+          "pourquoi": "Limites d'usage hebdomadaires parmi les frictions récurrentes."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-bg-stable-path",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-disable-bg-stable-path"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable `CLAUDE_CODE_DISABLE_BG_STABLE_PATH` ajoutée (macOS, sessions en arrière-plan)",
+      "version": null,
+      "date_publication": "2026-11-05",
+      "type": "nouveaute",
+      "resume": "Nouvelle fiche de réglages : avec l'installeur natif sur macOS, `CLAUDE_CODE_DISABLE_BG_STABLE_PATH=1` fait partir le processus hôte de chaque session en arrière-plan du binaire installé et non de `ClaudeCode.app`, au prix de nouvelles demandes d'autorisation (accès aux dossiers) après chaque mise à jour. À poser dans le bloc `env` des réglages utilisateur, d'un fichier géré ou d'une politique MDM, et non dans le shell. Claude Code 2.1.295 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Variables d'environnement de Claude Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-bg-stable-path"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2118073667858887068",
+      "raison": "post X sans rapport : renvoi vers un preprint de recherche en biologie d'Anthropic, sans effet sur les outils ni les conditions d'usage de Sylvain"
+    },
+    {
+      "id": "x-2118073665296228863",
+      "raison": "post X sans rapport : recherche en biologie structurale menée avec Claude (particule vault), application sectorielle"
+    },
+    {
+      "id": "https://claude.com/blog/new-agents-and-products-claude-marketplace",
+      "raison": "extension du Claude Marketplace (partenaires sécurité, infrastructure, création) réservée aux clients entreprise avec engagement de dépense : sans rapport avec l'abonnement individuel de Sylvain"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

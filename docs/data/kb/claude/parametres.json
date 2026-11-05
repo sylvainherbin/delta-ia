@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-04",
+ "maj_le": "2026-11-05",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 672,
- "commentees": 611,
+ "total": 673,
+ "commentees": 610,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -7915,6 +7915,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-bg-stable-path",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
+   "gabarit": "court",
+   "description": "Variable d'environnement propre à macOS avec l'installeur natif : à 1, le processus hôte de chaque session en arrière-plan part du binaire installé et non de ClaudeCode.app, ce qui peut faire redemander des autorisations (accès aux dossiers) après chaque mise à jour. Exige Claude Code 2.1.295 ou plus.",
+   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
+   "usage": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Elle ne concerne que macOS ; tes sessions tournent sur le K8 Plus, une machine Debian, donc elle n'a aucun effet chez toi."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Machine de développement K8 Plus et apps de bureau en paquets Debian : la variable ne vise que macOS."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-05",
+   "historique": [
+    {
+     "date": "2026-11-05",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-bundled-skills",
@@ -28113,7 +28160,7 @@
    "nom": "permissions",
    "gabarit": "court",
    "description": "Objet de réglages qui fixe les outils approuvés sans demande, ceux qui demandent toujours, ceux qui sont bloqués, et le mode de départ ; toutes les clés `permissions.*` s'y rangent.",
-   "description_source": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object.",
+   "description_source": "Control which tools Claude can use without asking, which ones prompt, and which ones are blocked. Also set the default permission mode for new sessions. Every permissions.* key below nests under this object.",
    "usage": "{\n  \"permissions\": {\n    \"allow\": [\"Bash(npm run *)\"],\n    \"ask\": [\"Bash(git push *)\"],\n    \"deny\": [\"Read(./.env)\"],\n    \"defaultMode\": \"acceptEdits\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"permissions\": {\n    \"allow\": [\"Bash(npm run *)\"],\n    \"ask\": [\"Bash(git push *)\"],\n    \"deny\": [\"Read(./.env)\"],\n    \"defaultMode\": \"acceptEdits\"\n  }\n}",
@@ -28130,11 +28177,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28159,6 +28206,43 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'objet `permissions` fixe les outils approuvés sans demande, ceux qui demandent toujours, ceux qui sont bloqués, et le mode de départ.",
+       "source": "https://code.claude.com/docs/en/settings-reference#permissions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La structure de l'objet `permissions` change."
+      },
+      {
+       "affirmation": "Les règles `deny` bloquent dans tous les modes, `bypassPermissions` compris.",
+       "source": "https://code.claude.com/docs/en/permission-modes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page dit que `bypassPermissions` ignore les règles `deny`."
+      },
+      {
+       "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai listés.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La politique de capacités de trading-sim change."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -28172,33 +28256,7 @@
      "pourquoi": "`.claude/settings.json` interdit WebFetch, WebSearch, le navigateur et les connecteurs."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "L'objet `permissions` fixe les outils approuvés sans demande, ceux qui demandent toujours, ceux qui sont bloqués, et le mode de départ.",
-     "source": "https://code.claude.com/docs/en/settings-reference#permissions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La structure de l'objet `permissions` change."
-    },
-    {
-     "affirmation": "Les règles `deny` bloquent dans tous les modes, `bypassPermissions` compris.",
-     "source": "https://code.claude.com/docs/en/permission-modes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page dit que `bypassPermissions` ignore les règles `deny`."
-    },
-    {
-     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
-     "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Le `.claude/settings.json` de trading-sim interdit WebFetch, WebSearch, le navigateur et les connecteurs claude.ai listés.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La politique de capacités de trading-sim change."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-permissions-additionaldirectories",
@@ -28494,7 +28552,7 @@
    "nom": "permissions.defaultMode",
    "gabarit": "court",
    "description": "Réglage du mode de permission de départ des nouvelles sessions ; non défini, c'est le défaut intégré de la surface utilisée.",
-   "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface.",
+   "description_source": "Set the default permission mode for new sessions. When you leave it unset, the built-in default for your surface applies.",
    "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"acceptEdits\"\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -28511,11 +28569,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-05",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28536,6 +28594,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-05",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
