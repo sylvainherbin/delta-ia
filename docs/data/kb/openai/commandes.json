@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-06",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1474,7 +1474,7 @@
    "categorie": "commandes",
    "nom": "codex agents",
    "gabarit": "complet",
-   "description": "Ouvre le centre de commandes des agents depuis le terminal. Il nécessite un serveur partagé local ou distant et ne prend pas en charge `--no-daemon`.",
+   "description": "Ouvre le centre de commandes des agents depuis le terminal. La note de version 0.167.0 ajoute son ouverture avec `codex agents --no-daemon` et les indicateurs de résultats non lus ; la restriction inverse des anciens commentaires concernait les versions précédentes.",
    "description_source": "Open the agent command center on a shared local or remote server. (maturité : Stable)",
    "usage": "codex agents",
    "usage_nature": "syntaxe",
@@ -1483,7 +1483,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Depuis le terminal des sessions Codex sous tmux, essayer `codex agents` ; résultat attendu : le centre affiche les conversations du serveur partagé."
+    "pourquoi": "Après mise à jour de la CLI terminal vers 0.167.0, essayer `codex agents` entre deux conversations d’audit trading-sim sous tmux ; résultat attendu : les résultats non lus sont repérables dans le centre. La variante `--no-daemon` est ajoutée par la release, sans remplacer le serveur partagé utilisé pour ton remote control."
    },
    "sources": [
     {
@@ -1493,17 +1493,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "CLI sous tmux et pilotage depuis l’iPhone."
+     "pourquoi": "Codex sous tmux avec remote control et deux binaires distincts."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Conversations d’audit Codex de trading-sim."
     }
    },
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Command overview",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-10-14",
@@ -1516,39 +1520,71 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande `codex agents` ouvre le centre de commandes des agents (agent command center) sur un serveur partagé, local ou distant ; la documentation la classe en maturité Stable.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `codex agents` disparaît de la documentation, change de rôle ou perd sa maturité Stable."
+      },
+      {
+       "affirmation": "Depuis le 02/10/2026, l'interface Codex de Sylvain est la CLI sous tmux, avec remote control depuis l'iPhone ; l'app de bureau n'est plus lancée au démarrage.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus la CLI sous tmux comme interface Codex principale."
+      },
+      {
+       "affirmation": "Les sessions Codex tournent comme services utilisateur modèles `codex-session@<nom>` (tmux `-L codex-<nom>`), avec un démarrage automatique éprouvé sur redémarrage le 02/10.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus les services `codex-session@<nom>` sous tmux."
+      },
+      {
+       "affirmation": "Lors de l'essai du 02/10/2026, `codex remote-control start` démarre un daemon local ; l'app de bureau fermée, il passe en « connected » et Sylvain écrit depuis l'iPhone dans les conversations Codex de la machine.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus le daemon remote-control local connecté ni cet usage depuis l'iPhone."
+      },
+      {
+       "affirmation": "Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire de la session concernée : celui du PATH pour la session tmux `codex`.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md change la règle sur le binaire à utiliser pour vérifier la syntaxe Codex."
+      }
+     ],
+     "raison": "La release officielle 0.167.0 accepte désormais codex agents --no-daemon ; ancienne restriction du commentaire devenue fausse."
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Depuis le terminal des sessions Codex sous tmux, essayer `codex agents` ; résultat attendu : le centre affiche les conversations du serveur partagé."
+     },
+     "raison": "La release officielle 0.167.0 accepte désormais codex agents --no-daemon ; ancienne restriction du commentaire devenue fausse."
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La commande `codex agents` ouvre le centre de commandes des agents (agent command center) sur un serveur partagé, local ou distant ; la documentation la classe en maturité Stable.",
-     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#command-overview",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande `codex agents` disparaît de la documentation, change de rôle ou perd sa maturité Stable."
+     "affirmation": "La release 0.167.0 annonce codex agents --no-daemon et les indicateurs de résultats non lus dans le centre et le sélecteur de sessions.",
+     "source": "https://github.com/openai/codex/releases/tag/rust-v0.167.0",
+     "releve_le": "2026-11-06",
+     "caduc_si": "Une release ultérieure retire cette combinaison ou modifie le centre de commandes."
     },
     {
-     "affirmation": "Depuis le 02/10/2026, l'interface Codex de Sylvain est la CLI sous tmux, avec remote control depuis l'iPhone ; l'app de bureau n'est plus lancée au démarrage.",
+     "affirmation": "Codex sert aux audits de trading-sim et se pilote en CLI sous tmux avec remote control depuis l’iPhone.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus la CLI sous tmux comme interface Codex principale."
-    },
-    {
-     "affirmation": "Les sessions Codex tournent comme services utilisateur modèles `codex-session@<nom>` (tmux `-L codex-<nom>`), avec un démarrage automatique éprouvé sur redémarrage le 02/10.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus les services `codex-session@<nom>` sous tmux."
-    },
-    {
-     "affirmation": "Lors de l'essai du 02/10/2026, `codex remote-control start` démarre un daemon local ; l'app de bureau fermée, il passe en « connected » et Sylvain écrit depuis l'iPhone dans les conversations Codex de la machine.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus le daemon remote-control local connecté ni cet usage depuis l'iPhone."
-    },
-    {
-     "affirmation": "Toute vérification de syntaxe Codex par un agent (`--help`) se fait sur le binaire de la session concernée : celui du PATH pour la session tmux `codex`.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md change la règle sur le binaire à utiliser pour vérifier la syntaxe Codex."
+     "releve_le": "2026-11-06",
+     "caduc_si": "Le rôle d’audit ou l’interface principale décrits dans CONTEXTE.md changent."
     }
    ]
   },
