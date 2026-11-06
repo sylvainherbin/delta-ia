@@ -21340,7 +21340,7 @@
    "categorie": "parametres",
    "nom": "enforceAvailableModels",
    "gabarit": "court",
-   "description": "Réglage qui oblige l'option Default du sélecteur `/model` à rester dans la liste `availableModels`.",
+   "description": "Réglage qui oblige l'option Default du sélecteur `/model` à se résoudre dans la liste `availableModels`, ce que le seul filtrage par préfixe ne garantit pas ; Claude Code v2.1.175 ou plus.",
    "description_source": "The /model picker has a Default option, and default model setting describes the model it resolves to. An availableModels allowlist limits the models you can name, but with the default prefix matching it doesn't remap your account type's default, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code v2.1.175 or later.",
    "usage": "{\n  \"availableModels\": [\"sonnet\", \"haiku\"],\n  \"enforceAvailableModels\": true\n}",
    "usage_nature": "syntaxe",
@@ -21349,7 +21349,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'administration d'organisation ; tu es seul sur un abonnement Max."
+    "pourquoi": "Réglage de restriction des modèles pensé pour un administrateur ; tu es seul sur ton abonnement Max (20x) et rien ne décrit le besoin de te limiter une liste de modèles."
    },
    "sources": [
     {
@@ -21362,7 +21362,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21391,13 +21391,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Utilisateur seul, abonnement Claude Max (5x)."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Utilisateur seul, abonnement Claude Max (20x) individuel, à l'essai jusqu'au 07/11."
     }
    }
   },
@@ -21573,7 +21577,7 @@
    "categorie": "parametres",
    "nom": "--exclude-dynamic-system-prompt-sections",
    "gabarit": "court",
-   "description": "Option CLI qui déplace le contexte propre à l'utilisateur (emplacement de la mémoire automatique…) du prompt système vers le premier message, pour mieux réutiliser le cache entre utilisateurs et machines, avec `-p`.",
+   "description": "Option CLI qui sort le contexte propre à l'utilisateur (emplacement de la mémoire automatique…) du prompt système pour le placer dans le premier message, afin de mieux réutiliser le cache entre utilisateurs et machines ; sans effet avec `--system-prompt` ou `--system-prompt-file`, prévue avec `-p`.",
    "description_source": "Move per-user context, such as the auto memory location, out of the system prompt and into the first user message. Improves prompt-cache reuse across different users and machines running the same task. Only applies with the default system prompt; ignored when --system-prompt or --system-prompt-file is set. Use with -p for scripted, multi-user workloads — claude -p --exclude-dynamic-system-prompt-sections \"query\"",
    "usage": "--exclude-dynamic-system-prompt-sections",
    "usage_nature": "syntaxe",
@@ -21582,7 +21586,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Gain pour une même tâche lancée par plusieurs utilisateurs ou machines ; tu travailles seul sur une seule machine."
+    "pourquoi": "Le gain porte sur une même tâche scriptée lancée par plusieurs utilisateurs ou machines ; tes `claude -p` (chaîne D70, JUGER) tournent sous ton seul compte, sans charge multi-utilisateur décrite."
    },
    "sources": [
     {
@@ -21595,7 +21599,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21616,13 +21620,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Une seule machine, un portable HP."
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Utilisateur seul, développe seul ses projets personnels."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Étapes Claude de la chaîne D70 lancées en non interactif par l'orchestrateur."
     }
    }
   },
@@ -21632,7 +21644,7 @@
    "categorie": "parametres",
    "nom": "--exec",
    "gabarit": "court",
-   "description": "Option CLI qui lance une commande shell en tâche d'arrière-plan avec PTY au lieu d'une session Claude, avec `--bg`.",
+   "description": "Option CLI qui lance une commande shell comme tâche d'arrière-plan avec PTY au lieu d'ouvrir une session Claude, à combiner avec `--bg`.",
    "description_source": "Run a shell command as a PTY-backed background job instead of starting a Claude session. Use with --bg to launch from the shell — claude --bg --exec 'pytest -x'",
    "usage": "--exec",
    "usage_nature": "syntaxe",
@@ -21641,7 +21653,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes calculs lourds passent par la tranche `calculs.slice` ; rien ne dit qu'il faille les lancer par Claude Code."
+    "pourquoi": "Tes travaux longs tournent déjà sous tmux ou par les lanceurs de `~/.local/bin` (`mission-codex`) ; aucun besoin de passer une commande shell par Claude Code n'est décrit."
    },
    "sources": [
     {
@@ -21654,7 +21666,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21667,13 +21679,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "calculs lourds bridés dans `calculs.slice`"
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous tmux, lancées par systemd."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "mission-codex lance déjà codex exec en arrière-plan."
     }
    }
   },
@@ -22487,7 +22507,7 @@
    "categorie": "parametres",
    "nom": "forceLoginOrgUUID",
    "gabarit": "court",
-   "description": "Réglage qui impose ou présélectionne l'organisation Anthropic de connexion.",
+   "description": "Réglage qui impose (source gérée) ou présélectionne l'organisation Anthropic de connexion ; posé dans un fichier de réglages, il retire aussi la connexion Console sans clé et crée une clé API.",
    "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to and creates an API key instead.",
    "usage": "{\n  \"forceLoginOrgUUID\": [\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\", \"yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy\"]\n}",
    "usage_nature": "syntaxe",
@@ -22496,7 +22516,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations."
+    "pourquoi": "Pensé pour les organisations ; ton abonnement Max (20x) est individuel, et la clé aurait l'effet de bord de créer une clé API à la connexion Console."
    },
    "sources": [
     {
@@ -22509,7 +22529,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22526,12 +22546,16 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
      "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
     }
    }
@@ -24124,7 +24148,7 @@
    "categorie": "parametres",
    "nom": "Hook SessionEnd",
    "gabarit": "court",
-   "description": "Événement de hook déclenché à la fin d'une session, filtrable par motif de sortie.",
+   "description": "Événement de hook déclenché à la fin d'une session Claude Code, filtrable par motif de sortie, pour un nettoyage, des statistiques ou une sauvegarde d'état.",
    "description_source": "Runs when a Claude Code session ends. Useful for cleanup tasks, logging session statistics, or saving session state. Supports matchers to filter by exit reason.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"SessionEnd\",\n  \"reason\": \"other\"\n}",
    "usage_nature": "syntaxe",
@@ -24133,7 +24157,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tournent en continu sous systemd."
+    "pourquoi": "Tes sessions durables tournent en continu sous systemd et ton seul hook est `PermissionDenied` ; aucun nettoyage de fin de session n'est décrit."
    },
    "sources": [
     {
@@ -24146,7 +24170,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24163,13 +24187,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions persistantes lancées par systemd"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions persistantes claude-session@<nom> lancées par systemd."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Un seul hook, PermissionDenied vers operer refus."
     }
    }
   },
@@ -24230,7 +24262,7 @@
    "categorie": "parametres",
    "nom": "Hook Setup",
    "gabarit": "court",
-   "description": "Événement de hook déclenché seulement avec `--init-only`, ou `--init` / `--maintenance` en mode `-p`, pour une installation ponctuelle.",
+   "description": "Événement de hook déclenché seulement avec `--init-only`, ou avec `--init` / `--maintenance` en mode `-p`, jamais au démarrage normal, pour une installation ou un nettoyage ponctuels.",
    "description_source": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. It doesn't fire on normal startup. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts, separate from normal session startup. For per-session initialization, use SessionStart instead.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Setup\",\n  \"trigger\": \"init\"\n}",
    "usage_nature": "syntaxe",
@@ -24239,7 +24271,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions démarrent par `claude --resume` sous tmux, jamais avec ces options d'initialisation."
+    "pourquoi": "Tes sessions démarrent par `claude --resume <id> --remote-control <nom>` sous tmux, sans ces options d'initialisation."
    },
    "sources": [
     {
@@ -24252,7 +24284,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24273,13 +24305,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions lancées par claude --resume <id> --remote-control dans tmux."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions lancées par claude --resume <id> --remote-control <nom> dans tmux."
     }
    }
   },
@@ -24615,7 +24651,7 @@
    "categorie": "parametres",
    "nom": "Hook TeammateIdle",
    "gabarit": "court",
-   "description": "Événement de hook déclenché quand un coéquipier d'une équipe d'agents va passer inactif, pour imposer un contrôle qualité.",
+   "description": "Événement de hook déclenché quand un coéquipier d'une équipe d'agents va passer inactif, pour imposer un contrôle qualité avant qu'il s'arrête.",
    "description_source": "Runs when an agent team teammate is about to go idle after finishing its turn. Use this to enforce quality gates before a teammate stops working, such as requiring passing lint checks or verifying that output files exist.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"TeammateIdle\",\n  \"teammate_name\": \"researcher\",\n  \"team_name\": \"session-a1b2c3d4\"\n}",
    "usage_nature": "syntaxe",
@@ -24624,7 +24660,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'utilises pas d'équipes d'agents ; OPÉRER coordonne tes sessions."
+    "pourquoi": "Rien ne décrit d'équipe d'agents chez toi : OPÉRER coordonne tes sessions et leurs missions."
    },
    "sources": [
     {
@@ -24637,7 +24673,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24654,12 +24690,16 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
      "pourquoi": "OPÉRER distribue missions et messages entre sessions."
     }
    }
@@ -25064,7 +25104,7 @@
    "categorie": "parametres",
    "nom": "--ide",
    "gabarit": "court",
-   "description": "Option CLI qui connecte automatiquement l'IDE au démarrage s'il y en a exactement un.",
+   "description": "Option CLI qui connecte automatiquement l'IDE au démarrage s'il y en a exactement un de disponible.",
    "description_source": "Automatically connect to IDE on startup if exactly one valid IDE is available — claude --ide",
    "usage": "--ide",
    "usage_nature": "syntaxe",
@@ -25073,7 +25113,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tournent sous tmux, sans IDE."
+    "pourquoi": "Tes sessions tournent sous tmux et se pilotent par Remote Control, sans IDE décrit."
    },
    "sources": [
     {
@@ -25086,7 +25126,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25103,13 +25143,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions tmux lancées par systemd"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions tmux lancées par systemd, pilotées depuis l'iPhone."
     }
    }
   },
@@ -25768,7 +25812,7 @@
    "categorie": "parametres",
    "nom": "isolatePeerMachines",
    "gabarit": "court",
-   "description": "Réglage qui exige ton accord avant qu'un `SendMessage` de Claude atteigne une session sur une autre machine, même en `bypassPermissions`.",
+   "description": "Réglage qui exige ton accord avant qu'un `SendMessage` de Claude atteigne une de tes sessions sur une autre machine, même en `bypassPermissions`.",
    "description_source": "Require your explicit approval before Claude's SendMessage reaches one of your sessions beyond this machine; see Require approval for cross-machine messages. The approval prompt appears even in bypassPermissions mode.",
    "usage": "{\n  \"isolatePeerMachines\": true\n}",
    "usage_nature": "syntaxe",
@@ -25777,7 +25821,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions se parlent sur la même machine ; ce réglage ajouterait une demande d'accord, même en bypassPermissions, contraire au régime full auto."
+    "pourquoi": "Tes sessions se parlent sur le K8 Plus et aucun échange avec le HP Beta n'est décrit ; la demande d'accord, même en bypassPermissions, irait contre ton régime full auto."
    },
    "sources": [
     {
@@ -25790,7 +25834,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25807,17 +25851,25 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     },
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
      "pourquoi": "OPÉRER remet lui-même les messages entre sessions, sans demande à Sylvain."
+    },
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "K8 Plus machine de développement, HP instance cliente Beta."
     }
    }
   },
@@ -26055,17 +26107,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions sous tmux, sans vue des agents utilisée."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions sous tmux pilotées par Remote Control, vue des agents non décrite."
     }
    },
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-06",
    "historique": [
     {
      "date": "2026-09-29",
@@ -26077,6 +26129,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-06",
      "changement": "commentaire révisé"
     }
    ]
