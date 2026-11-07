@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-07",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 52,
- "commentees": 42,
+ "commentees": 52,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -220,7 +220,7 @@
    "categorie": "mcp",
    "nom": "Automatic backgrounding of long tool calls",
    "gabarit": "complet",
-   "description": "Un appel d'outil MCP de la conversation principale qui dure plus de deux minutes passe en tâche d'arrière-plan au lieu de bloquer la session ; Claude reçoit l'identifiant de la tâche et continue, puis le résultat arrive en notification. `/tasks` suit ces tâches.",
+   "description": "Un appel d'outil MCP de la conversation principale encore en cours après deux minutes passe en tâche d'arrière-plan au lieu de bloquer la session ; Claude reçoit l'identifiant de la tâche et continue, le résultat arrive en notification. `/tasks` liste ces tâches et permet de les arrêter ; elles ne survivent pas à la sortie de la session, sauf les tâches MCP exécutées par le serveur lui-même.",
    "description_source": "If a background call's detail view in /tasks shows runs on the server; survives exiting this session, see MCP tasks that run on the server.",
    "usage": "/tasks",
    "usage_nature": "syntaxe",
@@ -229,7 +229,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le seul serveur MCP local de tes sessions, delta-ia, répond à des lectures courtes ; rien à régler, le comportement est automatique."
+    "pourquoi": "Comportement automatique, sans réglage à poser, et CONTEXTE.md ne décrit aucun outil MCP à appel long dans tes sessions."
    },
    "sources": [
     {
@@ -238,11 +238,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -263,10 +263,19 @@
     {
      "date": "2026-10-24",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP décrits : connecteur delta-ia en HTTP et connecteurs de compte claude.ai, sans appel long signalé."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -275,7 +284,7 @@
    "categorie": "mcp",
    "nom": "Automatic reconnection",
    "gabarit": "complet",
-   "description": "Claude Code reconnecte seul un serveur distant (HTTP ou SSE) qui décroche en cours de session et réessaie une première connexion après une erreur passagère ; un serveur stdio, processus local, n'est pas reconnecté automatiquement. `/mcp` montre l'état des serveurs et permet de relancer une connexion.",
+   "description": "Claude Code reconnecte seul un serveur distant qui décroche en cours de session (cinq essais à délai doublé) et réessaie trois fois une première connexion HTTP ou SSE après une erreur passagère. En `claude -p`, l'exécution continue sans les outils du serveur si les essais échouent ; un serveur stdio se relance depuis `/mcp` en session interactive.",
    "description_source": "Claude Code reconnects a remote server that drops mid-session and retries an HTTP or SSE server's first connection after a transient error. For a stdio server, see Stdio servers that exit or fail to start.",
    "usage": "/mcp",
    "usage_nature": "syntaxe",
@@ -284,7 +293,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La reconnexion des serveurs HTTP, comme le connecteur delta-ia, est automatique et sans réglage ; les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et `/mcp` reste le moyen de vérifier l'état d'un connecteur en cas de doute."
+    "pourquoi": "La reconnexion de tes serveurs HTTP, comme le connecteur delta-ia, est automatique et sans réglage, et les coupures Wi-Fi ont cessé depuis la connexion directe à la box ; `/mcp` reste le moyen de vérifier un connecteur en cas de doute."
    },
    "sources": [
     {
@@ -293,11 +302,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -322,17 +331,21 @@
     {
      "date": "2026-10-24",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "connecteur delta-ia en HTTP, portée locale ; connecteurs de compte claude.ai"
+     "pourquoi": "Connecteur delta-ia ajouté en `--transport http`, portée locale."
     },
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Wi-Fi : décrochages cessés après la connexion directe à la box"
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Wi-Fi fragile jusqu'au 01/10, résolu depuis la connexion directe à la box."
     }
    },
    "exemple_origine": "source"
@@ -343,7 +356,7 @@
    "categorie": "mcp",
    "nom": "Configure tool search",
    "gabarit": "complet",
-   "description": "La recherche d'outils MCP est active par défaut : les outils sont différés et découverts à la demande au lieu d'être chargés d'emblée. `ENABLE_TOOL_SEARCH` règle le seuil (`auto:5`) ou la coupe (`false`) ; elle est coupée d'office derrière un `ANTHROPIC_BASE_URL` tiers.",
+   "description": "La recherche d'outils MCP est active par défaut : les outils MCP sont différés et découverts à la demande au lieu d'être chargés d'emblée. `ENABLE_TOOL_SEARCH` la règle par seuil (`auto`, `auto:5`) ou la coupe (`false`) ; `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` la coupe sans recours.",
    "description_source": "Tool search is enabled by default: MCP tools are deferred and discovered on demand.",
    "usage": "# Use a custom 5% threshold\nENABLE_TOOL_SEARCH=auto:5 claude\n\n# Disable tool search entirely\nENABLE_TOOL_SEARCH=false claude",
    "usage_nature": "syntaxe",
@@ -352,7 +365,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le réglage par défaut limite déjà le coût en contexte de tes connecteurs claude.ai ; le couper chargerait tous leurs outils à chaque session."
+    "pourquoi": "Le défaut diffère déjà les outils de tes connecteurs claude.ai (Gmail, Drive, Calendar, Canva, GoDaddy, Vercel, Delta-IA) ; `false` les chargerait tous en contexte à chaque session."
    },
    "sources": [
     {
@@ -361,11 +374,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Scale with MCP tool search",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -378,10 +391,24 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs de compte claude.ai appliqués à tous les projets, connecteur delta-ia local."
+    },
+    "optimisation.pistes": {
+     "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+     "pourquoi": "Piste 9 : Gmail, Drive, Calendar, Canva et GoDaddy connectés mais jamais appelés."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-mcp-defer-a-server-s-tools",
@@ -801,7 +828,7 @@
    "categorie": "mcp",
    "nom": "Execute MCP prompts",
    "gabarit": "complet",
-   "description": "Les prompts exposés par un serveur MCP apparaissent comme commandes dans le menu `/`, sous la forme `/serveur:prompt (MCP)` ; `/mcp__serveur__prompt` les lance aussi.",
+   "description": "Les prompts exposés par un serveur MCP apparaissent dans le menu `/` sous la forme `/serveur:prompt (MCP)` ; `/mcp__serveur__prompt` les lance aussi, avec des arguments séparés par des espaces.",
    "description_source": "1. Discover available prompts",
    "usage": "/mcp__github__list_prs",
    "usage_nature": "syntaxe",
@@ -810,7 +837,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le connecteur delta-ia expose des outils, pas de prompts, d'après sa description dans SPEC.md."
+    "pourquoi": "CONTEXTE.md ne décrit aucun prompt MCP exposé par tes serveurs (delta-ia, connecteurs de compte) ni aucun usage de ce type."
    },
    "sources": [
     {
@@ -819,11 +846,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP prompts as commands",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -844,10 +871,19 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP et connecteurs décrits, sans prompt MCP utilisé."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -979,7 +1015,7 @@
    "categorie": "mcp",
    "nom": "How connectors reach Claude Code",
    "gabarit": "complet",
-   "description": "Les connecteurs claude.ai arrivent différemment selon le type de session : récupérés par Claude Code lui-même dans le terminal, transmis par l'hôte dans les sessions cloud, injectés par l'app de bureau dans ses sessions locales. Les réglages qui les gouvernent dépendent donc de l'endroit où tourne la session.",
+   "description": "Les connecteurs claude.ai arrivent différemment selon le lieu de la session : récupérés par Claude Code lui-même dans le terminal, transmis par l'hôte dans les sessions cloud, injectés par l'app de bureau dans ses sessions locales et SSH. `disableClaudeAiConnectors`, `ENABLE_CLAUDEAI_MCP_SERVERS` et `allowAllClaudeAiMcps` n'agissent que sur le premier cas ; dans l'app de bureau, seul le débranchement sur claude.ai/customize/connectors écarte un connecteur.",
    "description_source": "Which settings govern a claude.ai connector depends on where your session runs, because only some sessions fetch connectors from claude.ai themselves. Each row below names how connectors arrive in one kind of session and what controls them there. The desktop app's WSL sessions have no row because connectors are still rolling out to them.",
    "usage": "managed-mcp.json",
    "usage_nature": "syntaxe",
@@ -988,7 +1024,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Page de référence : tes sessions durables tournent dans le terminal sous tmux, donc Claude Code y récupère lui-même les connecteurs de compte (Vercel compris, de nouveau connecté le 12/10) ; elle éclaire la question du `deny` sur trading-sim, sans rien à essayer par elle-même."
+    "pourquoi": "Page de référence sans rien à essayer : tes sessions durables tournent dans le terminal sous tmux, où Claude Code récupère lui-même les connecteurs de compte, ce qui éclaire la question du `deny` sur trading-sim."
    },
    "sources": [
     {
@@ -997,11 +1033,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP servers from claude.ai",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1026,17 +1062,21 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions de terminal sous tmux"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables de terminal, sous tmux, via `claude-session@<nom>`."
     },
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "connecteurs de compte appliqués par défaut, écart trading-sim, Vercel connecté le 12/10"
+     "pourquoi": "Connecteurs de compte appliqués par défaut à tous les projets ; écart trading-sim sans `deny`."
     }
    },
    "exemple_impossible": "Usage = nom du fichier géré `managed-mcp.json` ; son contenu n'est pas dans la source de la fiche"
@@ -1504,7 +1544,7 @@
    "categorie": "mcp",
    "nom": "Option 2: Add a remote SSE server",
    "gabarit": "complet",
-   "description": "Ajout d'un serveur distant en SSE (Server-Sent Events), transport déprécié au profit de HTTP.",
+   "description": "Ajout d'un serveur distant qui n'expose qu'un point SSE, transport déprécié : depuis v2.1.265, `claude mcp add --transport http` essaie HTTP puis bascule seul en SSE. `--transport sse` reste pour une version antérieure ou une connexion SSE directe.",
    "description_source": "Some services still expose only an SSE endpoint. Add these with the same claude mcp add --transport http <name> <url> command as an HTTP server. Claude Code tries the HTTP transport first and switches to SSE when the server doesn't accept it. The automatic switch requires Claude Code v2.1.265 or later.",
    "usage": "# Basic syntax\nclaude mcp add --transport sse <name> <url>\n\n# Real example: Connect to Asana\nclaude mcp add --transport sse asana https://mcp.asana.com/sse\n\n# Example with authentication header\nclaude mcp add --transport sse private-api https://api.company.com/sse \\\n  --header \"X-API-Key: your-key-here\"",
    "usage_nature": "syntaxe",
@@ -1513,7 +1553,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Transport déprécié ; delta-ia est en HTTP."
+    "pourquoi": "Transport déprécié, et ton connecteur delta-ia est déjà ajouté en HTTP."
    },
    "sources": [
     {
@@ -1522,11 +1562,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1543,10 +1583,19 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur delta-ia ajouté par `claude mcp add --transport http`."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -1953,7 +2002,7 @@
    "categorie": "mcp",
    "nom": "Reference MCP resources",
    "gabarit": "complet",
-   "description": "Taper `@` dans le prompt liste les ressources de tous les serveurs MCP connectés, à côté des fichiers ; on les cite sous la forme `@serveur:protocole://chemin`.",
+   "description": "Taper `@` dans le prompt liste les ressources de tous les serveurs MCP connectés, à côté des fichiers ; on les cite sous la forme `@serveur:protocole://chemin`, plusieurs dans un même prompt si besoin.",
    "description_source": "1. List available resources",
    "usage": "Can you analyze @github:issue://123 and suggest a fix?",
    "usage_nature": "syntaxe",
@@ -1962,7 +2011,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "delta-ia expose des outils, pas de ressources."
+    "pourquoi": "CONTEXTE.md ne décrit aucune ressource MCP exposée par tes serveurs ni aucun usage de ce type."
    },
    "sources": [
     {
@@ -1971,11 +2020,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Use MCP resources",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1996,10 +2045,19 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs MCP et connecteurs décrits, sans ressource MCP citée."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -2487,7 +2545,7 @@
    "categorie": "mcp",
    "nom": "Use dynamic headers for custom authentication",
    "gabarit": "complet",
-   "description": "`headersHelper` lance une commande à la connexion et fusionne sa sortie dans les en-têtes, pour les authentifications autres qu'OAuth (Kerberos, jetons courts, SSO interne).",
+   "description": "`headersHelper` lance une commande (script ou commande en ligne) à la connexion d'un serveur MCP et fusionne sa sortie JSON dans les en-têtes envoyés, pour une authentification autre qu'OAuth (Kerberos, jetons courts, SSO interne). Quand il est la seule source de l'en-tête `Authorization`, Claude Code réessaie aussi après une erreur d'authentification.",
    "description_source": "When authentication such as Kerberos, short-lived tokens, or internal SSO needs headers generated at connection time, set the server's headersHelper to a command. Claude Code runs it when connecting and merges its output into the headers it sends. This example uses a script:",
    "usage": "{\n  \"mcpServers\": {\n    \"internal-api\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.internal.example.com\",\n      \"headersHelper\": \"/opt/bin/get-mcp-auth-headers.sh\"\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -2496,7 +2554,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui exige ce type d'authentification ; delta-ia n'en a aucune."
+    "pourquoi": "CONTEXTE.md ne décrit aucun serveur MCP qui exige ce type d'authentification."
    },
    "sources": [
     {
@@ -2505,11 +2563,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-29",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2526,10 +2584,19 @@
     {
      "date": "2026-10-29",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteur delta-ia ajouté par son URL seule, sans en-tête d'authentification."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -2726,7 +2793,7 @@
    "categorie": "mcp",
    "nom": "Use the GitHub integration",
    "gabarit": "complet",
-   "description": "Intégration GitHub de l'app Claude : par le bouton « + », on ajoute des fichiers et dossiers d'un dépôt au contexte d'une conversation, ou à la base de connaissances d'un Projet, où l'icône « Sync » les remet à jour. Le connecteur GitHub doit être activé sur le compte, et un dépôt privé demande l'accès par l'app GitHub de Claude.",
+   "description": "Intégration GitHub de l'app Claude : le bouton « + » ajoute des fichiers et dossiers d'un dépôt au contexte d'une conversation ou à la base de connaissances d'un Projet, où « Sync » les remet à jour. Seuls les fichiers d'une branche sont synchronisés, sans historique ni PR ; un dépôt privé demande l'accès par l'app GitHub de Claude.",
    "description_source": "Connect your GitHub repositories directly to Claude to provide comprehensive context for your software development tasks. You can easily add repositories by selecting them from a list, helping Claude better understand and assist with your codebase.",
    "usage": "1. Click the \"+\" button on the lower left corner of the chat interface.\n2. Select \"Add from GitHub\" from the drop-down.\n3. Use the file browser to select specific files and folders.\n4. When you send your message, Claude will access and process the content to inform its response.",
    "usage_nature": "etapes",
@@ -2735,7 +2802,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes dépôts sont travaillés dans Claude Code, sur la machine, et GitHub ne figure pas parmi les connecteurs claude.ai listés dans CONTEXTE.md."
+    "pourquoi": "Tes dépôts sont travaillés dans Claude Code sur la machine, et CONTEXTE.md ne cite ni connecteur GitHub ni dépôt joint à tes Projets claude.ai."
    },
    "sources": [
     {
@@ -2744,11 +2811,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2773,9 +2840,13 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
@@ -2783,7 +2854,11 @@
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Connecteurs connectés listés : Gmail, Drive, Calendar, Canva, GoDaddy ; GitHub absent."
+     "pourquoi": "Piste 9 : connecteurs connectés listés (Gmail, Drive, Calendar, Canva, GoDaddy), GitHub absent."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Trois Projets claude.ai décrits, sans dépôt GitHub joint."
     }
    }
   },
@@ -2856,16 +2931,16 @@
    "categorie": "mcp",
    "nom": "Get started with custom connectors using remote MCP",
    "gabarit": "complet",
-   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté par son URL dans les réglages des connecteurs ; sur Free, un seul est permis. L'ajout demande de choisir le mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in ») et, avec connexion, la façon dont Claude s'identifie au serveur OAuth (identité publiée de Claude recommandée, enregistrement automatique ou client OAuth propre).",
+   "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté sur Pro et Max par Customize > Connectors, « + Add » puis « Add custom connector », avec son URL et un mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in »). Claude se connecte au serveur depuis l'infrastructure d'Anthropic, pas depuis ta machine : le serveur doit être joignable depuis Internet.",
    "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Ultra, Team, and Enterprise plans. Free users are limited to one custom connector.",
    "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Free, Pro, Max, Team et Enterprise ; Claude, Cowork et Claude Desktop",
+   "disponibilite": "Free (un seul connecteur personnalisé), Pro, Max, Ultra, Team et Enterprise ; Claude, Cowork et Claude Desktop",
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton connecteur de compte Delta-IA, serveur MCP distant, passerait par ce mécanisme ; comme tout connecteur de compte, il s'applique à toutes tes sessions Claude Code, trading-sim compris tant que son settings.json ne le refuse pas."
+    "pourquoi": "Ton connecteur de compte Delta-IA passerait par ce mécanisme ; comme tout connecteur de compte, il s'applique à toutes tes sessions Claude Code, trading-sim compris tant que son settings.json ne le refuse pas."
    },
    "sources": [
     {
@@ -2874,11 +2949,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2932,15 +3007,39 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
-     "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans deny."
+     "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans `deny`."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "Les connecteurs personnalisés par serveur MCP distant sont disponibles sur les forfaits Pro et Max, ajoutés par Customize > Connectors, « + Add » puis « Add custom connector ».",
+     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+     "releve_le": "2026-11-07",
+     "caduc_si": "la page retire le forfait Max des connecteurs personnalisés ou change le chemin d'ajout"
+    },
+    {
+     "affirmation": "Claude se connecte au serveur MCP distant depuis l'infrastructure d'Anthropic, pas depuis l'appareil local : le serveur doit être joignable depuis Internet.",
+     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+     "releve_le": "2026-11-07",
+     "caduc_si": "la page indique que la connexion part de l'appareil local"
+    },
+    {
+     "affirmation": "Les connecteurs de compte claude.ai, Delta-IA compris, s'appliquent à tous les projets Claude Code, trading-sim compris faute de `deny` dans son settings.json.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-11-07",
+     "caduc_si": "trading-sim ajoute le `deny` des connecteurs de compte ou Delta-IA est retiré du compte"
+    }
+   ]
   },
   {
    "id": "claude-mcp-page-11176164-use-connectors-to-extend-claude-s-capabilities",
