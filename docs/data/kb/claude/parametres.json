@@ -26309,7 +26309,7 @@
    "categorie": "parametres",
    "nom": "--max-budget-usd",
    "gabarit": "court",
-   "description": "Option CLI qui fixe en dollars un plafond de dépense d'API, sous-agents compris, en mode `-p`.",
+   "description": "Option CLI du mode `-p` qui arrête l'exécution quand la dépense d'API estimée côté client, sous-agents compris, atteint le montant fixé.",
    "description_source": "Stop the run once estimated spend on API calls reaches this amount (print mode only). Claude Code checks the cap against its client-side cost estimate, which can differ from your bill. Spend from subagents counts toward the cap. Spend can pass the cap, so leave headroom. When you return to a conversation with --continue or --resume, totals restored from earlier runs don't count toward it. Once spend reaches the cap, spawning another subagent fails with Budget limit reached, and Claude Code stops background subagents that are still running; the cap-enforcement behaviors require Claude Code v2.1.217 or later — claude -p --max-budget-usd 5.00 \"query\"",
    "usage": "--max-budget-usd",
    "usage_nature": "syntaxe",
@@ -26318,7 +26318,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu passes par un abonnement Max, pas par une facturation à l'API."
+    "pourquoi": "Tu passes par l'abonnement Max (20x), pas par une facturation à l'API, et le plafond porte sur une estimation côté client qui peut différer de la facture."
    },
    "sources": [
     {
@@ -26331,7 +26331,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26352,13 +26352,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel ; aucun crédit Claude Code cloud déclaré."
     }
    }
   },
@@ -26582,7 +26586,7 @@
    "categorie": "parametres",
    "nom": "maxEffortLevel",
    "gabarit": "court",
-   "description": "Réglage qui plafonne le niveau d'effort d'une session, quelle que soit sa source (`/effort`, `--effort`, skill…).",
+   "description": "Réglage qui plafonne le niveau d'effort d'une session, quelle que soit sa source (`/effort`, `--effort`, sélecteur `/model`, skill, sous-agent ou défaut du modèle).",
    "description_source": "Cap the effort level a session can use, leaving lower levels available. Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default. Claude Code applies the cap itself before each request, so it holds on every provider, including Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. Requires Claude Code v2.1.267 or later.",
    "usage": "{\n  \"maxEffortLevel\": \"medium\",\n  \"modelSettings\": {\n    \"claude-sonnet-4-6\": {\n      \"maxEffortLevel\": \"max\"\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -26591,7 +26595,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Plafonner partout gênerait les sessions qui ont besoin d'un effort élevé (trading-sim, chef) ; `/effort` par session suffit."
+    "pourquoi": "Chaque session reçoit déjà son modèle et son effort de son lanceur selon son rôle ; un plafond global briderait celles qui ont besoin d'un effort élevé."
    },
    "sources": [
     {
@@ -26604,7 +26608,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26621,13 +26625,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Modèle et effort fixés par le lanceur de chaque session (ex. `--effort medium` pour le chef)."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle, effort et réglages de lancement propres à chaque rôle (ex. `--model opus --effort medium` pour le chef)."
     }
    }
   },
@@ -26907,7 +26915,7 @@
    "categorie": "parametres",
    "nom": "MCP_DISCOVERY_CACHE",
    "gabarit": "court",
-   "description": "Variable du cache de découverte MCP : un serveur distant déjà utilisé se connecte à son premier appel d'outil au lieu du démarrage.",
+   "description": "Variable qui active (`1`) ou coupe (`0`) le cache de découverte MCP : un serveur distant déjà utilisé se connecte à son premier appel d'outil plutôt qu'au démarrage.",
    "description_source": "Turns the MCP discovery cache on or off. With the cache on, a remote HTTP or SSE server you've used before can show the cached status, and Claude Code connects it on its first tool call instead of at startup. The cache is off by default unless a gradual rollout has enabled it for your account. Set to 1 to turn it on, or 0 to keep it off even when the rollout has enabled it. Before v2.1.238, the cache was on by default. The cached status requires Claude Code v2.1.221 or later",
    "usage": "MCP_DISCOVERY_CACHE",
    "usage_nature": "syntaxe",
@@ -26916,7 +26924,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Gain de démarrage faible pour tes sessions persistantes, rarement relancées."
+    "pourquoi": "Tes sessions durables sont des services systemd lancés une fois et repris, donc le gain au démarrage serait faible."
    },
    "sources": [
     {
@@ -26929,7 +26937,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -26946,13 +26954,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "sessions persistantes sous systemd"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous `claude-session@<nom>`, démarrées automatiquement et reprises par `--resume`."
     }
    }
   },
@@ -27747,7 +27759,7 @@
    "categorie": "parametres",
    "nom": "modelPricing",
    "gabarit": "court",
-   "description": "Réglage qui affiche la dépense aux tarifs négociés d'une organisation au lieu du prix catalogue, dans `/usage` et la ligne de statut.",
+   "description": "Réglage qui calcule la dépense affichée (`/usage`, ligne de statut, `--max-budget-usd`) aux tarifs négociés d'une organisation plutôt qu'au prix catalogue.",
    "description_source": "Report spend at the rates your organization pays instead of list price. Set it when your organization has contracted rates, so the dollar figures developers see match your bill. Claude Code applies the rates in /usage, the status line, the Agent SDK's total_cost_usd, the --max-budget-usd limit, and the OpenTelemetry cost metric and events. You supply the rates: Claude Code doesn't read them from your contract or the Claude Console. Requires Claude Code v2.1.242 or later.",
    "usage": "{\n  \"modelPricing\": {\n    \"multiplier\": 0.85,\n    \"overrides\": {\n      \"claude-sonnet-4-6\": {\n        \"input\": 2.4,\n        \"output\": 12,\n        \"cacheRead\": 0.24,\n        \"cacheWrite\": 3\n      }\n    }\n  }\n…",
    "usage_nature": "syntaxe",
@@ -27756,7 +27768,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations."
+    "pourquoi": "Pensé pour une organisation à tarifs contractuels ; tu as un abonnement Max (20x) individuel."
    },
    "sources": [
     {
@@ -27769,7 +27781,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27786,13 +27798,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel, hors organisation."
     }
    }
   },
@@ -27811,7 +27827,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le modèle et l'effort de chaque session sont fixés par son lanceur (`--model opus --effort medium` pour le chef) ; `/effort` et `--effort` suffisent pour la piste 11."
+    "pourquoi": "Le modèle et l'effort de chaque session sont déjà fixés par son lanceur, et `/effort` ou `--effort` suffisent pour la piste 11."
    },
    "sources": [
     {
@@ -27824,7 +27840,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27845,13 +27861,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Modèle, effort et réglages de lancement propres à chaque rôle, posés par le service `claude-session@<nom>`."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
@@ -27865,7 +27885,7 @@
    "categorie": "parametres",
    "nom": "--name",
    "gabarit": "court",
-   "description": "Option CLI qui donne à la session un nom affiché dans `/resume` et le titre du terminal, repris par `claude --resume <nom>` ; `/rename` le change en cours de session.",
+   "description": "Option CLI `--name` (`-n`) qui donne à la session un nom affiché dans `/resume` et le titre du terminal, repris par `claude --resume <nom>`.",
    "description_source": "Set a display name for the session, shown in /resume and the terminal title. You can resume a named session with claude --resume <name>. /rename changes the name mid-session and also shows it on the prompt bar — claude -n \"my-feature-work\"",
    "usage": "--name, -n",
    "usage_nature": "syntaxe",
@@ -27887,7 +27907,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-12",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27908,12 +27928,16 @@
     {
      "date": "2026-10-12",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     }
    }
@@ -27971,7 +27995,7 @@
    "categorie": "parametres",
    "nom": "--no-session-persistence",
    "gabarit": "court",
-   "description": "Option CLI, en mode `-p`, qui n'enregistre pas la session sur disque, donc sans reprise possible.",
+   "description": "Option CLI du mode `-p` qui n'enregistre pas la session sur disque, sans reprise possible ; `CLAUDE_CODE_SKIP_PROMPT_HISTORY` fait de même dans tous les modes.",
    "description_source": "Disable session persistence so sessions are not saved to disk and cannot be resumed. Print mode only. The CLAUDE_CODE_SKIP_PROMPT_HISTORY environment variable does the same in any mode — claude -p --no-session-persistence \"query\"",
    "usage": "--no-session-persistence",
    "usage_nature": "syntaxe",
@@ -27980,7 +28004,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions reposent au contraire sur la reprise par `--resume`."
+    "pourquoi": "Tes sessions durables reposent sur la reprise par `--resume`, et CONTEXTE.md ne signale aucune gêne due aux sessions enregistrées par les appels `claude -p`."
    },
    "sources": [
     {
@@ -27993,7 +28017,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28006,13 +28030,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "reprise par `claude --resume <id>`"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables reprises par `claude --resume <id>`."
     }
    }
   },
@@ -28967,7 +28995,7 @@
    "categorie": "parametres",
    "nom": "plansDirectory",
    "gabarit": "court",
-   "description": "Réglage du dossier où sont rangés les fichiers de plan écrits en mode plan, relatif à la racine du projet.",
+   "description": "Réglage du dossier où Claude Code range les fichiers de plan écrits en mode plan, relatif à la racine du projet.",
    "description_source": "Choose where Claude Code stores the plan files it writes in plan mode. Claude Code resolves the path relative to the project root.",
    "usage": "{\n  \"plansDirectory\": \"./plans\"\n}",
    "usage_nature": "syntaxe",
@@ -28976,7 +29004,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun usage du mode plan ; les plans des chefs passent par OPÉRER."
+    "pourquoi": "CONTEXTE.md ne décrit aucun usage du mode plan ; les missions et leurs briefs sont tenus par OPÉRER."
    },
    "sources": [
     {
@@ -28989,7 +29017,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Memory and context",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29010,13 +29038,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "Missions et briefs suivis dans OPÉRER."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Missions, briefs et cycle de mission tenus par OPÉRER."
     }
    }
   },
@@ -29590,7 +29622,7 @@
    "categorie": "parametres",
    "nom": "promptCacheTtl",
    "gabarit": "court",
-   "description": "Réglage de la durée du cache de la conversation principale (par exemple `1h`).",
+   "description": "Réglage de la durée du cache de prompt de la conversation principale (`5m` ou `1h`), en mode interactif, `-p` et Agent SDK.",
    "description_source": "Choose how long the prompt cache holds the main conversation. This key applies to your interactive, -p, and Agent SDK turns, together with the helpers Claude Code runs inline with them. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later.",
    "usage": "{\n  \"promptCacheTtl\": \"1h\",\n  \"subagentPromptCacheTtl\": \"5m\"\n}",
    "usage_nature": "syntaxe",
@@ -29599,7 +29631,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sur ton abonnement Max, la conversation principale a déjà le TTL d'une heure dans l'usage inclus."
+    "pourquoi": "Sur ton abonnement Max (20x), dans l'usage inclus, Claude Code demande déjà le TTL d'une heure pour la conversation principale (page prompt-caching)."
    },
    "sources": [
     {
@@ -29612,7 +29644,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -29625,13 +29657,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "abonnement Claude Max (5x)"
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) : usage inclus dans le forfait."
     }
    }
   },
@@ -29968,7 +30004,7 @@
    "categorie": "parametres",
    "nom": "--remote-control-session-name-prefix <prefix>",
    "gabarit": "court",
-   "description": "Option CLI du préfixe des noms Remote Control générés quand aucun nom explicite n'est donné (le nom d'hôte par défaut).",
+   "description": "Option CLI du préfixe des noms Remote Control générés quand aucun nom explicite n'est donné (nom d'hôte par défaut).",
    "description_source": "Prefix for auto-generated Remote Control session names when no explicit name is set. Defaults to your machine's hostname, producing names like myhost-graceful-unicorn. Set CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX for the same effect — claude remote-control --remote-control-session-name-prefix dev-box",
    "usage": "--remote-control-session-name-prefix <prefix>",
    "usage_nature": "syntaxe",
@@ -29990,7 +30026,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30003,12 +30039,16 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
      "pourquoi": "Services lancés avec `claude --resume <id> --remote-control <nom>`."
     }
    }
