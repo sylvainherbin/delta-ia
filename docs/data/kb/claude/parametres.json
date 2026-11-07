@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-06",
+ "maj_le": "2026-11-07",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 673,
- "commentees": 609,
+ "total": 675,
+ "commentees": 608,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -393,7 +393,7 @@
    "nom": "agentPushNotifEnabled",
    "gabarit": "court",
    "description": "Réglage qui autorise Claude à envoyer une notification push au téléphone quand il le juge utile, par exemple à la fin d'une longue tâche, tant que Remote Control est connecté.",
-   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
+   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
    "usage": "{\n  \"agentPushNotifEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"agentPushNotifEnabled\": true\n}",
@@ -414,7 +414,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-22",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -474,6 +474,10 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
@@ -3711,7 +3715,7 @@
    "nom": "autoInstallIdeExtension",
    "gabarit": "court",
    "description": "Réglage qui installe automatiquement l'extension IDE de Claude Code quand on le lance depuis le terminal de VS Code.",
-   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
+   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install or update the extension when you start claude. Before v2.1.318, Claude Code installs or updates the extension when you start claude in one of those editors' terminals, unless this key is false.",
    "usage": "{\n  \"autoInstallIdeExtension\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -3732,7 +3736,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-11-04",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3744,6 +3748,10 @@
     },
     {
      "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -7038,6 +7046,48 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-config-lock-wait-ms",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_CONFIG_LOCK_WAIT_MS",
+   "gabarit": "court",
+   "description": "Durée en millisecondes pendant laquelle `claude mcp add` ou `claude mcp remove` (portée utilisateur ou locale) retente d'obtenir le verrou de `~/.claude.json` avant d'échouer ; sans la variable, la commande attend environ 10 à 20 secondes, et une valeur plus courte ne change rien.",
+   "description_source": "Milliseconds that a command adding or removing a user or local scope MCP server, such as claude mcp add, keeps trying for the lock on ~/.claude.json before it fails. With it unset, the command waits about 10 to 20 seconds, and a shorter value changes nothing. Requires Claude Code v2.1.318 or later",
+   "usage": "CLAUDE_CODE_CONFIG_LOCK_WAIT_MS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne signale aucun échec de `claude mcp add` sur un verrou de `~/.claude.json` ; l'attente par défaut suffit."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-07",
+   "historique": [
+    {
+     "date": "2026-11-07",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-connect-timeout-ms",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -9658,6 +9708,48 @@
    "contexte_sections": null
   },
   {
+   "id": "claude-code-parametres-claude-code-drop-unavailable-deferred-tool",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL",
+   "gabarit": "court",
+   "description": "Avec la valeur 1, un appel d'outil différé dont l'outil n'est pas disponible est abandonné à la reprise d'une session par `-p` ; sans la variable, l'appel reste en attente et le message envoyé n'arrive pas à Claude.",
+   "description_source": "Set to 1 to drop a deferred tool call whose tool isn't available when you resume with -p. Without this variable, the call stays pending and a prompt you send doesn't reach Claude. Requires Claude Code v2.1.319 or later",
+   "usage": "CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucune reprise de session par `claude -p --resume` avec un outil différé manquant ; JUGER appelle `claude -p` sans cette reprise décrite."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-07",
+   "historique": [
+    {
+     "date": "2026-11-07",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-effort-level",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -11166,7 +11258,7 @@
    "nom": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
    "gabarit": "court",
    "description": "Variable qui empêche l'installation automatique des extensions IDE.",
-   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false",
+   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false. Claude Code versions before v2.1.318 also install or update the extension when you start claude in a VS Code, Cursor, or Devin Desktop terminal. This variable stops that too",
    "usage": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11187,7 +11279,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-04",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11199,6 +11291,10 @@
     },
     {
      "date": "2026-11-04",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -21944,7 +22040,7 @@
    "nom": "fastMode",
    "gabarit": "court",
    "description": "Réglage du mode rapide, plus rapide mais plus cher par jeton ; `/fast` l'écrit dans `~/.claude/settings.json`, donc pour toutes les sessions suivantes.",
-   "description_source": "Turn fast mode on for sessions where it's available, for interactive work like rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key by hand: running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key. Fast mode runs only on Opus 5.5, Opus 5, and Opus 4.8: turning it on from another model switches you to Opus, and switching to an unsupported model turns it off. See Switch models while fast mode is on.",
+   "description_source": "Turn fast mode on for sessions where it's available, for interactive work such as rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key yourself. Running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key.",
    "usage": "{\n  \"fastMode\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -21961,11 +22057,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -21982,6 +22078,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -21999,7 +22099,7 @@
    "nom": "fastModePerSessionOptIn",
    "gabarit": "court",
    "description": "Réglage qui empêche un `fastMode: true` enregistré d'activer le mode rapide au démarrage : il faut relancer `/fast` dans chaque session.",
-   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so fast mode is on at the start of every later session. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person has to run /fast in each session they want it. Claude Code leaves the fastMode key in their file, so turning this key off restores the old behavior.",
+   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so new sessions on a supported model start with fast mode on. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person runs /fast in each session they want it. Claude Code leaves fastMode in their file, so turning this key off restores the old behavior.",
    "usage": "{\n  \"fastModePerSessionOptIn\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22016,11 +22116,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22029,6 +22129,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -25616,7 +25720,7 @@
    "nom": "inputNeededNotifEnabled",
    "gabarit": "court",
    "description": "Réglage qui envoie une notification push au téléphone quand une demande de permission ou une question attend ta réponse, tant que Remote Control est connecté ; « Push when actions required » dans `/config`.",
-   "description_source": "Get a push notification on your phone when a permission prompt or question is waiting for your input. Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required.",
+   "description_source": "Get a push notification on your phone when a permission prompt or question is waiting for your input. In a local session, Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required.",
    "usage": "{\n  \"inputNeededNotifEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"inputNeededNotifEnabled\": true\n}",
@@ -25633,11 +25737,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25662,6 +25766,49 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Get a push notification on your phone when a permission prompt or question is waiting for your input. Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le réglage inputNeededNotifEnabled envoie une notification push sur le téléphone quand une demande de permission ou une question attend une réponse.",
+       "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le réglage inputNeededNotifEnabled disparaît de la documentation ou ne couvre plus les questions en attente."
+      },
+      {
+       "affirmation": "Claude Code n'envoie ces notifications que lorsque Remote Control est connecté.",
+       "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation lève la condition de connexion à Remote Control pour ces notifications."
+      },
+      {
+       "affirmation": "Le réglage apparaît dans /config sous le libellé « Push when actions required ».",
+       "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le libellé dans /config change ou le réglage n'y figure plus."
+      },
+      {
+       "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le régime bypassPermissions pour les sessions locales."
+      },
+      {
+       "affirmation": "L'iPhone est l'interface principale de Sylvain, via Remote Control et les notifications push.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale ou l'usage de Remote Control."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -25679,39 +25826,7 @@
      "pourquoi": "settings.json : notifications push des agents déjà activées."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "Le réglage inputNeededNotifEnabled envoie une notification push sur le téléphone quand une demande de permission ou une question attend une réponse.",
-     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le réglage inputNeededNotifEnabled disparaît de la documentation ou ne couvre plus les questions en attente."
-    },
-    {
-     "affirmation": "Claude Code n'envoie ces notifications que lorsque Remote Control est connecté.",
-     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation lève la condition de connexion à Remote Control pour ces notifications."
-    },
-    {
-     "affirmation": "Le réglage apparaît dans /config sous le libellé « Push when actions required ».",
-     "source": "https://code.claude.com/docs/en/settings-reference#inputneedednotifenabled",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le libellé dans /config change ou le réglage n'y figure plus."
-    },
-    {
-     "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
-     "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le régime bypassPermissions pour les sessions locales."
-    },
-    {
-     "affirmation": "L'iPhone est l'interface principale de Sylvain, via Remote Control et les notifications push.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'iPhone comme interface principale ou l'usage de Remote Control."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-interface-and-terminal-verbose",
@@ -27028,7 +27143,7 @@
    "nom": "MCP_PROTOCOL_NEGOTIATION",
    "gabarit": "court",
    "description": "Variable qui, sur le runtime client MCP v2 seulement, décide si Claude Code sonde les serveurs pour la révision de protocole MCP 2026-07-28 : `auto` sonde les serveurs HTTP, stdio et connecteurs claude.ai, `legacy` n'en sonde aucun (v2.1.221 ou plus).",
-   "description_source": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to skip the probe, so that every server connects with the handshake from before that revision. Set auto to probe the server kinds that support the probe: HTTP and stdio servers, claude.ai connectors, and the connectors of cloud and Remote Control sessions. With the variable unset, Claude Code probes those same kinds by default; see MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
+   "description_source": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to keep every server on the earlier handshake, or auto to probe the server kinds that support it. Unset, Claude Code probes them but can skip some servers. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
    "usage": "MCP_PROTOCOL_NEGOTIATION",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -27049,7 +27164,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27073,6 +27188,10 @@
     },
     {
      "date": "2026-10-23",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
