@@ -159,8 +159,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
-   "empreinte": "86f9b360af9f0f41012e379fa8af3d190a73c50aa94020568e38520d0e1545c0",
+   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
+   "empreinte": "3db5c389488bcae8e007e7cd6d31dde783b30b8be09e4c55152d4ac6f509a3dd",
    "gabarit": "court",
    "groupe": "Remote, desktop, and notifications",
    "id": "claude-code-parametres-agentpushnotifenabled",
@@ -182,14 +182,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "1628a654146f438a1f76a653765258351c1008213d7f5f9e1aee558f18ffc349",
-      "statut": "automatique",
-      "texte": "Autorise Claude à envoyer une notification push sur le téléphone lorsqu'il juge qu'elle en vaut la peine, par exemple à la fin d'une tâche longue. Claude peut en envoyer une pendant que Remote Control est connecté. Apparaît dans /config sous Push when Claude decides. Lorsqu'on modifie ce réglage à cet endroit, Claude Code enregistre également la valeur dans le compte."
+      "texte": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account."
      }
     }
    },
@@ -2570,8 +2563,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal.",
-   "empreinte": "ee1f9de821d67e16ea017fdd32d0b12a8d3b786c5d17f7cdae2d433a4f29aef6",
+   "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install or update the extension when you start claude. Before v2.1.318, Claude Code installs or updates the extension when you start claude in one of those editors' terminals, unless this key is false.",
+   "empreinte": "5af0769e13fd6cf5469b6fdc97fed20baec16d7592f37ecb8c81083f88b5acc6",
    "gabarit": "court",
    "groupe": "Global config settings",
    "id": "claude-code-parametres-autoinstallideextension",
@@ -2593,7 +2586,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install the extension when you start it. Appears in /config as Auto-install IDE extension when you run Claude Code inside a VS Code or JetBrains terminal."
+      "texte": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install or update the extension when you start claude. Before v2.1.318, Claude Code installs or updates the extension when you start claude in one of those editors' terminals, unless this key is false."
      }
     }
    },
@@ -5020,6 +5013,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Milliseconds that a command adding or removing a user or local scope MCP server, such as claude mcp add, keeps trying for the lock on ~/.claude.json before it fails. With it unset, the command waits about 10 to 20 seconds, and a shorter value changes nothing. Requires Claude Code v2.1.318 or later",
+   "empreinte": "5bd7b737620631b1ab7882a041ff3b0c6fbf3922d4ccaf4ba34f47646a4a972d",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-config-lock-wait-ms",
+   "identite": "kb:claude:claude-code-parametres-claude-code-config-lock-wait-ms",
+   "nom": "CLAUDE_CODE_CONFIG_LOCK_WAIT_MS",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Milliseconds that a command adding or removing a user or local scope MCP server, such as claude mcp add, keeps trying for the lock on ~/.claude.json before it fails. With it unset, the command waits about 10 to 20 seconds, and a shorter value changes nothing. Requires Claude Code v2.1.318 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_CONFIG_LOCK_WAIT_MS",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS instead. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS",
    "empreinte": "8ba72ad414b0aa49fb9123b1c901c756ed92030d5b24d2ca8b78d5cc93a884ba",
    "gabarit": "court",
@@ -5626,6 +5651,38 @@
     }
    },
    "usage": "CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
+   "empreinte": "0cfb8b68de4cc396582b1edfcd6e64e8f58dd65bdeabcc921df6bc841a6f8218",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-disable-bg-stable-path",
+   "identite": "kb:claude:claude-code-parametres-claude-code-disable-bg-stable-path",
+   "nom": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
    "usage_nature": "syntaxe"
   },
   {
@@ -7022,6 +7079,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Set to 1 to drop a deferred tool call whose tool isn't available when you resume with -p. Without this variable, the call stays pending and a prompt you send doesn't reach Claude. Requires Claude Code v2.1.319 or later",
+   "empreinte": "ee62808e4c0710eb67ef237a635b9a6d0c57250d8fa5c140a98e62f233ccda95",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-drop-unavailable-deferred-tool",
+   "identite": "kb:claude:claude-code-parametres-claude-code-drop-unavailable-deferred-tool",
+   "nom": "CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set to 1 to drop a deferred tool call whose tool isn't available when you resume with -p. Without this variable, the call stays pending and a prompt you send doesn't reach Claude. Requires Claude Code v2.1.319 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Set the effort level for supported models. Values: low, medium, high, xhigh, or max. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. A maxEffortLevel cap still applies. Set it to auto or unset to have Claude Code send no effort level, so that the API applies its own default for the model. See Adjust effort level",
    "empreinte": "77bcdc2a0c599c6fa5c48c982db0754f7e603a0a88e112b6f34ee2ac1f099dd6",
    "gabarit": "court",
@@ -7632,8 +7721,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "JSON object to merge into the top level of every API request body. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited",
-   "empreinte": "f84386a9ce4ebd8e1246f132c925af55b2a2f198f9dda25dbaa842b122e5c477",
+   "description_source": "JSON object to merge into the top level of model request bodies except on some requests outside the conversation, such as /model checks. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited",
+   "empreinte": "e486256106175b4de64056087147b08fbfbfb2b40a472347f5229f6bd6453fd2",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-extra-body",
@@ -7655,14 +7744,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "JSON object to merge into the top level of every API request body. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "258ebe5ab0ea9f63e0a213b10781372d561f3acdd046869de08ba834120f6355",
-      "statut": "automatique",
-      "texte": "Objet JSON à fusionner au niveau supérieur du corps de chaque requête API. Utile pour transmettre des paramètres propres à un fournisseur que Claude Code n'expose pas directement. Une valeur exportée dans le shell s'applique aussi aux sessions en arrière-plan lancées avec claude agents ou --bg. Avant la v2.1.206, les sessions en arrière-plan ignoraient une valeur exportée dans le shell et utilisaient la copie héritée par le processus superviseur en arrière-plan"
+      "texte": "JSON object to merge into the top level of model request bodies except on some requests outside the conversation, such as /model checks. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited"
      }
     }
    },
@@ -8244,8 +8326,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false",
-   "empreinte": "28d5c245f9a76490279fefa24459b2d019b70ba4aaf59ec247a5d89e29a159dc",
+   "description_source": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false. Claude Code versions before v2.1.318 also install or update the extension when you start claude in a VS Code, Cursor, or Devin Desktop terminal. This variable stops that too",
+   "empreinte": "80f84fb286dd0a9e4fa7f1ecf8bf900442508906618f53c8445e1804cfbda210",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-ide-skip-auto-install",
@@ -8267,7 +8349,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false"
+      "texte": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false. Claude Code versions before v2.1.318 also install or update the extension when you start claude in a VS Code, Cursor, or Devin Desktop terminal. This variable stops that too"
      }
     }
    },
@@ -16029,8 +16111,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Turn fast mode on for sessions where it's available, for interactive work like rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key by hand: running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key. Fast mode runs only on Opus 5.5, Opus 5, and Opus 4.8: turning it on from another model switches you to Opus, and switching to an unsupported model turns it off. See Switch models while fast mode is on.",
-   "empreinte": "6d33b1dc7bbb824c7524d42654302e5c6506c3252d3a2f46618afa83b927d2cc",
+   "description_source": "Turn fast mode on for sessions where it's available, for interactive work such as rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key yourself. Running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key.",
+   "empreinte": "ba9a86b026efba2acdc307dd48213a26aca26bce2cad98eaab46210ec30e043a",
    "gabarit": "court",
    "groupe": "Model and responses",
    "id": "claude-code-parametres-fastmode",
@@ -16052,14 +16134,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Turn fast mode on for sessions where it's available, for interactive work like rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key by hand: running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key. Fast mode runs only on Opus 5.5, Opus 5, and Opus 4.8: turning it on from another model switches you to Opus, and switching to an unsupported model turns it off. See Switch models while fast mode is on."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "c310d4bba761a9487c8bce34f3d08eb7747264a6bddd2ea7cadceca7fd695b27",
-      "statut": "automatique",
-      "texte": "Activer le mode rapide pour les sessions où il est disponible, pour un travail interactif comme l'itération rapide ou le débogage en direct, où la vitesse prime sur un coût plus élevé par token. Cette clé n'a en général pas besoin d'être modifiée à la main : l'exécution de /fast écrit fastMode: true dans ~/.claude/settings.json, et la relancer pour désactiver le mode rapide supprime la clé. Le mode rapide ne fonctionne que sur Opus 5.5, Opus 5 et Opus 4.8 : l'activer depuis un autre modèle fait passer sur Opus, et passer à un modèle non pris en charge le désactive. Voir Switch models while fast mode is on."
+      "texte": "Turn fast mode on for sessions where it's available, for interactive work such as rapid iteration or live debugging where you want speed at a higher cost per token. You don't usually edit this key yourself. Running /fast writes fastMode: true to ~/.claude/settings.json, and running it again to turn fast mode off removes the key."
      }
     }
    },
@@ -16068,8 +16143,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so fast mode is on at the start of every later session. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person has to run /fast in each session they want it. Claude Code leaves the fastMode key in their file, so turning this key off restores the old behavior.",
-   "empreinte": "8bf5af4ff01244ffa9b98872d7743d306f5d26692e3eb837534ea4c978ad3552",
+   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so new sessions on a supported model start with fast mode on. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person runs /fast in each session they want it. Claude Code leaves fastMode in their file, so turning this key off restores the old behavior.",
+   "empreinte": "971849641275d6fa210f8b0621fa7df2cf32ca72c456c0bde54b0493c6d0851a",
    "gabarit": "court",
    "groupe": "Model and responses",
    "id": "claude-code-parametres-fastmodepersessionoptin",
@@ -16091,14 +16166,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Normally, running /fast saves fastMode to a person's user settings, so fast mode is on at the start of every later session. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person has to run /fast in each session they want it. Claude Code leaves the fastMode key in their file, so turning this key off restores the old behavior."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "288bd755364fdeb896c06214025b7a5c1c44560b4f5cafbae72ff6d9e9cfc4dc",
-      "statut": "automatique",
-      "texte": "Normalement, l'exécution de /fast enregistre fastMode dans les paramètres utilisateur de la personne, de sorte que le mode rapide est actif au début de chaque session suivante. Définir cette clé à true empêche cela : un fastMode: true enregistré n'active plus le mode rapide au démarrage de la session, et chaque personne doit exécuter /fast dans chaque session où elle le souhaite. Claude Code conserve la clé fastMode dans son fichier ; la désactivation de cette clé rétablit donc l'ancien comportement."
+      "texte": "Normally, running /fast saves fastMode to a person's user settings, so new sessions on a supported model start with fast mode on. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person runs /fast in each session they want it. Claude Code leaves fastMode in their file, so turning this key off restores the old behavior."
      }
     }
    },
@@ -18419,8 +18487,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Get a push notification on your phone when a permission prompt or question is waiting for your input. Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required.",
-   "empreinte": "8ede72843355da31a503aa805385b033ac85a08b96a857fc02e96c45c96d2edd",
+   "description_source": "Get a push notification on your phone when a permission prompt or question is waiting for your input. In a local session, Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required.",
+   "empreinte": "fd9033b411bcdeea50feb0dd16b951925db2c367aa8e9e10515fe4059b643bb4",
    "gabarit": "court",
    "groupe": "Remote, desktop, and notifications",
    "id": "claude-code-parametres-inputneedednotifenabled",
@@ -18442,14 +18510,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Get a push notification on your phone when a permission prompt or question is waiting for your input. Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "9437bf81e9cfb98c3146a289759a1851981e5c1d2145c103d1d184440656b929",
-      "statut": "automatique",
-      "texte": "Recevoir une notification push sur le téléphone lorsqu'une invite de permission ou une question attend une réponse. Claude Code n'envoie ces notifications que lorsque Remote Control est connecté. Apparaît dans /config sous le libellé « Push when actions required »."
+      "texte": "Get a push notification on your phone when a permission prompt or question is waiting for your input. In a local session, Claude Code sends these only while Remote Control is connected. Appears in /config as Push when actions required."
      }
     }
    },
@@ -19387,8 +19448,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to skip the probe, so that every server connects with the handshake from before that revision. Set auto to probe the server kinds that support the probe: HTTP and stdio servers, claude.ai connectors, and the connectors of cloud and Remote Control sessions. With the variable unset, Claude Code probes those same kinds by default; see MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
-   "empreinte": "78db614576874d443e1e701bb73ca23a01856c906664b56f8a4a919b560b5ade",
+   "description_source": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to keep every server on the earlier handshake, or auto to probe the server kinds that support it. Unset, Claude Code probes them but can skip some servers. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
+   "empreinte": "3cc5b76958b4533f62aa3b308c4ffc4b50c786e2af16ee3ab58adce4fe6bb748",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-mcp-protocol-negotiation",
@@ -19410,14 +19471,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to skip the probe, so that every server connects with the handshake from before that revision. Set auto to probe the server kinds that support the probe: HTTP and stdio servers, claude.ai connectors, and the connectors of cloud and Remote Control sessions. With the variable unset, Claude Code probes those same kinds by default; see MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "3d39a866d3c138480d7bbdfd88bcac50f114c6fadf6dbdbd046c6b5321ecb1e8",
-      "statut": "automatique",
-      "texte": "Uniquement sur le runtime client MCP v2, contrôle si Claude Code sonde les serveurs pour la révision 2026-07-28 du protocole MCP. Définir sur legacy pour ignorer la sonde, de sorte que chaque serveur se connecte avec la poignée de main d'avant cette révision. Définir sur auto pour sonder les types de serveurs qui prennent en charge la sonde : serveurs HTTP et stdio, connecteurs claude.ai, ainsi que connecteurs des sessions cloud et Remote Control. Lorsque la variable n'est pas définie, Claude Code sonde par défaut ces mêmes types ; voir MCP client runtimes. Toute autre valeur est ignorée avec un avertissement dans le journal de débogage. Nécessite Claude Code v2.1.221 ou ultérieure"
+      "texte": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to keep every server on the earlier handshake, or auto to probe the server kinds that support it. Unset, Claude Code probes them but can skip some servers. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later"
      }
     }
    },
@@ -20284,8 +20338,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object.",
-   "empreinte": "75200ca705dc4e424ade2eabf2a3997096afc42abfe9a263239a5bf2f32ef8ef",
+   "description_source": "Control which tools Claude can use without asking, which ones prompt, and which ones are blocked. Also set the default permission mode for new sessions. Every permissions.* key below nests under this object.",
+   "empreinte": "3c3c5475ea296c0424111851c0493df480641079e40d84fc12df76e7c478a596",
    "gabarit": "court",
    "groupe": "Permission settings",
    "id": "claude-code-parametres-permissions",
@@ -20307,14 +20361,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Control which tools Claude can use without asking, which ones always prompt, and which ones are blocked, and set the permission mode a session starts in. Every permissions.* key below nests under this object."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "690c0d48f691d58f9e2ec22a3a8bd068263301698b5cd9c613751fb810f8fc20",
-      "statut": "automatique",
-      "texte": "Contrôler les outils que Claude peut utiliser sans demander confirmation, ceux qui demandent toujours confirmation et ceux qui sont bloqués, et définir le mode de permission dans lequel une session démarre. Chaque clé permissions.* ci-dessous s'imbrique sous cet objet."
+      "texte": "Control which tools Claude can use without asking, which ones prompt, and which ones are blocked. Also set the default permission mode for new sessions. Every permissions.* key below nests under this object."
      }
     }
    },
@@ -20511,8 +20558,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface.",
-   "empreinte": "5f56172d21d3c749357a18b91f43b09599ee104bde342ee420d03ed5ff8c1fe3",
+   "description_source": "Set the default permission mode for new sessions. When you leave it unset, the built-in default for your surface applies.",
+   "empreinte": "d05e55ab2c56e607e0962b6fb8f852b859c2dc10ceb548b2c1843e04525e573a",
    "gabarit": "court",
    "groupe": "Permission settings",
    "id": "claude-code-parametres-permissions-defaultmode",
@@ -20534,14 +20581,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set the permission mode new sessions start in. When you leave it unset, sessions start in the built-in default for your surface."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "f2c3d20dfd3bdb46fe264ea37812b45be51ddb7dcf1c08e61daa80c9e5cc3284",
-      "statut": "automatique",
-      "texte": "Définir le mode de permission dans lequel démarrent les nouvelles sessions. Si ce paramètre n'est pas défini, les sessions démarrent dans le mode par défaut intégré à la surface utilisée."
+      "texte": "Set the default permission mode for new sessions. When you leave it unset, the built-in default for your surface applies."
      }
     }
    },
@@ -26055,9 +26095,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-04",
+ "maj_le": "2026-11-07",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 673
+ "total": 676
 }

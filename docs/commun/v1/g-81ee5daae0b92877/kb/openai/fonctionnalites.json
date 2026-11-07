@@ -2104,8 +2104,8 @@
   },
   {
    "categorie": "fonctionnalites",
-   "description_source": "Auto-review replaces manual approval at the sandbox boundary with a separate reviewer agent. The main Codex agent still runs inside the same sandbox, with the same approval policy and the same network and filesystem limits. The difference is who reviews eligible escalation requests.",
-   "empreinte": "9859fd03419fde2f894904afce1cde02752021749df8c8e67b263dcdde47fdd1",
+   "description_source": "Auto-review sends eligible approval requests to a separate reviewer agent. Your sandbox, command rules, and tool settings determine which actions need approval. The reviewer decides whether those actions can proceed.",
+   "empreinte": "d454c67c02163850dbabeb2c812872bec97be3bf7c2441e87b566537713e3da0",
    "gabarit": "complet",
    "groupe": null,
    "id": "codex-fonctionnalites-page-sandboxing-auto-review",
@@ -2127,18 +2127,11 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Auto-review replaces manual approval at the sandbox boundary with a separate reviewer agent. The main Codex agent still runs inside the same sandbox, with the same approval policy and the same network and filesystem limits. The difference is who reviews eligible escalation requests."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "bca8cb8bbb6ffcfdb0dbc123220a55da9487af7d58a87376a603ca92f608e290",
-      "statut": "automatique",
-      "texte": "L'auto-review remplace l'approbation manuelle à la limite du sandbox par un agent relecteur distinct. L'agent Codex principal s'exécute toujours dans le même sandbox, avec la même politique d'approbation et les mêmes limites de réseau et de système de fichiers. La différence réside dans l'identité de celui qui examine les demandes d'escalade éligibles."
+      "texte": "Auto-review sends eligible approval requests to a separate reviewer agent. Your sandbox, command rules, and tool settings determine which actions need approval. The reviewer decides whether those actions can proceed."
      }
     }
    },
-   "usage": "[auto_review]\npolicy = \"\"\"\nYOUR POLICY GOES HERE\n\"\"\"",
+   "usage": "approval_policy = \"on-request\"\napprovals_reviewer = \"auto_review\"\ndefault_permissions = \":workspace\"\n\n[auto_review]\nextra_policy = \"\"\"\n## Environment Profile\n- Authorized target: lab.example.com.\n- Approved actions: inspect the target, reproduce authorized vulnerabilities,\n  and validate fixes within the documented engagement window.\n\n## Tenant Risk Taxonomy and Allow/Deny Rules\n…",
    "usage_nature": "syntaxe"
   },
   {
@@ -2221,7 +2214,7 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-10-30",
+ "maj_le": "2026-11-07",
  "perimetre": "openai",
  "schema": "delta.commun",
  "schema_version": 1,
