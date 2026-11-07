@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-11-06",
+ "maj_le": "2026-11-07",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -2535,8 +2535,8 @@
    "categorie": "parametres",
    "nom": "auto_review.extra_policy",
    "gabarit": "court",
-   "description": "Ajoute une politique Markdown locale à la revue automatique, sauf si la politique gérée `guardian_extra_policy` prime ; les valeurs vides sont ignorées.",
-   "description_source": "Type : string. Additional local Markdown policy for automatic review, included alongside the main policy. Managed guardian_extra_policy takes precedence. Blank values are ignored.",
+   "description": "Règles Markdown appliquées en complément de la politique Auto-review active ; guardian_extra_policy géré prime et les valeurs vides sont ignorées.",
+   "description_source": "Type : string. Markdown rules that Auto-review applies alongside the active policy. Managed guardian_extra_policy takes precedence. Blank values are ignored.",
    "usage": "auto_review.extra_policy",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2544,7 +2544,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le mode FULL_AUTO hors trading-sim ne définit aucune politique supplémentaire de revue automatique à injecter dans les missions Codex."
+    "pourquoi": "Les missions Codex utilisent danger-full-access et aucune règle supplémentaire de revue automatique n’est demandée pour ce flux."
    },
    "sources": [
     {
@@ -2554,17 +2554,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "FULL_AUTO hors trading-sim, validations choisies aux jalons sur trading-sim."
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions Codex utilisent danger-full-access, sans besoin déclaré de règles Auto-review supplémentaires."
     }
    },
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-27",
@@ -2577,6 +2577,14 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ]
   },
@@ -2586,8 +2594,8 @@
    "categorie": "parametres",
    "nom": "auto_review.policy",
    "gabarit": "court",
-   "description": "La politique de revue automatique fournit des consignes locales au réviseur automatique.",
-   "description_source": "Type : string. Local Markdown policy instructions for automatic review. Managed guardian_policy_config takes precedence. Blank values are ignored.",
+   "description": "Texte Markdown qui remplace entièrement la politique Auto-review par défaut ; guardian_policy_config géré prime et les valeurs vides sont ignorées.",
+   "description_source": "Type : string. Markdown text that replaces the default Auto-review policy. Managed guardian_policy_config takes precedence. Blank values are ignored.",
    "usage": "auto_review.policy",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2595,7 +2603,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La validation humaine pas à pas reste la méthode déclarée ; aucune revue automatique n’est demandée."
+    "pourquoi": "Les missions Codex utilisent danger-full-access et aucun remplacement de politique Auto-review n’est demandé ; remplacer la politique retire les règles omises, alors que extra_policy permet de les compléter."
    },
    "sources": [
     {
@@ -2608,7 +2616,7 @@
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2617,10 +2625,23 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Les missions Codex utilisent danger-full-access, sans besoin déclaré de politique Auto-review personnalisée."
+    }
+   }
   },
   {
    "id": "codex-parametres-background-terminal-max-timeout",

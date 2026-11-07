@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-10-30",
+ "maj_le": "2026-11-07",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -5076,16 +5076,16 @@
    "categorie": "fonctionnalites",
    "nom": "Auto-review",
    "gabarit": "complet",
-   "description": "Auto-review confie à un agent relecteur les demandes interactives qui franchissent la limite du sandbox. Il ne change ni les permissions ni le sandbox et ne s'applique pas avec approval_policy = \"never\".",
-   "description_source": "Auto-review replaces manual approval at the sandbox boundary with a separate reviewer agent. The main Codex agent still runs inside the same sandbox, with the same approval policy and the same network and filesystem limits. The difference is who reviews eligible escalation requests.",
-   "usage": "[auto_review]\npolicy = \"\"\"\nYOUR POLICY GOES HERE\n\"\"\"",
+   "description": "Auto-review confie les demandes d’approbation admissibles à un agent relecteur distinct, avec `approvals_reviewer = \"auto_review\"` et une politique interactive telle que `approval_policy = \"on-request\"`. Les règles `extra_policy` complètent la politique active ; `policy` la remplace entièrement, et les règles omises disparaissent du remplacement.",
+   "description_source": "Auto-review sends eligible approval requests to a separate reviewer agent. Your sandbox, command rules, and tool settings determine which actions need approval. The reviewer decides whether those actions can proceed.",
+   "usage": "approval_policy = \"on-request\"\napprovals_reviewer = \"auto_review\"\ndefault_permissions = \":workspace\"\n\n[auto_review]\nextra_policy = \"\"\"\n## Environment Profile\n- Authorized target: lab.example.com.\n- Approved actions: inspect the target, reproduce authorized vulnerabilities,\n  and validate fixes within the documented engagement window.\n\n## Tenant Risk Taxonomy and Allow/Deny Rules\n…",
    "usage_nature": "syntaxe",
    "exemple": "approval_policy = \"on-request\"\napprovals_reviewer = \"auto_review\"",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "La chaîne D70 utilise son profil explicite et mission-codex s'exécute en danger-full-access ; aucun besoin d'ajouter un relecteur d'approbations interactives n'est décrit."
+    "pourquoi": "Les missions Codex de développement utilisent danger-full-access et D70 son profil explicite ; aucun besoin de relecteur des approbations interactives n’est déclaré. Auto-review ne s’applique pas avec approval_policy = \"never\" et ne remplace pas la revue des jalons de trading-sim."
    },
    "sources": [
     {
@@ -5098,7 +5098,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-11-07",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5119,17 +5119,33 @@
     {
      "date": "2026-10-13",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-07",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "Les missions Codex utilisent danger-full-access avec modèle et effort explicites."
+     "pourquoi": "Les missions Codex utilisent danger-full-access."
     },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex utilise la CLI sous tmux et les missions non interactives."
+     "pourquoi": "D70 exécute Codex avec un profil de permissions explicite."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Les validations choisies de trading-sim concernent les jalons du projet."
     }
    },
    "exemple_origine": "source"
