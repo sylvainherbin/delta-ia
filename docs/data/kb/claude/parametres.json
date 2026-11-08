@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-07",
+ "maj_le": "2026-11-08",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -30101,7 +30101,7 @@
    "categorie": "parametres",
    "nom": "remoteControlAtStartup",
    "gabarit": "court",
-   "description": "Réglage qui connecte Remote Control au démarrage de chaque session interactive, sans attendre `/remote-control`.",
+   "description": "Réglage qui connecte Remote Control au démarrage de chaque session interactive, sans attendre `/remote-control` ; il apparaît dans `/config` sous « Enable Remote Control for all sessions ».",
    "description_source": "Connect Remote Control automatically when each interactive session starts, instead of waiting for /remote-control. Set it to true to turn auto-connect on, false to turn it off. Appears in /config as Enable Remote Control for all sessions.",
    "usage": "{\n  \"remoteControlAtStartup\": true\n}",
    "usage_nature": "syntaxe",
@@ -30110,7 +30110,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions systemd passent déjà `--remote-control` ; `/remote-control` couvre les autres."
+    "pourquoi": "Tes services `claude-session@<nom>` lancent déjà `claude --resume <id> --remote-control <nom>`, et `/remote-control` couvre les sessions lancées à la main : rien à gagner à l'activer pour toutes les sessions."
    },
    "sources": [
     {
@@ -30123,7 +30123,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30136,17 +30136,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "`--remote-control` passé au lancement"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services systemd qui lancent `claude --resume <id> --remote-control <nom>` pilotés depuis l'iPhone"
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "`/remote-control` tapée à la main"
+     "pourquoi": "`/remote-control` figure parmi les commandes tapées"
     }
    }
   },
@@ -30626,16 +30630,16 @@
    "categorie": "parametres",
    "nom": "sandbox.allowAppleEvents",
    "gabarit": "court",
-   "description": "Réglage macOS qui autorise les commandes isolées à envoyer des Apple Events, au prix de l'isolation.",
+   "description": "Réglage macOS qui autorise les commandes isolées à envoyer des Apple Events (open, osascript), au prix de l'isolation d'exécution.",
    "description_source": "Let sandboxed commands on macOS send Apple Events, which open, osascript, and tools that open URLs in a browser need; without it they fail with error -600. This removes code-execution isolation: sandboxed commands can launch other applications unsandboxed with no user prompt, and can send AppleScript commands to running applications such as Terminal, subject to the per-app macOS automation-consent prompt (TCC).",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"allowAppleEvents\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage propre à macOS, hors de ton environnement Linux."
+    "pourquoi": "Réglage propre à macOS, alors que tes machines tournent sous Linux (paquets Debian, services systemd)."
    },
    "sources": [
     {
@@ -30648,7 +30652,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30661,13 +30665,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Apps de bureau installées en paquets Debian : environnement Linux, pas macOS"
     }
    }
   },
@@ -31242,7 +31250,7 @@
    "categorie": "parametres",
    "nom": "sandbox.enableWeakerNestedSandbox",
    "gabarit": "court",
-   "description": "Réglage qui fait tourner le bac à sable Linux dans un conteneur Docker non privilégié, avec une isolation réduite.",
+   "description": "Réglage qui fait tourner le bac à sable Linux dans un conteneur Docker non privilégié en réutilisant son /proc, ce qui réduit l'isolation.",
    "description_source": "Run the Linux sandbox inside an unprivileged Docker container, where bubblewrap can't mount a fresh /proc. Instead the inner sandbox bind-mounts the container's existing /proc, which exposes process information that a fresh mount would hide. This reduces security; use it only when the outer container already provides the isolation you need.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"enableWeakerNestedSandbox\": true\n  }\n}",
    "usage_nature": "syntaxe",
@@ -31251,7 +31259,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pas de Docker dans tes outils déclarés."
+    "pourquoi": "Aucun Docker dans tes outils déclarés, et tes sessions tournent en bypassPermissions sans bac à sable décrit."
    },
    "sources": [
     {
@@ -31264,7 +31272,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31277,13 +31285,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "outils CLI déclarés, sans Docker"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Liste des outils CLI déclarés, sans Docker"
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading"
     }
    }
   },
@@ -31293,16 +31309,16 @@
    "categorie": "parametres",
    "nom": "sandbox.enableWeakerNetworkIsolation",
    "gabarit": "court",
-   "description": "Réglage macOS qui ouvre au bac à sable le service de confiance TLS du système.",
+   "description": "Réglage macOS qui ouvre au bac à sable le service de confiance TLS du système (com.apple.trustd.agent), au prix d'une voie d'exfiltration possible.",
    "description_source": "Let sandboxed commands on macOS reach the system TLS trust service, com.apple.trustd.agent. Go-based tools such as gh, gcloud, and terraform need it to verify TLS certificates when you use network.httpProxyPort with a MITM proxy and a custom CA. This reduces security by opening a potential data exfiltration path through the trust service.",
    "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"enableWeakerNetworkIsolation\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage propre à macOS, hors de ton environnement Linux."
+    "pourquoi": "Réglage propre à macOS, alors que tes machines tournent sous Linux (paquets Debian, services systemd)."
    },
    "sources": [
     {
@@ -31315,7 +31331,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31328,13 +31344,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Apps de bureau installées en paquets Debian : environnement Linux, pas macOS"
     }
    }
   },
@@ -32040,16 +32060,16 @@
    "categorie": "parametres",
    "nom": "sandbox.network.allowLocalBinding",
    "gabarit": "court",
-   "description": "Réglage macOS qui autorise les commandes isolées à écouter sur des ports localhost.",
+   "description": "Réglage macOS qui autorise les commandes isolées à écouter sur des ports et à joindre localhost ; sans effet sous Linux et WSL2.",
    "description_source": "Let sandboxed commands on macOS listen on network ports, for example to start a dev server, and connect to any port on localhost. A command that listens on a non-loopback address accepts connections from other machines. The key has no effect on Linux and WSL2, where each sandboxed command has its own loopback interface. To reach a server on the host from Linux or WSL2, see A command fails to reach a server on localhost.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowLocalBinding\": true\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage propre à macOS, hors de ton environnement Linux."
+    "pourquoi": "La documentation le dit sans effet sous Linux, où tournent tes machines (paquets Debian, services systemd)."
    },
    "sources": [
     {
@@ -32062,7 +32082,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32079,13 +32099,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Apps de bureau installées en paquets Debian : environnement Linux, pas macOS"
     }
    }
   },
@@ -32158,16 +32182,16 @@
    "categorie": "parametres",
    "nom": "sandbox.network.allowUnixSockets",
    "gabarit": "court",
-   "description": "Réglage macOS des chemins de sockets Unix joignables ; ignoré sous Linux.",
+   "description": "Réglage macOS qui liste les sockets Unix joignables depuis le bac à sable ; ignoré sous Linux, où `allowAllUnixSockets` le remplace.",
    "description_source": "List the Unix socket paths sandboxed commands can connect to on macOS. Claude Code ignores this list on Linux and WSL2, where the seccomp filter can't inspect socket paths; use allowAllUnixSockets there instead.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"allowUnixSockets\": [\"~/.ssh/agent-socket\"]\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
-   "disponibilite": null,
+   "disponibilite": "macOS",
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage propre à macOS, hors de ton environnement Linux."
+    "pourquoi": "La documentation le dit ignoré sous Linux, où tournent tes machines (paquets Debian, services systemd)."
    },
    "sources": [
     {
@@ -32180,7 +32204,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32193,13 +32217,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Linux Mint 22.1"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Apps de bureau installées en paquets Debian : environnement Linux, pas macOS"
     }
    }
   },
@@ -32264,7 +32292,7 @@
    "categorie": "parametres",
    "nom": "sandbox.network.httpProxyPort",
    "gabarit": "court",
-   "description": "Réglage qui envoie le trafic HTTP du bac à sable vers ton propre proxy.",
+   "description": "Réglage qui envoie le trafic HTTP du bac à sable vers ton propre proxy, qui reprend alors le filtrage des domaines à la place de Claude Code.",
    "description_source": "Point the sandbox at your own HTTP proxy instead of the one Claude Code runs. Organizations do this to inspect HTTPS traffic, apply their own filtering rules, or log requests. Your proxy takes over filtering, and Claude Code stops applying its domain lists and network prompts to traffic sent there. When unset, Claude Code starts its own proxy for HTTP traffic.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"httpProxyPort\": 8080\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -32273,7 +32301,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations."
+    "pourquoi": "Pensé pour l'inspection du trafic en organisation ; ton abonnement Max est individuel et aucun proxy n'est décrit."
    },
    "sources": [
     {
@@ -32286,7 +32314,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32303,13 +32331,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel, hors organisation"
     }
    }
   },
@@ -32319,7 +32351,7 @@
    "categorie": "parametres",
    "nom": "sandbox.network.socksProxyPort",
    "gabarit": "court",
-   "description": "Réglage qui envoie le trafic SOCKS du bac à sable vers ton propre proxy SOCKS5.",
+   "description": "Réglage qui envoie le trafic SOCKS du bac à sable vers ton propre proxy SOCKS5, qui reprend alors le filtrage à la place de Claude Code.",
    "description_source": "Point the sandbox at your own SOCKS5 proxy instead of the one Claude Code runs. Your proxy takes over filtering, and Claude Code stops applying its domain lists and network prompts to traffic sent there. When unset, Claude Code starts its own proxy for SOCKS traffic.",
    "usage": "{\n  \"sandbox\": {\n    \"network\": {\n      \"socksProxyPort\": 8081\n    }\n  }\n}",
    "usage_nature": "syntaxe",
@@ -32328,7 +32360,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations."
+    "pourquoi": "Pensé pour le filtrage réseau en organisation ; ton abonnement Max est individuel et aucun proxy n'est décrit."
    },
    "sources": [
     {
@@ -32341,7 +32373,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32358,13 +32390,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) individuel, hors organisation"
     }
    }
   },
@@ -32590,7 +32626,7 @@
    "categorie": "parametres",
    "nom": "--session-id",
    "gabarit": "court",
-   "description": "Option CLI qui impose un identifiant de session (UUID valide).",
+   "description": "Option CLI qui impose un identifiant de session précis, qui doit être un UUID valide.",
    "description_source": "Use a specific session ID for the conversation (must be a valid UUID) — claude --session-id \"550e8400-e29b-41d4-a716-446655440000\"",
    "usage": "--session-id",
    "usage_nature": "syntaxe",
@@ -32599,7 +32635,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes services reprennent des sessions existantes par `--resume <id>`."
+    "pourquoi": "Tes services reprennent des sessions existantes par `claude --resume <id>`, sans avoir à fixer l'identifiant d'une nouvelle session."
    },
    "sources": [
     {
@@ -32612,7 +32648,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -32625,13 +32661,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "reprise par `claude --resume <id>`"
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Reprise des sessions durables par `claude --resume <id>`"
     }
    }
   },
@@ -33114,7 +33154,7 @@
    "categorie": "parametres",
    "nom": "skipDangerousModePermissionPrompt",
    "gabarit": "court",
-   "description": "Réglage qui saute la confirmation avant d'entrer en mode `bypassPermissions`, écrit quand on l'accepte.",
+   "description": "Réglage qui saute la confirmation avant d'entrer en mode `bypassPermissions` ; Claude Code l'écrit à `true` dans tes réglages utilisateur dès que tu acceptes cette confirmation une fois.",
    "description_source": "Skip the confirmation dialog Claude Code shows before a session enters bypassPermissions mode, whether from --dangerously-skip-permissions or from defaultMode: \"bypassPermissions\". Claude Code writes true here in your user settings when you accept that dialog once.",
    "usage": "{\n  \"skipDangerousModePermissionPrompt\": true\n}",
    "usage_nature": "syntaxe",
@@ -33123,7 +33163,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions locales tournent déjà en bypassPermissions sous systemd ; la confirmation s'accepte une fois et Claude Code écrit lui-même la clé, rien à régler à la main."
+    "pourquoi": "Tes sessions locales tournent déjà en bypassPermissions sous systemd, et Claude Code écrit lui-même la clé à la première acceptation (effet persistant) : rien à régler à la main."
    },
    "sources": [
     {
@@ -33136,7 +33176,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Permission settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-08",
    "historique": [
     {
      "date": "2026-09-23",
@@ -33149,17 +33189,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-08",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading"
     },
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Services systemd qui lancent chaque session."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services systemd `claude-session@<nom>` qui lancent chaque session"
     }
    }
   },
