@@ -7,6 +7,7 @@ import pytest
 
 import valider
 import versions as v
+from deltalib.modeles import OUTILS_SUIVIS
 
 
 def test_comparer():
@@ -23,68 +24,35 @@ def test_versions_publiees_depuis_etat_brut_et_quotidiens(tmp_path):
     (tmp_path / "state").mkdir(); (tmp_path / "raw").mkdir(); (tmp_path / "docs" / "data" / "openai").mkdir(parents=True)
     (tmp_path / "state" / "openai.json").write_text(json.dumps({"vus": {
         "rust-v0.155.1": {"source_id": "codex-cli-releases"}, "rust-v0.156.1": {"source_id": "codex-cli-releases"},
-        "oa-codex/2026-09-11-app": {"source_id": "openai-changelog-codex-app"}}}))
+        }}))
     (tmp_path / "raw" / "openai-nouveautes.json").write_text(json.dumps({"nouveautes": [
-        {"id": "oa-codex/2026-09-25-app", "source_id": "openai-changelog-codex-app", "version": "26.925"}]}))
+        {"id": "rust-v0.158.0", "source_id": "codex-cli-releases", "version": "0.158.0"}]}))
     (tmp_path / "docs" / "data" / "openai" / "2026-09-23.json").write_text(json.dumps({"elements": [
-        {"ids_bruts": ["oa-codex/2026-09-11-app"], "version": "26.908"}, {"ids_bruts": ["rust-v0.157.0"], "version": "0.157.0"}]}))
-    assert v.versions_publiees(tmp_path, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai") == ["0.155.1", "0.156.1", "0.157.0"]
-    assert v.versions_publiees(tmp_path, "openai-changelog-codex-app", r"oa-codex/.*-app", "openai") == ["26.908", "26.925"]
-
-
-def test_app_chatgpt_lue_dans_le_flux_codex_app(monkeypatch):
-    from conftest import FauxClient, RACINE
-    monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
-    monkeypatch.setattr(v, "codex_app", lambda: ("0.155.0-alpha.16.4", "codex --version", None))
-    monkeypatch.setattr(v, "codex_terminal", lambda: ("0.155.1", "codex --version", None))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.51856", f"dpkg-query -W {nom}", None))
-    lignes = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient())}
-    app = lignes["ChatGPT Desktop"]
-    assert app["derniere_publiee"] == "26.908" and app["statut"] == "a_jour" and app["source_derniere"] == "openai-changelog-codex-app"
-    assert "Correspondance déduite, non documentée par OpenAI" in app["note"]
-
-
-def test_app_chatgpt_flux_en_echec(monkeypatch):
-    from conftest import FauxClient, RACINE
-    from deltalib.modeles import ErreurReseau
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.51856", f"dpkg-query -W {nom}", None))
-    monkeypatch.setattr(v, "claude_code", lambda: (None, "x", "absent"))
-    monkeypatch.setattr(v, "codex_app", lambda: (None, "x", "absent"))
-    monkeypatch.setattr(v, "codex_terminal", lambda: (None, "x", "absent"))
-    url = "https://learn.chatgpt.com/docs/changelog/codex-app.json"
-    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient({url: ErreurReseau("HTTP 503")}))}["ChatGPT Desktop"]
-    assert app["statut"] == "inconnu" and app["derniere_publiee"] is None and "HTTP 503" in app["raison"]
-    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient({url: ('{"items": []}', "application/json")}))}["ChatGPT Desktop"]
-    assert app["statut"] == "inconnu" and "FormatInattendu" in app["raison"]
+        {"ids_bruts": ["rust-v0.157.0"], "version": "0.157.0"}]}))
+    assert v.versions_publiees(tmp_path, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai") == ["0.155.1", "0.156.1", "0.157.0", "0.158.0"]
 
 
 def test_detecter_sans_outils_ni_source(tmp_path, monkeypatch):
     monkeypatch.setattr(v, "claude_code", lambda: (None, "claude --version", "exécutable `claude` introuvable"))
-    monkeypatch.setattr(v, "codex_app", lambda: ("0.155.0-alpha.16.4", "codex --version", None))
     monkeypatch.setattr(v, "codex_terminal", lambda: ("0.155.1", "codex --version", None))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.51856" if nom == "chatgpt" else None, f"dpkg-query -W {nom}",
-                                                        None if nom == "chatgpt" else "paquet non installé"))
     lignes = {l["outil"]: l for l in v.detecter(tmp_path)}
-    assert set(lignes) == {"Claude Code", "Codex (app ChatGPT)", "Codex CLI (terminal)", "ChatGPT Desktop", "Claude Desktop"}
+    assert set(lignes) == {"Claude Code", "Codex CLI (terminal)"}
     assert lignes["Claude Code"]["version"] is None and lignes["Claude Code"]["raison"] and lignes["Claude Code"]["statut"] == "inconnu"
     cli = lignes["Codex CLI (terminal)"]
     assert cli["derniere_publiee"] is None and cli["statut"] == "inconnu", "pas de source : pas de comparaison, jamais d'alerte inventée"
     assert "Aucune stable publiée connue" in cli["note"]
-    assert lignes["ChatGPT Desktop"]["statut"] == "inconnu" and "sources.yaml" in lignes["ChatGPT Desktop"]["raison"]
-    assert lignes["Claude Desktop"]["source_derniere"] is None
 
 
 def test_main_ecrit_versions_json_valide(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
-    monkeypatch.setattr(v, "codex_app", lambda: ("0.155.0-alpha.16.4", "codex --version", None))
     monkeypatch.setattr(v, "codex_terminal", lambda: ("0.155.1", "codex --version", None))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("1.0.0", f"dpkg-query -W {nom}", None))
     (tmp_path / "state").mkdir()
     (tmp_path / "state" / "claude.json").write_text(json.dumps({"vus": {"claude-code-2.1.280": {"source_id": "claude-code-changelog"}}}))
     assert v.main(["--racine", str(tmp_path)]) == 0
     lignes = json.loads((tmp_path / "docs" / "data" / "versions.json").read_text())
     assert lignes[0] == {**lignes[0], "outil": "Claude Code", "derniere_publiee": "2.1.280", "statut": "a_jour", "source_derniere": "claude-code-changelog"}
     r = valider.Rapport()
+    assert [l["outil"] for l in lignes] == list(OUTILS_SUIVIS)
     valider.verifier_versions(tmp_path, r)
     assert r.ok, r.erreurs
     assert v.main(["--racine", str(tmp_path / "vide"), "--dry-run"]) == 0 and not (tmp_path / "vide").exists()
@@ -117,35 +85,17 @@ def test_versions_dans_la_skill_delta():
     assert "docs/data/versions.json" in (racine / "SPEC.md").read_text(encoding="utf-8")
 
 
-def test_note_app_construite_avec_les_valeurs_detectees(monkeypatch):
-    from conftest import FauxClient, RACINE
-    monkeypatch.setattr(v, "claude_code", lambda: (None, "x", "absent"))
-    monkeypatch.setattr(v, "codex_app", lambda: (None, "x", "absent"))
-    monkeypatch.setattr(v, "codex_terminal", lambda: (None, "x", "absent"))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.62051", f"dpkg-query -W {nom}", None))
-    app = {l["outil"]: l for l in v.detecter(RACINE, client=FauxClient())}["ChatGPT Desktop"]
-    assert "26.917.62051 -> 26.917" in app["note"] and "(ex. 26.908)" in app["note"] and "51856" not in app["note"]
-    assert "51856" not in (Path(v.__file__)).read_text(encoding="utf-8")
-    assert "introuvable" in v.note_app((None, "x", "absent"), [])
-
-
-def test_deux_codex_embarque_et_cli_suivie_normalement(tmp_path, monkeypatch):
+def test_cli_codex_suivie_normalement(tmp_path, monkeypatch):
     monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
-    monkeypatch.setattr(v, "codex_app", lambda: ("0.155.0-alpha.16.4", "/usr/lib/chatgpt/resources/codex --version", None))
     monkeypatch.setattr(v, "codex_terminal", lambda: ("0.155.1", "codex --version (npm global, nvm)", None))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.71314", f"dpkg-query -W {nom}", None))
-    monkeypatch.setattr(v, "versions_app_chatgpt", lambda racine, client=None: (["26.908"], None))
     (tmp_path / "state").mkdir()
     (tmp_path / "state" / "openai.json").write_text(json.dumps({"vus": {"rust-v0.156.1": {"source_id": "codex-cli-releases"}}}))
     lignes = {l["outil"]: l for l in v.detecter(tmp_path)}
-    app = lignes["Codex (app ChatGPT)"]
-    assert app["statut"] == "embarque" and app["derniere_publiee"] is None and app["source_derniere"] is None
-    assert "26.917.71314" in app["note"] and "non comparé" in app["note"] and "raison" not in app
     cli = lignes["Codex CLI (terminal)"]
     assert cli["statut"] == "en_retard" and cli["derniere_publiee"] == "0.156.1" and cli["source_derniere"] == "codex-cli-releases", "D75 : alerte de retard"
     assert "utilisée par Sylvain [déclaré]" in cli["note"] and "dernière stable publiée 0.156.1" in cli["note"] and "un retard ne se rattrape pas tout seul" in cli["note"]
     assert "non_utilise" not in {l["statut"] for l in v.detecter(tmp_path)}
-    assert [l["outil"] for l in v.detecter(tmp_path)][:3] == ["Claude Code", "Codex (app ChatGPT)", "Codex CLI (terminal)"]
+    assert [l["outil"] for l in v.detecter(tmp_path)] == list(OUTILS_SUIVIS)
     # CLI absente : inconnu, avec raison
     monkeypatch.setattr(v, "codex_terminal", lambda: (None, "codex --version", "introuvable"))
     cli = {l["outil"]: l for l in v.detecter(tmp_path)}["Codex CLI (terminal)"]
@@ -164,7 +114,6 @@ def test_codex_terminal_exclut_l_exe_de_l_app(tmp_path, monkeypatch):
     monkeypatch.setattr(v, "_exe_codex_app", lambda: str(app))
     monkeypatch.setattr(v.shutil, "which", lambda n: str(app) if n == "codex" else None)
     monkeypatch.setattr(v.glob, "glob", lambda motif: [str(npm)])
-    assert v.codex_app()[0] == "0.155.0-alpha.16.4"
     assert v.codex_terminal()[0] == "0.155.1", "le codex de l'app, même dans le PATH, n'est pas la CLI autonome"
 
 
@@ -177,7 +126,6 @@ def test_codex_terminal_nvm_current_sans_app_ni_path(tmp_path, monkeypatch):
     codex = nvm / "codex"
     codex.write_text("#!/bin/sh\necho codex-cli 9.9.9\n")
     codex.chmod(0o755)
-    assert v.codex_app()[0] is None, "l'absence du paquet reste visible, sans repli vers la CLI"
     version, methode, erreur = v.codex_terminal()
     assert version == "9.9.9" and str(codex) in methode and erreur is None
 
@@ -187,7 +135,7 @@ def test_codex_terminal_nvm_current_sans_app_ni_path(tmp_path, monkeypatch):
     (lambda l: l.pop("note"), "`note` obligatoires"),
 ])
 def test_versions_json_embarque_invalide(tmp_path, modif, attendu):
-    l = {"outil": "Codex (app ChatGPT)", "version": "0.155.0-alpha.16.4", "detectee_le": "2026-09-24T16:00:00+00:00",
+    l = {"outil": "Codex CLI (terminal)", "version": "0.155.0-alpha.16.4", "detectee_le": "2026-09-24T16:00:00+00:00",
          "methode": "codex --version", "derniere_publiee": None, "source_derniere": None, "statut": "embarque", "note": "n"}
     modif(l)
     (tmp_path / "docs" / "data").mkdir(parents=True)
@@ -200,9 +148,6 @@ def test_versions_json_embarque_invalide(tmp_path, modif, attendu):
 def test_cli_codex_a_jour_en_retard_et_pre_version(tmp_path, monkeypatch):
     """D75 : la CLI du PATH est comparée comme Claude Code (versions complètes, stables seulement)."""
     monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
-    monkeypatch.setattr(v, "codex_app", lambda: ("0.155.0-alpha.16.4", "codex --version", None))
-    monkeypatch.setattr(v, "paquet_dpkg", lambda nom: ("26.917.71314", f"dpkg-query -W {nom}", None))
-    monkeypatch.setattr(v, "versions_app_chatgpt", lambda racine, client=None: (["26.908"], None))
     (tmp_path / "state").mkdir()
     (tmp_path / "state" / "openai.json").write_text(json.dumps({"vus": {"rust-v0.156.1": {"source_id": "codex-cli-releases"},
                                                                        "rust-v0.159.3": {"source_id": "codex-cli-releases"}}}))
@@ -211,8 +156,6 @@ def test_cli_codex_a_jour_en_retard_et_pre_version(tmp_path, monkeypatch):
         monkeypatch.setattr(v, "codex_terminal", lambda i=installee: (i, "codex --version", None))
         resultats[installee] = {l["outil"]: l for l in v.detecter(tmp_path)}["Codex CLI (terminal)"]["statut"]
     assert resultats == {"0.159.3": "a_jour", "0.160.0": "a_jour", "0.155.1": "en_retard", "0.159.4-alpha.2": "a_jour"}
-    # le Codex de l'app reste embarqué, jamais comparé
-    assert {l["outil"]: l for l in v.detecter(tmp_path)}["Codex (app ChatGPT)"]["statut"] == "embarque"
 
 
 def test_la_docstring_decrit_la_cli_comme_suivie():
@@ -225,3 +168,48 @@ def test_spec_decrit_d75():
     spec = (RACINE / "SPEC.md").read_text(encoding="utf-8")
     assert "| D75 |" in spec and "est comparée à la dernière stable et vaut à jour, en retard ou inconnu" in spec
     assert "installée mais non utilisée, vaut `non_utilise`" not in spec
+
+
+# --- CLI seulement (08/11/2026) : ORQYRA ne suit ni Claude Desktop, ni ChatGPT Desktop, ni le Codex de l'app ChatGPT.
+
+OUTILS_DESKTOP = ("Codex (app ChatGPT)", "ChatGPT Desktop", "Claude Desktop")
+
+
+def test_detecter_ne_rend_que_les_deux_cli(tmp_path, monkeypatch):
+    monkeypatch.setattr(v, "claude_code", lambda: ("2.1.280", "claude --version", None))
+    monkeypatch.setattr(v, "codex_terminal", lambda: ("0.155.1", "codex --version", None))
+    # même si les paquets de bureau sont installés, ils ne sont ni détectés ni écrits
+    assert [l["outil"] for l in v.detecter(tmp_path)] == list(OUTILS_SUIVIS) == ["Claude Code", "Codex CLI (terminal)"]
+    assert not any(hasattr(v, n) for n in ("codex_app", "versions_app_chatgpt", "paquet_dpkg", "note_app"))
+
+
+def _ligne(outil):
+    return {"outil": outil, "version": "1.0.0", "detectee_le": "2026-11-08T10:00:00+00:00", "methode": "x",
+            "derniere_publiee": "1.0.0", "source_derniere": "claude-code-changelog", "statut": "a_jour"}
+
+
+@pytest.mark.parametrize("desktop", OUTILS_DESKTOP)
+def test_valider_refuse_un_outil_desktop_dans_versions_json(tmp_path, desktop):
+    (tmp_path / "docs" / "data").mkdir(parents=True)
+    (tmp_path / "docs" / "data" / "versions.json").write_text(json.dumps(
+        [_ligne("Claude Code"), _ligne("Codex CLI (terminal)"), _ligne(desktop)]))
+    r = valider.Rapport()
+    valider.verifier_versions(tmp_path, r)
+    assert any("outils suivis" in e for e in r.erreurs), r.erreurs
+
+
+def test_valider_refuse_une_cli_manquante(tmp_path):
+    (tmp_path / "docs" / "data").mkdir(parents=True)
+    (tmp_path / "docs" / "data" / "versions.json").write_text(json.dumps([_ligne("Claude Code")]))
+    r = valider.Rapport()
+    valider.verifier_versions(tmp_path, r)
+    assert any("outils suivis" in e for e in r.erreurs), r.erreurs
+
+
+def test_versions_json_publie_ne_contient_que_les_deux_cli():
+    from conftest import RACINE
+    publie = json.loads((RACINE / "docs" / "data" / "versions.json").read_text(encoding="utf-8"))
+    assert sorted(l["outil"] for l in publie) == sorted(OUTILS_SUIVIS)
+    r = valider.Rapport()
+    valider.verifier_versions(RACINE, r)
+    assert r.ok, r.erreurs

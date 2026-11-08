@@ -115,9 +115,11 @@ test("etat_versions et a_tester", async () => {
   const v = (await appel("etat_versions")).corps.result.structuredContent;
   const noms = v.outils.map((o) => o.outil);
   // D75 : « Codex CLI (terminal) » ; l'ancien nom « … non utilisée) » reste accepté jusqu'au prochain /delta, qui réécrit versions.json.
-  assert.equal(noms.length, 5);
-  assert.deepEqual([noms[0], noms[1], noms[3], noms[4]], ["Claude Code", "Codex (app ChatGPT)", "ChatGPT Desktop", "Claude Desktop"]);
-  assert.ok(noms[2].startsWith("Codex CLI (terminal"), noms[2]);
+  // Les apps de bureau ne sont plus suivies (08/11/2026) : exactement les deux CLI.
+  assert.equal(noms.length, 2);
+  assert.equal(noms[0], "Claude Code");
+  assert.ok(noms[1].startsWith("Codex CLI (terminal"), noms[1]);
+  assert.ok(!noms.some((n) => /desktop|app chatgpt/i.test(n)), noms.join());
   const a = (await appel("a_tester")).corps.result;
   assert.equal(a.isError, false);
 });

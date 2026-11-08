@@ -3,22 +3,18 @@
 
 Détection sur la machine, sans chemin supposé :
 - Claude Code : `claude --version` (exécutable trouvé dans le PATH ou via ~/.local/bin, emplacement de l'installateur natif) ;
-- Codex de l'app ChatGPT (celui qu'utilise Sylvain) : l'exécutable `codex` livré par le paquet `chatgpt` (liste des
-  fichiers donnée par `dpkg -L`). Il suit le canal de l'app (pré-versions propres, ex. 0.155.0-alpha.16.4 avec l'app
-  26.917) : statut `embarque`, jamais comparé aux releases stables ;
 - Codex CLI autonome (terminal) : `codex` du PATH, sinon ~/.nvm/current/bin/codex, puis les installations globales npm de nvm
-  (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable de l'app. Utilisée par
+  (~/.nvm/versions/node/*/bin/codex, absentes du PATH des shells non interactifs), hors exécutable du paquet de bureau
+  `chatgpt` s'il est installé (ce n'est pas la CLI). Utilisée par
   Sylvain depuis le 02/10/2026 (session tmux en remote control) [déclaré], D75 : suivi normal, comparée à la dernière
-  stable de codex-cli-releases (à jour ou en retard). Elle se met à jour par npm, sans l'app : un retard ne se rattrape
-  pas tout seul, d'où l'alerte ;
-- ChatGPT Desktop, Claude Desktop : version du paquet Debian (`dpkg-query -W`).
+  stable de codex-cli-releases (à jour ou en retard). Elle se met à jour par npm : un retard ne se rattrape pas tout
+  seul, d'où l'alerte.
+ORQYRA n'utilise que les deux CLI : Claude Desktop, ChatGPT Desktop et le Codex embarqué dans l'app ChatGPT ne sont plus
+suivis (décision de Sylvain, 08/11/2026) ; `deltalib.modeles.OUTILS_SUIVIS` fixe la liste, `docs/data/versions.json` n'en contient pas d'autre.
 Une version introuvable vaut null, avec la raison.
 
 Dernière version publiée : seulement si une source de Delta la fournit (état, fichiers quotidiens, fichier brut) :
-claude-code-changelog pour Claude Code, codex-cli-releases pour Codex CLI. Pour l'app de bureau ChatGPT, la version la
-plus haute est lue directement dans le flux de la source openai-changelog-codex-app (champ `version`, même analyseur
-que la source) ; ses versions « 26.908 » suivent la numérotation du paquet `chatgpt` 26.917.x (correspondance déduite).
-Aucune source d'ORQYRA AI ne publie les versions de Claude Desktop : statut `inconnu`.
+claude-code-changelog pour Claude Code, codex-cli-releases pour Codex CLI.
 """
 
 from __future__ import annotations
@@ -37,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deltalib.dates import maintenant_iso  # noqa: E402
 from deltalib import profil as profil_mod  # noqa: E402
-from deltalib.modeles import cle_version  # noqa: E402
+from deltalib.modeles import OUTILS_SUIVIS, cle_version  # noqa: E402
 from deltalib.versions_evenements import ajouter_evenements, lire_precedent  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -52,15 +48,6 @@ def _executer(cmd: list[str], delai: int = 20) -> tuple[str | None, str | None]:
     if r.returncode != 0:
         return None, f"{' '.join(cmd)} : code {r.returncode}"
     return r.stdout.strip(), None
-
-
-def paquet_dpkg(nom: str) -> tuple[str | None, str, str | None]:
-    if not shutil.which("dpkg-query"):
-        return None, "dpkg-query -W", "dpkg-query absent (système non Debian)"
-    sortie, err = _executer(["dpkg-query", "-W", "-f=${Version}", nom])
-    if err or not sortie:
-        return None, f"dpkg-query -W {nom}", err or "paquet non installé"
-    return sortie, f"paquet Debian `{nom}` (dpkg-query -W)", None
 
 
 def claude_code() -> tuple[str | None, str, str | None]:
@@ -91,14 +78,6 @@ def _version_codex(exe: str, origine: str) -> tuple[str | None, str, str | None]
     if not m:
         return None, f"{exe} --version", err or f"sortie non reconnue : {sortie!r}"
     return m.group(0), f"`{exe} --version` ({origine})", None
-
-
-def codex_app() -> tuple[str | None, str, str | None]:
-    # Inventaire du paquet de bureau, indépendant du binaire retenu par l'orchestrateur.
-    exe = _exe_codex_app()
-    if not exe:
-        return None, "dpkg -L chatgpt", "exécutable `codex` introuvable dans le paquet chatgpt"
-    return _version_codex(exe, "paquet chatgpt, dpkg -L")
 
 
 def codex_terminal() -> tuple[str | None, str, str | None]:
@@ -140,36 +119,6 @@ def versions_publiees(racine: Path, source_id: str, motif: str, perimetre: str) 
     return sorted(res, key=cle_version)
 
 
-def versions_app_chatgpt(racine: Path, client=None) -> tuple[list[str], str | None]:
-    """Versions de l'app de bureau lues dans le flux de openai-changelog-codex-app, avec l'analyseur de la source."""
-    from deltalib.analyseurs import json_changelog
-    from deltalib.http import Client
-    from deltalib.modeles import ErreurSource
-    from deltalib.sources import ErreurConfiguration, charger_sources
-    try:
-        source = next(s for s in charger_sources(racine / "sources.yaml") if s.id == "openai-changelog-codex-app")
-    except (StopIteration, ErreurConfiguration, OSError) as e:
-        return [], f"source openai-changelog-codex-app introuvable dans sources.yaml : {e or 'absente'}"
-    try:
-        elements = json_changelog.analyser(source, client or Client()).elements
-    except ErreurSource as e:
-        return [], f"flux {source.url} en échec : {type(e).__name__}: {e}"
-    vs = sorted({e.version for e in elements if e.version and re.fullmatch(r"\d{2}\.\d{3}", e.version)}, key=cle_version)
-    if not vs:
-        return [], f"aucune version au format AA.MJJ dans {source.url}"
-    return vs, None
-
-
-def note_app(paquet: tuple, publiees: list[str]) -> str:
-    """Note de ChatGPT Desktop, construite avec les valeurs réellement détectées (jamais en dur)."""
-    installee = paquet[0]
-    exemple = publiees[-1] if publiees else None
-    comparaison = (f"la comparaison porte sur les deux premières composantes ({installee} -> "
-                   f"{'.'.join(installee.split('.')[:2])})" if installee else "version installée introuvable, pas de comparaison")
-    return ("Correspondance déduite, non documentée par OpenAI : les versions de l'app Codex du changelog"
-            + (f" (ex. {exemple})" if exemple else "") + " suivent la numérotation du paquet chatgpt ; " + comparaison + ".")
-
-
 def _stables(vs: list[str]) -> list[str]:
     return [v for v in vs if "-" not in v]
 
@@ -205,24 +154,12 @@ def detecter(racine: Path, client=None) -> list[dict]:
     ligne("Claude Code", claude_code(),
           _stables(versions_publiees(racine, "claude-code-changelog", r"claude-code-(\d+\.\d+\.\d+)", "claude")),
           "claude-code-changelog")
-    paquet_chatgpt = paquet_dpkg("chatgpt")
-    ligne("Codex (app ChatGPT)", codex_app(), [], None, statut="embarque",
-          note=("Codex utilisé par Sylvain [déclaré], livré avec l'app ChatGPT"
-                + (f" {paquet_chatgpt[0]}" if paquet_chatgpt[0] else "")
-                + " : il suit le canal de l'app, avec ses propres pré-versions, et se met à jour avec elle ;"
-                  " non comparé aux releases stables de codex-cli-releases."))
     stables_cli = _stables(versions_publiees(racine, "codex-cli-releases", r"rust-v(\d+\.\d+\.\d+)", "openai"))
     ligne("Codex CLI (terminal)", codex_terminal(), stables_cli, "codex-cli-releases",
-          note="CLI autonome utilisée par Sylvain [déclaré] (session tmux en remote control depuis le 02/10/2026), mise à jour par npm "
-               "et non avec l'app : un retard ne se rattrape pas tout seul. "
+          note="CLI autonome utilisée par Sylvain [déclaré] (session tmux en remote control depuis le 02/10/2026), mise à jour par npm : "
+               "un retard ne se rattrape pas tout seul. "
                + (f"Comparée à la dernière stable publiée {stables_cli[-1]}." if stables_cli else
                   "Aucune stable publiée connue d'ORQYRA AI : pas de comparaison."))
-    app, raison_app = versions_app_chatgpt(racine, client)
-    ligne("ChatGPT Desktop", paquet_chatgpt, app, "openai-changelog-codex-app", composantes=2,
-          note=note_app(paquet_chatgpt, app),
-          raison_source=raison_app)
-    ligne("Claude Desktop", paquet_dpkg("claude-desktop"), [], None,
-          note="Aucune source d'ORQYRA AI ne publie les versions de Claude Desktop.")
     return res
 
 

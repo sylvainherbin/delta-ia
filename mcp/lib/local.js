@@ -27,8 +27,8 @@ const RE_GENERATION = /^g-[0-9a-f]{16}$/;
 const VERDICTS_A_TESTER = ["tester", "utiliser"];
 // Versions communes qui concernent un produit de fiche (identités de versions.json) : seules celles qu'un relevé de
 // l'instance porte deviennent une raison de la vue « Utile pour mon ORQYRA ».
-const VERSIONS_PRODUIT = { "claude-code": ["version:claude-code"], claude: ["version:claude-desktop"],
-  codex: ["version:codex-cli-terminal", "version:codex-app-chatgpt"], chatgpt: ["version:chatgpt-desktop", "version:codex-app-chatgpt"] };
+// Seules les deux CLI sont suivies (apps de bureau retirées le 08/11/2026) : les produits `claude` et `chatgpt` n'ont plus de version.
+const VERSIONS_PRODUIT = { "claude-code": ["version:claude-code"], codex: ["version:codex-cli-terminal"] };
 // Exécutables déclarés par le profil d'instance qui servent un produit (clés de `executables`, discipline instance.py).
 const EXECUTABLES_PRODUIT = { "claude-code": ["claude"], codex: ["codex"] };
 

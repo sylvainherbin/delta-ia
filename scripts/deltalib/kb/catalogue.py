@@ -403,7 +403,7 @@ def _noter_source_modifiee(e: dict, jour: str, changement: str, avant, recommand
 
 
 def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs_ok: set[str],
-              jour: str | None = None) -> tuple[dict[str, dict], dict]:
+              jour: str | None = None, docs_desactives: frozenset[str] | set[str] = frozenset()) -> tuple[dict[str, dict], dict]:
     jour = jour or date.today().isoformat()
     res = {k: dict(v) for k, v in existantes.items()}
     modif = {"ajoutees": [], "usage_modifie": [], "description_source_modifiee": [], "retirees": [], "reapparues": []}
@@ -447,6 +447,12 @@ def fusionner(existantes: dict[str, dict], extraites: list[EntreeExtraite], docs
         if k not in presentes and e.get("origine") in docs_ok and not e.get("retiree"):
             e["retiree"] = True
             e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "absente de la documentation"}]
+            e["maj_le"] = jour
+            modif["retirees"].append(k)
+    for k, e in res.items():  # source passée `desactive` (ex. app de bureau, CLI seulement) : ses fiches sont retirées, jamais supprimées
+        if e.get("origine") in docs_desactives and not e.get("retiree"):
+            e["retiree"] = True
+            e["historique"] = e.get("historique", []) + [{"date": jour, "changement": "source désactivée (hors du périmètre suivi)"}]
             e["maj_le"] = jour
             modif["retirees"].append(k)
     return res, modif
@@ -495,14 +501,24 @@ def resume_ecartees(ecartees: list, gardees: int, premieres: int = 10) -> dict:
             "premieres": [{"systeme": s, "id": e.id} for s, e in ecartees[:premieres]]}
 
 
+def ids_docs_desactivees(racine: Path, perimetre: str) -> set[str]:
+    """Identifiants des documentations du périmètre au statut `desactive` dans sources.yaml (absent ou illisible : aucune)."""
+    from .documentation import ErreurDocumentation, charger_documentation
+    try:
+        return {d.id for d in charger_documentation(racine / "sources.yaml") if d.perimetre == perimetre and d.statut == "desactive"}
+    except (ErreurDocumentation, OSError):
+        return set()
+
+
 def mettre_a_jour(racine: Path, perimetre: str, docs: list[DocSource], ecrire_fichiers: bool = True,
                   surcharge: dict | None = None) -> dict:
     docs = [d for d in docs if d.perimetre == perimetre and d.active]
+    desactivees = ids_docs_desactivees(racine, perimetre)
     avertissements: list[dict] = []
     ecartees: list = []
     extraites, ok, echecs = extraire(racine, docs, surcharge, avertissements, ecartees)
     existantes = charger(racine, perimetre)
-    entrees, modif = fusionner(existantes, extraites, ok)
+    entrees, modif = fusionner(existantes, extraites, ok, docs_desactives=desactivees)
     if ecrire_fichiers:
         ecrire(racine, perimetre, entrees)
     d71 = sujet_d71(entrees, modif)

@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deltalib.etat import DOSSIERS  # noqa: E402
 from deltalib.contexte import (SHA1_VIDE, ContexteInvalide, analyser as analyser_contexte, erreurs_pourquoi,  # noqa: E402
                                termes_ancrage, termes_nommes)
-from deltalib.modeles import PERIMETRES, PRODUITS, id_web  # noqa: E402
+from deltalib.modeles import OUTILS_SUIVIS, PERIMETRES, PRODUITS, id_web  # noqa: E402
 from deltalib.sujet_d71 import mots_trouves_element  # noqa: E402
 from deltalib import recherche as index_recherche  # noqa: E402
 from deltalib.confidentialite import RE_ORGANISATION_PRIVEE, RE_SECRETS  # noqa: E402
@@ -1131,6 +1131,9 @@ def verifier_versions(racine: Path, r: Rapport) -> None:
         r.erreur(ou, "tableau non vide attendu")
         return
     attendus = {"outil", "version", "detectee_le", "methode", "derniere_publiee", "source_derniere", "statut"}
+    outils = [l.get("outil") for l in lignes if isinstance(l, dict)]
+    if sorted(map(str, outils)) != sorted(OUTILS_SUIVIS):  # ORQYRA n'utilise que les deux CLI (08/11/2026)
+        r.erreur(ou, f"outils suivis : exactement {list(OUTILS_SUIVIS)} attendus, trouvé {outils}")
     for i, l in enumerate(lignes):
         o = f"{ou}[{i}]"
         if not isinstance(l, dict) or not attendus <= set(l) or set(l) - attendus - {"raison", "note", "pertinent_pour_profil"}:

@@ -14,6 +14,9 @@ PERIMETRES = ("claude", "openai", "actu")
 TYPES = ("github_changelog", "github_releases", "html", "rss", "json", "x_liste")
 STATUTS = ("ok", "bloque", "a_valider", "desactive")
 STATUTS_ACTIFS = ("ok", "a_valider")
+# Les deux seuls outils dont les versions sont suivies (docs/data/versions.json) : ORQYRA n'utilise que les CLI, pas les
+# apps de bureau (décision de Sylvain, 08/11/2026). versions.py les produit, valider.py refuse toute autre liste.
+OUTILS_SUIVIS = ("Claude Code", "Codex CLI (terminal)")
 
 
 class ErreurSource(Exception):
