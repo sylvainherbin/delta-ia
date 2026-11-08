@@ -53,6 +53,8 @@ Mode Claude : `[claude].mode = "cle"` passe par `claude-cle --usage <nom>` (clé
 Le code 5 déclenche un repli unique sur la commande abonnement, seulement si le dépôt est resté intact ; une nouvelle garde
 réactive les quotas abonnement. L'événement `<étape>-repli-abonnement`, code 5, est ajouté au journal, avec le détail dans
 la sortie d'étape. `mode = "abonnement"` restaure les commandes antérieures. Les skills restent lues par leur chemin explicite.
+Sur clé, `--bare` ne laisse que Bash, Read et Edit : le prompt système ajouté dit de créer tout fichier avec Edit et
+`old_string` vide (CONSIGNE_ECRITURE_CLE).
 
 Colonne « code » de la ligne `orchestrateur | <étape>` : 0 réussie ou saut normal ; les codes internes 11 (quota Claude),
 12 (déjà fait), 128 (non lancée après un arrêt antérieur), 129 (aucun lot dû) et 130 (quota Codex épuisé) restent dans
@@ -112,6 +114,15 @@ CODE_RESEAU = 132        # échec réseau persistant : relances épuisées ou in
 CODE_INCOMPLET = 133     # code 0 de l'agent mais résultat incomplet ou contradictoire (arrêt avant la fin du skill, commit manquant)
 DELAI_VALIDATION_S = 300
 LONGUEUR_RAPPORT_SUPERVISION_MIN = 100
+# Sur clé, claude-cle impose --bare (CLAUDE_CODE_SIMPLE=1) : la session n'a que Bash, Read et Edit, et ni --allowedTools ni
+# --tools n'y ajoutent Write (CLI 2.1.319, événement init relevé le 08/11/2026). Edit crée un fichier quand old_string est
+# vide. Sans cette consigne, l'agent du 08/11 a pris l'absence de Write pour un refus et arrêté le passage (code 133).
+CONSIGNE_ECRITURE_CLE = (
+    "# Écriture sur clé (--bare)\n"
+    "Cette session n'a que les outils Bash, Read et Edit : Write n'existe pas, et son absence n'est pas un refus d'outil. "
+    "Tout fichier que la skill ou le prompt te demande d'écrire avec Write ou Edit (fichier du jour, fichier de commentaires, "
+    "rapport) se crée avec Edit : `file_path` est son chemin absolu, `old_string` vaut `\"\"` (chaîne vide) et `new_string` "
+    "porte le contenu entier ; les retouches suivantes se font avec Edit comme d'habitude.")
 MARQUEUR_REFUS_SUPERVISION = re.compile(
     r"\b(?:je ne peux pas|je ne suis pas en mesure|je n[’']ai pas acc[eè]s|"
     r"i cannot|i can[’']t|i(?: am|[’']m) unable to)\b", re.IGNORECASE)
@@ -242,9 +253,10 @@ def commande_claude(cfg: dict, e: dict, racine: Path, prompt: str, *, mode: str 
             if regles:
                 c += [option, *regles]
         # --bare saute la découverte de CLAUDE.md ; une inclusion @ n'est pas développée dans un prompt ajouté.
-        # Le seul import du CLAUDE.md du dépôt est REGLES.md : fournir les deux contenus explicitement.
-        contexte = "\n\n".join(f"# {nom}\n{(racine / nom).read_text(encoding='utf-8')}"
-                                for nom in ("CLAUDE.md", "REGLES.md"))
+        # Le seul import du CLAUDE.md du dépôt est REGLES.md : fournir les deux contenus explicitement, puis la façon de
+        # créer un fichier sans Write (CONSIGNE_ECRITURE_CLE).
+        contexte = "\n\n".join([*(f"# {nom}\n{(racine / nom).read_text(encoding='utf-8')}"
+                                  for nom in ("CLAUDE.md", "REGLES.md")), CONSIGNE_ECRITURE_CLE])
         c += ["--append-system-prompt", contexte]
     return c
 

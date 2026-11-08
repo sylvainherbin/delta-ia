@@ -966,7 +966,7 @@ def test_commande_cle_exacte_et_repli_abonnement(nom, usage):
     e = cfg["etapes"][nom]
     prompt = (RACINE / e["prompt_fichier"]).read_text() if "prompt_fichier" in e else e["prompt"]
     permissions = json.loads((RACINE / (e["settings"] if nom == "supervision" else ".claude/settings.json")).read_text())["permissions"]
-    contexte = "\n\n".join(f"# {f}\n{(RACINE / f).read_text()}" for f in ("CLAUDE.md", "REGLES.md"))
+    contexte = "\n\n".join([*(f"# {f}\n{(RACINE / f).read_text()}" for f in ("CLAUDE.md", "REGLES.md")), orc.CONSIGNE_ECRITURE_CLE])
     attendu = [os.path.expanduser("~/.local/bin/claude-cle"), "--usage", usage,
                "--delai", str(e["delai_min"] * 60 + cfg["chaine"]["arret_delai_s"] + 1), "-p", prompt,
                "--permission-mode", "bypassPermissions", "--strict-mcp-config", "--output-format", "json",
@@ -1016,6 +1016,38 @@ def test_supervision_commande_demande_la_creation_par_edit(mode):
         assert commande[commande.index("--disallowedTools") + 1:commande.index("--append-system-prompt")] == permissions["deny"]
     else:
         assert Path(commande[commande.index("--settings") + 1]) == settings
+
+
+@pytest.mark.parametrize("nom", ["delta", "delta-kb", "supervision"])
+def test_etapes_claude_sur_cle_creent_leurs_fichiers_avec_edit(nom):
+    """Régression du 08/11/2026 (code 133) : sous --bare, imposé par claude-cle, la session n'a que Bash, Read et Edit, et
+    ni --allowedTools ni --tools n'y ajoutent Write (événement init du CLI 2.1.319). L'agent a pris l'absence de Write pour
+    un refus et n'a pas créé docs/data/claude/2026-11-08.json. La commande sur clé dit donc de créer avec Edit et old_string
+    vide, et les skills lues par les étapes ne demandent plus Write."""
+    cfg = orc.charger_config()
+    assert cfg["claude"]["mode"] == "cle"
+    etapes = {x.nom: x for x in orc.construire_etapes(cfg, RACINE)}
+    commande = etapes[nom].commande
+    systeme = commande[commande.index("--append-system-prompt") + 1]
+    assert systeme.endswith(orc.CONSIGNE_ECRITURE_CLE)
+    for attendu in ("n'a que les outils Bash, Read et Edit", "Write n'existe pas", "n'est pas un refus d'outil",
+                    "se crée avec Edit", "`old_string` vaut `\"\"` (chaîne vide)", "`new_string` porte le contenu entier"):
+        assert attendu in systeme, attendu
+    # Sur abonnement, Write existe : ni prompt ajouté ni consigne (la commande de repli reste celle d'avant).
+    assert "--append-system-prompt" not in etapes[nom].commande_abonnement
+    if nom == "supervision":
+        return  # prompts/supervision.md demande déjà Edit et old_string vide (test précédent)
+    prompt = commande[commande.index("-p") + 1]
+    skill = re.search(r"Lis (\.claude/skills/[\w-]+/SKILL\.md)", prompt).group(1)
+    t = (RACINE / skill).read_text(encoding="utf-8")
+    assert "N'écris qu'avec l'outil Edit dans" in t
+    assert "Un fichier nouveau (" in t and "se crée aussi avec Edit : `file_path` absolu, `old_string` vaut `\"\"`" in t
+    assert "Write peut manquer (sessions sur clé, `--bare`) : ce n'est pas un refus d'outil." in t
+    assert "Write ou Edit" not in t and "Edit/Write" not in t and "ou Write pour" not in t
+    if nom == "delta":  # les fichiers que l'agent crée lui-même : fichier du jour (claude, actu), commentaires, rapport
+        assert "(fichier du jour, commentaires, rapport)" in t
+    else:
+        assert "(commentaires, rapport)" in t
 
 
 def test_mode_claude_invalide_refuse():
@@ -1331,7 +1363,7 @@ def test_skills_claude_lisent_la_base_avec_read():
         assert "jamais de boucle shell" not in t and "une commande simple par appel" not in t, f  # D88
         if f == ".claude/skills/delta/SKILL.md":
             assert "Toute retouche du fichier du jour, de `index.json` ou d'un autre JSON" in t
-            assert "Edit (ou Write pour un fichier entier)" in t
+            assert "se fait avec Edit ; un fichier entier nouveau se crée avec Edit et `old_string` vide" in t
             assert "heredoc" not in t and "jamais avec `python -c`" not in t and "Seule exception" not in t  # D88 : reliquats
 
 
