@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 675,
- "commentees": 607,
+ "commentees": 621,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -392,7 +392,7 @@
    "categorie": "parametres",
    "nom": "agentPushNotifEnabled",
    "gabarit": "court",
-   "description": "Réglage qui autorise Claude à envoyer une notification push au téléphone quand il le juge utile, par exemple à la fin d'une longue tâche, tant que Remote Control est connecté.",
+   "description": "Réglage booléen (défaut `false`) qui autorise Claude à envoyer une notification push au téléphone quand il le juge utile, par exemple à la fin d'une longue tâche, en session locale seulement tant que Remote Control est connecté.",
    "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
    "usage": "{\n  \"agentPushNotifEnabled\": true\n}",
    "usage_nature": "syntaxe",
@@ -401,7 +401,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Les notifications push des agents sont déjà activées dans tes réglages et arrivent sur l'iPhone, ton interface principale."
+    "pourquoi": "La clé est déjà à `true` dans ton `~/.claude/settings.json` et sert ton pilotage depuis l'iPhone ; attention, la changer par `/config` (« Push when Claude decides ») enregistre aussi la valeur dans ton compte."
    },
    "sources": [
     {
@@ -410,11 +410,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-11-07",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -478,20 +478,50 @@
     {
      "date": "2026-11-07",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "78e53aace0a24f2de1b71f74c402b68ab64c6e23",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.interface": {
      "sha1": "585bf9bde6f77d1a08b743563de158ea53fe1360",
-     "pourquoi": "settings.json : notifications push des agents activées."
+     "pourquoi": "settings.json : notifications push des agents activées (relevé du 07/10)."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Pilotage depuis l'iPhone, notifications push."
+     "pourquoi": "Pilotage à distance depuis l'iPhone, notifications push."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`agentPushNotifEnabled` (booléen, défaut false) autorise Claude à envoyer une notification push au téléphone ; en session locale, seulement tant que Remote Control est connecté.",
+     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+     "releve_le": "2026-11-09",
+     "caduc_si": "la clé change de nom, de type, de défaut ou de condition Remote Control dans la documentation"
+    },
+    {
+     "affirmation": "Changer la valeur dans /config (« Push when Claude decides ») l'enregistre aussi dans le compte ; les sessions d'un serveur `claude remote-control` suivent la valeur du compte plutôt que la clé.",
+     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+     "releve_le": "2026-11-09",
+     "caduc_si": "la documentation ne décrit plus cet enregistrement dans le compte"
+    },
+    {
+     "affirmation": "Le settings.json de Sylvain active les notifications push des agents (relevé du 07/10).",
+     "source": "contexte:config.claude-code.interface",
+     "releve_le": "2026-11-09",
+     "caduc_si": "un relevé de settings.json ne montre plus les notifications push des agents"
+    },
+    {
+     "affirmation": "L'iPhone, par Remote Control et notifications push, est l'interface principale de pilotage.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-11-09",
+     "caduc_si": "le pilotage à distance depuis l'iPhone n'est plus l'interface principale"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-agents",
@@ -1157,7 +1187,7 @@
    "categorie": "parametres",
    "nom": "ANTHROPIC_BASE_URL",
    "gabarit": "court",
-   "description": "Variable qui remplace l'adresse de l'API pour passer par un proxy ou une passerelle, ce qui coupe par défaut la recherche d'outils MCP.",
+   "description": "Variable qui remplace l'adresse de l'API pour passer par un proxy ou une passerelle ; depuis la v2.1.196, Remote Control est désactivé quand elle pointe ailleurs que sur api.anthropic.com.",
    "description_source": "Override the API endpoint to route requests through a proxy or gateway. For what happens when that gateway rejects MCP tool search, see Tool search through an LLM gateway. As of v2.1.196, Remote Control is disabled when this points at a host other than api.anthropic.com, matching its behavior on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry",
    "usage": "ANTHROPIC_BASE_URL",
    "usage_nature": "syntaxe",
@@ -1166,7 +1196,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'API, de passerelle ou de fournisseur tiers ; tu utilises Claude Code avec ton abonnement Max, sans passerelle."
+    "pourquoi": "Tu utilises ton abonnement Claude sans passerelle, et la poser couperait Remote Control, par lequel tu pilotes tes sessions depuis l'iPhone."
    },
    "sources": [
     {
@@ -1175,11 +1205,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1192,10 +1222,23 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude, aucune passerelle ni API décrite."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions lancées avec --remote-control et pilotées depuis l'iPhone."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-anthropic-betas",
@@ -2516,7 +2559,7 @@
    "categorie": "parametres",
    "nom": "API_TIMEOUT_MS",
    "gabarit": "court",
-   "description": "Variable qui fixe le délai d'expiration des requêtes à l'API, 10 minutes par défaut (maximum 2 147 483 647 ms) ; une requête en flux doit recevoir ses en-têtes de réponse dans ce délai.",
+   "description": "Variable qui fixe le délai, en millisecondes, accordé à chaque tentative de requête API pour recevoir ses en-têtes de réponse (défaut 600000, soit 10 minutes) ; `0` retire la limite depuis la v2.1.305, une tentative sans flux expirant encore à 300 secondes en session locale.",
    "description_source": "Time in milliseconds that each API request attempt has to receive its response headers. It doesn't limit how long a streaming response runs after that. The default is 600000, or 10 minutes, and the maximum is 2147483647. When you set a positive value, each attempt at a non-streaming request has to finish within it. Increase this when requests time out on slow networks or when routing through a proxy. Set to 0 to remove this limit, which requires Claude Code v2.1.305 or later. With 0, a non-streaming attempt still times out after 300 seconds in a local session",
    "usage": "API_TIMEOUT_MS",
    "usage_nature": "syntaxe",
@@ -2525,7 +2568,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le délai par défaut de 10 minutes suffit : les décrochages Wi-Fi ont cessé depuis la connexion directe à la box, et l'allonger retarderait seulement le constat d'un échec."
+    "pourquoi": "Le défaut de 10 minutes suffit depuis que la connexion directe à la box a réglé les coupures Wi-Fi, et tu ne passes par aucun proxy."
    },
    "sources": [
     {
@@ -2534,11 +2577,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2567,13 +2610,17 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "Wi-Fi : décrochages cessés après la connexion directe à la box"
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Wi-Fi fragile jusqu'au 01/10, résolu par la connexion directe à la box."
     }
    }
   },
@@ -3714,7 +3761,7 @@
    "categorie": "parametres",
    "nom": "autoInstallIdeExtension",
    "gabarit": "court",
-   "description": "Réglage qui installe automatiquement l'extension IDE de Claude Code quand on le lance depuis le terminal de VS Code.",
+   "description": "Réglage qui laisse `/ide`, lancé depuis un terminal externe, installer l'extension IDE de Claude Code dans un VS Code, Cursor ou Devin Desktop ouvert ; depuis la v2.1.318, le démarrage de `claude` n'installe plus l'extension.",
    "description_source": "Let /ide install the Claude Code IDE extension in a running VS Code, Cursor, or Devin Desktop when you run the command from an external terminal. Claude Code doesn't install or update the extension when you start claude. Before v2.1.318, Claude Code installs or updates the extension when you start claude in one of those editors' terminals, unless this key is false.",
    "usage": "{\n  \"autoInstallIdeExtension\": false\n}",
    "usage_nature": "syntaxe",
@@ -3723,7 +3770,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne mentionne aucun IDE : tes sessions tournent dans tmux."
+    "pourquoi": "Aucun IDE ne figure dans tes outils : tes sessions tournent sous tmux."
    },
    "sources": [
     {
@@ -3732,11 +3779,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Global config settings",
-   "maj_le": "2026-11-07",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3753,10 +3800,23 @@
     {
      "date": "2026-11-07",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.machine": {
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Outils CLI listés, aucun IDE."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions Claude Code sous tmux, lancées par systemd."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-automemorydirectory",
@@ -5577,7 +5637,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_AX_PREPARK_MS",
    "gabarit": "court",
-   "description": "Variable qui règle, en mode lecteur d'écran, l'attente avant l'écriture d'une ligne.",
+   "description": "Variable qui fixe, en mode lecteur d'écran, l'attente en millisecondes avant l'écriture d'une ligne nouvelle ou modifiée (défaut 0 depuis la v2.1.287, plafond 5000).",
    "description_source": "In screen reader mode, how many milliseconds Claude Code waits before it writes a new or changed line. Default 0, so Claude Code doesn't wait. Before v2.1.287, the default was 50. Claude Code caps the wait at 5000. Ignored in project and local settings. Requires Claude Code v2.1.233 or later",
    "usage": "CLAUDE_AX_PREPARK_MS",
    "usage_nature": "syntaxe",
@@ -5586,7 +5646,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'accessibilité dont CONTEXTE.md ne décrit aucun besoin."
+    "pourquoi": "Réglage d'accessibilité (lecteur d'écran) dont CONTEXTE.md ne décrit aucun besoin."
    },
    "sources": [
     {
@@ -5595,11 +5655,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5620,15 +5680,14 @@
     {
      "date": "2026-10-23",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
-   "contexte_sections": {
-    "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Aucun besoin d'accessibilité décrit."
-    }
-   }
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-ax-screen-reader",
@@ -5636,7 +5695,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_AX_SCREEN_READER",
    "gabarit": "court",
-   "description": "Variable qui active ou force la coupure de la sortie adaptée aux lecteurs d'écran.",
+   "description": "Variable qui active (`1`) une sortie adaptée aux lecteurs d'écran, en texte plat sans bordures ni animations, ou la force à l'arrêt (`0`) même si `axScreenReader` vaut true, l'option `--ax-screen-reader` primant.",
    "description_source": "Set to 1 to render screen-reader friendly output: flat text without decorative borders or animations. Set to 0 to force screen-reader mode off even when axScreenReader is true. The --ax-screen-reader flag takes precedence. Ignored in project and local settings. Requires Claude Code v2.1.181 or later",
    "usage": "CLAUDE_AX_SCREEN_READER",
    "usage_nature": "syntaxe",
@@ -5645,7 +5704,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'accessibilité dont CONTEXTE.md ne décrit aucun besoin."
+    "pourquoi": "Réglage d'accessibilité (lecteur d'écran) dont CONTEXTE.md ne décrit aucun besoin."
    },
    "sources": [
     {
@@ -5654,11 +5713,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5671,10 +5730,14 @@
     {
      "date": "2026-10-23",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-ax-startup-quiet-ms",
@@ -5682,7 +5745,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_AX_STARTUP_QUIET_MS",
    "gabarit": "court",
-   "description": "Variable qui retarde, en mode lecteur d'écran, le premier affichage pour laisser lire la ligne de démarrage.",
+   "description": "Variable qui retient, en mode lecteur d'écran, le premier affichage après la ligne de confirmation de démarrage (défaut 3000 ms, `0` pour afficher tout de suite, plafond 10 minutes), la première frappe y mettant fin.",
    "description_source": "In screen reader mode, how many milliseconds Claude Code holds the first interface render after the startup confirmation line. Your screen reader can then speak the line in full before new output interrupts it. Default 3000. Set 0 to render immediately. Claude Code caps the hold at 600000 (10 minutes). Your first keystroke ends the hold early. Ignored in project and local settings. Requires Claude Code v2.1.217 or later",
    "usage": "CLAUDE_AX_STARTUP_QUIET_MS",
    "usage_nature": "syntaxe",
@@ -5691,7 +5754,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réglage d'accessibilité dont CONTEXTE.md ne décrit aucun besoin."
+    "pourquoi": "Réglage d'accessibilité (lecteur d'écran) dont CONTEXTE.md ne décrit aucun besoin."
    },
    "sources": [
     {
@@ -5700,11 +5763,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5717,10 +5780,14 @@
     {
      "date": "2026-10-23",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-bash-maintain-project-working-dir",
@@ -6350,7 +6417,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "gabarit": "court",
-   "description": "Variable d'environnement de Claude Code qui fixe la fenêtre d'auto-compaction en jetons, de 100000 à 1000000, en entier simple uniquement (« 500k » est lu comme 500, puis ramené au minimum). Elle prime sur `/autocompact`, `--autocompact` et le réglage `autoCompactWindow`, et reste plafonnée par la fenêtre de contexte du modèle.",
+   "description": "Variable qui fixe la fenêtre d'auto-compaction, le remplissage du contexte qui déclenche la compaction, de 100000 à 1000000 jetons ; les valeurs à suffixe comme `200k` exigent la v2.1.304 ou plus.",
    "description_source": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
    "usage": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "usage_nature": "syntaxe",
@@ -6359,7 +6426,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Tes sessions durables `claude-session@<nom>` ont déjà des réglages de lancement propres à chaque rôle : cette variable posée dans un seul service y règlerait le moment de la compaction, que tu déclenches aujourd'hui à la main par `/compact`. Essaie-la d'abord sur une seule session."
+    "pourquoi": "Essai : poser `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` dans un seul service `claude-session@<nom>` et vérifier que la compaction automatique survient vers 200 000 jetons, à la place de tes `/compact` manuels ; cela pourrait alléger tes limites hebdomadaires."
    },
    "sources": [
     {
@@ -6368,11 +6435,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6437,19 +6504,66 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "recommandation corrigée",
+     "avant": {
+      "verdict": "tester",
+      "pourquoi": "Scénario : dans un seul service `claude-session@<nom>`, poser `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` (entier simple, valable quelle que soit la version) et vérifier que la compaction automatique survient vers 200 000 jetons ; cela remplacerait tes `/compact` manuels et pourrait alléger la consommation de tes limites hebdomadaires."
+     },
+     "raison": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Décrit les services systemd `claude-session@<nom>` aux réglages de lancement propres à chaque rôle, où la variable peut se poser."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services claude-session@<nom> aux réglages de lancement propres à chaque rôle, où poser la variable."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Le relevé d'usage montre `/compact` parmi les commandes tapées : la compaction est déjà gérée à la main."
+     "pourquoi": "Relevé du 25/09 : /compact figure parmi les commandes tapées."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     }
-   }
+   },
+   "provenance": [
+    {
+     "affirmation": "`CLAUDE_CODE_AUTO_COMPACT_WINDOW` fixe la fenêtre d'auto-compaction de 100000 à 1000000 jetons ; les valeurs à suffixe comme 200k exigent la v2.1.304 ou plus.",
+     "source": "https://code.claude.com/docs/en/env-vars",
+     "releve_le": "2026-11-09",
+     "caduc_si": "la variable disparaît de la documentation ou sa plage ou sa syntaxe change"
+    },
+    {
+     "affirmation": "Chaque session durable est un service systemd `claude-session@<nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-11-09",
+     "caduc_si": "les sessions ne sont plus lancées par ce service modèle"
+    },
+    {
+     "affirmation": "`/compact` figure parmi les commandes tapées dans le relevé du 25/09.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-11-09",
+     "caduc_si": "un nouveau relevé ne montre plus /compact parmi les commandes tapées"
+    },
+    {
+     "affirmation": "Les limites d'usage hebdomadaires sont une friction récurrente de Sylvain.",
+     "source": "contexte:methode.travail",
+     "releve_le": "2026-11-09",
+     "caduc_si": "CONTEXTE.md ne cite plus les limites hebdomadaires parmi les frictions"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-auto-connect-ide",
@@ -7093,7 +7207,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_CONNECT_TIMEOUT_MS",
    "gabarit": "court",
-   "description": "Variable retirée en v2.1.186 et désormais sans effet ; `API_TIMEOUT_MS` la remplace.",
+   "description": "Variable retirée en v2.1.186 et désormais sans effet : `API_TIMEOUT_MS` la remplace, et `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` couvre la phase des en-têtes d'une requête en flux.",
    "description_source": "Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS instead. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS",
    "usage": "CLAUDE_CODE_CONNECT_TIMEOUT_MS",
    "usage_nature": "syntaxe",
@@ -7102,7 +7216,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Retirée ; sans objet."
+    "pourquoi": "Variable retirée et sans effet : rien à régler."
    },
    "sources": [
     {
@@ -7111,11 +7225,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7128,10 +7242,14 @@
     {
      "date": "2026-10-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {}
   },
   {
    "id": "claude-code-parametres-claude-code-debug-log-level",
@@ -7822,7 +7940,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "gabarit": "court",
-   "description": "Variable qui désactive toutes les tâches d'arrière-plan, y compris Ctrl+B.",
+   "description": "Variable qui, à `1`, retire `run_in_background` des outils Bash, PowerShell et sous-agents, coupe Ctrl+B et la mise en arrière-plan automatique des sous-agents, des longs appels MCP et des commandes shell expirées, les tâches MCP et l'outil Monitor restant en arrière-plan.",
    "description_source": "Set to 1 to remove the run_in_background parameter from the Bash, PowerShell, and subagent tools and to turn off the Ctrl+B shortcut and background runs of forked skills. Claude Code then also stops moving subagents, long MCP tool calls, and timed-out shell commands to the background automatically. MCP tasks and the Monitor tool still run in the background. To turn off background sessions too, set CLAUDE_CODE_DISABLE_AGENT_VIEW to 1",
    "usage": "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS",
    "usage_nature": "syntaxe",
@@ -7831,7 +7949,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes campagnes et ton usage de Monitor s'appuient sur l'arrière-plan."
+    "pourquoi": "Tes sessions lancent des sous-agents en parallèle et beaucoup de commandes Bash : tout forcer au premier plan bloquerait la session pendant ces tâches."
    },
    "sources": [
     {
@@ -7840,11 +7958,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-29",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7861,10 +7979,23 @@
     {
      "date": "2026-10-29",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Sous-agents utilisés, vérifications indépendantes en parallèle."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Bash très dominant dans l'usage réel des outils."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-bg-exit-handoff",
@@ -7872,7 +8003,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "gabarit": "court",
-   "description": "Variable qui arrête les commandes shell, workflows dynamiques et (depuis la v2.1.198) sous-agents d'arrière-plan d'une session de fond quand son superviseur l'arrête, la redémarre ou la met à jour, au lieu de les transmettre au processus suivant ; `← ` ou `/background` transmettent toujours le travail en cours.",
+   "description": "Variable qui, à `1`, arrête le travail en cours d'une session d'arrière-plan (commandes shell et, depuis la v2.1.198, sous-agents d'arrière-plan) quand son superviseur l'arrête, la redémarre ou la met à jour, au lieu de le transmettre au processus suivant.",
    "description_source": "Set to 1 to stop a background session's in-flight work when the supervisor stops, restarts, or updates that session's process, instead of handing it to the session's next process. That work is the session's running background shell commands, plus background subagents as of v2.1.198. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over. Requires Claude Code v2.1.196 or later",
    "usage": "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF",
    "usage_nature": "syntaxe",
@@ -7881,7 +8012,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun lien avec un projet ou une habitude décrits dans CONTEXTE.md ; le comportement par défaut convient."
+    "pourquoi": "Le défaut, qui transmet le travail en cours, convient ; CONTEXTE.md ne décrit aucun besoin de l'interrompre."
    },
    "sources": [
     {
@@ -7890,11 +8021,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-27",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7919,9 +8050,13 @@
     {
      "date": "2026-10-27",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "348415614e356a98053a789013951fce3ceb4a3f",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {}
   },
   {
@@ -8061,7 +8196,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_CFC_PROMPT",
    "gabarit": "court",
-   "description": "Variable qui garde les outils Claude in Chrome tout en retirant leur section du prompt système, pour les hôtes qui fournissent la leur.",
+   "description": "Variable, destinée aux hôtes qui embarquent Claude Code avec leur propre guidage navigateur, qui garde les outils Claude in Chrome tout en retirant la section Chrome du prompt système et la skill `/claude-in-chrome`.",
    "description_source": "For hosts that embed Claude Code and supply their own browser guidance. Set to 1 to keep the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and the /claude-in-chrome bundled skill. In VS Code, the extension at v2.1.314 or later also leaves the Claude in Chrome instructions out of a session's messages. Requires Claude Code v2.1.257 or later",
    "usage": "CLAUDE_CODE_DISABLE_CFC_PROMPT",
    "usage_nature": "syntaxe",
@@ -8070,7 +8205,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Réservée aux hôtes qui embarquent Claude Code avec leur propre guidage navigateur ; aucun hôte de ce genre n'est décrit dans CONTEXTE.md."
+    "pourquoi": "Aucun hôte qui embarque Claude Code n'est décrit dans CONTEXTE.md."
    },
    "sources": [
     {
@@ -8079,11 +8214,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-03",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8100,9 +8235,13 @@
     {
      "date": "2026-11-03",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {}
   },
   {
@@ -8153,7 +8292,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_CRON",
    "gabarit": "court",
-   "description": "Variable qui désactive les tâches planifiées, `/loop` compris.",
+   "description": "Variable qui, à `1`, désactive les tâches planifiées de session : la skill `/loop` et les outils cron disparaissent et les tâches déjà planifiées s'arrêtent, même en cours.",
    "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
    "usage": "CLAUDE_CODE_DISABLE_CRON",
    "usage_nature": "syntaxe",
@@ -8162,7 +8301,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun lien avec un projet ou une habitude décrits dans CONTEXTE.md ; le comportement par défaut convient."
+    "pourquoi": "Tes tâches récurrentes passent par des timers systemd (chaîne de nuit, `operer-tic`), et rien dans CONTEXTE.md ne demande de couper `/loop`."
    },
    "sources": [
     {
@@ -8171,11 +8310,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-21",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8188,10 +8327,23 @@
     {
      "date": "2026-10-21",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Chaîne de nuit lancée par le timer delta-passage.timer."
+    },
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Timer operer-tic toutes les 5 minutes."
+    }
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-disable-dangerous-rm-timeout",
@@ -8199,7 +8351,7 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
    "gabarit": "court",
-   "description": "Variable qui supprime le délai de 2 minutes des demandes de suppression sur un chemin critique : en mode auto, la suppression passe alors au classificateur.",
+   "description": "Variable qui, à `1`, supprime la limite de temps et les refus des modes auto et bypassPermissions sur les suppressions de chemins critiques (classificateur en mode auto, demande sans délai en bypassPermissions) ; elle se pose dans l'environnement qui lance Claude Code, pas dans un bloc `env` des réglages.",
    "description_source": "Set to 1 to turn off the auto and bypassPermissions time limit and denials on critical-path removals. These removals then go to the classifier in auto mode, and get an untimed prompt in bypassPermissions mode wherever Claude Code can show one. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later",
    "usage": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT",
    "usage_nature": "syntaxe",
@@ -8208,7 +8360,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Toutes tes sessions locales (sauf trading) tournent en bypassPermissions : sans ce délai, la demande de suppression attendrait ta réponse indéfiniment dans une session laissée seule ; aucun motif décrit de le couper."
+    "pourquoi": "Tes sessions locales (sauf trading) tournent en bypassPermissions et en FULL_AUTO : sans limite, une suppression critique attendrait ta réponse sans fin ; le défaut protège mieux."
    },
    "sources": [
     {
@@ -8217,18 +8369,22 @@
      "officielle": true
     }
    ],
-   "commentee": false,
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
-     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, souvent laissées seules."
+     "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Projets en FULL_AUTO, sans validation pas à pas."
     }
    },
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-27",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-26",
@@ -8245,6 +8401,10 @@
     {
      "date": "2026-10-27",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentée"
     }
    ]
   },
