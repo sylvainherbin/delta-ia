@@ -33352,7 +33352,7 @@
    "categorie": "parametres",
    "nom": "spinnerTipsEnabled",
    "gabarit": "court",
-   "description": "Réglage qui affiche ou masque les astuces sur les fonctionnalités dans la ligne du spinner.",
+   "description": "Réglage qui affiche (défaut) ou masque, avec `false`, les astuces sur les fonctionnalités de Claude Code dans la ligne du spinner ; il apparaît dans `/config` sous « Show tips ».",
    "description_source": "While Claude works, the spinner line rotates through short tips about Claude Code features, such as \"Use Plan Mode to prepare for a complex request before making changes. Press Shift+Tab twice to enable.\" Set this key to false to hide them. Appears in /config as Show tips.",
    "usage": "{\n  \"spinnerTipsEnabled\": false\n}",
    "usage_nature": "syntaxe",
@@ -33361,7 +33361,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Laisser les astuces actives, c'est le défaut : elles répondent en partie à ton irritant sur la méconnaissance des fonctionnalités."
+    "pourquoi": "Rien à régler : le défaut garde les astuces, qui répondent en partie à ton irritant (méconnaître les fonctionnalités de Claude Code)."
    },
    "sources": [
     {
@@ -33374,7 +33374,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -33387,13 +33387,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "irritant principal : méconnaissance des commandes et fonctionnalités"
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Irritant principal déclaré : méconnaissance des commandes et des fonctionnalités de Claude Code."
     }
    }
   },
@@ -33403,7 +33407,7 @@
    "categorie": "parametres",
    "nom": "spinnerTipsOverride",
    "gabarit": "court",
-   "description": "Réglage qui ajoute tes propres astuces à la rotation du spinner, ou remplace celles intégrées.",
+   "description": "Réglage qui ajoute tes propres astuces à la rotation du spinner de Claude Code, ou remplace les astuces intégrées par les tiennes.",
    "description_source": "Add your own tips to the spinner tips that Claude Code shows while Claude works, or replace the built-in tips with yours. Claude Code puts your tips in the same rotation as the built-in ones.",
    "usage": "{\n  \"spinnerTipsOverride\": {\n    \"label\": \"Acme tip\",\n    \"tips\": [\n      \"Run /review before opening a PR\",\n      {\n        \"id\": \"gateway-errors\",\n        \"text\": \"Seeing 5xx errors? Check the gateway status page first\",\n        \"cooldownSessions\": 5,\n        \"priority\": 2\n      }\n    ]\n…",
    "usage_nature": "syntaxe",
@@ -33412,7 +33416,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Pensé pour les organisations."
+    "pourquoi": "Tes sessions sont pilotées depuis l'iPhone et alimentées par les briefs d'OPÉRER : une astuce de spinner n'y transmettrait rien d'utile."
    },
    "sources": [
     {
@@ -33425,7 +33429,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -33442,13 +33446,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "L'iPhone (Remote Control) est l'interface principale de pilotage."
+    },
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER remet missions et consignes aux sessions, leçons injectées dans les briefs."
     }
    }
   },
@@ -35044,7 +35056,7 @@
    "categorie": "parametres",
    "nom": "--tmux",
    "gabarit": "court",
-   "description": "Option CLI qui crée une session tmux pour un worktree ; exige `--worktree`.",
+   "description": "Option CLI qui crée une session tmux pour le worktree ouvert par `--worktree` (obligatoire) ; `--tmux=classic` force tmux classique au lieu des volets iTerm2.",
    "description_source": "Create a tmux session for the worktree. Requires --worktree. Uses iTerm2 native panes when available; pass --tmux=classic for traditional tmux — claude -w feature-auth --tmux",
    "usage": "--tmux",
    "usage_nature": "syntaxe",
@@ -35053,7 +35065,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tmux sont créées par les services systemd et tes worktrees par `git worktree add` ou OPÉRER, pas par `--worktree`."
+    "pourquoi": "Tes sessions tmux viennent des services systemd `claude-session@<nom>` et tes worktrees de `git worktree add` ou d'OPÉRER, jamais de `--worktree`."
    },
    "sources": [
     {
@@ -35066,7 +35078,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -35083,17 +35095,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Sessions tmux créées par systemd."
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions tmux dédiées lancées par le service systemd claude-session@<nom>."
     },
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "Worktrees créés par git ou OPÉRER."
+     "pourquoi": "Worktrees créés par git worktree add ou OPÉRER ; l'option --worktree n'est pas utilisée."
     }
    }
   },
@@ -35449,7 +35465,7 @@
    "categorie": "parametres",
    "nom": "--version",
    "gabarit": "court",
-   "description": "Option CLI qui affiche le numéro de version (`claude -v`).",
+   "description": "Option CLI qui affiche le numéro de version de Claude Code (`claude -v`).",
    "description_source": "Output the version number — claude -v",
    "usage": "--version, -v",
    "usage_nature": "syntaxe",
@@ -35458,7 +35474,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le relevé automatique de `versions.json` à chaque passage delta-ia donne déjà ta version installée."
+    "pourquoi": "Le relevé automatique `docs/data/versions.json`, fait à chaque passage delta-ia, donne déjà ta version installée."
    },
    "sources": [
     {
@@ -35471,7 +35487,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -35484,13 +35500,17 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "versions installées relevées dans docs/data/versions.json"
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "Versions des outils : docs/data/versions.json, relevé à chaque passage."
     }
    }
   },

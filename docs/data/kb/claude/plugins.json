@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "plugins",
- "maj_le": "2026-11-06",
+ "maj_le": "2026-11-09",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -986,7 +986,7 @@
    "categorie": "plugins",
    "nom": "explanatory-output-style",
    "gabarit": "complet",
-   "description": "Plugin qui ajoute aux réponses des explications pédagogiques sur les choix d'implémentation et les schémas du code (reprise de l'ancien style Explanatory).",
+   "description": "Plugin qui ajoute aux réponses des explications pédagogiques sur les choix d'implémentation et les schémas du code, à la manière de l'ancien style de sortie Explanatory, déprécié. Il s'installe depuis la marketplace officielle.",
    "description_source": "Adds educational insights about implementation choices and codebase patterns (mimics the deprecated Explanatory output style)",
    "usage": "/plugin install explanatory-output-style@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -995,7 +995,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Ton irritant porte sur la connaissance des commandes et des fonctionnalités, pas sur la compréhension du code produit ; le style allongerait chaque réponse."
+    "pourquoi": "Ton irritant porte sur les commandes et fonctionnalités des outils, pas sur la compréhension du code produit ; ce style allongerait chaque réponse, donc la consommation de tes limites."
    },
    "sources": [
     {
@@ -1008,7 +1008,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "learning",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1033,13 +1033,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Irritant principal : méconnaissance des commandes et fonctionnalités."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Irritant principal : méconnaissance des commandes et fonctionnalités, pas du code."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     }
    }
   },
@@ -1281,7 +1289,7 @@
    "categorie": "plugins",
    "nom": "github",
    "gabarit": "complet",
-   "description": "Plugin du serveur MCP officiel de GitHub : tickets, pull requests, relecture et recherche de dépôts depuis Claude Code.",
+   "description": "Plugin qui installe le serveur MCP officiel de GitHub : création de tickets, gestion des pull requests, relecture de code et recherche de dépôts depuis Claude Code. Il donne accès à l'API GitHub complète par des outils MCP.",
    "description_source": "Official GitHub MCP server for repository management. Create issues, manage pull requests, review code, search repositories, and interact with GitHub's full API directly from Claude Code.",
    "usage": "/plugin install github@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -1290,7 +1298,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "`gh` et git suffisent déjà à tes sessions, qui passent surtout par Bash, pour les commits et les PR de trading-sim."
+    "pourquoi": "`gh` et git, déjà installés, couvrent les PR de trading-sim et les poussées par Bash, ton outil dominant ; un serveur MCP de plus ajouterait des définitions d'outils au contexte sans gain décrit."
    },
    "sources": [
     {
@@ -1303,7 +1311,7 @@
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1328,17 +1336,25 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
-     "sha1": "e73e7d549fe2ca1b1af99f53982744ecbffdeddc",
-     "pourquoi": "`gh` et git installés."
+     "sha1": "32d47308f4c332cc00a692719ee6cfb6cd844fc9",
+     "pourquoi": "git et gh installés sur la machine."
     },
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Bash très dominant dans l'usage observé."
+     "pourquoi": "Bash très dominant dans l'usage réel des outils."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "trading-sim : commits passés par une PR."
     }
    }
   },
@@ -2655,7 +2671,7 @@
    "categorie": "plugins",
    "nom": "project-artifact",
    "gabarit": "complet",
-   "description": "Plugin qui publie une page d'état de projet vivante sous forme d'artefact claude.ai (objectifs, étapes, suites), rafraîchie à la même adresse.",
+   "description": "Plugin qui publie une page d'état de projet vivante (vue d'ensemble, critères de réussite, suite des chantiers, prochaines étapes) comme artefact claude.ai partageable. Une configuration par projet permet de rafraîchir l'état à la même adresse et de ne rapporter que l'écart.",
    "description_source": "Generate and publish a living project status page — overview & success criteria, the workstream sequence, and next steps — as a shareable claude.ai artifact backed by a per-project config, so refreshes re-gather live state, redeploy the same URL, and report only the delta.",
    "usage": "/plugin install project-artifact@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -2664,7 +2680,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Delta et la console de pilotage couvrent déjà le suivi de tes projets."
+    "pourquoi": "OPÉRER (`operer etat`) et la console de pilotage `carnet-console` suivent déjà l'état de tes projets ; une page claude.ai ferait doublon."
    },
    "sources": [
     {
@@ -2674,17 +2690,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "env.multi-sessions": {
-     "sha1": "8bfe70216ed353690f67f30ce1aa4b0fac9a5077",
-     "pourquoi": "Console de pilotage et veille delta-ia déjà en place."
+    "projet.delta-desktop": {
+     "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+     "pourquoi": "Console de pilotage carnet-console jointe depuis l'iPhone."
+    },
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "OPÉRER tient missions, incidents et état des projets."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2696,6 +2716,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
      "changement": "commentaire révisé"
     }
    ]
@@ -2836,7 +2860,7 @@
    "categorie": "plugins",
    "nom": "ralph-loop",
    "gabarit": "complet",
-   "description": "Plugin de boucles où Claude reprend la même tâche encore et encore, en voyant son travail précédent, jusqu'à ce qu'elle soit finie (technique « Ralph Wiggum »).",
+   "description": "Plugin de boucles autoréférentielles : Claude reprend la même tâche encore et encore, en voyant son travail précédent, jusqu'à ce qu'elle soit finie (technique « Ralph Wiggum »). Il s'installe depuis la marketplace officielle.",
    "description_source": "Interactive self-referential AI loops for iterative development, implementing the Ralph Wiggum technique. Claude works on the same task repeatedly, seeing its previous work, until completion.",
    "usage": "/plugin install ralph-loop@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -2845,7 +2869,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Boucle sur une même tâche jusqu'à son terme : coûteux en jetons alors que les limites hebdomadaires sont ta friction, et OPÉRER cadre déjà les missions."
+    "pourquoi": "Une boucle jusqu'à complétion consomme des jetons sans plafond alors que les limites hebdomadaires sont ta friction, et OPÉRER cadre déjà le cycle des missions jusqu'à la clôture par preuves."
    },
    "sources": [
     {
@@ -2855,21 +2879,21 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     },
     "methode.operer": {
-     "sha1": "3848708f346f89ed457c7cb0dba0ebb732b70904",
-     "pourquoi": "OPÉRER suit les missions de bout en bout."
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Cycle de mission BRIEF → CLOSE, clôture par preuves."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "development",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2882,6 +2906,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
+     "changement": "commentaire révisé"
     }
    ]
   },
@@ -2891,7 +2919,7 @@
    "categorie": "plugins",
    "nom": "receipts",
    "gabarit": "complet",
-   "description": "Plugin qui produit un rapport personnel d'impact de Claude Code (livraisons, projets, part d'usage) à partir des transcripts locaux, pour un bilan ou un responsable.",
+   "description": "Plugin qui produit un rapport personnel d'impact de Claude Code : ce que tu as livré, sur quels projets, et la part d'usage de chaque projet. Il lit les transcripts de `~/.claude/projects` et lance git en lecture seule ; seuls des comptes et noms de projets sont envoyés, le rapport reste sur la machine.",
    "description_source": "A personal Claude Code impact report for justifying your usage to a manager or a self-review: what you shipped, which projects it went to, and each project's share of your usage. Reads your ~/.claude/projects transcripts and runs read-only git locally; only counts and project names are sent to write it up, and the report stays on your machine.",
    "usage": "/plugin install receipts@claude-plugins-official",
    "usage_nature": "syntaxe",
@@ -2900,7 +2928,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu travailles seul, sans bilan à justifier."
+    "pourquoi": "Le bilan d'usage de l'essai Max 20x était à préparer avant le 07/11, date passée ; à rejuger si un nouveau bilan d'abonnement est déclaré, car la part d'usage par projet y servirait."
    },
    "sources": [
     {
@@ -2910,17 +2938,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
-     "sha1": "76bb3b6485c20931d9bfec97b5cd40aaaf36b89c",
-     "pourquoi": "Développeur indépendant, sans responsable."
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Essai Max 20x avec bilan d'usage avant le 07/11 ; développeur indépendant, sans responsable."
     }
    },
    "retiree": false,
    "origine": "cc-plugins",
    "groupe": "productivity",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-09",
    "historique": [
     {
      "date": "2026-09-26",
@@ -2932,6 +2960,10 @@
     },
     {
      "date": "2026-10-11",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-09",
      "changement": "commentaire révisé"
     }
    ]
