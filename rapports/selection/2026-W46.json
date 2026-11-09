@@ -1,0 +1,112 @@
+{
+ "semaine": "2026-W46",
+ "jour": "2026-11-09",
+ "taille": 5,
+ "revoir_apres_jours": 28,
+ "priorites": [
+  "trading-sim d'abord",
+  "ce qui débloque Codex en CLI + tmux + remote control",
+  "ce qui allège les limites hebdomadaires",
+  "ce qui renforce les audits croisés Claude ↔ Codex"
+ ],
+ "candidats": 231,
+ "ecartees": {
+  "retour": 0,
+  "a_revoir_attente": 0,
+  "trop_proposee": 1
+ },
+ "avertissements": [],
+ "entrees": [
+  {
+   "rang": 1,
+   "id": "rust-v0.167.0",
+   "origine": "veille",
+   "produit": "codex",
+   "categorie": "veille",
+   "nom": "Codex CLI 0.167.0 : centre des agents sans daemon, résultats non lus et navigation conservée",
+   "quoi": "Après mise à jour de la CLI terminal vers 0.167.0, reprendre l’exemple `codex agents` de la fiche, puis essayer `codex agents --no-daemon` dans un terminal d’essai du flux d’audit trading-sim sous tmux ; résultat attend…",
+   "pourquoi": "Tu utilises Codex sous tmux avec remote control pour les audits de trading-sim : les résultats non lus dans le centre des agents répondent directement au suivi de tes conversations, et le changement de backend conserve désormais le brouillon en cours. Les aperçus d’images et leurs chemins cliquable…",
+   "caduque_si": "caduque si change : version citée v0.167.0",
+   "score": 34,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux, remote, control (+18)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)",
+    "nouveauté de la veille, impact moyen (+5)"
+   ]
+  },
+  {
+   "rang": 2,
+   "id": "claude-code-2.1.319",
+   "origine": "veille",
+   "produit": "claude-code",
+   "categorie": "veille",
+   "nom": "Claude Code 2.1.319 : `/tasks` rouvre les sous-agents terminés, `permissions.denyInsteadOfPrompting`, correctifs de règles deny/ask de Bash",
+   "quoi": "Essayer la ligne « Earlier in this session » de `/tasks` sur un sous-agent `Explore` d'une mission de développement de delta-ia.",
+   "pourquoi": "La version installée est déjà la 2.1.319 (`docs/data/versions.json` : à jour). Tes sessions lancent des sous-agents (`Explore`, `general-purpose`, vérifications en parallèle, relevé du 04/10) : la ligne « Earlier in this session » de `/tasks` te laisse rouvrir un sous-agent fini sans relancer sa re…",
+   "caduque_si": "caduque si change : version citée v2.1.319",
+   "score": 31,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, remote, control (+12)",
+    "priorité 3 « ce qui allège les limites hebdomadaires » : limites (+4)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : claude, codex (+2)",
+    "nouveauté de la veille, impact moyen (+5)"
+   ]
+  },
+  {
+   "rang": 3,
+   "id": "codex-commandes-codex-agents",
+   "origine": "a-tester",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "codex agents",
+   "quoi": "Essayer codex agents",
+   "pourquoi": "Après mise à jour de la CLI terminal vers 0.167.0, essayer `codex agents` entre deux conversations d’audit trading-sim sous tmux ; résultat attendu : les résultats non lus sont repérables dans le centre. La variante `--no-daemon` est ajoutée par la release, sans remplacer le serveur partagé utilisé…",
+   "caduque_si": "caduque si change : version citée v0.167.0",
+   "score": 29,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, cli, tmux, remote, control (+18)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)"
+   ]
+  },
+  {
+   "rang": 4,
+   "id": "codex-parametres-codex-doctor-network-only",
+   "origine": "a-tester",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex doctor --network-only",
+   "quoi": "Essayer codex doctor --network-only",
+   "pourquoi": "Essayer `codex doctor --network-only` depuis le terminal du flux Codex sous tmux ; résultat attendu : un diagnostic limité à la configuration et aux connexions réseau, sans lancer d’audit trading-sim.",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 27,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, tmux (+9)",
+    "priorité 3 « ce qui allège les limites hebdomadaires » : limites (+4)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : audits, codex (+3)",
+    "fiche ajoutée le 2026-11-03 (+3)"
+   ]
+  },
+  {
+   "rang": 5,
+   "id": "codex-commandes-config",
+   "origine": "a-tester",
+   "produit": "codex",
+   "categorie": "commandes",
+   "nom": "/config",
+   "quoi": "Essayer /config",
+   "pourquoi": "Dans le flux Codex sous tmux de trading-sim, ouvrir `/config` et parcourir les préférences sans les modifier ; résultat attendu : repérer les notifications et raccourcis, toute modification étant sauvegardée automatiquement.",
+   "caduque_si": "caducité non renseignée dans la fiche (ni version, ni prix, ni limite, ni disponibilité)",
+   "score": 21,
+   "classement": [
+    "priorité 1 « trading-sim d'abord » : trading-sim (+8)",
+    "priorité 2 « ce qui débloque Codex en CLI + tmux + remote control » : codex, tmux (+9)",
+    "priorité 4 « ce qui renforce les audits croisés Claude ↔ Codex » : codex (+1)",
+    "fiche ajoutée le 2026-11-03 (+3)"
+   ]
+  }
+ ]
+}
