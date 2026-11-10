@@ -1,0 +1,150 @@
+{
+  "date": "2026-11-10",
+  "perimetre": "actu",
+  "agent": "claude-code",
+  "genere_le": "2026-11-10T03:10:49+00:00",
+  "synthese": "Compte et quotas : aucune annonce de limite, de crédit, d'offre ou de tarif dans l'actualité du jour ; la remise à zéro Fable et les offres de lancement de Fable 5.2 sont dans la veille `claude` du jour. Mesures d'OBSERVATORY du 10/11 à 03 h UTC : semaine Claude à 21 % et semaine Fable à 10 % (remise à zéro le 15/11 à 16 h UTC), ChatGPT semaine à 75 % (remise à zéro le 11/11 à 04 h 54 UTC), sous le seuil D71 de 80 %, jauge de session 5 h absente de la mesure. Deux éléments utiles côté actualité : Ars Technica rapporte l'enquête d'Apiiro sur des secrets exposés dans des fichiers `.claude/settings.local.json` publiés sur GitHub, à recouper avec ton dépôt public carnet ; Simon Willison observe qu'à l'effort `max` Fable 5.2 a épuisé ses 128 000 jetons en réflexion sans répondre.",
+  "elements": [
+    {
+      "id": "https://arstechnica.com/ai/2026/11/claude-code-settings-files-expose-thousands-of-secrets-on-github/",
+      "ids_bruts": [
+        "https://arstechnica.com/ai/2026/11/claude-code-settings-files-expose-thousands-of-secrets-on-github/"
+      ],
+      "produit": "actu",
+      "titre": "Des milliers de secrets exposés sur GitHub dans les fichiers `.claude/settings.local.json` de Claude Code (Apiiro, via Ars Technica)",
+      "version": null,
+      "date_publication": "2026-11-09",
+      "type": "actu",
+      "resume": "Ars Technica rapporte que des chercheurs d'Apiiro ont trouvé des milliers de secrets (mots de passe de bases de données, jetons d'API, identifiants root) dans des fichiers de réglages de Claude Code publiés dans des dépôts GitHub. Quand l'utilisateur choisit « Yes, and don't ask again » pour une commande shell, la règle est écrite dans `.claude/settings.local.json`, parfois telle quelle avec les informations sensibles de la commande ; Anthropic indique dans sa documentation que ce fichier est ajouté à la liste globale d'exclusion de git du développeur, ce qui évite en général son partage. L'extrait lu par Delta ne dit pas si Anthropic a corrigé quelque chose.",
+      "sources": [
+        {
+          "url": "https://arstechnica.com/ai/2026/11/claude-code-settings-files-expose-thousands-of-secrets-on-github/",
+          "libelle": "Ars Technica — Claude Code is accidentally exposing secrets all over GitHub",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "moyen",
+      "pour_toi": "Ton dépôt carnet est public et ne doit contenir aucun secret ni donnée personnelle (CONTEXTE.md, AGENTS.md), et Claude Code y sert au développement. Tes sessions locales tournent en `bypassPermissions` depuis le 06/10, régime qui n'a plus de demande d'approbation à mémoriser, mais les règles « don't ask again » acceptées avant cette date ont pu être écrites dans un `.claude/settings.local.json` : la commande de l'action le tranche pour carnet.",
+      "projets_concernes": [
+        "carnet"
+      ],
+      "action": {
+        "description": "Vérifie que `.claude/settings.local.json` n'est pas suivi par git dans le dépôt public carnet et que ses règles `Bash(...)` ne contiennent aucun secret.",
+        "etapes": [
+          "Dans `~/projets/carnet`, tape `git ls-files .claude` puis `git check-ignore -v .claude/settings.local.json` ; résultat attendu : `git ls-files` ne liste pas `settings.local.json`, et `git check-ignore` nomme la règle d'exclusion qui l'ignore.",
+          "Dans le même dossier, tape `grep -n 'Bash(' .claude/settings.local.json` ; résultat attendu : le fichier n'existe pas, ou aucune règle ne contient de mot de passe, de jeton ni de clé ; une règle qui en contient est à supprimer du fichier et le secret à révoquer."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "projet.carnet": {
+          "sha1": "fd08c925758ef0c7d719d220bc4e8c67d1442f19",
+          "pourquoi": "Dépôt public sans secret ni donnée personnelle ; Claude Code en développement."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading-sim."
+        }
+      }
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/9/llm-anthropic/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Nov/9/llm-anthropic/"
+      ],
+      "produit": "actu",
+      "titre": "llm-anthropic 0.31 : Fable 5.2 à l'effort `max` épuise 128 000 jetons de réflexion sans répondre dans le test de Simon Willison",
+      "version": "0.31",
+      "date_publication": "2026-11-09",
+      "type": "actu",
+      "resume": "Simon Willison publie llm-anthropic 0.31, qui ajoute Fable 5.2 et Mythos 5.2 à son outil `llm`. Il a lancé le même prompt (un SVG) aux cinq niveaux de réflexion, de `low` à `max` : à `max`, Fable 5.2 n'a rendu aucune image après avoir dépensé ses 128 000 jetons en réflexion, un défaut qu'il avait vu avec Opus 5.5 et qui est nouveau pour la série Fable (Fable 5 et 5.1 avaient répondu à `max`). C'est un essai d'un seul prompt.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Nov/9/llm-anthropic/",
+          "libelle": "Simon Willison — llm-anthropic 0.31",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "moyen",
+      "pour_toi": "CONTEXTE.md place la consommation Fable/Opus près des plafonds hebdomadaires (piste 11), et tes services fixent l'effort par rôle au lancement (`--effort medium` pour le chef) : un niveau `max` qui dépense ses 128 000 jetons de sortie sans répondre serait de la limite perdue. C'est l'essai unique d'un tiers sur un seul prompt ; Anthropic dit de son côté que `max` n'est pas recommandé au quotidien (élément Fable 5.2 de la veille `claude` du jour).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Garder l'effort de la session d'essai Fable 5.2 à medium ou high, jamais à `max`.",
+        "etapes": [
+          "Dans la session `delta` passée sur Fable 5.2 pour l'essai (élément Fable 5.2 de la veille `claude`), tape `/effort status` (syntaxe de la fiche `claude-code-commandes-effort`) ; résultat attendu : le niveau en vigueur s'affiche, medium par défaut dans Claude Code d'après Anthropic, et tu ne tapes `/effort max` dans aucune session pendant l'essai."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-effort"
+      ],
+      "contexte_sections": {
+        "optimisation.pistes": {
+          "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
+          "pourquoi": "Point 11 : Fable/Opus proche des plafonds hebdomadaires."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Services claude-session avec effort réglé par rôle (--effort medium pour le chef)."
+        }
+      }
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/9/details-summary/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Nov/9/details-summary/"
+      ],
+      "produit": "actu",
+      "titre": "Descriptions de pull requests écrites par un agent : un paragraphe humain, puis le détail dans `<details><summary>` (Simon Willison)",
+      "version": null,
+      "date_publication": "2026-11-09",
+      "type": "actu",
+      "resume": "Simon Willison décrit sa pratique pour les pull requests ouvertes par Claude Code ou Codex : un premier paragraphe choisi par l'humain, parfois avec une capture, puis le texte complet de l'agent dans un bloc `<details><summary>` replié, dont le résumé nomme le modèle et souvent l'effort (par exemple « Claude Opus 5.5 Medium »). GitHub Markdown accepte ces balises dans la description d'une PR ou un commentaire d'issue.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Nov/9/details-summary/",
+          "libelle": "Simon Willison — Hide your slop PR descriptions behind <details><summary>",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://simonwillison.net/2026/Nov/9/mysterious-beeps/",
+      "raison": "projet domestique de l'auteur construit avec Claude Code (localiser un bip), sans nouveauté d'outil ni de réglage (D24)"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/9/hn-50421091/",
+      "raison": "commentaire Hacker News : portage d'une scène 3D par Opus 5.5, sans nouveauté d'outil (D24)"
+    },
+    {
+      "id": "https://importai.substack.com/p/import-ai-480-self-sustaining-space",
+      "raison": "lettre de recherche générale (conjecture quantique prouvée, gants robotiques, économie spatiale, entraînement distribué), sans effet sur les outils ni les conditions d'usage (D24)"
+    },
+    {
+      "id": "https://arstechnica.com/tech-policy/2026/11/ceo-jensen-huang-admits-affair-as-nvidia-probes-possible-chinese-espionage/",
+      "raison": "affaire personnelle et enquête d'espionnage visant un dirigeant, sans rapport avec les modèles ni les outils IA (D24)"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/7/hn-50407316/",
+      "raison": "commentaire sur un bureau d'écrivain, sans rapport avec l'IA (D24)"
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/3/hn-50354278/",
+      "raison": "opinion sur l'enseignement de l'informatique face à l'IA, aucun outil ni réglage concerné (D24)"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
