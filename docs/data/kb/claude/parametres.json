@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-09",
+ "maj_le": "2026-11-10",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 675,
- "commentees": 621,
+ "total": 676,
+ "commentees": 622,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -22263,7 +22263,7 @@
    "nom": "fastModePerSessionOptIn",
    "gabarit": "court",
    "description": "Réglage qui empêche un `fastMode: true` enregistré d'activer le mode rapide au démarrage : il faut relancer `/fast` dans chaque session.",
-   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so new sessions on a supported model start with fast mode on. Set this key to true to stop that: a saved fastMode: true no longer turns fast mode on at session start, and each person runs /fast in each session they want it. Claude Code leaves fastMode in their file, so turning this key off restores the old behavior.",
+   "description_source": "Normally, running /fast saves fastMode to a person's user settings, so new sessions on a supported model start with fast mode on. On Fable 5.2, that happens only if they turned it on while using Fable 5.2. To make each person run /fast in each session they want it, set this key to true. Claude Code leaves fastMode in their file, so turning this key off restores the old behavior.",
    "usage": "{\n  \"fastModePerSessionOptIn\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22284,7 +22284,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-11-07",
+   "maj_le": "2026-11-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22296,6 +22296,10 @@
     },
     {
      "date": "2026-11-07",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-10",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -28441,7 +28445,7 @@
    "nom": "--permission-prompt-tool",
    "gabarit": "court",
    "description": "Option CLI qui confie les demandes de permission du mode non interactif à un outil MCP.",
-   "description_source": "Specify an MCP tool to handle permission prompts in non-interactive mode. Pass the full name, such as mcp__<server>__<tool>, of a tool on an MCP server that the run loads. Claude Code waits for that tool's MCP server to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default. The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an allow result for one to a deny. This restriction requires Claude Code v2.1.199 or later — claude -p --mcp-config ./mcp.json --permission-prompt-tool mcp__permissions__approve \"query\"",
+   "description_source": "Specify an MCP tool to handle permission prompts in non-interactive mode. Pass the full name, such as mcp__<server>__<tool>, of a tool on an MCP server that the run loads. Claude Code waits for that tool's MCP server to connect before running the first turn, up to the MCP_TIMEOUT startup timeout, 30 seconds by default. See what the tool must return. The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an allow result for one to a deny. This restriction requires Claude Code v2.1.199 or later — claude -p --mcp-config ./mcp.json --permission-prompt-tool mcp__permissions__approve \"query\"",
    "usage": "--permission-prompt-tool",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -28462,7 +28466,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-10-20",
+   "maj_le": "2026-11-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -28474,6 +28478,10 @@
     },
     {
      "date": "2026-10-20",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-10",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -29108,6 +29116,57 @@
      "source": "contexte:config.claude-code.mcp",
      "releve_le": "2026-10-16",
      "caduc_si": "Le `deny` de trading-sim couvre les connecteurs de compte."
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-permissions-denyinsteadofprompting",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "permissions.denyInsteadOfPrompting",
+   "gabarit": "court",
+   "description": "Quand la clé vaut `true`, un appel d'outil qui attendrait une réponse à une demande de permission est refusé et le tour continue : la session reste en marche quand personne n'est là pour répondre. Exige Claude Code 2.1.319 ou plus.",
+   "description_source": "Set this to true to keep a session running when nobody is there to answer a permission prompt. Claude Code denies a tool call that would otherwise wait on a prompt, and the turn continues. Requires Claude Code v2.1.319 or later.",
+   "usage": "{\n  \"permissions\": {\n    \"defaultMode\": \"auto\",\n    \"denyInsteadOfPrompting\": true\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions locales tournent en `bypassPermissions`, donc sans demande de permission à refuser ; seul trading-sim échappe à ce régime, et c'est ChatGPT Work qui y arbitre."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#permissionsdenyinsteadofprompting",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions sauf trading-sim."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Sur trading-sim, ChatGPT (Work) est l'architecte et l'arbitre."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Permission settings",
+   "maj_le": "2026-11-10",
+   "historique": [
+    {
+     "date": "2026-11-10",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-10",
+     "changement": "commentée"
     }
    ]
   },

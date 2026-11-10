@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-03",
+ "maj_le": "2026-11-10",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 135,
+ "commentees": 133,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -3280,7 +3280,7 @@
    "nom": "claude remote-control",
    "gabarit": "complet",
    "description": "Démarre un serveur Remote Control sans session interactive locale, pour piloter Claude Code depuis claude.ai ou l'app Claude. Après l'arrêt du serveur, les sessions qu'il servait peuvent être reprises.",
-   "description_source": "Start a Remote Control server to control Claude Code from Claude.ai or the Claude app. Runs in server mode (no local interactive session). See Server mode flags. After you stop the server, you can bring back the sessions it was serving. See Resume sessions after stopping the server — claude remote-control --name \"My Project\"",
+   "description_source": "Start a Remote Control server to control Claude Code from claude.ai or the Claude app. Alias: claude rc. Runs in server mode (no local interactive session). See Server mode flags. After you stop the server, you can bring back the sessions it was serving. See Resume sessions after stopping the server — claude remote-control --name \"My Project\"",
    "usage": "claude remote-control",
    "usage_nature": "syntaxe",
    "exemple": "claude remote-control --name \"My Project\"",
@@ -3297,11 +3297,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-11-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3310,6 +3310,10 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-10",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -10673,7 +10677,7 @@
    "nom": "/usage",
    "gabarit": "complet",
    "description": "Affiche le coût de la session, les limites du forfait et les statistiques d'activité ; sur les forfaits Pro, Max, Ultra, Team et Enterprise, détaille ce qui compte dans les limites du forfait. `/cost` et `/stats` en sont des alias.",
-   "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Ultra, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. /cost and /stats are aliases",
+   "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Ultra, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. Behind a Claude apps gateway that tracks spend, shows your spend through the gateway. /cost and /stats are aliases",
    "usage": "/usage",
    "usage_nature": "syntaxe",
    "exemple": "/usage",
@@ -10690,11 +10694,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-31",
+   "maj_le": "2026-11-10",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10829,6 +10833,31 @@
     {
      "date": "2026-10-31",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-10",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Ultra, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. /cost and /stats are aliases",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-10",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/usage` affiche le coût de la session, les limites du forfait et l'activité ; sur Pro, Max, Ultra, Team et Enterprise, il détaille ce qui compte dans les limites ; `/cost` et `/stats` en sont des alias.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-31",
+       "caduc_si": "la commande change de nom, d'alias ou de contenu"
+      },
+      {
+       "affirmation": "Le forfait Max (20x) est à l'essai d'un mois depuis le 07/10, avec un bilan d'usage à préparer avant le 07/11.",
+       "source": "contexte:profil",
+       "releve_le": "2026-10-31",
+       "caduc_si": "Sylvain décide de la suite de l'essai ou change de forfait"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -10838,21 +10867,7 @@
      "pourquoi": "Forfait Max (20x) à l'essai jusqu'au 07/11, bilan d'usage à préparer ; aucun crédit Claude Code cloud (21/10)."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "`/usage` affiche le coût de la session, les limites du forfait et l'activité ; sur Pro, Max, Ultra, Team et Enterprise, il détaille ce qui compte dans les limites ; `/cost` et `/stats` en sont des alias.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-31",
-     "caduc_si": "la commande change de nom, d'alias ou de contenu"
-    },
-    {
-     "affirmation": "Le forfait Max (20x) est à l'essai d'un mois depuis le 07/10, avec un bilan d'usage à préparer avant le 07/11.",
-     "source": "contexte:profil",
-     "releve_le": "2026-10-31",
-     "caduc_si": "Sylvain décide de la suite de l'essai ou change de forfait"
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-usage-credits",
