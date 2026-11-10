@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 133,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -3279,7 +3279,7 @@
    "categorie": "commandes",
    "nom": "claude remote-control",
    "gabarit": "complet",
-   "description": "Démarre un serveur Remote Control sans session interactive locale, pour piloter Claude Code depuis claude.ai ou l'app Claude. Après l'arrêt du serveur, les sessions qu'il servait peuvent être reprises.",
+   "description": "Démarre un serveur Remote Control (alias `claude rc`) sans session interactive locale, pour piloter Claude Code depuis claude.ai ou l'app Claude ; le serveur peut créer plusieurs sessions (`--spawn`, `--capacity`). Après un arrêt par Ctrl+C, les sessions qu'il servait se reprennent pendant environ quatre heures en relançant la commande dans le même dossier, ou une seule avec `--continue` ou `--session-id <id>` (Claude Code 2.1.200 ou plus).",
    "description_source": "Start a Remote Control server to control Claude Code from claude.ai or the Claude app. Alias: claude rc. Runs in server mode (no local interactive session). See Server mode flags. After you stop the server, you can bring back the sessions it was serving. See Resume sessions after stopping the server — claude remote-control --name \"My Project\"",
    "usage": "claude remote-control",
    "usage_nature": "syntaxe",
@@ -3288,7 +3288,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tes sessions tournent déjà avec `--remote-control herbin-<nom>` dans tmux, ce qui garde une session locale consultable ; le mode serveur n'apporte rien d'identifié."
+    "pourquoi": "Tes sessions tournent déjà en mode interactif par `claude --resume <id> --remote-control <nom>` dans tmux, sous systemd ; la documentation renvoie ces sessions vers `claude --resume`, pas vers le mode serveur, qui n'apporte rien d'identifié."
    },
    "sources": [
     {
@@ -3297,7 +3297,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -3314,10 +3314,20 @@
     {
      "date": "2026-11-10",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-10",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Services claude-session@<nom> qui lancent claude --resume <id> --remote-control <nom> dans tmux."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-respawn-id",
