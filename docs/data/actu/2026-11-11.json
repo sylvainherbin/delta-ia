@@ -1,0 +1,189 @@
+{
+  "date": "2026-11-11",
+  "perimetre": "actu",
+  "agent": "claude-code",
+  "genere_le": "2026-11-11T03:12:00+00:00",
+  "synthese": "Compte et quotas : aucune annonce de limite, de remise à zéro, d'offre ou de tarif d'Anthropic ou d'OpenAI dans l'actualité du jour ; la remise à zéro complète annoncée par @ClaudeDevs (à utiliser avant le 10/12 à 14 h PT) et les remises Fable de lancement sont dans la veille `claude` du jour. Mesures d'OBSERVATORY du 11/11 à 03 h UTC : semaine Claude à 43 % et semaine Fable à 47 % (remise à zéro le 15/11 à 16 h UTC), sous le seuil D71 de 80 %, jauge de session 5 h absente de la mesure ; ChatGPT semaine à 100 % (remise à zéro le 11/11 à 04 h 54 UTC), au-dessus du seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Un seul élément avec un geste : la documentation d'Anthropic sur Fable 5.2, citée par Simon Willison, donne une phrase de brief qui fait fusionner le code répété. Le reste (Meta Muse Ember, Gemini 4 Carbon, Grok Build, AlphaProof Code) ne touche pas tes outils ; les tarifs Claude repris dans l'article sur Muse Ember sont ceux de Fable 5.2 déjà couverts le 10/11.",
+  "elements": [
+    {
+      "id": "https://simonwillison.net/2026/Nov/10/prompting-claude-fable-52/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Nov/10/prompting-claude-fable-52/"
+      ],
+      "produit": "actu",
+      "titre": "Prompting Claude Fable 5.2 : dire que le code est « le sien » fait fusionner le code répété (test d'Anthropic sur de petites tâches)",
+      "version": null,
+      "date_publication": "2026-11-10",
+      "type": "actu",
+      "resume": "Simon Willison cite la documentation d'Anthropic « Prompting Claude Fable 5.2 » : quand le brief ne dit rien de la propriété du code, ou présente la base comme celle de quelqu'un d'autre, le modèle tend à ajouter à la structure existante, même en répétant du code. Avec une phrase disant que la base de code est la sienne, il a fusionné le code répété dans environ la moitié des essais, contre moins d'un dixième sans elle (petites tâches de code, test d'Anthropic ; extrait cité par Willison, la page d'origine n'est pas lue par Delta).",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Nov/10/prompting-claude-fable-52/",
+          "libelle": "Simon Willison — Quoting Prompting Claude Fable 5.2",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "faible",
+      "pour_toi": "Delta rédige des briefs de développement que les devs reçoivent par OPÉRER (consigne de Sylvain du 04/10, CONTEXTE.md), et la veille `claude` du 10/11 propose un essai de Fable 5.2. La phrase ne vaut que pour Fable 5.2 et de petites tâches, et elle laisse au modèle la décision de restructurer : à ne pas mettre dans un brief pour trading-sim, dont l'architecture est gelée (`TRADING-SIM-ARCHITECTURE-V1.0`).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Ajoute en tête d'un brief la phrase `This codebase is yours: what it's for and how it's built are your call, and you'll keep building on it.` ; essai : un brief de nettoyage de code répété sur delta-ia (`mission-dev delta`), confié à une session Fable 5.2, comparé au même brief sans la phrase ; résultat attendu : avec la phrase, le modèle fusionne le code répété au lieu d'ajouter par-dessus.",
+        "etapes": [
+          "Choisis un module de `~/projets/delta-ia` qui répète du code, et écris le brief en ajoutant en première ligne `This codebase is yours: what it's for and how it's built are your call, and you'll keep building on it.` ; résultat attendu : le brief nomme le module et la phrase figure en tête.",
+          "Lance le même brief sans la phrase sur une copie du module ; résultat attendu : la comparaison des deux diffs montre si le code répété est fusionné avec la phrase seulement."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Consigne du 04/10 sur les briefs de développement confiés aux sous-agents et aux devs."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Architecture versionnée et gelée : une consigne de restructuration libre n'y convient pas."
+        }
+      }
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/10/muse-ember/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Nov/10/muse-ember/"
+      ],
+      "produit": "actu",
+      "titre": "Meta lance Muse Ember, modèle compact au même prix d'entrée que Claude Haiku 5.5 et GPT-6 Luna (0,10 $ par Mtok en entrée, 0,50 $ en sortie sous le seuil de contexte)",
+      "version": null,
+      "date_publication": "2026-11-10",
+      "type": "actu",
+      "resume": "Meta AI lance Muse Ember, son plus petit modèle, destiné aux tâches d'agents répétées (appels d'outils, sous-tâches de code, routage, extraction). Sous le seuil de contexte (200 000 jetons pour Ember), il coûte 0,10 $ par Mtok en entrée et 0,50 $ en sortie, comme GPT-6 Luna et Claude Haiku 5.5 ; au-delà, 0,30 $ et 1,50 $. Willison relève que Fable 5.2, à 8 $ et 40 $ par Mtok, coûte 80 fois ce prix d'entrée, et que la comparaison au jeton compte peu quand les jetons de raisonnement diffèrent. Les tarifs Claude cités sont des repères déjà publiés, non une annonce d'Anthropic.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Nov/10/muse-ember/",
+          "libelle": "Simon Willison — Introducing Our Smallest, Most Efficient Model: Muse Ember",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://simonwillison.net/2026/Nov/10/llm-gemini/",
+      "ids_bruts": [
+        "https://simonwillison.net/2026/Nov/10/llm-gemini/",
+        "https://deepmind.google/blog/gemini-4-carbon-is-now-available/"
+      ],
+      "produit": "actu",
+      "titre": "Gemini 4 Carbon ouvert à tous : 2 $ et 10 $ par Mtok au lancement, doublés le 1er décembre",
+      "version": null,
+      "date_publication": "2026-11-10",
+      "type": "actu",
+      "resume": "Google ouvre Gemini 4 Carbon à tous, deux semaines après une annonce limitée à des défenseurs cyber. Simon Willison relève un prix de 2 $ en entrée et 10 $ en sortie par Mtok au lancement, qui doit passer à 4 $ et 20 $ le 1er décembre, et publie llm-gemini 0.36 pour l'appeler. La page de DeepMind lue par Delta est vide.",
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Nov/10/llm-gemini/",
+          "libelle": "Simon Willison — llm-gemini 0.36",
+          "officielle": false
+        },
+        {
+          "url": "https://deepmind.google/blog/gemini-4-carbon-is-now-available/",
+          "libelle": "Google DeepMind — Gemini 4 Carbon is now available",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://arstechnica.com/security/2026/11/grok-build-coding-agent-leaks-oodles-of-confidential-info-some-belonging-to-spacexsi/",
+      "ids_bruts": [
+        "https://arstechnica.com/security/2026/11/grok-build-coding-agent-leaks-oodles-of-confidential-info-some-belonging-to-spacexsi/"
+      ],
+      "produit": "actu",
+      "titre": "Grok Build : les liens de partage d'applications permettent d'énumérer des milliers de projets et d'en lire les données (Claroc, via Ars Technica)",
+      "version": null,
+      "date_publication": "2026-11-10",
+      "type": "actu",
+      "resume": "Ars Technica rapporte une recherche de la société de sécurité Claroc : les liens de partage de Grok Build, l'agent de développement de SpaceXSI, sont randomisés mais énumérables, et ouvrir un lien montre l'application et toutes ses données, y compris des données internes d'entreprises et de SpaceXSI elle-même. Le détail d'un correctif n'est pas dans l'extrait lu.",
+      "sources": [
+        {
+          "url": "https://arstechnica.com/security/2026/11/grok-build-coding-agent-leaks-oodles-of-confidential-info-some-belonging-to-spacexsi/",
+          "libelle": "Ars Technica — Grok Build coding agent leaks oodles of confidential info",
+          "officielle": false
+        }
+      ],
+      "certitude": "rapporte",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://deepmind.google/blog/introducing-alphaproof-code/",
+      "ids_bruts": [
+        "https://deepmind.google/blog/introducing-alphaproof-code/"
+      ],
+      "produit": "actu",
+      "titre": "AlphaProof Code (DeepMind) : des agents écrivent trois millions de lignes de preuves en Lean pour vérifier le chiffrement central de Signal",
+      "version": null,
+      "date_publication": "2026-11-10",
+      "type": "actu",
+      "resume": "DeepMind présente AlphaProof Code, des agents qui ont écrit trois millions de lignes de preuves en Lean pour vérifier le chiffrement central de Signal. L'extrait lu par Delta tient en cette phrase : ni disponibilité, ni accès, ni tarif ne sont donnés.",
+      "sources": [
+        {
+          "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+          "libelle": "Google DeepMind — Introducing AlphaProof Code",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://simonwillison.net/2026/Nov/10/yonkers-rises/",
+      "raison": "démonstration d'animation 3D avec Fable 5.2, sans commande, réglage ni information sur le modèle (D24)"
+    },
+    {
+      "id": "https://arstechnica.com/science/2026/11/what-happens-to-mathematics-when-ai-becames-an-oracle/",
+      "raison": "entretien autour d'un livre de vulgarisation sur les mathématiques, sans lien avec les outils IA (D24)"
+    },
+    {
+      "id": "https://arstechnica.com/gadgets/2026/11/ukraines-fiber-optic-drones-get-squeezed-by-ai-data-center-demand/",
+      "raison": "chaîne d'approvisionnement de la fibre optique pour les drones, sans lien avec les outils IA (D24)"
+    },
+    {
+      "id": "https://arstechnica.com/ai/2026/11/ring-cameras-go-mobile-as-amazon-debuts-ai-powered-security-drone-and-robot/",
+      "raison": "produits grand public de robotique de sécurité (D24)"
+    },
+    {
+      "id": "https://arstechnica.com/google/2026/11/deepmind-reveals-gemini-robotics-2-5-and-open-safety-benchmark-asimov-jailbreak/",
+      "raison": "robotique : Gemini Robotics 2.5 et son banc de sécurité (D24)"
+    },
+    {
+      "id": "https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/",
+      "raison": "robotique : Gemini Robotics 2.5 (D24), même sujet que l'article d'Ars Technica du jour"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
