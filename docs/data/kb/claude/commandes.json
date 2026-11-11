@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 132,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -6280,7 +6280,7 @@
    "categorie": "commandes",
    "nom": "/list-agents",
    "gabarit": "complet",
-   "description": "Liste les subagents, coéquipiers d'une équipe d'agents et autres sessions Claude Code que Claude peut joindre, avec le nom à employer pour chacun. Alias : `/peers`. Uniquement dans les sessions où la messagerie entre sessions est activée.",
+   "description": "Liste les subagents, les coéquipiers d'une équipe d'agents et les autres sessions Claude Code que Claude peut joindre, avec le nom à employer pour chacun ; alias `/peers`. Les lignes des coéquipiers et la première ligne qui donne le nom de la session courante exigent la v2.1.239 ou plus. La commande n'existe que dans les sessions où la messagerie entre sessions est activée.",
    "description_source": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
    "usage": "/list-agents",
    "usage_nature": "syntaxe",
@@ -6289,7 +6289,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Depuis une session Claude Code, tes sessions se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code. Les messages venant de Codex passent par `operer message`, pas par cette liste."
+    "pourquoi": "Tes sessions Claude Code se parlent par `SendMessage` et `ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 : c'est la vérification à refaire pour ta priorité d'échanges Cowork ↔ Claude Code, d'autant que les tâches Cowork tournent dans le cloud depuis le 06/10 et n'y apparaîtraient plus. Les messages venant de Codex passent par `operer message`, pas par cette liste."
    },
    "sources": [
     {
@@ -6298,7 +6298,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -6392,20 +6392,44 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
-     "pourquoi": "Claude Code : `SendMessage`/`ListAgents` ; Codex : `operer message` ; `/list-agents` montre Dispatch (25/09) ; Cowork dans le cloud depuis le 06/10."
+     "pourquoi": "Claude Code : `SendMessage`/`ListAgents` ; `/list-agents` montre Dispatch (25/09) ; Cowork dans le cloud depuis le 06/10 ; Codex : `operer message`."
     },
     "usage.hors-machine": {
      "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
      "pourquoi": "Priorité de veille : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/list-agents` (alias `/peers`) liste les subagents, coéquipiers et autres sessions Claude Code joignables, avec leur nom ; seulement là où la messagerie entre sessions est activée.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-11",
+     "caduc_si": "la commande change de nom, perd la liste des sessions ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Les sessions Claude Code de Sylvain se parlent par `SendMessage`/`ListAgents`, et `/list-agents` a montré Dispatch comme session Remote Control le 25/09 ; Cowork tourne dans le cloud depuis le 06/10.",
+     "source": "contexte:env.multi-sessions",
+     "releve_le": "2026-11-11",
+     "caduc_si": "les sessions cessent d'utiliser la messagerie entre sessions ou Cowork retrouve un mode local"
+    },
+    {
+     "affirmation": "La veille doit signaler en priorité ce qui permet aux sessions Cowork, Dispatch compris, d'échanger directement avec les sessions Claude Code.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-11-11",
+     "caduc_si": "Sylvain retire cette priorité de la consigne de veille"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-login",
@@ -8699,7 +8723,7 @@
    "categorie": "commandes",
    "nom": "/review",
    "gabarit": "complet",
-   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument (`/review 1234`), avec les mêmes niveaux d'effort et options. Sans niveau, reprend le dernier niveau de `low` à `max` tapé ; `/code-review ultra` lance la revue approfondie dans le cloud. Avant la v2.1.223, `/review` était une revue distincte, en un passage et en lecture seule, d'une PR GitHub.",
+   "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument (`/review 1234`), avec les mêmes niveaux d'effort et les mêmes options (`--fix`, `--comment`, `--max-findings`). Sans niveau, il reprend le dernier niveau de `low` à `max` tapé ; pour une revue approfondie dans le cloud, la page renvoie à `/code-review ultra`.",
    "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review locally with /code-review for the exact rules. For a deep cloud review, use /code-review ultra",
    "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [--max-findings n|all|default] [pr#|branch|path]",
    "usage_nature": "syntaxe",
@@ -8717,7 +8741,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -8750,9 +8774,13 @@
     {
      "date": "2026-11-11",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {},
    "exemple_origine": "source"
   },
@@ -10701,7 +10729,7 @@
    "categorie": "commandes",
    "nom": "/usage",
    "gabarit": "complet",
-   "description": "Affiche le coût de la session, les limites du forfait et les statistiques d'activité ; sur les forfaits Pro, Max, Ultra, Team et Enterprise, détaille ce qui compte dans les limites du forfait. `/cost` et `/stats` en sont des alias.",
+   "description": "Affiche le coût de la session, les limites d'usage du forfait et les statistiques d'activité ; sur les forfaits Pro, Max, Ultra, Team et Enterprise, détaille ce qui compte dans les limites du forfait. Derrière une passerelle Claude apps qui suit les dépenses, montre aussi la dépense passée par cette passerelle ; `/cost` et `/stats` en sont des alias.",
    "description_source": "Show session cost, plan usage limits, and activity stats. On a Pro, Max, Ultra, Team, or Enterprise plan, includes a breakdown of what counts against your plan limits. Behind a Claude apps gateway that tracks spend, shows your spend through the gateway. /cost and /stats are aliases",
    "usage": "/usage",
    "usage_nature": "syntaxe",
@@ -10710,7 +10738,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Ton forfait Max (20x), renommé Ultra le 30/10 d'après @claudeai, est à l'essai jusqu'au 07/11, avec un bilan d'usage à préparer d'ici le 03/11 : les pourcentages sont déjà relevés par Delta, mais le détail de ce qui compte dans les limites n'est donné que par `/usage`, à joindre au bilan avant le 03/11. Aucun crédit cloud depuis le 21/10 : les sessions cloud puisent dans ce même forfait."
+    "pourquoi": "Les pourcentages sont déjà relevés par Delta, mais seul `/usage` détaille ce qui compte dans tes limites : c'est l'élément à joindre au bilan de l'essai Max (20x), dont CONTEXTE.md fixe le renouvellement au 07/11 sans dire encore la suite décidée. Sans crédit cloud depuis le 21/10, les sessions cloud puisent aussi dans ce forfait, d'où l'intérêt de voir leur part."
    },
    "sources": [
     {
@@ -10719,11 +10747,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-10",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10883,16 +10911,45 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "profil": {
      "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
-     "pourquoi": "Forfait Max (20x) à l'essai jusqu'au 07/11, bilan d'usage à préparer ; aucun crédit Claude Code cloud (21/10)."
+     "pourquoi": "Max (20x) à l'essai, renouvellement le 07/11, bilan d'usage à préparer ; aucun crédit Claude Code cloud (21/10)."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Priorité de veille : ce qui allège la consommation des limites hebdomadaires."
     }
    },
-   "exemple_origine": "source"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/usage` affiche le coût de la session, les limites du forfait et l'activité ; sur Pro, Max, Ultra, Team et Enterprise, il détaille ce qui compte dans les limites ; `/cost` et `/stats` en sont des alias.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-11",
+     "caduc_si": "la commande change de nom, d'alias ou perd le détail de ce qui compte dans les limites"
+    },
+    {
+     "affirmation": "Le forfait Max (20x) est à l'essai d'un mois depuis le 07/10, renouvellement le 07/11, avec un bilan d'usage à préparer ; aucun crédit Claude Code cloud depuis le 21/10.",
+     "source": "contexte:profil",
+     "releve_le": "2026-11-11",
+     "caduc_si": "CONTEXTE.md consigne la suite de l'essai, un changement de forfait ou la reprise d'un crédit cloud",
+     "revoir_le": "2026-11-18"
+    },
+    {
+     "affirmation": "La veille doit signaler en priorité ce qui allège la consommation des limites hebdomadaires.",
+     "source": "contexte:usage.hors-machine",
+     "releve_le": "2026-11-11",
+     "caduc_si": "Sylvain retire cette priorité de la consigne de veille"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-usage-credits",
