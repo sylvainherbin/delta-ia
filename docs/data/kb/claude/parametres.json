@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-10",
+ "maj_le": "2026-11-11",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 676,
- "commentees": 622,
+ "total": 677,
+ "commentees": 618,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -8559,6 +8559,53 @@
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
    "contexte_sections": null
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-feature-flags",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_FEATURE_FLAGS",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui coupe la récupération des feature flags (v2.1.319 ou plus) ; Remote Control et les autres fonctions qui en dépendent deviennent indisponibles.",
+   "description_source": "Set to 1 to turn off feature-flag fetching. Requires Claude Code v2.1.319 or later. With this variable set, Remote Control and the other features that need feature-flag fetching are unavailable. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set. The older name, DISABLE_GROWTHBOOK, still works, and it is the only one that v2.1.124 through v2.1.318 read",
+   "usage": "CLAUDE_CODE_DISABLE_FEATURE_FLAGS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La définir couperait Remote Control, par lequel tu pilotes tes sessions `claude-session@<nom>` depuis l'iPhone."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Les sessions durables sont lancées avec `--remote-control` et pilotées depuis l'iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-11",
+   "historique": [
+    {
+     "date": "2026-11-11",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-disable-feedback-survey",
@@ -17623,7 +17670,7 @@
    "nom": "crossSessionInbound",
    "gabarit": "court",
    "description": "Réglage qui choisit ce que fait une session des messages venus de tes autres sessions Claude Code : `accept` (les remettre), `hold` (afficher un avis sans les remettre) ou `refuse` (les rejeter). Sans valeur, Claude Code décide message par message selon les classes de mode de permission des deux sessions ; demande Claude Code 2.1.224 ou plus.",
-   "description_source": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later.",
+   "description_source": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes.",
    "usage": "{\n  \"crossSessionInbound\": \"hold\"\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"crossSessionInbound\": \"hold\"\n}",
@@ -17640,11 +17687,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Agents, sessions, and worktrees",
-   "maj_le": "2026-10-30",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -17733,6 +17780,49 @@
     {
      "date": "2026-10-30",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "crossSessionInbound accepte `accept`, `hold` (avis sans remise) ou `refuse` ; sans valeur, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
+       "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
+       "releve_le": "2026-10-30",
+       "caduc_si": "La documentation retire le réglage ou change ses valeurs ou son comportement par défaut."
+      },
+      {
+       "affirmation": "Une valeur de projet ou locale ne s'applique que si elle est plus stricte que celle des réglages gérés, de `--settings` ou des réglages utilisateur ; un `hold` de projet s'applique quand aucune source de confiance ne fixe de valeur.",
+       "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
+       "releve_le": "2026-10-30",
+       "caduc_si": "La documentation change l'ordre de priorité entre réglages de projet et réglages utilisateur pour cette clé."
+      },
+      {
+       "affirmation": "Les sessions Claude Code de Sylvain se parlent via SendMessage / ListAgents.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-30",
+       "caduc_si": "Les sessions cessent d'échanger par SendMessage."
+      },
+      {
+       "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-30",
+       "caduc_si": "La session trading passe elle aussi en bypassPermissions, ou le régime global change."
+      },
+      {
+       "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-30",
+       "caduc_si": "trading-sim passe en FULL_AUTO."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -17750,39 +17840,7 @@
      "pourquoi": "trading-sim est le seul projet en VALIDATIONS_CHOISIES, où Sylvain seul donne le go."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "crossSessionInbound accepte `accept`, `hold` (avis sans remise) ou `refuse` ; sans valeur, Claude Code décide par message selon les classes de mode de permission des deux sessions.",
-     "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
-     "releve_le": "2026-10-30",
-     "caduc_si": "La documentation retire le réglage ou change ses valeurs ou son comportement par défaut."
-    },
-    {
-     "affirmation": "Une valeur de projet ou locale ne s'applique que si elle est plus stricte que celle des réglages gérés, de `--settings` ou des réglages utilisateur ; un `hold` de projet s'applique quand aucune source de confiance ne fixe de valeur.",
-     "source": "https://code.claude.com/docs/en/settings-reference#crosssessioninbound",
-     "releve_le": "2026-10-30",
-     "caduc_si": "La documentation change l'ordre de priorité entre réglages de projet et réglages utilisateur pour cette clé."
-    },
-    {
-     "affirmation": "Les sessions Claude Code de Sylvain se parlent via SendMessage / ListAgents.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-30",
-     "caduc_si": "Les sessions cessent d'échanger par SendMessage."
-    },
-    {
-     "affirmation": "Depuis le 06/10/2026, toutes les sessions locales tournent en bypassPermissions, sauf trading.",
-     "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-30",
-     "caduc_si": "La session trading passe elle aussi en bypassPermissions, ou le régime global change."
-    },
-    {
-     "affirmation": "trading-sim est en VALIDATIONS_CHOISIES : un tour de revue par jalon, Sylvain seul donne le go.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-30",
-     "caduc_si": "trading-sim passe en FULL_AUTO."
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-dangerously-load-development-channels",
@@ -18310,7 +18368,7 @@
    "nom": "desktopSessionCleanupPeriodDays",
    "gabarit": "court",
    "description": "Réglage qui fixe l'âge maximal des transcripts des sessions lancées depuis Claude Desktop ou Cowork ; sans lui, ils sont gardés.",
-   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. Cleaned up automatically lists the cases where cleanupPeriodDays applies instead and Claude Code ignores this key. Requires Claude Code v2.1.248 or later.",
+   "description_source": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age, except in cases such as a session you deleted in Claude Desktop. Requires Claude Code v2.1.248 or later.",
    "usage": "{\n  \"desktopSessionCleanupPeriodDays\": 90\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18327,11 +18385,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Privacy and telemetry",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18352,6 +18410,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -18862,7 +18924,7 @@
    "nom": "DISABLE_GROWTHBOOK",
    "gabarit": "court",
    "description": "Variable qui coupe la récupération des feature flags GrowthBook ; Remote Control et les autres fonctions qui en dépendent deviennent indisponibles.",
-   "description_source": "Set to 1 or true to disable feature-flag fetching and use code defaults for every flag. This makes Remote Control and the other features that need feature-flag fetching unavailable. Setting it to 0 or false leaves fetching on. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set",
+   "description_source": "Set to 1 to turn off feature-flag fetching. Requires Claude Code v2.1.124 or later. Superseded by CLAUDE_CODE_DISABLE_FEATURE_FLAGS, which requires v2.1.319 or later: use that name unless a machine on v2.1.318 or earlier reads the configuration. This name still works",
    "usage": "DISABLE_GROWTHBOOK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18883,7 +18945,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -18903,6 +18965,10 @@
     },
     {
      "date": "2026-10-23",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-11",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -22015,7 +22081,7 @@
    "nom": "extraKnownMarketplaces",
    "gabarit": "court",
    "description": "Réglage qui déclare des marketplaces de plugins supplémentaires pour ceux qui ouvrent le dépôt ou qu'atteignent les réglages gérés.",
-   "description_source": "Register additional plugin marketplaces by name, so that people who open the repository, or everyone your managed settings reach, get the marketplace without adding it themselves. Claude Code registers each marketplace it doesn't already know. Whether a plugin that enabledPlugins names from it installs depends on the plugin's source and which file enables it; that entry has the rules.",
+   "description_source": "Register additional plugin marketplaces by name, so that people who open the repository, or everyone your managed settings reach, get the marketplace without adding it themselves. Claude Code registers each marketplace it doesn't already know. Whether a plugin that enabledPlugins names from it installs depends on the plugin's source and which file enables it; Enabled in project settings but not installed has the rules.",
    "usage": "{\n  \"extraKnownMarketplaces\": {\n    \"acme-tools\": {\n      \"source\": {\n        \"source\": \"github\",\n        \"repo\": \"acme-corp/claude-plugins\"\n      }\n    },\n    \"security-plugins\": {\n      \"source\": {\n        \"source\": \"git\",\n        \"url\": \"https://git.example.com/security/plugins.git\"\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22032,11 +22098,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22057,6 +22123,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -22721,7 +22791,7 @@
    "nom": "forceLoginMethod",
    "gabarit": "court",
    "description": "Réglage qui restreint le type de compte de connexion : `claudeai`, `console` ou `gateway`.",
-   "description_source": "Restrict which kind of account people can log in with. Set \"claudeai\" to allow only claude.ai accounts, \"console\" to allow only Claude Console accounts, or \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization.",
+   "description_source": "Restrict which kind of account people can log in with: \"claudeai\" for claude.ai sign-in or \"console\" for Claude Console sign-in. Set \"gateway\" to send people to a cloud gateway instead of a first-party login. Administrators set it in managed settings and pair it with forceLoginOrgUUID to keep developers' claude.ai logins inside one organization.",
    "usage": "{\n  \"forceLoginMethod\": \"claudeai\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -22742,7 +22812,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-10-29",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22762,6 +22832,10 @@
     },
     {
      "date": "2026-10-29",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-11",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -34019,7 +34093,7 @@
    "nom": "strictPluginOnlyCustomization",
    "gabarit": "court",
    "description": "Réglage qui n'accepte skills, agents, hooks et MCP que venant de plugins ou de réglages gérés.",
-   "description_source": "Block skills, agents, hooks, and MCP servers from user and project sources, so they can come only from plugins or managed settings. Combine it with strictKnownMarketplaces to control the full customization supply chain: the marketplace allowlist controls which plugins users can install.",
+   "description_source": "Block skills, agents, hooks, and MCP servers from user and project sources. Combine it with strictKnownMarketplaces to choose which marketplaces users can install plugins from. Add disableSideloadFlags to reject the CLI flags that sideload plugins, agents, and MCP servers for a single run.",
    "usage": "{\n  \"strictPluginOnlyCustomization\": [\"skills\", \"hooks\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -34036,11 +34110,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Plugins and skills",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34049,6 +34123,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -34563,7 +34641,7 @@
    "nom": "syntaxHighlightingDisabled",
    "gabarit": "court",
    "description": "Réglage qui affiche le code des diffs et aperçus en texte brut, sans coloration.",
-   "description_source": "Claude Code colors code by language in the diffs, code blocks, and file previews it shows in the terminal, with its built-in highlighter; no plugin or language server is involved. Set this key to true to show them as plain text instead, for example if the colors clash with your terminal theme or slow a screen reader.",
+   "description_source": "Claude Code colors code by language in the diffs, code blocks, and file previews it shows in the terminal, with its built-in highlighter. Set this key to true to show them as plain text instead, for example if the colors clash with your terminal theme or slow a screen reader.",
    "usage": "{\n  \"syntaxHighlightingDisabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -34580,11 +34658,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34593,6 +34671,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

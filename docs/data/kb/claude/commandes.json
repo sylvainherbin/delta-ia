@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-10",
+ "maj_le": "2026-11-11",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 132,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -6281,7 +6281,7 @@
    "nom": "/list-agents",
    "gabarit": "complet",
    "description": "Liste les subagents, coéquipiers d'une équipe d'agents et autres sessions Claude Code que Claude peut joindre, avec le nom à employer pour chacun. Alias : `/peers`. Uniquement dans les sessions où la messagerie entre sessions est activée.",
-   "description_source": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Requires Claude Code v2.1.224 or later; earlier versions report Unknown command: /list-agents. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
+   "description_source": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
    "usage": "/list-agents",
    "usage_nature": "syntaxe",
    "exemple": "/list-agents",
@@ -6298,11 +6298,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6361,6 +6361,37 @@
     {
      "date": "2026-10-24",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "List the subagents, agent team teammates, and other Claude Code sessions Claude can message, with the name to use for each. See cross-session messaging. Also available as /peers. Requires Claude Code v2.1.224 or later; earlier versions report Unknown command: /list-agents. Teammate rows and the first line showing this session's own name require v2.1.239 or later. Available only in sessions where cross-session messaging is enabled",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/list-agents` (alias `/peers`, v2.1.224 ou plus) liste les sous-agents, coéquipiers et autres sessions joignables, avec le nom à utiliser.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la commande change de rôle, de version minimale ou disparaît"
+      },
+      {
+       "affirmation": "Depuis Claude Code, les sessions se parlent par `SendMessage`/`ListAgents` ; depuis Codex, par `operer message` ; `/list-agents` a montré Dispatch le 25/09.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-10-24",
+       "caduc_si": "l'architecture multi-sessions ou les canaux de messages changent"
+      },
+      {
+       "affirmation": "Les échanges directs entre Cowork (Dispatch compris) et Claude Code sont une priorité déclarée de la veille.",
+       "source": "contexte:usage.hors-machine",
+       "releve_le": "2026-10-24",
+       "caduc_si": "Sylvain retire cette priorité"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -6374,27 +6405,7 @@
      "pourquoi": "Priorité de veille : échanges directs entre sessions Cowork (Dispatch compris) et Claude Code."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "`/list-agents` (alias `/peers`, v2.1.224 ou plus) liste les sous-agents, coéquipiers et autres sessions joignables, avec le nom à utiliser.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-24",
-     "caduc_si": "la commande change de rôle, de version minimale ou disparaît"
-    },
-    {
-     "affirmation": "Depuis Claude Code, les sessions se parlent par `SendMessage`/`ListAgents` ; depuis Codex, par `operer message` ; `/list-agents` a montré Dispatch le 25/09.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-10-24",
-     "caduc_si": "l'architecture multi-sessions ou les canaux de messages changent"
-    },
-    {
-     "affirmation": "Les échanges directs entre Cowork (Dispatch compris) et Claude Code sont une priorité déclarée de la veille.",
-     "source": "contexte:usage.hors-machine",
-     "releve_le": "2026-10-24",
-     "caduc_si": "Sylvain retire cette priorité"
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-login",
@@ -8689,7 +8700,7 @@
    "nom": "/review",
    "gabarit": "complet",
    "description": "Alias de `/code-review` : relit le diff courant, ou une PR, une branche ou un chemin passés en argument (`/review 1234`), avec les mêmes niveaux d'effort et options. Sans niveau, reprend le dernier niveau de `low` à `max` tapé ; `/code-review ultra` lance la revue approfondie dans le cloud. Avant la v2.1.223, `/review` était une revue distincte, en un passage et en lecture seule, d'une PR GitHub.",
-   "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review locally with /code-review for the exact rules. For a deep cloud review, use /code-review ultra. Before v2.1.223, /review was a separate command that ran a single-pass, read-only review of a GitHub pull request by number, listing open PRs to pick from when run with no argument; from v2.1.186 through v2.1.201, it ran the same multi-agent engine as /code-review medium",
+   "description_source": "Alias of /code-review: reviews the current diff, or a PR number, branch, or path you pass, such as /review 1234, and takes the same effort levels and flags. With no level given, the review reuses the last low through max level you typed; see Review locally with /code-review for the exact rules. For a deep cloud review, use /code-review ultra",
    "usage": "/review [low|medium|high|xhigh|max|ultra] [--fix] [--comment] [--max-findings n|all|default] [pr#|branch|path]",
    "usage_nature": "syntaxe",
    "exemple": "/review 1234",
@@ -8706,11 +8717,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-11",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8735,6 +8746,10 @@
     {
      "date": "2026-10-16",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-11",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
