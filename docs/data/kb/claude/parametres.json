@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-11",
+ "maj_le": "2026-11-12",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,7 +41,7 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 677,
+ "total": 678,
  "commentees": 618,
  "entrees": [
   {
@@ -8293,7 +8293,7 @@
    "nom": "CLAUDE_CODE_DISABLE_CRON",
    "gabarit": "court",
    "description": "Variable qui, à `1`, désactive les tâches planifiées de session : la skill `/loop` et les outils cron disparaissent et les tâches déjà planifiées s'arrêtent, même en cours.",
-   "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
+   "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and CronCreate become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
    "usage": "CLAUDE_CODE_DISABLE_CRON",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8310,11 +8310,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-09",
+   "maj_le": "2026-11-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8331,6 +8331,10 @@
     {
      "date": "2026-11-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-12",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -20451,6 +20455,48 @@
      "pourquoi": "Sessions lancées avec --remote-control <nom>, pilotées depuis l'iPhone."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-disableremotepreviewscripts",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "disableRemotePreviewScripts",
+   "gabarit": "court",
+   "description": "Réglage booléen qui empêche l'exécution des scripts quand l'app de bureau prévisualise un fichier HTML depuis une session SSH ou WSL ; la navigation externe du volet Browser n'est pas touchée.",
+   "description_source": "Keep scripts from running when people preview an HTML file from an SSH or WSL session in the desktop app. External browsing in the Browser pane is unaffected.",
+   "usage": "{\n  \"disableRemotePreviewScripts\": true\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucune prévisualisation HTML depuis une session SSH ou WSL dans l'app de bureau ; tes sessions tournent sous tmux sur le K8."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#disableremotepreviewscripts",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Remote, desktop, and notifications",
+   "maj_le": "2026-11-12",
+   "historique": [
+    {
+     "date": "2026-11-12",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-12",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-disableskillshellexecution",

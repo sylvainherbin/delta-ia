@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-11-10",
+ "maj_le": "2026-11-12",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -246,16 +246,16 @@
    "categorie": "skills",
    "nom": "/claude-api",
    "gabarit": "complet",
-   "description": "Skill de référence sur l'API Claude et les Managed Agents, dans le langage du projet ; il s'active aussi de lui-même quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`, `preserved-thinking-migration`), changent de version du SDK (`upgrade`), passent le code à une version d'API plus récente (`api-version`, ajoutée en 2.1.307 pour la version 2026-10-21), lancent les Managed Agents (`managed-agents-onboard`), auditent les prompts (`prompt-audit`), analysent les coûts (`cost-optimize`) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
+   "description": "Skill de référence sur l'API Claude et les Managed Agents, dans le langage du projet ; il s'active aussi de lui-même quand le code importe `anthropic` ou `@anthropic-ai/sdk`. Ses sous-commandes migrent le code vers un modèle plus récent (`migrate`, `preserved-thinking-migration`), changent de version du SDK (`upgrade`), passent le code à une version d'API plus récente (`api-version`, 2.1.307), lancent les Managed Agents (`managed-agents-onboard`), comparent les réglages d'un Managed Agent au guide de déploiement sécurisé (`managed-agents-secure`, qui exige la CLI `ant`), auditent les prompts (`prompt-audit`), analysent les coûts (`cost-optimize`), cherchent où le temps est perdu dans le code d'appel à l'API (`latency-optimize`, 2.1.319 ou plus) et construisent ou améliorent un jeu d'évaluation (`build-eval`, `hillclimb`).",
    "description_source": "Skill. Load Claude API and Managed Agents reference material for your project's language. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. For what each subcommand does and the version it requires, see Work on Claude API projects",
-   "usage": "/claude-api [migrate|upgrade|api-version|managed-agents-onboard|managed-agents-secure|prompt-audit|cost-optimize|build-eval|hillclimb|preserved-thinking-migration]",
+   "usage": "/claude-api [migrate|upgrade|api-version|managed-agents-onboard|managed-agents-secure|prompt-audit|cost-optimize|latency-optimize|build-eval|hillclimb|preserved-thinking-migration]",
    "usage_nature": "syntaxe",
    "exemple": "/claude-api",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun de tes projets n'appelle l'API Claude directement : JUGER passe par `claude -p`, donc la sous-commande `api-version` n'a rien à migrer."
+    "pourquoi": "Aucun de tes projets n'appelle l'API Claude directement : JUGER passe par `claude -p`, donc ni `latency-optimize` ni `managed-agents-secure` n'ont de code ou d'agent à examiner."
    },
    "sources": [
     {
@@ -268,7 +268,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-22",
+   "maj_le": "2026-11-12",
    "historique": [
     {
      "date": "2026-09-23",
@@ -305,9 +305,17 @@
     {
      "date": "2026-10-22",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-12",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-12",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.juger-design": {
      "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
