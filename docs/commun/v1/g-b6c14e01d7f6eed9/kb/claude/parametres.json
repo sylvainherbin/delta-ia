@@ -5797,8 +5797,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
-   "empreinte": "390783a6feacc6c507e8aa95c4adab2f6187870dafca8be698deaffb70e20f35",
+   "description_source": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and CronCreate become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session",
+   "empreinte": "f841de5e1175f6154c974455fb49de22836dec368ef43c7f1fd58f5b6fbcd4d1",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-disable-cron",
@@ -5820,14 +5820,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "2ab69f442d7d762fd0531e2a3a7d7f851a09de11f98955e1eb985a77c8a47d31",
-      "statut": "automatique",
-      "texte": "Définir à 1 pour désactiver les tâches planifiées limitées à la session. Le skill /loop et les outils cron deviennent indisponibles, et les tâches déjà planifiées cessent de se déclencher, y compris celles déjà en cours pendant la session"
+      "texte": "Set to 1 to disable session-scoped scheduled tasks. The /loop skill and CronCreate become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session"
      }
     }
    },
@@ -15030,6 +15023,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Keep scripts from running when people preview an HTML file from an SSH or WSL session in the desktop app. External browsing in the Browser pane is unaffected.",
+   "empreinte": "ffd2bb153daba45361433e082f9b804a48e57b8605fc7d95756d4bd4dd493fa2",
+   "gabarit": "court",
+   "groupe": "Remote, desktop, and notifications",
+   "id": "claude-code-parametres-disableremotepreviewscripts",
+   "identite": "kb:claude:claude-code-parametres-disableremotepreviewscripts",
+   "nom": "disableRemotePreviewScripts",
+   "origine": "cc-reglages",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "settings-reference",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/settings-reference#disableremotepreviewscripts"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Keep scripts from running when people preview an HTML file from an SSH or WSL session in the desktop app. External browsing in the Browser pane is unaffected."
+     }
+    }
+   },
+   "usage": "{\n  \"disableRemotePreviewScripts\": true\n}",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Turn off inline shell execution for !... and ! blocks in skills and custom commands from user, project, plugin, or additional-directory sources. Claude Code replaces each command with [shell command execution disabled by policy] instead of running it.",
    "empreinte": "f005a4f48d6e477a14827a57855c04c0311f74a36b29e05be45d94eb6076c2b9",
    "gabarit": "court",
@@ -18031,7 +18056,7 @@
   {
    "categorie": "parametres",
    "description_source": "Runs when Claude Code cleans up a worktree that your WorktreeCreate hook created. The event fires when:",
-   "empreinte": "1ffae2080035ba25368456389bad41dec3ac12ffb6e2a07fb843599d5519a4e5",
+   "empreinte": "9de348beae5d414a9bca121beaaa1c6b15d632c0ac9e9339660202f6b2968651",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-worktreeremove",
@@ -18064,7 +18089,7 @@
      }
     }
    },
-   "usage": "{\n  \"hooks\": {\n    \"WorktreeRemove\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'jq -r .worktree_path | xargs rm -rf'\"\n          }\n        ]\n      }\n    ]\n…",
+   "usage": "{\n  \"hooks\": {\n    \"WorktreeRemove\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'p=$(jq -er .worktree_path) && rm -rf -- \\\"$p\\\"'\"\n          }\n        ]\n      }\n    ]\n…",
    "usage_nature": "syntaxe"
   },
   {
@@ -26103,9 +26128,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-11",
+ "maj_le": "2026-11-13",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 678
+ "total": 679
 }
