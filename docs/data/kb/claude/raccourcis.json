@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 97,
- "commentees": 95,
+ "commentees": 97,
  "entrees": [
   {
    "id": "claude-code-raccourcis-0",
@@ -3795,7 +3795,7 @@
    "categorie": "raccourcis",
    "nom": "Shift+Enter",
    "gabarit": "court",
-   "description": "Maj+Entrée insère un retour à la ligne dans les terminaux qui le gèrent nativement (iTerm2, Kitty, Ghostty…).",
+   "description": "Maj+Entrée insère un retour à la ligne sans envoyer le message, nativement dans iTerm2, WezTerm, Ghostty, Kitty, Warp et Windows Terminal ; ailleurs, il faut le configurer.",
    "description_source": "Shift+Enter — Native in iTerm2, WezTerm, Ghostty, Kitty, Warp, Windows Terminal. For other terminals, see Enter multiline prompts",
    "usage": "Shift+Enter",
    "usage_nature": "syntaxe",
@@ -3804,7 +3804,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Propre à macOS ou à des terminaux que CONTEXTE.md ne cite pas ; dans tmux, Ctrl+J suffit."
+    "pourquoi": "CONTEXTE.md ne cite aucun de ces terminaux et tu pilotes surtout depuis l'iPhone ; sous tmux, la page indique que Ctrl+J marche dans tout terminal sans configuration."
    },
    "sources": [
     {
@@ -3813,7 +3813,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "Multiline input",
@@ -3830,10 +3830,19 @@
     {
      "date": "2026-11-13",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-13",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "l'iPhone est l'interface principale de pilotage (Remote Control)"
+    }
+   }
   },
   {
    "id": "claude-code-raccourcis-shift-tab",
@@ -3841,7 +3850,7 @@
    "categorie": "raccourcis",
    "nom": "Shift+Tab",
    "gabarit": "court",
-   "description": "Maj+Tab fait tourner les modes de permission : défaut, acceptEdits, plan et, selon la configuration, auto ou bypassPermissions.",
+   "description": "Maj+Tab fait tourner les modes de permission (default, affiché Manual, puis acceptEdits, plan, et bypassPermissions ou auto s'ils sont disponibles) ; sur une demande de permission sans champ de commentaire ouvert, il autorise l'action pour le reste de la session, et il approuve le plan à l'invite d'approbation.",
    "description_source": "Cycle permission modes — Cycle through default (labeled Manual in the mode indicator), acceptEdits, and plan, then bypassPermissions and auto where available. See permission modes. On a file permission prompt, the same key closes an open comment field. With no field open, it selects the option that allows the action for the rest of the session, when the prompt offers that option. At the plan approval prompt, it approves the plan",
    "usage": "Shift+Tab, or Alt+M on Windows when the Node or Bun runtime doesn't enable VT input mode",
    "usage_nature": "syntaxe",
@@ -3850,7 +3859,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Sylvain pilote ses sessions surtout depuis l'iPhone (Remote Control), sans clavier physique, et toutes les sessions locales sauf trading tournent en `bypassPermissions` ; sur trading-sim, `/plan` couvre le besoin de passer en mode plan avant un jalon."
+    "pourquoi": "Toutes tes sessions locales sauf trading tournent en bypassPermissions et tu pilotes depuis l'iPhone ; attention, sur une demande de permission la touche autorise l'action pour toute la session, pas une seule fois."
    },
    "sources": [
     {
@@ -3859,7 +3868,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-raccourcis",
    "groupe": "General controls",
@@ -3880,13 +3889,17 @@
     {
      "date": "2026-11-13",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-13",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "l'iPhone est l'interface principale"
+     "pourquoi": "l'iPhone est l'interface principale de pilotage (Remote Control)"
     },
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
