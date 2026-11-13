@@ -1,0 +1,282 @@
+{
+ "date": "2026-11-13",
+ "perimetre": "claude",
+ "agent": "claude-code",
+ "genere_le": "2026-11-13T03:10:00+00:00",
+ "synthese": "Compte et quotas : aucune offre ni limite nouvelle pour ton forfait Max ; relevé OBSERVATORY du 13/11 à 03 h UTC : semaine Claude à 43 % et semaine Fable à 23 % (remise à zéro des deux le 15/11 à 16 h UTC), session 5 h non mesurée, ChatGPT semaine à 16 % (remise à zéro le 18/11 à 05 h UTC), sous le seuil D71 de 80 %. Claude Code 2.1.323 (installée, à jour) touche tes limites sans les changer (menu de crédits d'usage, heure de remise à zéro Fable, pause des workflows), ajoute `CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES` pour couper des requêtes de sous-agents et porte de 20 à 100 000 la borne de messages entre sessions ; Opus 5.5 devient le modèle par défaut de l'app Claude. Claude Meetings, Managed Agents auto-hébergés, Claude Tag et la panne du connecteur Microsoft 365 ne concernent ni ton forfait ni tes projets.",
+ "elements": [
+  {
+   "id": "claude-code-2.1.323",
+   "ids_bruts": [
+    "claude-code-2.1.323"
+   ],
+   "produit": "claude-code",
+   "titre": "Claude Code 2.1.323 : menu d'options quand les crédits d'usage manquent, messages entre sessions portés de 20 à 100 000, `CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES`, Code Mode expérimental, correctifs de permissions Bash et de Remote Control",
+   "version": "2.1.323",
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Ajouts : Code Mode (opt-in expérimental où Claude écrit du JavaScript pour appeler ses outils ; la page `https://code.claude.com/docs/en/code-mode` donne l'activation), un menu d'options (arrêter, passer aux crédits d'usage, passer au forfait supérieur) quand un modèle exige des crédits d'usage coupés ou épuisés, `CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES` (réglé sur `1`, il coupe les résumés de progression des sous-agents et les requêtes qui les écrivent), le `.docx` dans les envois de fichiers de l'outil Artifact, `engines[\"claude-code\"]` dans `plugin.json` et un avertissement au démarrage pour une règle Bash allow avec `*` dans la valeur d'une variable. Changements : le nombre de messages qu'une session peut envoyer aux autres sessions de la même machine sans ta frappe passe d'environ 20 à 100 000 (même valeur pour l'onglet Code de Claude Desktop, 20 dans la 2.1.321) ; les workflows de l'onglet Code de Claude Desktop se mettent en pause à une limite d'usage et reprennent après sa remise à zéro ; le message de limite Fable en `-p`, SDK, IDE et cloud donne l'heure de remise à zéro ; le Bash du bac à sable refuse `git worktree add`, `move` et `remove` (lecture seule) ; `/security-review` demande confirmation ; la connexion d'un serveur MCP demande confirmation même en mode bypass ; le réglage `subagentStatusLine` est retiré. Correctifs : un `rm` jugé depuis le mauvais dossier sautait la demande de suppression dangereuse sous `bypassPermissions` ; des règles Bash allow (`Bash(ls*)`) et deny (via `sudo`, `env`) manquaient des commandes ; Remote Control affichait des sessions déconnectées une minute ou plus après un changement de réseau, et pas de question de crédits d'usage dans l'app Claude ; `claude -p` avertit sur stderr quand les réglages bloquent le modèle demandé ; la limite Fable n'affichait aucune heure de remise à zéro dans le terminal ; nombreux correctifs VS Code, cloud, OpenTelemetry et Claude Tag.",
+   "sources": [
+    {
+     "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21323",
+     "libelle": "Claude Code 2.1.323 — CHANGELOG",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "fort",
+   "pour_toi": "Aucune limite d'usage ne change dans cette version : elle ajoute un menu quand les crédits d'usage manquent, l'heure de remise à zéro de la limite Fable dans les messages et la pause puis la reprise des workflows de l'onglet Code de Claude Desktop ; tu n'as aucun crédit Claude Code cloud (décision du 21/10) et la semaine Claude est à 43 % (Fable 23 %), remise à zéro le 15/11 à 16 h UTC (OBSERVATORY, relevé du 13/11 à 03 h UTC). La version installée est la 2.1.323 (`docs/data/versions.json` : à jour), donc tout ce qui suit est déjà actif dans une session redémarrée. Tu utilises des sous-agents (31 appels `Agent` en cinq jours au relevé du 04/10) : `CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES=1` coupe les requêtes qui écrivent leurs résumés de progression ; le changelog ne chiffre pas l'économie, mais c'est un réglage qui touche ta priorité d'alléger les limites hebdomadaires. Tes sessions se parlent par `SendMessage` (chefs, devs, Claude Design) : la borne d'environ 20 messages sans ta frappe tombe à 100 000, ce qui retire un garde-fou contre deux sessions qui s'échangent des messages en boucle ; sur trading-sim, seul projet validé par jalon, `crossSessionInbound` (fiche de la base) reste le garde-fou, si le réglage y est posé, ce que la commande de l'action tranche. Tes sessions durables démarrent par `claude --resume <id> --remote-control <nom>` et tu les pilotes depuis l'iPhone : les correctifs de reconnexion après un changement de réseau et d'état « en cours » pendant une demande de permission te concernent. Le régime `bypassPermissions` des sessions locales retrouve la demande de suppression dangereuse qu'un `rm` jugé depuis le mauvais dossier contournait, et l'authentification d'un serveur MCP (connecteurs Delta-IA, Vercel) demande désormais ta confirmation même en bypass. JUGER et la chaîne D70 appellent `claude -p` : un modèle bloqué par les réglages est maintenant signalé sur stderr. Tu utilises les artefacts : l'outil Artifact accepte aussi le `.docx` à l'envoi. Les missions qui créent un worktree par `git worktree add` échoueraient en lecture seule si le bac à sable est actif dans la session, ce que la dernière étape de l'action tranche. Code Mode est expérimental : le changelog ne donne ni commande ni gain mesuré, la page citée donne l'activation. Les autres ajouts ne touchent aucun usage décrit dans CONTEXTE.md : `claude plugin validate` et `claude plugin install --json` (aucun plugin à toi, `frontend-design` est installé en essai et non adopté), `CLAUDE_CODE_AUTO_MODE_MODEL` (sessions Claude Desktop sur fournisseurs tiers), `CLAUDE_CODE_PERFORCE_MODE` et l'indication `/diff to close` du panneau de différences.",
+   "projets_concernes": [
+    "trading-sim"
+   ],
+   "action": {
+    "description": "Couper les résumés de progression des sous-agents, vérifier le garde-fou entre sessions sur trading-sim et l'état du bac à sable ; revérifier le 20/11/2026 (aucune échéance publiée) si Anthropic modifie les limites ou les menus de crédits.",
+    "etapes": [
+      "Dans `~/.claude/settings.json`, ajoute à la clé `env` la paire `\"CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES\": \"1\"` (syntaxe de la fiche `claude-code-parametres-env`) ; essai : depuis la session `delta`, redémarrée sur la 2.1.323, lance deux sous-agents `Explore` ; résultat attendu : les sous-agents tournent sans ligne de résumé de progression rédigé, la documentation disant que les requêtes qui l'écrivent sont coupées.",
+      "Pour trading-sim, tape `grep -n crossSessionInbound ~/projets/trading-sim/.claude/settings.json` ; résultat attendu : une ligne `hold` ou `refuse` montre que le garde-fou tient malgré les 100 000 messages ; aucune ligne signifie que le réglage `{\"crossSessionInbound\": \"hold\"}` de la fiche `claude-code-parametres-crosssessioninbound` reste à tester sur ce projet.",
+      "Tape `grep -n sandbox ~/.claude/settings.json ~/.claude/chef-settings.json` ; résultat attendu : aucune ligne signifie pas de bac à sable, donc les `git worktree add` des missions ne sont pas touchés ; une ligne `enabled: true` signifie qu'une mission qui crée un worktree depuis cette session doit le faire hors du bac à sable."
+    ],
+    "effort": "30min"
+   },
+   "kb_refs": [
+    "claude-code-parametres-env",
+    "claude-code-parametres-crosssessioninbound"
+   ],
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Max 20x à l'essai ; limites d'usage comme friction, aucun crédit Claude Code cloud."
+    },
+    "config.claude-code.sous-agents": {
+     "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+     "pourquoi": "Les sous-agents sont utilisés (31 appels Agent en cinq jours)."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables en --remote-control, SendMessage entre sessions."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions sauf trading-sim."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Projet validé par jalon, hors régime bypass, seul à garder un garde-fou entre sessions."
+    },
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Connecteurs MCP (Delta-IA, Vercel) dont la connexion demande une confirmation."
+    },
+    "methode.juger-design": {
+     "sha1": "a29bfdc69df21b83f21baf17bf47637eb2ce50bd",
+     "pourquoi": "JUGER appelle claude -p ; Claude Design tourne dans l'onglet Code de Claude Desktop."
+    },
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Une branche et un worktree par mission, créés par git worktree add."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Sylvain utilise les artefacts de Claude."
+    }
+   }
+  },
+  {
+   "id": "https://claude.com/blog/using-claude-opus-5-5-as-your-daily-driver-for-knowledge-work",
+   "ids_bruts": [
+    "https://claude.com/blog/using-claude-opus-5-5-as-your-daily-driver-for-knowledge-work"
+   ],
+   "produit": "claude",
+   "titre": "Claude Opus 5.5 devient le modèle par défaut de Claude (Pro, Max, Ultra, Team), avec un guide d'usage : effort Medium au départ, Fable 5.2 sur crédits hors Max",
+   "version": null,
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Anthropic publie un guide qui présente Claude Opus 5.5 comme le modèle par défaut de Claude sur les forfaits Pro, Max, Ultra et Team, recommandé pour la recherche, l'analyse, les documents, tableurs et présentations. Il rappelle que sur ces forfaits les modèles plus chers épuisent les limites plus vite, et que Pro et les sièges standard Team n'incluent pas Fable 5.2 dans leurs limites (hors offres de lancement : il passe par les crédits d'usage). Il conseille de partir de l'effort Medium, défaut d'Opus 5.5 que l'éditeur dit égal ou supérieur à Opus 5 en High sur ses évaluations de code et de travail de connaissance, de retirer « think hard » (la réflexion est toujours active) et de joindre graphiques et captures plutôt que de les retranscrire. Le texte ne modifie aucune limite.",
+   "sources": [
+    {
+     "url": "https://claude.com/resources/articles/using-claude-opus-5-5-as-your-daily-driver-for-knowledge-work",
+     "libelle": "Claude — Using Claude Opus 5.5 as your daily driver for knowledge work",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "moyen",
+   "pour_toi": "Le nouveau défaut concerne l'app Claude (conversations, Projets claude.ai), non Claude Code : `docs/data/etat.json` donne déjà `opus` comme modèle par défaut de Claude Code, sans `effortLevel` fixé (effort par défaut du modèle). Pour ton forfait Max, le guide dit seulement que les modèles chers consomment les limites plus vite, ce qui serait défavorable si tes conversations de l'app démarraient jusqu'ici sur un modèle moins cher, sans effet immédiat : la semaine Claude est à 43 % (remise à zéro le 15/11 à 16 h UTC, relevé du 13/11 à 03 h UTC). Les rôles `dev-core`, `dev-discipline` et `dev-veille` tournent en Sonnet à l'effort high (`raw/organisation.json`) : l'éditeur écrit qu'à effort élevé le coût par tâche de Sonnet 5.5 se rapproche de celui d'Opus 5.5, constat de l'éditeur non mesuré chez toi.",
+   "projets_concernes": [],
+   "action": {
+    "description": "Vérifier le niveau d'effort affiché par l'app Claude pour Opus 5.5 ; revérifier le 20/11/2026 (aucune échéance publiée) si la page d'aide des limites change.",
+    "etapes": [
+     "Dans le Projet claude.ai « Web app ia », ouvre une conversation, clique le nom du modèle à côté du bouton d'envoi, puis `Effort` (chemin donné par le guide) ; résultat attendu : `Medium` est coché pour Opus 5.5, et tu le laisses ainsi pour les conversations courantes."
+    ],
+    "effort": "5min"
+   },
+   "kb_refs": [],
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Max 20x à l'essai ; limites hebdomadaires comme friction."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "Projets claude.ai dont « Web app ia » ; app Claude utilisée surtout pour piloter Claude Code."
+    }
+   }
+  },
+  {
+   "id": "claude-apps-notes-2026-11-12",
+   "ids_bruts": [
+    "claude-apps-notes-2026-11-12",
+    "https://claude.com/blog/claude-meetings",
+    "x-2120973994191094179",
+    "x-2120973996304830859",
+    "x-2120973999295643679",
+    "x-2120974000746582357"
+   ],
+   "produit": "claude",
+   "titre": "Claude Meetings en bêta sur Team et Enterprise : Claude rejoint un appel Google Meet, prend les notes et construit des documents pendant la réunion",
+   "version": null,
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Claude Meetings arrive en bêta dans Claude et Claude Desktop pour les forfaits Team et Enterprise : Claude rejoint un appel Google Meet comme participant visible, répond par écrit, construit des documents, tableaux blancs et diapositives avec l'équipe, puis range notes, actions et transcription sur une page de la réunion ; les autres plateformes de visioconférence sont annoncées. Pendant la bêta, notes et transcriptions sont gratuites sur Team et Enterprise, les réponses aussi sauf appel à un outil connecté, et les artefacts créés en réunion le sont jusqu'au 10/02/2027 ; la fonction n'est pas ouverte aux organisations en rétention zéro, HIPAA ou clés CMEK. Ces offres ne portent pas sur le forfait Max.",
+   "sources": [
+    {
+     "url": "https://claude.com/resources/articles/claude-meetings",
+     "libelle": "Claude — Introducing Claude Meetings",
+     "officielle": true
+    },
+    {
+     "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+     "libelle": "Claude (apps) — notes de version, 12/11",
+     "officielle": true
+    },
+    {
+     "url": "https://x.com/claudeai/status/2120973994191094179",
+     "libelle": "@claudeai — annonce de Claude Meetings",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  },
+  {
+   "id": "claude-platform-notes-2026-11-12",
+   "ids_bruts": [
+    "claude-platform-notes-2026-11-12",
+    "https://claude.com/blog/self-hosted-claude-managed-agents",
+    "x-2120938988165091693",
+    "x-2120938990518116578"
+   ],
+   "produit": "claude",
+   "titre": "Claude Managed Agents auto-hébergés en bêta privée : le service entier (harnais, bacs à sable, secrets, historique) tourne dans ton cloud ou sur site",
+   "version": null,
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Le service Managed Agents peut être exploité en entier sur l'infrastructure du client (serveur, base de données, workers, historique des sessions), au lieu des seuls bacs à sable auto-hébergés ; les requêtes au modèle partent vers Anthropic par défaut, ou vers Amazon Bedrock, Google, Microsoft Foundry ou une passerelle choisie. C'est une bêta privée réservée aux organisations éligibles, accès à demander à l'équipe Anthropic du compte ; la rétention zéro d'Anthropic s'applique aux requêtes comme pour tout appel à l'API Messages.",
+   "sources": [
+    {
+     "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+     "libelle": "Claude Platform — notes de version, 12/11",
+     "officielle": true
+    },
+    {
+     "url": "https://claude.com/resources/articles/self-hosted-claude-managed-agents",
+     "libelle": "Claude — Operate Claude Managed Agents inside your security perimeter",
+     "officielle": true
+    },
+    {
+     "url": "https://x.com/ClaudeDevs/status/2120938988165091693",
+     "libelle": "@ClaudeDevs — annonce de la bêta privée",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  },
+  {
+   "id": "https://claude.com/blog/claude-tag-guide-for-startups",
+   "ids_bruts": [
+    "https://claude.com/blog/claude-tag-guide-for-startups"
+   ],
+   "produit": "claude",
+   "titre": "Guide Claude Tag pour startups : canaux Slack où brancher Claude (astreinte, thread vers PR, base de connaissances, données, rapports)",
+   "version": null,
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Guide de bonnes pratiques tiré de huit startups qui utilisent Claude Tag, l'agent de Claude dans Slack : cinq types de canaux (astreinte et alertes, thread vers pull request, base de connaissances de l'entreprise, données en libre-service, rapports et passations) et une liste de préparation. Claude Tag est en bêta publique sur Team et Enterprise, indisponible sur Free, Pro et Max, ainsi que pour les organisations en rétention zéro, CMEK ou HIPAA ; les forfaits Team demandent des crédits d'usage avant que Claude réponde.",
+   "sources": [
+    {
+     "url": "https://claude.com/resources/articles/claude-tag-guide-for-startups",
+     "libelle": "Claude — The Claude Tag guide for startups",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  },
+  {
+   "id": "anthropic-status-sqn3fg1l96dl",
+   "ids_bruts": [
+    "anthropic-status-sqn3fg1l96dl"
+   ],
+   "produit": "claude",
+   "titre": "Incident : erreurs élevées sur le connecteur Microsoft 365 (courrier, calendrier, recherche, Claude for Outlook), cause amont, non résolu à 23 h 23 UTC",
+   "version": null,
+   "date_publication": "2026-11-12",
+   "type": "nouveaute",
+   "resume": "Ouvert le 12/11 à 17 h 52 UTC, impact « major » : les outils courrier, calendrier, SharePoint, Teams et recherche du connecteur Microsoft 365 échouent pour la plupart des requêtes, les nouvelles connexions peuvent ne pas aboutir et Claude for Outlook est touché. Le dernier message (22 h 23 UTC) l'attribue à un incident de service Microsoft 365 en cours, statut « identified », sans heure de rétablissement ; composants : claude.ai et Claude Cowork.",
+   "sources": [
+    {
+     "url": "https://status.claude.com/incidents/sqn3fg1l96dl",
+     "libelle": "Claude Status — incident sqn3fg1l96dl",
+     "officielle": true
+    }
+   ],
+   "certitude": "officiel",
+   "impact": "nul",
+   "pour_toi": null,
+   "projets_concernes": [],
+   "action": null,
+   "kb_refs": [],
+   "contexte_sections": {}
+  }
+ ],
+ "ecartes": [
+  {
+   "id": "x-2120962482584101217",
+   "raison": "post X sans rapport : lien vers une vidéo, sans commande ni réglage (D24)"
+  },
+  {
+   "id": "x-2120962481225146636",
+   "raison": "post X sans rapport : vidéo de présentation sur le lancement des modèles et le coût par tâche, sans commande ni réglage à citer (D24)"
+  },
+  {
+   "id": "x-2120841731302154708",
+   "raison": "post X sans rapport : introduction en bourse d'Anthropic, information financière sans lien avec les outils ou leurs conditions d'usage (D24)"
+  },
+  {
+   "id": "https://claude.com/blog/j-crew-style-advisor-with-claude",
+   "raison": "témoignage client : assistant de style pour un site de mode, application sectorielle (D24)"
+  },
+  {
+   "id": "https://claude.com/blog/claude-for-manufacturing",
+   "raison": "plugin sectoriel pour la fabrication industrielle, sans rapport avec les projets ou les outils (D24)"
+  }
+ ],
+ "sources_en_echec": [],
+ "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
