@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 131,
+ "commentees": 132,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -3377,7 +3377,7 @@
    "categorie": "commandes",
    "nom": "claude rm <id>",
    "gabarit": "complet",
-   "description": "Retire une session d'arrière-plan de la liste ; le transcript reste disponible via `claude --resume`. Si un worktree bloque la suppression, le message indique l'option à passer (`--discard-unpushed` ou `--force-remove-worktree`).",
+   "description": "Retire une session d'arrière-plan (agent view, `--bg`) de la liste des sessions gérées par Claude Code ; le transcript reste sur la machine et se rouvre avec `claude --resume`. Si Claude Code refuse la suppression à cause du worktree de la session, la documentation renvoie à la section « Delete a session after Claude Code refuses » de la page agent view.",
    "description_source": "Remove a background session from the list. If Claude Code refuses to delete the session because of its worktree, see Delete a session after Claude Code refuses. The conversation transcript stays on your local machine, available through claude --resume — claude rm 7c5dcf5d",
    "usage": "claude rm <id>",
    "usage_nature": "syntaxe",
@@ -3386,7 +3386,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'utilises pas de sessions d'arrière-plan."
+    "pourquoi": "Tes sessions durables sont des services systemd `claude-session@<nom>` sous tmux, lancés par `claude --resume <id> --remote-control <nom>`, pas des sessions d'arrière-plan d'agent view : rien à retirer avec `claude rm`."
    },
    "sources": [
     {
@@ -3395,7 +3395,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -3412,10 +3412,20 @@
     {
      "date": "2026-11-14",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables décrites comme services systemd sous tmux avec --resume et --remote-control, sans sessions --bg d'agent view."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-setup-token",
@@ -4486,7 +4496,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-22",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4596,9 +4606,13 @@
     {
      "date": "2026-10-22",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
