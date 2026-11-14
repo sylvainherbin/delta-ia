@@ -1,0 +1,218 @@
+{
+  "date": "2026-11-14",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-11-14T03:16:35+00:00",
+  "synthese": "Codex CLI 0.168.0 et 0.169.0 ajoutent des conversations latérales, une recherche des tâches et des contrôles de lecture utiles aux audits sous tmux. Le relevé local indique encore 0.167.2 ; le correctif de confiance explicite de codex exec est aussi à considérer pour les exécutions non interactives. Wallet est annoncé, sans usage d’achat délégué décrit dans ton contexte. Trou de lecture des dépréciations : échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+  "sources_en_echec": [
+    {
+      "id": "openai-deprecations",
+      "url": "https://developers.openai.com/api/docs/deprecations.md",
+      "erreur": "échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+      "partiel": true
+    }
+  ],
+  "elements": [
+    {
+      "id": "rust-v0.169.0",
+      "ids_bruts": [
+        "rust-v0.169.0"
+      ],
+      "produit": "codex",
+      "titre": "Codex CLI 0.169.0 : onglets latéraux persistants, recherche des tâches et confiance explicite",
+      "version": "0.169.0",
+      "date_publication": "2026-11-13",
+      "type": "amelioration",
+      "resume": "L’espace terminal optionnel gagne plusieurs conversations latérales persistantes, la recherche d’anciennes tâches et le réglage Collapse turn details. La version ajoute l’édition de fournisseurs et leur connexion par code d’appareil, l’export ZIP local par Ctrl+S dans l’éditeur de rapport, ainsi qu’une connexion Cloud optionnelle sous Linux avec images, choix du modèle et de l’effort, archivage et restauration. En dossier non approuvé, codex exec désactive configuration de projet et MCP même avec --sandbox workspace-write ; --trust enregistre explicitement la confiance, tandis que les correctifs couvrent la transmission du plan après effacement du contexte, les attentes MCP et les interruptions tardives.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.169.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu audites trading-sim avec Codex et travailles en CLI sous tmux : plusieurs onglets latéraux conservés après redémarrage permettent de séparer les questions d’un audit. La recherche par nom, extrait de consigne ou dossier facilite le retour aux audits anciens ; Collapse turn details permet de relire leurs réponses en repliant l’activité achevée. L’édition des fournisseurs et la connexion par code d’appareil concernent une éventuelle passerelle distante, sans adoption de passerelle décrite dans CONTEXTE.md. Ctrl+S dans l’éditeur de rapport permet de garder un diagnostic ZIP local pour un incident du flux d’audit. La connexion Cloud optionnelle sous Linux ajoute images, modèle, effort et archivage de conversations Cloud Codex ; elle ne décrit pas un accès aux sessions Claude. Pour la chaîne D70 et mission-codex, le correctif de confiance impose de distinguer sandbox et approbation du projet : --trust persiste cette dernière. Le relevé du 14/11 donne encore 0.167.2 pour la CLI autonome : ces ajouts nécessitent une version plus récente. La liste des changements ajoute aussi un mode OpenSSH ProxyCommand à codex tcp-tunnel pour les connexions SSH ; elle ne fournit pas la syntaxe de ce mode et n’établit pas de changement du remote control iPhone que tu utilises.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Après mise à jour de la CLI vers 0.169.0, active `Collapse turn details` dans le transcript plein écran ; essai : relis un audit trading-sim achevé ; résultat attendu : l’activité terminée est repliée sous chaque consigne, les réponses restent visibles et les sorties d’outils restent recherchables.",
+        "etapes": [
+          "Dans le transcript plein écran, activer Collapse turn details.",
+          "Relire un audit trading-sim achevé et rechercher un terme présent dans une sortie d’outil.",
+          "Pour un diagnostic nécessaire, Ctrl+S dans l’éditeur de rapport enregistre un ZIP local ; relire son contenu avant tout partage."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "CLI sous tmux, audits et exécutions non interactives réellement utilisés."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Audits adversariaux formels à relire."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "D70 exécute Codex sous un profil explicite ; confiance et sandbox sont distincts."
+        }
+      }
+    },
+    {
+      "id": "rust-v0.168.0",
+      "ids_bruts": [
+        "rust-v0.168.0"
+      ],
+      "produit": "codex",
+      "titre": "Codex CLI 0.168.0 : espace à deux conversations, GIF et notifications terminal",
+      "version": "0.168.0",
+      "date_publication": "2026-11-13",
+      "type": "amelioration",
+      "resume": "features.tui_workspace active une conversation latérale redimensionnable ; leader z agrandit le panneau ciblé et Sessions → Model providers choisit le fournisseur des nouvelles conversations. La version ajoute les enregistrements audio pour les modèles compatibles, les GIF via features.image_generation_animation, les aperçus d’images et pets sous tmux avec Ghostty ou Kitty et allow-passthrough all, ainsi que tui.notification_method = \"osc777\". Elle corrige notamment l’arrivée des messages de guidage pendant les sauvegardes finales et avertit que features.multi_agent est déprécié au profit d’agents.enabled pour désactiver les outils de sous-agents.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.168.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Codex sous tmux pour les audits de trading-sim : l’espace à deux conversations offre un essai concret pour garder une question latérale à côté de l’audit. Le choix de fournisseur dans Sessions → Model providers persiste pour les nouvelles conversations, tandis que les conversations existantes conservent leur fournisseur ; aucun changement de fournisseur n’est nécessaire d’après le contexte. Les enregistrements audio et les GIF ajoutent des possibilités à la CLI, sans usage de ces deux fonctions documenté pour tes audits. Les aperçus et pets dans tmux exigent Ghostty ou Kitty et allow-passthrough all ; le terminal utilisé n’est pas identifié dans CONTEXTE.md, donc leur compatibilité locale reste à établir. osc777 ajoute une méthode de notification terminal, distincte des notifications iPhone ; son support local n’est pas établi. Le correctif des messages de guidage concerne ton travail dans les conversations longues. La référence extraite mentionne encore features.multi_agent et ne liste pas osc777 : sur ces deux points, la note de version est plus récente que les fiches.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Après mise à jour de la CLI vers 0.168.0 ou plus récente, ajoute `features.tui_workspace = true` à la racine de `~/.codex/config.toml` ; essai : ouvre une question latérale pendant la relecture d’un audit trading-sim ; résultat attendu : les deux conversations sont visibles côte à côte, le séparateur se redimensionne et `leader z` agrandit le panneau ciblé.",
+        "etapes": [
+          "Dans ~/.codex/config.toml, placer features.tui_workspace = true avant toute table [section], ou ajouter tui_workspace = true dans la table [features] existante.",
+          "Relancer la CLI et ouvrir une conversation latérale pour une question sur un audit trading-sim.",
+          "Déplacer le séparateur ou utiliser leader z pour agrandir le panneau ciblé."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-parametres-tui-notification-method",
+        "codex-parametres-features-multi-agent",
+        "codex-parametres-agents-enabled"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Usage CLI sous tmux et guidage des audits ; aucun terminal compatible nommé."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Essai de conversation latérale sur les audits existants."
+        }
+      }
+    },
+    {
+      "id": "https://openai.com/index/introducing-chatgpt-wallet",
+      "ids_bruts": [
+        "https://openai.com/index/introducing-chatgpt-wallet",
+        "releasebot-79587",
+        "x-2121283153205883030",
+        "x-2121283151729496235"
+      ],
+      "produit": "chatgpt",
+      "titre": "ChatGPT Wallet : achats autorisés par l’utilisateur pour les agents",
+      "version": null,
+      "date_publication": "2026-11-13",
+      "type": "nouveaute",
+      "resume": "OpenAI annonce Wallet pour permettre aux agents de ChatGPT Work, Codex et dots de payer avec l’approbation de l’utilisateur, en conservant les protections de la carte. Le relais des notes ChatGPT décrit un déploiement progressif dans dots pour les adultes Pro éligibles aux États-Unis, avec carte émise aux États-Unis et adresse de facturation américaine, une validation biométrique et un identifiant de paiement substitué aux données réelles de la carte ; ces conditions détaillées proviennent du relais tiers.",
+      "sources": [
+        {
+          "url": "https://openai.com/index/introducing-chatgpt-wallet",
+          "libelle": "openai-news",
+          "officielle": true
+        },
+        {
+          "url": "https://releasebot.io/updates/openai/chatgpt",
+          "libelle": "releasebot-chatgpt",
+          "officielle": false
+        },
+        {
+          "url": "https://x.com/ChatGPT/status/2121283153205883030",
+          "libelle": "x-liste-openai",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ChatGPT/status/2121283151729496235",
+          "libelle": "x-liste-openai",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "openai-status-01M7ATRS6BMZ61E4JDHJGM79Y0",
+      "ids_bruts": [
+        "openai-status-01M7ATRS6BMZ61E4JDHJGM79Y0"
+      ],
+      "produit": "chatgpt",
+      "titre": "Costs API : retards de publication des données de coûts sous surveillance",
+      "version": null,
+      "date_publication": "2026-11-13",
+      "type": "correction",
+      "resume": "L’incident du 13 novembre retarde la publication des données de coûts d’organisation via Costs API. Au dernier état collecté, une mitigation est appliquée et la surveillance continue, avec des retards encore attendus ; l’utilisation de l’API et de ChatGPT n’est pas affectée.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M7ATRS6BMZ61E4JDHJGM79Y0",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "openai-status-01M79GYA0GA772Y6D089AH5478",
+      "ids_bruts": [
+        "openai-status-01M79GYA0GA772Y6D089AH5478"
+      ],
+      "produit": "chatgpt",
+      "titre": "Sites : échecs de publication du 13 novembre résolus",
+      "version": null,
+      "date_publication": "2026-11-13",
+      "type": "correction",
+      "resume": "OpenAI a signalé des échecs de publication Sites le 13 novembre à 03:59 UTC. L’incident est déclaré résolu à 05:55 UTC, avec retour au fonctionnement normal des services concernés.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M79GYA0GA772Y6D089AH5478",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "releasebot-79586",
+      "raison": "déjà couvert le 2026-11-12 (releasebot-77787) : retrait d’Advanced et Standard Voice le 11 décembre 2026 au profit de GPT-Live."
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
