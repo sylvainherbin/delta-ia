@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-13",
+ "maj_le": "2026-11-14",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 678,
- "commentees": 618,
+ "total": 681,
+ "commentees": 613,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -393,7 +393,7 @@
    "nom": "agentPushNotifEnabled",
    "gabarit": "court",
    "description": "Réglage booléen (défaut `false`) qui autorise Claude à envoyer une notification push au téléphone quand il le juge utile, par exemple à la fin d'une longue tâche, en session locale seulement tant que Remote Control est connecté.",
-   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
+   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides.",
    "usage": "{\n  \"agentPushNotifEnabled\": true\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"agentPushNotifEnabled\": true\n}",
@@ -410,11 +410,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Remote, desktop, and notifications",
-   "maj_le": "2026-11-09",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -482,6 +482,43 @@
     {
      "date": "2026-11-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`agentPushNotifEnabled` (booléen, défaut false) autorise Claude à envoyer une notification push au téléphone ; en session locale, seulement tant que Remote Control est connecté.",
+       "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+       "releve_le": "2026-11-09",
+       "caduc_si": "la clé change de nom, de type, de défaut ou de condition Remote Control dans la documentation"
+      },
+      {
+       "affirmation": "Changer la valeur dans /config (« Push when Claude decides ») l'enregistre aussi dans le compte ; les sessions d'un serveur `claude remote-control` suivent la valeur du compte plutôt que la clé.",
+       "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
+       "releve_le": "2026-11-09",
+       "caduc_si": "la documentation ne décrit plus cet enregistrement dans le compte"
+      },
+      {
+       "affirmation": "Le settings.json de Sylvain active les notifications push des agents (relevé du 07/10).",
+       "source": "contexte:config.claude-code.interface",
+       "releve_le": "2026-11-09",
+       "caduc_si": "un relevé de settings.json ne montre plus les notifications push des agents"
+      },
+      {
+       "affirmation": "L'iPhone, par Remote Control et notifications push, est l'interface principale de pilotage.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-11-09",
+       "caduc_si": "le pilotage à distance depuis l'iPhone n'est plus l'interface principale"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -495,33 +532,7 @@
      "pourquoi": "Pilotage à distance depuis l'iPhone, notifications push."
     }
    },
-   "exemple_origine": "source",
-   "provenance": [
-    {
-     "affirmation": "`agentPushNotifEnabled` (booléen, défaut false) autorise Claude à envoyer une notification push au téléphone ; en session locale, seulement tant que Remote Control est connecté.",
-     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
-     "releve_le": "2026-11-09",
-     "caduc_si": "la clé change de nom, de type, de défaut ou de condition Remote Control dans la documentation"
-    },
-    {
-     "affirmation": "Changer la valeur dans /config (« Push when Claude decides ») l'enregistre aussi dans le compte ; les sessions d'un serveur `claude remote-control` suivent la valeur du compte plutôt que la clé.",
-     "source": "https://code.claude.com/docs/en/settings-reference#agentpushnotifenabled",
-     "releve_le": "2026-11-09",
-     "caduc_si": "la documentation ne décrit plus cet enregistrement dans le compte"
-    },
-    {
-     "affirmation": "Le settings.json de Sylvain active les notifications push des agents (relevé du 07/10).",
-     "source": "contexte:config.claude-code.interface",
-     "releve_le": "2026-11-09",
-     "caduc_si": "un relevé de settings.json ne montre plus les notifications push des agents"
-    },
-    {
-     "affirmation": "L'iPhone, par Remote Control et notifications push, est l'interface principale de pilotage.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-11-09",
-     "caduc_si": "le pilotage à distance depuis l'iPhone n'est plus l'interface principale"
-    }
-   ]
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-parametres-agents",
@@ -6718,6 +6729,52 @@
    }
   },
   {
+   "id": "claude-code-parametres-claude-code-automount-roots",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_AUTOMOUNT_ROOTS",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui liste des dossiers d'automount absolus à ne pas parcourir quand Claude Code cherche CLAUDE.md, skills et `.mcp.json` dans les dossiers au-dessus du répertoire de travail (Claude Code 2.1.323 ou plus récent).",
+   "description_source": "Automount root folders for Claude Code to skip when it looks in the folders above your working directory for files such as CLAUDE.md, skills, and .mcp.json. Set it when those lookups wait on your automounter. Separate multiple paths with : on Unix or ; on Windows, and give each as an absolute path with no symlink in it. Requires Claude Code v2.1.323 or later",
+   "usage": "CLAUDE_CODE_AUTOMOUNT_ROOTS",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne décrit aucun automounter ni lenteur de recherche de CLAUDE.md ; la variable ne sert que si ces recherches attendent un automounter."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-14",
+   "historique": [
+    {
+     "date": "2026-11-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-bash-edit-diff",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -10723,6 +10780,52 @@
    }
   },
   {
+   "id": "claude-code-parametres-claude-code-experimental-code-mode",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE",
+   "gabarit": "court",
+   "description": "Variable d'environnement qui démarre les sessions en Code Mode, fonction expérimentale (valeur 1) ; 0 la laisse coupée, et dans les réglages gérés elle la bloque pour une organisation.",
+   "description_source": "Set to 1 to start sessions in Code Mode, an experimental feature. Set to 0 to keep it off, or in managed settings to block it for an organization. The variable doesn't count in every settings file. See the version and account requirements",
+   "usage": "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Fonction expérimentale dont le changelog 2.1.323 ne donne ni gain mesuré ni commande d'essai ; aucune priorité de profil.yaml ni aucun projet de CONTEXTE.md n'en dépend."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-14",
+   "historique": [
+    {
+     "date": "2026-11-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-extra-body",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -12890,7 +12993,7 @@
    "nom": "CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS",
    "gabarit": "court",
    "description": "Variable d'environnement qui fixe le délai de départ, en millisecondes (500 à 32000, 500 par défaut), du recul exponentiel entre les nouvelles tentatives après une erreur 529 « overloaded » de l'API (v2.1.292 ou plus).",
-   "description_source": "Starting delay in milliseconds, in place of the default 500, of the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.292 or later",
+   "description_source": "Starting delay in milliseconds of the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 500). Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. See when it has no effect. Requires Claude Code v2.1.292 or later",
    "usage": "CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12907,13 +13010,13 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
    "contexte_sections": {},
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-10-09",
@@ -12922,6 +13025,10 @@
     {
      "date": "2026-10-09",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -12932,7 +13039,7 @@
    "nom": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
    "gabarit": "court",
    "description": "Variable qui relève le plafond du délai d'attente exponentiel entre deux relances automatiques d'une requête rejetée par l'API avec une erreur 529 (surcharge) : 32 000 ms par défaut, de 32 000 à 64 000 ms. Sans effet avec `CLAUDE_CODE_RETRY_WATCHDOG=1` ni en mode rapide.",
-   "description_source": "Ceiling in milliseconds, in place of the default 32000, on the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it so that later retries keep spreading apart when the API is at capacity. Give whole milliseconds from 32000 to 64000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.296 or later",
+   "description_source": "Ceiling in milliseconds on the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 32000). Raise it so that later retries keep spreading apart. Give whole milliseconds from 32000 to 300000 in plain digits; Claude Code treats any other value as unset. Values above 64000 require v2.1.323 or later. See when it has no effect. Requires Claude Code v2.1.296 or later",
    "usage": "CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12949,13 +13056,13 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {},
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-10-14",
@@ -12968,6 +13075,10 @@
     {
      "date": "2026-10-14",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -13104,7 +13215,7 @@
    "nom": "CLAUDE_CODE_PLUGIN_DIR_WATCH",
    "gabarit": "court",
    "description": "Contrôle le rechargement d'un mod chargé avec `--plugin-dir` quand ses fichiers changent : actif par défaut en interactif, 1 l'active aussi en non interactif, 0 le coupe partout. Exige Claude Code 2.1.287 ou plus.",
-   "description_source": "Controls whether Claude Code reloads a mod when the mod's files change. Reloading applies to a mod you load from a directory with --plugin-dir, and it's on by default in interactive sessions. Set to 1 to turn it on in non-interactive sessions as well, or 0 to turn it off in every session. Requires Claude Code v2.1.287 or later. See mod settings and environment variables",
+   "description_source": "Controls whether a mod reloads when its files change. By default, mods in skills directories reload in any session that takes more than one prompt, non-interactive included. Mods in --plugin-dir directories reload only in interactive terminal sessions. Set to 1 to reload them as skills-directory mods do, or 0 to turn reloading off everywhere. Requires Claude Code v2.1.287 or later",
    "usage": "CLAUDE_CODE_PLUGIN_DIR_WATCH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -13121,7 +13232,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
    "contexte_sections": {
     "config.claude-code.skills": {
@@ -13132,7 +13243,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-08",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-10-08",
@@ -13141,6 +13252,10 @@
     {
      "date": "2026-10-08",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -13823,6 +13938,57 @@
      "pourquoi": "politique de capacités déjà restrictive"
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-claude-code-resume-hint-command",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_RESUME_HINT_COMMAND",
+   "gabarit": "court",
+   "description": "Variable d'environnement pour un script enveloppe qui lance Claude Code : le nom donné remplace `claude` dans la ligne `--resume <session-id>` affichée à la sortie (2.1.323 ou plus récent ; ignorée dans le bloc `env` d'un fichier de réglages).",
+   "description_source": "In a wrapper script that starts Claude Code, set this to the name you type to run the wrapper, such as mytool. A local session then prints mytool --resume <session-id> at exit in place of claude --resume <session-id>. Claude Code ignores a name that doesn't match ^\\w[\\w-]*$. It also ignores the variable in a settings file's env block. Requires Claude Code v2.1.323 or later",
+   "usage": "CLAUDE_CODE_RESUME_HINT_COMMAND",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions durables lancent `claude --resume <id> --remote-control <nom>` directement, sans script enveloppe qui imprimerait un autre nom."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Les sessions durables exécutent `claude --resume <id> --remote-control <nom>` sans enveloppe."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-14",
+   "historique": [
+    {
+     "date": "2026-11-14",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-resume-interrupted-turn",
@@ -15344,7 +15510,7 @@
    "nom": "CLAUDE_CODE_SYNC_SKILLS",
    "gabarit": "court",
    "description": "Variable qui fait télécharger, en mode `-p`, les skills activés sur le compte claude.ai et attendre leur liste.",
-   "description_source": "Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable, so set it only when a -p run needs your current skills on its first query",
+   "description_source": "Set to 1 to make Claude Code download the skills enabled for your claude.ai account. In non-interactive mode with the -p flag, Claude Code also waits up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS for the list of skills before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable. In an interactive session, the variable requires v2.1.323 or later",
    "usage": "CLAUDE_CODE_SYNC_SKILLS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -15361,11 +15527,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -15382,6 +15548,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -27728,8 +27898,8 @@
    "nom": "minimumVersion",
    "gabarit": "court",
    "description": "Réglage de la version minimale en deçà de laquelle les mises à jour ne descendent pas, écrit par `/config` lors d'un changement de canal.",
-   "description_source": "Keep background auto-updates and claude update from installing any version below this one, so moving to the \"stable\" channel doesn't downgrade you from a newer \"latest\" build. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config, and clears it when you switch back to \"latest\".",
-   "usage": "{\n  \"autoUpdatesChannel\": \"stable\",\n  \"minimumVersion\": \"2.1.100\"\n}",
+   "description_source": "Keep background auto-updates and claude update from installing any version below the one you set. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config. Claude Code clears the key when you switch back to \"latest\" in /config.",
+   "usage": "{\n  \"autoUpdatesChannel\": \"stable\",\n  \"minimumVersion\": \"2.1.323\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -27745,11 +27915,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Updates and versioning",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -27758,6 +27928,14 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -31143,8 +31321,8 @@
    "nom": "sandbox.autoAllowBashIfSandboxed",
    "gabarit": "court",
    "description": "Réglage qui exécute sans demande les commandes Bash isolées ; les règles `deny` et `ask` ciblées s'appliquent toujours.",
-   "description_source": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow, and deny rules and content-scoped ask rules such as Bash(git push *) still apply; a bare Bash ask rule is skipped for sandboxed commands. Set it to false to send sandboxed commands through the regular permission flow too, which the /sandbox Mode tab calls regular permissions mode.",
-   "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"autoAllowBashIfSandboxed\": false\n  }\n}",
+   "description_source": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow. deny rules and content-scoped ask rules such as Bash(git push *) still apply, but a bare Bash ask rule is skipped for sandboxed commands. To set it to true in managed settings, add it to the sandbox block of your highest-ranked managed source.",
+   "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"autoAllowBashIfSandboxed\": true\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -31160,11 +31338,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Sandbox settings",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -31181,6 +31359,14 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -34063,7 +34249,7 @@
    "nom": "--strict-mcp-config",
    "gabarit": "court",
    "description": "Option CLI qui n'utilise que les serveurs MCP de `--mcp-config`, en ignorant toute autre configuration MCP.",
-   "description_source": "Only use MCP servers from --mcp-config, ignoring all other MCP configurations. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json",
+   "description_source": "Skip the MCP servers configured in places such as .mcp.json, ~/.claude.json, or a plugin, and load the ones you pass with --mcp-config. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json",
    "usage": "--strict-mcp-config",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -34080,11 +34266,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34093,6 +34279,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
@@ -34498,10 +34688,10 @@
     }
    ],
    "commentee": true,
-   "retiree": false,
+   "retiree": true,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -34518,6 +34708,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "absente de la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",

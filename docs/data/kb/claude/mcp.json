@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-12",
+ "maj_le": "2026-11-14",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 52,
- "commentees": 52,
+ "commentees": 51,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -2937,7 +2937,7 @@
    "gabarit": "complet",
    "description": "Un connecteur personnalisé relie Claude, Cowork et Claude Desktop à un serveur MCP distant, ajouté sur Pro et Max par Customize > Connectors, « + Add » puis « Add custom connector », avec son URL et un mode de connexion (« Sign in now », « Sign in when needed » ou « No sign in »). Claude se connecte au serveur depuis l'infrastructure d'Anthropic, pas depuis ta machine : le serveur doit être joignable depuis Internet.",
    "description_source": "Custom connectors using remote MCP are available on Claude, Cowork, and Claude Desktop for users on Free, Pro, Max, Ultra, Team, and Enterprise plans. Free users are limited to one custom connector.",
-   "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
+   "usage": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL exactly as the provider documents it, including any path (for example, <https://example.com/mcp>). Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**. Choose \"Use your own OAuth client\" only if the server's documentation says it requires a client you register yourself. Enter both the Client ID and the Client Secret if the server issued a secret, and register <https://claude.ai/api/mcp/auth_callback> as the redirect URL for that client.\n…",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": "Free (un seul connecteur personnalisé), Pro, Max, Ultra, Team et Enterprise ; Claude, Cowork et Claude Desktop",
@@ -2953,11 +2953,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "claude-apps",
    "groupe": null,
-   "maj_le": "2026-11-07",
+   "maj_le": "2026-11-14",
    "historique": [
     {
      "date": "2026-09-23",
@@ -3015,6 +3015,37 @@
     {
      "date": "2026-11-07",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Navigate to **[Organization settings > Connectors](https://claude.ai/admin-settings/connectors)**.\n2. Click “Add.”\n3. Hover over “Custom,” then select “Web.”\n4. Enter a name for the connector. This is the name users see in the connectors list.\n5. Add your connector's remote MCP server URL. Click “Continue.”\n6. Review the authentication settings Claude detected, and change them if your server needs something different. Click “Continue.”\n7. Under **Authentication**, choose how people connect to the server: “Sign in now,” “Sign in when needed,” or “No sign in.”\n8. Under **OAuth client**, choose how Claude identifies itself to the server’s authorization server: “Use Claude’s published identity (Recommended),” “Register automatically,” or “Use your own OAuth client.” **Note:** You won’t see the **OAuth client** setting if you selected \"No sign in\" under **Authentication**.\n…",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-14",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Les connecteurs personnalisés par serveur MCP distant sont disponibles sur les forfaits Pro et Max, ajoutés par Customize > Connectors, « + Add » puis « Add custom connector ».",
+       "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+       "releve_le": "2026-11-07",
+       "caduc_si": "la page retire le forfait Max des connecteurs personnalisés ou change le chemin d'ajout"
+      },
+      {
+       "affirmation": "Claude se connecte au serveur MCP distant depuis l'infrastructure d'Anthropic, pas depuis l'appareil local : le serveur doit être joignable depuis Internet.",
+       "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+       "releve_le": "2026-11-07",
+       "caduc_si": "la page indique que la connexion part de l'appareil local"
+      },
+      {
+       "affirmation": "Les connecteurs de compte claude.ai, Delta-IA compris, s'appliquent à tous les projets Claude Code, trading-sim compris faute de `deny` dans son settings.json.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-11-07",
+       "caduc_si": "trading-sim ajoute le `deny` des connecteurs de compte ou Delta-IA est retiré du compte"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -3023,27 +3054,7 @@
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
      "pourquoi": "Connecteurs de compte claude.ai (Delta-IA compris) appliqués à tous les projets ; écart trading-sim sans `deny`."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "Les connecteurs personnalisés par serveur MCP distant sont disponibles sur les forfaits Pro et Max, ajoutés par Customize > Connectors, « + Add » puis « Add custom connector ».",
-     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
-     "releve_le": "2026-11-07",
-     "caduc_si": "la page retire le forfait Max des connecteurs personnalisés ou change le chemin d'ajout"
-    },
-    {
-     "affirmation": "Claude se connecte au serveur MCP distant depuis l'infrastructure d'Anthropic, pas depuis l'appareil local : le serveur doit être joignable depuis Internet.",
-     "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
-     "releve_le": "2026-11-07",
-     "caduc_si": "la page indique que la connexion part de l'appareil local"
-    },
-    {
-     "affirmation": "Les connecteurs de compte claude.ai, Delta-IA compris, s'appliquent à tous les projets Claude Code, trading-sim compris faute de `deny` dans son settings.json.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-11-07",
-     "caduc_si": "trading-sim ajoute le `deny` des connecteurs de compte ou Delta-IA est retiré du compte"
-    }
-   ]
+   }
   },
   {
    "id": "claude-mcp-page-11176164-use-connectors-to-extend-claude-s-capabilities",
