@@ -159,8 +159,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account.",
-   "empreinte": "3db5c389488bcae8e007e7cd6d31dde783b30b8be09e4c55152d4ac6f509a3dd",
+   "description_source": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides.",
+   "empreinte": "80652e571edd619c6db5b986c60d04bb66715769f600ad9dcceb0afeaac981ac",
    "gabarit": "court",
    "groupe": "Remote, desktop, and notifications",
    "id": "claude-code-parametres-agentpushnotifenabled",
@@ -182,7 +182,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides. When you change it there, Claude Code also saves the value to your account."
+      "texte": "Allow Claude to send a push notification to your phone when it decides one is worth sending, for example when a long task finishes. In a local session, Claude can send one while Remote Control is connected. Appears in /config as Push when Claude decides."
      }
     }
    },
@@ -4701,6 +4701,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Automount root folders for Claude Code to skip when it looks in the folders above your working directory for files such as CLAUDE.md, skills, and .mcp.json. Set it when those lookups wait on your automounter. Separate multiple paths with : on Unix or ; on Windows, and give each as an absolute path with no symlink in it. Requires Claude Code v2.1.323 or later",
+   "empreinte": "68845f7fb19e3da4e99aed8a006fd5ec79ef70c5bd021c138ad00c50aaa6d598",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-automount-roots",
+   "identite": "kb:claude:claude-code-parametres-claude-code-automount-roots",
+   "nom": "CLAUDE_CODE_AUTOMOUNT_ROOTS",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Automount root folders for Claude Code to skip when it looks in the folders above your working directory for files such as CLAUDE.md, skills, and .mcp.json. Set it when those lookups wait on your automounter. Separate multiple paths with : on Unix or ; on Windows, and give each as an absolute path with no symlink in it. Requires Claude Code v2.1.323 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_AUTOMOUNT_ROOTS",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Set to 0 to turn off the diff of the files that changed while a Bash command ran, or 1 to record it in every permission mode. Takes precedence over the bashEditDiffEnabled setting. Requires Claude Code v2.1.269 or later",
    "empreinte": "85d36fa6e5c427781984b03a20ba7d7bdd2db47e3135eb072ed466ebbd3cd5f0",
    "gabarit": "court",
@@ -7746,6 +7778,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Set to 1 to start sessions in Code Mode, an experimental feature. Set to 0 to keep it off, or in managed settings to block it for an organization. The variable doesn't count in every settings file. See the version and account requirements",
+   "empreinte": "0c63675f10bb9f0074c3985348ae99c26eca5f901c98431ba5bb3427a13fd983",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-experimental-code-mode",
+   "identite": "kb:claude:claude-code-parametres-claude-code-experimental-code-mode",
+   "nom": "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set to 1 to start sessions in Code Mode, an experimental feature. Set to 0 to keep it off, or in managed settings to block it for an organization. The variable doesn't count in every settings file. See the version and account requirements"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "JSON object to merge into the top level of model request bodies except on some requests outside the conversation, such as /model checks. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited",
    "empreinte": "e486256106175b4de64056087147b08fbfbfb2b40a472347f5229f6bd6453fd2",
    "gabarit": "court",
@@ -9415,8 +9479,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Starting delay in milliseconds, in place of the default 500, of the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.292 or later",
-   "empreinte": "86c5311c094106b95a5d83ced86b8067472c44cf0c562964ac2c4d1b3ab3429d",
+   "description_source": "Starting delay in milliseconds of the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 500). Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. See when it has no effect. Requires Claude Code v2.1.292 or later",
+   "empreinte": "ed4e53edc6bcd166c9e1f5a23f2398a104c40369d6c8c685ce23f89e20ed0b6d",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-overloaded-retry-base-delay-ms",
@@ -9438,14 +9502,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Starting delay in milliseconds, in place of the default 500, of the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.292 or later"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "47d9dce6ba24caa71aa9c923285ef21c08951859792b94f686376616eac1eac8",
-      "statut": "automatique",
-      "texte": "Délai initial en millisecondes, à la place de la valeur par défaut de 500, de la temporisation exponentielle entre les nouvelles tentatives automatiques d'une requête que l'API rejette avec une erreur 529 overloaded. L'augmenter pour répartir les nouvelles tentatives sur une fenêtre plus longue lorsque l'API est saturée. Indiquer des millisecondes entières de 500 à 32000 en chiffres simples ; Claude Code traite toute autre valeur comme non définie. N'a aucun effet lorsque CLAUDE_CODE_RETRY_WATCHDOG est défini à 1, ou lorsque la requête rejetée a été envoyée en mode rapide. Nécessite Claude Code v2.1.292 ou ultérieure"
+      "texte": "Starting delay in milliseconds of the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 500). Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. See when it has no effect. Requires Claude Code v2.1.292 or later"
      }
     }
    },
@@ -9454,8 +9511,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Ceiling in milliseconds, in place of the default 32000, on the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it so that later retries keep spreading apart when the API is at capacity. Give whole milliseconds from 32000 to 64000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.296 or later",
-   "empreinte": "4813c4092cded1265a34613c070a3140d81f0ea4d4d71e2e1efc77b942966d45",
+   "description_source": "Ceiling in milliseconds on the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 32000). Raise it so that later retries keep spreading apart. Give whole milliseconds from 32000 to 300000 in plain digits; Claude Code treats any other value as unset. Values above 64000 require v2.1.323 or later. See when it has no effect. Requires Claude Code v2.1.296 or later",
+   "empreinte": "e54c3cb94fa1d7f043698aed972b230e4041cae1dafc1cb4b6618d513bbba3fa",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-overloaded-retry-max-delay-ms",
@@ -9477,14 +9534,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Ceiling in milliseconds, in place of the default 32000, on the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it so that later retries keep spreading apart when the API is at capacity. Give whole milliseconds from 32000 to 64000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.296 or later"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "c04d0dc5dc39e1d3797de7808cd824175b91a3c1ec6840f9a2d4e07b6c29aca0",
-      "statut": "automatique",
-      "texte": "Plafond en millisecondes, à la place de la valeur par défaut de 32000, de la temporisation exponentielle entre les nouvelles tentatives automatiques d'une requête que l'API rejette avec une erreur 529 overloaded. L'augmenter pour que les nouvelles tentatives continuent de s'espacer lorsque l'API est saturée. Indiquer des millisecondes entières de 32000 à 64000 en chiffres simples ; Claude Code traite toute autre valeur comme non définie. N'a aucun effet lorsque CLAUDE_CODE_RETRY_WATCHDOG est défini à 1, ou lorsque la requête rejetée a été envoyée en mode rapide. Nécessite Claude Code v2.1.296 ou ultérieure"
+      "texte": "Ceiling in milliseconds on the backoff between retries of a request that the API rejects with a 529 overloaded error (default: 32000). Raise it so that later retries keep spreading apart. Give whole milliseconds from 32000 to 300000 in plain digits; Claude Code treats any other value as unset. Values above 64000 require v2.1.323 or later. See when it has no effect. Requires Claude Code v2.1.296 or later"
      }
     }
    },
@@ -9610,8 +9660,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Controls whether Claude Code reloads a mod when the mod's files change. Reloading applies to a mod you load from a directory with --plugin-dir, and it's on by default in interactive sessions. Set to 1 to turn it on in non-interactive sessions as well, or 0 to turn it off in every session. Requires Claude Code v2.1.287 or later. See mod settings and environment variables",
-   "empreinte": "7ce15814f830463cb7a4c21d5bc4a89c10e1d292fb49455d5e6ab161de2c400a",
+   "description_source": "Controls whether a mod reloads when its files change. By default, mods in skills directories reload in any session that takes more than one prompt, non-interactive included. Mods in --plugin-dir directories reload only in interactive terminal sessions. Set to 1 to reload them as skills-directory mods do, or 0 to turn reloading off everywhere. Requires Claude Code v2.1.287 or later",
+   "empreinte": "abfa13c8eca386e116f6e82f88d24d9aac4a5ea2b04bf4255df6b8aa2d778b30",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-plugin-dir-watch",
@@ -9633,14 +9683,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Controls whether Claude Code reloads a mod when the mod's files change. Reloading applies to a mod you load from a directory with --plugin-dir, and it's on by default in interactive sessions. Set to 1 to turn it on in non-interactive sessions as well, or 0 to turn it off in every session. Requires Claude Code v2.1.287 or later. See mod settings and environment variables"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "2192dbd67e89c384b4d5c3d2b8442b7c79b92ccc9a3cdaec27f002a9758c9a4c",
-      "statut": "automatique",
-      "texte": "Contrôle si Claude Code recharge un mod lorsque les fichiers du mod changent. Le rechargement s'applique à un mod chargé depuis un répertoire avec --plugin-dir, et il est activé par défaut dans les sessions interactives. Définir à 1 pour l'activer aussi dans les sessions non interactives, ou à 0 pour le désactiver dans toutes les sessions. Nécessite Claude Code v2.1.287 ou ultérieure. Voir les réglages des mods et les variables d'environnement"
+      "texte": "Controls whether a mod reloads when its files change. By default, mods in skills directories reload in any session that takes more than one prompt, non-interactive included. Mods in --plugin-dir directories reload only in interactive terminal sessions. Set to 1 to reload them as skills-directory mods do, or 0 to turn reloading off everywhere. Requires Claude Code v2.1.287 or later"
      }
     }
    },
@@ -10193,6 +10236,38 @@
     }
    },
    "usage": "CLAUDE_CODE_RESTRICTED",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "In a wrapper script that starts Claude Code, set this to the name you type to run the wrapper, such as mytool. A local session then prints mytool --resume <session-id> at exit in place of claude --resume <session-id>. Claude Code ignores a name that doesn't match ^\\w[\\w-]*$. It also ignores the variable in a settings file's env block. Requires Claude Code v2.1.323 or later",
+   "empreinte": "14eea1b596e21beb2c235102e9311b1c493e4ec447f09c3d231ce3bdfc08e252",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-resume-hint-command",
+   "identite": "kb:claude:claude-code-parametres-claude-code-resume-hint-command",
+   "nom": "CLAUDE_CODE_RESUME_HINT_COMMAND",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "In a wrapper script that starts Claude Code, set this to the name you type to run the wrapper, such as mytool. A local session then prints mytool --resume <session-id> at exit in place of claude --resume <session-id>. Claude Code ignores a name that doesn't match ^\\w[\\w-]*$. It also ignores the variable in a settings file's env block. Requires Claude Code v2.1.323 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_RESUME_HINT_COMMAND",
    "usage_nature": "syntaxe"
   },
   {
@@ -11360,8 +11435,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable, so set it only when a -p run needs your current skills on its first query",
-   "empreinte": "15818b4698b02b0f1c0d77eb4341070308b2794fc3404854057ddb4aba8958fe",
+   "description_source": "Set to 1 to make Claude Code download the skills enabled for your claude.ai account. In non-interactive mode with the -p flag, Claude Code also waits up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS for the list of skills before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable. In an interactive session, the variable requires v2.1.323 or later",
+   "empreinte": "6deb9265d88f19af786cc234edd9e817a81ec0e7421574f7038799a0324b870b",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-sync-skills",
@@ -11383,14 +11458,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable, so set it only when a -p run needs your current skills on its first query"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "ca582353cc43d16c5f27a245fb24b5b6c47d619a5044444baf6fa205cc71a64b",
-      "statut": "automatique",
-      "texte": "Définir à 1 en mode non interactif avec l'option -p pour que Claude Code télécharge les skills activées pour le compte claude.ai lors de cette exécution et attende la liste de ces skills, jusqu'à CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, avant d'exécuter la première requête. Nécessite une authentification claude.ai. Les sessions de terminal ouvertes avec une connexion au compte claude.ai synchronisent ces skills sans cette variable ; ne la définir que lorsqu'une exécution avec -p a besoin des skills actuelles dès sa première requête"
+      "texte": "Set to 1 to make Claude Code download the skills enabled for your claude.ai account. In non-interactive mode with the -p flag, Claude Code also waits up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS for the list of skills before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable. In an interactive session, the variable requires v2.1.323 or later"
      }
     }
    },
@@ -18056,7 +18124,7 @@
   {
    "categorie": "parametres",
    "description_source": "Runs when Claude Code cleans up a worktree that your WorktreeCreate hook created. The event fires when:",
-   "empreinte": "1ffae2080035ba25368456389bad41dec3ac12ffb6e2a07fb843599d5519a4e5",
+   "empreinte": "9de348beae5d414a9bca121beaaa1c6b15d632c0ac9e9339660202f6b2968651",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-worktreeremove",
@@ -18089,7 +18157,7 @@
      }
     }
    },
-   "usage": "{\n  \"hooks\": {\n    \"WorktreeRemove\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'jq -r .worktree_path | xargs rm -rf'\"\n          }\n        ]\n      }\n    ]\n…",
+   "usage": "{\n  \"hooks\": {\n    \"WorktreeRemove\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"bash -c 'p=$(jq -er .worktree_path) && rm -rf -- \\\"$p\\\"'\"\n          }\n        ]\n      }\n    ]\n…",
    "usage_nature": "syntaxe"
   },
   {
@@ -19697,8 +19765,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Keep background auto-updates and claude update from installing any version below this one, so moving to the \"stable\" channel doesn't downgrade you from a newer \"latest\" build. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config, and clears it when you switch back to \"latest\".",
-   "empreinte": "d451bbb1d6efe9f8ad87923d0c23d736b8f7cf1fdac40fa6ae669fb31815ee2c",
+   "description_source": "Keep background auto-updates and claude update from installing any version below the one you set. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config. Claude Code clears the key when you switch back to \"latest\" in /config.",
+   "empreinte": "c4485a7b8dacbe49c33d79d7fad0d704f4b50fcc004fda771abbc86f47b4b45d",
    "gabarit": "court",
    "groupe": "Updates and versioning",
    "id": "claude-code-parametres-minimumversion",
@@ -19720,18 +19788,11 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Keep background auto-updates and claude update from installing any version below this one, so moving to the \"stable\" channel doesn't downgrade you from a newer \"latest\" build. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config, and clears it when you switch back to \"latest\"."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0fff522c3b71483b7d29646febc7a5cf034acc370336a4f391e7944bc4baf71f",
-      "statut": "automatique",
-      "texte": "Empêcher les mises à jour automatiques en arrière-plan et claude update d'installer une version antérieure à celle-ci, afin que le passage au canal \"stable\" ne rétrograde pas depuis un build \"latest\" plus récent. Claude Code écrit cette clé automatiquement lorsqu'on choisit de rester sur la version actuelle en changeant de canal dans /config, et la supprime lorsqu'on revient à \"latest\"."
+      "texte": "Keep background auto-updates and claude update from installing any version below the one you set. Claude Code writes this key for you when you choose to stay on your current version while switching channels in /config. Claude Code clears the key when you switch back to \"latest\" in /config."
      }
     }
    },
-   "usage": "{\n  \"autoUpdatesChannel\": \"stable\",\n  \"minimumVersion\": \"2.1.100\"\n}",
+   "usage": "{\n  \"autoUpdatesChannel\": \"stable\",\n  \"minimumVersion\": \"2.1.323\"\n}",
    "usage_nature": "syntaxe"
   },
   {
@@ -22041,8 +22102,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow, and deny rules and content-scoped ask rules such as Bash(git push *) still apply; a bare Bash ask rule is skipped for sandboxed commands. Set it to false to send sandboxed commands through the regular permission flow too, which the /sandbox Mode tab calls regular permissions mode.",
-   "empreinte": "e7f4560bd67b794fdb4abd986d0ba4713ab6f4ae923882a08de3896dde0a00fb",
+   "description_source": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow. deny rules and content-scoped ask rules such as Bash(git push *) still apply, but a bare Bash ask rule is skipped for sandboxed commands. To set it to true in managed settings, add it to the sandbox block of your highest-ranked managed source.",
+   "empreinte": "738f1ee647be28a2c08b68877557889d3c1e8936bbb9a5abb5a32cf2a8347514",
    "gabarit": "court",
    "groupe": "Sandbox settings",
    "id": "claude-code-parametres-sandbox-autoallowbashifsandboxed",
@@ -22064,18 +22125,11 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow, and deny rules and content-scoped ask rules such as Bash(git push *) still apply; a bare Bash ask rule is skipped for sandboxed commands. Set it to false to send sandboxed commands through the regular permission flow too, which the /sandbox Mode tab calls regular permissions mode."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "a5ff30979b0e8654a3219442046ada7a6f3dae751f8e1c53a8be48ce41b2a42c",
-      "statut": "automatique",
-      "texte": "Permettre à Claude Code d'exécuter les commandes Bash sandboxées sans invite d'autorisation. Les commandes qui ne peuvent pas s'exécuter dans le sandbox passent toujours par le flux d'autorisation habituel, et les règles de refus ainsi que les règles ask limitées au contenu, comme Bash(git push *), s'appliquent toujours ; une règle ask Bash générique est ignorée pour les commandes sandboxées. Définir la valeur à false pour faire passer aussi les commandes sandboxées par le flux d'autorisation habituel, que l'onglet Mode de /sandbox appelle regular permissions mode."
+      "texte": "Let Claude Code run sandboxed Bash commands without a permission prompt. Commands that can't run in the sandbox still go through the regular permission flow. deny rules and content-scoped ask rules such as Bash(git push *) still apply, but a bare Bash ask rule is skipped for sandboxed commands. To set it to true in managed settings, add it to the sandbox block of your highest-ranked managed source."
      }
     }
    },
-   "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"autoAllowBashIfSandboxed\": false\n  }\n}",
+   "usage": "{\n  \"sandbox\": {\n    \"enabled\": true,\n    \"autoAllowBashIfSandboxed\": true\n  }\n}",
    "usage_nature": "syntaxe"
   },
   {
@@ -24080,8 +24134,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Only use MCP servers from --mcp-config, ignoring all other MCP configurations. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json",
-   "empreinte": "c8fca9877bf890037b1716669bbe79d88f23b56bd9c5a2d072a3aa3b362fe5ef",
+   "description_source": "Skip the MCP servers configured in places such as .mcp.json, ~/.claude.json, or a plugin, and load the ones you pass with --mcp-config. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json",
+   "empreinte": "90b373fc5fde5a1a7b6f8046bf6ef77b668a50fea2117736213a5e4c5b65d3c3",
    "gabarit": "court",
    "groupe": "CLI flags",
    "id": "claude-code-parametres-strict-mcp-config",
@@ -24103,14 +24157,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Only use MCP servers from --mcp-config, ignoring all other MCP configurations. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "8ab341b66c780495352bd0e026d439d359ee0fd86e7bad6cd78bb61ecb188e3c",
-      "statut": "automatique",
-      "texte": "Utiliser uniquement les serveurs MCP de --mcp-config, en ignorant toutes les autres configurations MCP. Voir Contrôle exclusif avec managed-mcp.json pour l'effet de l'option avec un fichier MCP géré — claude --strict-mcp-config --mcp-config ./mcp.json"
+      "texte": "Skip the MCP servers configured in places such as .mcp.json, ~/.claude.json, or a plugin, and load the ones you pass with --mcp-config. See Exclusive control with managed-mcp.json for what the flag does under a managed MCP file — claude --strict-mcp-config --mcp-config ./mcp.json"
      }
     }
    },
@@ -24386,7 +24433,7 @@
   {
    "categorie": "parametres",
    "description_source": "When Claude runs subagents, Claude Code lists them in a task display below the prompt, one row per subagent showing name · description · token count. This key lets you run your own command to rewrite those rows, for example to show each subagent's context usage as a percentage. On each refresh, Claude Code sends the visible rows as one JSON object on stdin, with a tasks array carrying each subagent's id, name, status, model, tokenCount, and more, and replaces the row for each id you write back as a {\"id\", \"content\"} line. Rows you don't write back keep the default rendering.",
-   "empreinte": "4f46fc5ae8cd29a25b60bcd6024ea29ce6fac47939a8070a02864554a97f9e1d",
+   "empreinte": "eb86b124976a007f6b81476f94a0da16f9260406d2aa9c5477632da09a125cff",
    "gabarit": "court",
    "groupe": "Interface and terminal",
    "id": "claude-code-parametres-subagentstatusline",
@@ -24394,7 +24441,7 @@
    "nom": "subagentStatusLine",
    "origine": "cc-reglages",
    "produit": "claude-code",
-   "retiree": false,
+   "retiree": true,
    "sources": [
     {
      "libelle": "settings-reference",
@@ -26128,9 +26175,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-12",
+ "maj_le": "2026-11-14",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 679
+ "total": 682
 }
