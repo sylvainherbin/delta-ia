@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-14",
+ "maj_le": "2026-11-15",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 681,
- "commentees": 613,
+ "total": 682,
+ "commentees": 612,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -8907,7 +8907,7 @@
    "nom": "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP",
    "gabarit": "court",
    "description": "Variable qui empêche, sur l'API Anthropic, le renvoi automatique d'Opus 4 et d'Opus 4.1 vers la version actuelle d'Opus, pour garder volontairement un ancien modèle. Le renvoi ne s'exécute pas sur Bedrock, Google Cloud Agent Platform ni Microsoft Foundry.",
-   "description_source": "Set to 1 to prevent automatic remapping of Opus 4 and Opus 4.1 to the current Opus version on the Anthropic API. Use when you intentionally want to pin an older model. The remap does not run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry",
+   "description_source": "Set to 1 to prevent automatic remapping of Opus 4 and Opus 4.1 to the current Opus version on the Anthropic API. The remap doesn't run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry",
    "usage": "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8924,11 +8924,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-13",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8945,6 +8945,10 @@
     {
      "date": "2026-10-13",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -9236,7 +9240,7 @@
    "nom": "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK",
    "gabarit": "court",
    "description": "Variable qui désactive le repli sans flux quand une requête en flux échoue en cours de route.",
-   "description_source": "Set to 1 to disable the non-streaming fallback when a streaming request fails mid-stream. Streaming errors propagate to the retry layer instead. Useful when a proxy or gateway causes the fallback to produce duplicate tool execution",
+   "description_source": "Set to 1 to disable the non-streaming fallback when a streaming request fails mid-stream. Useful when a proxy or gateway causes the fallback to produce duplicate tool execution",
    "usage": "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9253,11 +9257,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -9266,6 +9270,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -9799,6 +9807,48 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-ultrathink",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_ULTRATHINK",
+   "gabarit": "court",
+   "description": "Variable d'environnement : `CLAUDE_CODE_DISABLE_ULTRATHINK=1` désactive le mot-clé ultrathink (Claude Code 2.1.316 ou plus).",
+   "description_source": "Set to 1 to turn the ultrathink keyword off. Requires Claude Code v2.1.316 or later",
+   "usage": "CLAUDE_CODE_DISABLE_ULTRATHINK",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "CONTEXTE.md ne mentionne ni ultrathink ni problème de consommation qu'il causerait ; aucun essai nommé à proposer."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-15",
+   "historique": [
+    {
+     "date": "2026-11-15",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "commentée"
     }
    ]
   },
@@ -22447,9 +22497,9 @@
    "categorie": "parametres",
    "nom": "fallbackModel",
    "gabarit": "court",
-   "description": "Réglage d'une chaîne de modèles de repli, essayés dans l'ordre quand le modèle principal est surchargé ou indisponible.",
+   "description": "Réglage d'une chaîne de modèles de repli, essayés dans l'ordre quand le modèle principal est surchargé ou indisponible ; la documentation donne maintenant comme exemple `claude-sonnet-5` puis `claude-haiku-5-5`.",
    "description_source": "Name backup models for Claude Code to try, in order, when your primary model is overloaded or unavailable. Claude Code switches to the next available model in the chain for the rest of the turn and shows a notice. Without a chain, Claude Code retries the same model and then surfaces the server's error, and you retry or switch models yourself.",
-   "usage": "{\n  \"fallbackModel\": [\"claude-sonnet-5\", \"claude-haiku-4-5\"]\n}",
+   "usage": "{\n  \"fallbackModel\": [\"claude-sonnet-5\", \"claude-haiku-5-5\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -22469,7 +22519,7 @@
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Model and responses",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -22478,9 +22528,17 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {}
   },
   {

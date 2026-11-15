@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-14",
+ "maj_le": "2026-11-15",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 132,
+ "commentees": 129,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -51,7 +51,7 @@
    "nom": "/add-dir",
    "gabarit": "complet",
    "description": "Ajoute un répertoire de travail accessible pendant la session en cours, avec complétion du chemin par Tab. La plupart de la configuration `.claude/` du répertoire ajouté n'est pas chargée et les chemins réseau sont refusés. Lancée pendant une réponse, elle demande confirmation tout de suite et l'appel d'outil suivant du même tour peut déjà lire le dossier.",
-   "description_source": "Add a working directory for file access during the current session. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. When you run it while Claude is responding, Claude Code asks you to confirm the directory right away, and once you confirm, Claude's next tool call in the same turn can access it. Before v2.1.234, Claude Code queued the command until the turn finished",
+   "description_source": "Add a working directory for file access. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. If you run /add-dir while Claude is responding, Claude's next tool call can access the directory once you confirm the add",
    "usage": "/add-dir <path>",
    "usage_nature": "syntaxe",
    "exemple": "/add-dir ~/projets/discipline",
@@ -68,11 +68,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -109,6 +109,55 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Add a working directory for file access during the current session. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. When you run it while Claude is responding, Claude Code asks you to confirm the directory right away, and once you confirm, Claude's next tool call in the same turn can access it. Before v2.1.234, Claude Code queued the command until the turn finished",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/add-dir <path> ajoute un répertoire de travail accessible aux fichiers pendant la session en cours ; on tape un chemin partiel et Tab accepte une suggestion.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande /add-dir change de syntaxe ou disparaît de la documentation des commandes."
+      },
+      {
+       "affirmation": "La plupart de la configuration .claude/ n'est pas découverte depuis le répertoire ajouté par /add-dir.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation indique que la configuration .claude/ du répertoire ajouté est chargée."
+      },
+      {
+       "affirmation": "Lancée pendant une réponse de Claude, /add-dir demande aussitôt confirmation du répertoire ; après confirmation, l'appel d'outil suivant du même tour peut y accéder.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation indique de nouveau que la commande est mise en file jusqu'à la fin du tour."
+      },
+      {
+       "affirmation": "Les sessions delta et delta-ia partagent le dossier de travail ~/projets/delta-ia.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne rattache plus delta et delta-ia au dossier ~/projets/delta-ia."
+      },
+      {
+       "affirmation": "Le dépôt ~/projets/discipline porte le Delta Core, dont OPÉRER (moteur sans modèle : missions, incidents, échéances, allocation entre Claude et Codex).",
+       "source": "contexte:projet.discipline",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le dépôt ~/projets/discipline ou OPÉRER n'y est plus porté."
+      },
+      {
+       "affirmation": "mission-codex passe toujours modèle et effort explicitement selon la nature de la mission, d'après le barème codex_modeles.py de discipline.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus le barème codex_modeles.py dans discipline pour mission-codex."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -126,45 +175,7 @@
      "pourquoi": "Barème `codex_modeles.py` de `discipline` utilisé par `mission-codex`."
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "/add-dir <path> ajoute un répertoire de travail accessible aux fichiers pendant la session en cours ; on tape un chemin partiel et Tab accepte une suggestion.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande /add-dir change de syntaxe ou disparaît de la documentation des commandes."
-    },
-    {
-     "affirmation": "La plupart de la configuration .claude/ n'est pas découverte depuis le répertoire ajouté par /add-dir.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation indique que la configuration .claude/ du répertoire ajouté est chargée."
-    },
-    {
-     "affirmation": "Lancée pendant une réponse de Claude, /add-dir demande aussitôt confirmation du répertoire ; après confirmation, l'appel d'outil suivant du même tour peut y accéder.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation indique de nouveau que la commande est mise en file jusqu'à la fin du tour."
-    },
-    {
-     "affirmation": "Les sessions delta et delta-ia partagent le dossier de travail ~/projets/delta-ia.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne rattache plus delta et delta-ia au dossier ~/projets/delta-ia."
-    },
-    {
-     "affirmation": "Le dépôt ~/projets/discipline porte le Delta Core, dont OPÉRER (moteur sans modèle : missions, incidents, échéances, allocation entre Claude et Codex).",
-     "source": "contexte:projet.discipline",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le dépôt ~/projets/discipline ou OPÉRER n'y est plus porté."
-    },
-    {
-     "affirmation": "mission-codex passe toujours modèle et effort explicitement selon la nature de la mission, d'après le barème codex_modeles.py de discipline.",
-     "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus le barème codex_modeles.py dans discipline pour mission-codex."
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-advisor",
@@ -4023,7 +4034,7 @@
    "nom": "/config",
    "gabarit": "complet",
    "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles peuvent couper mais pas activer un réglage qui exige une confirmation, comme `autoContinueAtUsageLimit`. `/config --help` liste les clés acceptées ; alias : `/settings`.",
-   "description_source": "Open the Settings interface to adjust theme, model, output style, and other preferences. Pass one or more key=value pairs to set a setting directly without opening the interface, for example /config thinking=false, /config theme=dark, or /config model=sonnet. The key=value form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. The key=value form can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit, though it can turn one off. Run /config --help to list the keys it accepts. Alias: /settings",
+   "description_source": "Open the Settings interface to adjust preferences. Pass key=value pairs to set a setting directly, for example /config verbose=true, /config theme=dark, or /config model=sonnet. That form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. It can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit. Run /config --help to list the keys it accepts. Alias: /settings",
    "usage": "/config [key=value ...]",
    "usage_nature": "syntaxe",
    "exemple": "/config thinking=false",
@@ -4040,11 +4051,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-01",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4097,6 +4108,10 @@
     {
      "date": "2026-11-01",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -7100,7 +7115,7 @@
    "nom": "/permissions",
    "gabarit": "complet",
    "description": "Ouvre un dialogue interactif qui gère les règles d'autorisation des outils (allow, ask, deny) : consultation par portée, ajout ou retrait de règles, répertoires de travail et refus récents du mode auto. L'onglet Auto mode montre et modifie les règles du classificateur du mode auto. Alias : `/allowed-tools`.",
-   "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. Alias: /allowed-tools",
+   "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. In the desktop app, edit your settings files instead. Alias: /allowed-tools",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
    "exemple": "/permissions",
@@ -7117,11 +7132,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-03",
+   "maj_le": "2026-11-15",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7150,6 +7165,10 @@
     {
      "date": "2026-11-03",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
