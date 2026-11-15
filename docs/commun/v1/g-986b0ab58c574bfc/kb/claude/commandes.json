@@ -3,8 +3,8 @@
  "entrees": [
   {
    "categorie": "commandes",
-   "description_source": "Add a working directory for file access during the current session. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. When you run it while Claude is responding, Claude Code asks you to confirm the directory right away, and once you confirm, Claude's next tool call in the same turn can access it. Before v2.1.234, Claude Code queued the command until the turn finished",
-   "empreinte": "c8bb88065af1e11e37ec1561278493c167c291c76e8ce32d33306d80b03cd2ef",
+   "description_source": "Add a working directory for file access. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. If you run /add-dir while Claude is responding, Claude's next tool call can access the directory once you confirm the add",
+   "empreinte": "ebb87c043f16862521ca6efc72d1f38a33fb6c7ff667900ef2976d70538a3d83",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-add-dir",
@@ -26,14 +26,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Add a working directory for file access during the current session. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. When you run it while Claude is responding, Claude Code asks you to confirm the directory right away, and once you confirm, Claude's next tool call in the same turn can access it. Before v2.1.234, Claude Code queued the command until the turn finished"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "775478001c07c358a550d5bdc4a77b1d4620ad9466e49a9139cafef074dcc7b1",
-      "statut": "automatique",
-      "texte": "Ajouter un répertoire de travail pour l'accès aux fichiers pendant la session en cours. Saisir un chemin partiel pour afficher les suggestions de répertoires correspondantes ; appuyer sur Tab pour en accepter une. La plupart des configurations .claude/ ne sont pas détectées à partir du répertoire ajouté. Il n'est pas possible d'ajouter la plupart des chemins réseau, comme \\\\server\\share. Après un ajout réussi, les hooks DirectoryAdded sont exécutés. Lorsque la commande est lancée pendant que Claude répond, Claude Code demande immédiatement de confirmer le répertoire ; une fois confirmé, le prochain appel d'outil de Claude dans le même tour peut y accéder. Avant la v2.1.234, Claude Code mettait la commande en file d'attente jusqu'à la fin du tour"
+      "texte": "Add a working directory for file access. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. If you run /add-dir while Claude is responding, Claude's next tool call can access the directory once you confirm the add"
      }
     }
    },
@@ -1737,8 +1730,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Remove a background session from the list. When the removal is refused over the session's worktree and a second claude rm can resolve it, the refusal prints the exact flag and value to pass: --discard-unpushed <commit>@<worktree-id> discards a worktree that has unpushed commits along with those commits, and --force-remove-worktree <worktree-id> deletes a worktree directory that git or the WorktreeRemove hook couldn't remove. --discard-unpushed requires Claude Code v2.1.260 or later, and --force-remove-worktree requires v2.1.268 or later. The conversation transcript stays on your local machine, available through claude --resume — claude rm 7c5dcf5d",
-   "empreinte": "8d6a3fb1a771d7b576fd83b5b150f205c2a1341ec27038599202aee7200bc33f",
+   "description_source": "Remove a background session from the list. If Claude Code refuses to delete the session because of its worktree, see Delete a session after Claude Code refuses. The conversation transcript stays on your local machine, available through claude --resume — claude rm 7c5dcf5d",
+   "empreinte": "c9bd00c7a5f7d614ef449b753f0a4dce878cc6ac3b90abe3acf468a55794b48d",
    "gabarit": "complet",
    "groupe": "CLI commands",
    "id": "claude-code-commandes-claude-rm-id",
@@ -1760,14 +1753,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Remove a background session from the list. When the removal is refused over the session's worktree and a second claude rm can resolve it, the refusal prints the exact flag and value to pass: --discard-unpushed <commit>@<worktree-id> discards a worktree that has unpushed commits along with those commits, and --force-remove-worktree <worktree-id> deletes a worktree directory that git or the WorktreeRemove hook couldn't remove. --discard-unpushed requires Claude Code v2.1.260 or later, and --force-remove-worktree requires v2.1.268 or later. The conversation transcript stays on your local machine, available through claude --resume — claude rm 7c5dcf5d"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "98054db521e7269c0caeea7ef24d47ad90b75825d311b3b3b7ddf358a41b8376",
-      "statut": "automatique",
-      "texte": "Supprimer une session en arrière-plan de la liste. Lorsque la suppression est refusée à cause du worktree de la session et qu'une seconde commande claude rm peut la résoudre, le refus affiche l'option exacte et la valeur à passer : --discard-unpushed <commit>@<worktree-id> supprime un worktree contenant des commits non poussés, ainsi que ces commits, et --force-remove-worktree <worktree-id> supprime un répertoire de worktree que git ou le hook WorktreeRemove n'ont pas pu supprimer. --discard-unpushed nécessite la version 2.1.260 ou ultérieure de Claude Code, et --force-remove-worktree nécessite la version 2.1.268 ou ultérieure. La transcription de la conversation reste sur la machine locale, accessible via claude --resume — claude rm 7c5dcf5d"
+      "texte": "Remove a background session from the list. If Claude Code refuses to delete the session because of its worktree, see Delete a session after Claude Code refuses. The conversation transcript stays on your local machine, available through claude --resume — claude rm 7c5dcf5d"
      }
     }
    },
@@ -2049,8 +2035,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Open the Settings interface to adjust theme, model, output style, and other preferences. Pass one or more key=value pairs to set a setting directly without opening the interface, for example /config thinking=false, /config theme=dark, or /config model=sonnet. The key=value form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. The key=value form can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit, though it can turn one off. Run /config --help to list the keys it accepts. Alias: /settings",
-   "empreinte": "fe5b543107dec32b1cf3840148e3a917c357b4cca044f41890ee630f666ea326",
+   "description_source": "Open the Settings interface to adjust preferences. Pass key=value pairs to set a setting directly, for example /config verbose=true, /config theme=dark, or /config model=sonnet. That form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. It can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit. Run /config --help to list the keys it accepts. Alias: /settings",
+   "empreinte": "681f01bac8458c228cfa7b9256e70ab3ccfac6ad4b47591e7860f2ee23d1c031",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-config",
@@ -2072,14 +2058,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Open the Settings interface to adjust theme, model, output style, and other preferences. Pass one or more key=value pairs to set a setting directly without opening the interface, for example /config thinking=false, /config theme=dark, or /config model=sonnet. The key=value form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. The key=value form can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit, though it can turn one off. Run /config --help to list the keys it accepts. Alias: /settings"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "aae33fcf405dcd9e209c9c793507e4d3c9458e74de23a58c4b0e2c5fcb9f2983",
-      "statut": "automatique",
-      "texte": "Ouvrir l'interface des paramètres pour ajuster le thème, le modèle, le style de sortie et d'autres préférences. Passer une ou plusieurs paires clé=valeur pour définir un paramètre directement sans ouvrir l'interface, par exemple /config thinking=false, /config theme=dark ou /config model=sonnet. La forme clé=valeur fonctionne aussi en mode non interactif (-p) et depuis l'application mobile Claude via Remote Control. La forme clé=valeur ne peut pas activer un paramètre qui nécessite une confirmation dans le panneau, comme autoContinueAtUsageLimit, mais elle peut le désactiver. Exécuter /config --help pour lister les clés acceptées. Alias : /settings"
+      "texte": "Open the Settings interface to adjust preferences. Pass key=value pairs to set a setting directly, for example /config verbose=true, /config theme=dark, or /config model=sonnet. That form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. It can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit. Run /config --help to list the keys it accepts. Alias: /settings"
      }
     }
    },
@@ -3393,8 +3372,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. Alias: /allowed-tools",
-   "empreinte": "d32c6b67762182663a8889ba39ff5ade1b03c774185684c91016b87868d45918",
+   "description_source": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. In the desktop app, edit your settings files instead. Alias: /allowed-tools",
+   "empreinte": "2888f507c9870bec326c5d153449341d0e1d9324105c2daa9b374073a473cbda",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-permissions",
@@ -3416,7 +3395,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. Alias: /allowed-tools"
+      "texte": "Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. You can also view and edit auto mode classifier rules from the dialog's Auto mode tab. In the desktop app, edit your settings files instead. Alias: /allowed-tools"
      }
     }
    },
@@ -4496,8 +4475,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Order Claude Code stickers",
-   "empreinte": "53d48f18430515bc12119e3a388679a1e4f426723d4577a2e52b6d1774ed60a3",
+   "description_source": "Check Claude Code sticker availability",
+   "empreinte": "5bd1542788443d31be067a2c69e47d07215cb2d4e577d16386756e898b0fa254",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-stickers",
@@ -4519,14 +4498,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Order Claude Code stickers"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "b244d0bd27183456c6661f33a63d4d78c5402c65aab60d43ef07e571fb174423",
-      "statut": "automatique",
-      "texte": "Commander des autocollants Claude Code"
+      "texte": "Check Claude Code sticker availability"
      }
     }
    },
@@ -4918,8 +4890,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Open the upgrade page in your browser to switch to a higher plan tier. When the browser fails to open, the command shows a sign-in prompt without printing the URL",
-   "empreinte": "5a178784ab9ff1be65869ad0623e5b320d2a26b3a12f80029896915b9e0308a0",
+   "description_source": "Open the upgrade page in your browser to switch to a higher plan tier. When no browser can open the page, for example over SSH, the command prints the page's URL above its sign-in prompt. Printing the URL requires Claude Code v2.1.323 or later",
+   "empreinte": "de5d3d3cfcd8db526c00a2d52dbf1d7a8ae048fe4e729a45feaec2fedcd9ea36",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-upgrade",
@@ -4941,14 +4913,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Open the upgrade page in your browser to switch to a higher plan tier. When the browser fails to open, the command shows a sign-in prompt without printing the URL"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "8b0c6dd16cdeb0356947371a033a6a5972a226e8d9b0fa3ea4d6fc9d4c3c5cbc",
-      "statut": "automatique",
-      "texte": "Ouvrir la page de mise à niveau dans le navigateur pour passer à un forfait supérieur. Si le navigateur ne parvient pas à s'ouvrir, la commande affiche une invite de connexion sans afficher l'URL"
+      "texte": "Open the upgrade page in your browser to switch to a higher plan tier. When no browser can open the page, for example over SSH, the command prints the page's URL above its sign-in prompt. Printing the URL requires Claude Code v2.1.323 or later"
      }
     }
    },
@@ -4989,8 +4954,8 @@
   },
   {
    "categorie": "commandes",
-   "description_source": "Configure usage credits, or request them from your admin, when you hit a limit. Opens your usage-credits billing settings in the browser, except that Team and Enterprise members without billing access instead send a usage-credits request to their admin from the CLI, after confirming in a dialog that the request notifies their admins. When no browser can open the billing page, for example over SSH, the command prints the URL to visit instead; this requires Claude Code v2.1.205 or later, and earlier versions showed nothing in that case. Previously /extra-usage",
-   "empreinte": "ac89e961be400226136cb878efddc35e4f2723213b61775f85e86dc5a6b117ba",
+   "description_source": "Configure usage credits, or request them from your admin, when you hit a limit. Opens your usage-credits billing settings in the browser. Team and Enterprise members without billing access instead send a usage-credits request to their admin from the CLI. At a terminal where no browser can open the page, for example over SSH, the command prints the URL. Printing it requires Claude Code v2.1.205 or later. Previously /extra-usage",
+   "empreinte": "c4f65886878412c099956476b6b989b5ae7202b7ebebc7a84299c733b265d66c",
    "gabarit": "complet",
    "groupe": "All commands",
    "id": "claude-code-commandes-usage-credits",
@@ -5012,14 +4977,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Configure usage credits, or request them from your admin, when you hit a limit. Opens your usage-credits billing settings in the browser, except that Team and Enterprise members without billing access instead send a usage-credits request to their admin from the CLI, after confirming in a dialog that the request notifies their admins. When no browser can open the billing page, for example over SSH, the command prints the URL to visit instead; this requires Claude Code v2.1.205 or later, and earlier versions showed nothing in that case. Previously /extra-usage"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "8dbc3483eb96c60aa675edea3be7903070cbf3d59ec299cf7751eb8b8194f0aa",
-      "statut": "automatique",
-      "texte": "Configurer les crédits d'utilisation, ou les demander à l'administrateur, lorsqu'une limite est atteinte. Ouvre les paramètres de facturation des crédits d'utilisation dans le navigateur, sauf pour les membres Team et Enterprise sans accès à la facturation : ceux-ci envoient à la place une demande de crédits d'utilisation à leur administrateur depuis la CLI, après confirmation dans une boîte de dialogue indiquant que la demande notifie leurs administrateurs. Lorsqu'aucun navigateur ne peut ouvrir la page de facturation, par exemple via SSH, la commande affiche l'URL à visiter ; cela nécessite Claude Code v2.1.205 ou ultérieure, les versions antérieures n'affichaient rien dans ce cas. Précédemment /extra-usage"
+      "texte": "Configure usage credits, or request them from your admin, when you hit a limit. Opens your usage-credits billing settings in the browser. Team and Enterprise members without billing access instead send a usage-credits request to their admin from the CLI. At a terminal where no browser can open the page, for example over SSH, the command prints the URL. Printing it requires Claude Code v2.1.205 or later. Previously /extra-usage"
      }
     }
    },
@@ -5184,7 +5142,7 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-11",
+ "maj_le": "2026-11-15",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
