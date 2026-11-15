@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 129,
+ "commentees": 131,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -50,7 +50,7 @@
    "categorie": "commandes",
    "nom": "/add-dir",
    "gabarit": "complet",
-   "description": "Ajoute un répertoire de travail accessible pendant la session en cours, avec complétion du chemin par Tab. La plupart de la configuration `.claude/` du répertoire ajouté n'est pas chargée et les chemins réseau sont refusés. Lancée pendant une réponse, elle demande confirmation tout de suite et l'appel d'outil suivant du même tour peut déjà lire le dossier.",
+   "description": "Ajoute un répertoire de travail auquel Claude peut accéder en fichiers, avec complétion du chemin par Tab. La plupart de la configuration `.claude/` du répertoire ajouté n'est pas chargée, la plupart des chemins réseau sont refusés et les hooks `DirectoryAdded` s'exécutent après l'ajout. Lancée pendant une réponse, l'appel d'outil suivant de Claude peut accéder au dossier dès que tu confirmes l'ajout.",
    "description_source": "Add a working directory for file access. Type a partial path to see matching directory suggestions; press Tab to accept one. Most .claude/ configuration isn't discovered from the added directory. You can't add most network paths, such as \\\\server\\share. After a successful add, your DirectoryAdded hooks run. If you run /add-dir while Claude is responding, Claude's next tool call can access the directory once you confirm the add",
    "usage": "/add-dir <path>",
    "usage_nature": "syntaxe",
@@ -59,7 +59,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans une session dont le dossier est `~/projets/delta-ia` (delta, delta-ia), `/add-dir ~/projets/discipline` donnerait accès au code d'OPÉRER, par exemple au barème `codex_modeles.py`, sans relancer la session ailleurs ; vérifier que la lecture marche dans le même tour et que le `.claude/` de discipline n'est pas chargé."
+    "pourquoi": "Dans une session dont le dossier est `~/projets/delta-ia` (delta, delta-ia), `/add-dir ~/projets/discipline` donnerait accès au code d'OPÉRER, par exemple au barème `codex_modeles.py`, sans relancer la session ailleurs ; vérifier que la lecture marche après confirmation et que le `.claude/` de discipline n'est pas chargé."
    },
    "sources": [
     {
@@ -68,7 +68,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -158,9 +158,13 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
@@ -175,7 +179,45 @@
      "pourquoi": "Barème `codex_modeles.py` de `discipline` utilisé par `mission-codex`."
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "/add-dir <path> ajoute un répertoire de travail pour l'accès aux fichiers ; on tape un chemin partiel et Tab accepte une suggestion.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-15",
+     "caduc_si": "La commande /add-dir change de syntaxe ou disparaît de la documentation des commandes."
+    },
+    {
+     "affirmation": "La plupart de la configuration .claude/ n'est pas découverte depuis le répertoire ajouté par /add-dir.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-15",
+     "caduc_si": "La documentation indique que la configuration .claude/ du répertoire ajouté est chargée."
+    },
+    {
+     "affirmation": "Lancée pendant une réponse de Claude, /add-dir rend le répertoire accessible à l'appel d'outil suivant de Claude une fois l'ajout confirmé.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-15",
+     "caduc_si": "La documentation indique de nouveau que la commande attend la fin du tour avant de s'appliquer."
+    },
+    {
+     "affirmation": "Les sessions delta et delta-ia partagent le dossier de travail ~/projets/delta-ia.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-11-15",
+     "caduc_si": "CONTEXTE.md ne rattache plus delta et delta-ia au dossier ~/projets/delta-ia."
+    },
+    {
+     "affirmation": "Le dépôt ~/projets/discipline porte le Delta Core, dont OPÉRER (moteur sans modèle : missions, incidents, échéances, allocation entre Claude et Codex).",
+     "source": "contexte:projet.discipline",
+     "releve_le": "2026-11-15",
+     "caduc_si": "CONTEXTE.md ne décrit plus le dépôt ~/projets/discipline ou OPÉRER n'y est plus porté."
+    },
+    {
+     "affirmation": "mission-codex passe toujours modèle et effort explicitement selon la nature de la mission, d'après le barème codex_modeles.py de discipline.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-11-15",
+     "caduc_si": "CONTEXTE.md ne mentionne plus le barème codex_modeles.py dans discipline pour mission-codex."
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-advisor",
@@ -4033,11 +4075,11 @@
    "categorie": "commandes",
    "nom": "/config",
    "gabarit": "complet",
-   "description": "Ouvre l'interface des réglages (thème, modèle, style de sortie…). Des paires `clé=valeur` en argument modifient un réglage sans ouvrir l'interface, y compris en mode `-p` et depuis l'app mobile via Remote Control ; elles peuvent couper mais pas activer un réglage qui exige une confirmation, comme `autoContinueAtUsageLimit`. `/config --help` liste les clés acceptées ; alias : `/settings`.",
+   "description": "Ouvre l'interface des réglages (Settings). Des paires `clé=valeur` en argument modifient un réglage directement, y compris en mode non interactif (`-p`) et depuis l'app mobile Claude via Remote Control ; cette forme ne peut pas activer un réglage qui exige une confirmation dans le panneau, comme `autoContinueAtUsageLimit`. `/config --help` liste les clés acceptées ; alias : `/settings`.",
    "description_source": "Open the Settings interface to adjust preferences. Pass key=value pairs to set a setting directly, for example /config verbose=true, /config theme=dark, or /config model=sonnet. That form also works in non-interactive mode (-p) and from the Claude mobile app via Remote Control. It can't turn on a setting that needs your confirmation in the panel, such as autoContinueAtUsageLimit. Run /config --help to list the keys it accepts. Alias: /settings",
    "usage": "/config [key=value ...]",
    "usage_nature": "syntaxe",
-   "exemple": "/config thinking=false",
+   "exemple": "/config theme=dark",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -4051,7 +4093,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -4112,6 +4154,10 @@
     {
      "date": "2026-11-15",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-15",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
