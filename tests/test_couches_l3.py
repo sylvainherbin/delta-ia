@@ -47,7 +47,7 @@ def test_copies_ne_portent_que_les_adresses_et_la_langue():
 def test_origines_du_site_et_relais():
     import relais_reference as rr
     assert mod_config.origines_site() == ("https://ai.orqyra.io", "https://sylvainherbin.github.io")
-    assert rr.SITES == mod_config.origines_site()
+    assert rr.SITES == (mod_config.origines_site()[0],)
 
 
 @pytest.mark.parametrize("valeur", ["https://x", ["http://ancienne.exemple.test/"], [3]])

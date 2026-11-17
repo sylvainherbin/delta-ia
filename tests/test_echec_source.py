@@ -104,6 +104,13 @@ class FausseSession:
         return r
 
 
+@pytest.fixture(autouse=True)
+def dns_simule(monkeypatch):
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    import socket
+    monkeypatch.setattr(socket, "getaddrinfo", lambda h, p, **kw: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", p))])
+
+
 def client_avec(scenario):
     return Client(session=FausseSession(scenario), dormir=lambda s: None)
 

@@ -33,7 +33,7 @@ from deltalib.echeances import FICHIER_RESUME, ecrire_resume  # noqa: E402
 from deltalib.etat import DOSSIERS, charger_etat, ecrire_json, ids_base, valider  # noqa: E402
 from deltalib.http import Client  # noqa: E402
 from deltalib.modeles import PERIMETRES  # noqa: E402
-from deltalib.passage import executer  # noqa: E402
+from deltalib.passage import PlafondDepasse, executer  # noqa: E402
 from deltalib.sources import ErreurConfiguration, charger_sources, sources_du_perimetre  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -140,7 +140,15 @@ def commande_recuperer(args, racine: Path) -> int:
         print(f"aucune source active pour le périmètre {args.perimetre!r}", file=sys.stderr)
         return 2
     chemin_etat = racine / "state" / f"{args.perimetre}.json"
-    bilan = executer(args.perimetre, sources, chemin_etat, Client(), depuis=args.depuis)
+    try:
+        bilan = executer(args.perimetre, sources, chemin_etat, Client(), depuis=args.depuis)
+    except PlafondDepasse as exc:
+        print(f"fetch : {exc}", file=sys.stderr)
+        if not args.dry_run:
+            rapport = racine / "rapports" / f"{datetime.now().strftime('%Y-%m-%d_%H%M')}-fetch-plafond.md"
+            rapport.parent.mkdir(parents=True, exist_ok=True)
+            rapport.write_text(f"# Passage {args.perimetre} arrêté\n\n{exc}\n\nÉtat et brut non écrits.\n", encoding="utf-8")
+        return 6
     brut = bilan.en_dict()
     try:  # D96 : éléments des 7 derniers jours dont une section citée de CONTEXTE.md a changé
         brut.update(a_reevaluer(racine, DOSSIERS[args.perimetre], date.today()))

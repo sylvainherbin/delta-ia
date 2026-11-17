@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import os
+import copy
+import ipaddress
+import socket
 import time
 from dataclasses import dataclass
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 import requests
 
@@ -16,6 +19,27 @@ DELAI = (10, 30)  # connexion, lecture, en secondes
 TENTATIVES = 3
 ATTENTES = (2, 4)  # secondes entre les tentatives
 TAILLE_MAX = 8 * 1024 * 1024  # 8 Mo, au-delà on refuse
+
+
+def verifier_destination(url: str, autoriser_http: bool = False) -> None:
+    """Chaque requête et chaque redirection : schéma déclaré et toutes les IP routables."""
+    try:
+        adresse = urlparse(url)
+        if adresse.scheme not in (("https", "http") if autoriser_http else ("https",)):
+            raise ValueError("schéma interdit")
+        if not adresse.hostname or adresse.username is not None or adresse.password is not None:
+            raise ValueError("hôte absent ou identifiants interdits")
+        ips = socket.getaddrinfo(adresse.hostname, adresse.port or (443 if adresse.scheme == "https" else 80),
+                                 type=socket.SOCK_STREAM)
+        if not ips:
+            raise ValueError("aucune adresse résolue")
+        for _, _, _, _, sockaddr in ips:
+            ip = ipaddress.ip_address(sockaddr[0])
+            ip = getattr(ip, "ipv4_mapped", None) or ip
+            if not ip.is_global or ip.is_multicast or ip.is_reserved:
+                raise ValueError("adresse non routable")
+    except (ValueError, OSError) as exc:
+        raise ErreurReseau(f"DESTINATION_REFUSEE : {exc}") from exc
 
 
 @dataclass
@@ -42,10 +66,32 @@ class Client:
                  attentes: tuple[int, ...] = ATTENTES, dormir=time.sleep) -> None:
         self.session = session or requests.Session()
         self.session.headers["User-Agent"] = USER_AGENT
+        self.session.trust_env = False  # aucun proxy implicite ne contourne la résolution contrôlée
+        self._autoriser_http = False
         self.tentatives = tentatives
         self.attentes = attentes
         self._dormir = dormir
         self._jeton_github = os.environ.get("GITHUB_TOKEN")  # lu, jamais écrit ni journalisé
+
+    def pour_source(self, source):
+        client = copy.copy(self)
+        client._autoriser_http = source.url.startswith("http://") or source.options.get("autoriser_http") is True
+        return client
+
+    def _obtenir(self, url: str, accept: str | None):
+        historique = []
+        for saut in range(11):
+            verifier_destination(url, self._autoriser_http)
+            r = self.session.get(url, headers=self._entetes(url, accept), timeout=DELAI, allow_redirects=False, stream=True)
+            if r.status_code not in (301, 302, 303, 307, 308):
+                return r, tuple(historique)
+            cible = r.headers.get("Location")
+            historique.append((r.status_code, url))
+            r.close()
+            if not cible or saut == 10:
+                raise ErreurReseau("DESTINATION_REFUSEE : redirection absente ou trop de sauts")
+            url = urljoin(url, cible)
+        raise ErreurReseau("DESTINATION_REFUSEE : trop de redirections")
 
     def _entetes(self, url: str, accept: str | None) -> dict:
         h = {"Accept": accept} if accept else {}
@@ -71,7 +117,7 @@ class Client:
         derniere = None
         for i in range(self.tentatives):
             try:
-                r = self.session.get(url, headers=self._entetes(url, accept), timeout=DELAI, allow_redirects=True, stream=True)
+                r, historique = self._obtenir(url, accept)
                 if r.status_code == 200:
                     contenu = self._lire_borne(r, url)
             except requests.RequestException as e:
@@ -81,8 +127,9 @@ class Client:
                     r._content = contenu  # décodage par requests (charset de l'en-tête, sinon détection)
                     if not r.encoding or r.encoding.lower() == "iso-8859-1":
                         r.encoding = r.apparent_encoding or "utf-8"
-                    return Reponse(r.url, r.status_code, r.headers.get("Content-Type", ""), r.text,
-                                   tuple((h.status_code, h.url) for h in r.history))
+                    reponse = Reponse(r.url, r.status_code, r.headers.get("Content-Type", ""), r.text, historique)
+                    r.close()
+                    return reponse
                 r.close()
                 derniere = f"HTTP {r.status_code}"
                 if 400 <= r.status_code < 500 and r.status_code not in (408, 429):

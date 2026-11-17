@@ -249,6 +249,7 @@ def cfg(tmp_path):
 
 
 def etape(depot, nom, mode, *args, agent="claude", delai=20, garde="delta", kb=None, supervision=False, checkout=(), clean=(), attendus=()):
+    checkout = checkout or orc.charger_config()["etapes"].get(nom, {}).get("checkout", [])
     return orc.Etape(nom=nom, agent=agent, commande=[sys.executable, str(depot.faux), mode, *args], delai_s=delai,
                      garde=None if supervision else garde, kb=kb, supervision=supervision, checkout=list(checkout), clean=list(clean),
                      commits_attendus=list(attendus))
@@ -934,7 +935,7 @@ def test_commandes_reelles_syntaxe_et_interdits():
     assert etapes["delta"].commande[etapes["delta"].commande.index("--setting-sources") + 1] == "project"
     sup = etapes["supervision"].commande
     assert sup[sup.index("--setting-sources") + 1] == "" and sup[sup.index("--settings") + 1].endswith(".claude/supervision.settings.json")
-    assert sup[2] == (RACINE / "prompts" / "supervision.md").read_text(encoding="utf-8")
+    assert "rapport dans rapports/" in sup[2] and "Séparation des sources" in sup[2]
     for nom in ("codex-delta", "codex-delta-kb"):
         c = etapes[nom].commande
         assert c[1:3] == ["exec", "--ignore-user-config"] and c[0] == os.path.expanduser("~/.nvm/current/bin/codex")
@@ -966,7 +967,7 @@ def test_commande_cle_exacte_et_repli_abonnement(nom, usage):
     cfg = orc.charger_config()
     assert cfg["claude"]["mode"] == "cle"
     e = cfg["etapes"][nom]
-    prompt = (RACINE / e["prompt_fichier"]).read_text() if "prompt_fichier" in e else e["prompt"]
+    prompt = orc.construire_prompt(e, RACINE)
     permissions = json.loads((RACINE / (e["settings"] if nom == "supervision" else ".claude/settings.json")).read_text())["permissions"]
     contexte = "\n\n".join([*(f"# {f}\n{(RACINE / f).read_text()}" for f in ("CLAUDE.md", "REGLES.md")), orc.CONSIGNE_ECRITURE_CLE])
     attendu = [os.path.expanduser("~/.local/bin/claude-cle"), "--usage", usage,
@@ -998,7 +999,7 @@ def test_supervision_commande_demande_la_creation_par_edit(mode):
     supervision = next(e for e in orc.construire_etapes(cfg, RACINE) if e.nom == "supervision")
     commande = supervision.commande
     prompt = commande[commande.index("-p") + 1]
-    assert prompt == (RACINE / "prompts/supervision.md").read_text(encoding="utf-8")
+    assert prompt == orc.construire_prompt(cfg["etapes"]["supervision"], RACINE)
     assert "avec l'outil Edit" in prompt and "Write" not in prompt
     assert '`old_string` vaut `""`' in prompt
     assert "`file_path` est le chemin absolu de ce rapport" in prompt

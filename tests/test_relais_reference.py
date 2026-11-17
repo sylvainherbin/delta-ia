@@ -48,8 +48,9 @@ def test_texte_idee_entree_en_attente_et_longue():
 
 
 def test_origines_admises():
-    assert rr.origine_admise("https://ai.orqyra.io") and rr.origine_admise("https://sylvainherbin.github.io")
-    assert rr.origine_admise("http://localhost:8000") and rr.origine_admise("http://127.0.0.1")
+    assert rr.origine_admise("https://ai.orqyra.io")
+    for origine in ("https://sylvainherbin.github.io", "http://localhost:8000", "http://127.0.0.1"):
+        assert not rr.origine_admise(origine)
     for o in (None, "", "null", "https://exemple.com", "https://sylvainherbin.github.io.exemple.com", "https://ai.orqyra.io.exemple.com", "http://ai.orqyra.io", "http://localhost.exemple.com",
               "https://localhost:8000"):
         assert not rr.origine_admise(o), o
@@ -525,7 +526,7 @@ def test_suivi_sert_la_projection_a_l_origine_admise(relais):
     assert code == 200 and r["ok"] is True and r["etape"] == "suivi" and r["sources_en_echec"] == []
     f = r["fiches"]["claude-code-commandes-add-dir"]
     assert f["etat"] == "installe" and f["installations"][0]["lot"] == "m-1" and f["installations"][0]["le"] == "2026-10-11"
-    assert h["Access-Control-Allow-Origin"] == "https://ai.orqyra.io"
+    assert "Access-Control-Allow-Origin" not in h
     # donnée personnelle : ni origine inconnue, ni requête sans origine, ni autre hôte (rebinding DNS)
     for origine in ("https://exemple.com", None):
         code, h, r = appel(relais["url"] + "/suivi", origine=origine)

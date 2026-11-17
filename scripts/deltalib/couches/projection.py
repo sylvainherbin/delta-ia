@@ -29,6 +29,7 @@ import yaml
 
 from . import classement as cl
 from . import schemas
+from .fichiers import refuser_liens
 from .extraction import Extraction, extraire_tous_systemes, systemes_de
 from .generateur import ecrire_entree, generer
 from .racines import Racines
@@ -380,6 +381,11 @@ def _empreintes(depot: Path, rels) -> dict[str, str | None]:
 
 
 def lire_entrees(depot: Path) -> list[Entree]:
+    try:
+        for rel in ("docs/data", ESSAIS, REJUGEMENTS, PROFIL, SOURCES, CATALOGUE_LOCAL, *SOURCES_SCINDEES):
+            refuser_liens(depot, depot / rel)
+    except ValueError as exc:
+        raise ImportImpossible(str(exc)) from exc
     rels = sorted(p.relative_to(depot).as_posix() for p in (depot / "docs" / "data").rglob("*") if p.is_file())
     rels += [r for r in (ESSAIS, REJUGEMENTS, PROFIL, SOURCES) if (depot / r).is_file()]
     if (depot / CATALOGUE_LOCAL).is_file():
@@ -388,6 +394,7 @@ def lire_entrees(depot: Path) -> list[Entree]:
                    for p in (depot / d).iterdir() if p.is_file() and p.suffix in (".yaml", ".md") and p.name != "README.md")
     sortie = []
     for rel in rels:
+        refuser_liens(depot, depot / rel)
         octets = (depot / rel).read_bytes()
         sortie.append(Entree(rel, octets, hashlib.sha256(octets).hexdigest()))
     return sortie
@@ -436,6 +443,11 @@ def importer(depot: Path, racines: Racines, detecteur: Detecteur | None = None, 
     `brut` : dépôt dont `raw/kb/` porte les pages de documentation (défaut : `depot`) ; `traductions` : cache de
     traductions (défaut : `<etat>/delta-ia/production/traductions-fr.json`) ; `budget` : unités au plus envoyées au
     rédacteur, 0 pour le seul cache."""
+    try:
+        for rel in ("docs/data", ESSAIS, REJUGEMENTS, PROFIL, SOURCES, CATALOGUE_LOCAL, *SOURCES_SCINDEES):
+            refuser_liens(depot, depot / rel)
+    except ValueError as exc:
+        raise ImportImpossible(str(exc)) from exc
     depot = depot.resolve()
     for nom in ("configuration", "etat", "cache", "runtime"):
         p = getattr(racines, nom).resolve()

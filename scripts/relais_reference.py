@@ -6,7 +6,7 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
 127.0.0.1 seulement, depuis le navigateur de la machine de Sylvain.
 
   POST /reference {"id": "<id de l'entrée>"}
-    1. l'origine de la page doit être le site publié ou un aperçu local (http://localhost, http://127.0.0.1) ;
+    1. l'origine de la page doit être l’origine exacte du site publié (aucun aperçu local implicite) ;
     2. seul l'id est lu dans la requête : l'entrée est relue dans la base locale (docs/data/kb/*/*.json), jamais
        recopiée depuis la page ;
     3. l'entrée devient une idée (texte_idee) remise à la porte des idées du bureau, idee.py (palier 3 de
@@ -22,7 +22,7 @@ Le site est statique (GitHub Pages) et le serveur MCP reste en lecture seule (D6
   GET /suivi  boucle d'adoption (m-a04181983623) : l'état de chaque fiche envoyée, projeté depuis OPÉRER par
     deltalib/adoptions.py (proposé, retenu ou écarté, en réalisation, installé ; résultat observé de Delta Lab à part),
     et les ajustements de réglage proposés par le pont hebdomadaire (lot 4, `--ajustements`).
-    Donnée personnelle, servie seulement à une origine admise et sous l'hôte 127.0.0.1 ou localhost (pas de
+    Donnée personnelle, sans aucun en-tête CORS : non lisible depuis le site public. Servie à une origine admise et sous l'hôte 127.0.0.1 ou localhost (pas de
     rebinding DNS) ; calcul d'environ 15 s gardé 10 min, refait en arrière-plan à la demande suivante : la page reçoit
     le dernier calcul, ou 503 « en_calcul » avant le premier.
 
@@ -46,16 +46,15 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE / "scripts"))
 from deltalib import adoptions  # noqa: E402
-from deltalib.couches.config import origines_site  # noqa: E402
+from deltalib.couches.config import charger as config_relais, origine as origine_url  # noqa: E402
 
 PORT = 47613
 KB = RACINE / "docs" / "data" / "kb"
 STATE = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state")
 IDEE = Path(os.environ.get("DELTA_IDEE") or STATE.parent / "share" / "delta-system-experience" / "palier-3" / "idee.py")
 JOURNAL = STATE / "delta-ia" / "envois-reference.jsonl"
-# Origines du site public lues dans la configuration commune (L3) : l'adresse actuelle, puis les anciennes qui redirigent.
-SITES = origines_site()
-APERCU = re.compile(r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$")
+# Seule l’origine exacte de la page publiée est admise pour le bouton Référence.
+SITES = (origine_url(config_relais()["site_public_url"]),)
 CORPS_MAX = 2048
 PLAFOND = 10         # envois par heure glissante (D104)
 FENETRE = 3600
@@ -67,7 +66,7 @@ CATEGORIES = {"fonctionnalites": "fonctionnalité", "commandes": "commande", "sk
 
 
 def origine_admise(origine):
-    return origine in SITES or bool(APERCU.match(origine or ""))
+    return origine in SITES
 
 
 def trouver(kb, ident):
@@ -301,7 +300,7 @@ class Relais(BaseHTTPRequestHandler):
         self.send_response(code)
         for k, v in (entetes or {}).items():
             self.send_header(k, v)
-        if origine and origine_admise(origine):
+        if self.path.split("?", 1)[0].rstrip("/") != "/suivi" and origine and origine_admise(origine):
             self.send_header("Access-Control-Allow-Origin", origine)
             self.send_header("Vary", "Origin")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")

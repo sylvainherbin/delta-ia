@@ -57,6 +57,10 @@ def charger(racines: Racines | None = None) -> dict:
     anciennes = conf["site_anciennes_urls"]
     if not isinstance(anciennes, list) or not all(isinstance(u, str) and u.startswith("https://") for u in anciennes):
         raise ConfigInvalide("config : site_anciennes_urls, liste d'adresses https attendue")
+    limites = conf["limites"]
+    if not isinstance(limites, dict) or any(type(limites.get(c)) is not int or limites[c] <= 0
+                                          for c in ("lectures_articles", "synchro_octets")):
+        raise ConfigInvalide("config : limites entières strictement positives attendues")
     return conf
 
 

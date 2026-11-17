@@ -109,6 +109,15 @@ def parser_html_date(html: str, source) -> list[Element]:
     return elements
 
 
+def hote_article_admis(url: str, source) -> bool:
+    try:
+        adresse, origine = urlparse(url), urlparse(source.url)
+        schemas = ("https", "http") if origine.scheme == "http" or source.options.get("autoriser_http") is True else ("https",)
+        return adresse.scheme in schemas and adresse.netloc == origine.netloc and adresse.username is None
+    except ValueError:
+        return False
+
+
 def parser_html_time_liens(html: str, source) -> list[Element]:
     soup = BeautifulSoup(html, "html.parser")
     times = soup.find_all("time")
@@ -144,6 +153,8 @@ def parser_html_time_liens(html: str, source) -> list[Element]:
             if a is None or not a.get("href"):
                 raise FormatInattendu("carte avec <time> sans lien de titre : gabarit changé ?")
         url = urljoin(source.url, a["href"])
+        if not hote_article_admis(url, source):
+            continue
         if url in vus:
             continue
         titre = titre_el.get_text(" ", strip=True) if titre_el else None
@@ -181,7 +192,6 @@ def parser_resources_liste(html: str, source) -> tuple[list[Element], str | None
     cartes = soup.select('a[class*="ResourceCard"][href]')
     if not cartes:
         raise FormatInattendu("aucune carte `ResourceCard` : gabarit de claude.com/resources/articles changé ?")
-    hote = urlparse(source.url).netloc
     prefixe = source.options.get("prefixe_id")
     elements: list[Element] = []
     vus: set[str] = set()
@@ -189,7 +199,7 @@ def parser_resources_liste(html: str, source) -> tuple[list[Element], str | None
     for c in cartes:
         url = urljoin(source.url, c["href"])
         adresse = urlparse(url)
-        if adresse.netloc != hote or not adresse.path.startswith("/resources/articles/"):
+        if not hote_article_admis(url, source) or not adresse.path.startswith("/resources/articles/"):
             continue
         titre_el = c.find(["h2", "h3", "h4"])
         date_el = c.select_one('[class*="meta"]')

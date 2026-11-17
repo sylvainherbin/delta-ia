@@ -174,17 +174,19 @@ def synchroniser(racines: Racines, base_url: str, maintenant: datetime | None = 
         etat["derniere_tentative"] = maintenant_iso(maintenant)
         etat["source"] = base_url
         try:
-            res = _synchroniser(racines, base_url, etat, obtenir)
+            res = _synchroniser(racines, base_url, etat, obtenir,
+                                limite_total=mod_config.charger(racines)["limites"]["synchro_octets"])
             etat["erreur"] = None
             etat["verifie_le"] = etat["derniere_tentative"]
-        except SynchroEchec as e:
+        except (SynchroEchec, mod_config.ConfigInvalide) as e:
             etat.update(erreur=str(e), etag=None, last_modified=None)  # prochaine tentative sans requête conditionnelle
             res = {"statut": "echec", "generation": etat.get("generation"), "erreur": str(e)}
         ecrire(chemin_synchro(racines), etat)
         return res
 
 
-def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir) -> dict:
+def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir, limite_total: int | None = None) -> dict:
+    limite_total = mod_config.charger(racines)["limites"]["synchro_octets"] if limite_total is None else limite_total
     actif = _lire_json(racines.commun_actif) or {}
     entetes = {}
     if etat.get("generation") and etat["generation"] == actif.get("generation"):
@@ -192,7 +194,9 @@ def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir) -> dict:
             entetes["If-None-Match"] = etat["etag"]
         if etat.get("last_modified"):
             entetes["If-Modified-Since"] = etat["last_modified"]
-    statut, en_tetes, corps = obtenir(urljoin(base_url, INDEX), entetes, TAILLE_INDEX)
+    statut, en_tetes, corps = obtenir(urljoin(base_url, INDEX), entetes, min(TAILLE_INDEX, limite_total))
+    if len(corps) > limite_total:
+        raise SynchroEchec("PLAFOND_SYNCHRO : index au-delà du total autorisé")
     if statut == 304:
         return {"statut": "inchange", "generation": actif.get("generation"), "erreur": None}
     if statut != 200:
@@ -215,29 +219,47 @@ def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir) -> dict:
         _pointer(racines, generation, dossier_local, index["publie_le"])
         etat.update(reussite)
         return {"statut": "inchange", "generation": generation, "erreur": None}
+    _, _, octets = obtenir(urljoin(base_url, f"{generation}/manifest.json"), {}, min(TAILLE_INDEX * 8, limite_total - len(corps)))
+    if hashlib.sha256(octets).hexdigest() != index["manifest_sha256"]:
+        raise SynchroEchec("manifeste différent de l'index")
+    try:
+        manifest = json.loads(octets.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise SynchroEchec("manifeste illisible") from exc
+    fichiers = manifest.get("fichiers") if isinstance(manifest, dict) else None
+    if not isinstance(fichiers, list):
+        raise SynchroEchec("manifeste sans liste de fichiers")
+    total = len(corps) + len(octets)
+    vus = {"manifest.json"}
+    for f in fichiers:
+        rel = f.get("chemin") if isinstance(f, dict) else None
+        if (not isinstance(rel, str) or not rel or rel.startswith("/") or ".." in rel.split("/")
+                or type(f.get("taille")) is not int or not 0 <= f["taille"] <= schemas.TAILLE_MAX or rel in vus):
+            raise SynchroEchec("chemin ou taille refusé dans le manifeste")
+        vus.add(rel)
+        total += f["taille"]
+    if total > limite_total:
+        raise SynchroEchec(f"PLAFOND_SYNCHRO : {total} octets annoncés, limite {limite_total} ; aucune génération écrite")
+    # Tous les contenus, y compris le cache réutilisé, comptent avant la première écriture.
+    contenus = {}
+    actif_dossier = racines.commun / str(actif.get("generation"))
+    for f in fichiers:
+        rel = f["chemin"]
+        local = actif_dossier / rel
+        if local.is_file() and not local.is_symlink() and sha256_fichier(local) == f.get("sha256"):
+            contenu = local.read_bytes()
+        else:
+            _, _, contenu = obtenir(urljoin(base_url, f"{generation}/{rel}"), {}, f["taille"])
+        if len(contenu) != f["taille"] or hashlib.sha256(contenu).hexdigest() != f.get("sha256"):
+            raise SynchroEchec(f"contenu ou taille différent du manifeste : {rel}")
+        contenus[rel] = contenu
     base = dossier_prive(racines.commun)
     chantier = base / f".sync-{generation}"
     if chantier.exists():
         shutil.rmtree(chantier)
     neuf = chantier / generation
     try:
-        _, _, octets = obtenir(urljoin(base_url, f"{generation}/manifest.json"), {}, TAILLE_INDEX * 8)
-        if hashlib.sha256(octets).hexdigest() != index["manifest_sha256"]:
-            raise SynchroEchec("manifeste différent de l'index")
-        manifest = json.loads(octets.decode("utf-8"))
-        fichiers = manifest.get("fichiers") if isinstance(manifest, dict) else None
-        if not isinstance(fichiers, list):
-            raise SynchroEchec("manifeste sans liste de fichiers")
-        actif_dossier = racines.commun / str(actif.get("generation"))
-        for f in fichiers:
-            rel = f.get("chemin") if isinstance(f, dict) else None
-            if not isinstance(rel, str) or rel.startswith("/") or ".." in rel.split("/") or not isinstance(f.get("taille"), int):
-                raise SynchroEchec("chemin refusé dans le manifeste")
-            local = actif_dossier / rel
-            if local.is_file() and not local.is_symlink() and sha256_fichier(local) == f.get("sha256"):
-                contenu = local.read_bytes()  # fichier inchangé : repris de la génération active
-            else:
-                _, _, contenu = obtenir(urljoin(base_url, f"{generation}/{rel}"), {}, min(f["taille"], schemas.TAILLE_MAX))
+        for rel, contenu in contenus.items():
             _poser(neuf / rel, contenu)
         _poser(neuf / "manifest.json", octets)
         erreurs = schemas.valider_generation(neuf, Detecteur())

@@ -867,32 +867,31 @@ def test_toutes_les_pages_en_echec(docs):
 # --- Redirections : jamais suivies en silence (24/09) ---------------------------------------------------------------
 
 @pytest.mark.parametrize("statut", [301, 302, 307, 308])
-def test_client_note_les_redirections(statut, sockets_locaux):
-    import threading
-    from http.server import BaseHTTPRequestHandler, HTTPServer
+def test_client_note_les_redirections(statut, monkeypatch):
+    import io
+    import socket
+    import requests
     from deltalib.http import Client
 
-    class H(BaseHTTPRequestHandler):
-        def do_GET(self):
-            if self.path == "/ancien.md":
-                self.send_response(statut); self.send_header("Location", "/nouveau.md"); self.end_headers()
-            else:
-                corps = b"# Titre\n\nTexte.\n"
-                self.send_response(200); self.send_header("Content-Type", "text/markdown"); self.send_header("Content-Length", str(len(corps)))
-                self.end_headers(); self.wfile.write(corps)
-
-        def log_message(self, *a):
-            pass
-    srv = HTTPServer(("127.0.0.1", 0), H)
-    threading.Thread(target=srv.serve_forever, daemon=True).start()
-    try:
-        base = f"http://127.0.0.1:{srv.server_address[1]}"
-        rep = Client(dormir=lambda s: None).get(base + "/ancien.md")
-        assert rep.url == base + "/nouveau.md" and rep.texte.startswith("# Titre")
-        assert rep.redirections == ((statut, base + "/ancien.md"),)
-        assert Client(dormir=lambda s: None).get(base + "/nouveau.md").redirections == ()
-    finally:
-        srv.shutdown()
+    monkeypatch.setattr(socket, "getaddrinfo", lambda h, p, **kw: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", p))])
+    class Session:
+        headers = {}
+        def get(self, url, **kw):
+            assert kw["allow_redirects"] is False
+            r = requests.Response()
+            r.url, r.encoding = url, "utf-8"
+            r.raw = io.BytesIO(b"# Titre\n\nTexte.\n")
+            r.status_code = statut if url.endswith("ancien.md") else 200
+            r.headers["Content-Type"] = "text/markdown"
+            if r.status_code != 200:
+                r.headers["Location"] = "/nouveau.md"
+            return r
+    client = Client(session=Session(), dormir=lambda s: None)
+    base = "https://public.invalid"
+    rep = client.get(base + "/ancien.md")
+    assert rep.url == base + "/nouveau.md" and rep.texte.startswith("# Titre")
+    assert rep.redirections == ((statut, base + "/ancien.md"),)
+    assert client.get(base + "/nouveau.md").redirections == ()
 
 
 class ClientRedirige(ClientDoc):

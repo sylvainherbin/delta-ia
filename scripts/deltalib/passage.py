@@ -88,7 +88,7 @@ def recuperer(sources: list[Source], client: Client, borne: str | None = None, r
     for s in sources:
         analyser = ANALYSEURS[s.type]
         try:
-            resultat = analyser(s, client, borne)
+            resultat = analyser(s, client.pour_source(s) if isinstance(client, Client) else client, borne)
         except ErreurSource as e:
             journal.warning("source %s en échec : %s", s.id, e)
             echecs.append(Echec(s.id, s.url, f"{type(e).__name__}: {e}"))
@@ -262,21 +262,35 @@ def texte_markdown(texte: str) -> str:
     return res if len(res) <= TAILLE_MAX_MARKDOWN else res[:TAILLE_MAX_MARKDOWN].rsplit("\n", 1)[0] + "\n[… texte tronqué]"
 
 
-def lire_articles(nouveautes: list[Element], sources: list[Source], client: Client, echecs: list[Echec]) -> None:
+class PlafondDepasse(RuntimeError):
+    pass
+
+
+def lire_articles(nouveautes: list[Element], sources: list[Source], client: Client, echecs: list[Echec], limite: int | None = None) -> None:
     """A1 (26/09) : pour une source à option `lire_articles`, chaque nouvel article est lu (un GET) et son texte
     principal remplace le résumé de la liste dans `contenu`. Un article illisible garde le résumé et remonte en
     `sources_en_echec` (partiel), jamais en contenu vide."""
-    from .analyseurs.html_notes import texte_article
+    from .analyseurs.html_notes import texte_article, hote_article_admis
     lues = {s.id: s.options["lire_articles"] for s in sources if s.options.get("lire_articles")}
+    from .couches.config import charger
+    limite = charger()["limites"]["lectures_articles"] if limite is None else limite
+    nombre = sum(1 for e in nouveautes if e.source_id in lues and e.url)
+    if nombre > limite:
+        raise PlafondDepasse(f"PLAFOND_ARTICLES : {nombre} lectures demandées, limite {limite} ; aucune lecture d’article")
+    par_id = {s.id: s for s in sources}
     for e in nouveautes:
         if e.source_id not in lues or not e.url:
             continue
         try:
+            source = par_id[e.source_id]
+            if not hote_article_admis(e.url, source):
+                raise FormatInattendu("hôte d’article non déclaré")
+            lecteur = client.pour_source(source) if isinstance(client, Client) else client
             if lues[e.source_id] == "markdown":  # étape 2a : article d'aide servi en Markdown (`<url>.md`)
-                e.contenu = texte_markdown(client.get(e.url if e.url.endswith(".md") else e.url + ".md",
+                e.contenu = texte_markdown(lecteur.get(e.url if e.url.endswith(".md") else e.url + ".md",
                                                       accept="text/markdown").texte)
             else:
-                e.contenu = texte_article(client.get(e.url, accept="text/html").texte)
+                e.contenu = texte_article(lecteur.get(e.url, accept="text/html").texte)
         except ErreurSource as err:
             echecs.append(Echec(e.source_id, e.url, f"article illisible : {type(err).__name__}: {err}", partiel=True))
             journal.warning("source %s : article %s illisible : %s", e.source_id, e.url, err)

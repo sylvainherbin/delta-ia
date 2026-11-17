@@ -17,6 +17,8 @@ from pathlib import Path
 
 import yaml
 
+from .fichiers import refuser_liens
+
 # Chemins normalisés : `[]` membre de liste, `*` clé variable. Une clé sans descendant listé est atomique.
 PUBLIC_MODELES = set("""
 date_releve famille fournisseur produit produits
@@ -151,13 +153,17 @@ def scinder_sources(depot: Path) -> tuple[dict, dict]:
     `forfaits.yaml` est privé entier en L2 (classe S : tarifs publics et rattachements de compte mêlés)."""
     publique: dict[str, dict] = {}
     privee: dict[str, dict] = {}
+    for dossier in ("kb-modeles", "kb-methodes"):
+        refuser_liens(depot, depot / dossier)
     for chemin in sorted((depot / "kb-modeles").glob("*.yaml")):
         rel = chemin.relative_to(depot).as_posix()
+        refuser_liens(depot, chemin)
         doc = lire_modele(chemin)
         pub, priv = ({}, doc) if chemin.name == "forfaits.yaml" else scinder(doc, PUBLIC_MODELES)
         publique[rel], privee[rel] = pub, priv
     for chemin in sorted((depot / "kb-methodes").glob("*.md")):
         rel = chemin.relative_to(depot).as_posix()
+        refuser_liens(depot, chemin)
         publique[rel], privee[rel] = scinder(lire_methode(chemin), PUBLIC_METHODES)
     return publique, privee
 
