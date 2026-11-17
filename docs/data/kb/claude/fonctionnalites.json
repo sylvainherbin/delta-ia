@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "fonctionnalites",
- "maj_le": "2026-11-11",
+ "maj_le": "2026-11-17",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -4570,8 +4570,8 @@
    "categorie": "fonctionnalites",
    "nom": "How Claude Code uses prompt caching",
    "gabarit": "complet",
-   "description": "Claude Code met en cache le préfixe de chaque requête (invite système, contexte du projet, conversation) pour ne pas retraiter tout l'historique à chaque tour. Changer de modèle, modifier les outils chargés ou lancer `/compact` invalide une partie du cache, et une modification de CLAUDE.md ne s'applique qu'à la session suivante ou après `/clear` ou `/compact`.",
-   "description_source": "Claude Code manages prompt caching automatically. See why a model switch triggers a slow uncached turn, what /compact costs, why CLAUDE.md edits don't apply mid-session, and how to check your cache hit rate.",
+   "description": "Claude Code met en cache le préfixe de chaque requête (invite système, contexte du projet, conversation) pour ne pas retraiter tout l'historique à chaque tour. Changer de modèle, modifier les outils chargés ou lancer `/compact` invalide une partie du cache, et une modification de CLAUDE.md ne s'applique qu'à la session suivante ou après `/clear` ou `/compact`. Au-delà de la limite du forfait, la conversation principale passe à un cache de cinq minutes tant que Claude Code consomme des usage credits.",
+   "description_source": "See why a model switch triggers a slow uncached turn in Claude Code, what /compact costs, and how to check your prompt cache hit rate.",
    "usage": "1. `FORCE_PROMPT_CACHING_5M=1`, which forces five minutes for both buckets\n2. The bucket's environment variable\n3. The bucket's setting\n4. For a subagent's requests, the `cacheTtl` value in the subagent's [`experimental` frontmatter field](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields), which requires Claude Code v2.1.248 or later. Claude Code ignores a `1h` there while your Claude subscription is using usage credits\n5. `ENABLE_PROMPT_CACHING_1H=1`, which requests one hour for both buckets\n6. The [default for the request's bucket](#which-ttl-each-request-gets)",
    "usage_nature": "etapes",
    "exemple": null,
@@ -4592,7 +4592,7 @@
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4668,6 +4668,47 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Claude Code manages prompt caching automatically. See why a model switch triggers a slow uncached turn, what /compact costs, why CLAUDE.md edits don't apply mid-session, and how to check your cache hit rate.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Un changement de modèle en cours de session provoque un tour plus lent et plus coûteux, la requête suivante ne trouvant aucun cache.",
+       "source": "https://code.claude.com/docs/en/prompt-caching",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la page ne décrit plus le changement de modèle comme invalidant le cache"
+      },
+      {
+       "affirmation": "Le contexte du projet (CLAUDE.md, mémoire) n'est rechargé qu'au démarrage de la session, ou après `/clear` ou `/compact`.",
+       "source": "https://code.claude.com/docs/en/prompt-caching",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la page indique qu'un CLAUDE.md modifié s'applique en cours de session"
+      },
+      {
+       "affirmation": "La durée de cache `1h` demandée pour un sous-agent est ignorée tant que l'abonnement Claude consomme des usage credits.",
+       "source": "https://code.claude.com/docs/en/prompt-caching",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la page retire cette réserve ou change la règle de priorité des durées de cache"
+      },
+      {
+       "affirmation": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-24",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce `/clear` de `mission-dev`"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -4683,27 +4724,27 @@
    },
    "provenance": [
     {
-     "affirmation": "Un changement de modèle en cours de session provoque un tour plus lent et plus coûteux, la requête suivante ne trouvant aucun cache.",
+     "affirmation": "Chaque modèle a son propre cache : changer de modèle en cours de session fait relire tout l'historique sans cache, pour un tour plus lent et plus coûteux.",
      "source": "https://code.claude.com/docs/en/prompt-caching",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-17",
      "caduc_si": "la page ne décrit plus le changement de modèle comme invalidant le cache"
     },
     {
-     "affirmation": "Le contexte du projet (CLAUDE.md, mémoire) n'est rechargé qu'au démarrage de la session, ou après `/clear` ou `/compact`.",
+     "affirmation": "CLAUDE.md et la mémoire ne sont relus qu'au démarrage de la session, ou après `/clear` ou `/compact`.",
      "source": "https://code.claude.com/docs/en/prompt-caching",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-17",
      "caduc_si": "la page indique qu'un CLAUDE.md modifié s'applique en cours de session"
     },
     {
      "affirmation": "La durée de cache `1h` demandée pour un sous-agent est ignorée tant que l'abonnement Claude consomme des usage credits.",
      "source": "https://code.claude.com/docs/en/prompt-caching",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-17",
      "caduc_si": "la page retire cette réserve ou change la règle de priorité des durées de cache"
     },
     {
-     "affirmation": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission.",
+     "affirmation": "`mission-dev` vide le contexte du dev par `/clear` avant chaque mission.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-17",
      "caduc_si": "CONTEXTE.md ne décrit plus ce `/clear` de `mission-dev`"
     }
    ]

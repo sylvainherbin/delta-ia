@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-15",
+ "maj_le": "2026-11-17",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 682,
- "commentees": 612,
+ "commentees": 609,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -4079,7 +4079,7 @@
    "nom": "autoScrollEnabled",
    "gabarit": "court",
    "description": "Réglage qui fait suivre la fin de la conversation en rendu plein écran ; `false` garde la position de lecture.",
-   "description_source": "Follow new output to the bottom of the conversation in fullscreen rendering. Turn it off to stay where you scrolled while Claude keeps working; permission prompts still scroll into view.",
+   "description_source": "Follow new output to the bottom of the conversation in fullscreen rendering.",
    "usage": "{\n  \"autoScrollEnabled\": false\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -4096,11 +4096,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Interface and terminal",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4109,6 +4109,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -11937,7 +11941,7 @@
    "nom": "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
    "gabarit": "court",
    "description": "Variable qui fixe le nombre maximal de jetons de sortie de la plupart des requêtes.",
-   "description_source": "Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code lowers a value above a model's cap to the cap. For a model ID Claude Code can't resolve to a model it knows, the default is 32000 and the cap is 128000. Increasing this value reduces the effective context window available before auto-compaction triggers",
+   "description_source": "Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code lowers a value above a model's cap to the cap. For a model ID Claude Code can't resolve to a model it knows, the default is 32000 and the cap is 128000",
    "usage": "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11954,11 +11958,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -11975,6 +11979,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -12836,7 +12844,7 @@
    "nom": "CLAUDE_CODE_OAUTH_REFRESH_TOKEN",
    "gabarit": "court",
    "description": "Variable qui fournit un jeton de rafraîchissement OAuth claude.ai pour se connecter sans navigateur, avec `CLAUDE_CODE_OAUTH_SCOPES`.",
-   "description_source": "OAuth refresh token for claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. Useful for provisioning authentication in automated environments. Ignored in project and local settings",
+   "description_source": "OAuth refresh token for claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. A refresh token works once, because the exchange replaces it. Ignored in project and local settings",
    "usage": "CLAUDE_CODE_OAUTH_REFRESH_TOKEN",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12857,7 +12865,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-03",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12873,6 +12881,10 @@
     },
     {
      "date": "2026-11-03",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -25330,16 +25342,16 @@
    "categorie": "parametres",
    "nom": "Hook UserPromptExpansion",
    "gabarit": "court",
-   "description": "Événement de hook déclenché quand une commande tapée se développe en prompt, pour la bloquer, y injecter du contexte ou la journaliser.",
+   "description": "Événement de hook déclenché quand une commande tapée se développe en prompt avant d'atteindre Claude, pour bloquer une commande, y injecter du contexte ou journaliser les commandes invoquées.",
    "description_source": "Runs when a user-typed command expands into a prompt before reaching Claude. Use this to block specific commands from direct invocation, inject context for a particular skill, or log which commands users invoke. For example, a hook matching deploy can block /deploy unless an approval file is present, or a hook matching a review skill can append the team's review checklist as additionalContext.",
-   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../00893aaf.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"UserPromptExpansion\",\n  \"expansion_type\": \"slash_command\",\n  \"command_name\": \"example-skill\",\n  \"command_args\": \"arg1 arg2\",\n  \"command_source\": \"plugin\",\n  \"prompt\": \"/example-skill arg1 arg2\"\n}",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../00893aaf.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"UserPromptExpansion\",\n  \"expansion_type\": \"slash_command\",\n  \"command_name\": \"my-plugin:example-skill\",\n  \"command_args\": \"arg1 arg2\",\n  \"command_source\": \"plugin\",\n  \"prompt\": \"/my-plugin:example-skill arg1 arg2\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu n'as aucune commande slash perso à encadrer (tes gestes répétés sont des scripts de `~/.local/bin`)."
+    "pourquoi": "Tu n'as aucune commande slash perso à encadrer : tes gestes répétés sont des scripts de `~/.local/bin`, et le seul hook en place est `PermissionDenied`."
    },
    "sources": [
     {
@@ -25352,7 +25364,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25369,13 +25381,21 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.skills": {
      "sha1": "ea1c593e91f0effefae69579902550750c762b86",
-     "pourquoi": "Commandes slash perso : aucune ; scripts dans ~/.local/bin."
+     "pourquoi": "Commandes slash perso : aucune ; un seul hook (PermissionDenied) ; gestes répétés en scripts de ~/.local/bin."
     }
    }
   },
@@ -30400,7 +30420,7 @@
    "nom": "--ref <branch>",
    "gabarit": "court",
    "description": "Option CLI qui, avec `--environment`, base la session cloud sur une référence nommée au lieu de HEAD.",
-   "description_source": "With --environment, base the new session's checkout on a named ref instead of local HEAD — claude -p \"Run the smoke test\" --environment ccpool_abc123 --ref main",
+   "description_source": "With --environment, base the new session's checkout on a named ref. Requires Claude Code v2.1.224 or later — claude -p \"Run the smoke test\" --environment ccpool_abc123 --ref main",
    "usage": "--ref <branch>",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -30417,11 +30437,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -30430,6 +30450,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",

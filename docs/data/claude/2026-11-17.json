@@ -1,0 +1,186 @@
+{
+  "date": "2026-11-17",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-17T03:10:00+00:00",
+  "synthese": "Compte et quotas : aucune limite, offre ni tarif nouveau ; seule la fiche de la base sur le cache de prompts a changé de texte (rien à activer). Relevé OBSERVATORY du 17/11 à 03 h 01 UTC : semaine Claude à 50 % et semaine Fable à 0 %, remise à zéro des deux le 22/11 vers 16 h UTC ; session 5 h non mesurée ; semaine ChatGPT à 27 %, remise à zéro le 22/11 à 17 h 10 UTC ; aucun quota hebdomadaire n'atteint le seuil D71 (80 %). Claude Code 2.1.326 (installée, à jour) durcit beaucoup de contrôles de permission, y compris en bypassPermissions là où personne ne peut répondre : à surveiller sur la chaîne de 04 h 00 et les sessions sans surveillance ; elle corrige aussi plusieurs défauts de Remote Control (affichage inactif sur l'iPhone, coupure en pleine réponse). Les posts X du jour portent sur Xcode et macOS, sans rapport avec ta machine Linux.",
+  "elements": [
+    {
+      "id": "kb-claude-code-fonctionnalites-page-prompt-caching",
+      "ids_bruts": [
+        "kb-claude-code-fonctionnalites-page-prompt-caching"
+      ],
+      "produit": "claude-code",
+      "titre": "Base (D71) : la page sur le cache de prompts de Claude Code change de description d'origine",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La description d'origine de la page « How Claude Code uses prompt caching » ne mentionne plus l'édition de CLAUDE.md en cours de session ; le corps de la page dit toujours que CLAUDE.md n'est relu qu'au démarrage, ou après `/clear` ou `/compact`. Règle de durée lue sur la page : dans la limite incluse du forfait, la conversation principale reçoit un cache d'une heure et les sous-agents ou la compaction cinq minutes ; avec des usage credits, tout passe à cinq minutes, et la durée `1h` demandée par un sous-agent est ignorée.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/prompt-caching",
+          "libelle": "How Claude Code uses prompt caching — code.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Aucune limite ni aucun tarif ne change pour toi : la page décrit seulement la durée du cache. Ta semaine Claude est à 50 % (Fable 0 %), remise à zéro le 22/11 vers 16 h UTC (OBSERVATORY, relevé du 17/11 à 03 h 01 UTC) et tu as décidé le 21/10 de n'avoir aucun crédit Claude Code cloud ; la fiche garde le verdict « utiliser », car `mission-dev` vide déjà le contexte du dev par `/clear` avant chaque mission.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Aucun geste à faire ; revérifier la fiche le 24/11/2026 (aucune échéance publiée).",
+        "etapes": [
+          "Le 24/11/2026, relis la fiche `claude-code-fonctionnalites-page-prompt-caching` de la base de référence ; résultat attendu : règle de durée du cache inchangée (une heure dans la limite du forfait, cinq minutes avec des usage credits), sans nouveau geste de compte pour ton Max."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-fonctionnalites-page-prompt-caching"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Max 20x à l'essai ; aucun crédit Claude Code cloud (décision du 21/10)."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "`mission-dev` vide le contexte du dev (`/clear`) avant chaque mission."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.326",
+      "ids_bruts": [
+        "claude-code-2.1.326"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.326 : permissions durcies (y compris en bypassPermissions), Remote Control corrigé, avertissement sur les règles --allowedTools incomplètes",
+      "version": "2.1.326",
+      "date_publication": "2026-11-16",
+      "type": "nouveaute",
+      "resume": "Version de 367 puces (11 ajouts, 119 modifications, 233 correctifs). Défavorable pour les sessions sans surveillance : certains appels d'outil en mode bypassPermissions demandent maintenant une approbation ou sont refusés là où personne ne peut répondre, et le mode auto, le bac à sable Bash, certaines commandes `cp` et `mv` et les écritures sur les fichiers de connexion (`.credentials.json`) sont aussi plus restrictifs. Ajouts : avertissement au démarrage pour une entrée `--allowedTools`, `--disallowedTools` ou `--tools` qui n'est pas une règle complète, ligne de `/status` indiquant les fonctions coupées par le fournisseur ou `DISABLE_TELEMETRY`, `Ctrl+O` pour afficher les avis de démarrage masqués ; la compaction automatique en mode plan utilise le modèle qui te répond (Opus avec `opusplan`), donc peut coûter plus, et `/usage` en plein écran montre d'abord les barres de limite du forfait.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21326",
+          "libelle": "Claude Code 2.1.326 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Toutes tes sessions locales tournent en bypassPermissions (sauf trading) et la chaîne de 04 h 00 lance ses étapes Claude avec `--permission-mode bypassPermissions` ; la 2.1.326, déjà installée d'après `docs/data/versions.json`, fait demander ou refuser certains appels même dans ce mode, ce qui peut arrêter une session ou une étape sans surveillance (un refus de la chaîne sort en code 125). La chaîne passe les listes `allow` et `deny` de `.claude/settings.json` en `--allowedTools` et `--disallowedTools` : relues aujourd'hui, toutes les entrées sont des règles complètes, donc l'avertissement de démarrage ne devrait pas apparaître. Remote Control, ton interface principale depuis l'iPhone, reçoit trois corrections : une session coupée en pleine réponse quand le serveur est brièvement indisponible, une session affichée inactive sur le téléphone alors que des sous-agents tournent encore (Stop sur le téléphone les arrête désormais avec le tour), et une session affichée « en cours » alors qu'elle attend une réponse possible seulement dans le terminal. Une session reprise par `--resume` ne perd plus son historique quand la mémoire manque ; `/btw` signale un appel d'outil tenté et ses longues réponses défilent ; le premier message après `/compact` est plus rapide dans un dépôt git. La note ajoutée dans `/plugin` et `claude plugin list` pour un champ `plugin.json` mal formé (`author`, `homepage`) touche seulement `frontend-design@claude-plugins-official`, le seul plugin installé, à l'essai. Le correctif d'affichage tmux 3.7 ne te concerne pas : `tmux -V` donne 3.4 sur le K8.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Contrôle les refus de permission des sessions en bypassPermissions après le passage à la 2.1.326, et essaie les corrections de Remote Control ; revérifier le 18/11/2026 (aucune échéance publiée).",
+        "etapes": [
+          "Le 18/11/2026, lance `operer friction` ; essai sur la chaîne de nuit D70 de 04 h 00 et sur une session dev de delta-ia ; résultat attendu : aucun refus de permission nouveau (sinon note la commande refusée et transmets-la à Dev-delta).",
+          "Depuis l'app Claude iOS, ouvre une session Remote Control d'un chef (`/remote-control` si elle n'est pas déjà reliée, fiche `claude-code-commandes-remote-control`) pendant qu'elle lance un sous-agent en arrière-plan ; résultat attendu : elle reste « en cours » sur l'iPhone jusqu'à la fin du sous-agent, et Stop sur l'iPhone l'arrête avec le tour."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-remote-control",
+        "claude-code-commandes-btw",
+        "claude-code-commandes-compact",
+        "claude-code-commandes-status",
+        "claude-code-commandes-usage",
+        "claude-code-parametres-allowedtools",
+        "claude-code-parametres-resume"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10 ; un refus est un problème d'exécution."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "La chaîne de 04 h 00 lance les étapes Claude en bypassPermissions ; un refus sort en code 125."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions sous tmux avec --resume et --remote-control, pilotées depuis l'iPhone."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-11-16",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-16"
+      ],
+      "produit": "claude",
+      "titre": "Plateforme Claude : filigrane de texte sur les anciens modèles, sauf paramètres d'échantillonnage non standard",
+      "version": null,
+      "date_publication": "2026-11-16",
+      "type": "nouveaute",
+      "resume": "Le texte généré par Claude Opus 4.6, Opus 4.5, Sonnet 4.5 et Haiku 4.5 porte le filigrane de texte d'Anthropic sur les plateformes prises en charge. Si une requête fixe `temperature`, `top_p` ou `top_k` à une valeur non standard, le texte peut ne pas porter le filigrane.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude — platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-r1b4f9bbnsx1",
+      "ids_bruts": [
+        "anthropic-status-r1b4f9bbnsx1"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées sur Claude Sonnet 5.5 et Claude Fable 5.2 (claude.ai, API, Claude Code, Cowork)",
+      "version": null,
+      "date_publication": "2026-11-16",
+      "type": "nouveaute",
+      "resume": "Incident majeur du 16/11 de 07 h 32 à 08 h 45 UTC (23 h 32 PT le 15/11 à 00 h 45 PT le 16/11) sur claude.ai, l'API Claude, Claude Code et Claude Cowork ; un correctif a été déployé pour Claude Sonnet 5.5 et d'autres modèles, statut « resolved ».",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/r1b4f9bbnsx1",
+          "libelle": "Elevated errors for Claude Sonnet 5.5 and Claude Fable 5.2 — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2122457608963395586",
+      "raison": "post X sans rapport : lien vers un article sur la vérification du code, aucune commande ni aucun réglage à citer"
+    },
+    {
+      "id": "x-2122439104419790958",
+      "raison": "post X sans rapport : plugin Xcode (`xcode@claude-plugins-official`), réservé à macOS"
+    },
+    {
+      "id": "x-2122439102981390562",
+      "raison": "post X sans rapport : disponibilité de Claude Code desktop avec Xcode 27.1 sur macOS"
+    },
+    {
+      "id": "x-2122439100854939907",
+      "raison": "post X sans rapport : skill Apple App Resizability pour iPhone Duo, applications iOS natives"
+    },
+    {
+      "id": "x-2122439098740674839",
+      "raison": "post X sans rapport : simulateur iOS iPhone Duo de Claude Code desktop, macOS"
+    },
+    {
+      "id": "anthropic-status-b5cq662qf2wm",
+      "raison": "incident sur Claude Meetings (bêta Team et Enterprise), produit de réunions sans lien avec l'usage de Claude Code ou de ton forfait Max"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
