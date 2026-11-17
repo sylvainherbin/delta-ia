@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-11-12",
+ "maj_le": "2026-11-17",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 468,
- "commentees": 468,
+ "total": 474,
+ "commentees": 474,
  "entrees": [
   {
    "id": "chatgpt-parametres-reglages-appearance",
@@ -7347,6 +7347,53 @@
    ]
   },
   {
+   "id": "codex-parametres-codex-exec-trust",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex exec --trust",
+   "gabarit": "court",
+   "description": "Enregistre la confiance accordée au projet pour cette exécution et les conversations futures, même avec --ephemeral, et ne peut pas être combiné à --ignore-user-config.",
+   "description_source": "Save project trust for this run and future chats, even with --ephemeral . Conflicts with --ignore-user-config . (valeurs : boolean)",
+   "usage": "codex exec --trust",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "La chaîne delta-ia emploie --ignore-user-config, incompatible avec --trust ; cette option persiste la confiance et ne doit pas être ajoutée à ses commandes."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-exec",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La chaîne D70 utilise codex exec avec --ignore-user-config."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "codex exec",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-codex-exec-worktree",
    "produit": "codex",
    "categorie": "parametres",
@@ -9624,6 +9671,53 @@
    "contexte_sections": null
   },
   {
+   "id": "codex-parametres-codex-review-trust",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "codex review --trust",
+   "gabarit": "court",
+   "description": "Accorde la confiance au projet et à ses serveurs MCP pour cette revue et les conversations futures ; un projet explicitement non approuvé est refusé.",
+   "description_source": "Trust this project for this review and future chats, including its configured MCP servers. Codex refuses an explicitly untrusted project. (valeurs : boolean)",
+   "usage": "codex review --trust",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les audits trading-sim ne justifient pas de changer durablement la confiance du projet et de ses MCP par cette option."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#codex-review",
+     "libelle": "developer-commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Les audits sont l’usage principal de Codex ; trading-sim figure parmi les projets approuvés."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-cli",
+   "groupe": "codex review",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-codex-review-uncommitted",
    "produit": "codex",
    "categorie": "parametres",
@@ -11453,6 +11547,53 @@
      "pourquoi": "Audits exigeants dont le coût est un irritant."
     }
    }
+  },
+  {
+   "id": "codex-parametres-features-gateway-setup-wizard",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "features.gateway_setup_wizard",
+   "gabarit": "court",
+   "description": "Propose la configuration d’une passerelle personnalisée pendant la connexion CLI quand le choix du fournisseur est disponible ; désactivé par défaut.",
+   "description_source": "Type : boolean. Offer custom gateway setup during CLI sign-in when the user can choose a provider. Defaults to false. See Connect to a gateway.",
+   "usage": "features.gateway_setup_wizard",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les profils Codex de CONTEXTE.md ne décrivent aucune passerelle personnalisée à configurer."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.profils": {
+     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+     "pourquoi": "Trois profils sont utilisés ; aucune passerelle personnalisée n’y est déclarée."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-features-goals",
@@ -18939,6 +19080,100 @@
    "contexte_sections": {}
   },
   {
+   "id": "codex-parametres-model-providers-id-gateway-oauth-credential-export",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.<id>.gateway_oauth.credential_export",
+   "gabarit": "court",
+   "description": "Définit une commande qui fournit le jeton de passerelle, avec args et timeout_ms facultatifs (30 000 ms par défaut), à la place du client et des endpoints OAuth.",
+   "description_source": "Type : table. Use a command as the gateway credential source. Set command to an executable that prints one access token. Optional fields are args and timeout_ms (default 30000). Omit the OAuth client ID and endpoint settings when using this table.",
+   "usage": "model_providers.<id>.gateway_oauth.credential_export",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucune passerelle personnalisée n’est déclarée pour les profils Codex, donc aucun exporteur de jeton concret n’est à configurer."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.profils": {
+     "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+     "pourquoi": "Les profils ne décrivent pas de passerelle ni de fournisseur de jetons personnalisé."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-model-providers-id-gateway-oauth-device-authorization-url",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "model_providers.<id>.gateway_oauth.device_authorization_url",
+   "gabarit": "court",
+   "description": "Définit l’endpoint facultatif d’autorisation par code d’appareil pour connecter une passerelle depuis SSH ou un terminal sans navigateur.",
+   "description_source": "Type : string. Optional device authorization endpoint for signing in to the gateway over SSH or from a terminal without a browser.",
+   "usage": "model_providers.<id>.gateway_oauth.device_authorization_url",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le remote control sous tmux est utilisé, mais aucune passerelle OAuth personnalisée n’est décrite et cet endpoint ne configure pas Remote Control."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "La CLI est utilisée sous tmux avec remote control depuis l’iPhone."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-model-providers-id-http-headers",
    "produit": "codex",
    "categorie": "parametres",
@@ -18986,8 +19221,8 @@
    "categorie": "parametres",
    "nom": "model_providers.<id>.model_catalog_url",
    "gabarit": "court",
-   "description": "URL complète d’un catalogue de modèles au format natif Codex ; omettre conserve la découverte par défaut du fournisseur.",
-   "description_source": "Type : string. Full URL for a Codex-native model catalog. Omit to keep the provider's default model discovery.",
+   "description": "Indique l’URL complète d’un catalogue natif Codex, accessible avec les identifiants OAuth de passerelle si protocole, hôte et port correspondent à base_url ; omis, conserve la découverte par défaut.",
+   "description_source": "Type : string. Full URL for a Codex-native model catalog. Codex can fetch it with existing gateway OAuth credentials when the URL has the same scheme, host, and port as base_url. Omit to keep the provider's default model discovery.",
    "usage": "model_providers.<id>.model_catalog_url",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -18995,7 +19230,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les profils Codex ne décrivent aucun catalogue de modèles personnalisé à substituer au catalogue existant."
+    "pourquoi": "Les profils Codex de CONTEXTE.md ne décrivent aucun catalogue personnalisé à substituer à la découverte des modèles."
    },
    "sources": [
     {
@@ -19005,17 +19240,17 @@
     }
    ],
    "commentee": true,
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.profils": {
      "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
-     "pourquoi": "Profils utilisant les modèles existants."
+     "pourquoi": "Les profils utilisés ne déclarent aucun catalogue de modèles personnalisé."
     }
    },
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-10-14",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-10-14",
@@ -19023,6 +19258,14 @@
     },
     {
      "date": "2026-10-14",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
      "changement": "commentée"
     }
    ]
@@ -23491,6 +23734,67 @@
      "source": "contexte:config.codex.interface",
      "releve_le": "2026-10-16",
      "caduc_si": "CONTEXTE.md attribue un autre rôle à Codex ou ne mentionne plus trading-sim dans ce rôle."
+    }
+   ]
+  },
+  {
+   "id": "codex-parametres-tui-collapse-turn-details",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "tui.collapse_turn_details",
+   "gabarit": "court",
+   "description": "Résume les appels d’outils et replie l’activité terminée sous chaque consigne du transcript plein écran tout en laissant les réponses visibles ; false par défaut.",
+   "description_source": "Type : boolean. Summarize tool calls and fold completed activity beneath each prompt in the full-screen transcript. Answers stay visible. Defaults to false.",
+   "usage": "tui.collapse_turn_details",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Dans un audit trading-sim en CLI sous tmux, essaie `tui.collapse_turn_details = true` dans `~/.codex/config.toml` : résultat attendu, activité terminée repliée et verdict visible ; remets false pour retrouver le détail."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex sert surtout aux audits et s’utilise en CLI sous tmux avec remote control."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-17",
+   "historique": [
+    {
+     "date": "2026-11-17",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
+    }
+   ],
+   "provenance": [
+    {
+     "affirmation": "Type : boolean. Summarize tool calls and fold completed activity beneath each prompt in the full-screen transcript. Answers stay visible. Defaults to false.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-11-17",
+     "caduc_si": "La documentation modifie la fonction, la syntaxe ou les conditions de disponibilité."
+    },
+    {
+     "affirmation": "Codex sert surtout aux audits et s’utilise en CLI sous tmux avec remote control.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-17",
+     "caduc_si": "La section de CONTEXTE.md ne décrit plus cet usage."
     }
    ]
   },

@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-11-08",
+ "maj_le": "2026-11-17",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -4924,8 +4924,8 @@
    "categorie": "commandes",
    "nom": "/feedback",
    "gabarit": "complet",
-   "description": "Envoie aux mainteneurs Codex des journaux et informations de diagnostic pour signaler un problème. Le contenu transmis sert au support et ne corrige pas localement la session.",
-   "description_source": "Send logs to the Codex maintainers. — Report issues or share diagnostics with support.",
+   "description": "Ouvre le formulaire de retour et permet de choisir l’inclusion des journaux. Dans l’éditeur de note d’une connexion locale, Ctrl+S enregistre un ZIP de diagnostic et affiche son chemin au lieu de soumettre le retour, même si les envois sont interdits.",
+   "description_source": "Send feedback or save a diagnostic ZIP. — Report issues or share diagnostics with support.",
    "usage": "/feedback",
    "usage_nature": "syntaxe",
    "exemple": "/feedback",
@@ -4933,7 +4933,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "À réserver à un bug Codex reproductible ; aucun incident nécessitant un envoi de logs n'est identifié."
+    "pourquoi": "Aucun bug Codex reproductible nécessitant un diagnostic n’est décrit pour les audits trading-sim ; réserver cette commande à un incident identifié."
    },
    "sources": [
     {
@@ -4946,7 +4946,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-09",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4959,10 +4959,23 @@
     {
      "date": "2026-10-09",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé pour auditer en CLI sous tmux."
+    }
+   },
    "exemple_origine": "source"
   },
   {
@@ -7748,8 +7761,8 @@
    "categorie": "commandes",
    "nom": "/side",
    "gabarit": "complet",
-   "description": "`/side` ouvre une conversation annexe temporaire depuis le chat courant, avec un transcript séparé. Elle ne s'utilise ni depuis une autre conversation annexe ni pendant le mode review.",
-   "description_source": "Start an ephemeral side chat. — Ask a focused follow-up without disrupting the main chat’s transcript.",
+   "description": "Ouvre un échange annexe au transcript séparé, avec /btw comme alias, pendant que le fil principal continue. Temporaire par défaut, il peut être conservé et rouvert dans une session locale plein écran avec features.tui_workspace et un historique enregistré ; indisponible dans une autre annexe ou en mode review.",
+   "description_source": "Open a side chat. — Ask a focused follow-up without disrupting the main chat’s transcript.",
    "usage": "/side , /btw",
    "usage_nature": "syntaxe",
    "exemple": "/side",
@@ -7757,7 +7770,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pendant un audit trading-sim hors mode review, essaie `/side` pour demander une explication limitée du format de verdict de la mission. Vérifie que l'échange reste dans le fil annexe et que le transcript principal conserve son déroulement."
+    "pourquoi": "Pendant un audit trading-sim hors mode review, essaie `/side` pour une explication du format du verdict : résultat attendu, échange dans un fil séparé et état du fil principal visible. Avec features.tui_workspace et un historique enregistré, les annexes sauvegardées se rouvrent après redémarrage."
    },
    "sources": [
     {
@@ -7770,7 +7783,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -7795,66 +7808,97 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Start an ephemeral side chat. — Ask a focused follow-up without disrupting the main chat’s transcript.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande intégrée /side, aussi appelée /btw, démarre une conversation annexe éphémère (ephemeral side chat).",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "/side ou son alias /btw disparaît de la liste des commandes intégrées ou change de fonction."
+      },
+      {
+       "affirmation": "Selon la documentation, /side permet de poser une question de suivi ciblée sans perturber le transcript de la conversation principale.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne garantit plus que le transcript principal reste intact lors d'un échange via /side."
+      },
+      {
+       "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'audit comme rôle principal de Codex."
+      },
+      {
+       "affirmation": "Depuis le 02/10, l'essentiel de l'usage de Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de la CLI sous tmux ni de conversation d'audit."
+      },
+      {
+       "affirmation": "Sur trading-sim, Codex fait l'audit adversarial ; le dossier contient des missions NEXT-CODEX-AUDIT-* rédigées par ChatGPT.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le rôle d'audit de Codex sur trading-sim ou ces missions."
+      },
+      {
+       "affirmation": "Les verdicts de trading-sim suivent la convention de blocs CLÉ = VALEUR lisibles par machine.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La convention de verdicts en blocs CLÉ = VALEUR est retirée de CONTEXTE.md."
+      },
+      {
+       "affirmation": "Le coût en jetons des prompts d'audit très longs figure parmi les frictions récurrentes de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne cite plus ce coût en jetons parmi les frictions récurrentes."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "projet.chatgpt-trading-sim": {
-     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Les missions et les verdicts d'audit suivent des formats de fichiers précis."
-    },
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
+     "pourquoi": "Les audits Codex passent principalement par la CLI sous tmux."
     },
-    "methode.travail": {
-     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Trading-sim conserve des validations par jalon ; les autres projets sont autonomes et les audits coûtent des jetons."
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Les verdicts des audits utilisent des blocs CLÉ = VALEUR."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La commande intégrée /side, aussi appelée /btw, démarre une conversation annexe éphémère (ephemeral side chat).",
+     "affirmation": "La section /side décrit un transcript séparé, des annexes temporaires par défaut et leur réouverture avec features.tui_workspace et un historique enregistré.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "/side ou son alias /btw disparaît de la liste des commandes intégrées ou change de fonction."
+     "releve_le": "2026-11-17",
+     "caduc_si": "La documentation modifie la fonction, la syntaxe ou les conditions de disponibilité."
     },
     {
-     "affirmation": "Selon la documentation, /side permet de poser une question de suivi ciblée sans perturber le transcript de la conversation principale.",
-     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne garantit plus que le transcript principal reste intact lors d'un échange via /side."
-    },
-    {
-     "affirmation": "Codex sert surtout à auditer ce que fait Claude, sur trading-sim et ailleurs.",
+     "affirmation": "Les audits Codex passent principalement par la CLI sous tmux.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'audit comme rôle principal de Codex."
+     "releve_le": "2026-11-17",
+     "caduc_si": "La section de CONTEXTE.md ne décrit plus cet usage."
     },
     {
-     "affirmation": "Depuis le 02/10, l'essentiel de l'usage de Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus l'usage de la CLI sous tmux ni de conversation d'audit."
-    },
-    {
-     "affirmation": "Sur trading-sim, Codex fait l'audit adversarial ; le dossier contient des missions NEXT-CODEX-AUDIT-* rédigées par ChatGPT.",
+     "affirmation": "Les verdicts des audits utilisent des blocs CLÉ = VALEUR.",
      "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le rôle d'audit de Codex sur trading-sim ou ces missions."
-    },
-    {
-     "affirmation": "Les verdicts de trading-sim suivent la convention de blocs CLÉ = VALEUR lisibles par machine.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La convention de verdicts en blocs CLÉ = VALEUR est retirée de CONTEXTE.md."
-    },
-    {
-     "affirmation": "Le coût en jetons des prompts d'audit très longs figure parmi les frictions récurrentes de Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne cite plus ce coût en jetons parmi les frictions récurrentes."
+     "releve_le": "2026-11-17",
+     "caduc_si": "La section de CONTEXTE.md ne décrit plus cet usage."
     }
    ]
   },

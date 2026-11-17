@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-11-12",
+ "maj_le": "2026-11-17",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1556,16 +1556,16 @@
    "categorie": "fonctionnalites",
    "nom": "Projects and chats",
    "gabarit": "complet",
-   "description": "La vue Projects de ChatGPT regroupe les conversations, sources et instructions partagées, ainsi que les projets locaux dans l'app. En CLI, le projet correspond au dossier de lancement ou à celui choisi avec `--cd` ; la vue Projects n'y est pas proposée.",
+   "description": "Les projets ChatGPT regroupent conversations, fichiers et instructions ; la CLI prend son dossier de travail comme projet et n’expose pas cette vue. L’usage extrait porte sur Lock chat plutôt que sur l’organisation d’un projet ; verrouiller une conversation de projet lui retire l’accès aux instructions, fichiers et mémoire du projet.",
    "description_source": "Use a project to organize related chats and give ChatGPT the context it needs. The Projects view in the ChatGPT desktop app includes ChatGPT projects and local projects that connect to folders on your computer.",
-   "usage": "codex",
-   "usage_nature": "syntaxe",
-   "exemple": "cd /home/herbin/projets/trading-sim\ncodex",
+   "usage": "1. Open the chat's more menu (…), select **Lock chat**, confirm, and create or enter your account PIN.\n2. Go to **Projects > Locked chats** and enter your PIN for temporary access.\n3. Select **Lock now** when finished. Check other devices before screen sharing; titles or content can remain visible until you refresh ChatGPT on those devices.",
+   "usage_nature": "etapes",
+   "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
-    "verdict": "tester",
-    "pourquoi": "Pour un audit trading-sim dans ta session CLI sous tmux, essaie `codex --cd /home/herbin/projets/trading-sim` et demande d'identifier le dépôt sans le modifier : le résultat attendu est le bon dépôt identifié comme dossier de travail. Le contexte ne confirme pas l'usage de la vue ChatGPT Projects."
+    "verdict": "ignorer",
+    "pourquoi": "L’usage extrait est un sous-parcours Lock chat, pas un mode d’emploi Projects ; ne pas le transposer aux audits Codex locaux, qui ne prennent pas en charge ce verrouillage."
    },
    "sources": [
     {
@@ -1578,7 +1578,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1623,58 +1623,68 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "usage modifié dans la documentation",
+     "avant": "codex",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Selon la documentation, un projet sert à organiser des conversations liées et à donner à ChatGPT le contexte dont il a besoin.",
+       "source": "https://learn.chatgpt.com/docs/projects",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus les projets comme un moyen d'organiser les conversations et de fournir du contexte."
+      },
+      {
+       "affirmation": "La vue Projects de l'app de bureau ChatGPT inclut des projets ChatGPT et des projets locaux reliés à des dossiers de l'ordinateur.",
+       "source": "https://learn.chatgpt.com/docs/projects",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne mentionne plus les projets locaux reliés à des dossiers dans la vue Projects de l'app de bureau."
+      },
+      {
+       "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux avec remote control depuis l'iPhone ; l'app de bureau n'est plus lancée au démarrage.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux ou indique que l'app de bureau est de nouveau l'interface principale."
+      },
+      {
+       "affirmation": "Les projets approuvés dans Codex sont trading-sim et un dossier de travail Codex daté.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne liste plus trading-sim parmi les projets approuvés de Codex."
+      },
+      {
+       "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'attribue plus à Codex le rôle d'auditer le travail de Claude sur trading-sim."
+      },
+      {
+       "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans docs/audits/.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ou ses rapports d'audit Codex."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux et remote control sont utilisés ; D70 emploie le binaire distinct de l'app."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le dépôt local trading-sim est la priorité et le support des audits Codex."
+     "pourquoi": "Les audits Codex sont conduits en CLI sous tmux."
     }
-   },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "Selon la documentation, un projet sert à organiser des conversations liées et à donner à ChatGPT le contexte dont il a besoin.",
-     "source": "https://learn.chatgpt.com/docs/projects",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus les projets comme un moyen d'organiser les conversations et de fournir du contexte."
-    },
-    {
-     "affirmation": "La vue Projects de l'app de bureau ChatGPT inclut des projets ChatGPT et des projets locaux reliés à des dossiers de l'ordinateur.",
-     "source": "https://learn.chatgpt.com/docs/projects",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne mentionne plus les projets locaux reliés à des dossiers dans la vue Projects de l'app de bureau."
-    },
-    {
-     "affirmation": "Depuis le 02/10/2026, Sylvain utilise Codex en CLI sous tmux avec remote control depuis l'iPhone ; l'app de bureau n'est plus lancée au démarrage.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus l'usage de la CLI Codex sous tmux ou indique que l'app de bureau est de nouveau l'interface principale."
-    },
-    {
-     "affirmation": "Les projets approuvés dans Codex sont trading-sim et un dossier de travail Codex daté.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne liste plus trading-sim parmi les projets approuvés de Codex."
-    },
-    {
-     "affirmation": "Le rôle déclaré de Codex est surtout d'auditer ce que fait Claude, sur trading-sim et ailleurs.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'attribue plus à Codex le rôle d'auditer le travail de Claude sur trading-sim."
-    },
-    {
-     "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans docs/audits/.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ou ses rapports d'audit Codex."
-    }
-   ]
+   }
   },
   {
    "id": "chatgpt-fonctionnalites-page-sites",
@@ -5172,16 +5182,16 @@
    "categorie": "fonctionnalites",
    "nom": "Codex Security",
    "gabarit": "complet",
-   "description": "Codex Security examine le code à la recherche de vulnérabilités et fournit des preuves pour les investiguer et les corriger. Le plugin analyse un dépôt local ; la CLI et le SDK permettent des exécutions automatisées, tandis que le service Cloud analyse des dépôts GitHub connectés.",
-   "description_source": "Codex Security reviews code for vulnerabilities and reports evidence you can use to investigate and fix them. Choose how to run it based on where your code lives and how you want to review the results.",
-   "usage": "Codex Security reviews code for vulnerabilities and reports evidence you can use to investigate and fix them. Choose how to run it based on where your code lives and how you want to review the results.",
+   "description": "Codex Security recherche des vulnérabilités applicatives et rapporte des preuves. La documentation propose Daybreak Defense Factory pour les dépôts GitHub, le plugin pour un dépôt local, ainsi que la CLI et le SDK pour les scans automatisés.",
+   "description_source": "Codex Security scans code for vulnerabilities and reports findings with supporting evidence. Run it in Daybreak Defense Factory, in Codex, from a terminal, or through the SDK.",
+   "usage": "Codex Security scans code for vulnerabilities and reports findings with supporting evidence. Run it in Daybreak Defense Factory, in Codex, from a terminal, or through the SDK.",
    "usage_nature": "etapes",
    "exemple": null,
-   "disponibilite": "Les scans avec inférence OpenAI exigent l’accès Codex Security ; Codex Security Cloud est en research preview et exige un accès d’espace, GitHub et un environnement cloud compatible.",
+   "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Les audits déclarés de trading-sim portent sur la logique et le protocole du simulateur ; aucun besoin précis de recherche de vulnérabilités applicatives n’est établi."
+    "pourquoi": "Les audits déclarés de trading-sim portent sur la logique et le protocole du simulateur ; aucun scénario précis de scan de vulnérabilités applicatives n’est établi."
    },
    "sources": [
     {
@@ -5194,7 +5204,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-18",
+   "maj_le": "2026-11-17",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5223,13 +5233,25 @@
     {
      "date": "2026-10-18",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-17",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Audits de logique et protocole, sans scénario déclaré de scan de vulnérabilités applicatives."
+     "pourquoi": "Les audits trading-sim portent sur l’architecture et le protocole du simulateur."
     }
    }
   },
