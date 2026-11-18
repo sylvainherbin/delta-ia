@@ -1,0 +1,278 @@
+{
+  "date": "2026-11-18",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-18T03:05:30+00:00",
+  "synthese": "Compte et quotas : rien de nouveau dans les sources du jour (aucune limite, offre, remise à zéro ni tarif de ton forfait Max ; la facturation liée de la Claude Platform concerne les plateformes tierces qui revendent l'API). Relevé du 18/11 : `rapports/usage.json` (03 h 00 UTC) n'a pas de jauge Claude, `docs/data/etat.json` (OBSERVATORY, 02 h 45 UTC) donne la semaine Claude à 69 % et la semaine Fable à 0 %, remise à zéro Claude non relevée, session 5 h non mesurée ; semaine ChatGPT à 48 %, remise à zéro le 22/11 à 17 h 10 UTC ; aucun quota hebdomadaire n'atteint le seuil D71 (80 %). Claude Code 2.1.327 (installée, à jour) continue de durcir les contrôles de permission, ce qui peut faire demander ou refuser un appel sur une session ou une étape sans surveillance, et ajoute dans `/status` une liste des réglages de permission ignorés, des matchers de hook sans effet et des fichiers de skill ou d'agent cassés ; elle corrige aussi ListAgents, les messages vers Remote Control et un blocage de `claude -p`. Le reste du jour (guides Enterprise, facturation liée, canal de version de Claude Desktop, deux incidents résolus) ne touche ni tes projets ni ta machine.",
+  "elements": [
+    {
+      "id": "claude-code-2.1.327",
+      "ids_bruts": [
+        "claude-code-2.1.327"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.327 : liste d'anomalies de configuration dans `/status`, contrôles de permission encore durcis, ListAgents paginé, `claude -p` débloqué",
+      "version": "2.1.327",
+      "date_publication": "2026-11-17",
+      "type": "nouveaute",
+      "resume": "Version de 173 puces (9 ajouts, 61 modifications, 100 correctifs). Ajouts : `/status` liste les fichiers d'agent, de skill, de commande et de style de sortie cassés, les erreurs de raccourcis, un bac à sable indisponible, les réglages de permission ignorés et les matchers de hook qui ne correspondent jamais ; `claude mcp add-json <name> -` lit le JSON du serveur sur stdin (hors session) ; `/tui classic` nomme le rendu sans plein écran (`/tui default` reste valable) ; `attributionProject` nomme le groupe de facturation d'une session pour les passerelles ; confirmation avant que `/install-github-app` modifie un dépôt ; une note dans `/config` quand d'autres réglages écrasent une ligne. Défavorable sans surveillance : liens symboliques et notion de dossier de travail contrôlés plus strictement, commandes Bash dont les variables s'étendent en texte très long refusées, sous-agent repris par le message d'un autre qui peut demander ou être refusé là où personne ne répond. Correctifs : ListAgents pagine les longues listes de sessions, `claude -p` ne reste plus suspendu au-delà de 10 s quand les réglages du modèle tardent, serveurs MCP distants retentés pendant environ un jour après une coupure, messages perdus à la reprise de sessions longues ou headless.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21327",
+          "libelle": "Claude Code 2.1.327 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tes sessions locales tournent en bypassPermissions (sauf trading) et la chaîne de 04 h 00 lance ses étapes Claude avec `--permission-mode bypassPermissions` ; la 2.1.327, installée d'après `docs/data/versions.json`, prolonge le durcissement de la 2.1.326 du 17/11 (liens symboliques, dossier de travail, sous-agents repris) : un appel peut être demandé ou refusé sur une session ou une étape sans surveillance, et un refus de la chaîne sort en code 125. Côté ajouts, `/status` liste désormais les réglages de permission ignorés, les matchers de hook sans effet et les fichiers de skill ou d'agent cassés : tu as le hook `PermissionDenied`, des skills perso et l'agent `executant`, donc c'est un contrôle de santé de configuration à lancer dans la session du chef delta-ia (le verdict « ignorer » de la fiche `claude-code-commandes-status` portait sur la ligne `Session kind`, pas sur cette liste). Tes sessions se parlent par `SendMessage` et `ListAgents` et tu les pilotes depuis l'iPhone : ListAgents pagine les longues listes, et un message vers une session Remote Control échoué après un délai dit maintenant qu'il a peut-être été reçu. La chaîne de nuit appelle `claude -p` : il ne reste plus suspendu au-delà de 10 s quand les réglages du modèle tardent. Ton serveur MCP local delta-ia est ajouté en HTTP sans jeton, donc `claude mcp add-json <name> -` n'apporte rien à ton cas ; CONTEXTE.md ne décrit aucun mode worktree de Remote Control (tes worktrees viennent de `git worktree add` ou d'OPÉRER), donc le correctif de suppression de `.env` en mode worktree ne te concerne pas. Les autres puces (Windows, PowerShell, VS Code, artifacts, passerelles) n'ont aucun lien avec ta machine Linux.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lance `/status` dans une session du chef delta-ia pour lire la liste d'anomalies de configuration, puis relis les refus de permission de la chaîne après la 2.1.327 (aucune échéance publiée).",
+        "etapes": [
+          "Tape `/status` (fiche `claude-code-commandes-status`, usage `/status`) dans la session du chef delta-ia, qui charge les skills perso, l'agent `executant` et le hook `PermissionDenied` ; résultat attendu : la liste signale seulement les fichiers cassés, réglages de permission ignorés ou matchers de hook sans effet, ou n'apparaît pas si tout est valide.",
+          "Lance `operer friction` (frictions de la semaine) après le passage de 04 h 00 de la chaîne D70 ; résultat attendu : aucun refus de permission nouveau depuis la 2.1.327 (sinon note la commande refusée et transmets-la à Dev-delta)."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-status",
+        "claude-code-commandes-tui"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Toutes les sessions locales en bypassPermissions sauf trading ; refus = problème d'exécution."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes Claude de 04 h 00 en bypassPermissions, un refus sort en code 125."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Hook `PermissionDenied`, skills perso et agent `executant` : ce que `/status` contrôle."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions pilotées par Remote Control, `SendMessage` et `ListAgents` entre sessions."
+        },
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Serveur MCP local delta-ia ajouté en HTTP sans jeton."
+        }
+      }
+    },
+    {
+      "id": "claude-platform-notes-2026-11-17",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-17",
+        "https://claude.com/blog/linked-billing-on-claude-platform",
+        "x-2122751844455956760",
+        "x-2122751848964841675",
+        "x-2122751847400411302",
+        "x-2122751850265112746"
+      ],
+      "produit": "claude",
+      "titre": "Claude Platform : facturation liée (Linked billing) en bêta, les clients paient l'API d'une plateforme tierce sans partager de clé",
+      "version": null,
+      "date_publication": "2026-11-17",
+      "type": "nouveaute",
+      "resume": "Les plateformes tierces (agents de code, outils d'automatisation) peuvent laisser leurs clients payer l'usage de l'API Claude par leur propre organisation Claude Platform, sans clé d'API échangée : le client approuve le lien, fixe une limite de dépense et peut le rompre dans la Console. L'en-tête bêta est `user-profiles-billing-2026-10-01` et le champ `billing_policy` de chaque requête `/v1/messages` ou `/v1/chat/completions` choisit qui paie ; elle ne vaut que pour les organisations qui paient Anthropic directement pour l'API. Dix-neuf plateformes (Asana, Linear, Ramp, Factory, Warp, etc.) sont citées au lancement ; aucune limite ni aucun tarif de forfait n'est modifié.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude — platform.claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://claude.com/resources/articles/linked-billing-on-claude-platform",
+          "libelle": "Linked billing on the Claude Platform — claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2122751844455956760",
+          "libelle": "@ClaudeDevs — annonce de la facturation liée",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-apps-notes-2026-11-17",
+      "ids_bruts": [
+        "claude-apps-notes-2026-11-17",
+        "x-2122821051910684824"
+      ],
+      "produit": "claude",
+      "titre": "Claude Desktop : choix d'un canal de versions, Stable par défaut ou Latest (une version par jour environ)",
+      "version": null,
+      "date_publication": "2026-11-17",
+      "type": "nouveaute",
+      "resume": "Un canal de versions règle quelle version de Claude Desktop est installée à la mise à jour : Stable, par défaut, reçoit les versions moins souvent après plus de tests ; Latest reçoit une version environ une fois par jour, au prix d'une fiabilité moindre. Le post de @ClaudeDevs annonce l'option pour Windows et Mac, dans Réglages > Application de bureau.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Claude (apps) — notes de version, 17/11",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2122821051910684824",
+          "libelle": "@ClaudeDevs — canal Latest de Claude Desktop",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-apps-notes-2026-11-12",
+      "ids_bruts": [
+        "claude-apps-notes-2026-11-12"
+      ],
+      "produit": "claude",
+      "titre": "Claude Meetings en bêta sur Team et Enterprise (note de version révisée)",
+      "version": null,
+      "date_publication": "2026-11-12",
+      "type": "nouveaute",
+      "revision": true,
+      "resume": "Révision de la note du 12/11, déjà publiée le 13/11. Ajoutée : l'entrée porte l'intitulé « Add Claude to your meetings ». Le texte décrit toujours la bêta de Claude Meetings sur les forfaits Team et Enterprise (Claude rejoint un appel Google Meet) ; aucun changement de conditions n'y est lisible.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Claude (apps) — notes de version, 12/11 (révisée)",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-aide-index-18466097",
+      "ids_bruts": [
+        "claude-aide-index-18466097"
+      ],
+      "produit": "claude",
+      "titre": "Nouvel article d'aide : planifier les modèles restreints et les programmes d'accès (migration Claude Enterprise vers Claude Desktop sur un fournisseur cloud)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Article pour les administrateurs de forfaits Claude Enterprise, rattaché au guide « Move from Claude Enterprise to Claude Desktop on a cloud provider » : l'accès accordé par un programme de vérification (Cyber Verification Program) ou à un modèle restreint se prépare comme une étape séparée, avec délai. Il demande de lier chaque compte cloud (AWS, Google Cloud, Azure) dans le portail de vérification, de vérifier la disponibilité sur Amazon Bedrock, qui est limitée, et de reconfigurer les rôles et l'accès aux modèles, que Claude Desktop sur 3P règle par sa propre configuration.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/18466097-plan-for-restricted-models-and-access-programs",
+          "libelle": "Plan for restricted models and access programs — support.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-aide-index-18466091",
+      "ids_bruts": [
+        "claude-aide-index-18466091"
+      ],
+      "produit": "claude",
+      "titre": "Nouvel article d'aide : planifier l'identité et les connexions (migration Claude Enterprise vers Claude Desktop sur un fournisseur cloud)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Article pour les administrateurs de forfaits Claude Enterprise, de la même série de migration : un déploiement de Claude Desktop sur 3P compte plusieurs connexions distinctes, dont la plupart peuvent utiliser un autre système d'identité. Il conseille de les lister avant de planifier le déménagement, et d'ordonner ce projet avec un éventuel changement de fournisseur d'identité, car claude.ai n'en accepte qu'un à la fois par défaut.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/18466091-plan-identity-and-sign-in",
+          "libelle": "Plan identity and sign-in — support.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-6prv10gjdpz1",
+      "ids_bruts": [
+        "anthropic-status-6prv10gjdpz1"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : erreurs élevées à l'édition de documents avec le connecteur Google Docs (claude.ai, Claude Code, Cowork)",
+      "version": null,
+      "date_publication": "2026-11-18",
+      "type": "nouveaute",
+      "resume": "Incident mineur du 18/11 de 00 h 19 à 01 h 33 UTC (16 h 19 à 17 h 33 PT le 17/11) : l'édition de documents par le connecteur Google Docs échouait sur claude.ai, Claude Code et Claude Cowork ; la lecture n'était pas touchée. Un correctif a été déployé, statut « resolved » à 01 h 44 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/6prv10gjdpz1",
+          "libelle": "Elevated errors affecting the Google Docs connector — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-1lglzf469c0z",
+      "ids_bruts": [
+        "anthropic-status-1lglzf469c0z"
+      ],
+      "produit": "claude",
+      "titre": "Incident résolu : connexion avec Apple impossible pour certains utilisateurs de claude.ai et de l'app Claude iOS",
+      "version": null,
+      "date_publication": "2026-11-17",
+      "type": "nouveaute",
+      "resume": "Incident majeur du 17/11 de 16 h 40 à 20 h 20 UTC (08 h 40 à 12 h 20 PT) : la connexion avec Apple échouait sur claude.ai et l'app Claude iOS, celles avec Google et par courriel n'étant pas touchées. Statut « resolved » à 21 h 51 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/1lglzf469c0z",
+          "libelle": "Some users unable to sign in with Apple on claude.ai and the Claude iOS app — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2122801681939234950",
+      "raison": "déjà couvert le 2026-11-13 (claude-code-2.1.323) : Code Mode et `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` ; fiche `claude-code-parametres-claude-code-experimental-code-mode` dans la base"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
