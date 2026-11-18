@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "commandes",
- "maj_le": "2026-11-17",
+ "maj_le": "2026-11-18",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -6210,8 +6210,8 @@
    "categorie": "commandes",
    "nom": "/model",
    "gabarit": "complet",
-   "description": "`/model` ouvre le sélecteur du modèle actif et, lorsqu'il est disponible, de l'effort de raisonnement. Il ne propose que les modèles accessibles au compte et à l'espace de travail ; `/status` permet de vérifier le choix.",
-   "description_source": "Choose the active model (and reasoning effort, when available). — Use gpt-6-luna or gpt-6.1-sol if shown.",
+   "description": "`/model` ouvre le choix du modèle et de son effort parmi les options accessibles au compte. La documentation recommande GPT-6.2 Sol pour le code courant et `/status` confirme le choix.",
+   "description_source": "Choose the active model (and reasoning effort, when available). — Select GPT-6.2 Sol for everyday coding if your workspace has access.",
    "usage": "/model",
    "usage_nature": "syntaxe",
    "exemple": "/model",
@@ -6219,7 +6219,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Dans une session CLI d'essai d'audit trading-sim, choisis un modèle disponible avec `/model` puis contrôle `/status` et le défaut des nouvelles sessions. Le contexte relève un changement de défaut après un choix dans l'app, dont le mécanisme reste à confirmer ; les missions `mission-codex` fixent déjà modèle et effort explicitement."
+    "pourquoi": "Dans une session CLI d’essai trading-sim, lance `/model`, choisis GPT-6.2 Sol puis `/status` ; résultat attendu : le modèle sélectionné est confirmé dans la conversation. Vérifie la portée du choix avant de le réutiliser : CONTEXTE relève un ancien changement de défaut global dans l’app, sans mécanisme confirmé ; mission-codex fixe ses propres paramètres."
    },
    "sources": [
     {
@@ -6232,7 +6232,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Built-in slash commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-18",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6273,70 +6273,140 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Choose the active model (and reasoning effort, when available). — Use gpt-6-luna or gpt-6.1-sol if shown.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Dans la CLI Codex, la commande slash `/model` permet de choisir le modèle actif et, lorsqu'il est disponible, l'effort de raisonnement.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `/model` change de rôle ou de syntaxe, ou disparaît de la liste des commandes slash intégrées."
+      },
+      {
+       "affirmation": "La documentation conseille d'utiliser `gpt-6-luna` ou `gpt-6.1-sol` s'ils apparaissent dans le sélecteur de `/model`.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne cite plus ces modèles ou en recommande d'autres."
+      },
+      {
+       "affirmation": "Depuis le 02/10/2026, l'essentiel de l'usage de Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit et la console.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus d'usage de Codex en CLI sous tmux ni de conversation d'audit."
+      },
+      {
+       "affirmation": "Codex sert surtout à auditer ce que fait Claude, notamment sur trading-sim.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md attribue un autre rôle principal à Codex ou ne cite plus trading-sim."
+      },
+      {
+       "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans `docs/audits/`.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ni ses audits Codex."
+      },
+      {
+       "affirmation": "Le modèle choisi dans une conversation de l'app Codex semble devenir le défaut global de `config.toml` ; la portée et le déclencheur de ce changement restent à confirmer au prochain changement de modèle.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md confirme ou infirme le mécanisme, ou retire cette piste."
+      },
+      {
+       "affirmation": "`mission-codex` passe toujours le modèle et l'effort explicitement à `codex exec`, sans jamais les hériter de `~/.codex/config.toml`.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "`mission-codex` hérite désormais du modèle ou de l'effort de `config.toml`, ou CONTEXTE.md ne le décrit plus."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "/model choisit le modèle et l’effort ; /status confirme le modèle actif.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
+       "releve_le": "2026-11-18",
+       "caduc_si": "La documentation modifie les modèles, les commandes ou les conditions décrites."
+      },
+      {
+       "affirmation": "Codex CLI sous tmux sert aux audits du travail de Claude.",
+       "source": "contexte:config.codex.interface",
+       "releve_le": "2026-11-18",
+       "caduc_si": "La section de contexte citée change."
+      },
+      {
+       "affirmation": "Les missions passent explicitement modèle et effort.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-11-18",
+       "caduc_si": "La section de contexte citée change."
+      }
+     ],
+     "raison": "Compléter les sections citées pour le scénario trading-sim et l’incertitude sur la persistance du modèle."
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "La CLI npm sous tmux est utilisée avec remote control ; D70 utilise le binaire distinct de l'app."
-    },
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Codex audite une architecture gelée et un registre de protocole dans un dépôt de simulation."
+     "pourquoi": "Codex CLI sous tmux sert aux audits du travail de Claude."
     },
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "mission-codex lance codex exec dans un worktree avec modèle et effort explicites puis commite les chemins déclarés."
+     "pourquoi": "Les missions passent explicitement modèle et effort."
     },
     "optimisation.pistes": {
      "sha1": "9630582fa9b3cce87e7aeaa271136c6e03c69ee9",
-     "pourquoi": "Le choix d'un modèle dans l'app semble changer le défaut global, mais sa portée exacte reste à confirmer."
+     "pourquoi": "Le changement de défaut global après un choix dans l’app reste à confirmer."
+    },
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "Le scénario porte sur le flux d’audit trading-sim."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Dans la CLI Codex, la commande slash `/model` permet de choisir le modèle actif et, lorsqu'il est disponible, l'effort de raisonnement.",
+     "affirmation": "/model choisit le modèle et l’effort ; /status confirme le modèle actif.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande `/model` change de rôle ou de syntaxe, ou disparaît de la liste des commandes slash intégrées."
+     "releve_le": "2026-11-18",
+     "caduc_si": "La documentation modifie les modèles, les commandes ou les conditions décrites."
     },
     {
-     "affirmation": "La documentation conseille d'utiliser `gpt-6-luna` ou `gpt-6.1-sol` s'ils apparaissent dans le sélecteur de `/model`.",
-     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#built-in-slash-commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne cite plus ces modèles ou en recommande d'autres."
-    },
-    {
-     "affirmation": "Depuis le 02/10/2026, l'essentiel de l'usage de Codex passe par la CLI sous tmux, avec quelques conversations nommées par rôle, dont l'audit et la console.",
+     "affirmation": "Codex CLI sous tmux sert aux audits du travail de Claude.",
      "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus d'usage de Codex en CLI sous tmux ni de conversation d'audit."
+     "releve_le": "2026-11-18",
+     "caduc_si": "La section de contexte citée change."
     },
     {
-     "affirmation": "Codex sert surtout à auditer ce que fait Claude, notamment sur trading-sim.",
-     "source": "contexte:config.codex.interface",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md attribue un autre rôle principal à Codex ou ne cite plus trading-sim."
-    },
-    {
-     "affirmation": "Le dépôt trading-sim contient 17 rapports d'audit Codex dans `docs/audits/`.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus le projet trading-sim ni ses audits Codex."
-    },
-    {
-     "affirmation": "Le modèle choisi dans une conversation de l'app Codex semble devenir le défaut global de `config.toml` ; la portée et le déclencheur de ce changement restent à confirmer au prochain changement de modèle.",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md confirme ou infirme le mécanisme, ou retire cette piste."
-    },
-    {
-     "affirmation": "`mission-codex` passe toujours le modèle et l'effort explicitement à `codex exec`, sans jamais les hériter de `~/.codex/config.toml`.",
+     "affirmation": "Les missions passent explicitement modèle et effort.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "`mission-codex` hérite désormais du modèle ou de l'effort de `config.toml`, ou CONTEXTE.md ne le décrit plus."
+     "releve_le": "2026-11-18",
+     "caduc_si": "La section de contexte citée change."
+    },
+    {
+     "affirmation": "La portée du choix de modèle dans l’app reste à confirmer.",
+     "source": "contexte:optimisation.pistes",
+     "releve_le": "2026-11-18",
+     "caduc_si": "Le contexte confirme ou infirme la portée du choix."
     }
    ]
   },
