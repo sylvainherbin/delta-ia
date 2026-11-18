@@ -2,7 +2,7 @@
   "semaine": "2026-W47",
   "du": "2026-11-16",
   "au": "2026-11-22",
-  "genere_le": "2026-11-17T03:11:19+00:00",
+  "genere_le": "2026-11-18T03:12:58+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -11,7 +11,8 @@
       "raison": null,
       "jours": [
         "2026-11-16",
-        "2026-11-17"
+        "2026-11-17",
+        "2026-11-18"
       ]
     },
     "actu": {
@@ -19,14 +20,16 @@
       "raison": null,
       "jours": [
         "2026-11-16",
-        "2026-11-17"
+        "2026-11-17",
+        "2026-11-18"
       ]
     },
     "openai": {
       "statut": "ok",
       "raison": null,
       "jours": [
-        "2026-11-16"
+        "2026-11-16",
+        "2026-11-17"
       ]
     },
     "kb-claude": {
@@ -58,6 +61,18 @@
   },
   "d71": [
     {
+      "perimetre": "actu",
+      "id": "https://simonwillison.net/2026/Nov/17/gpt62-astra-and-sol/",
+      "produit": "actu",
+      "titre": "GPT-6.2 Astra et GPT-6.2 Sol : Astra à 80 % du prix de GPT-6 Astra, Sol au même prix, cache d'Astra à 0,40 $ par million de jetons",
+      "version": null,
+      "impact": "fort",
+      "certitude": "rapporte",
+      "date_publication": "2026-11-17",
+      "jour": "2026-11-18",
+      "action": "Aucun geste de compte à faire ; revérifier le 25/11/2026 (aucune échéance publiée) que l'annonce officielle d'OpenAI confirme ces prix, avant de modifier un profil Codex ou le barème de `mission-codex`."
+    },
+    {
       "perimetre": "claude",
       "id": "kb-claude-code-fonctionnalites-page-prompt-caching",
       "produit": "claude-code",
@@ -82,7 +97,117 @@
       "action": "Contrôle les refus de permission des sessions en bypassPermissions après le passage à la 2.1.326, et essaie les corrections de Remote Control ; revérifier le 18/11/2026 (aucune échéance publiée)."
     }
   ],
-  "elements": [],
-  "base_ajoutees": [],
+  "elements": [
+    {
+      "perimetre": "openai",
+      "id": "x-2122377585523126615",
+      "produit": "chatgpt",
+      "titre": "Offre d’accès gratuit aux modèles pour des scientifiques : candidatures le 23 novembre",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": "2026-11-16",
+      "jour": "2026-11-17",
+      "action": "Revérifier le 23/11/2026, à l’ouverture publiée des candidatures : ouvrir le lien de candidature du post officiel et lire les critères scientifiques avant toute demande ; aucune date de clôture publiée dans le post. ChatGPT semaine : 27 % au relevé du 17/11 à 03:12 UTC ; aucune modification de cette jauge n’est établie par l’annonce."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-2.1.327",
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.327 : liste d'anomalies de configuration dans `/status`, contrôles de permission encore durcis, ListAgents paginé, `claude -p` débloqué",
+      "version": "2.1.327",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-11-17",
+      "jour": "2026-11-18",
+      "action": "Lance `/status` dans une session du chef delta-ia pour lire la liste d'anomalies de configuration, puis relis les refus de permission de la chaîne après la 2.1.327 (aucune échéance publiée)."
+    },
+    {
+      "perimetre": "openai",
+      "id": "kb-codex-parametres-codex-exec-trust",
+      "produit": "codex",
+      "titre": "Base Codex : six paramètres de confiance, passerelle et affichage documentés",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": null,
+      "jour": "2026-11-17",
+      "action": "Après mise à jour de la CLI autonome, essai dans le flux d’audit sous tmux : dans la table `[tui]` de `~/.codex/config.toml`, définir `collapse_turn_details = true`, puis relancer `codex` en plein écran ; résultat attendu : activité terminée repliée sous la consigne et réponse finale visible. Revenir à `collapse_turn_details = false` pour restaurer le détail ; ne pas ajouter --trust à la chaîne D70 qui emploie --ignore-user-config."
+    }
+  ],
+  "base_ajoutees": [
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-tui-collapse-turn-details",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "tui.collapse_turn_details",
+      "usage": "tui.collapse_turn_details",
+      "exemple": "[tui]\ncollapse_turn_details = true",
+      "exemple_origine": "compose",
+      "verdict": "tester",
+      "date_ajout": "2026-11-17"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-codex-exec-trust",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "codex exec --trust",
+      "usage": "codex exec --trust",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-17"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-codex-review-trust",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "codex review --trust",
+      "usage": "codex review --trust",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-17"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-features-gateway-setup-wizard",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "features.gateway_setup_wizard",
+      "usage": "features.gateway_setup_wizard",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-17"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-model-providers-id-gateway-oauth-credential-export",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "model_providers.<id>.gateway_oauth.credential_export",
+      "usage": "model_providers.<id>.gateway_oauth.credential_export",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-17"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-model-providers-id-gateway-oauth-device-authorization-url",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "model_providers.<id>.gateway_oauth.device_authorization_url",
+      "usage": "model_providers.<id>.gateway_oauth.device_authorization_url",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-17"
+    }
+  ],
   "base_verdicts": []
 }
