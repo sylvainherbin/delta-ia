@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -2036,7 +2036,7 @@
    "categorie": "commandes",
    "nom": "claude auto-mode defaults",
    "gabarit": "complet",
-   "description": "Affiche en JSON les règles intégrées du classificateur du mode auto ; `--label` filtre par préfixe de libellé. `claude auto-mode config` montre la configuration effective avec tes réglages.",
+   "description": "Affiche en JSON les règles du classificateur du mode auto intégrées à Claude Code. `--label <prefix>` ne garde que les règles dont le libellé commence par ce préfixe, sans tenir compte de la casse ; `claude auto-mode config` montre ces règles avec tes réglages appliqués. Exige Claude Code v2.1.208 ou plus récent.",
    "description_source": "Print the auto mode classifier rules built into Claude Code as JSON. Use claude auto-mode config to see those rules with your settings applied. --label <prefix> prints only the rules whose label starts with that prefix, matched case-insensitively. Requires Claude Code v2.1.208 or later — claude auto-mode defaults --label 'Git Destructive'",
    "usage": "claude auto-mode defaults",
    "usage_nature": "syntaxe",
@@ -2045,7 +2045,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Le classifieur du mode auto ne s'applique plus à tes sessions locales, passées en `bypassPermissions` le 06/10 (trading exceptée, sans mode décrit dans CONTEXTE) : lire ses règles n'aurait plus d'usage."
+    "pourquoi": "Tes sessions locales tournent en `bypassPermissions` depuis le 06/10 (trading exceptée, sans mode décrit dans CONTEXTE) : le classificateur du mode auto ne s'y appliquerait plus, et lire ses règles n'a pas d'usage identifié."
    },
    "sources": [
     {
@@ -2054,7 +2054,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -2079,9 +2079,13 @@
     {
      "date": "2026-11-18",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-18",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "65440212fc6dc3bf6123c3e801ff142d6bdff5f7",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
@@ -2091,7 +2095,8 @@
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Refus du classifieur du mode auto : friction levée le 06/10 par le régime bypassPermissions."
     }
-   }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-auto-mode-reset",
