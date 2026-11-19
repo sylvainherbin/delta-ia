@@ -425,8 +425,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Limit which URLs HTTP hooks can target. When you define this key, Claude Code runs an HTTP hook only if its URL matches one of the patterns and blocks the rest without running them; an empty array blocks every HTTP hook.",
-   "empreinte": "d842cfb2ff3437c43ea4ebbb8c6686b017cc8f8dbff12203f1e56258baa25f18",
+   "description_source": "Limit which URLs HTTP hooks can target. Set this key in managed settings to cover hooks your organization deploys, or in any settings file to cover other hooks. Claude Code runs a covered hook only if its URL matches a pattern in the list merged across settings files.",
+   "empreinte": "34d340a97edfe35fd5929f489f7b449e0510f32d997b0595acf1649c451ee307",
    "gabarit": "court",
    "groupe": "Hooks and automation",
    "id": "claude-code-parametres-allowedhttphookurls",
@@ -448,14 +448,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Limit which URLs HTTP hooks can target. When you define this key, Claude Code runs an HTTP hook only if its URL matches one of the patterns and blocks the rest without running them; an empty array blocks every HTTP hook."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "dac6e69e36afbbdb413488c9b5184bc65ca1c811dc23f21f22d09410fe214629",
-      "statut": "automatique",
-      "texte": "Limite les URL que les hooks HTTP peuvent cibler. Lorsque cette clé est définie, Claude Code n'exécute un hook HTTP que si son URL correspond à l'un des motifs, et bloque les autres sans les exécuter ; un tableau vide bloque tous les hooks HTTP."
+      "texte": "Limit which URLs HTTP hooks can target. Set this key in managed settings to cover hooks your organization deploys, or in any settings file to cover other hooks. Claude Code runs a covered hook only if its URL matches a pattern in the list merged across settings files."
      }
     }
    },
@@ -1627,8 +1620,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Federation rule ID for Workload Identity Federation. When you set it together with ANTHROPIC_ORGANIZATION_ID, Claude Code selects federation credentials, which rank above your /login credential. See authentication precedence",
-   "empreinte": "ca907a44711b0d4dbbf4fc23f8ede0f398b1bb84baa89d3f8c24089ea0bb55ab",
+   "description_source": "Federation rule ID for Workload Identity Federation. Set it together with ANTHROPIC_ORGANIZATION_ID. See authentication precedence",
+   "empreinte": "0cc0c4b2c19f8bdf6386dd215a2ed47390daaf4e0db1a30ba5486b57f5fc84c4",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-anthropic-federation-rule-id",
@@ -1650,14 +1643,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Federation rule ID for Workload Identity Federation. When you set it together with ANTHROPIC_ORGANIZATION_ID, Claude Code selects federation credentials, which rank above your /login credential. See authentication precedence"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "5136fe836a150a2bb88cdb4978a58232fcd6164790798578efb9e076878e43f2",
-      "statut": "automatique",
-      "texte": "ID de règle de fédération pour Workload Identity Federation. Lorsqu'il est défini avec ANTHROPIC_ORGANIZATION_ID, Claude Code sélectionne les identifiants de fédération, qui sont prioritaires sur les identifiants /login. Voir authentication precedence"
+      "texte": "Federation rule ID for Workload Identity Federation. Set it together with ANTHROPIC_ORGANIZATION_ID. See authentication precedence"
      }
     }
    },
@@ -2673,8 +2659,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier ships with built-in allow and deny rules. Include the literal string \"$defaults\" in an array to keep those built-in rules at that position and add yours around them; leave it out to replace them with yours.",
-   "empreinte": "f3b00b53fde65f38f30229cf583f8803bc74855e4d89b570ec53a166e20db4de",
+   "description_source": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier has built-in allow and deny rules. Include the literal string \"$defaults\" in every array you set, so your rules add to the built-in ones. If you leave it out, your rules can replace them.",
+   "empreinte": "3601430ab03e447a794698729faa3fe9707843922108cef754cf4193caa57c35",
    "gabarit": "court",
    "groupe": "Permission settings",
    "id": "claude-code-parametres-automode",
@@ -2696,14 +2682,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier ships with built-in allow and deny rules. Include the literal string \"$defaults\" in an array to keep those built-in rules at that position and add yours around them; leave it out to replace them with yours."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0c7d28632856d2aece7628768c0941bfbb6146f13ce70c56098b0a4ec2b2b2f2",
-      "statut": "automatique",
-      "texte": "Ajouter des règles personnalisées à ce que le classificateur du mode automatique bloque et autorise. Utiliser ce paramètre pour indiquer au classificateur quels dépôts, buckets et domaines l'organisation considère comme fiables, afin qu'il cesse de bloquer les opérations internes courantes. Le classificateur est livré avec des règles d'autorisation et de refus intégrées. Inclure la chaîne littérale \"$defaults\" dans un tableau pour conserver ces règles intégrées à cette position et ajouter les règles personnalisées autour ; l'omettre pour les remplacer par des règles personnalisées"
+      "texte": "Add your own rules to what the auto mode classifier blocks and allows. Use it to tell the classifier which repos, buckets, and domains your organization trusts, so it stops blocking routine internal operations. The classifier has built-in allow and deny rules. Include the literal string \"$defaults\" in every array you set, so your rules add to the built-in ones. If you leave it out, your rules can replace them."
      }
     }
    },
@@ -3017,8 +2996,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Minimal mode: skip auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\"",
-   "empreinte": "31852b653a057e47ca53319d1075221013e48a31b50aa839ef7015d36ce140a0",
+   "description_source": "Minimal mode: skip auto-discovery of your hooks and of skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\"",
+   "empreinte": "18dedabfed1af310c98fd31e243340109aa6d4397a0e28b0dfe92dc0ef087155",
    "gabarit": "court",
    "groupe": "CLI flags",
    "id": "claude-code-parametres-bare",
@@ -3040,14 +3019,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Minimal mode: skip auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\""
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "642366655f9959c6f42ffe983dae2f27d4c5109e80eb1c44986dbb4a78c0cf36",
-      "statut": "automatique",
-      "texte": "Mode minimal : ignorer la détection automatique des hooks, skills, commandes personnalisées, subagents, plugins installés, serveurs MCP, mémoire automatique et CLAUDE.md afin que les appels scriptés démarrent plus vite. Les skills dans un répertoire passé avec --add-dir se chargent toujours. Claude a accès aux outils Bash, de lecture et de modification de fichiers. Définit CLAUDE_CODE_SIMPLE. Voir le mode bare — claude --bare -p \"query\""
+      "texte": "Minimal mode: skip auto-discovery of your hooks and of skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Skills in a directory you pass with --add-dir still load. Claude has access to Bash, file read, and file edit tools. Sets CLAUDE_CODE_SIMPLE. See bare mode — claude --bare -p \"query\""
      }
     }
    },
@@ -4538,8 +4510,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
-   "empreinte": "16da0bec787b796c6f2d233fe1c546088ee7861b3106f02f9779a9f064718e3b",
+   "description_source": "Set the auto-compact window, which is how full the context gets before compaction, to a token count of 100000 or more. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
+   "empreinte": "e181fe99e7474c7a518181382c62c45e73ea37016dbc136a63c5b29d24f8d4fd",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-auto-compact-window",
@@ -4561,14 +4533,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "27cc7eacc4b563e61f70cc314b5fbcb9f80b6082b13028388a9d4043a3bbfdc2",
-      "statut": "automatique",
-      "texte": "Définir la fenêtre de compactage automatique, c'est-à-dire le niveau de remplissage du contexte avant le compactage, entre 100000 et 1000000 de jetons. Les valeurs suffixées, comme 200k, nécessitent la v2.1.304 ou une version ultérieure. Pour la priorité par rapport aux autres moyens de définir la fenêtre et l'effet sur used_percentage de la barre d'état, voir Définir la fenêtre de compactage automatique"
+      "texte": "Set the auto-compact window, which is how full the context gets before compaction, to a token count of 100000 or more. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window"
      }
     }
    },
@@ -6920,8 +6885,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 so that claude ultrareview doesn't exit with Error: Workspace not trusted in a folder you haven't trusted when it can't ask you to trust it, such as in CI. Set it in the environment that launches Claude Code, not a settings env block, and only where every such run starts in a folder you trust. Runs that can ask still ask. Requires Claude Code v2.1.309 or later",
-   "empreinte": "ad31b4d281a455fdfdeb168223dcde2575191e0d3abe73a593e6b017c97d2f64",
+   "description_source": "Set to 1 so claude ultrareview doesn't exit with Error: Workspace not trusted when run without a terminal or with CI=true. claude ultrareview still asks when it can. From v2.1.314, the variable also skips the trust check in /ultrareview and /code-review ultra. Set it in the launch environment, not a settings env block, and only where every review starts in a folder you trust. Requires Claude Code v2.1.309 or later",
+   "empreinte": "e35e6ba4336f00df04969410fa0a5d443927777226d96cee268c1ab01da42262",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-disable-ultrareview-trust-check",
@@ -6943,14 +6908,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 so that claude ultrareview doesn't exit with Error: Workspace not trusted in a folder you haven't trusted when it can't ask you to trust it, such as in CI. Set it in the environment that launches Claude Code, not a settings env block, and only where every such run starts in a folder you trust. Runs that can ask still ask. Requires Claude Code v2.1.309 or later"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0424bc5bf736e38492040050e40a7d0357dd37d78bf3ed7acdb8472d7efeb530",
-      "statut": "automatique",
-      "texte": "Définir sur 1 pour que claude ultrareview ne quitte pas avec Error: Workspace not trusted dans un dossier non approuvé lorsqu'il ne peut pas demander la confiance, par exemple en CI. À définir dans l'environnement qui lance Claude Code, et non dans un bloc env des paramètres, et uniquement lorsque chaque exécution de ce type démarre dans un dossier de confiance. Les exécutions capables de demander continuent de le faire. Nécessite Claude Code v2.1.309 ou ultérieure"
+      "texte": "Set to 1 so claude ultrareview doesn't exit with Error: Workspace not trusted when run without a terminal or with CI=true. claude ultrareview still asks when it can. From v2.1.314, the variable also skips the trust check in /ultrareview and /code-review ultra. Set it in the launch environment, not a settings env block, and only where every review starts in a folder you trust. Requires Claude Code v2.1.309 or later"
      }
     }
    },
@@ -10854,8 +10812,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
-   "empreinte": "51d77188329d0634bba547c277ab48e900b7977e565fbe8a704db141665ee61f",
+   "description_source": "Set to 1 to run with a minimal system prompt and the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. OAuth tokens and keychain credentials aren't read, so for the Anthropic API, set ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare",
+   "empreinte": "aba196cb151ed4ae68c55c2bb8a86c7b732ddba4b97f2cf5cf04dddaec2204ab",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-simple",
@@ -10877,14 +10835,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "4546d582866931089ca5c1c0b6aae96b22b9124e552c9365ed162ab6615ce756",
-      "statut": "automatique",
-      "texte": "Définir à 1 pour exécuter avec une invite système minimale et uniquement les outils Bash, de lecture de fichiers et de modification de fichiers. Les outils MCP issus de --mcp-config restent disponibles. Désactive la découverte automatique des hooks, skills, commandes personnalisées, sous-agents, plugins installés, serveurs MCP, mémoire automatique et CLAUDE.md. Les skills situés dans un répertoire transmis avec --add-dir se chargent toujours. Les jetons OAuth et les identifiants du trousseau ne sont pas lus ; l'authentification Anthropic doit donc provenir de ANTHROPIC_API_KEY ou d'un apiKeyHelper dans --settings. Équivalent à l'option --bare"
+      "texte": "Set to 1 to run with a minimal system prompt and the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. OAuth tokens and keychain credentials aren't read, so for the Anthropic API, set ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare"
      }
     }
    },
@@ -11201,6 +11152,38 @@
     }
    },
    "usage": "CLAUDE_CODE_STOP_HOOK_BLOCK_CAP",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Set to 1 to flag more of the -c scripts that Claude Code can't check, including ones that name neither rm nor rmdir. Set it in the environment that launches Claude Code, not a settings env block. Has no effect when CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT is 1. Requires Claude Code v2.1.299 or later",
+   "empreinte": "9d6c4f92b1a79ab857805af790c69a4ee44f57fc8c8331aa96d36ea72ff83081",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-strict-inline-shell-rm-prompt",
+   "identite": "kb:claude:claude-code-parametres-claude-code-strict-inline-shell-rm-prompt",
+   "nom": "CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set to 1 to flag more of the -c scripts that Claude Code can't check, including ones that name neither rm nor rmdir. Set it in the environment that launches Claude Code, not a settings env block. Has no effect when CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT is 1. Requires Claude Code v2.1.299 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT",
    "usage_nature": "syntaxe"
   },
   {
@@ -18205,8 +18188,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "An HTTP hook can put the value of an environment variable into a request header, for example an Authorization: Bearer $HOOK_TOKEN header, but only for variables the hook lists in its own allowedEnvVars. This key sets an outer limit on that list for every HTTP hook: a hook can use a variable only if both its own allowedEnvVars and this key name it. Use it to stop a hook from reading a secret it shouldn't, even when the hook's definition asks for it.",
-   "empreinte": "981ec12f79dbf4aa11638156dc085293ce2d7f96a7bfa9980d38b67d1f2c6ca0",
+   "description_source": "An HTTP hook can put the value of an environment variable into a request header, for example an Authorization: Bearer $HOOK_TOKEN header, but only for variables the hook lists in its own allowedEnvVars.",
+   "empreinte": "d81db5014c269bc070e61ab1185dbc4ae4f347d68bdd31423d5a97e14a1d1b63",
    "gabarit": "court",
    "groupe": "Hooks and automation",
    "id": "claude-code-parametres-httphookallowedenvvars",
@@ -18228,14 +18211,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "An HTTP hook can put the value of an environment variable into a request header, for example an Authorization: Bearer $HOOK_TOKEN header, but only for variables the hook lists in its own allowedEnvVars. This key sets an outer limit on that list for every HTTP hook: a hook can use a variable only if both its own allowedEnvVars and this key name it. Use it to stop a hook from reading a secret it shouldn't, even when the hook's definition asks for it."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "b62ea920ea3d3a6596aa1fec1f27fb8cc502c6899509d71c0c6d8f3bfbf022b3",
-      "statut": "automatique",
-      "texte": "Un hook HTTP peut placer la valeur d'une variable d'environnement dans un en-tête de requête, par exemple un en-tête Authorization: Bearer $HOOK_TOKEN, mais uniquement pour les variables que le hook liste dans son propre allowedEnvVars. Cette clé définit une limite externe sur cette liste pour tous les hooks HTTP : un hook ne peut utiliser une variable que si son propre allowedEnvVars et cette clé la nomment tous deux. Permet d'empêcher un hook de lire un secret qu'il ne devrait pas lire, même lorsque la définition du hook le demande."
+      "texte": "An HTTP hook can put the value of an environment variable into a request header, for example an Authorization: Bearer $HOOK_TOKEN header, but only for variables the hook lists in its own allowedEnvVars."
      }
     }
    },
@@ -26172,9 +26148,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-17",
+ "maj_le": "2026-11-19",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 683
+ "total": 684
 }
