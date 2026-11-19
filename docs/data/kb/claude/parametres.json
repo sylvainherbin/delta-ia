@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-18",
+ "maj_le": "2026-11-19",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 682,
- "commentees": 604,
+ "total": 683,
+ "commentees": 602,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -2264,7 +2264,7 @@
    "nom": "ANTHROPIC_FEDERATION_RULE_ID",
    "gabarit": "court",
    "description": "Variable qui donne l'identifiant de règle de fédération d'identité de charge de travail, avec `ANTHROPIC_ORGANIZATION_ID`.",
-   "description_source": "Federation rule ID for Workload Identity Federation. When you set it together with ANTHROPIC_ORGANIZATION_ID, Claude Code selects federation credentials, which rank above your /login credential. See authentication precedence",
+   "description_source": "Federation rule ID for Workload Identity Federation. Set it together with ANTHROPIC_ORGANIZATION_ID. See authentication precedence",
    "usage": "ANTHROPIC_FEDERATION_RULE_ID",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -2281,11 +2281,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2294,6 +2294,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -6445,7 +6449,7 @@
    "nom": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "gabarit": "court",
    "description": "Variable qui fixe la fenêtre d'auto-compaction, le remplissage du contexte qui déclenche la compaction, de 100000 à 1000000 jetons ; les valeurs à suffixe comme `200k` exigent la v2.1.304 ou plus.",
-   "description_source": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
+   "description_source": "Set the auto-compact window, which is how full the context gets before compaction, to a token count of 100000 or more. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
    "usage": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6462,11 +6466,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-09",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6548,6 +6552,43 @@
     {
      "date": "2026-11-09",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`CLAUDE_CODE_AUTO_COMPACT_WINDOW` fixe la fenêtre d'auto-compaction de 100000 à 1000000 jetons ; les valeurs à suffixe comme 200k exigent la v2.1.304 ou plus.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-11-09",
+       "caduc_si": "la variable disparaît de la documentation ou sa plage ou sa syntaxe change"
+      },
+      {
+       "affirmation": "Chaque session durable est un service systemd `claude-session@<nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
+       "source": "contexte:env.multi-sessions",
+       "releve_le": "2026-11-09",
+       "caduc_si": "les sessions ne sont plus lancées par ce service modèle"
+      },
+      {
+       "affirmation": "`/compact` figure parmi les commandes tapées dans le relevé du 25/09.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-11-09",
+       "caduc_si": "un nouveau relevé ne montre plus /compact parmi les commandes tapées"
+      },
+      {
+       "affirmation": "Les limites d'usage hebdomadaires sont une friction récurrente de Sylvain.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-11-09",
+       "caduc_si": "CONTEXTE.md ne cite plus les limites hebdomadaires parmi les frictions"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -6564,33 +6605,7 @@
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
      "pourquoi": "Limites d'usage hebdomadaires : friction récurrente."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "`CLAUDE_CODE_AUTO_COMPACT_WINDOW` fixe la fenêtre d'auto-compaction de 100000 à 1000000 jetons ; les valeurs à suffixe comme 200k exigent la v2.1.304 ou plus.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-11-09",
-     "caduc_si": "la variable disparaît de la documentation ou sa plage ou sa syntaxe change"
-    },
-    {
-     "affirmation": "Chaque session durable est un service systemd `claude-session@<nom>` avec, selon le rôle, un modèle, un effort et des réglages de lancement propres.",
-     "source": "contexte:env.multi-sessions",
-     "releve_le": "2026-11-09",
-     "caduc_si": "les sessions ne sont plus lancées par ce service modèle"
-    },
-    {
-     "affirmation": "`/compact` figure parmi les commandes tapées dans le relevé du 25/09.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-11-09",
-     "caduc_si": "un nouveau relevé ne montre plus /compact parmi les commandes tapées"
-    },
-    {
-     "affirmation": "Les limites d'usage hebdomadaires sont une friction récurrente de Sylvain.",
-     "source": "contexte:methode.travail",
-     "releve_le": "2026-11-09",
-     "caduc_si": "CONTEXTE.md ne cite plus les limites hebdomadaires parmi les frictions"
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-parametres-claude-code-auto-connect-ide",
@@ -9782,7 +9797,7 @@
    "nom": "CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK",
    "gabarit": "court",
    "description": "Variable à 1 pour que `claude ultrareview` n'échoue pas avec « Workspace not trusted » dans un dossier non approuvé quand il ne peut pas poser la question (CI). À définir dans l'environnement de lancement, pas dans le bloc `env` de settings. Demande Claude Code 2.1.309 ou plus.",
-   "description_source": "Set to 1 so that claude ultrareview doesn't exit with Error: Workspace not trusted in a folder you haven't trusted when it can't ask you to trust it, such as in CI. Set it in the environment that launches Claude Code, not a settings env block, and only where every such run starts in a folder you trust. Runs that can ask still ask. Requires Claude Code v2.1.309 or later",
+   "description_source": "Set to 1 so claude ultrareview doesn't exit with Error: Workspace not trusted when run without a terminal or with CI=true. claude ultrareview still asks when it can. From v2.1.314, the variable also skips the trust check in /ultrareview and /code-review ultra. Set it in the launch environment, not a settings env block, and only where every review starts in a folder you trust. Requires Claude Code v2.1.309 or later",
    "usage": "CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9799,7 +9814,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "1766ff49786dc233a8ed73407a1a1b062cb5372c",
    "contexte_sections": {
     "config.claude-code.skills": {
@@ -9810,7 +9825,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-23",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-10-23",
@@ -9823,6 +9838,10 @@
     {
      "date": "2026-10-23",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -15222,6 +15241,57 @@
      "pourquoi": "Un seul hook (PermissionDenied) et un seul plugin installé (frontend-design, en essai)."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-claude-code-strict-inline-shell-rm-prompt",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT",
+   "gabarit": "court",
+   "description": "Variable d'environnement : à 1, Claude Code signale davantage de scripts `-c` qu'il ne sait pas vérifier, même sans `rm` ni `rmdir` ; à régler dans l'environnement de lancement, pas dans le bloc `env` des réglages (2.1.299 ou plus, sans effet si `CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT` vaut 1).",
+   "description_source": "Set to 1 to flag more of the -c scripts that Claude Code can't check, including ones that name neither rm nor rmdir. Set it in the environment that launches Claude Code, not a settings env block. Has no effect when CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT is 1. Requires Claude Code v2.1.299 or later",
+   "usage": "CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Elle ajoute des demandes de confirmation, or tes sessions locales tournent en bypassPermissions (sauf trading) : rien à gagner."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions sauf trading : pas de demande de confirmation à durcir."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-19",
+   "historique": [
+    {
+     "date": "2026-11-19",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-subagent-model",

@@ -1,0 +1,221 @@
+{
+  "date": "2026-11-19",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-19T03:04:36+00:00",
+  "synthese": "Compte et quotas : aucune limite, offre, remise à zéro ni tarif nouveau dans les sources du jour. Alerte D71 : le quota hebdomadaire Claude est à 80 % (`rapports/usage.json`, relevé du 19/11 à 03 h 01 UTC, remise à zéro le 22/11 à 16 h UTC), au seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Semaine Fable à 0 % (remise à zéro le 22/11 à 16 h UTC), semaine ChatGPT à 63 % (remise à zéro le 22/11 à 17 h 10 UTC), session 5 h non mesurée. Claude Code 2.1.328 (installée, à jour) ajoute un avertissement : un message venu d'une session qui saute les demandes de permission peut être retenu puis abandonné par une session cloud ; elle corrige aussi la messagerie entre sessions cloud, Remote Control et locales, et recentre `/code-review` sur les bugs. Le retrait de Claude Sonnet 4.5 (30/11/2026) reçoit des précisions sans effet sur ta configuration. L'introduction en bourse d'Anthropic est écartée (information financière). Fiche de la base citée : `claude auth login`, repérée D71 par mots-clés, dont seule la description d'origine a changé.",
+  "elements": [
+    {
+      "id": "claude-code-2.1.328",
+      "ids_bruts": [
+        "claude-code-2.1.328"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.328 : avertissement sur les messages retenus par une session cloud, messagerie entre sessions corrigée, `/code-review` recentré",
+      "version": "2.1.328",
+      "date_publication": "2026-11-19",
+      "type": "nouveaute",
+      "resume": "Version de 144 puces (14 ajouts, 39 modifications, 91 correctifs). Messagerie entre sessions : un avertissement signale qu'un message venu d'une session qui saute les demandes de permission peut être retenu puis abandonné par une session cloud ; Claude apprend quand une session cloud peut répondre et comment obtenir autrement le résultat ; les sessions cloud et Remote Control à peine démarrées, ou dont le titre contient un @, redeviennent joignables ; `claude -p` dit sur stderr quand un message d'une autre session est retenu ou abandonné et comment l'autoriser ; `/list-agents` n'affiche plus sa liste qu'à toi. Autres changements : `/code-review` ne rapporte plus que les bugs et les écarts à CLAUDE.md, marque chaque point Important, Pre-existing ou Nit et termine par un correctif suggéré ; reprise des grosses sessions plus rapide et moins gourmande en mémoire ; correctifs de Remote Control (message de coupure répété, demande de permission perdue au redémarrage d'une session distante). Autres ajouts : avis de `/status` et de `claude doctor` quand un exportateur OpenTelemetry n'a pas de point de terminaison, `CLAUDE_CODE_DISABLE_DEFERRED_TOOL_RESUME` pour empêcher `claude -p --resume` et `--continue` d'exécuter un appel différé par un hook, `maxEffortLevel` contrôlé au démarrage de la passerelle Claude apps, `claude self-hosted-runner orchestrator --hook-label` et `claude --environment --metadata`. Le reste (mode auto sur Bedrock, Google Cloud, Foundry, runner auto-hébergé, Code Mode, Windows, VS Code) vise d'autres configurations.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21328",
+          "libelle": "Claude Code 2.1.328 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tes sessions locales tournent en bypassPermissions (sauf trading), se parlent par `SendMessage` et `ListAgents` et sont pilotées depuis l'iPhone par Remote Control ; OPÉRER confie aussi des missions à Claude cloud, et l'échange direct entre sessions cloud ou Cowork et sessions Claude Code est une priorité que tu as déclarée. La 2.1.328, installée d'après `docs/data/versions.json`, rend explicite un cas défavorable : le message d'une session qui saute les demandes de permission peut être retenu puis abandonné par une session cloud. Elle corrige aussi des sessions cloud ou Remote Control introuvables par la messagerie entre sessions, et indique à Claude quand une session cloud peut répondre. Ce n'est pas le canal retour vers Dispatch que tu attends : le changelog ne donne pas le réglage qui autorise la remise ; la fiche `claude-code-parametres-crosssessioninbound` (verdict `tester`) décrit `crossSessionInbound` (`accept`, `hold`, `refuse`) côté session qui reçoit. `/list-agents`, que ta fiche classe `utiliser`, n'affiche plus sa liste qu'à toi. CONTEXTE.md ne cite pas `/code-review` ; sa fiche est `tester` pour trading-sim avant l'audit Codex, et la 2.1.328 le recentre sur les bugs avec un classement Important, Pre-existing ou Nit, ce qui sert l'audit croisé Claude ↔ Codex. Tes services relancent chaque session par `claude --resume <id>` : la reprise des grosses sessions est annoncée plus rapide et moins gourmande en mémoire. Parmi les autres ajouts, l'avis OpenTelemetry de `/status` et de `claude doctor` ne compte que si un exportateur est configuré (CONTEXTE.md n'en décrit aucun), `CLAUDE_CODE_DISABLE_DEFERRED_TOOL_RESUME` ne concerne que des appels différés par un hook (ton seul hook est `PermissionDenied`), et `maxEffortLevel`, `claude self-hosted-runner orchestrator` et `claude --environment` relèvent de la passerelle et du runner auto-hébergé, absents de ta configuration. Mode auto sur Bedrock, Code Mode, Windows et VS Code ne figurent pas non plus dans la configuration décrite par CONTEXTE.md.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Depuis la session du chef delta-ia, envoie un message avec `SendMessage` à une session cloud ouverte et lis l'avis de la 2.1.328 ; essaie aussi `/code-review` sans `--fix` sur trading-sim avant le prochain audit Codex.",
+        "etapes": [
+          "Depuis la session du chef delta-ia (bypassPermissions, Remote Control actif), envoie un message avec `SendMessage` à une session cloud ouverte (Dispatch ou exécutant `claude-cloud`) ; résultat attendu : la session répond, ou l'avis de la 2.1.328 dit que le message est retenu ou abandonné, et Claude indique que Remote Control est coupé si la session n'est pas listée.",
+          "Dans la même session, lance `/list-agents` (fiche `claude-code-commandes-list-agents`, usage `/list-agents`) ; résultat attendu : la liste n'apparaît que pour toi et contient les sessions cloud ou Remote Control démarrées après la 2.1.328 ; note celles qui manquent pour le chef Delta.",
+          "Avant tout réglage, lis la fiche `claude-code-parametres-crosssessioninbound` (usage `{\"crossSessionInbound\": \"hold\"}`, valeurs `accept`, `hold`, `refuse`) et compare-la à l'avis reçu à l'étape 1 ; résultat attendu : tu sais quelle valeur de `crossSessionInbound` la session cloud destinataire applique, sans rien modifier dans `.claude/settings.json`.",
+          "Depuis la session qui travaille sur `~/projets/trading-sim`, sur accord de Work, lance `/code-review high ~/projets/trading-sim` (sans `--fix`) avant le prochain audit Codex ; résultat attendu : une liste de points marqués Important, Pre-existing ou Nit, chacun avec un correctif suggéré, sans aucune modification de l'arbre de travail."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-list-agents",
+        "claude-code-parametres-crosssessioninbound",
+        "claude-code-skills-code-review",
+        "claude-code-parametres-resume"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions sauf trading : cas visé par l'avertissement sur les messages retenus."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions durables sous tmux, `SendMessage`, `ListAgents`, Remote Control, reprise par `--resume`."
+        },
+        "methode.operer": {
+          "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+          "pourquoi": "OPÉRER répartit les missions entre Claude local, Claude cloud (`claude-cloud`) et Codex."
+        },
+        "usage.hors-machine": {
+          "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+          "pourquoi": "Priorité déclarée : échanges directs entre sessions Cowork ou cloud et sessions Claude Code."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Audit Codex des travaux de Claude sur trading-sim : `/code-review` à essayer avant lui."
+        }
+      }
+    },
+    {
+      "id": "anthropic-deprecations-2026-09-30-claude-sonnet-4-5-model",
+      "ids_bruts": [
+        "anthropic-deprecations-2026-09-30-claude-sonnet-4-5-model"
+      ],
+      "produit": "claude",
+      "titre": "Retrait de Claude Sonnet 4.5 le 30/11/2026 : précisions sur Claude Code (révision de l'annonce)",
+      "version": null,
+      "date_publication": "2026-09-30",
+      "type": "depreciation",
+      "resume": "La page des dépréciations ajoute que le retrait de `claude-sonnet-4-5-20250929` (30/11/2026, remplacement recommandé `claude-sonnet-5-5`) inclut l'identifiant sans date `claude-sonnet-4-5`. Elle précise qu'après le retrait Claude Code sur l'API Claude affiche une erreur commençant par « There's an issue with the selected model », et que, avec une chaîne de modèles de repli, il passe au modèle suivant puis retente Sonnet 4.5 au message d'après. La date de retrait et le remplacement recommandé ne changent pas.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+          "libelle": "Dépréciations des modèles — platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "revision": true
+    },
+    {
+      "id": "claude-aide-index-18467110",
+      "ids_bruts": [
+        "claude-aide-index-18467110"
+      ],
+      "produit": "claude",
+      "titre": "Nouvel article d'aide : proposer la facturation liée dans sa plateforme (bêta)",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Article pour les éditeurs de plateformes : un client lie son organisation Claude Console à l'application par OAuth, Anthropic le facture directement et l'application ne détient jamais sa clé API. La bêta couvre `/v1/messages` et `/v1/chat/completions` ; l'API Message Batches et Claude Managed Agents n'y sont pas encore. Les forfaits Pro, Max, Ultra, Team et Enterprise ne peuvent pas être liés ; une application en test accepte au plus 10 utilisateurs, chacun limité à 50 $ par mois.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/18467110-offer-linked-billing-in-your-platform",
+          "libelle": "Offer linked billing in your platform — support.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-commandes-claude-auth-login",
+      "ids_bruts": [
+        "kb-claude-code-commandes-claude-auth-login"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : fiche `claude auth login` modifiée (repérée D71 par mots-clés)",
+      "version": null,
+      "date_publication": "2026-11-19",
+      "type": "nouveaute",
+      "resume": "Seule la description d'origine de `claude auth login` a changé : si des réglages gérés exigent une connexion par passerelle Claude apps, la commande se lance sans option dans un terminal, sur Claude Code 2.1.316 ou plus. L'usage (`--email`, `--sso`, `--console`) est inchangé ; `--console` reste la connexion qui facture l'API à l'usage au lieu de l'abonnement. Aucune limite, remise à zéro ni tarif ne change : la fiche est repérée D71 par la seule mention de la facturation.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/cli-reference",
+          "libelle": "Claude Code — cli-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-claude-auth-login"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-strict-inline-shell-rm-prompt",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-strict-inline-shell-rm-prompt"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable ajoutée, `CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT`",
+      "version": null,
+      "date_publication": "2026-11-19",
+      "type": "nouveaute",
+      "resume": "Fiche de variable d'environnement ajoutée : `CLAUDE_CODE_STRICT_INLINE_SHELL_RM_PROMPT=1` fait signaler davantage de scripts `-c` que Claude Code ne sait pas vérifier, y compris ceux qui ne nomment ni `rm` ni `rmdir`. Elle se règle dans l'environnement qui lance Claude Code, pas dans le bloc `env` des réglages, reste sans effet si `CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT` vaut 1 et demande Claude Code 2.1.299 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Claude Code — env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-strict-inline-shell-rm-prompt"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2123196808675405860",
+      "raison": "post X sans rapport : prix de l'introduction en bourse d'Anthropic, information financière sans lien avec les modèles, les outils ou leurs conditions d'usage (D24)"
+    },
+    {
+      "id": "https://www.anthropic.com/news/anthropic-prices-initial-public-offering",
+      "raison": "introduction en bourse d'Anthropic (prix, nombre d'actions, cotation Nasdaq) : information financière sans lien avec les modèles, les outils ou leurs conditions d'usage (D24)"
+    },
+    {"id": "claude-platform-notes-2026-04-23", "raison": "révision de forme d'une note ancienne (« is now in beta » devient « is now available in beta »), sans changement de sens"},
+    {"id": "claude-platform-notes-2026-04-16", "raison": "révision de forme d'une note ancienne : liens et formulations réécrits, mention du nouveau tokenizer ajoutée, aucun fait nouveau"},
+    {"id": "claude-platform-notes-2026-04-07", "raison": "révision de forme d'une note ancienne : région us-east-1 déplacée dans la phrase, nom `bedrock-mantle` ajouté au lien, sans changement de sens"},
+    {"id": "claude-platform-notes-2026-02-19", "raison": "révision de forme d'une note ancienne : mention « (preview) » retirée pour Microsoft Foundry, sans effet sur l'usage décrit dans CONTEXTE.md"},
+    {"id": "claude-platform-notes-2026-02-17", "raison": "révision de forme d'une note ancienne : « (beta) » reformulé, intitulé de lien modifié"},
+    {"id": "claude-platform-notes-2026-02-07", "raison": "révision de forme d'une note ancienne : « Claude » ajouté devant Opus 4.6, libellé du lien de la liste d'attente"},
+    {"id": "claude-platform-notes-2026-02-05", "raison": "révision de forme d'une note ancienne : phrase sur la réflexion adaptative reformulée, lien remplacé"},
+    {"id": "claude-platform-notes-2025-11-24", "raison": "révision de forme d'une note ancienne : « on-demand » devient « on demand »"},
+    {"id": "claude-platform-notes-2025-10-16", "raison": "révision de forme d'une note ancienne : ponctuation finale et orthographe « Prebuilt »"},
+    {"id": "claude-platform-notes-2025-09-29", "raison": "révision de forme d'une note ancienne : intitulés de liens et « Claude API pricing is unaffected » reformulés, sans changement de sens"},
+    {"id": "claude-platform-notes-2025-09-16", "raison": "révision de forme d'une note ancienne : « Anthropic Console » et « Claude Console » reformulés, dates inchangées"},
+    {"id": "claude-platform-notes-2025-09-10", "raison": "révision de forme d'une note ancienne : « web pages » devient « webpages »"},
+    {"id": "claude-platform-notes-2025-09-08", "raison": "révision de forme d'une note ancienne : phrase sur le SDK C# réordonnée"},
+    {"id": "claude-platform-notes-2025-09-02", "raison": "révision de forme d'une note ancienne : casse de « code execution tool »"},
+    {"id": "claude-platform-notes-2025-08-27", "raison": "révision de forme d'une note ancienne : phrase sur le SDK PHP réordonnée"},
+    {"id": "claude-platform-notes-2025-08-18", "raison": "révision de forme d'une note ancienne : « Usage & Cost API » devient « Usage and Cost API »"},
+    {"id": "claude-platform-notes-2025-08-05", "raison": "révision de forme d'une note ancienne : règle sur temperature et top_p d'Opus 4.1 reformulée, sans changement de sens"},
+    {"id": "claude-platform-notes-2025-06-11", "raison": "révision de forme d'une note ancienne : « buffering / JSON validation » devient « buffering or JSON validation »"},
+    {"id": "claude-platform-notes-2025-05-22", "raison": "révision de forme d'une note ancienne : « execute » devient « run », casse de « code execution tool »"},
+    {"id": "claude-platform-notes-2025-05-01", "raison": "révision de forme d'une note ancienne : phrases sur le contrôle du cache passées à la forme active, sans changement de sens"},
+    {"id": "claude-platform-notes-2025-04-09", "raison": "révision de forme d'une note ancienne : phrase sur le SDK Ruby réordonnée"},
+    {"id": "claude-platform-notes-2025-02-27", "raison": "révision de forme d'une note ancienne : « just » devient « only »"},
+    {"id": "claude-platform-notes-2025-02-24", "raison": "révision de forme d'une note ancienne : formulations des outils bash et text editor reprises, en-tête bêta nommé « beta header »"},
+    {"id": "claude-platform-notes-2025-01-23", "raison": "révision de forme d'une note ancienne : article « the » ajouté devant « citations capability »"},
+    {"id": "claude-platform-notes-2024-12-17", "raison": "révision de forme d'une note ancienne : « 50% » devient « 50 percent », lien des alias de modèle changé, pourcentages inchangés"},
+    {"id": "claude-platform-notes-2024-10-08", "raison": "révision de forme d'une note ancienne : « 50% » devient « 50 percent »"},
+    {"id": "claude-platform-notes-2024-08-19", "raison": "révision de forme d'une note ancienne : phrase sur les sorties de 8 192 jetons reformulée"},
+    {"id": "claude-platform-notes-2024-08-14", "raison": "révision de forme d'une note ancienne : « re-use » devient « reuse », pourcentages écrits en toutes lettres"}
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

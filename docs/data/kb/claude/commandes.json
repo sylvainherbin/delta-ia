@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-18",
+ "maj_le": "2026-11-19",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 135,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1868,7 +1868,7 @@
    "nom": "claude auth login",
    "gabarit": "complet",
    "description": "Connecte Claude Code à ton compte Anthropic. `--email` préremplit l'adresse, `--sso` force le SSO, `--console` facture à l'usage via Anthropic Console au lieu de l'abonnement.",
-   "description_source": "Sign in to your Anthropic account. Use --email to pre-fill your email address, --sso to force SSO authentication, and --console to sign in with Anthropic Console for API usage billing instead of a Claude subscription — claude auth login --console",
+   "description_source": "Sign in to your Anthropic account. Use --email to pre-fill your email address, --sso to force SSO authentication, and --console to sign in with Anthropic Console for API usage billing instead of a Claude subscription. If managed settings require a Claude apps gateway sign-in, run the command with no flags in a terminal, on v2.1.316 or later. If the command points you to /login, run that inside claude — claude auth login --console",
    "usage": "claude auth login",
    "usage_nature": "syntaxe",
    "exemple": "claude auth login --console",
@@ -1885,11 +1885,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
-   "maj_le": "2026-09-23",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1898,6 +1898,10 @@
     {
      "date": "2026-09-23",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
@@ -10568,16 +10572,16 @@
    "categorie": "commandes",
    "nom": "/tui",
    "gabarit": "complet",
-   "description": "Choisit le moteur d'affichage du terminal et relance dessus en gardant la conversation ; `fullscreen` active le rendu plein écran sans scintillement. Sans argument, affiche le moteur actif.",
-   "description_source": "Set the terminal UI renderer and relaunch into it with your conversation intact. fullscreen enables the flicker-free alt-screen renderer. With no argument, prints the active renderer",
-   "usage": "/tui [default|fullscreen]",
+   "description": "Choisit le moteur d'affichage du terminal et relance dessus en gardant la conversation : `fullscreen` active le rendu plein écran sans scintillement, `classic` (ou `default`) revient au rendu classique, `classic` demandant Claude Code 2.1.327 ou plus. Sans argument, la commande affiche le moteur actif.",
+   "description_source": "Set the terminal UI renderer and relaunch into it. fullscreen enables the flicker-free alt-screen renderer. default, or classic on v2.1.327 or later, selects the classic renderer. With no argument, prints the active renderer",
+   "usage": "/tui [classic|fullscreen]",
    "usage_nature": "syntaxe",
    "exemple": "/tui",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Rendu du terminal local, sans effet sur le pilotage depuis l'iPhone."
+    "pourquoi": "Rendu du terminal local, sans effet sur le pilotage depuis l'iPhone par Remote Control."
    },
    "sources": [
     {
@@ -10590,7 +10594,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-10",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10603,10 +10607,31 @@
     {
      "date": "2026-10-10",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentaire révisé"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables sous tmux, pilotées depuis l'iPhone par Remote Control."
+    }
+   },
    "exemple_origine": "source"
   },
   {
