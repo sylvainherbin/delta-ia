@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "fonctionnalites",
- "maj_le": "2026-11-18",
+ "maj_le": "2026-11-19",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1771,8 +1771,8 @@
    "categorie": "fonctionnalites",
    "nom": "Use ChatGPT",
    "gabarit": "complet",
-   "description": "ChatGPT accepte questions, fichiers et tâches formulés en langage naturel. Les outils et le contexte fournis orientent l'analyse ou la production demandée.",
-   "description_source": "{/* vale alex.Condescending = NO */}",
+   "description": "ChatGPT accepte questions, fichiers et tâches formulés en langage naturel. La documentation distingue Chat pour les échanges, Work pour mener une tâche à un résultat révisable et Codex pour les vues de développement ; les outils disponibles dépendent du forfait et de l’environnement.",
+   "description_source": "ChatGPT is an AI agent that you communicate with in natural language:",
    "usage": "Help me plan a 30-minute team meeting about our new customer feedback process.",
    "usage_nature": "syntaxe",
    "exemple": "Help me plan a 30-minute team meeting about our new customer feedback process.",
@@ -1780,7 +1780,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Tu utilises ChatGPT pour arbitrer trading-sim et auditer le travail de Claude ; joins les sources et critères de l'audit à chaque demande."
+    "pourquoi": "Tu utilises ChatGPT Work pour concevoir et arbitrer trading-sim et ChatGPT pour auditer Claude : joins les fichiers sources, les contraintes et le format du verdict, puis relis le résultat avec ces critères."
    },
    "sources": [
     {
@@ -1793,7 +1793,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1818,28 +1818,61 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "{/* vale alex.Condescending = NO */}",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La documentation recommande d’ajouter le contexte et les outils nécessaires puis de relire le résultat.",
+       "source": "https://learn.chatgpt.com/docs/use-chatgpt",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "c6cd043311cbab0e210330de1b2387d07832d926",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
-    "projet.trading-sim": {
-     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "ChatGPT sert aux arbitrages et à la revue croisée du projet."
+    "projet.chatgpt-trading-sim": {
+     "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+     "pourquoi": "ChatGPT Work conçoit et arbitre trading-sim avec des missions et verdicts formalisés."
+    },
+    "usage.hors-machine": {
+     "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+     "pourquoi": "ChatGPT sert aussi à auditer le travail de Claude."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "La documentation recommande d’ajouter le contexte et les outils nécessaires puis de relire le résultat.",
+     "affirmation": "La documentation distingue Chat, Work et Codex et recommande de fournir contexte et outils puis de relire le résultat.",
      "source": "https://learn.chatgpt.com/docs/use-chatgpt",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-11-19",
+     "caduc_si": "La documentation change ces parcours ou recommandations."
     },
     {
-     "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+     "affirmation": "ChatGPT Work est l’architecte et l’arbitre de trading-sim ; les missions et verdicts sont formalisés.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-11-19",
+     "caduc_si": "Le contexte change le rôle de Work ou les formats utilisés."
     }
    ]
   },
@@ -4609,8 +4642,8 @@
    "categorie": "fonctionnalites",
    "nom": "Permissions",
    "gabarit": "complet",
-   "description": "Les permissions règlent la revue des actions locales, tandis que le sandbox fixe les fichiers et ressources accessibles. La commande CLI `/permissions` permet de consulter ou changer le mode disponible ; les contraintes de l’environnement restent applicables.",
-   "description_source": "{/* vale Microsoft.FirstPerson = NO */}",
+   "description": "Les permissions règlent la revue des actions locales ; le sandbox fixe les fichiers et ressources réseau accessibles. Dans la CLI, `/permissions` affiche les modes disponibles, dont la présence dépend du client, de la configuration et des exigences de l’environnement. La revue automatique ne donne pas à elle seule davantage d’accès.",
+   "description_source": "Permissions control how ChatGPT (in the desktop app) and Codex (in the CLI or IDE) handle local actions, such as editing files, running commands, and using the internet. The mode you choose sets the boundary for what ChatGPT can do on its own and what needs review.",
    "usage": "/permissions",
    "usage_nature": "syntaxe",
    "exemple": "/permissions",
@@ -4618,7 +4651,7 @@
    "statut_usage": "utilise",
    "recommandation": {
     "verdict": "utiliser",
-    "pourquoi": "Pour les audits trading-sim, vérifie que les permissions effectives correspondent au périmètre de la mission ; la validation humaine par jalon décrite dans le contexte ne signifie pas une approbation de chaque commande. Conserve le régime autorisé pour la session."
+    "pourquoi": "Pour les audits trading-sim, utilise `/permissions` pour confronter les accès effectifs au périmètre de la mission ; la validation par jalon décrite dans le contexte ne demande pas une approbation de chaque commande. Changer le mode de revue ne suffit pas à élargir le sandbox."
    },
    "sources": [
     {
@@ -4631,7 +4664,7 @@
    "retiree": false,
    "origine": "oa-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4669,38 +4702,67 @@
     {
      "date": "2026-10-16",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "{/* vale Microsoft.FirstPerson = NO */}",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Le sandbox fixe les accès possibles ; les approbations règlent la revue des actions.",
+       "source": "https://learn.chatgpt.com/docs/permission-modes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change ou retire le comportement décrit."
+      },
+      {
+       "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
+      },
+      {
+       "affirmation": "Trading-sim exige une validation par jalon ; les autres projets sont en FULL_AUTO.",
+       "source": "contexte:methode.travail",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le régime de validation des projets change."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Le projet utilise des audits formels sur une spécification gelée."
+     "pourquoi": "Codex audite une architecture gelée et un registre de protocole."
     },
     "methode.travail": {
      "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
-     "pourquoi": "Trading-sim exige un tour de revue par jalon, sans validation pas à pas des commandes."
+     "pourquoi": "Trading-sim conserve une validation humaine par jalon."
     }
    },
    "exemple_origine": "source",
    "provenance": [
     {
-     "affirmation": "Le sandbox fixe les accès possibles ; les approbations règlent la revue des actions.",
+     "affirmation": "La CLI propose /permissions ; le sandbox borne les accès et les approbations règlent leur revue.",
      "source": "https://learn.chatgpt.com/docs/permission-modes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change ou retire le comportement décrit."
+     "releve_le": "2026-11-19",
+     "caduc_si": "La documentation change la commande ou la séparation entre accès et revue."
     },
     {
-     "affirmation": "Trading-sim comporte une spécification gelée et des audits contradictoires.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le contexte change concernant cet usage, cette configuration ou cette méthode."
-    },
-    {
-     "affirmation": "Trading-sim exige une validation par jalon ; les autres projets sont en FULL_AUTO.",
+     "affirmation": "Codex audite trading-sim, qui conserve une validation par jalon.",
      "source": "contexte:methode.travail",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le régime de validation des projets change."
+     "releve_le": "2026-11-19",
+     "caduc_si": "Le rôle de Codex ou le régime de validation de trading-sim change."
     }
    ]
   },
