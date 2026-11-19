@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1867,16 +1867,16 @@
    "categorie": "commandes",
    "nom": "claude auth login",
    "gabarit": "complet",
-   "description": "Connecte Claude Code à ton compte Anthropic. `--email` préremplit l'adresse, `--sso` force le SSO, `--console` facture à l'usage via Anthropic Console au lieu de l'abonnement.",
+   "description": "Connecte la CLI Claude Code à ton compte Anthropic depuis le terminal. `--email` préremplit l'adresse, `--sso` force l'authentification SSO et `--console` ouvre une session Anthropic Console facturée à l'usage de l'API au lieu de l'abonnement Claude. Si la commande renvoie vers `/login`, la connexion se fait dans `claude`.",
    "description_source": "Sign in to your Anthropic account. Use --email to pre-fill your email address, --sso to force SSO authentication, and --console to sign in with Anthropic Console for API usage billing instead of a Claude subscription. If managed settings require a Claude apps gateway sign-in, run the command with no flags in a terminal, on v2.1.316 or later. If the command points you to /login, run that inside claude — claude auth login --console",
    "usage": "claude auth login",
    "usage_nature": "syntaxe",
-   "exemple": "claude auth login --console",
+   "exemple": "claude auth login",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Connexion ponctuelle, déjà faite avec ton abonnement Max ; `--console` basculerait vers une facturation API."
+    "pourquoi": "Geste de compte ponctuel, qui reste à toi ; avec ton abonnement Max, n'emploie pas `--console`, qui ferait facturer tes sessions à l'usage de l'API au lieu du forfait."
    },
    "sources": [
     {
@@ -1885,7 +1885,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -1902,10 +1902,24 @@
     {
      "date": "2026-11-19",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-19",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) et aucun crédit Claude Code cloud : `--console` basculerait vers une facturation API."
+    },
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Les gestes de compte et d'identifiants (connexion, OAuth) restent à Sylvain."
+    }
+   },
+   "exemple_origine": "source"
   },
   {
    "id": "claude-code-commandes-claude-auth-logout",
@@ -4570,7 +4584,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-14",
+   "maj_le": "2026-11-19",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4683,6 +4697,10 @@
     },
     {
      "date": "2026-11-14",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-19",
      "changement": "commentaire révisé"
     }
    ],
