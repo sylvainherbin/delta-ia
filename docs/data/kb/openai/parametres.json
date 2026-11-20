@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-11-17",
+ "maj_le": "2026-11-20",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -8370,8 +8370,8 @@
    "categorie": "parametres",
    "nom": "codex --model, -m",
    "gabarit": "court",
-   "description": "L’option `--model`, alias `-m`, remplace pour le lancement le modèle défini dans la configuration.",
-   "description_source": "Override the model set in configuration (for example gpt-6.1-sol ). (valeurs : string)",
+   "description": "L’option `--model`, alias `-m`, remplace au lancement le modèle défini dans la configuration ; la documentation donne désormais `gpt-6.2-sol` comme exemple.",
+   "description_source": "Override the model set in configuration (for example gpt-6.2-sol ). (valeurs : string)",
    "usage": "codex --model, -m",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8392,7 +8392,7 @@
    "retiree": false,
    "origine": "oa-cli",
    "groupe": "Global flags",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -8429,9 +8429,56 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-20",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Override the model set in configuration (for example gpt-6.1-sol ). (valeurs : string)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-20",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'option `--model`, alias `-m`, remplace le modèle défini dans la configuration (exemple donné : gpt-6.1-sol) ; elle prend une valeur de type string.",
+       "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+       "releve_le": "2026-10-16",
+       "caduc_si": "L'option --model / -m change de syntaxe, ne remplace plus le modèle de la configuration ou disparaît de la documentation des global flags."
+      },
+      {
+       "affirmation": "Le lanceur `mission-codex <worktree> <consigne> [nom]` lance `codex exec` en arrière-plan avec `-s danger-full-access`.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus mission-codex ou indique qu'il ne lance plus codex exec."
+      },
+      {
+       "affirmation": "Avec `mission-codex`, le modèle et l'effort sont toujours passés explicitement, jamais hérités de `~/.codex/config.toml`, selon la nature de la mission (barème `codex_modeles.py` de `discipline`).",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md indique que mission-codex hérite désormais du modèle de ~/.codex/config.toml ou abandonne le barème codex_modeles.py."
+      },
+      {
+       "affirmation": "Barème des missions Codex : mécanique → `gpt-6-luna` / medium, code ou correctif → `gpt-6.1-sol` / high ; `gpt-6-astra` exige un motif.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md modifie le barème des modèles par nature de mission ou retire ces modèles."
+      },
+      {
+       "affirmation": "Après la mission, le lanceur déclare `A_RELIRE` dans OPÉRER et y consigne modèle, effort et jetons.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'indique plus que mission-codex consigne le modèle, l'effort et les jetons dans OPÉRER."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-20",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
@@ -8440,34 +8487,16 @@
    },
    "provenance": [
     {
-     "affirmation": "L'option `--model`, alias `-m`, remplace le modèle défini dans la configuration (exemple donné : gpt-6.1-sol) ; elle prend une valeur de type string.",
+     "affirmation": "--model, alias -m, remplace le modèle configuré ; la documentation donne gpt-6.2-sol comme exemple de valeur string.",
      "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
-     "releve_le": "2026-10-16",
-     "caduc_si": "L'option --model / -m change de syntaxe, ne remplace plus le modèle de la configuration ou disparaît de la documentation des global flags."
+     "releve_le": "2026-11-20",
+     "caduc_si": "La syntaxe, le rôle ou l’exemple de modèle de l’option change dans la documentation."
     },
     {
-     "affirmation": "Le lanceur `mission-codex <worktree> <consigne> [nom]` lance `codex exec` en arrière-plan avec `-s danger-full-access`.",
+     "affirmation": "mission-codex passe explicitement le modèle et l’effort selon la nature de la mission, sans hériter du défaut global.",
      "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus mission-codex ou indique qu'il ne lance plus codex exec."
-    },
-    {
-     "affirmation": "Avec `mission-codex`, le modèle et l'effort sont toujours passés explicitement, jamais hérités de `~/.codex/config.toml`, selon la nature de la mission (barème `codex_modeles.py` de `discipline`).",
-     "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md indique que mission-codex hérite désormais du modèle de ~/.codex/config.toml ou abandonne le barème codex_modeles.py."
-    },
-    {
-     "affirmation": "Barème des missions Codex : mécanique → `gpt-6-luna` / medium, code ou correctif → `gpt-6.1-sol` / high ; `gpt-6-astra` exige un motif.",
-     "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md modifie le barème des modèles par nature de mission ou retire ces modèles."
-    },
-    {
-     "affirmation": "Après la mission, le lanceur déclare `A_RELIRE` dans OPÉRER et y consigne modèle, effort et jetons.",
-     "source": "contexte:methode.missions",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'indique plus que mission-codex consigne le modèle, l'effort et les jetons dans OPÉRER."
+     "releve_le": "2026-11-20",
+     "caduc_si": "Le lanceur décrit dans le contexte cesse de passer explicitement ces paramètres."
     }
    ]
   },
