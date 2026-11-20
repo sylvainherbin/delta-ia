@@ -282,15 +282,16 @@ def publier_ids(racine: Path) -> tuple[int, str, str]:
         contenu = json.dumps({"maj": d["maj"], "ids": d["ids"]}, ensure_ascii=False, indent=1) + "\n"
         env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
 
-        def git(*args, entree=None, index=None):
+        def git(*args, entree=None, index=None, brut=False):
             r = subprocess.run(["git", "-C", str(racine), *args], input=entree, capture_output=True, text=True,
                                timeout=60, env={**env, **({"GIT_INDEX_FILE": str(index)} if index else {})})
             if r.returncode:
                 raise RuntimeError(f"git {args[0]} : code {r.returncode}")
-            return r.stdout.strip()
+            return r.stdout if brut else r.stdout.strip()
 
-        if [l for l in git("status", "--porcelain=v1", "--untracked-files=all").splitlines()
-                if l.strip() and not est_sentinelle_codex(racine, l.strip())]:
+        # Sortie brute, ligne non épurée : voir orchestrateur.etat_depot (nom à espace insécable finale).
+        if [l for l in git("status", "--porcelain=v1", "--untracked-files=all", brut=True).split("\n")
+                if l.strip() and not est_sentinelle_codex(racine, l)]:
             raise ValueError("arbre non propre, publication X différée")
         avant = git("rev-parse", "HEAD")
         distant = bool(git("remote"))

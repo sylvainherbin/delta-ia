@@ -26,17 +26,17 @@ RACINE = Path(__file__).resolve().parent.parent
 PREMIER_JOUR = date(2026, 10, 19)
 
 
-def commande(racine: Path, *args: str) -> str:
+def commande(racine: Path, *args: str, brut: bool = False) -> str:
     env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
     env.setdefault("GIT_SSH_COMMAND", "ssh -o BatchMode=yes")
     res = subprocess.run(args, cwd=racine, env=env, capture_output=True, text=True, timeout=300)
     if res.returncode:
         raise RuntimeError(f"{' '.join(args)} : {res.stderr.strip() or res.stdout.strip()}")
-    return res.stdout.strip()
+    return res.stdout if brut else res.stdout.strip()
 
 
-def git(racine: Path, *args: str) -> str:
-    return commande(racine, "git", *args)
+def git(racine: Path, *args: str, brut: bool = False) -> str:
+    return commande(racine, "git", *args, brut=brut)
 
 
 def valider(racine: Path) -> None:
@@ -50,7 +50,8 @@ def est_selection(chemin: str) -> bool:
 
 
 def chemins_git(racine: Path, *args: str) -> set[str]:
-    return set(filter(None, git(racine, *args, "-z").split("\0")))
+    # Sortie brute : `strip()` retirerait l'espace initiale d'un nom (` .gitattributes`) et le confondrait avec la sentinelle.
+    return set(filter(None, git(racine, *args, "-z", brut=True).split("\0")))
 
 
 def changements_selection(racine: Path) -> set[str]:

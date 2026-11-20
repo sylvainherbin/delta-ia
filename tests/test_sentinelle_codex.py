@@ -56,7 +56,9 @@ ETATS = {
     "vide-0555": (lambda r: _ecrire(r / ".gitattributes", "", 0o555), False),
     "contenu-0444": (lambda r: _ecrire(r / ".gitattributes", CONTENU, 0o444), False),
     "contenu-0644": (lambda r: _ecrire(r / ".gitattributes", CONTENU, 0o644), False),
-    "lien": (lambda r: ((r / "cible").write_text(""), (r / "cible").chmod(0o444), (r / ".gitattributes").symlink_to("cible")), False),
+    # cible hors du dépôt : seul le lien lui-même peut faire refuser (aucun `?? cible` à côté)
+    "lien": (lambda r: ((r.parent / "cible-hors-depot").write_text(""), (r.parent / "cible-hors-depot").chmod(0o444),
+                        (r / ".gitattributes").symlink_to(r.parent / "cible-hors-depot")), False),
     "lien-pendant": (lambda r: (r / ".gitattributes").symlink_to("absent"), False),
     "repertoire": (lambda r: _ecrire(r / ".gitattributes" / "x", "", 0o444), False),
     "sous-dossier": (lambda r: _ecrire(r / "sous" / ".gitattributes", "", 0o444), False),
@@ -273,3 +275,53 @@ def test_garde_ne_voit_pas_un_gitattributes_non_suivi_de_racine(racine, capsys, 
 def test_garde_gitattributes_suivi_modifie(racine, capsys, etape, code):
     ETATS["suivi-modifie"][0](racine)
     assert lancer(racine, capsys, *etape)[0] == code
+
+
+# --- retouches de relecture : ligne brute, racine = haut du dépôt ----------------------------------------------------
+
+@pytest.fixture
+def sans_guillemets(monkeypatch):
+    """core.quotePath=false : un nom à espace insécable sort de git sans guillemets."""
+    monkeypatch.setenv("GIT_CONFIG_COUNT", "1")
+    monkeypatch.setenv("GIT_CONFIG_KEY_0", "core.quotePath")
+    monkeypatch.setenv("GIT_CONFIG_VALUE_0", "false")
+
+
+@pytest.mark.parametrize("voisin", [".gitattributes\u00a0", " .gitattributes", ".gitattributes "])
+def test_nom_a_espace_voisin_de_la_sentinelle_n_est_pas_tolere(dossier, sans_guillemets, voisin):
+    ETATS["vide-0444"][0](dossier)
+    _ecrire(dossier / voisin, "", 0o444)
+    assert not any(est_sentinelle_codex(dossier, l) for l in lignes_statut(dossier) if l != "?? .gitattributes")
+    assert [l for l in orc.etat_depot(dossier, distant=False)["sales"] if voisin in l], "l'orchestrateur voit le voisin"
+    assert commun_auto.changements(dossier) == {voisin}
+    with pytest.raises(RuntimeError, match="hors de la route"):
+        commun_auto.verifier_arbre(dossier)
+
+
+@pytest.mark.parametrize("voisin", [".gitattributes\u00a0", " .gitattributes"])
+def test_capteur_x_refuse_un_nom_a_espace_voisin_de_la_sentinelle(depot_publication, sans_guillemets, voisin):
+    racine, g = depot_publication
+    ETATS["vide-0444"][0](racine)
+    _ecrire(racine / voisin, "", 0o444)
+    assert capteur_x.publier_ids(racine) == (1, "aucun", "publication X différée (ValueError)")
+
+
+@pytest.mark.parametrize("voisin", [".gitattributes\u00a0", " .gitattributes"])
+def test_selection_refuse_un_nom_a_espace_voisin_de_la_sentinelle(publication, sans_guillemets, voisin):
+    racine, distant = publication
+    ETATS["vide-0444"][0](racine)
+    _ecrire(racine / voisin, "", 0o444)
+    with pytest.raises(RuntimeError, match="hors sélection"):
+        auto.changements_selection(racine)
+
+
+def test_sentinelle_refusee_sans_depot_a_la_racine_passee(dossier, tmp_path):
+    ETATS["vide-0444"][0](dossier)
+    assert est_sentinelle_codex(dossier, "?? .gitattributes")
+    hors = tmp_path / "hors-depot"
+    hors.mkdir()
+    _ecrire(hors / ".gitattributes", "", 0o444)
+    assert not est_sentinelle_codex(hors, "?? .gitattributes")
+    sous = dossier / "sous"
+    _ecrire(sous / ".gitattributes", "", 0o444)  # sous-dossier d'un dépôt : ce n'est pas le haut, les chemins de git n'y sont pas relatifs
+    assert not est_sentinelle_codex(sous, "?? .gitattributes")

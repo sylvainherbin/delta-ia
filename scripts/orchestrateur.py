@@ -286,10 +286,11 @@ def construire_etapes(cfg: dict, racine: Path = RACINE) -> list[Etape]:
 
 # ------------------------------------------------------------------------------------------------------------ git
 
-def git(racine: Path, *args: str, env: dict | None = None) -> tuple[int, str]:
+def git(racine: Path, *args: str, env: dict | None = None, brut: bool = False) -> tuple[int, str]:
     r = subprocess.run(["git", "-C", str(racine), *args], capture_output=True, text=True, timeout=120,
                        env={**os.environ, "GIT_TERMINAL_PROMPT": "0", **(env or {})})
-    return r.returncode, (r.stdout + r.stderr).strip()
+    sortie = r.stdout + r.stderr
+    return r.returncode, sortie if brut else sortie.strip()
 
 
 def tete_courte(racine: Path) -> str:
@@ -307,10 +308,12 @@ def etat_depot(racine: Path, distant: bool = True) -> dict:
     """index_lock, fichiers modifiés ou non suivis (hors ignorés), commits locaux absents de origin/main (None : non évalué)."""
     if distant and git(racine, "remote")[1].strip():
         git(racine, "fetch", "--quiet", "origin")  # une panne réseau laisse l'ancienne référence : on ne s'arrête pas pour cela
-    _, statut = git(racine, "status", "--porcelain=v1", "--untracked-files=all", env={"GIT_OPTIONAL_LOCKS": "0"})
+    # Sortie brute : `strip()` retirerait une espace (insécable avec core.quotePath=false) en fin de nom et ferait passer
+    # `.gitattributes<nbsp>` pour la sentinelle ; la fonction reçoit la ligne telle que git l'écrit (sans `\n`).
+    _, statut = git(racine, "status", "--porcelain=v1", "--untracked-files=all", env={"GIT_OPTIONAL_LOCKS": "0"}, brut=True)
     code, n = git(racine, "rev-list", "--count", "origin/main..HEAD")
     return {"index_lock": (racine / ".git" / "index.lock").exists(),
-            "sales": [l for l in statut.splitlines() if l.strip() and not est_sentinelle_codex(racine, l.strip())],
+            "sales": [l for l in statut.split("\n") if l.strip() and not est_sentinelle_codex(racine, l)],
             "en_avance": int(n) if code == 0 and n.isdigit() else None}
 
 
