@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 from deltalib import selection as sel
 from deltalib import semaine as sem
+from deltalib.sentinelle import est_sentinelle_codex
 
 RACINE = Path(__file__).resolve().parent.parent
 PREMIER_JOUR = date(2026, 10, 19)
@@ -55,7 +56,8 @@ def chemins_git(racine: Path, *args: str) -> set[str]:
 def changements_selection(racine: Path) -> set[str]:
     modifies = chemins_git(racine, "diff", "--name-only")
     modifies.update(chemins_git(racine, "diff", "--cached", "--name-only"))
-    modifies.update(chemins_git(racine, "ls-files", "--others", "--exclude-standard"))
+    modifies.update(c for c in chemins_git(racine, "ls-files", "--others", "--exclude-standard")
+                    if not est_sentinelle_codex(racine, "?? " + c))
     if any(not est_selection(c) for c in modifies):
         raise RuntimeError("arbre ou index modifié hors sélection ; aucune publication")
     return modifies

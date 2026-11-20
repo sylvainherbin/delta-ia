@@ -102,6 +102,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import passages  # noqa: E402
 from deltalib import capteur_x  # noqa: E402
+from deltalib.sentinelle import est_sentinelle_codex  # noqa: E402
 
 RACINE = Path(__file__).resolve().parent.parent
 CONFIG = Path(__file__).resolve().parent / "orchestrateur.toml"
@@ -309,7 +310,7 @@ def etat_depot(racine: Path, distant: bool = True) -> dict:
     _, statut = git(racine, "status", "--porcelain=v1", "--untracked-files=all", env={"GIT_OPTIONAL_LOCKS": "0"})
     code, n = git(racine, "rev-list", "--count", "origin/main..HEAD")
     return {"index_lock": (racine / ".git" / "index.lock").exists(),
-            "sales": [l for l in statut.splitlines() if l.strip()],
+            "sales": [l for l in statut.splitlines() if l.strip() and not est_sentinelle_codex(racine, l.strip())],
             "en_avance": int(n) if code == 0 and n.isdigit() else None}
 
 
@@ -543,7 +544,8 @@ def publier_selection_en_attente(racine: Path, jour: date) -> str | None:
     try:
         changements = selection_auto.chemins_git(racine, "diff", "--name-only")
         changements |= selection_auto.chemins_git(racine, "diff", "--cached", "--name-only")
-        changements |= selection_auto.chemins_git(racine, "ls-files", "--others", "--exclude-standard")
+        changements |= {c for c in selection_auto.chemins_git(racine, "ls-files", "--others", "--exclude-standard")
+                        if not est_sentinelle_codex(racine, "?? " + c)}  # seule la liste des non suivis tolère la sentinelle
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         return f"sélection hebdomadaire en attente non vérifiable ({type(exc).__name__})"
     if not changements:

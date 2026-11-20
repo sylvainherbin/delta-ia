@@ -85,6 +85,8 @@ elif mode == "echec":
     print("échec simulé", file=sys.stderr); sys.exit(3)
 elif mode == "sale-hors-chemins":
     ecrire("notes.txt", "touché hors périmètre\n"); claude_ok()
+elif mode in ("sentinelle", "gitattributes-contenu"):   # sentinelle du pilote Codex (vide, 0444) ou vrai .gitattributes à contenu
+    ecrire(".gitattributes", "" if mode == "sentinelle" else "* merge=union\n"); os.chmod(".gitattributes", 0o444); claude_ok()
 elif mode == "non-pousse":
     passage(sys.argv[2], sys.argv[3], pousser=False); claude_ok()
 elif mode == "refus":

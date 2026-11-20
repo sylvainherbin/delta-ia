@@ -28,6 +28,8 @@ from pathlib import Path
 
 import requests
 
+from .sentinelle import est_sentinelle_codex
+
 LISTE_ID = "2113336377958084762"
 LISTE_URL = f"https://x.com/i/lists/{LISTE_ID}"
 API_URL = f"https://api.x.com/2/lists/{LISTE_ID}/tweets"
@@ -287,7 +289,8 @@ def publier_ids(racine: Path) -> tuple[int, str, str]:
                 raise RuntimeError(f"git {args[0]} : code {r.returncode}")
             return r.stdout.strip()
 
-        if git("status", "--porcelain=v1", "--untracked-files=all"):
+        if [l for l in git("status", "--porcelain=v1", "--untracked-files=all").splitlines()
+                if l.strip() and not est_sentinelle_codex(racine, l.strip())]:
             raise ValueError("arbre non propre, publication X différée")
         avant = git("rev-parse", "HEAD")
         distant = bool(git("remote"))

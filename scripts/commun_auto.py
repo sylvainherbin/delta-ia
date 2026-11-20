@@ -29,6 +29,7 @@ from deltalib.couches import publication
 from deltalib.couches import racines as mod_racines
 from deltalib.couches.projection import importer
 from deltalib.couches.traduction import RedacteurClaude
+from deltalib.sentinelle import est_sentinelle_codex
 
 RACINE = Path(__file__).resolve().parent.parent
 ROUTE = Path("docs/commun/v1")
@@ -51,7 +52,7 @@ def est_publie(chemin: str) -> bool:
 
 def changements(racine: Path) -> set[str]:
     sortie = set(filter(None, git(racine, "status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all", brut=True).split("\0")))
-    return {ligne[3:] for ligne in sortie if len(ligne) > 3}
+    return {ligne[3:] for ligne in sortie if len(ligne) > 3 and not est_sentinelle_codex(racine, ligne)}
 
 
 def verifier_arbre(racine: Path) -> None:
