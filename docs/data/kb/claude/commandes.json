@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 133,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -1974,7 +1974,7 @@
    "categorie": "commandes",
    "nom": "claude auth status",
    "gabarit": "complet",
-   "description": "Affiche l'état d'authentification du CLI en JSON (`--text` pour un texte lisible), avec `configDirectory` (dossier de configuration utilisé, 2.1.268 ou plus) et `authMethod` (none, claude.ai, oauth_token, api_key, api_key_helper ou third_party). Le code de sortie vaut 0 si la session est connectée, 1 sinon.",
+   "description": "Affiche l'état d'authentification du CLI en JSON (`--text` pour un texte lisible), avec `configDirectory` (dossier de configuration utilisé, 2.1.268 ou plus), `authMethod` (none, claude.ai, oauth_token, api_key, api_key_helper ou third_party) et, depuis 2.1.318, `loginExpiresAt` (date de fin attendue au plus tard d'une connexion enregistrée, ou `null`). Le code de sortie vaut 0 si la session est connectée, 1 sinon.",
    "description_source": "Show authentication status as JSON. Use --text for human-readable output. Exits with code 0 if logged in, 1 if not. The JSON includes a configDirectory field naming the configuration directory the CLI uses. The field requires Claude Code v2.1.268 or later. The JSON's authMethod field is one of none, claude.ai, oauth_token, api_key, api_key_helper, or third_party. From v2.1.318, its loginExpiresAt field gives a stored login's latest expected end date, or null — claude auth status",
    "usage": "claude auth status",
    "usage_nature": "syntaxe",
@@ -1983,7 +1983,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "CONTEXTE.md ne décrit aucun problème d'authentification ni de contrôle scripté de la connexion des sessions systemd ; un tel contrôle (code de sortie 0 ou 1) resterait une hypothèse sans scénario arrêté."
+    "pourquoi": "CONTEXTE.md ne décrit ni expiration de connexion ni contrôle scripté de l'authentification des sessions systemd ou de la chaîne de nuit ; lire `loginExpiresAt` resterait une précaution sans scénario arrêté."
    },
    "sources": [
     {
@@ -1992,7 +1992,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI commands",
@@ -2041,13 +2041,21 @@
     {
      "date": "2026-11-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-20",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
      "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
-     "pourquoi": "Sessions systemd durables : seul terrain plausible d'un contrôle de santé scripté, non décrit."
+     "pourquoi": "Sessions systemd durables : terrain plausible d'un contrôle de connexion scripté, non décrit dans CONTEXTE.md."
+    },
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Chaîne D70 lancée sans surveillance à 04:00 : aucune panne d'authentification n'y est rapportée."
     }
    },
    "exemple_origine": "source"
@@ -4588,7 +4596,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-19",
+   "maj_le": "2026-11-20",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4705,6 +4713,10 @@
     },
     {
      "date": "2026-11-19",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-20",
      "changement": "commentaire révisé"
     }
    ],
