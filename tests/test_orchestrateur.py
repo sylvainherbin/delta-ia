@@ -169,6 +169,12 @@ elif mode in ("branche-suivie", "branche-pushremote", "branche-remote-inconnu", 
         if mode == "branche-pushremote":
             git("config", "branch.suivie.pushRemote", "origin")
     claude_ok()
+elif mode == "ajoute-venv-pth":
+    ecrire(".venv/lib/python3/site-packages/piege.pth", "import os; os.system('echo piégé')\n"); claude_ok()
+elif mode == "modifie-venv-pth":
+    open(".venv/lib/python3/site-packages/existant.pth", "a").write("import os\n"); claude_ok()
+elif mode == "ajoute-sitecustomize":
+    ecrire(".venv/lib/python3/site-packages/sitecustomize.py", "print('piégé')\n"); claude_ok()
 elif mode == "ajoute-info-attributes":
     ecrire(".git/info/attributes", "* filter=piege\n"); claude_ok()
 elif mode == "modifie-info-exclude":
@@ -463,9 +469,15 @@ def chaine_deux_etapes_puis_supervision(depot, cfg, mode):
 
 @pytest.mark.parametrize("mode, fichier", [("ajoute-hook", "hooks/pre-commit"), ("modifie-config", "config"),
                                            ("modifie-hook", "hooks/pre-push"), ("supprime-hook", "hooks/pre-push"),
-                                           ("ajoute-info-attributes", "info/attributes"), ("modifie-info-exclude", "info/exclude")])
+                                           ("ajoute-info-attributes", "info/attributes"), ("modifie-info-exclude", "info/exclude"),
+                                           ("ajoute-venv-pth", "venv/lib/python3/site-packages/piege.pth"),
+                                           ("modifie-venv-pth", "venv/lib/python3/site-packages/existant.pth"),
+                                           ("ajoute-sitecustomize", "venv/lib/python3/site-packages/sitecustomize.py")])
 def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fichier):
     (depot / ".git" / "hooks").mkdir(exist_ok=True)
+    site = depot / ".venv" / "lib" / "python3" / "site-packages"
+    site.mkdir(parents=True)
+    (site / "existant.pth").write_text("/chemin/fixture\n")  # .pth préexistant (distutils-precedence.pth et autres)
     if mode in ("modifie-hook", "supprime-hook"):
         (depot / ".git" / "hooks" / "pre-push").write_text("#!/bin/sh\n")  # hook préexistant
     assert chaine_deux_etapes_puis_supervision(depot, cfg, mode) == 1
@@ -1441,6 +1453,17 @@ def test_passage_auto_une_seule_chaine_a_la_fois(depot_sh):
     r.sommeil.write_text("0")
     troisieme = subprocess.run(cmd, cwd=r, env=env, capture_output=True, text=True)
     assert troisieme.returncode == 0, troisieme.stderr
+
+
+def test_passage_auto_temoin_d_incident_rien_n_est_lance(depot_sh):
+    """B2 : témoin d'incident git non levé, le Python du .venv n'est pas lancé (un .pth posé s'exécuterait à son démarrage)."""
+    marque = depot_sh / "rapports" / "auto" / orc.INCIDENT_GIT
+    marque.parent.mkdir(parents=True, exist_ok=True)
+    marque.write_text("{}\n")
+    r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
+                       capture_output=True, text=True)
+    assert r.returncode == 126 and "INCIDENT_GIT" in r.stderr and r.stdout == ""
+    assert 'export PYTHONPYCACHEPREFIX="${XDG_RUNTIME_DIR:-' in (RACINE / "scripts" / "passage-auto.sh").read_text()
 
 
 def test_passage_auto_option_liste_n_appelle_rien(depot_sh):

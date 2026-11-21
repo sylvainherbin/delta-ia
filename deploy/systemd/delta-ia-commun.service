@@ -7,9 +7,14 @@ Type=oneshot
 WorkingDirectory=%h/projets/delta-ia
 # Python isolé : aucun module du dépôt n’est importé avant le contrôle de son arbre.
 ExecStartPre=/usr/bin/python3 -I -S -c "import subprocess, sys; r = subprocess.run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', 'scripts'], capture_output=True); sale = r.returncode != 0 or bool(r.stdout); sys.stderr.write('ARBRE_CODE_SALE : contrôle avant imports\\n' if sale else ''); sys.exit(126 if sale else 0)"
+# Témoin d'incident (orchestrateur, code 126) : un hook, un réglage git ou un .pth du .venv peut avoir été posé ;
+# le Python du .venv n'est pas lancé tant que le superviseur ne l'a pas levé.
+ExecStartPre=/usr/bin/python3 -I -S -c "import os, sys; t = 'rapports/auto/incident-git.json'; i = os.path.lexists(t); sys.stderr.write('INCIDENT_GIT : ' + t + ' non levé, rien n est lancé\\n' if i else ''); sys.exit(126 if i else 0)"
 ExecStart=%h/projets/delta-ia/.venv/bin/python -B scripts/commun_auto.py
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 Environment=TZ=Europe/Paris LANG=C.UTF-8 LC_ALL=C.UTF-8 GIT_TERMINAL_PROMPT=0
+# B2 : les .pyc se lisent et s'écrivent hors de l'arbre ; un __pycache__/ piégé dans scripts/ (ignoré par git) n'est pas chargé.
+Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache
 # Attend le verrou partagé si la chaîne de 04:00 ou la sélection du lundi travaille encore (au plus 4 h).
 TimeoutStartSec=4h15min
 KillMode=control-group

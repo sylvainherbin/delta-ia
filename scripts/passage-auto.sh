@@ -5,7 +5,7 @@
 # d'une session graphique : mode nuit). Ne lance rien d'autre que scripts/orchestrateur.py, qui porte toute la logique.
 #
 # Codes de sortie : 0 chaîne sans échec ; 1 au moins une étape en échec (dont le contrôle de valider.py après une étape, code 131 dans le journal) ; 2 mauvais argument ; 14 chaîne déjà en cours ;
-# 16 environnement du dépôt illisible (.venv absent).
+# 16 environnement du dépôt illisible (.venv absent) ; 126 témoin d'incident git non levé (rapports/auto/incident-git.json).
 set -u
 
 RACINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -14,6 +14,8 @@ HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
 export HOME
 export PATH="$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 export LANG=C.UTF-8 LC_ALL=C.UTF-8
+# B2 : .pyc hors de l'arbre (un __pycache__/ piégé dans scripts/, ignoré par git, n'est pas chargé).
+export PYTHONPYCACHEPREFIX="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/delta-ia-pycache"
 
 PYTHON="$RACINE/.venv/bin/python"
 [ -x "$PYTHON" ] || { echo "passage-auto : $PYTHON introuvable (voir CLAUDE.md : python3 -m venv .venv)" >&2; exit 16; }
@@ -25,4 +27,10 @@ if ! flock -n 9; then
     exit 14
 fi
 # Le descripteur 9 reste ouvert dans le processus Python (même PID après exec) : le verrou dure jusqu'à la fin de la chaîne.
+# Témoin d'incident non levé : un .pth ou un sitecustomize posé dans le .venv s'exécuterait au démarrage de Python, avant
+# le contrôle de l'orchestrateur. Rien n'est lancé (126) tant que le superviseur ne l'a pas levé.
+if [ -e "$RACINE/rapports/auto/incident-git.json" ] || [ -L "$RACINE/rapports/auto/incident-git.json" ]; then
+    echo "passage-auto : INCIDENT_GIT, rapports/auto/incident-git.json non levé : rien n'est lancé" >&2
+    exit 126
+fi
 exec "$PYTHON" "$RACINE/scripts/orchestrateur.py" "$@"

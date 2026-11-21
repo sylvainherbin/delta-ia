@@ -29,8 +29,8 @@ Pour chaque étape, sans aucun LLM :
    il reste fatal même après un arrêt propre. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié,
    pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus), `.git/config` et `.git/info/` doivent être
-   inchangés, hors suivi de branche (`branch.<nom>.remote` et `.merge` vers un remote déjà connu) ; un hook, un réglage ou
-   un attribut git écrit par une étape s'exécuterait ensuite hors de son bac à sable
+   inchangés, hors suivi de branche (`branch.<nom>.remote` et `.merge` vers un remote déjà connu), ainsi que les exécutables de
+   démarrage du `.venv` (`*.pth`, `sitecustomize`, `usercustomize`) ; un hook, un réglage, un attribut git ou un `.pth` écrit par une étape s'exécuterait ensuite hors de son bac à sable
    (code 126, constaté avant toute autre commande git de l'orchestrateur et consigné dans `rapports/auto/incident-git.json` ;
    contrôle aussi AVANT chaque étape, et avant la publication de la sélection et le relevé X : ce témoin présent, ou l'empreinte
    git changée depuis le début de la chaîne, et rien n'est lancé (126) ; seul le superviseur lève le témoin, après examen),
@@ -396,9 +396,9 @@ def empreinte_git(racine: Path) -> dict[str, str]:
     lié. Les noms comptent autant que les contenus : un fichier ajouté ou supprimé change l'empreinte."""
     code, commun = git(racine, "rev-parse", "--path-format=absolute", "--git-common-dir")
     if code != 0 or not commun:
-        return {"?": "git illisible"}
+        return {"?": "git illisible", **empreinte_venv(racine)}
     base = Path(commun)
-    res: dict[str, str] = {}
+    res: dict[str, str] = empreinte_venv(racine)
     res.update(empreinte_config(base / "config"))
     for dossier in ("hooks", "info"):
         racine_d = base / dossier
@@ -412,6 +412,34 @@ def empreinte_git(racine: Path) -> dict[str, str]:
                 res[f"{dossier}/{rel}"] = hashlib.sha256(f.read_bytes()).hexdigest()
             except OSError:
                 res[f"{dossier}/{rel}"] = "illisible"
+    return res
+
+
+VENV_DEMARRAGE = ("sitecustomize", "usercustomize")
+
+
+def empreinte_venv(racine: Path) -> dict[str, str]:
+    """Exécutables de démarrage du `.venv` (B2) : `*.pth`, `sitecustomize` et `usercustomize` (module, `.pyc` sans source ou
+    paquet) à la racine de chaque site-packages. Python les exécute à son démarrage, avant tout contrôle : un ajout ou un
+    changement pendant une étape tournerait à la chaîne ou au minuteur suivant. Clés « venv/<chemin> »."""
+    res: dict[str, str] = {}
+    venv = racine / ".venv"
+    for site in sorted(venv.glob("lib*/python*/site-packages")):
+        try:
+            entrees = sorted(site.iterdir())
+        except OSError:
+            res[f"venv/{site.relative_to(venv)}"] = "illisible"
+            continue
+        for p in entrees:
+            if not (p.name.endswith(".pth") or p.name.split(".", 1)[0] in VENV_DEMARRAGE):
+                continue
+            fichiers = sorted(q for q in p.rglob("*") if q.is_file() or q.is_symlink()) if p.is_dir() and not p.is_symlink() else [p]
+            for f in fichiers or [p]:
+                try:
+                    lien = f"lien:{os.readlink(f)}:" if f.is_symlink() else ""
+                    res[f"venv/{f.relative_to(venv)}"] = lien + (hashlib.sha256(f.read_bytes()).hexdigest() if f.is_file() else "dossier")
+                except OSError:
+                    res[f"venv/{f.relative_to(venv)}"] = "illisible"
     return res
 
 
