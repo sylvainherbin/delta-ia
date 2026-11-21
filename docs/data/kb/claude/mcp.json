@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-19",
+ "maj_le": "2026-11-21",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -1362,11 +1362,11 @@
    "categorie": "mcp",
    "nom": "MCP tasks for server authors",
    "gabarit": "complet",
-   "description": "Pour l'auteur d'un serveur MCP : répondre à un `tools/call` long par une tâche (`resultType: \"task\"`, `taskId`, `status`, `pollIntervalMs`) selon l'extension MCP tasks. Claude Code annonce sa prise en charge dans les métadonnées de la requête.",
+   "description": "Pour l'auteur d'un serveur MCP : répondre à un `tools/call` long par une tâche (`resultType: \"task\"`, `taskId`, `status`, `pollIntervalMs`) selon l'extension MCP tasks. Sur une connexion de révision de protocole 2026-07-28, Claude Code annonce sa prise en charge dans `params._meta`, et omet l'extension quand l'appel ne peut pas devenir une tâche.",
    "description_source": "If you build an MCP server, you can answer a long-running tools/call with a task. The MCP tasks extension defines the messages you send. On a protocol revision 2026-07-28 connection, each request carries Claude Code's client capabilities at params._meta[\"io.modelcontextprotocol/clientCapabilities\"], with \"io.modelcontextprotocol/tasks\": {} under extensions. A tools/call request that can't become a task omits that extension.",
-   "usage": "{\n  \"resultType\": \"task\",\n  \"taskId\": \"build-7f3a9c2e\",\n  \"status\": \"working\",\n  \"statusMessage\": \"Compiling, 40 of 212 files done\",\n  \"createdAt\": \"2026-10-22T14:03:07Z\",\n  \"lastUpdatedAt\": \"2026-10-22T14:03:07Z\",\n  \"ttlMs\": null,\n  \"pollIntervalMs\": 5000\n}",
+   "usage": "{\n  \"resultType\": \"task\",\n  \"taskId\": \"build-7f3a9c2e\",\n  \"status\": \"working\",\n  \"statusMessage\": \"Compiling, 40 of 212 files done\",\n  \"createdAt\": \"2026-10-22T14:03:07Z\",\n  \"lastUpdatedAt\": \"2026-10-22T14:03:07Z\",\n  \"ttlMs\": null,\n  \"pollIntervalMs\": 10000\n}",
    "usage_nature": "syntaxe",
-   "exemple": "{\n  \"resultType\": \"task\",\n  \"taskId\": \"build-7f3a9c2e\",\n  \"status\": \"working\",\n  \"statusMessage\": \"Compiling, 40 of 212 files done\",\n  \"createdAt\": \"2026-10-22T14:03:07Z\",\n  \"lastUpdatedAt\": \"2026-10-22T14:03:07Z\",\n  \"ttlMs\": null,\n  \"pollIntervalMs\": 5000\n}",
+   "exemple": "{\n  \"resultType\": \"task\",\n  \"taskId\": \"build-7f3a9c2e\",\n  \"status\": \"working\",\n  \"statusMessage\": \"Compiling, 40 of 212 files done\",\n  \"createdAt\": \"2026-10-22T14:03:07Z\",\n  \"lastUpdatedAt\": \"2026-10-22T14:03:07Z\",\n  \"ttlMs\": null,\n  \"pollIntervalMs\": 10000\n}",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
@@ -1391,7 +1391,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-21",
    "historique": [
     {
      "date": "2026-10-24",
@@ -1404,6 +1404,18 @@
     {
      "date": "2026-10-24",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentaire révisé"
     }
    ],
    "exemple_origine": "source"

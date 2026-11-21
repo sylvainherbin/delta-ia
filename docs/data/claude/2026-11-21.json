@@ -1,0 +1,194 @@
+{
+  "date": "2026-11-21",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-21T03:05:00+00:00",
+  "synthese": "Compte et quotas : aucune limite, offre, remise à zéro ni tarif ne change dans les sources du jour. Alerte D71 : le quota hebdomadaire Claude est à 89 % (`rapports/usage.json`, relevé du 21/11 à 03 h 00 UTC, remise à zéro le 22/11 à 16 h UTC) et celui de ChatGPT à 91 % (remise à zéro le 22/11 à 17 h 10 UTC), tous deux au-dessus du seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Semaine Fable à 0 % (même remise à zéro), session 5 h non mesurée. Claude Code 2.1.330 (installée, à jour) apporte les graphiques intégrés `easel` à essayer, des correctifs d'enregistrement concurrent des réglages utilisateur utiles à tes sessions parallèles, et une version de `claude -p` qui signale enfin un disque plein ; computer use (Team et Enterprise), deux réglages de connexion d'organisation et la fiche `/teleport` n'ont pas d'effet sur ton usage. Le discours des cofondateurs d'Anthropic et la clôture de l'introduction en bourse sont écartés.",
+  "elements": [
+    {
+      "id": "claude-code-2.1.330",
+      "ids_bruts": [
+        "claude-code-2.1.330"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.330 : graphiques intégrés `easel`, réglages utilisateur enregistrés sans perte à plusieurs processus, `claude -p` qui signale un disque plein, `rm` plus encadré",
+      "version": "2.1.330",
+      "date_publication": "2026-11-20",
+      "type": "nouveaute",
+      "resume": "Version de 142 puces (16 ajouts, 28 modifications, 98 correctifs). Ajouts : `easel`, un outil intégré qui dessine des graphiques à la demande et sous les résultats de métriques MCP (Pro et Max, et Team ou Enterprise là où c'est disponible, sur macOS et Linux ; les graphiques automatiques se coupent dans `/config`) ; connexion aux organisations gérées par l'Enterprise Admin Console après `claude auth login` ; `CLAUDE_CODE_FULL_SIGN_IN_LINK=1` pour afficher l'URL de connexion complète, le lien affiché par `/login`, `claude auth login` et `claude setup-token` étant désormais beaucoup plus court ; `commandPrinted` et `commandFailed` dans le JSON de `claude plugin install --json`. Correctifs : changements des réglages utilisateur perdus quand plusieurs processus les enregistrent en même temps ; sauvegardes incomplètes de `~/.claude.json` qui prenaient la place de bonnes copies sur disque plein ; blocage de plusieurs minutes après le compactage d'une très longue conversation ; serveur MCP déclaré par un sous-agent arrêté quand un autre sous-agent se terminait ; `claude -p` qui sortait en code 0 sans message quand sa sortie allait dans un fichier sur disque plein (il sort maintenant en code 1) ; variables d'un hook SessionStart perdues avec `claude -p --continue` ; Remote Control : boutons Diff et pull request cachés sur mobile après activation en cours de conversation. Changements : `rm` visant la racine, le dossier personnel, un dossier de premier niveau ou le dossier de travail demandent plus souvent une approbation, et sont refusés quand personne ne peut répondre ; la relance automatique sur `max_tokens` retirée par la 2.1.329 est rétablie ; les tâches récurrentes et `/loop` durent jusqu'à 30 jours au lieu de 7 ; `/config` classe les réglages par début de nom ; `/resume` n'affiche plus les sessions où seul un écran comme `/model` a été ouvert ; `/stats` compte en jours locaux et non en jours UTC. Sept ajouts visent VS Code seulement (`/fork`, `/workflows`, les réglages `claudeCode.escapeStopsClaude`, `claudeCode.pinPrompt` et `claudeCode.contextUsageThreshold`, l'argument `prompt` d'« Open in Side Bar », le menu des groupes de sessions) ; le reste (runner auto-hébergé, Windows, Amazon Bedrock, passerelle Claude apps, Code Mode) vise des configurations que CONTEXTE.md ne décrit pas.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21330",
+          "libelle": "Claude Code 2.1.330 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Claude Code 2.1.330 est installée et à jour d'après `docs/data/versions.json` : les correctifs sont déjà actifs sur ta machine. CONTEXTE.md décrit ton forfait Max (20x) et des paquets Debian : `easel`, annoncé pour Max sur Linux, est donc dans le périmètre annoncé, et il répond à ton irritant principal (mieux connaître les fonctions de Claude Code) ; le changelog dit « là où c'est disponible » pour Team et Enterprise, sans préciser le déploiement sur Max. CONTEXTE.md décrit aussi plusieurs sessions Claude Code en parallèle (services `claude-session@<nom>`) : si deux d'entre elles enregistrent un réglage au même moment, il n'est plus perdu, et une sauvegarde de `~/.claude.json` n'écrase plus une bonne copie quand le disque est plein. Tes sous-agents (31 appels `Agent` relevés le 04/10) ne perdent plus un serveur MCP déclaré quand un autre sous-agent se termine. L'étape `/delta` de la chaîne D70 est lancée par `claude -p` : une sortie vers un fichier sur disque plein remonte maintenant en code 1, que l'orchestrateur peut voir. Changement à surveiller : `rm` sur un dossier de premier niveau ou le dossier de travail demande plus souvent une approbation et est refusé sans interlocuteur ; le changelog ne dit pas si le régime `bypassPermissions` de tes sessions (CONTEXTE.md) y échappe, donc un refus inattendu d'un `rm` dans une session sans interlocuteur serait à rapprocher de cette version. Les ajouts de connexion d'organisation et le lien de connexion court ne te concernent pas : ton abonnement est individuel.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Dans une session de `~/projets/delta-ia`, demande un graphique tiré de `docs/data/claude/index.json`, puis cherche le réglage des graphiques automatiques avec `/config`.",
+        "etapes": [
+          "Dans une session de `~/projets/delta-ia`, demande « trace en graphique le nombre d'éléments par jour de `docs/data/claude/index.json` » (outil intégré `easel`, aucune commande à taper) ; résultat attendu : un graphique s'affiche dans la session, ou Claude répond sans graphique, ce qui voudrait dire que `easel` n'est pas encore livré sur ton compte Max.",
+          "Tape `/config` puis `chart` dans la recherche (fiche `claude-code-commandes-config`, usage `/config`) ; résultat attendu : le réglage des graphiques automatiques apparaît et se coupe si tu n'en veux pas ; s'il n'apparaît pas, la fonction n'est pas active chez toi."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-config",
+        "claude-code-parametres-claude-code-full-sign-in-link"
+      ],
+      "contexte_sections": {
+        "profil": {
+          "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+          "pourquoi": "Abonnement Max (20x) individuel : `easel` annoncé pour Max, connexion d'organisation sans objet."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Plusieurs sessions `claude-session@<nom>` en parallèle, pilotées par Remote Control depuis l'iPhone."
+        },
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents utilisés (31 appels `Agent` le 04/10) ; correctif du serveur MCP déclaré par un sous-agent."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions en `bypassPermissions` : effet du changement sur `rm` non établi par le changelog."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Chaîne D70 : l'étape `/delta` est lancée par `claude -p`, dont le code de sortie sur disque plein change."
+        }
+      }
+    },
+    {
+      "id": "claude-apps-notes-2026-11-20",
+      "ids_bruts": [
+        "claude-apps-notes-2026-11-20",
+        "claude-aide-index-18483812"
+      ],
+      "produit": "claude",
+      "titre": "Computer use (bêta) pour les forfaits Team et Enterprise, désactivé par défaut",
+      "version": null,
+      "date_publication": "2026-11-20",
+      "type": "nouveaute",
+      "resume": "Computer use, qui laisse Claude voir l'écran d'un utilisateur et agir dans les applications de bureau qu'il autorise, passe en bêta sur Team et Enterprise, avec un déploiement progressif par organisation. L'article d'aide d'administration précise que la fonction est désactivée par défaut, qu'un Owner ou Primary Owner l'active dans Organization settings > Capabilities, et qu'elle exige l'expérience Claude unifiée (Claude Desktop sous macOS 14 ou plus et Windows ; Claude sur le web et mobile quand le réglage Computer access est actif). Elle ne fonctionne ni dans Claude Code ni dans les tâches de l'option « Cowork » séparée, n'a pas de bac à sable entre Claude et les applications, et enregistre les captures d'écran avec la conversation.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude — support.claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://support.claude.com/en/articles/18483812-set-up-computer-use-for-team-and-enterprise-plans",
+          "libelle": "Set up computer use for Team and Enterprise plans — support.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-commandes-teleport",
+      "ids_bruts": [
+        "kb-claude-code-commandes-teleport"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (D71) : la fiche `/teleport` change de description d'origine",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La description d'origine de `/teleport` dit maintenant que la commande ouvre un sélecteur puis « charge la conversation » d'une session cloud, là où elle disait qu'elle récupérait la branche et la conversation ; l'usage (`/teleport`, alias `/tp`) et la condition d'un abonnement claude.ai sont inchangés. Le changelog 2.1.330 précise que `claude --teleport` affiche dans certaines configurations les commandes git pour changer de branche au lieu de les exécuter, et sort en code 1 avec `-p` tant que la branche n'est pas changée. Aucune limite, remise à zéro ni tarif ne change : la fiche est repérée D71 par la seule mention de l'abonnement.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Commandes — code.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-commandes-teleport"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-full-sign-in-link",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-full-sign-in-link"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable ajoutée, `CLAUDE_CODE_FULL_SIGN_IN_LINK`",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche de variable d'environnement ajoutée : `CLAUDE_CODE_FULL_SIGN_IN_LINK=1` affiche l'URL de connexion claude.ai complète au lieu de la version courte, utile quand l'URL courte donne une erreur ou qu'un script lit des valeurs dans l'URL. Elle se pose dans le shell ou les réglages utilisateur et demande Claude Code 2.1.330 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Claude Code — env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-full-sign-in-link"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-enforceanthropicsignin",
+      "ids_bruts": [
+        "kb-claude-code-parametres-enforceanthropicsignin"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : réglage ajouté, `enforceAnthropicSignIn`",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Fiche de réglage ajoutée : `enforceAnthropicSignIn` exige une connexion claude.ai sur l'API d'Anthropic, ou une connexion à l'Enterprise Admin Console ; cette dernière ne compte que si `forceLoginOrgUUID` nomme l'organisation et qu'aucun `policyHelper` n'est défini. Il demande Claude Code 2.1.329 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#enforceanthropicsignin",
+          "libelle": "Claude Code — settings-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-enforceanthropicsignin"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2123822989154369958",
+      "raison": "post X sans rapport : récit des cofondateurs d'Anthropic, sans effet sur les modèles, les outils ou leurs conditions d'usage"
+    },
+    {
+      "id": "https://www.anthropic.com/news/ipo-close",
+      "raison": "information financière (clôture de l'introduction en bourse), sans lien avec les modèles, les outils ou leurs conditions d'usage (D24) ; sujet déjà écarté le 19/11 (x-2123196808675405860) et le 20/11 (x-2123461658890686863)"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

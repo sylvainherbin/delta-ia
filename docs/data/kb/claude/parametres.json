@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-20",
+ "maj_le": "2026-11-21",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 689,
- "commentees": 602,
+ "total": 691,
+ "commentees": 600,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -8211,7 +8211,7 @@
    "nom": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
    "gabarit": "court",
    "description": "Variable d'environnement propre à macOS avec l'installeur natif : à 1, le processus hôte de chaque session en arrière-plan part du binaire installé et non de ClaudeCode.app, ce qui peut faire redemander des autorisations (accès aux dossiers) après chaque mise à jour. Exige Claude Code 2.1.295 ou plus.",
-   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
+   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. Requires Claude Code v2.1.295 or later",
    "usage": "CLAUDE_CODE_DISABLE_BG_STABLE_PATH",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -8228,7 +8228,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.machine": {
@@ -8239,7 +8239,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-05",
+   "maj_le": "2026-11-21",
    "historique": [
     {
      "date": "2026-11-05",
@@ -8248,6 +8248,10 @@
     {
      "date": "2026-11-05",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -11366,6 +11370,57 @@
      "pourquoi": "Sorties de la chaîne dans `rapports/auto/`."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-claude-code-full-sign-in-link",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
+   "gabarit": "court",
+   "description": "Variable d'environnement : à 1, `claude auth login` et `/login` affichent l'URL de connexion claude.ai complète au lieu de la version courte (2.1.330 ou plus), utile si l'URL courte donne une erreur ou si un script lit des valeurs dans l'URL.",
+   "description_source": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
+   "usage": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Dépanne seulement une connexion dont l'URL courte échoue ; CONTEXTE.md ne décrit aucun script qui lit l'URL de connexion et les sessions durables restent connectées."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions durables `claude --resume` : aucune lecture de l'URL de connexion décrite."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-21",
+   "historique": [
+    {
+     "date": "2026-11-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentaire révisé"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-claude-code-git-bash-path",
@@ -22329,6 +22384,57 @@
    }
   },
   {
+   "id": "claude-code-parametres-enforceanthropicsignin",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "enforceAnthropicSignIn",
+   "gabarit": "court",
+   "description": "Clé de réglages gérés : exige une connexion claude.ai sur l'API d'Anthropic ou une connexion à l'Enterprise Admin Console ; cette dernière ne compte que si `forceLoginOrgUUID` nomme l'organisation et sans `policyHelper` (2.1.329 ou plus).",
+   "description_source": "Require a claude.ai login on Anthropic's API, or an Enterprise Admin Console sign-in. An Enterprise Admin Console sign-in counts only when forceLoginOrgUUID names your organization and you set no policyHelper. Requires Claude Code v2.1.329 or later.",
+   "usage": "{\n  \"forceLoginOrgUUID\": \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"enforceAnthropicSignIn\": true\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Pensé pour une organisation qui impose la connexion ; ton abonnement Max (20x) est individuel, sans réglages gérés par une administration."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#enforceanthropicsignin",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max (20x) individuel, hors organisation."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "Authentication and providers",
+   "maj_le": "2026-11-21",
+   "historique": [
+    {
+     "date": "2026-11-21",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-enforceavailablemodels",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -23530,7 +23636,7 @@
    "nom": "forceLoginOrgUUID",
    "gabarit": "court",
    "description": "Réglage qui impose (source gérée) ou présélectionne l'organisation Anthropic de connexion ; posé dans un fichier de réglages, il retire aussi la connexion Console sans clé et crée une clé API.",
-   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to and creates an API key instead.",
+   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array.",
    "usage": "{\n  \"forceLoginOrgUUID\": [\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\", \"yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy\"]\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -23547,11 +23653,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-reglages",
    "groupe": "Authentication and providers",
-   "maj_le": "2026-11-06",
+   "maj_le": "2026-11-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -23572,6 +23678,10 @@
     {
      "date": "2026-11-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -24776,7 +24886,7 @@
    "nom": "Hook PostToolUse",
    "gabarit": "court",
    "description": "Événement de hook déclenché juste après la réussite d'un outil.",
-   "description_source": "Runs immediately after a tool completes successfully.",
+   "description_source": "Runs immediately after a tool completes successfully. In the main conversation, PostToolUse hooks from managed settings also run after some failed calls, so write them to handle both.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"PostToolUse\",\n  \"tool_name\": \"Write\",\n  \"tool_input\": {\n    \"file_path\": \"/path/to/file.txt\",\n    \"content\": \"file content\"\n  },\n  \"tool_response\": {\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24793,11 +24903,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24826,6 +24936,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -25032,7 +25146,7 @@
    "nom": "Hook PreToolUse",
    "gabarit": "court",
    "description": "Événement de hook déclenché après la préparation des paramètres d'un outil et avant son exécution, filtrable par nom d'outil, outils MCP compris.",
-   "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on any tool name except EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
+   "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on tool names other than EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
    "usage": "{\n  \"hook_event_name\": \"PreToolUse\",\n  \"tool_name\": \"Write\",\n  \"tool_input\": {\n    \"file_path\": \"C:\\\\project\\\\src\\\\index.ts\",\n    \"content\": \"...\"\n  },\n  ...\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25049,11 +25163,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-21",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25102,6 +25216,61 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Runs after Claude creates tool parameters and before processing the tool call. Matches on any tool name except EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-21",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "L'événement PreToolUse s'exécute après que Claude a créé les paramètres d'un outil et avant le traitement de l'appel de cet outil.",
+       "source": "https://code.claude.com/docs/en/hooks#pretooluse",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation change le moment de déclenchement de PreToolUse ou retire cet événement."
+      },
+      {
+       "affirmation": "PreToolUse peut filtrer sur tout nom d'outil sauf EndConversation, dont les outils intégrés Bash, Write, Edit et les outils MCP.",
+       "source": "https://code.claude.com/docs/en/hooks#pretooluse",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation retire Bash des outils filtrables par PreToolUse ou modifie la liste des correspondances."
+      },
+      {
+       "affirmation": "Sylvain n'a aujourd'hui qu'un seul hook, PermissionDenied dans ~/.claude/settings.json, qui lance operer refus ; aucun autre hook n'existe dans les réglages des projets.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md signale un autre hook installé, notamment dans les réglages d'un projet."
+      },
+      {
+       "affirmation": "Bash est de loin l'outil le plus appelé par Sylvain dans Claude Code, avec environ 2 900 appels relevés le 25/09.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Un nouveau relevé d'usage dans CONTEXTE.md montre que Bash n'est plus l'outil dominant."
+      },
+      {
+       "affirmation": "La piste 3 note que la vérification SHA-256 des missions est un contrôle répété à la main qui pourrait devenir un hook.",
+       "source": "contexte:optimisation.pistes",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md retire la piste 3 ou indique que la vérification SHA-256 des missions est déjà automatisée."
+      },
+      {
+       "affirmation": "Sur trading-sim, l'empreinte SHA-256 d'une mission est conservée dans un fichier .sha256 séparé, jamais dans le document lui-même.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md change la convention d'empreinte des missions de trading-sim ou ne décrit plus ce projet."
+      },
+      {
+       "affirmation": "Sur trading-sim, herbin-mint relit les missions lourdes, notamment leur intégrité SHA-256, avant lancement.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus la relecture d'intégrité SHA-256 avant lancement des missions."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
@@ -25118,51 +25287,7 @@
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
      "pourquoi": "Empreinte SHA-256 des missions dans un fichier `.sha256` séparé."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "L'événement PreToolUse s'exécute après que Claude a créé les paramètres d'un outil et avant le traitement de l'appel de cet outil.",
-     "source": "https://code.claude.com/docs/en/hooks#pretooluse",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation change le moment de déclenchement de PreToolUse ou retire cet événement."
-    },
-    {
-     "affirmation": "PreToolUse peut filtrer sur tout nom d'outil sauf EndConversation, dont les outils intégrés Bash, Write, Edit et les outils MCP.",
-     "source": "https://code.claude.com/docs/en/hooks#pretooluse",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation retire Bash des outils filtrables par PreToolUse ou modifie la liste des correspondances."
-    },
-    {
-     "affirmation": "Sylvain n'a aujourd'hui qu'un seul hook, PermissionDenied dans ~/.claude/settings.json, qui lance operer refus ; aucun autre hook n'existe dans les réglages des projets.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md signale un autre hook installé, notamment dans les réglages d'un projet."
-    },
-    {
-     "affirmation": "Bash est de loin l'outil le plus appelé par Sylvain dans Claude Code, avec environ 2 900 appels relevés le 25/09.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Un nouveau relevé d'usage dans CONTEXTE.md montre que Bash n'est plus l'outil dominant."
-    },
-    {
-     "affirmation": "La piste 3 note que la vérification SHA-256 des missions est un contrôle répété à la main qui pourrait devenir un hook.",
-     "source": "contexte:optimisation.pistes",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md retire la piste 3 ou indique que la vérification SHA-256 des missions est déjà automatisée."
-    },
-    {
-     "affirmation": "Sur trading-sim, l'empreinte SHA-256 d'une mission est conservée dans un fichier .sha256 séparé, jamais dans le document lui-même.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md change la convention d'empreinte des missions de trading-sim ou ne décrit plus ce projet."
-    },
-    {
-     "affirmation": "Sur trading-sim, herbin-mint relit les missions lourdes, notamment leur intégrité SHA-256, avant lancement.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus la relecture d'intégrité SHA-256 avant lancement des missions."
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-parametres-hook-sessionend",
