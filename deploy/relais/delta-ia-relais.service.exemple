@@ -7,6 +7,9 @@
 [Unit]
 Description=Delta — relais local « Envoyer à Delta » (onglet Référence → juger)
 Documentation=file:%h/projets/delta-ia/scripts/relais_reference.py
+# SUITE 4, point 4 : une garde qui refuse (126) ne relance pas l'unité toutes les 5 s sans fin (voir Restart=).
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 Type=simple
@@ -21,6 +24,10 @@ ExecStart=/usr/bin/python3 %h/projets/delta-ia/scripts/relais_reference.py
 Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache
 Restart=on-failure
 RestartSec=5
+# SUITE 4, point 4 : pas de redémarrage sur le 126 d'une garde. RestartPreventExitStatus ne vaut que pour le processus
+# principal (systemd.service(5) : sans effet sur ExecStartPre=) ; les gardes étant des ExecStartPre, c'est la limite de
+# démarrages de [Unit] (StartLimitBurst) qui arrête la boucle : 3 démarrages en 60 s, puis l'unité reste en échec.
+RestartPreventExitStatus=126
 
 [Install]
 WantedBy=default.target

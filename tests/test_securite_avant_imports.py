@@ -375,3 +375,25 @@ def test_tout_lanceur_du_depot_porte_la_garde():
     assert sorted(vus) == sorted(UNITES + MODELES)
     assert len(parcours) == 1, "un seul code de parcours"
     assert "ls-files" not in next(iter(parcours))
+
+
+def test_aucune_unite_ne_redemarre_sur_une_garde():
+    """SUITE 4, point 4 : toute unité ou tout modèle du dépôt qui redémarre (Restart=) ne boucle pas sur le 126 d'une
+    garde. RestartPreventExitStatus=126 couvre le processus principal ; les gardes sont des ExecStartPre, sur lesquels
+    il est sans effet (systemd.service(5)) : la limite de démarrages de [Unit] doit être atteinte par la boucle elle-même
+    (StartLimitBurst redémarrages espacés de RestartSec tiennent dans StartLimitIntervalSec)."""
+    redemarrent = []
+    for f in sorted((RACINE / "deploy").rglob("*.service*")):
+        texte = f.read_text()
+        unit, _, service = texte.partition("[Service]")
+        valeurs = lambda bloc, cle: [l.strip().partition("=")[2] for l in bloc.splitlines() if l.strip().startswith(cle + "=")]
+        restart = valeurs(service, "Restart")
+        if not restart or restart[-1] == "no":
+            continue
+        redemarrent.append(str(f.relative_to(RACINE)))
+        assert "126" in (valeurs(service, "RestartPreventExitStatus") or [""])[-1].split(), f.name
+        intervalle, rafale = valeurs(unit, "StartLimitIntervalSec"), valeurs(unit, "StartLimitBurst")
+        assert intervalle and rafale, f"{f.name} : limite de démarrages absente de [Unit]"
+        pause = float((valeurs(service, "RestartSec") or ["0.1"])[-1])  # 100 ms par défaut
+        assert int(rafale[-1]) * pause < float(intervalle[-1]) and float(intervalle[-1]) > 0, f.name
+    assert "deploy/relais/delta-ia-relais.service.exemple" in redemarrent
