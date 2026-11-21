@@ -10,6 +10,7 @@ import time
 from dataclasses import dataclass
 from urllib.parse import urlparse, urljoin
 
+import idna  # dépendance de requests, qui encode l'hôte de la même façon (UTS 46)
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.connection import HTTPConnection, HTTPSConnection
@@ -41,7 +42,10 @@ def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[
         if not adresse.hostname or adresse.username is not None or adresse.password is not None:
             raise ValueError("hôte absent ou identifiants interdits")
         port = adresse.port or (443 if adresse.scheme == "https" else 80)
-        ips = socket.getaddrinfo(adresse.hostname, port, type=socket.SOCK_STREAM)
+        hote = adresse.hostname
+        if not hote.isascii():  # nom accentué : contrôlé et résolu sous la forme punycode que requests passe à la connexion
+            hote = idna.encode(hote, uts46=True).decode("ascii")
+        ips = socket.getaddrinfo(hote, port, type=socket.SOCK_STREAM)
         if not ips:
             raise ValueError("aucune adresse résolue")
         for _, _, _, _, sockaddr in ips:
@@ -49,7 +53,7 @@ def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[
             ip = getattr(ip, "ipv4_mapped", None) or ip
             if not ip.is_global or ip.is_multicast or ip.is_reserved:
                 raise ValueError("adresse non routable")
-        return _cle_hote(adresse.hostname, port), tuple(dict.fromkeys(sockaddr[0] for *_, sockaddr in ips))
+        return _cle_hote(hote, port), tuple(dict.fromkeys(sockaddr[0] for *_, sockaddr in ips))
     except (ValueError, OSError) as exc:
         raise ErreurReseau(f"DESTINATION_REFUSEE : {exc}") from exc
 

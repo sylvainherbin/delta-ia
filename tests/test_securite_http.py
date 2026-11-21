@@ -164,6 +164,29 @@ def test_repli_sur_les_ip_deja_controlees_sans_nouvelle_resolution(monkeypatch):
     assert demandees == [("93.184.216.34", 443), ("93.184.216.35", 443)], "repli dans l'ordre, sans doublon"
     assert resolutions == ["hote.invalid"], "une seule résolution par saut"
 
+
+def test_nom_accentue_controle_et_connecte_en_punycode(monkeypatch):
+    """SUITE 3, point 5 : requests passe l'hôte « café.invalid » en punycode à la connexion ; le contrôle résout la même
+    forme et l'épingle sous la même clé : la connexion part vers l'IP contrôlée au lieu d'être refusée faute d'épingle."""
+    import urllib3.util.connection as connexion
+
+    resolutions, demandees = [], []
+
+    def resoudre(h, p, *a, **kw):
+        resolutions.append(h)
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", p))]
+
+    def connecter(adresse, *a, **k):
+        demandees.append(adresse)
+        raise OSError("fixture : IP contrôlée atteinte")
+
+    monkeypatch.setattr(socket, "getaddrinfo", resoudre)
+    monkeypatch.setattr(connexion, "create_connection", connecter)
+    with pytest.raises(ErreurReseau) as exc:
+        Client(tentatives=1, dormir=lambda s: None).get("https://café.invalid/a")
+    assert resolutions == ["xn--caf-dma.invalid"] and demandees == [("93.184.216.34", 443)]
+    assert "aucune IP contrôlée" not in str(exc.value)
+
 def test_tls_garde_sni_et_certificat_de_l_hote(monkeypatch):
     """HTTPS : socket ouvert vers l'IP contrôlée, SNI et vérification du certificat sur le nom d'hôte."""
     import urllib3.connection as conn
