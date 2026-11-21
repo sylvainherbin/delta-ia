@@ -30,9 +30,10 @@ def _cle_hote(hote: str, port: int) -> tuple[str, int]:
     return hote.strip("[]").rstrip(".").lower(), int(port)
 
 
-def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[str, int], str]:
-    """Chaque requête et chaque redirection : schéma déclaré et toutes les IP routables. Rend ((hôte, port), IP contrôlée) :
-    la connexion se fait à cette IP, sans nouvelle résolution (un rebond DNS vers une adresse interne n'est pas suivi)."""
+def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[str, int], tuple[str, ...]]:
+    """Chaque requête et chaque redirection : schéma déclaré et toutes les IP routables. Rend ((hôte, port), IP contrôlées),
+    dans l'ordre de la résolution et sans doublon : la connexion se fait à ces IP, l'une après l'autre, sans nouvelle
+    résolution (un rebond DNS vers une adresse interne n'est pas suivi, même quand la première IP refuse)."""
     try:
         adresse = urlparse(url)
         if adresse.scheme not in (("https", "http") if autoriser_http else ("https",)):
@@ -48,18 +49,18 @@ def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[
             ip = getattr(ip, "ipv4_mapped", None) or ip
             if not ip.is_global or ip.is_multicast or ip.is_reserved:
                 raise ValueError("adresse non routable")
-        return _cle_hote(adresse.hostname, port), ips[0][4][0]
+        return _cle_hote(adresse.hostname, port), tuple(dict.fromkeys(sockaddr[0] for *_, sockaddr in ips))
     except (ValueError, OSError) as exc:
         raise ErreurReseau(f"DESTINATION_REFUSEE : {exc}") from exc
 
 
 class AdaptateurEpingle(HTTPAdapter):
-    """Connexion à l'IP contrôlée par `verifier_destination`, sans nouvelle résolution. L'hôte reste celui de l'URL pour
-    l'en-tête Host, le SNI et la vérification du certificat : seule l'adresse du socket est imposée. Sans IP contrôlée
-    pour (hôte, port), la connexion est refusée."""
+    """Connexion aux IP contrôlées par `verifier_destination`, l'une après l'autre, sans nouvelle résolution. L'hôte reste
+    celui de l'URL pour l'en-tête Host, le SNI et la vérification du certificat : seule l'adresse du socket est imposée.
+    Sans IP contrôlée pour (hôte, port), la connexion est refusée ; si toutes refusent, la dernière erreur est levée."""
 
     def __init__(self) -> None:
-        self.epingles: dict[tuple[str, int], str] = {}
+        self.epingles: dict[tuple[str, int], tuple[str, ...]] = {}
         super().__init__()
 
     def init_poolmanager(self, *args, **kwargs) -> None:
@@ -69,16 +70,21 @@ class AdaptateurEpingle(HTTPAdapter):
         def classe(base):
             class Connexion(base):
                 def _new_conn(self):
-                    ip = epingles.get(_cle_hote(self.host, self.port))
-                    if ip is None:
+                    ips = epingles.get(_cle_hote(self.host, self.port))
+                    if not ips:
                         raise NewConnectionError(self, f"DESTINATION_REFUSEE : aucune IP contrôlée pour {self.host}:{self.port}")
-                    try:
-                        return _connexion.create_connection((ip, self.port), self.timeout, source_address=self.source_address,
-                                                            socket_options=self.socket_options)
-                    except socket.timeout as e:
-                        raise ConnectTimeoutError(self, f"Connection to {self.host} ({ip}) timed out") from e
-                    except OSError as e:
-                        raise NewConnectionError(self, f"Failed to establish a new connection: {e}") from e
+                    erreur = None
+                    for ip in ips:  # repli sur les seules adresses déjà contrôlées, jamais une résolution neuve
+                        try:
+                            return _connexion.create_connection((ip, self.port), self.timeout, source_address=self.source_address,
+                                                                socket_options=self.socket_options)
+                        except socket.timeout as e:
+                            erreur = ConnectTimeoutError(self, f"Connection to {self.host} ({ip}) timed out")
+                            erreur.__cause__ = e
+                        except OSError as e:
+                            erreur = NewConnectionError(self, f"Failed to establish a new connection: {e}")
+                            erreur.__cause__ = e
+                    raise erreur
             return Connexion
 
         class Pool(HTTPConnectionPool):
@@ -135,9 +141,9 @@ class Client:
     def _obtenir(self, url: str, accept: str | None):
         historique = []
         for saut in range(11):
-            cle, ip = verifier_destination(url, self._autoriser_http)
+            cle, ips = verifier_destination(url, self._autoriser_http)
             if self._epingles is not None:
-                self._epingles[cle] = ip  # chaque saut : la connexion suit la résolution contrôlée, jamais une seconde
+                self._epingles[cle] = ips  # chaque saut : la connexion suit la résolution contrôlée, jamais une seconde
             r = self.session.get(url, headers=self._entetes(url, accept), timeout=DELAI, allow_redirects=False, stream=True)
             if r.status_code not in (301, 302, 303, 307, 308):
                 return r, tuple(historique)

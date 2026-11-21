@@ -112,7 +112,7 @@ def test_rebond_dns_la_connexion_va_a_l_ip_controlee_a_chaque_saut(monkeypatch):
     publiques = {"debut.invalid": "93.184.216.34", "saut.invalid": "93.184.216.35"}
     vues = []
 
-    def rebond(hote, p, **kw):
+    def rebond(hote, p, *a, **kw):  # urllib3 appelle getaddrinfo(hôte, port, famille, type) en positionnel
         ip = hote if hote[0].isdigit() else ("127.0.0.1" if hote in vues else publiques[hote])
         vues.append(hote)
         return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (ip, p))]
@@ -138,6 +138,31 @@ def test_rebond_dns_la_connexion_va_a_l_ip_controlee_a_chaque_saut(monkeypatch):
     assert hotes == [f"debut.invalid:{port}", f"saut.invalid:{port}"], "en-tête Host conservé"
     assert rep.texte == "fixture" and rep.redirections == ((302, f"http://debut.invalid:{port}/debut"),)
 
+
+
+def test_repli_sur_les_ip_deja_controlees_sans_nouvelle_resolution(monkeypatch):
+    """SUITE 3, point 5 : la première IP contrôlée refuse la connexion, la seconde sert ; une seule résolution, et la
+    connexion ne demande que des IP contrôlées (doublon écarté, ordre de la résolution)."""
+    import urllib3.util.connection as connexion
+
+    resolutions, demandees = [], []
+
+    def resoudre(h, p, *a, **kw):
+        resolutions.append(h)
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (ip, p)) for ip in ("93.184.216.34", "93.184.216.34", "93.184.216.35")]
+
+    def connecter(adresse, *a, **k):
+        demandees.append(adresse)
+        if adresse[0] == "93.184.216.34":
+            raise ConnectionRefusedError("fixture : première IP fermée")
+        raise OSError("fixture : seconde IP atteinte")  # atteinte : le repli a eu lieu ; aucun échange réel
+
+    monkeypatch.setattr(socket, "getaddrinfo", resoudre)
+    monkeypatch.setattr(connexion, "create_connection", connecter)
+    with pytest.raises(ErreurReseau):
+        Client(tentatives=1, dormir=lambda s: None).get("https://hote.invalid/a")
+    assert demandees == [("93.184.216.34", 443), ("93.184.216.35", 443)], "repli dans l'ordre, sans doublon"
+    assert resolutions == ["hote.invalid"], "une seule résolution par saut"
 
 def test_tls_garde_sni_et_certificat_de_l_hote(monkeypatch):
     """HTTPS : socket ouvert vers l'IP contrôlée, SNI et vérification du certificat sur le nom d'hôte."""
