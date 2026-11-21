@@ -2,8 +2,18 @@
 
 ## En-tête
 
-État : partiel.
-Réserves : les deux skills Codex sous `.agents/skills/` restent en lecture seule dans le profil natif ; leur ajout est fourni en patch externe. Aucun test n’a été lancé, conformément au brief. L’affichage du suivi personnel depuis la page Référence publique devient inaccessible par CORS ; aucun jeton ni nouvelle route privée n’est livré. Les commits, reçus, relecture, fusion et déploiement restent à la voie de livraison.
+État : livré en relecture (R3c, mission m-786e8d7b550e, 21/11/2026). Les sections « Point (…) » ci-dessous décrivent la remise du 17/11 ; la section suivante dit ce qui a changé depuis et fait foi en cas d'écart.
+Réserves : l'affichage du suivi personnel sur la page Référence reste perdu, par décision de Sylvain du 21/11 (« Non, on le perd ») : `/suivi` reste sans CORS. Les têtes, mutants et suites se jouent au K8 par le chef dev ; cette remise n'en revendique aucun résultat neuf.
+
+## État au 21/11/2026 (R3c)
+
+- Skills Codex (point b) : appliqués dans la branche (6e2c1f4) ; `prompts/codex-delta.md` et `codex-delta-kb.md` sont de nouveau identiques au corps des SKILL.md (b8af6ce), la règle « Sources non fiables » après le titre.
+- Intégrité git (point 2, R3 et R3b) : empreinte de `.git/config` (clés de suivi à part), `hooks/` et `info/` avant et après chaque étape, et contrôle avant la publication, le relevé X et chaque étape. Seuls `branch.<nom>.remote` et `.merge` vers un remote connu avant l'étape sont exemptés ; `remote.pushDefault` reste strict et ne fait pas d'un « pushdefault » un remote connu (point 7 de la SUITE 2). Sur un git altéré, la supervision elle-même n'est plus lancée : 126 et témoin `rapports/auto/incident-git.json` (B1, 7f61de3). La phrase « La supervision reste lancée après l'arrêt de la chaîne » du point (2) n'est plus vraie.
+- Périmètre des commits (point 2) : les commits de delta-ia-commun et delta-ia-selection poussés pendant l'étape ne lui sont plus imputés (identité git du dépôt, un parent, déjà sur origin/main, sujet du service, chemins de sa publication) ; tout autre commit l'est (fed96dd).
+- Requêtes sortantes (point 4) : la connexion se fait à l'IP contrôlée, sans nouvelle résolution, à chaque saut ; Host, SNI et certificat restent ceux du nom d'hôte (eedf135). La réserve « ce correctif ne revendique pas un verrouillage contre un changement DNS » est levée.
+- Avant imports (point 6) : les unités et `passage-auto.sh` placent les `.pyc` hors de l'arbre (`PYTHONPYCACHEPREFIX`), et refusent (126) de lancer le Python du `.venv` tant que le témoin d'incident git n'est pas levé ; les `*.pth`, `sitecustomize` et `usercustomize` du `.venv` entrent dans l'empreinte d'avant/après étape (B2, da2e3f1).
+- Relais (point 3) : inchangé ; la perte d'affichage de `/suivi` est acceptée (décision du 21/11 ci-dessus).
+- Tests : la R3b a été jouée au K8 par le chef dev (15 mutants rouges, tête ciblée verte, 6 rouges neufs sur la tête entière, traités par b8af6ce et 3e97655). La R3c attend ses lignes de banc (`~/projets/briefs/securite-delta-ia-veille/lignes-banc-r3.txt`).
 
 ## Réalisation
 

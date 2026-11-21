@@ -510,8 +510,11 @@ def differences_git(avant: dict[str, str], apres: dict[str, str]) -> list[str]:
     """Clés de l'empreinte qui diffèrent, toutes strictes sauf `branch.<nom>.remote` et `branch.<nom>.merge` (chef dev, 21/11 :
     une branche suivie créée par une étape ne doit pas laisser un 126 durable), et seulement si le remote de cette branche
     (sa valeur après, ou avant si la clé disparaît) est un remote déjà présent avant. Tout le reste reste strict, sous branch.*
-    compris (pushRemote, rebase, description…), comme remote.*, core.*, include*, filter.*, alias.*, url.*, et les hooks."""
-    connus = {k[len("config:remote."):].rsplit(".", 1)[0] for k in avant if k.startswith("config:remote.")}
+    compris (pushRemote, rebase, description…), comme remote.* (`remote.pushDefault` compris), core.*, include*, filter.*, alias.*, url.*, et les hooks."""
+    # Remote connu : clé « remote.<nom>.<variable> » d'avant l'étape. `remote.pushDefault` (sans sous-section) n'en nomme
+    # aucun et reste strict : « pushdefault » n'est pas un remote, sa valeur ne fait rien exempter.
+    connus = {nom for k in avant if k.startswith("config:remote.")
+              for nom, point, _ in [k[len("config:remote."):].rpartition(".")] if point and nom}
     modifies = []
     for k in sorted(set(avant) | set(apres)):
         if avant.get(k) == apres.get(k):

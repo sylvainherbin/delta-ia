@@ -586,6 +586,11 @@ def test_differences_git_exemption_etroite():
     ajoute = {**avant, "config:remote.autre.url": "v", "config:branch.x.remote": "autre", "config:branch.x.merge": "refs/heads/x"}
     assert orc.differences_git(avant, ajoute) == ["config:branch.x.merge", "config:branch.x.remote", "config:remote.autre.url"], \
         "remote connu = présent AVANT l'étape"
+    pousse = {**avant, "config:remote.pushdefault": "origin"}
+    assert orc.differences_git(pousse, {**pousse, "config:remote.pushdefault": "autre"}) == ["config:remote.pushdefault"]
+    assert orc.differences_git(avant, pousse) == ["config:remote.pushdefault"], "remote.pushDefault ajouté : strict"
+    assert orc.differences_git(pousse, {**pousse, "config:branch.x.remote": "pushdefault", "config:branch.x.merge": "refs/heads/x"}) \
+        == ["config:branch.x.merge", "config:branch.x.remote"], "« pushdefault » n'est pas un remote connu"
 
 
 def test_empreinte_config_cles_de_suivi_a_part(depot):
