@@ -157,7 +157,39 @@ def test_temoin_d_incident_avant_tout_git(tmp_path, chemin):
     assert len(faits) == 1 and faits[0].returncode == 126 and "INCIDENT_GIT" in faits[0].stderr, "le témoin est le premier contrôle"
     assert not trace.exists(), "aucun git avant le témoin"
     (tmp_path / "rapports" / "auto" / "incident-git.json").unlink()
-    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)) and trace.exists(), "témoin levé : le contrôle git suit"
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)), "témoin levé : l'unité part"
+    # SUITE 4, point 1 : les modèles ne lancent plus aucun git ; seules les deux unités gardent git status (après l'empreinte)
+    assert trace.exists() == (chemin in UNITES), "modèles : aucun git dans les gardes"
+
+
+def _faux_fsmonitor(tmp_path: Path) -> Path:
+    """core.fsmonitor du dépôt de test : un script qui laisse une trace. git l'exécute à la lecture de l'index (status,
+    ls-files), hors de tout bac à sable ; une étape qui écrit .git/config peut le poser."""
+    trace = tmp_path / "fsmonitor-lance"
+    script = tmp_path / "fsmonitor.sh"
+    script.write_text(f"#!/bin/sh\necho \"$@\" >> '{trace}'\nexit 0\n")
+    script.chmod(0o755)
+    env_git = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    subprocess.run(["git", "config", "core.fsmonitor", str(script)], cwd=tmp_path, env=env_git, check=True, capture_output=True)
+    subprocess.run(["git", "status", "--porcelain=v1"], cwd=tmp_path, env=env_git, capture_output=True)
+    assert trace.exists(), "témoin : le faux fsmonitor est exécuté par un git ordinaire"
+    trace.unlink()
+    return trace
+
+
+@pytest.mark.parametrize("chemin", MODELES)
+def test_modele_ne_lance_jamais_le_fsmonitor(tmp_path, chemin):
+    """SUITE 4, point 1 : un core.fsmonitor posé n'est jamais exécuté par la garde d'un modèle, ni quand elle refuse
+    (binaire sous scripts/) ni quand elle laisse partir l'unité."""
+    scripts = _depot_scripts(tmp_path, "commun")
+    trace = _faux_fsmonitor(tmp_path)
+    unite = (RACINE / chemin).read_text()
+    env = _env_unite(unite, tmp_path)
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
+    _pyc_sans_source(scripts / "zoneinfo.pyc")
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "scripts/zoneinfo.pyc" in faits[-1].stderr
+    assert not trace.exists(), "aucun git, donc aucun fsmonitor"
 
 
 def _pyc_sans_source(chemin: Path) -> None:
@@ -210,23 +242,57 @@ def test_modele_refuse_un_fichier_ignore_sous_scripts(tmp_path, chemin):
     _pyc_sans_source(scripts / "zoneinfo.pyc")
     faits = _sequence(unite, tmp_path, env)
     assert faits[-1].returncode == 126 and "ARBRE_CODE_SALE" in faits[-1].stderr and "scripts/zoneinfo.pyc" in faits[-1].stderr
+    # SUITE 4, point 1 : les autres binaires importables, même dans un sous-dossier ; __pycache__/ toléré
+    (scripts / "zoneinfo.pyc").unlink()
+    (scripts / "sous").mkdir()
+    for nom in ("x.pyo", "_json.cpython-312-x86_64-linux-gnu.so", "y.pyd"):
+        (scripts / "sous" / nom).write_bytes(b"")
+        faits = _sequence(unite, tmp_path, env)
+        assert faits[-1].returncode == 126 and f"scripts/sous/{nom}" in faits[-1].stderr, nom
+        (scripts / "sous" / nom).unlink()
+    (scripts / "sous" / "__pycache__").mkdir()
+    (scripts / "sous" / "__pycache__" / "z.cpython-0.pyc").write_bytes(b"")
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
+
+
+def _code_python(ligne: str) -> str:
+    """Code passé à `python3 -I -S -c` dans une ligne ExecStartPre= ou dans passage-auto.sh."""
+    args = shlex.split(ligne.partition("=")[2] if ligne.startswith("ExecStartPre=") else ligne.removeprefix("if ! ").removesuffix("; then"))
+    assert args[:4] == ["/usr/bin/python3", "-I", "-S", "-c"], ligne[:80]
+    return args[4]
 
 
 def test_tout_lanceur_du_depot_porte_la_garde():
-    """Tout modèle d'unité du dépôt qui lance du code de scripts/ porte témoin d'abord, PYTHONPYCACHEPREFIX et refus des
-    fichiers ignorés ; delta-passage passe par passage-auto.sh, qui porte la même garde en shell (avant l'exec)."""
-    vus = []
+    """Tout modèle d'unité du dépôt qui lance du code de scripts/ porte témoin d'abord, PYTHONPYCACHEPREFIX et le parcours
+    de scripts/ ; delta-passage passe par passage-auto.sh, qui porte la même garde avant l'exec. SUITE 4, point 1 : le
+    parcours est le même code partout, et aucune garde ne lance git, hors le git status des deux unités (dernier contrôle)."""
+    import re
+    lance_git = lambda code: re.search(r"['\"]git['\"]", code)  # les gardes appellent git par subprocess.run(['git', …])
+    vus, parcours = [], set()
     for f in sorted((RACINE / "deploy").rglob("*.service*")):
         unite = f.read_text()
         start = next(l for l in unite.splitlines() if l.startswith("ExecStart="))
         if start.endswith("/scripts/passage-auto.sh"):
             sh = (RACINE / "scripts" / "passage-auto.sh").read_text()
-            assert sh.index('if [ -e "$RACINE/rapports/auto/incident-git.json" ]') < sh.index("git ls-files -o -i") < sh.index('exec "$PYTHON"')
+            avant = sh[:sh.index('exec "$PYTHON"')]
+            code = [l for l in avant.splitlines() if l.strip() and not l.lstrip().startswith("#")]
+            assert not [l for l in code if re.search(r"(^|[\s;(|&$])git(\s|$)", l)], "aucun git dans passage-auto.sh avant l'exec"
+            ligne = next(l for l in code if "os.walk" in l)
+            parcours.add(_code_python(ligne))
+            assert sh.index('if [ -e "$RACINE/rapports/auto/incident-git.json" ]') < sh.index(ligne) < sh.index('exec "$PYTHON"')
             assert "export PYTHONPYCACHEPREFIX=" in sh
             continue
         pre = [l for l in unite.splitlines() if l.startswith("ExecStartPre=")]
-        assert pre and "incident-git.json" in pre[0] and "git" not in pre[0].replace("incident-git.json", ""), f.name
-        assert any("'ls-files', '-o', '-i'" in l for l in pre), f.name
+        assert pre and "incident-git.json" in pre[0] and not lance_git(_code_python(pre[0])), f.name
+        assert "os.walk('scripts'" in pre[1], f"{f.name} : parcours juste après le témoin"
+        parcours.add(_code_python(pre[1]))
+        avec_git = [l for l in pre if lance_git(_code_python(l))]
+        if str(f.relative_to(RACINE)) in UNITES:
+            assert avec_git == [pre[-1]] and "'status', '--porcelain=v1'" in pre[-1], f.name
+        else:
+            assert avec_git == [], f"{f.name} : aucun git dans un modèle"
         assert "Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache" in unite, f.name
         vus.append(str(f.relative_to(RACINE)))
     assert sorted(vus) == sorted(UNITES + MODELES)
+    assert len(parcours) == 1, "un seul code de parcours"
+    assert "ls-files" not in next(iter(parcours))

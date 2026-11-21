@@ -9,10 +9,11 @@ ConditionPathExists=%h/projets/delta-ia/scripts/etat_fournisseurs.py
 [Service]
 Type=oneshot
 WorkingDirectory=%h/projets/delta-ia
-# SUITE 3, B2b : garde des unités delta-ia. Témoin d'incident EN PREMIER (ni git ni Python du dépôt tant qu'il existe),
-# puis aucun fichier IGNORÉ sous scripts/ hors __pycache__/ (un .pyc sans source y serait importé).
+# Garde des unités delta-ia. Témoin d'incident EN PREMIER (ni git ni Python du dépôt tant qu'il existe), puis
+# (SUITE 4, point 1) parcours de scripts/ SANS git, un core.fsmonitor ou un hook posé s'exécutant au premier git :
+# tout *.pyc, *.pyo, *.so ou *.pyd hors de __pycache__/ arrête (un .pyc sans source y serait importé). Aucun git ici.
 ExecStartPre=/usr/bin/python3 -I -S -c "import os, sys; t = 'rapports/auto/incident-git.json'; i = os.path.lexists(t); sys.stderr.write('INCIDENT_GIT : ' + t + ' non levé, rien n est lancé\\n' if i else ''); sys.exit(126 if i else 0)"
-ExecStartPre=/usr/bin/python3 -I -S -c "import subprocess, sys; o = subprocess.run(['git', 'ls-files', '-o', '-i', '--exclude-standard', '--', 'scripts'], capture_output=True); ignores = [p for p in o.stdout.decode(errors='replace').splitlines() if '/__pycache__/' not in p]; sale = o.returncode != 0 or bool(ignores); sys.stderr.write('ARBRE_CODE_SALE : fichiers ignorés sous scripts : ' + ' '.join(ignores[:5]) + '\\n' if sale else ''); sys.exit(126 if sale else 0)"
+ExecStartPre=/usr/bin/python3 -I -S -c "import os, sys; x = ('.pyc', '.pyo', '.so', '.pyd'); b = sorted(os.path.join(d, f) for d, s, fs in os.walk('scripts', onerror=lambda e: (sys.stderr.write('ARBRE_CODE_SALE : scripts illisible (' + str(e) + '), rien n est lancé\\n'), os._exit(126))) if '__pycache__' not in d.split(os.sep) for f in fs if f.lower().endswith(x)); sys.stderr.write('ARBRE_CODE_SALE : binaires hors de __pycache__ sous scripts : ' + ' '.join(b[:5]) + ', rien n est lancé\\n' if b else ''); sys.exit(126 if b else 0)"
 ExecStart=%h/projets/delta-ia/.venv/bin/python -B scripts/etat_fournisseurs.py
 # Les .pyc se lisent et s'écrivent hors de l'arbre : un __pycache__/ piégé dans scripts/ n'est pas chargé.
 Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache

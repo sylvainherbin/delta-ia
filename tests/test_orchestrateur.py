@@ -1486,6 +1486,7 @@ def test_passage_auto_temoin_d_incident_rien_n_est_lance(depot_sh):
     marque = depot_sh / "rapports" / "auto" / orc.INCIDENT_GIT
     marque.parent.mkdir(parents=True, exist_ok=True)
     marque.write_text("{}\n")
+    trace = faux_fsmonitor(depot_sh)
     r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
                        capture_output=True, text=True)
     assert r.returncode == 126 and "INCIDENT_GIT" in r.stderr and r.stdout == ""
@@ -1494,6 +1495,20 @@ def test_passage_auto_temoin_d_incident_rien_n_est_lance(depot_sh):
     assert len(lignes) == 1 and lignes[0][1:6] == ["orchestrateur", "chaine-git", "0 éléments (0 fort)", "aucun", "126"]
     assert "INCIDENT_GIT" in lignes[0][6] and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{4}", lignes[0][0])
     assert codes(depot_sh) == {"chaine-git": orc.CODE_ETAT}
+    assert not trace.exists(), "aucun git avant le témoin : le fsmonitor posé n'est pas exécuté"
+
+
+def faux_fsmonitor(depot) -> Path:
+    """core.fsmonitor posé dans le dépôt de test : un script qui laisse une trace (git l'exécute à la lecture de l'index)."""
+    trace = depot.parent / "fsmonitor-lance"
+    script = depot.parent / "fsmonitor.sh"
+    script.write_text(f"#!/bin/sh\necho \"$@\" >> '{trace}'\nexit 0\n")
+    script.chmod(0o755)
+    depot.sh("git", "config", "core.fsmonitor", str(script))
+    depot.sh("git", "status", "--porcelain=v1")
+    assert trace.exists(), "témoin : un git ordinaire exécute le faux fsmonitor"
+    trace.unlink()
+    return trace
 
 
 
@@ -1509,6 +1524,7 @@ def test_passage_auto_pyc_sans_source_ignore_rien_n_est_lance(depot_sh):
     with (depot_sh / ".git" / "info" / "exclude").open("a") as f:
         f.write("*.pyc\n")
     assert depot_sh.sh("git", "status", "--porcelain=v1", "--", "scripts").stdout == b"", "invisible à git status"
+    trace = faux_fsmonitor(depot_sh)  # SUITE 4, point 1 : le refus se fait sans git
     direct = subprocess.run([str(depot_sh / ".venv" / "bin" / "python"), "scripts/orchestrateur.py", "--config", str(depot_sh.toml),
                              "--liste"], cwd=depot_sh, capture_output=True, text=True)
     assert (depot_sh / "IMPORTE").exists(), f"témoin : sans le contrôle, le .pyc est importé ({direct.returncode})"
@@ -1517,6 +1533,7 @@ def test_passage_auto_pyc_sans_source_ignore_rien_n_est_lance(depot_sh):
                        capture_output=True, text=True)
     assert r.returncode == 126 and "ARBRE_CODE_SALE" in r.stderr and "scripts/html.pyc" in r.stderr and r.stdout == ""
     assert not (depot_sh / "IMPORTE").exists()
+    assert not trace.exists(), "passage-auto.sh n'a lancé aucun git : le fsmonitor posé n'est pas exécuté"
     (depot_sh / "scripts" / "html.pyc").unlink()
     (depot_sh / "scripts" / "__pycache__").mkdir(exist_ok=True)
     (depot_sh / "scripts" / "__pycache__" / "x.cpython-0.pyc").write_bytes(b"")

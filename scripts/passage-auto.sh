@@ -6,7 +6,7 @@
 #
 # Codes de sortie : 0 chaîne sans échec ; 1 au moins une étape en échec (dont le contrôle de valider.py après une étape, code 131 dans le journal) ; 2 mauvais argument ; 14 chaîne déjà en cours ;
 # 16 environnement du dépôt illisible (.venv absent) ; 126 témoin d'incident git non levé (rapports/auto/incident-git.json)
-# ou fichier ignoré sous scripts/ hors __pycache__/ (ARBRE_CODE_SALE).
+# ou binaire Python (*.pyc, *.pyo, *.so, *.pyd) sous scripts/ hors __pycache__/ (ARBRE_CODE_SALE).
 set -u
 
 RACINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -40,15 +40,12 @@ if [ -e "$RACINE/rapports/auto/incident-git.json" ] || [ -L "$RACINE/rapports/au
         >> "$RACINE/rapports/passages.log" 2>/dev/null
     exit 126
 fi
-# B2a, après le témoin : un fichier IGNORÉ sous scripts/ (un html.pyc ou un zoneinfo.pyc sans source) serait importé par
-# l'orchestrateur avant son propre contrôle. Seul __pycache__/ est toléré : PYTHONPYCACHEPREFIX l'écarte.
-if ! IGNORES="$(git ls-files -o -i --exclude-standard -- scripts)"; then
-    echo "passage-auto : ARBRE_CODE_SALE, fichiers ignorés sous scripts/ illisibles : rien n'est lancé" >&2
-    exit 126
-fi
-IGNORES="$(printf '%s\n' "$IGNORES" | grep -v -e '/__pycache__/')"
-if [ -n "$IGNORES" ]; then
-    echo "passage-auto : ARBRE_CODE_SALE, fichiers ignorés sous scripts/ : $(printf '%s\n' "$IGNORES" | head -n 5 | tr '\n' ' '); rien n'est lancé" >&2
+# SUITE 4, point 1 : aucun git avant l'orchestrateur (un core.fsmonitor ou un hook posé dans .git s'exécuterait au premier
+# git, ls-files compris). Parcours de scripts/ par la seule bibliothèque standard, en Python isolé : tout *.pyc, *.pyo,
+# *.so ou *.pyd hors de __pycache__/ (un html.pyc sans source, importé par l'orchestrateur avant son propre contrôle)
+# arrête. __pycache__/ est écarté par PYTHONPYCACHEPREFIX. Même code que les ExecStartPre des unités.
+if ! /usr/bin/python3 -I -S -c "import os, sys; x = ('.pyc', '.pyo', '.so', '.pyd'); b = sorted(os.path.join(d, f) for d, s, fs in os.walk('scripts', onerror=lambda e: (sys.stderr.write('ARBRE_CODE_SALE : scripts illisible (' + str(e) + '), rien n est lancé\\n'), os._exit(126))) if '__pycache__' not in d.split(os.sep) for f in fs if f.lower().endswith(x)); sys.stderr.write('ARBRE_CODE_SALE : binaires hors de __pycache__ sous scripts : ' + ' '.join(b[:5]) + ', rien n est lancé\\n' if b else ''); sys.exit(126 if b else 0)"; then
+    echo "passage-auto : ARBRE_CODE_SALE, rien n'est lancé" >&2
     exit 126
 fi
 exec "$PYTHON" "$RACINE/scripts/orchestrateur.py" "$@"
