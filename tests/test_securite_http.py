@@ -76,3 +76,87 @@ def test_destination_initiale_non_routable_refusee(monkeypatch, ip):
     with pytest.raises(ErreurReseau, match="DESTINATION_REFUSEE"):
         Client(session=session).get("https://public.invalid/a")
     assert session.appels == []
+
+
+def test_rebond_dns_la_connexion_va_a_l_ip_controlee_a_chaque_saut(monkeypatch):
+    """Rebond DNS : l'hôte est public au contrôle, 127.0.0.1 à toute résolution suivante. La connexion se fait à l'IP
+    contrôlée (Host conservé), au premier saut comme après la redirection ; 127.0.0.1 n'est jamais demandé."""
+    import threading
+    import urllib3.util.connection as connexion
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    hotes = []
+
+    class Gestion(BaseHTTPRequestHandler):
+        def do_GET(self):
+            hotes.append(self.headers["Host"])
+            if self.path == "/debut":
+                self.send_response(302)
+                self.send_header("Location", f"http://saut.invalid:{port}/fin")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+            else:
+                corps = b"fixture"
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain")
+                self.send_header("Content-Length", str(len(corps)))
+                self.end_headers()
+                self.wfile.write(corps)
+
+        def log_message(self, *a):
+            pass
+
+    serveur = HTTPServer(("127.0.0.1", 0), Gestion)
+    port = serveur.server_address[1]
+    threading.Thread(target=serveur.serve_forever, daemon=True).start()
+    publiques = {"debut.invalid": "93.184.216.34", "saut.invalid": "93.184.216.35"}
+    vues = []
+
+    def rebond(hote, p, **kw):
+        ip = hote if hote[0].isdigit() else ("127.0.0.1" if hote in vues else publiques[hote])
+        vues.append(hote)
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (ip, p))]
+
+    demandees = []
+    vraie_connexion = connexion.create_connection
+
+    def connecter(adresse, *a, **k):
+        demandees.append(adresse)
+        if adresse[0] in publiques.values():  # l'IP publique contrôlée est servie par le serveur local du test
+            return vraie_connexion(("127.0.0.1", adresse[1]), *a, **k)
+        return vraie_connexion(adresse, *a, **k)  # sans épinglage : hôte résolu de nouveau, donc 127.0.0.1
+
+    monkeypatch.setattr(socket, "getaddrinfo", rebond)
+    monkeypatch.setattr(connexion, "create_connection", connecter)
+    try:
+        source = SimpleNamespace(url=f"http://debut.invalid:{port}/debut", options={})
+        rep = Client(dormir=lambda s: None).pour_source(source).get(source.url)
+    finally:
+        serveur.shutdown()
+        serveur.server_close()
+    assert demandees == [("93.184.216.34", port), ("93.184.216.35", port)], "connexion à l'IP contrôlée, jamais une résolution neuve"
+    assert hotes == [f"debut.invalid:{port}", f"saut.invalid:{port}"], "en-tête Host conservé"
+    assert rep.texte == "fixture" and rep.redirections == ((302, f"http://debut.invalid:{port}/debut"),)
+
+
+def test_tls_garde_sni_et_certificat_de_l_hote(monkeypatch):
+    """HTTPS : socket ouvert vers l'IP contrôlée, SNI et vérification du certificat sur le nom d'hôte."""
+    import urllib3.connection as conn
+    import urllib3.util.connection as connexion
+
+    monkeypatch.setattr(socket, "getaddrinfo", lambda h, p, **kw: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", p))])
+    demandees, sni = [], []
+
+    def connecter(adresse, *a, **k):
+        demandees.append(adresse)
+        return socket.socket()  # jamais connecté : l'enveloppe TLS est interceptée avant tout échange
+
+    def envelopper(*a, **k):
+        sni.append((k.get("server_hostname"), k.get("assert_hostname")))
+        raise OSError("fixture : pas de TLS")
+
+    monkeypatch.setattr(connexion, "create_connection", connecter)
+    monkeypatch.setattr(conn, "_ssl_wrap_socket_and_match_hostname", envelopper)
+    with pytest.raises(ErreurReseau):
+        Client(tentatives=1, dormir=lambda s: None).get("https://hote.invalid/a")
+    assert demandees == [("93.184.216.34", 443)] and sni and sni[0][0] == "hote.invalid"

@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from urllib.parse import urlparse, urljoin
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.connection import HTTPConnection, HTTPSConnection
+from urllib3.connectionpool import HTTPConnectionPool, HTTPSConnectionPool
+from urllib3.exceptions import ConnectTimeoutError, NewConnectionError
+from urllib3.util import connection as _connexion
 
 from .modeles import ErreurReseau
 
@@ -21,16 +26,21 @@ ATTENTES = (2, 4)  # secondes entre les tentatives
 TAILLE_MAX = 8 * 1024 * 1024  # 8 Mo, au-delà on refuse
 
 
-def verifier_destination(url: str, autoriser_http: bool = False) -> None:
-    """Chaque requête et chaque redirection : schéma déclaré et toutes les IP routables."""
+def _cle_hote(hote: str, port: int) -> tuple[str, int]:
+    return hote.strip("[]").rstrip(".").lower(), int(port)
+
+
+def verifier_destination(url: str, autoriser_http: bool = False) -> tuple[tuple[str, int], str]:
+    """Chaque requête et chaque redirection : schéma déclaré et toutes les IP routables. Rend ((hôte, port), IP contrôlée) :
+    la connexion se fait à cette IP, sans nouvelle résolution (un rebond DNS vers une adresse interne n'est pas suivi)."""
     try:
         adresse = urlparse(url)
         if adresse.scheme not in (("https", "http") if autoriser_http else ("https",)):
             raise ValueError("schéma interdit")
         if not adresse.hostname or adresse.username is not None or adresse.password is not None:
             raise ValueError("hôte absent ou identifiants interdits")
-        ips = socket.getaddrinfo(adresse.hostname, adresse.port or (443 if adresse.scheme == "https" else 80),
-                                 type=socket.SOCK_STREAM)
+        port = adresse.port or (443 if adresse.scheme == "https" else 80)
+        ips = socket.getaddrinfo(adresse.hostname, port, type=socket.SOCK_STREAM)
         if not ips:
             raise ValueError("aucune adresse résolue")
         for _, _, _, _, sockaddr in ips:
@@ -38,8 +48,46 @@ def verifier_destination(url: str, autoriser_http: bool = False) -> None:
             ip = getattr(ip, "ipv4_mapped", None) or ip
             if not ip.is_global or ip.is_multicast or ip.is_reserved:
                 raise ValueError("adresse non routable")
+        return _cle_hote(adresse.hostname, port), ips[0][4][0]
     except (ValueError, OSError) as exc:
         raise ErreurReseau(f"DESTINATION_REFUSEE : {exc}") from exc
+
+
+class AdaptateurEpingle(HTTPAdapter):
+    """Connexion à l'IP contrôlée par `verifier_destination`, sans nouvelle résolution. L'hôte reste celui de l'URL pour
+    l'en-tête Host, le SNI et la vérification du certificat : seule l'adresse du socket est imposée. Sans IP contrôlée
+    pour (hôte, port), la connexion est refusée."""
+
+    def __init__(self) -> None:
+        self.epingles: dict[tuple[str, int], str] = {}
+        super().__init__()
+
+    def init_poolmanager(self, *args, **kwargs) -> None:
+        super().init_poolmanager(*args, **kwargs)
+        epingles = self.epingles
+
+        def classe(base):
+            class Connexion(base):
+                def _new_conn(self):
+                    ip = epingles.get(_cle_hote(self.host, self.port))
+                    if ip is None:
+                        raise NewConnectionError(self, f"DESTINATION_REFUSEE : aucune IP contrôlée pour {self.host}:{self.port}")
+                    try:
+                        return _connexion.create_connection((ip, self.port), self.timeout, source_address=self.source_address,
+                                                            socket_options=self.socket_options)
+                    except socket.timeout as e:
+                        raise ConnectTimeoutError(self, f"Connection to {self.host} ({ip}) timed out") from e
+                    except OSError as e:
+                        raise NewConnectionError(self, f"Failed to establish a new connection: {e}") from e
+            return Connexion
+
+        class Pool(HTTPConnectionPool):
+            ConnectionCls = classe(HTTPConnection)
+
+        class PoolTLS(HTTPSConnectionPool):
+            ConnectionCls = classe(HTTPSConnection)
+
+        self.poolmanager.pool_classes_by_scheme = {"http": Pool, "https": PoolTLS}
 
 
 @dataclass
@@ -67,6 +115,12 @@ class Client:
         self.session = session or requests.Session()
         self.session.headers["User-Agent"] = USER_AGENT
         self.session.trust_env = False  # aucun proxy implicite ne contourne la résolution contrôlée
+        self._epingles = None
+        if isinstance(self.session, requests.Session):
+            adaptateur = AdaptateurEpingle()
+            self.session.mount("https://", adaptateur)
+            self.session.mount("http://", adaptateur)
+            self._epingles = adaptateur.epingles
         self._autoriser_http = False
         self.tentatives = tentatives
         self.attentes = attentes
@@ -81,7 +135,9 @@ class Client:
     def _obtenir(self, url: str, accept: str | None):
         historique = []
         for saut in range(11):
-            verifier_destination(url, self._autoriser_http)
+            cle, ip = verifier_destination(url, self._autoriser_http)
+            if self._epingles is not None:
+                self._epingles[cle] = ip  # chaque saut : la connexion suit la résolution contrôlée, jamais une seconde
             r = self.session.get(url, headers=self._entetes(url, accept), timeout=DELAI, allow_redirects=False, stream=True)
             if r.status_code not in (301, 302, 303, 307, 308):
                 return r, tuple(historique)
