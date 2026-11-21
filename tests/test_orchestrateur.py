@@ -51,19 +51,11 @@ def passage(dossier, fichier, pousser=True, sujet=None):
 
 if mode == "ok":
     passage(sys.argv[2], sys.argv[3]); claude_ok()
-elif mode in ("minuteur-commun", "minuteur-selection", "faux-minuteur-hors-chemins", "faux-minuteur-autre-identite"):
-    # Commit poussé sur main pendant l'étape, comme delta-ia-commun ou delta-ia-selection, puis le commit de l'étape.
-    sujet, chemin = {"minuteur-selection": ("delta(selection): 2026-W40 — sélection hebdomadaire", "rapports/selection/2026-W40.json"),
-                     "faux-minuteur-hors-chemins": ("delta(commun): 2026-10-02 — génération g1", "notes.txt")}.get(
-                         mode, ("delta(commun): 2026-10-02 — génération g1", "docs/commun/v1/index.json"))
-    ecrire(chemin, "minuteur\n")
-    git("add", "-f", chemin)
-    if mode == "faux-minuteur-autre-identite":
-        subprocess.run(["git", "commit", "-qm", sujet], check=True, capture_output=True,
-                       env={**os.environ, "GIT_AUTHOR_NAME": "autre", "GIT_AUTHOR_EMAIL": "autre@t", "GIT_COMMITTER_NAME": "autre",
-                            "GIT_COMMITTER_EMAIL": "autre@t"})
-    else:
-        git("commit", "-qm", sujet)
+elif mode == "commit-commun":
+    # Commit poussé sur main pendant l'étape, au sujet, aux chemins et à l'identité de delta-ia-commun, puis celui de l'étape.
+    ecrire("docs/commun/v1/index.json", "minuteur\n")
+    git("add", "-f", "docs/commun/v1/index.json")
+    git("commit", "-qm", "delta(commun): 2026-10-02 — génération g1")
     git("push", "-q", "origin", "HEAD:refs/heads/main")
     passage(sys.argv[2], sys.argv[3]); claude_ok()
 elif mode == "ok-codex":
@@ -509,21 +501,18 @@ def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fich
     assert incident["constate"] == "étape delta" and fichier in incident["chemins"], "témoin durable de l'incident"
 
 
-@pytest.mark.parametrize("mode, impute", [("minuteur-commun", False), ("minuteur-selection", False),
-                                          ("faux-minuteur-hors-chemins", True), ("faux-minuteur-autre-identite", True)])
-def test_commits_des_minuteurs_pousses_pendant_l_etape_ne_lui_sont_pas_imputes(depot, cfg, monkeypatch, mode, impute):
-    """SUITE 2, point 5 : un commit de delta-ia-commun ou de delta-ia-selection (identité du dépôt, sujet et chemins du
-    service) poussé pendant l'étape ne lui est pas imputé ; même sujet hors de ses chemins, ou autre identité : imputé."""
-    for nom, valeur in (("GIT_AUTHOR_NAME", "t"), ("GIT_COMMITTER_NAME", "t"), ("GIT_AUTHOR_EMAIL", "t@t"), ("GIT_COMMITTER_EMAIL", "t@t")):
-        monkeypatch.setenv(nom, valeur)  # identité git du dépôt, celle des services
-    e = etape(depot, "delta", mode, "docs/data/claude", "a.json", checkout=DELTA_CLAUDE)
-    code = chaine(depot, cfg, [e]).executer()
-    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
-    if impute:
-        assert code == 1 and codes(depot)["delta"] == orc.CODE_ETAT and "PERIMETRE_COMMITS" in cause
-    else:
-        assert code == 0 and codes(depot)["delta"] == 0 and "PERIMETRE_COMMITS" not in cause
 
+def test_commit_sur_docs_commun_pendant_l_etape_est_impute(depot, cfg, monkeypatch):
+    """SUITE 3, point 4 : aucune exemption de minuteur. delta-ia-commun et delta-ia-selection prennent le verrou de la
+    chaîne : depuis le K8, aucun de leurs commits ne peut arriver pendant une étape, et l'identité git ne distingue pas un
+    agent d'un minuteur. Un commit sur docs/commun/v1/ au sujet du minuteur, poussé pendant l'étape, lui est imputé (126)."""
+    for nom, valeur in (("GIT_AUTHOR_NAME", "t"), ("GIT_COMMITTER_NAME", "t"), ("GIT_AUTHOR_EMAIL", "t@t"), ("GIT_COMMITTER_EMAIL", "t@t")):
+        monkeypatch.setenv(nom, valeur)  # identité du dépôt égale à celle du commit : même ainsi, imputé
+    e = etape(depot, "delta", "commit-commun", "docs/data/claude", "a.json", checkout=DELTA_CLAUDE)
+    assert chaine(depot, cfg, [e]).executer() == 1
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    assert codes(depot)["delta"] == orc.CODE_ETAT and "PERIMETRE_COMMITS" in cause and "docs/commun/v1/index.json" in cause
+    assert not hasattr(orc, "commit_de_minuteur") and not hasattr(orc, "MINUTEURS")
 
 def test_hooks_et_config_inchanges_ne_changent_rien(depot, cfg):
     (depot / ".git" / "hooks").mkdir(exist_ok=True)

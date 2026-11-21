@@ -337,37 +337,10 @@ def reference_etape(racine: Path) -> str:
     return ref
 
 
-# Commits des minuteurs delta-ia-commun (commun_auto.py) et delta-ia-selection (selection_auto.py), poussés sur main
-# pendant la fenêtre d'une étape : sujet exact du service, chemins de sa seule publication.
-MINUTEURS = (
-    (re.compile(r"delta\(commun\): [0-9]{4}-[0-9]{2}-[0-9]{2} — génération \S+"),
-     lambda p: p == "kb-traductions/fr.json" or p.startswith("docs/commun/v1/")),
-    (re.compile(r"delta\(selection\): [0-9]{4}-W[0-9]{2} — sélection hebdomadaire"),
-     lambda p: re.fullmatch(r"rapports/selection/[0-9]{4}-W[0-9]{2}\.(json|md)", p) is not None),
-)
-
-
-def commit_de_minuteur(racine: Path, commit: str, chemins: set[str], fin: str) -> bool:
-    """Commit d'un minuteur, non imputé à l'étape : identité de commit (auteur et commiteur = identité git du dépôt, celle
-    des services), un seul parent, déjà sur origin/main, sujet d'un minuteur et chemins tous dans sa publication."""
-    code, ident = git(racine, "var", "GIT_COMMITTER_IDENT")
-    code_l, meta = git(racine, "log", "-1", "--format=%P%x1f%an <%ae>%x1f%cn <%ce>%x1f%s", commit)
-    if code or code_l or not chemins:
-        return False
-    identite = ident.rsplit(" ", 2)[0]
-    parents, auteur, commiteur, sujet = (meta.split("\x1f") + ["", "", "", ""])[:4]
-    if len(parents.split()) != 1 or auteur != identite or commiteur != identite:
-        return False
-    if git(racine, "merge-base", "--is-ancestor", commit, fin)[0] != 0:
-        return False
-    return any(motif.fullmatch(sujet) and all(publie(p) for p in chemins) for motif, publie in MINUTEURS)
-
-
 def controle_commits(racine: Path, etape: Etape, debut: str) -> str | None:
     """Contrôle aussi les commits locaux et les chemins modifiés puis rétablis dans la même étape.
 
-    Le périmètre réutilise les chemins de checkout déclarés dans la configuration D68/D70. Les commits des minuteurs
-    (`commit_de_minuteur`) ne sont pas imputés à l'étape ; tout autre commit l'est, chemin par chemin.
+    Le périmètre réutilise les chemins de checkout déclarés dans la configuration D68/D70.
     Aucune commande ne rétablit un commit : un incident est conservé pour la supervision.
     """
     def lire(*args):
@@ -382,15 +355,13 @@ def controle_commits(racine: Path, etape: Etape, debut: str) -> str | None:
         for ref in dict.fromkeys((fin, tete)):
             if lire("merge-base", debut, ref) != debut:
                 raise RuntimeError(f"historique divergent : {debut}..{ref}")
-            # Chemins pris commit par commit (et non par le diff global de l'intervalle) : un commit de minuteur
-            # s'exclut sans masquer ce qu'un autre commit a touché.
-            for commit in lire("rev-list", f"{debut}..{ref}").splitlines():
-                touches = {p for p in lire("diff-tree", "--root", "-m", "--no-commit-id", "-r",
-                                           "--name-only", "--no-renames", "-z", commit).split("\0") if p}
-                if commit_de_minuteur(racine, commit, touches, fin):
-                    continue
-                commits.add(commit)
-                chemins.update(touches)
+            intervalle = f"{debut}..{ref}"
+            chemins.update(p for p in lire("diff", "--name-only", "--no-renames", "-z", intervalle).split("\0") if p)
+            nouveaux = lire("rev-list", intervalle).splitlines()
+            commits.update(nouveaux)
+            for commit in nouveaux:
+                chemins.update(p for p in lire("diff-tree", "--root", "-m", "--no-commit-id", "-r",
+                                               "--name-only", "--no-renames", "-z", commit).split("\0") if p)
         interdits = sorted(p for p in chemins if not any(p == c.rstrip("/") or p.startswith(c.rstrip("/") + "/")
                                                         for c in etape.checkout))
         if interdits:
