@@ -415,6 +415,32 @@ def empreinte_git(racine: Path) -> dict[str, str]:
     return res
 
 
+BINAIRES_PYTHON = (".pyc", ".pyo", ".so", ".pyd")
+
+
+def binaires_hors_cache(racine: Path) -> list[str]:
+    """SUITE 4, point 3 : le parcours des gardes d'avant démarrage (unités, passage-auto.sh), en processus. Tout *.pyc, *.pyo,
+    *.so ou *.pyd sous scripts/ hors de `__pycache__/` : un scripts/json.pyc sans source écrit par une étape serait chargé
+    par le prochain Python du dépôt (garde.py, valider.py, capteur_x.py importent json) avant la bibliothèque standard.
+    Parcours illisible : refus aussi. scripts/ absent : rien à charger, aucun refus (dépôts de test réduits ; l'unité, elle,
+    refuse un scripts/ absent)."""
+    trouves: list[str] = []
+    if not os.path.lexists(os.path.join(racine, "scripts")):
+        return trouves
+
+    def erreur(exc: OSError) -> None:
+        raise exc
+
+    try:
+        for d, _, fichiers in os.walk(os.path.join(racine, "scripts"), onerror=erreur):
+            rel = os.path.relpath(d, racine)
+            if "__pycache__" not in rel.split(os.sep):
+                trouves += [os.path.join(rel, f) for f in fichiers if f.lower().endswith(BINAIRES_PYTHON)]
+    except OSError as exc:
+        return [f"scripts (parcours illisible : {exc.strerror or exc})"]
+    return sorted(trouves)
+
+
 def fichier_reference_git(environ=None) -> Path:
     """SUITE 4, point 2 : référence de l'empreinte de démarrage, HORS de l'arbre (une étape écrit l'arbre et .git), au chemin
     que lit l'ExecStartPre des unités commun et selection : `${XDG_STATE_HOME:-~/.local/state}/delta-ia/empreinte-git.json`."""
@@ -1014,6 +1040,9 @@ class Chaine:
         if f.exists() or f.is_symlink():
             return (f"incident git non levé ({f.relative_to(self.racine)}) : {quoi} non lancée ; à examiner (.git/hooks/, "
                     ".git/config, .git/info/) puis à lever par le superviseur ; rien n'est rétabli, la chaîne s'arrête")
+        binaire = self.controle_binaires(quoi)  # avant garde.py, capteur_x.py et l'étape : aucun Python du dépôt sur un .pyc posé
+        if binaire:
+            return binaire
         if self.git_depart is None:
             self.git_depart = empreinte_git(self.racine)
         modifies = differences_git(self.git_depart, empreinte_git(self.racine))
@@ -1022,6 +1051,16 @@ class Chaine:
             return ("hooks ou config git modifiés avant l'étape, depuis le début de la chaîne : " + ", ".join(modifies[:8])
                     + f" ; {quoi} non lancée, rien n'est rétabli, la chaîne s'arrête")
         return None
+
+    def controle_binaires(self, quoi: str) -> str | None:
+        """SUITE 4, point 3 : avant de relancer un Python du dépôt après une étape. Un binaire hors de `__pycache__/` sous
+        scripts/ : incident (témoin, la chaîne s'arrête en 126). Renvoie le motif du refus, ou None."""
+        trouves = binaires_hors_cache(self.racine)
+        if not trouves:
+            return None
+        self.noter_incident_git(f"avant {quoi}", trouves)
+        return (f"ARBRE_CODE_SALE : binaire(s) Python hors de __pycache__/ sous scripts/ : {', '.join(trouves[:5])} ; {quoi} non "
+                "lancée, rien n'est rétabli, la chaîne s'arrête")
 
     def relance_interdite(self, quand: datetime) -> bool:
         """D122 : aucune tentative ne commence entre `relances_limite` (07:30) et `fenetre_fin` (08:00), la fin de la fenêtre de la chaîne."""
@@ -1066,6 +1105,9 @@ class Chaine:
                 etape = replace(etape, commande=etape.commande_abonnement, commande_abonnement=[])
                 env["DELTA_CLAUDE_MODE"] = "abonnement"
                 if etape.garde:
+                    binaire = self.controle_binaires("garde abonnement")
+                    if binaire:
+                        return res, CODE_ETAT, binaire
                     garde_code, motif = garde(self.racine, etape, self.jour, env)
                     if garde_code:
                         return replace(res, garde_abonnement=True), garde_code, f"{repli} ; garde abonnement (code {garde_code}) : {motif}"
@@ -1202,8 +1244,12 @@ class Chaine:
             detail = "sautée : quota de l'agent épuisé (Codex a refusé de tourner)" + (f" ; reprise annoncée : {reprise}" if reprise else "")
         controle = ""
         if code == 0 and not stop and not etape.supervision and controles_valider(etape):
-            valide, resume, controle = verifier_arbre(racine, etape, self.jour, env)
-            if not valide:  # le push est déjà fait : on signale, on ne rétablit rien ; la chaîne continue (périmètres indépendants)
+            binaire = self.controle_binaires("valider.py")
+            if binaire:
+                code, detail, stop = CODE_ETAT, binaire, True
+            else:
+                valide, resume, controle = verifier_arbre(racine, etape, self.jour, env)
+            if not binaire and not valide:  # le push est déjà fait : on signale, on ne rétablit rien ; la chaîne continue (périmètres indépendants)
                 code, detail = CODE_VALIDATION, "valider.py échoue sur l'arbre laissé par l'étape (déjà poussé) : " + resume
         if code not in (0, CODE_QUOTA_EPUISE, CODE_VALIDATION) and not stop and not etape.supervision:
             stop = True  # une étape en échec arrête la chaîne (la supervision, elle, reste lancée)

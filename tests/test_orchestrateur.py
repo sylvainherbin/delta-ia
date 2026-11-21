@@ -10,6 +10,7 @@ import subprocess
 import sys
 import textwrap
 import time
+from dataclasses import replace
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -51,6 +52,13 @@ def passage(dossier, fichier, pousser=True, sujet=None):
 
 if mode == "ok":
     passage(sys.argv[2], sys.argv[3]); claude_ok()
+elif mode == "ok-pyc":   # SUITE 4, point 3 : l'étape réussit et laisse un scripts/json.pyc sans source (ignoré par git)
+    import py_compile
+    passage(sys.argv[2], sys.argv[3])
+    ecrire("json-source.py", f"open({sys.argv[4]!r}, 'w').write('charge')\n")
+    py_compile.compile("json-source.py", cfile=f"scripts/{sys.argv[5] if len(sys.argv) > 5 else 'json.pyc'}", doraise=True)
+    os.remove("json-source.py")
+    claude_ok()
 elif mode == "commit-commun":
     # Commit poussé sur main pendant l'étape, au sujet, aux chemins et à l'identité de delta-ia-commun, puis celui de l'étape.
     ecrire("docs/commun/v1/index.json", "minuteur\n")
@@ -654,6 +662,103 @@ def test_incident_git_bloque_la_chaine_suivante_jusqu_a_sa_levee(depot, cfg):
     marque.unlink()
     (depot / "rapports" / "passages.log").unlink()
     assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 0
+
+
+def _ignorer_pyc(depot):
+    with (depot / ".gitignore").open("a") as f:
+        f.write("*.pyc\n")
+    depot.sh("git", "commit", "-qam", "ignorer les pyc")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+
+
+def test_json_pyc_ecrit_par_l_etape_n_est_jamais_charge_par_la_garde_suivante(depot, cfg, tmp_path):
+    """SUITE 4, point 3 : une étape réussie laisse scripts/json.pyc sans source, ignoré par git (arbre propre). La garde de
+    l'étape suivante (garde.py importe json) le chargerait avant la bibliothèque standard : le parcours en processus l'arrête
+    avant (incident, témoin, 126)."""
+    _ignorer_pyc(depot)
+    trace = tmp_path / "json-charge"
+    etapes = [etape(depot, "delta", "ok-pyc", "docs/data/claude", "a.json", str(trace)),
+              etape(depot, "codex-delta", "ok", "docs/data/openai", "b.json")]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert not trace.exists(), "json.pyc jamais chargé"
+    c = codes(depot)
+    assert c["delta"] == 0 and c["codex-delta"] == orc.CODE_ETAT
+    cause = next(l for l in journal(depot) if l[2] == "codex-delta")[6]
+    assert "ARBRE_CODE_SALE" in cause and "scripts/json.pyc" in cause
+    assert json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())["chemins"] == ["scripts/json.pyc"]
+    assert not (depot / "docs/data/openai/b.json").exists(), "étape suivante non lancée"
+    # témoin : sans le contrôle, garde.py charge le json.pyc
+    subprocess.run([sys.executable, str(depot / "scripts" / "garde.py"), "--help"], cwd=depot, capture_output=True)
+    assert trace.exists()
+
+
+def test_binaire_ecrit_par_l_etape_arrete_avant_valider(depot, cfg, tmp_path):
+    """SUITE 4, point 3 : même parcours avant valider.py (contrôle d'après l'étape) ; un .so hors de __pycache__/ aussi."""
+    with (depot / ".gitignore").open("a") as g:
+        g.write("*.so\n")
+    # Témoin de valider.py : une validation réellement lancée écrit rapports/valide-claude.
+    (depot / "scripts/valider.py").write_text(
+        "import pathlib, sys\np = sys.argv[sys.argv.index('--perimetre') + 1]\npathlib.Path('rapports/valide-' + p).write_text('oui')\n")
+    depot.sh("git", "add", ".gitignore", "scripts/valider.py")
+    depot.sh("git", "commit", "-qm", "ignorer les so, validation de test")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    e = etape(depot, "delta", "ok-pyc", "docs/data/claude", "a.json", str(tmp_path / "jamais"), "_json.cpython-0.so")
+    e.valider = ["claude"]
+    assert chaine(depot, cfg, [e]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    assert "ARBRE_CODE_SALE" in cause and "scripts/_json.cpython-0.so" in cause and "valider.py non lancée" in cause
+    assert not (depot / "rapports" / "valide-claude").exists(), "valider.py non lancée"
+    assert json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())["chemins"] == ["scripts/_json.cpython-0.so"]
+
+
+def test_binaires_hors_cache_meme_regle_que_les_unites(tmp_path):
+    """SUITE 4, point 3 : la règle du parcours des unités (casse ignorée, __pycache__/ toléré à toute profondeur)."""
+    s = tmp_path / "scripts"
+    assert orc.binaires_hors_cache(tmp_path) == [], "scripts/ absent : aucun refus"
+    (s / "sous" / "__pycache__").mkdir(parents=True)
+    for nom in ("a.py", "sous/__pycache__/b.cpython-312.pyc", "sous/c.txt"):
+        (s / nom).write_text("")
+    assert orc.binaires_hors_cache(tmp_path) == []
+    for nom in ("json.PYC", "sous/d.pyo", "sous/e.so", "f.pyd"):
+        (s / nom).write_text("")
+    assert orc.binaires_hors_cache(tmp_path) == ["scripts/f.pyd", "scripts/json.PYC", "scripts/sous/d.pyo", "scripts/sous/e.so"]
+
+
+def test_binaire_present_au_depart_arrete_avant_la_premiere_garde(depot, cfg, tmp_path, monkeypatch):
+    """SUITE 4, point 3 : un binaire déjà là au démarrage de la chaîne arrête avant la première garde (garde.py jamais lancée)."""
+    _ignorer_pyc(depot)
+    (depot / "scripts" / "json.pyc").write_bytes(b"")
+    gardes = []
+    monkeypatch.setattr(orc, "garde", lambda *a, **k: gardes.append(a) or (0, ""))
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 1
+    assert gardes == [] and codes(depot)["delta"] == orc.CODE_ETAT
+    assert not (depot / "docs/data/claude/a.json").exists()
+    assert "ARBRE_CODE_SALE" in next(l for l in journal(depot) if l[2] == "chaine-git")[6], "contrôle du démarrage de chaîne (avant sélection et relevé X)"
+
+
+def test_binaire_avant_la_garde_du_repli_abonnement(depot, cfg, monkeypatch):
+    """SUITE 4, point 3 : au repli abonnement (code 5 de claude-cle), garde.py est relancée après une tentative qui a pu
+    écrire sous scripts/ ; le parcours tourne avant, la garde n'est jamais lancée."""
+    _ignorer_pyc(depot)
+    e = replace(etape(depot, "delta", "ok", "docs/data/claude", "a.json"), commande_abonnement=["faux-abonnement"])
+    c = chaine(depot, cfg, [e])
+
+    def tentative_sur_cle(*a, **k):  # la tentative sur clé laisse un scripts/json.pyc ignoré par git, puis rend 5
+        (depot / "scripts" / "json.pyc").write_bytes(b"")
+        return object()
+
+    gardes = []
+    monkeypatch.setattr(orc, "lancer", tentative_sur_cle)
+    monkeypatch.setattr(orc, "evaluer", lambda etape, res: (5, "code 5"))
+    monkeypatch.setattr(orc, "refus_permission", lambda res: False)
+    monkeypatch.setattr(orc, "etat_depot", lambda *a, **k: {"index_lock": False, "sales": [], "en_avance": 0})
+    monkeypatch.setattr(orc, "ecrire_sortie", lambda *a, **k: None)
+    monkeypatch.setattr(orc, "garde", lambda *a, **k: gardes.append(a) or (0, ""))
+    _, code, detail = c.lancer_avec_relances(e, {}, orc.empreinte_git(depot))
+    assert code == orc.CODE_ETAT and "ARBRE_CODE_SALE" in detail and "garde abonnement non lancée" in detail
+    assert gardes == [], "garde.py jamais relancée sur le json.pyc"
+    assert json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())["chemins"] == ["scripts/json.pyc"]
 
 
 def test_chaine_propre_ecrit_la_reference_git_hors_de_l_arbre(depot, cfg, tmp_path):
