@@ -215,6 +215,11 @@ def environnement(cfg: dict, supervision: bool = False, extra: dict | None = Non
     for cle in ("XDG_RUNTIME_DIR", "DELTA_INSTANCE_POLICY"):   # DELTA_INSTANCE_POLICY : seuils de garde.py (OBS6)
         if cle in os.environ:
             env[cle] = os.environ[cle]
+    # SUITE 5, point 2 : les Python relancés (garde.py, valider.py, capteur_x.py) lisent leurs .pyc hors de l'arbre ; un
+    # .pyc forgé dans scripts/**/__pycache__/ (ignoré par git, toléré par le parcours) n'est pas chargé. Valeur de
+    # passage-auto.sh et des unités (%t/delta-ia-pycache) par défaut.
+    env["PYTHONPYCACHEPREFIX"] = os.environ.get("PYTHONPYCACHEPREFIX") or os.path.join(
+        os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}", "delta-ia-pycache")
     env.update(extra or {})
     return env
 

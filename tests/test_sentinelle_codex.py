@@ -25,6 +25,7 @@ from test_selection_auto import git as git_sel
 def etat_xdg_de_test(tmp_path, monkeypatch):
     """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai ~/.local/state."""
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+    monkeypatch.setenv("PYTHONPYCACHEPREFIX", str(tmp_path / "pycache-de-test"))  # SUITE 5, point 2 : .pyc des étapes, jamais sous le vrai %t
 
 DISCIPLINE = Path.home() / "projets" / "discipline" / "src" / "delta" / "operer" / "restes_bac.py"
 CONTENU = "* merge=union\n"

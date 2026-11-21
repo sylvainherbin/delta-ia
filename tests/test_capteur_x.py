@@ -21,6 +21,7 @@ from deltalib.sources import Source
 def etat_xdg_de_test(tmp_path, monkeypatch):
     """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai ~/.local/state."""
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+    monkeypatch.setenv("PYTHONPYCACHEPREFIX", str(tmp_path / "pycache-de-test"))  # SUITE 5, point 2 : .pyc des étapes, jamais sous le vrai %t
 
 BRUT = json.loads((FIXTURES / "x_liste_brut.json").read_text(encoding="utf-8"))
 API = json.loads((FIXTURES / "x_api_liste.json").read_text(encoding="utf-8"))

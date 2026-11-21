@@ -260,6 +260,7 @@ def etat_xdg_de_test(tmp_path, monkeypatch):
     """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai
     ~/.local/state (les essais de passage-auto.sh en héritent)."""
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+    monkeypatch.setenv("PYTHONPYCACHEPREFIX", str(tmp_path / "pycache-de-test"))  # SUITE 5, point 2 : .pyc des étapes, jamais sous le vrai %t
 
 
 @pytest.fixture
@@ -759,6 +760,44 @@ def test_binaire_avant_la_garde_du_repli_abonnement(depot, cfg, monkeypatch):
     assert code == orc.CODE_ETAT and "ARBRE_CODE_SALE" in detail and "garde abonnement non lancée" in detail
     assert gardes == [], "garde.py jamais relancée sur le json.pyc"
     assert json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())["chemins"] == ["scripts/json.pyc"]
+
+
+def test_environnement_porte_le_prefixe_des_pyc(cfg, monkeypatch, tmp_path):
+    """SUITE 5, point 2 : PYTHONPYCACHEPREFIX repris de l'environnement de la chaîne (passage-auto.sh l'exporte), sinon la
+    valeur des unités, %t/delta-ia-pycache."""
+    monkeypatch.setenv("PYTHONPYCACHEPREFIX", str(tmp_path / "p"))
+    assert orc.environnement(cfg)["PYTHONPYCACHEPREFIX"] == str(tmp_path / "p")
+    assert orc.environnement(cfg, supervision=True)["PYTHONPYCACHEPREFIX"] == str(tmp_path / "p")
+    monkeypatch.delenv("PYTHONPYCACHEPREFIX")
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path / "run"))
+    assert orc.environnement(cfg)["PYTHONPYCACHEPREFIX"] == str(tmp_path / "run" / "delta-ia-pycache")
+    monkeypatch.delenv("XDG_RUNTIME_DIR")
+    assert orc.environnement(cfg)["PYTHONPYCACHEPREFIX"] == f"/run/user/{os.getuid()}/delta-ia-pycache"
+
+
+def test_pyc_forge_dans_pycache_n_est_pas_charge_par_la_garde_relancee(depot, cfg, tmp_path):
+    """SUITE 5, point 2 : scripts/deltalib/__pycache__/sentinelle.<tag>.pyc forgé (hash non vérifié : chargé sans regarder
+    la source), ignoré par git et toléré par le parcours. garde.py importe la sentinelle au démarrage ; relancée par la
+    chaîne sous PYTHONPYCACHEPREFIX, elle lit ses .pyc dans le préfixe et ne charge jamais le .pyc forgé."""
+    import py_compile
+    trace = tmp_path / "sentinelle-forgee-chargee"
+    source = tmp_path / "sentinelle-forgee.py"
+    source.write_text(f"import pathlib\npathlib.Path({str(trace)!r}).write_text('chargée')\n\n\n"
+                      "def est_sentinelle_codex(*a, **k):\n    return False\n")
+    cache = depot / "scripts" / "deltalib" / "__pycache__"
+    cache.mkdir(exist_ok=True)
+    py_compile.compile(str(source), cfile=str(cache / f"sentinelle.{sys.implementation.cache_tag}.pyc"), doraise=True,
+                       invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH)
+    assert orc.binaires_hors_cache(depot) == [], "__pycache__/ toléré par le parcours"
+    prefixe = Path(os.environ["PYTHONPYCACHEPREFIX"])  # fixture etat_xdg_de_test
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 0
+    assert codes(depot)["delta"] == 0
+    assert not trace.exists(), "garde.py relancée sous PYTHONPYCACHEPREFIX : le .pyc forgé n'est pas chargé"
+    assert list(prefixe.rglob("sentinelle.*.pyc")), "garde.py a importé la sentinelle, ses .pyc dans le préfixe"
+    # témoin : la même garde, sans le préfixe, charge le .pyc forgé
+    sans = {k: v for k, v in orc.environnement(cfg).items() if k != "PYTHONPYCACHEPREFIX"}
+    orc.garde(depot, etape(depot, "delta", "ok"), JOUR, sans)
+    assert trace.exists()
 
 
 def test_chaine_propre_ecrit_la_reference_git_hors_de_l_arbre(depot, cfg, tmp_path):
