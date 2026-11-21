@@ -1490,6 +1490,10 @@ def test_passage_auto_temoin_d_incident_rien_n_est_lance(depot_sh):
                        capture_output=True, text=True)
     assert r.returncode == 126 and "INCIDENT_GIT" in r.stderr and r.stdout == ""
     assert 'export PYTHONPYCACHEPREFIX="${XDG_RUNTIME_DIR:-' in (RACINE / "scripts" / "passage-auto.sh").read_text()
+    lignes = journal(depot_sh)  # SUITE 3, point 6 : le blocage laisse sa ligne, écrite en shell
+    assert len(lignes) == 1 and lignes[0][1:6] == ["orchestrateur", "chaine-git", "0 éléments (0 fort)", "aucun", "126"]
+    assert "INCIDENT_GIT" in lignes[0][6] and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{4}", lignes[0][0])
+    assert codes(depot_sh) == {"chaine-git": orc.CODE_ETAT}
 
 
 

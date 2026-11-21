@@ -32,6 +32,12 @@ fi
 # le contrôle de l'orchestrateur. Rien n'est lancé (126) tant que le superviseur ne l'a pas levé.
 if [ -e "$RACINE/rapports/auto/incident-git.json" ] || [ -L "$RACINE/rapports/auto/incident-git.json" ]; then
     echo "passage-auto : INCIDENT_GIT, rapports/auto/incident-git.json non levé : rien n'est lancé" >&2
+    # SUITE 3, point 6 : trace au journal des passages, en shell (aucun Python ne démarre), au format de passages.ligne ;
+    # un journal non inscriptible ne change pas le code.
+    mkdir -p "$RACINE/rapports" 2>/dev/null
+    printf '%s | orchestrateur | chaine-git | 0 éléments (0 fort) | aucun | 126 | %s\n' "$(date +%Y-%m-%d_%H%M)" \
+        "INCIDENT_GIT : rapports/auto/incident-git.json non levé, passage-auto n'a rien lancé" \
+        >> "$RACINE/rapports/passages.log" 2>/dev/null
     exit 126
 fi
 # B2a, après le témoin : un fichier IGNORÉ sous scripts/ (un html.pyc ou un zoneinfo.pyc sans source) serait importé par
