@@ -1,6 +1,7 @@
 """D70 : orchestrateur des passages automatiques. Aucun appel réel à `claude` ni à `codex` : les étapes sont de faux agents
 (petits scripts Python) qui modifient un dépôt de test avec son `origin` local. La vraie garde tourne avant chaque étape."""
 
+import hashlib
 import json
 import os
 import re
@@ -157,6 +158,17 @@ elif mode == "modifie-hook":
     open(".git/hooks/pre-push", "a").write("echo piégé\n"); claude_ok()
 elif mode == "supprime-hook":
     os.remove(".git/hooks/pre-push"); claude_ok()
+elif mode in ("branche-suivie", "branche-pushremote", "branche-remote-inconnu", "remote-ajoute"):
+    passage(sys.argv[2], sys.argv[3])
+    if mode == "remote-ajoute":
+        git("remote", "add", "autre", "https://exemple.invalid/autre.git")
+    elif mode == "branche-remote-inconnu":
+        git("config", "branch.suivie.remote", "inconnu"); git("config", "branch.suivie.merge", "refs/heads/main")
+    else:
+        git("branch", "--track", "suivie", "origin/main")
+        if mode == "branche-pushremote":
+            git("config", "branch.suivie.pushRemote", "origin")
+    claude_ok()
 elif mode == "ajoute-info-attributes":
     ecrire(".git/info/attributes", "* filter=piege\n"); claude_ok()
 elif mode == "modifie-info-exclude":
@@ -490,6 +502,59 @@ def test_empreinte_git_noms_et_contenus(depot):
     # un fichier suivi ou non suivi du dépôt n'entre pas dans l'empreinte
     (depot / "notes.txt").write_text("autre")
     assert "notes.txt" not in orc.empreinte_git(depot)
+
+
+# --- SUITE 1 (chef dev, 21/11 10:33) : exemption étroite des clés de suivi de branche ------------------------------
+
+def test_branche_suivie_sur_remote_connu_sans_126(depot, cfg):
+    """Une étape qui crée une branche suivie sur un remote déjà connu (branch.<nom>.remote et .merge) : pas de 126, pas de
+    témoin d'incident, la chaîne suivante passe."""
+    assert chaine(depot, cfg, [etape(depot, "delta", "branche-suivie", "docs/data/claude", "a.json")]).executer() == 0
+    assert codes(depot)["delta"] == 0
+    assert not (depot / "rapports" / "auto" / orc.INCIDENT_GIT).exists()
+    assert depot.sh("git", "config", "branch.suivie.remote").stdout.decode().strip() == "origin"
+
+
+@pytest.mark.parametrize("mode, cles", [("branche-pushremote", ["config"]),
+                                        ("branche-remote-inconnu", ["config:branch.suivie.merge", "config:branch.suivie.remote"]),
+                                        ("remote-ajoute", ["config:remote.autre.fetch", "config:remote.autre.url"])])
+def test_config_hors_exemption_etroite_code_126(depot, cfg, mode, cles):
+    """pushRemote (sous-clé de branch.* non exemptée), suivi vers un remote inconnu, remote ajouté : 126 et témoin."""
+    assert chaine(depot, cfg, [etape(depot, "delta", mode, "docs/data/claude", "a.json")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT
+    incident = json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())
+    assert incident["chemins"] == cles
+
+
+def test_differences_git_exemption_etroite():
+    avant = {"config": "a", "config:remote.origin.url": "u", "config:branch.main.remote": "origin",
+             "config:branch.main.merge": "refs/heads/main"}
+    suivie = {**avant, "config:branch.x.remote": "origin", "config:branch.x.merge": "refs/heads/x"}
+    assert orc.differences_git(avant, suivie) == []
+    assert orc.differences_git(avant, {k: v for k, v in avant.items() if not k.startswith("config:branch.main.")}) == [], \
+        "suivi retiré d'une branche sur un remote connu"
+    assert orc.differences_git(avant, {**avant, "config:branch.main.merge": "refs/heads/autre"}) == []
+    assert orc.differences_git(avant, {**avant, "config:branch.x.remote": "."}) == ["config:branch.x.remote"], "« . » n'est pas un remote"
+    assert orc.differences_git(avant, {**avant, "config:branch.x.merge": "refs/heads/x"}) == ["config:branch.x.merge"], "sans remote"
+    assert orc.differences_git(avant, {**avant, "config:branch.x.remote": "origin\norigin"}) == ["config:branch.x.remote"], \
+        "valeurs multiples : strict"
+    ajoute = {**avant, "config:remote.autre.url": "v", "config:branch.x.remote": "autre", "config:branch.x.merge": "refs/heads/x"}
+    assert orc.differences_git(avant, ajoute) == ["config:branch.x.merge", "config:branch.x.remote", "config:remote.autre.url"], \
+        "remote connu = présent AVANT l'étape"
+
+
+def test_empreinte_config_cles_de_suivi_a_part(depot):
+    config = depot / ".git" / "config"
+    base = orc.empreinte_git(depot)
+    assert base["config:remote.origin.url"] and "config:branch.main.remote" not in base
+    with config.open("a") as f:
+        f.write("# commentaire sans effet\n")
+    assert orc.empreinte_git(depot) == base
+    depot.sh("git", "config", "include.path", str(depot.parent / "absent.inc"))
+    assert orc.differences_git(base, orc.empreinte_git(depot)) == ["config"], "la directive include reste stricte"
+    casse = depot.parent / "casse.config"  # à part : un .git/config illisible arrêterait déjà rev-parse (« git illisible »)
+    casse.write_text("[[[\n")
+    assert orc.empreinte_config(casse) == {"config": "brut:" + hashlib.sha256(b"[[[\n").hexdigest()}, "illisible par git : strict"
 
 
 def test_empreinte_git_voit_info_attributes_et_exclude(depot):

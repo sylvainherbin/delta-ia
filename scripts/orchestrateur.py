@@ -29,8 +29,9 @@ Pour chaque étape, sans aucun LLM :
    il reste fatal même après un arrêt propre. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié,
    pas de `.git/index.lock`,
    aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus), `.git/config` et `.git/info/` doivent être
-   inchangés (un hook, un réglage ou un attribut git écrit par une étape s'exécuterait ensuite hors de son bac à sable :
-   code 126, constaté avant toute autre commande git de l'orchestrateur et consigné dans `rapports/auto/incident-git.json` ;
+   inchangés, hors suivi de branche (`branch.<nom>.remote` et `.merge` vers un remote déjà connu) ; un hook, un réglage ou
+   un attribut git écrit par une étape s'exécuterait ensuite hors de son bac à sable
+   (code 126, constaté avant toute autre commande git de l'orchestrateur et consigné dans `rapports/auto/incident-git.json` ;
    contrôle aussi AVANT chaque étape, et avant la publication de la sélection et le relevé X : ce témoin présent, ou l'empreinte
    git changée depuis le début de la chaîne, et rien n'est lancé (126) ; seul le superviseur lève le témoin, après examen),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse aucun commit d'étape, ne supprime
@@ -398,8 +399,7 @@ def empreinte_git(racine: Path) -> dict[str, str]:
         return {"?": "git illisible"}
     base = Path(commun)
     res: dict[str, str] = {}
-    config = base / "config"
-    res["config"] = hashlib.sha256(config.read_bytes()).hexdigest() if config.is_file() else "absent"
+    res.update(empreinte_config(base / "config"))
     for dossier in ("hooks", "info"):
         racine_d = base / dossier
         if not racine_d.is_dir():
@@ -415,8 +415,57 @@ def empreinte_git(racine: Path) -> dict[str, str]:
     return res
 
 
+def empreinte_config(config: Path) -> dict[str, str]:
+    """`.git/config` lu par `git config --file … --list -z` (sans suivre les include, dont la directive reste une clé) :
+    « config » = sha256 des entrées, dans l'ordre, hors `branch.<nom>.remote`, `branch.<nom>.merge` et `remote.*`, qui ont
+    chacune leur clé « config:<clé> » (valeurs multiples jointes par un saut de ligne). Fichier que git ne lit pas : empreinte
+    du contenu brut, strict. Les commentaires et la mise en forme, sans effet, ne comptent pas."""
+    if not config.is_file():
+        return {"config": "absent"}
+    try:
+        r = subprocess.run(["git", "config", "--file", str(config), "--list", "-z"], capture_output=True, timeout=60,
+                           env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})
+    except (OSError, subprocess.TimeoutExpired):
+        r = None
+    if r is None or r.returncode != 0:
+        try:
+            return {"config": "brut:" + hashlib.sha256(config.read_bytes()).hexdigest()}
+        except OSError:
+            return {"config": "illisible"}
+    res: dict[str, str] = {}
+    normales: list[bytes] = []
+    for entree in r.stdout.split(b"\0"):
+        if not entree:
+            continue
+        cle = entree.partition(b"\n")[0].decode("utf-8", "surrogateescape")
+        if cle.startswith("remote.") or (cle.startswith("branch.") and cle.endswith((".remote", ".merge"))
+                                          and cle.count(".") >= 2):
+            valeur = entree.partition(b"\n")[2].decode("utf-8", "surrogateescape")
+            k = f"config:{cle}"
+            res[k] = res[k] + "\n" + valeur if k in res else valeur
+            continue
+        normales.append(entree)
+    res["config"] = hashlib.sha256(b"\0".join(normales)).hexdigest()
+    return res
+
+
 def differences_git(avant: dict[str, str], apres: dict[str, str]) -> list[str]:
-    return sorted(k for k in set(avant) | set(apres) if avant.get(k) != apres.get(k))
+    """Clés de l'empreinte qui diffèrent, toutes strictes sauf `branch.<nom>.remote` et `branch.<nom>.merge` (chef dev, 21/11 :
+    une branche suivie créée par une étape ne doit pas laisser un 126 durable), et seulement si le remote de cette branche
+    (sa valeur après, ou avant si la clé disparaît) est un remote déjà présent avant. Tout le reste reste strict, sous branch.*
+    compris (pushRemote, rebase, description…), comme remote.*, core.*, include*, filter.*, alias.*, url.*, et les hooks."""
+    connus = {k[len("config:remote."):].rsplit(".", 1)[0] for k in avant if k.startswith("config:remote.")}
+    modifies = []
+    for k in sorted(set(avant) | set(apres)):
+        if avant.get(k) == apres.get(k):
+            continue
+        if k.startswith("config:branch."):
+            cle_remote = "config:branch." + k[len("config:branch."):].rsplit(".", 1)[0] + ".remote"
+            remote = apres[cle_remote] if cle_remote in apres else avant.get(cle_remote)
+            if remote in connus:
+                continue
+        modifies.append(k)
+    return modifies
 
 
 def arret_propre(racine: Path, etape: Etape) -> list[str]:
