@@ -51,6 +51,21 @@ def passage(dossier, fichier, pousser=True, sujet=None):
 
 if mode == "ok":
     passage(sys.argv[2], sys.argv[3]); claude_ok()
+elif mode in ("minuteur-commun", "minuteur-selection", "faux-minuteur-hors-chemins", "faux-minuteur-autre-identite"):
+    # Commit poussé sur main pendant l'étape, comme delta-ia-commun ou delta-ia-selection, puis le commit de l'étape.
+    sujet, chemin = {"minuteur-selection": ("delta(selection): 2026-W40 — sélection hebdomadaire", "rapports/selection/2026-W40.json"),
+                     "faux-minuteur-hors-chemins": ("delta(commun): 2026-10-02 — génération g1", "notes.txt")}.get(
+                         mode, ("delta(commun): 2026-10-02 — génération g1", "docs/commun/v1/index.json"))
+    ecrire(chemin, "minuteur\n")
+    git("add", "-f", chemin)
+    if mode == "faux-minuteur-autre-identite":
+        subprocess.run(["git", "commit", "-qm", sujet], check=True, capture_output=True,
+                       env={**os.environ, "GIT_AUTHOR_NAME": "autre", "GIT_AUTHOR_EMAIL": "autre@t", "GIT_COMMITTER_NAME": "autre",
+                            "GIT_COMMITTER_EMAIL": "autre@t"})
+    else:
+        git("commit", "-qm", sujet)
+    git("push", "-q", "origin", "HEAD:refs/heads/main")
+    passage(sys.argv[2], sys.argv[3]); claude_ok()
 elif mode == "ok-codex":
     passage(sys.argv[2], sys.argv[3])
 elif mode == "ok-sans-commit":
@@ -492,6 +507,22 @@ def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fich
         assert (depot / ".git" / "hooks" / "pre-commit").exists(), "l'orchestrateur ne supprime ni ne rétablit rien"
     incident = json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())
     assert incident["constate"] == "étape delta" and fichier in incident["chemins"], "témoin durable de l'incident"
+
+
+@pytest.mark.parametrize("mode, impute", [("minuteur-commun", False), ("minuteur-selection", False),
+                                          ("faux-minuteur-hors-chemins", True), ("faux-minuteur-autre-identite", True)])
+def test_commits_des_minuteurs_pousses_pendant_l_etape_ne_lui_sont_pas_imputes(depot, cfg, monkeypatch, mode, impute):
+    """SUITE 2, point 5 : un commit de delta-ia-commun ou de delta-ia-selection (identité du dépôt, sujet et chemins du
+    service) poussé pendant l'étape ne lui est pas imputé ; même sujet hors de ses chemins, ou autre identité : imputé."""
+    for nom, valeur in (("GIT_AUTHOR_NAME", "t"), ("GIT_COMMITTER_NAME", "t"), ("GIT_AUTHOR_EMAIL", "t@t"), ("GIT_COMMITTER_EMAIL", "t@t")):
+        monkeypatch.setenv(nom, valeur)  # identité git du dépôt, celle des services
+    e = etape(depot, "delta", mode, "docs/data/claude", "a.json", checkout=DELTA_CLAUDE)
+    code = chaine(depot, cfg, [e]).executer()
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    if impute:
+        assert code == 1 and codes(depot)["delta"] == orc.CODE_ETAT and "PERIMETRE_COMMITS" in cause
+    else:
+        assert code == 0 and codes(depot)["delta"] == 0 and "PERIMETRE_COMMITS" not in cause
 
 
 def test_hooks_et_config_inchanges_ne_changent_rien(depot, cfg):
