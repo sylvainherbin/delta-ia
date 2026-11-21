@@ -1019,10 +1019,11 @@ class Chaine:
     def executer_etape(self, etape: Etape) -> Issue:
         racine = self.racine
         env = environnement(self.cfg, etape.supervision, etape.env_extra)
-        if not etape.supervision:  # contrôle AVANT l'étape : rien ne se lance sur un git déjà altéré (la supervision lit seulement)
-            blocage = self.controle_git_avant(f"étape {etape.nom}")
-            if blocage:
-                return self._fin(etape, CODE_ETAT, False, True, blocage)
+        # Contrôle AVANT l'étape, supervision comprise : rien ne se lance sur un git déjà altéré. La supervision lancerait elle
+        # aussi git (status, log) sur un hook, un filtre ou un réglage posé ; sa ligne de journal porte la cause (126).
+        blocage = self.controle_git_avant("supervision" if etape.supervision else f"étape {etape.nom}")
+        if blocage:
+            return self._fin(etape, CODE_ETAT, False, True, blocage)
         if etape.garde:
             code, motif = garde(racine, etape, self.jour, env)
             if code in CODES_GARDE_SAUTEE:

@@ -471,7 +471,9 @@ def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fich
     assert chaine_deux_etapes_puis_supervision(depot, cfg, mode) == 1
     assert codes(depot)["delta"] == orc.CODE_ETAT == 126
     assert codes(depot)["codex-delta"] == 0, "la chaîne s'arrête sur delta"
-    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
+    assert not (depot / "rapports" / "supervision-lancee.txt").exists(), "B1 : supervision non lancée sur un git altéré"
+    assert codes(depot)["supervision"] == orc.CODE_ETAT
+    assert "incident git non levé" in next(l for l in journal(depot) if l[2] == "supervision")[6]
     log = (depot / "rapports" / "auto" / "2026-10-02-delta.log").read_text()
     assert "hooks ou config git modifiés" in log and fichier in log and "rien n'est rétabli" in log
     if mode == "ajoute-hook":
@@ -601,7 +603,8 @@ def test_incident_git_bloque_la_chaine_suivante_jusqu_a_sa_levee(depot, cfg):
     assert ahead(depot) == 0 and not (depot / "docs/data/claude/a.json").exists()
     cause = next(l for l in journal(depot) if l[2] == "delta")[6]
     assert "incident git non levé" in cause and orc.INCIDENT_GIT in cause
-    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
+    assert not (depot / "rapports" / "supervision-lancee.txt").exists(), "B1 : supervision non lancée tant que le témoin existe"
+    assert codes(depot)["supervision"] == orc.CODE_ETAT
     # levée par le superviseur, après examen : hook retiré, témoin supprimé
     (depot / ".git" / "hooks" / "pre-commit").unlink()
     marque.unlink()
@@ -624,6 +627,22 @@ def test_hook_pose_entre_deux_temps_de_la_chaine_arrete_avant_l_etape(depot, cfg
     assert codes(depot)["delta"] == orc.CODE_ETAT and not temoin.exists() and ahead(depot) == 0
     cause = next(l for l in journal(depot) if l[2] == "delta")[6]
     assert "modifiés avant l'étape" in cause and "hooks/pre-commit" in cause
+    assert (depot / "rapports" / "auto" / orc.INCIDENT_GIT).exists()
+
+
+def test_git_altere_avant_la_supervision_non_lancee(depot, cfg, monkeypatch):
+    """B1 : un hook posé après le contrôle de départ (ici pendant la publication de la sélection), sans étape pour le voir :
+    la supervision, qui lance git, n'est pas lancée ; sa ligne porte 126 et la cause."""
+    def poser_hook(racine, jour):
+        hook = racine / ".git" / "hooks" / "pre-commit"
+        hook.parent.mkdir(exist_ok=True)
+        hook.write_text("#!/bin/sh\necho execute >> rapports/hook-execute.txt\n")
+    monkeypatch.setattr(orc, "publier_selection_en_attente", poser_hook)
+    assert chaine(depot, cfg, [etape(depot, "supervision", "supervision", supervision=True)]).executer() == 1
+    assert not (depot / "rapports" / "supervision-lancee.txt").exists()
+    assert codes(depot)["supervision"] == orc.CODE_ETAT
+    cause = next(l for l in journal(depot) if l[2] == "supervision")[6]
+    assert "modifiés avant l'étape" in cause and "hooks/pre-commit" in cause and "supervision non lancée" in cause
     assert (depot / "rapports" / "auto" / orc.INCIDENT_GIT).exists()
 
 
