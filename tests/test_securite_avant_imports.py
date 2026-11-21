@@ -111,3 +111,48 @@ def test_temoin_d_incident_arrete_avant_le_python_du_venv(tmp_path, nom):
     (tmp_path / "rapports" / "auto" / "incident-git.json").write_text("{}\n")
     codes = [(r.returncode, r.stderr) for r in _pre(unite, tmp_path, env)]
     assert any(c == 126 and "INCIDENT_GIT" in e for c, e in codes)
+
+
+def _faux_git(tmp_path: Path, env: dict) -> Path:
+    """git du PATH de l'unité (%h/.local/bin en tête) qui laisse une trace avant d'appeler le vrai : un hook ou un réglage
+    posé s'exécuterait à ce moment-là."""
+    trace = tmp_path / "git-lance"
+    bin_ = tmp_path / "home" / ".local" / "bin"
+    bin_.mkdir(parents=True, exist_ok=True)
+    (bin_ / "git").write_text(f"#!/bin/sh\necho \"$@\" >> '{trace}'\nexec /usr/bin/git \"$@\"\n")
+    (bin_ / "git").chmod(0o755)
+    env.setdefault("PATH", f"{bin_}:/usr/bin:/bin")  # unité sans Environment=PATH : celui de systemd --user, sans ~/.local/bin
+    if not env["PATH"].startswith(str(bin_)):
+        env["PATH"] = f"{bin_}:{env['PATH']}"
+    return trace
+
+
+def _sequence(unite: str, tmp_path: Path, env: dict) -> list:
+    """ExecStartPre dans l'ordre, comme systemd : le premier code non nul arrête l'unité."""
+    faits = []
+    for l in unite.splitlines():
+        if l.startswith("ExecStartPre="):
+            faits.append(subprocess.run(shlex.split(l.partition("=")[2]), cwd=tmp_path, env=env, capture_output=True, text=True))
+            if faits[-1].returncode:
+                break
+    return faits
+
+
+UNITES = ["deploy/systemd/delta-ia-commun.service", "deploy/systemd/delta-ia-selection.service"]
+
+
+@pytest.mark.parametrize("chemin", UNITES)
+def test_temoin_d_incident_avant_tout_git(tmp_path, chemin):
+    """SUITE 3, B1 : le témoin est le premier ExecStartPre ; tant qu'il existe, git n'est pas lancé (un hook ou un réglage
+    git posé, cause du témoin, s'exécuterait au premier git)."""
+    _depot_scripts(tmp_path, "commun")
+    unite = (RACINE / chemin).read_text()
+    env = _env_unite(unite, tmp_path)
+    trace = _faux_git(tmp_path, env)
+    (tmp_path / "rapports" / "auto").mkdir(parents=True)
+    (tmp_path / "rapports" / "auto" / "incident-git.json").write_text("{}\n")
+    faits = _sequence(unite, tmp_path, env)
+    assert len(faits) == 1 and faits[0].returncode == 126 and "INCIDENT_GIT" in faits[0].stderr, "le témoin est le premier contrôle"
+    assert not trace.exists(), "aucun git avant le témoin"
+    (tmp_path / "rapports" / "auto" / "incident-git.json").unlink()
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)) and trace.exists(), "témoin levé : le contrôle git suit"
