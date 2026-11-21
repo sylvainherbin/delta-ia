@@ -157,6 +157,19 @@ elif mode == "modifie-hook":
     open(".git/hooks/pre-push", "a").write("echo piégé\n"); claude_ok()
 elif mode == "supprime-hook":
     os.remove(".git/hooks/pre-push"); claude_ok()
+elif mode == "ajoute-info-attributes":
+    ecrire(".git/info/attributes", "* filter=piege\n"); claude_ok()
+elif mode == "modifie-info-exclude":
+    open(".git/info/exclude", "a").write("/notes.txt\n"); claude_ok()
+elif mode == "hook-temoin":   # hook qui laisse une trace s'il s'exécute (rapports/ est ignoré)
+    ecrire(".git/hooks/pre-commit", "#!/bin/sh\necho execute >> rapports/hook-execute.txt\n")
+    os.chmod(".git/hooks/pre-commit", 0o755); claude_ok()
+elif mode == "filtre-piege":   # attribut + pilote : le filtre s'exécuterait au premier checkout de l'orchestrateur
+    temoin = os.path.join(os.getcwd(), "rapports", "filtre-execute.txt")
+    ecrire(".git/info/attributes", "*.json filter=piege\n")
+    git("config", "filter.piege.smudge", f"sh -c 'echo execute >> {temoin}; cat'")
+    ecrire("docs/data/claude/index.json", "modifié avant l'échec\n")
+    sys.exit(3)
 elif mode == "supervision":
     ecrire("rapports/supervision-lancee.txt", "oui\n"); ecrire("rapports/2026-10-02_0420-supervision.md", "# supervision\n"); claude_ok()
 elif mode == "supervision-muette":   # la supervision sort en code 0 sans écrire son rapport
@@ -226,6 +239,9 @@ def depot(tmp_path):
         (racine / f).write_text("{}\n")
     (racine / "scripts").mkdir()
     shutil.copy(RACINE / "scripts" / "garde.py", racine / "scripts" / "garde.py")
+    (racine / "scripts" / "deltalib").mkdir()  # la garde importe la règle de la sentinelle (garde.py, contrôle 4)
+    for f in ("__init__.py", "sentinelle.py"):
+        shutil.copy(RACINE / "scripts" / "deltalib" / f, racine / "scripts" / "deltalib" / f)
     (tmp_path / "faux_agent.py").write_text(FAUX_AGENT)
     sh("git", "add", "-A")
     sh("git", "commit", "-qm", "init")
@@ -434,7 +450,8 @@ def chaine_deux_etapes_puis_supervision(depot, cfg, mode):
 
 
 @pytest.mark.parametrize("mode, fichier", [("ajoute-hook", "hooks/pre-commit"), ("modifie-config", "config"),
-                                           ("modifie-hook", "hooks/pre-push"), ("supprime-hook", "hooks/pre-push")])
+                                           ("modifie-hook", "hooks/pre-push"), ("supprime-hook", "hooks/pre-push"),
+                                           ("ajoute-info-attributes", "info/attributes"), ("modifie-info-exclude", "info/exclude")])
 def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fichier):
     (depot / ".git" / "hooks").mkdir(exist_ok=True)
     if mode in ("modifie-hook", "supprime-hook"):
@@ -447,6 +464,8 @@ def test_hook_ou_config_modifie_arrete_la_chaine_code_126(depot, cfg, mode, fich
     assert "hooks ou config git modifiés" in log and fichier in log and "rien n'est rétabli" in log
     if mode == "ajoute-hook":
         assert (depot / ".git" / "hooks" / "pre-commit").exists(), "l'orchestrateur ne supprime ni ne rétablit rien"
+    incident = json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())
+    assert incident["constate"] == "étape delta" and fichier in incident["chemins"], "témoin durable de l'incident"
 
 
 def test_hooks_et_config_inchanges_ne_changent_rien(depot, cfg):
@@ -471,6 +490,98 @@ def test_empreinte_git_noms_et_contenus(depot):
     # un fichier suivi ou non suivi du dépôt n'entre pas dans l'empreinte
     (depot / "notes.txt").write_text("autre")
     assert "notes.txt" not in orc.empreinte_git(depot)
+
+
+def test_empreinte_git_voit_info_attributes_et_exclude(depot):
+    """Constat (i) du 20/11 : `info/attributes` attache filtres et pilotes, `info/exclude` masque un fichier aux contrôles
+    d'arbre (`git status`) ; `info/refs` (update-server-info) n'a pas d'effet local et n'entre pas dans l'empreinte."""
+    info = depot / ".git" / "info"
+    info.mkdir(exist_ok=True)
+    base = orc.empreinte_git(depot)
+    (info / "attributes").write_text("* filter=piege\n")
+    with (info / "exclude").open("a") as f:
+        f.write("/.gitattributes\n")
+    (info / "refs").write_text("genere\n")
+    assert orc.differences_git(base, orc.empreinte_git(depot)) == ["info/attributes", "info/exclude"]
+
+
+def test_empreinte_git_d_un_worktree_lie_lit_le_depot_commun(depot, tmp_path):
+    """Depuis un worktree lié, git prend config, hooks et info/ dans le dépôt commun : l'empreinte les lit là aussi."""
+    lie = tmp_path / "lie"
+    depot.sh("git", "worktree", "add", "-q", "--detach", str(lie))
+    base = orc.empreinte_git(lie)
+    assert base == orc.empreinte_git(depot)
+    (depot / ".git" / "hooks").mkdir(exist_ok=True)
+    (depot / ".git" / "hooks" / "pre-push").write_text("#!/bin/sh\n")
+    (depot / ".git" / "info").mkdir(exist_ok=True)
+    (depot / ".git" / "info" / "attributes").write_text("* merge=union\n")
+    assert orc.differences_git(base, orc.empreinte_git(lie)) == ["hooks/pre-push", "info/attributes"]
+
+
+# --- constat (ii) du 20/11 : contrôle AVANT l'étape ----------------------------------------------------------------
+
+def test_incident_git_bloque_la_chaine_suivante_jusqu_a_sa_levee(depot, cfg):
+    """Une chaîne arrêtée en 126 laisse le hook en place (rien n'est rétabli) ; sans contrôle avant l'étape, la chaîne du
+    lendemain le prendrait dans son empreinte de départ et le premier commit l'exécuterait."""
+    temoin = depot / "rapports" / "hook-execute.txt"
+    assert chaine(depot, cfg, [etape(depot, "delta", "hook-temoin")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT and not temoin.exists()
+    marque = depot / "rapports" / "auto" / orc.INCIDENT_GIT
+    assert marque.exists()
+    (depot / "rapports" / "passages.log").unlink()
+    etapes = [etape(depot, "delta", "ok", "docs/data/claude", "a.json"), etape(depot, "supervision", "supervision", supervision=True)]
+    assert chaine(depot, cfg, etapes).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT, "étape non lancée"
+    assert not temoin.exists(), "le hook laissé par la chaîne précédente ne s'est pas exécuté"
+    assert ahead(depot) == 0 and not (depot / "docs/data/claude/a.json").exists()
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    assert "incident git non levé" in cause and orc.INCIDENT_GIT in cause
+    assert (depot / "rapports" / "supervision-lancee.txt").exists(), "la supervision reste lancée"
+    # levée par le superviseur, après examen : hook retiré, témoin supprimé
+    (depot / ".git" / "hooks" / "pre-commit").unlink()
+    marque.unlink()
+    (depot / "rapports" / "passages.log").unlink()
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 0
+
+
+def test_hook_pose_entre_deux_temps_de_la_chaine_arrete_avant_l_etape(depot, cfg, monkeypatch):
+    """Un hook posé après le début de la chaîne et avant l'étape (ici pendant la publication de la sélection) : l'empreinte
+    de l'étape le contiendrait déjà ; le contrôle avant l'étape compare au début de la chaîne."""
+    temoin = depot / "rapports" / "hook-execute.txt"
+
+    def poser_hook(racine, jour):
+        hook = racine / ".git" / "hooks" / "pre-commit"
+        hook.parent.mkdir(exist_ok=True)
+        hook.write_text("#!/bin/sh\necho execute >> rapports/hook-execute.txt\n")
+        hook.chmod(0o755)
+    monkeypatch.setattr(orc, "publier_selection_en_attente", poser_hook)
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT and not temoin.exists() and ahead(depot) == 0
+    cause = next(l for l in journal(depot) if l[2] == "delta")[6]
+    assert "modifiés avant l'étape" in cause and "hooks/pre-commit" in cause
+    assert (depot / "rapports" / "auto" / orc.INCIDENT_GIT).exists()
+
+
+def test_incident_git_non_leve_bloque_publication_et_releve(depot, cfg, monkeypatch):
+    """La publication de la sélection et le relevé X commitent et poussent avant la première étape : rien ne part non plus."""
+    appels = []
+    monkeypatch.setattr(orc, "publier_selection_en_attente", lambda racine, jour: appels.append("publication"))
+    monkeypatch.setattr(orc.Chaine, "releve_x", lambda self: appels.append("releve"))
+    marque = depot / "rapports" / "auto" / orc.INCIDENT_GIT
+    marque.parent.mkdir(parents=True, exist_ok=True)
+    marque.write_text("{}\n")
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 1
+    assert appels == [] and codes(depot)["chaine-git"] == orc.CODE_ETAT
+
+
+def test_git_altere_pendant_l_etape_aucune_commande_git_avant_le_126(depot, cfg):
+    """Après l'étape, l'empreinte se compare avant tout `git status`, `checkout` ou `clean` de l'orchestrateur : un attribut
+    et son pilote posés par l'étape s'exécuteraient sinon hors du bac à sable (ici au checkout de l'arrêt propre)."""
+    temoin = depot / "rapports" / "filtre-execute.txt"
+    assert chaine(depot, cfg, [etape(depot, "delta", "filtre-piege", checkout=["docs/data/claude"])]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT
+    assert not temoin.exists(), "le filtre posé par l'étape ne s'est pas exécuté"
+    assert (depot / "docs/data/claude/index.json").read_text() == "modifié avant l'échec\n", "rien n'est rétabli"
 
 
 def test_supervision_est_prevenue_du_code_126_git():

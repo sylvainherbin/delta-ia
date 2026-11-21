@@ -28,8 +28,11 @@ Pour chaque étape, sans aucun LLM :
    `<étape>-refus`, code 125) ; sans ce rapport pour la supervision, ou sans les commits attendus pour les autres étapes,
    il reste fatal même après un arrêt propre. Dans les deux cas l'état final doit être propre (arbre sans fichier modifié,
    pas de `.git/index.lock`,
-   aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus) comme `.git/config` doivent être
-   inchangés (un hook ou un réglage git écrit par une étape s'exécuterait ensuite hors de son bac à sable : code 126),
+   aucun commit local absent de `origin/main`), et `.git/hooks/` (noms et contenus), `.git/config` et `.git/info/` doivent être
+   inchangés (un hook, un réglage ou un attribut git écrit par une étape s'exécuterait ensuite hors de son bac à sable :
+   code 126, constaté avant toute autre commande git de l'orchestrateur et consigné dans `rapports/auto/incident-git.json` ;
+   contrôle aussi AVANT chaque étape, et avant la publication de la sélection et le relevé X : ce témoin présent, ou l'empreinte
+   git changée depuis le début de la chaîne, et rien n'est lancé (126) ; seul le superviseur lève le témoin, après examen),
    sinon la chaîne s'arrête : l'orchestrateur ne pousse aucun commit d'étape, ne supprime
    jamais un `.git/index.lock` (D21) et ne touche jamais à `raw/` (historique du brut, D72), sauf le capteur de la liste X (clé
    `chaine.capteur_x`) : relevé avant la première étape, publication dédiée des seuls IDs (`delta(x):`,
@@ -110,6 +113,7 @@ CONFIG = Path(__file__).resolve().parent / "orchestrateur.toml"
 AGENT_JOURNAL = "orchestrateur"
 
 CODE_DELAI, CODE_PERMISSION, CODE_ETAT, CODE_BINAIRE, CODE_NON_LANCEE, CODE_SANS_LOT = 124, 125, 126, 127, 128, 129
+INCIDENT_GIT = "incident-git.json"  # sous `chaine.sortie_dossier` : témoin d'altération de git, levé par le superviseur seul
 CODE_QUOTA_EPUISE = 130  # Codex refuse de tourner (limite d'usage atteinte) : étape sautée, la chaîne continue
 CODE_VALIDATION = 131    # l'étape a réussi mais `valider.py` échoue sur l'arbre qu'elle a laissé : échec signalé, la chaîne continue
 CODE_RESEAU = 132        # échec réseau persistant : relances épuisées ou interdites en fin de fenêtre (D122)
@@ -380,24 +384,34 @@ def etat_depot(racine: Path, distant: bool = True) -> dict:
             "en_avance": int(n) if code == 0 and n.isdigit() else None}
 
 
+INFO_GENERES = ("refs", "packs")  # .git/info/ écrit par `git update-server-info` : sans effet sur les commandes locales
+
+
 def empreinte_git(racine: Path) -> dict[str, str]:
-    """Empreinte de l'intégrité de git : {« config » ou « hooks/<chemin> » : sha256 du contenu}. Avec `.git` en écriture pour
-    Codex, un hook ou un réglage ajouté pendant une étape s'exécuterait plus tard hors du bac à sable (git commit de Claude ou
-    de Sylvain). Les noms comptent autant que les contenus : un fichier ajouté ou supprimé change l'empreinte."""
-    code, gitdir = git(racine, "rev-parse", "--absolute-git-dir")
-    if code != 0 or not gitdir:
+    """Empreinte de l'intégrité de git : {« config », « hooks/<chemin> » ou « info/<chemin> » : sha256 du contenu}. Avec `.git`
+    en écriture pour Codex, un hook ou un réglage ajouté pendant une étape s'exécuterait plus tard hors du bac à sable (git
+    commit de Claude ou de Sylvain) ; `info/attributes` attache des filtres et pilotes aux chemins, `info/exclude` masque des
+    fichiers aux contrôles d'arbre. Lus dans le dépôt commun (`--git-common-dir`), là où git les prend aussi depuis un worktree
+    lié. Les noms comptent autant que les contenus : un fichier ajouté ou supprimé change l'empreinte."""
+    code, commun = git(racine, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    if code != 0 or not commun:
         return {"?": "git illisible"}
-    base = Path(gitdir)
+    base = Path(commun)
     res: dict[str, str] = {}
     config = base / "config"
     res["config"] = hashlib.sha256(config.read_bytes()).hexdigest() if config.is_file() else "absent"
-    hooks = base / "hooks"
-    if hooks.is_dir():
-        for f in sorted(p for p in hooks.rglob("*") if p.is_file() or p.is_symlink()):
+    for dossier in ("hooks", "info"):
+        racine_d = base / dossier
+        if not racine_d.is_dir():
+            continue
+        for f in sorted(p for p in racine_d.rglob("*") if p.is_file() or p.is_symlink()):
+            rel = f.relative_to(racine_d)
+            if dossier == "info" and rel.parts[0] in INFO_GENERES:
+                continue
             try:
-                res[f"hooks/{f.relative_to(hooks)}"] = hashlib.sha256(f.read_bytes()).hexdigest()
+                res[f"{dossier}/{rel}"] = hashlib.sha256(f.read_bytes()).hexdigest()
             except OSError:
-                res[f"hooks/{f.relative_to(hooks)}"] = "illisible"
+                res[f"{dossier}/{rel}"] = "illisible"
     return res
 
 
@@ -841,6 +855,7 @@ class Chaine:
         self.compte_lots = compte_lots
         self.dormir, self.maintenant, self.resoudre = dormir, maintenant, resoudre  # injectés par les tests
         self.issues: list[Issue] = []
+        self.git_depart: dict[str, str] | None = None  # empreinte git au début de la chaîne (executer)
 
     def _fin(self, etape: Etape, code: int, ok: bool, arret: bool, detail: str, commit: str = "aucun") -> Issue:
         code_journal = 0 if ok else code
@@ -849,6 +864,36 @@ class Chaine:
         issue = Issue(etape.nom, code, ok, arret, detail, commit)
         self.issues.append(issue)
         return issue
+
+    def fichier_incident_git(self) -> Path:
+        return self.racine / self.cfg["chaine"]["sortie_dossier"] / INCIDENT_GIT
+
+    def noter_incident_git(self, quoi: str, chemins: list[str]) -> None:
+        """Témoin durable d'une altération de git : il bloque les chaînes suivantes jusqu'à sa levée par le superviseur, après
+        examen. Écrit par l'orchestrateur après la fin de l'agent ; aucun agent ne tourne avant le contrôle qui le lit."""
+        f = self.fichier_incident_git()
+        if f.exists() or f.is_symlink():
+            return
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps({"jour": self.jour.isoformat(), "quand": datetime.now().isoformat(timespec="seconds"),
+                                 "constate": quoi, "chemins": chemins}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+    def controle_git_avant(self, quoi: str) -> str | None:
+        """Contrôle AVANT tout lancement (publication, relevé, étape) : sans lui, un hook, un réglage ou un attribut posé hors
+        d'une étape (entre deux étapes, par une chaîne précédente arrêtée en 126) s'exécuterait au premier commit ou push, et le
+        contrôle d'après l'étape ne le verrait pas (l'empreinte de départ le contient déjà). Renvoie le motif du refus, ou None."""
+        f = self.fichier_incident_git()
+        if f.exists() or f.is_symlink():
+            return (f"incident git non levé ({f.relative_to(self.racine)}) : {quoi} non lancée ; à examiner (.git/hooks/, "
+                    ".git/config, .git/info/) puis à lever par le superviseur ; rien n'est rétabli, la chaîne s'arrête")
+        if self.git_depart is None:
+            self.git_depart = empreinte_git(self.racine)
+        modifies = differences_git(self.git_depart, empreinte_git(self.racine))
+        if modifies:
+            self.noter_incident_git(f"avant {quoi}", modifies)
+            return ("hooks ou config git modifiés avant l'étape, depuis le début de la chaîne : " + ", ".join(modifies[:8])
+                    + f" ; {quoi} non lancée, rien n'est rétabli, la chaîne s'arrête")
+        return None
 
     def relance_interdite(self, quand: datetime) -> bool:
         """D122 : aucune tentative ne commence entre `relances_limite` (07:30) et `fenetre_fin` (08:00), la fin de la fenêtre de la chaîne."""
@@ -881,10 +926,11 @@ class Chaine:
             if code == 5 and etape.agent == "claude" and etape.commande_abonnement:
                 # Le lanceur peut aussi rendre 5 après une réponse API sans crédit : ne jamais rejouer un passage
                 # ayant déjà écrit/commité. Un refus de permission ou un délai ne déclenche pas de repli.
+                if differences_git(git_avant, empreinte_git(self.racine)):  # avant toute commande git (status, fetch)
+                    return res, code, "code 5 : repli abonnement refusé, hooks ou config git modifiés"
                 etat = etat_depot(self.racine, self.distant)
                 if (refus_permission(res) or etat["index_lock"] or etat["sales"] or etat["en_avance"]
-                        or tete_courte(self.racine) != tete_avant
-                        or differences_git(git_avant, empreinte_git(self.racine))):
+                        or tete_courte(self.racine) != tete_avant):
                     return res, code, "code 5 : repli abonnement refusé, résultat ou dépôt déjà modifié"
                 repli = "repli abonnement après code 5 de claude-cle"
                 ecrire_sortie(self.racine, self.cfg, self.jour, etape, res, 5, repli, [])
@@ -908,9 +954,11 @@ class Chaine:
             delai = delais[tentative - 1]
             if self.relance_interdite(self.maintenant() + timedelta(seconds=0 if dns else delai)):
                 return res, CODE_RESEAU, f"réseau : relance interdite en fin de fenêtre ({ch['relances_limite']}), abandon après {total} ({motif})"
+            if differences_git(git_avant, empreinte_git(self.racine)):  # avant le checkout : un filtre posé s'y exécuterait
+                return res, code, detail  # le chemin ordinaire le qualifie (126)
             jouees = arret_propre(self.racine, etape) if etape.checkout or etape.clean else []
             etat = etat_depot(self.racine, self.distant)
-            if (etat["index_lock"] or etat["sales"] or etat["en_avance"] or differences_git(git_avant, empreinte_git(self.racine))):
+            if etat["index_lock"] or etat["sales"] or etat["en_avance"]:
                 return res, code, detail  # état différent d'avant l'étape : pas de relance, le chemin ordinaire le qualifie (126, 15)
             ecrire_sortie(self.racine, self.cfg, self.jour, etape, res, code,
                           f"tentative {tentative}/{len(delais) + 1} échouée, réseau ({motif}) : relance après {delai // 60:g} min d'attente au plus", jouees)
@@ -922,6 +970,10 @@ class Chaine:
     def executer_etape(self, etape: Etape) -> Issue:
         racine = self.racine
         env = environnement(self.cfg, etape.supervision, etape.env_extra)
+        if not etape.supervision:  # contrôle AVANT l'étape : rien ne se lance sur un git déjà altéré (la supervision lit seulement)
+            blocage = self.controle_git_avant(f"étape {etape.nom}")
+            if blocage:
+                return self._fin(etape, CODE_ETAT, False, True, blocage)
         if etape.garde:
             code, motif = garde(racine, etape, self.jour, env)
             if code in CODES_GARDE_SAUTEE:
@@ -944,6 +996,14 @@ class Chaine:
             return self._fin(etape, code, True, False, detail)
         if etape.supervision and code == 0 and not refus_permission(res) and not rapport_supervision_ecrit(racine, self.jour, debut):
             enregistrer_rapport_supervision(racine, self.jour, debut, res.stdout)
+        modifies = differences_git(git_avant, empreinte_git(racine))
+        if modifies:  # priorité sur tout autre motif, et avant toute autre commande git (status, fetch, checkout, clean) : un
+            # réglage, un hook ou un attribut posé s'y exécuterait hors du bac à sable ; l'intégrité ne se rétablit pas automatiquement
+            detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
+            self.noter_incident_git(f"étape {etape.nom}", modifies)
+            ecrire_sortie(racine, self.cfg, self.jour, etape, res, CODE_ETAT, detail, [], version)
+            apres = tete_courte(racine)
+            return self._fin(etape, CODE_ETAT, False, True, detail, apres if apres != avant else "aucun")
         refus = refus_permission(res) if etape.agent == "claude" else []
         if refus and code != 0:  # étape déjà en échec : le refus s'ajoute à la cause, il reste fatal
             detail = f"{len(refus)} permission(s) refusée(s) : " + " ; ".join(refus[:5]) + f" ; {detail}"
@@ -1005,16 +1065,12 @@ class Chaine:
             else:
                 avertissement = f"{len(refus)} permission(s) refusée(s), non fatale(s) : " + " ; ".join(refus[:5])
                 detail = "ok avec avertissement : " + avertissement
-        modifies = differences_git(git_avant, empreinte_git(racine))
-        quota = (etape.agent == "codex" and code != 0 and code not in (CODE_DELAI, CODE_BINAIRE) and not stop and not modifies
+        quota = (etape.agent == "codex" and code != 0 and code not in (CODE_DELAI, CODE_BINAIRE) and not stop
                  and not etat["sales"] and not etat["en_avance"] and quota_codex_epuise(res))
         if quota:  # refus constaté de l'agent (pas un seuil) : étape sautée, la chaîne continue
             code = CODE_QUOTA_EPUISE
             reprise = reprise_quota_codex(res)
             detail = "sautée : quota de l'agent épuisé (Codex a refusé de tourner)" + (f" ; reprise annoncée : {reprise}" if reprise else "")
-        if modifies:  # priorité sur tout autre motif : l'intégrité de git ne se rétablit pas automatiquement
-            code, stop = CODE_ETAT, True
-            detail = "hooks ou config git modifiés pendant l'étape : " + ", ".join(modifies[:8]) + " ; rien n'est rétabli, la chaîne s'arrête"
         controle = ""
         if code == 0 and not stop and not etape.supervision and controles_valider(etape):
             valide, resume, controle = verifier_arbre(racine, etape, self.jour, env)
@@ -1064,10 +1120,16 @@ class Chaine:
                 journaliser(self.racine, "capteur-x-purge", "aucun", 1, "purge du texte X impossible")
 
     def executer(self) -> int:
-        erreur_selection = publier_selection_en_attente(self.racine, self.jour)
-        if erreur_selection:
-            journaliser(self.racine, "selection-publication", "aucun", 1, erreur_selection)
-        self.releve_x()
+        self.git_depart = empreinte_git(self.racine)
+        blocage = self.controle_git_avant("publication de la sélection et relevé X")
+        erreur_selection = None
+        if blocage:  # ces deux temps commitent et poussent : rien ne part sur un git altéré ; chaque étape refuse ensuite
+            journaliser(self.racine, "chaine-git", "aucun", CODE_ETAT, blocage)
+        else:
+            erreur_selection = publier_selection_en_attente(self.racine, self.jour)
+            if erreur_selection:
+                journaliser(self.racine, "selection-publication", "aucun", 1, erreur_selection)
+            self.releve_x()
         arret_par: str | None = None
         for etape in [e for e in self.etapes if not e.supervision]:
             if arret_par:

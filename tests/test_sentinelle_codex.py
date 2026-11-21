@@ -259,22 +259,41 @@ def test_selection_en_attente_ne_publie_pas_avec_un_autre_etat(depot, monkeypatc
     assert appels == []
 
 
-# --- garde.py:258 : ce qu'il fait d'un `.gitattributes` de racine (constat, aucun changement de code) -------------------------
-# Il ne voit ni la sentinelle ni un vrai `.gitattributes` non suivi (un `??` ne compte que sous CHEMINS_PASSAGE) ; avec --etape, ni un
-# `.gitattributes` suivi et modifié (hors CHEMINS_ETAPE) ; sans --etape, un suivi modifié donne 13. Les attributs ne sont donc protégés
-# que par les quatre contrôles de ce lot, jamais par la garde.
+# --- garde.py, contrôle 4 (constat (iii) du 20/11) : un `.gitattributes` de racine arrête la garde, la sentinelle exceptée -----
+# Avant la correction, un `??` ne comptait que sous CHEMINS_PASSAGE et, avec --etape, un suivi modifié hors CHEMINS_ETAPE
+# passait : ni la sentinelle ni un vrai `.gitattributes` n'étaient vus. Désormais tout état de ce chemin autre que la
+# sentinelle exacte (même table ETATS que les quatre autres contrôles) donne 13, quelle que soit l'étape.
 
-@pytest.mark.parametrize("nom", ["vide-0444", "contenu-0444", "contenu-0644"])
-@pytest.mark.parametrize("etape", [[], ["--etape", "delta"], ["--etape", "codex-delta"], ["--etape", "delta-kb"], ["--etape", "codex-delta-kb"]])
-def test_garde_ne_voit_pas_un_gitattributes_non_suivi_de_racine(racine, capsys, nom, etape):
-    ETATS[nom][0](racine)
-    assert lancer(racine, capsys, *etape)[0] == 0
+ETAPES_GARDE = [[], ["--etape", "delta"], ["--etape", "codex-delta"], ["--etape", "delta-kb"], ["--etape", "codex-delta-kb"]]
 
 
-@pytest.mark.parametrize("etape, code", [([], 13), (["--etape", "delta"], 0), (["--etape", "codex-delta"], 0)])
-def test_garde_gitattributes_suivi_modifie(racine, capsys, etape, code):
-    ETATS["suivi-modifie"][0](racine)
-    assert lancer(racine, capsys, *etape)[0] == code
+@pytest.fixture
+def depot_garde(tmp_path, racine):
+    """Le dépôt de test de garde.py, un niveau plus bas : l'état « lien » pose sa cible dans le dossier parent, propre au test."""
+    depot = tmp_path / "depot"
+    depot.mkdir()
+    for f in [p for p in racine.iterdir() if p.name != "depot"]:  # `racine` est tmp_path : le dépôt (et .git) y descend
+        f.rename(depot / f.name)
+    return depot
+
+
+@pytest.mark.parametrize("nom", list(ETATS))
+@pytest.mark.parametrize("etape", ETAPES_GARDE)
+def test_garde_refuse_tout_gitattributes_hors_sentinelle(depot_garde, capsys, nom, etape):
+    ETATS[nom][0](depot_garde)
+    code, out = lancer(depot_garde, capsys, *etape)
+    if ETATS[nom][1]:
+        assert code == 0, out
+    else:
+        assert code == 13 and ".gitattributes" in out, out
+
+
+@pytest.mark.parametrize("etape", ETAPES_GARDE)
+def test_garde_refuse_un_gitattributes_cite_par_git(depot_garde, capsys, etape):
+    """Un chemin à espace sort entre guillemets dans `git status` : le nom se lit sans eux."""
+    _ecrire(depot_garde / "un dossier" / ".gitattributes", CONTENU, 0o644)
+    code, out = lancer(depot_garde, capsys, *etape)
+    assert code == 13 and "un dossier/.gitattributes" in out, out
 
 
 # --- retouches de relecture : ligne brute, racine = haut du dépôt ----------------------------------------------------

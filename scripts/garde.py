@@ -25,6 +25,8 @@ Contrôles, dans l'ordre :
 4. Arbre de travail : fichier suivi modifié (indexé ou non), ou fichier non suivi dans les chemins du passage
    (`docs/data/claude/`, `docs/data/actu/`, `state/`) -> arrêt, code 13, avec la liste des fichiers. Un reste
    d'arrêt (versions.json, etat.json, fichier du jour non commité) ou un CONTEXTE.md non commité bloquerait le pull.
+   Tout `.gitattributes` non suivi ou modifié, à la racine ou dessous, arrête aussi en code 13, quelle que soit l'étape ;
+   seule la sentinelle du pilote Codex (`deltalib.sentinelle`) est tolérée.
 
 5. D70 : au moins un commit local absent de `origin/main` (`git rev-list --count origin/main..HEAD`) -> arrêt, code 15 :
    une étape ne doit jamais pousser le commit non validé d'une autre. Sans `origin/main` (dépôt sans distant, tests), non évalué.
@@ -50,6 +52,8 @@ import sys
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
+
+from deltalib.sentinelle import est_sentinelle_codex  # scripts/ est sur le chemin : lancé comme script ou importé par les tests
 
 RACINE = Path(__file__).resolve().parent.parent
 POLITIQUE_DEFAUT = RACINE.parent / "discipline" / "config" / "instance-policy.json"
@@ -263,8 +267,16 @@ def controler(racine: Path, jour: date, maintenant: datetime | None = None, dela
         return res  # sans état git, les commits non poussés ne se lisent pas non plus
     sales = []
     chemins_etape = CHEMINS_ETAPE.get(etape)
-    for ligne in sortie.splitlines():
+    for ligne in sortie.split("\n"):  # ligne brute : pas de splitlines() ni de strip() (nom à espace voisin de la sentinelle)
+        if not ligne:
+            continue
         etat, chemin = ligne[:2], ligne[3:].split(" -> ")[-1]
+        nom = chemin[1:-1] if len(chemin) > 1 and chemin[0] == chemin[-1] == '"' else chemin  # chemin cité par git (espace…)
+        if ".gitattributes" in nom.split("/") and not est_sentinelle_codex(racine, ligne):
+            # avant les filtres d'étape : un attribut (filtre, pilote de diff ou de fusion) agit sur tout le dépôt ;
+            # seule la sentinelle du pilote Codex (vide, 0444, non suivie, à la racine) est tolérée
+            sales.append(f"{chemin} ({etat.strip() or '??'})")
+            continue
         if chemins_etape is not None and not chemin.startswith(chemins_etape):
             continue
         if etat == "??":
