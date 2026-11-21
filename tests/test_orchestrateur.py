@@ -1173,6 +1173,7 @@ def test_commandes_reelles_syntaxe_et_interdits():
     assert etapes["delta"].commande[etapes["delta"].commande.index("--setting-sources") + 1] == "project"
     sup = etapes["supervision"].commande
     assert sup[sup.index("--setting-sources") + 1] == "" and sup[sup.index("--settings") + 1].endswith(".claude/supervision.settings.json")
+    assert sup[2] == orc.construire_prompt(cfg["etapes"]["supervision"], RACINE)  # égalité exacte, comme le test du prompt Edit
     assert "rapport dans rapports/" in sup[2] and "Séparation des sources" in sup[2]
     for nom in ("codex-delta", "codex-delta-kb"):
         c = etapes[nom].commande
