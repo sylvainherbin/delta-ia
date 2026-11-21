@@ -428,7 +428,8 @@ def binaires_hors_cache(racine: Path) -> list[str]:
     *.so ou *.pyd sous scripts/ hors de `__pycache__/` : un scripts/json.pyc sans source écrit par une étape serait chargé
     par le prochain Python du dépôt (garde.py, valider.py, capteur_x.py importent json) avant la bibliothèque standard.
     Parcours illisible : refus aussi. scripts/ absent : rien à charger, aucun refus (dépôts de test réduits ; l'unité, elle,
-    refuse un scripts/ absent)."""
+    refuse un scripts/ absent). SUITE 5, point 3 : tout lien symbolique sous scripts/ (scripts/ compris, __pycache__/
+    compris) est rendu aussi, comme dans les unités."""
     trouves: list[str] = []
     if not os.path.lexists(os.path.join(racine, "scripts")):
         return trouves
@@ -437,13 +438,16 @@ def binaires_hors_cache(racine: Path) -> list[str]:
         raise exc
 
     try:
-        for d, _, fichiers in os.walk(os.path.join(racine, "scripts"), onerror=erreur):
+        if os.path.islink(os.path.join(racine, "scripts")):
+            trouves.append("scripts")
+        for d, dossiers, fichiers in os.walk(os.path.join(racine, "scripts"), onerror=erreur):
             rel = os.path.relpath(d, racine)
+            trouves += [os.path.join(rel, n) for n in dossiers + fichiers if os.path.islink(os.path.join(d, n))]
             if "__pycache__" not in rel.split(os.sep):
                 trouves += [os.path.join(rel, f) for f in fichiers if f.lower().endswith(BINAIRES_PYTHON)]
     except OSError as exc:
         return [f"scripts (parcours illisible : {exc.strerror or exc})"]
-    return sorted(trouves)
+    return sorted(set(trouves))
 
 
 def fichier_reference_git(environ=None) -> Path:
@@ -1065,8 +1069,8 @@ class Chaine:
         if not trouves:
             return None
         self.noter_incident_git(f"avant {quoi}", trouves)
-        return (f"ARBRE_CODE_SALE : binaire(s) Python hors de __pycache__/ sous scripts/ : {', '.join(trouves[:5])} ; {quoi} non "
-                "lancée, rien n'est rétabli, la chaîne s'arrête")
+        return (f"ARBRE_CODE_SALE : binaire(s) Python hors de __pycache__/ ou lien(s) symbolique(s) sous scripts/ : "
+                f"{', '.join(trouves[:5])} ; {quoi} non lancée, rien n'est rétabli, la chaîne s'arrête")
 
     def relance_interdite(self, quand: datetime) -> bool:
         """D122 : aucune tentative ne commence entre `relances_limite` (07:30) et `fenetre_fin` (08:00), la fin de la fenêtre de la chaîne."""

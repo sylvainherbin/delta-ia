@@ -726,6 +726,43 @@ def test_binaires_hors_cache_meme_regle_que_les_unites(tmp_path):
     assert orc.binaires_hors_cache(tmp_path) == ["scripts/f.pyd", "scripts/json.PYC", "scripts/sous/d.pyo", "scripts/sous/e.so"]
 
 
+def test_binaires_hors_cache_refuse_tout_lien_symbolique(tmp_path):
+    """SUITE 5, point 3 : même règle que les unités pour les liens : fichier, dossier (jamais suivi), pendant, dans
+    __pycache__/, et scripts/ lui-même."""
+    s = tmp_path / "scripts"
+    (s / "sous" / "__pycache__").mkdir(parents=True)
+    ailleurs = tmp_path / "ailleurs"
+    ailleurs.mkdir()
+    (ailleurs / "piege.pyc").write_text("")
+    (s / "json.py").symlink_to(ailleurs / "json.py")
+    (s / "lib").symlink_to(ailleurs, target_is_directory=True)
+    (s / "sous" / "pendant.py").symlink_to(tmp_path / "absent")
+    (s / "sous" / "__pycache__" / "b.cpython-312.pyc").symlink_to(ailleurs / "piege.pyc")
+    (s / "x.pyc").symlink_to(ailleurs / "piege.pyc")
+    assert orc.binaires_hors_cache(tmp_path) == ["scripts/json.py", "scripts/lib", "scripts/sous/__pycache__/b.cpython-312.pyc",
+                                                 "scripts/sous/pendant.py", "scripts/x.pyc"], "lien x.pyc rendu une fois"
+    for p in ("json.py", "lib", "sous/pendant.py", "sous/__pycache__/b.cpython-312.pyc", "x.pyc"):
+        (s / p).unlink()
+    assert orc.binaires_hors_cache(tmp_path) == []
+    s.rename(tmp_path / "vrais-scripts")
+    s.symlink_to(tmp_path / "vrais-scripts", target_is_directory=True)
+    assert orc.binaires_hors_cache(tmp_path) == ["scripts"]
+
+
+def test_lien_symbolique_present_au_demarrage_arrete_avant_la_premiere_garde(depot, cfg):
+    """SUITE 5, point 3 : un lien sous scripts/, ignoré par git, présent au démarrage de la chaîne, l'arrête avant la
+    première garde (incident, 126) ; entre deux étapes, le même binaires_hors_cache tourne (controle_binaires)."""
+    with (depot / ".gitignore").open("a") as f:
+        f.write("scripts/lien.py\n")
+    depot.sh("git", "commit", "-qam", "ignorer le lien")
+    depot.sh("git", "push", "-q", "origin", "HEAD:refs/heads/main")
+    (depot / "scripts" / "lien.py").symlink_to(depot / "scripts" / "garde.py")
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 1
+    assert codes(depot)["delta"] == orc.CODE_ETAT and not (depot / "docs/data/claude/a.json").exists()
+    assert "lien(s) symbolique(s)" in next(l for l in journal(depot) if l[2] == "chaine-git")[6]
+    assert json.loads((depot / "rapports" / "auto" / orc.INCIDENT_GIT).read_text())["chemins"] == ["scripts/lien.py"]
+
+
 def test_binaire_present_au_depart_arrete_avant_la_premiere_garde(depot, cfg, tmp_path, monkeypatch):
     """SUITE 4, point 3 : un binaire déjà là au démarrage de la chaîne arrête avant la première garde (garde.py jamais lancée)."""
     _ignorer_pyc(depot)

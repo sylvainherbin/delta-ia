@@ -44,7 +44,8 @@ fi
 # git, ls-files compris). Parcours de scripts/ par la seule bibliothèque standard, en Python isolé : tout *.pyc, *.pyo,
 # *.so ou *.pyd hors de __pycache__/ (un html.pyc sans source, importé par l'orchestrateur avant son propre contrôle)
 # arrête. __pycache__/ est écarté par PYTHONPYCACHEPREFIX. Même code que les ExecStartPre des unités.
-if ! /usr/bin/python3 -I -S -c "import os, sys; x = ('.pyc', '.pyo', '.so', '.pyd'); b = sorted(os.path.join(d, f) for d, s, fs in os.walk('scripts', onerror=lambda e: (sys.stderr.write('ARBRE_CODE_SALE : scripts illisible (' + str(e) + '), rien n est lancé\\n'), os._exit(126))) if '__pycache__' not in d.split(os.sep) for f in fs if f.lower().endswith(x)); sys.stderr.write('ARBRE_CODE_SALE : binaires hors de __pycache__ sous scripts : ' + ' '.join(b[:5]) + ', rien n est lancé\\n' if b else ''); sys.exit(126 if b else 0)"; then
+# SUITE 5, point 3 : tout lien symbolique sous scripts/ (scripts/ compris, __pycache__/ compris) arrête aussi.
+if ! /usr/bin/python3 -I -S -c "import os, sys; x = ('.pyc', '.pyo', '.so', '.pyd'); w = list(os.walk('scripts', onerror=lambda e: (sys.stderr.write('ARBRE_CODE_SALE : scripts illisible (' + str(e) + '), rien n est lancé\\n'), os._exit(126)))); l = (['scripts'] if os.path.islink('scripts') else []) + sorted(os.path.join(d, n) for d, s, fs in w for n in s + fs if os.path.islink(os.path.join(d, n))); b = sorted(os.path.join(d, f) for d, s, fs in w if '__pycache__' not in d.split(os.sep) for f in fs if f.lower().endswith(x)); sys.stderr.write('ARBRE_CODE_SALE : liens symboliques sous scripts : ' + ' '.join(l[:5]) + ', rien n est lancé\\n' if l else ''); sys.stderr.write('ARBRE_CODE_SALE : binaires hors de __pycache__ sous scripts : ' + ' '.join(b[:5]) + ', rien n est lancé\\n' if b else ''); sys.exit(126 if l or b else 0)"; then
     echo "passage-auto : ARBRE_CODE_SALE, rien n'est lancé" >&2
     exit 126
 fi

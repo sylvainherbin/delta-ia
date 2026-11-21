@@ -370,6 +370,31 @@ def test_modele_refuse_un_fichier_ignore_sous_scripts(tmp_path, chemin):
     assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
 
 
+@pytest.mark.parametrize("chemin", UNITES + MODELES)
+def test_lien_symbolique_sous_scripts_arrete_l_unite(tmp_path, chemin):
+    """SUITE 5, point 3 : os.walk ne suit pas un lien ; un lien sous scripts/ ferait charger du code hors du parcours. Tout
+    lien symbolique sous scripts/ arrête (126), fichier ou dossier, pendant, dans __pycache__/, et scripts/ lui-même."""
+    scripts = _depot_scripts(tmp_path, "commun")
+    unite = (RACINE / chemin).read_text()
+    env = _env_unite(unite, tmp_path)
+    _reference(tmp_path, env)
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)), "sans lien : l'unité part"
+    ailleurs = tmp_path / "rapports" / "ailleurs"
+    ailleurs.mkdir(parents=True)
+    (scripts / "__pycache__").mkdir()
+    for lien, cible in (("json.py", ailleurs / "json.py"), ("sous", ailleurs), ("pendant.py", tmp_path / "absent"),
+                        ("__pycache__/piege.cpython-0.pyc", ailleurs / "x.pyc")):
+        (scripts / lien).symlink_to(cible)
+        faits = _sequence(unite, tmp_path, env)
+        assert faits[-1].returncode == 126 and f"liens symboliques sous scripts : scripts/{lien}" in faits[-1].stderr, lien
+        (scripts / lien).unlink()
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
+    scripts.rename(tmp_path / "vrais-scripts")
+    scripts.symlink_to(tmp_path / "vrais-scripts", target_is_directory=True)
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "liens symboliques sous scripts : scripts" in faits[-1].stderr
+
+
 def _code_python(ligne: str) -> str:
     """Code passé à `python3 -I -S -c` dans une ligne ExecStartPre= ou dans passage-auto.sh."""
     args = shlex.split(ligne.partition("=")[2] if ligne.startswith("ExecStartPre=") else ligne.removeprefix("if ! ").removesuffix("; then"))
