@@ -11,7 +11,13 @@ Documentation=file:%h/projets/delta-ia/scripts/relais_reference.py
 [Service]
 Type=simple
 WorkingDirectory=%h/projets/delta-ia
+# SUITE 3, B2b : garde des unités delta-ia. Témoin d'incident EN PREMIER (ni git ni Python du dépôt tant qu'il existe),
+# puis aucun fichier IGNORÉ sous scripts/ hors __pycache__/ (un .pyc sans source y serait importé).
+ExecStartPre=/usr/bin/python3 -I -S -c "import os, sys; t = 'rapports/auto/incident-git.json'; i = os.path.lexists(t); sys.stderr.write('INCIDENT_GIT : ' + t + ' non levé, rien n est lancé\\n' if i else ''); sys.exit(126 if i else 0)"
+ExecStartPre=/usr/bin/python3 -I -S -c "import subprocess, sys; o = subprocess.run(['git', 'ls-files', '-o', '-i', '--exclude-standard', '--', 'scripts'], capture_output=True); ignores = [p for p in o.stdout.decode(errors='replace').splitlines() if '/__pycache__/' not in p]; sale = o.returncode != 0 or bool(ignores); sys.stderr.write('ARBRE_CODE_SALE : fichiers ignorés sous scripts : ' + ' '.join(ignores[:5]) + '\\n' if sale else ''); sys.exit(126 if sale else 0)"
 ExecStart=/usr/bin/python3 %h/projets/delta-ia/scripts/relais_reference.py
+# Les .pyc se lisent et s'écrivent hors de l'arbre : un __pycache__/ piégé dans scripts/ n'est pas chargé.
+Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache
 Restart=on-failure
 RestartSec=5
 

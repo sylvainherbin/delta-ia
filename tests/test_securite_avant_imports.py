@@ -139,9 +139,11 @@ def _sequence(unite: str, tmp_path: Path, env: dict) -> list:
 
 
 UNITES = ["deploy/systemd/delta-ia-commun.service", "deploy/systemd/delta-ia-selection.service"]
+MODELES = ["deploy/systemd/delta-etat-fournisseurs.service.exemple", "deploy/systemd/delta-reglages-pont.service.exemple",
+           "deploy/relais/delta-ia-relais.service.exemple"]  # SUITE 3, B2b : modèles du dépôt, unités installées non touchées
 
 
-@pytest.mark.parametrize("chemin", UNITES)
+@pytest.mark.parametrize("chemin", UNITES + MODELES)
 def test_temoin_d_incident_avant_tout_git(tmp_path, chemin):
     """SUITE 3, B1 : le témoin est le premier ExecStartPre ; tant qu'il existe, git n'est pas lancé (un hook ou un réglage
     git posé, cause du témoin, s'exécuterait au premier git)."""
@@ -194,3 +196,37 @@ def test_pyc_sans_source_ignore_par_git_arrete_avant_tout_import(tmp_path, nom):
     (scripts / "__pycache__").mkdir()
     (scripts / "__pycache__" / "piege.cpython-0.pyc").write_bytes(b"")
     assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
+
+
+@pytest.mark.parametrize("chemin", MODELES)
+def test_modele_refuse_un_fichier_ignore_sous_scripts(tmp_path, chemin):
+    """SUITE 3, B2b : les autres lanceurs du dépôt ont la même garde que les deux unités : un .pyc sans source ignoré
+    sous scripts/ arrête l'unité avant ExecStart ; __pycache__/ est écarté par PYTHONPYCACHEPREFIX."""
+    scripts = _depot_scripts(tmp_path, "commun")
+    unite = (RACINE / chemin).read_text()
+    env = _env_unite(unite, tmp_path)
+    assert env["PYTHONPYCACHEPREFIX"] == str(tmp_path / "run" / "delta-ia-pycache")
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)), "arbre sans fichier ignoré : l'unité part"
+    _pyc_sans_source(scripts / "zoneinfo.pyc")
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "ARBRE_CODE_SALE" in faits[-1].stderr and "scripts/zoneinfo.pyc" in faits[-1].stderr
+
+
+def test_tout_lanceur_du_depot_porte_la_garde():
+    """Tout modèle d'unité du dépôt qui lance du code de scripts/ porte témoin d'abord, PYTHONPYCACHEPREFIX et refus des
+    fichiers ignorés ; delta-passage passe par passage-auto.sh, qui porte la même garde en shell (avant l'exec)."""
+    vus = []
+    for f in sorted((RACINE / "deploy").rglob("*.service*")):
+        unite = f.read_text()
+        start = next(l for l in unite.splitlines() if l.startswith("ExecStart="))
+        if start.endswith("/scripts/passage-auto.sh"):
+            sh = (RACINE / "scripts" / "passage-auto.sh").read_text()
+            assert sh.index('if [ -e "$RACINE/rapports/auto/incident-git.json" ]') < sh.index("git ls-files -o -i") < sh.index('exec "$PYTHON"')
+            assert "export PYTHONPYCACHEPREFIX=" in sh
+            continue
+        pre = [l for l in unite.splitlines() if l.startswith("ExecStartPre=")]
+        assert pre and "incident-git.json" in pre[0] and "git" not in pre[0].replace("incident-git.json", ""), f.name
+        assert any("'ls-files', '-o', '-i'" in l for l in pre), f.name
+        assert "Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache" in unite, f.name
+        vus.append(str(f.relative_to(RACINE)))
+    assert sorted(vus) == sorted(UNITES + MODELES)
