@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -265,6 +266,44 @@ def test_unite_compare_l_empreinte_git_avant_son_git_status(tmp_path, nom):
     faits = _sequence(unite, tmp_path, env)
     assert faits[-1].returncode == 126 and ".git n est pas un dossier" in faits[-1].stderr
     assert not trace.exists()
+
+
+@pytest.mark.parametrize("nom", ["commun", "selection"])
+def test_commondir_vers_un_dossier_ignore_n_execute_jamais_le_filtre(tmp_path, nom):
+    """SUITE 5, point 1 : .git/commondir fait lire config et info/attributes dans un dossier ignoré, hors de l'empreinte ;
+    un filter.x.clean posé là serait exécuté par le git status de l'unité (même -c core.fsmonitor/hooksPath). Tout
+    .git/commondir présent : 126 et une ligne au journal, sans git ; l'orchestrateur n'en écrit jamais la référence."""
+    scripts = _depot_scripts(tmp_path, nom)
+    unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
+    env = _env_unite(unite, tmp_path)
+    _reference(tmp_path, env)
+    trace = tmp_path / "filtre-lance"
+    commun = tmp_path / "rapports" / "commun-git"  # rapports/ est ignoré : invisible au git status
+    shutil.copytree(tmp_path / ".git", commun)
+    filtre = tmp_path / "filtre.sh"
+    filtre.write_text(f"#!/bin/sh\necho x >> '{trace}'\nexec cat\n")
+    filtre.chmod(0o755)
+    with (commun / "config").open("a") as f:
+        f.write(f"[filter \"x\"]\n\tclean = {filtre}\n")
+    (commun / "info").mkdir(exist_ok=True)
+    (commun / "info" / "attributes").write_text("* filter=x\n")
+    (tmp_path / ".git" / "commondir").write_text("../rapports/commun-git\n")
+    env_git = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    status = ["git", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=/dev/null", "status", "--porcelain=v1",
+              "--untracked-files=all", "--", "scripts"]
+    os.utime(scripts / f"{nom}_auto.py", (1_000_000_000, 1_000_000_000))  # stat changé : git relit le contenu, filtre compris
+    subprocess.run(status, cwd=tmp_path, env=env_git, capture_output=True)
+    assert trace.exists(), "témoin : le git status de l'unité exécute le filtre lu par commondir"
+    trace.unlink()
+    os.utime(scripts / f"{nom}_auto.py", (1_000_000_100, 1_000_000_100))  # de nouveau changé après le rafraîchissement de l'index
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "EMPREINTE_GIT : .git/commondir présent" in faits[-1].stderr
+    assert not trace.exists(), "git jamais lancé, filtre jamais exécuté"
+    (ligne,) = _journal(tmp_path)
+    assert ligne[1:6] == ["orchestrateur", f"{nom}-git", "0 éléments (0 fort)", "aucun", "126"] and "commondir" in ligne[6]
+    assert orc.empreinte_git_demarrage(tmp_path) is None
+    assert "commondir" in orc.ecrire_reference_git(tmp_path, tmp_path / "reference-jamais.json")
+    assert not (tmp_path / "reference-jamais.json").exists()
 
 
 def _pyc_sans_source(chemin: Path) -> None:

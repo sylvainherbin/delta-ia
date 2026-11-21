@@ -453,9 +453,10 @@ def empreinte_git_demarrage(racine: Path) -> dict | None:
     """Empreinte lue SANS git (un core.fsmonitor ou un hook posé s'exécuterait au premier git) : même calcul que l'ExecStartPre
     des unités commun et selection, qui la compare à la référence avant leur `git status`. sha256 de .git/config,
     .git/info/attributes et .git/info/exclude (None si absent, « lien:<cible> » pour un lien), noms et sha256 de .git/hooks/.
-    None si .git n'est pas un dossier (worktree lié : ses réglages sont ailleurs) ; l'unité refuse alors (126)."""
+    None si .git n'est pas un dossier (worktree lié : ses réglages sont ailleurs) ; l'unité refuse alors (126). SUITE 5,
+    point 1 : None aussi si .git/commondir existe (config et info/attributes lus ailleurs, hors de l'empreinte)."""
     g = os.path.join(racine, ".git")
-    if not os.path.isdir(g) or os.path.islink(g):
+    if not os.path.isdir(g) or os.path.islink(g) or os.path.lexists(os.path.join(g, "commondir")):
         return None
 
     def h(p: str) -> str | None:
@@ -478,7 +479,7 @@ def ecrire_reference_git(racine: Path, fichier: Path | None = None) -> str | Non
     fichier = fichier or fichier_reference_git()
     e = empreinte_git_demarrage(racine)
     if e is None:
-        return ".git n'est pas un dossier : référence non écrite"
+        return ".git n'est pas un dossier, ou porte commondir : référence non écrite"
     try:
         fichier.parent.mkdir(parents=True, exist_ok=True)
         tmp = fichier.with_name(fichier.name + ".tmp")
