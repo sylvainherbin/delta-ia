@@ -480,7 +480,10 @@ def test_releve_rate_ne_republie_pas_l_attente_et_publication_ratee_ne_bloque_pa
     attente.write_text('ancien relevé')
     journaux = []
     monkeypatch.setattr(orc, "journaliser", lambda *a: journaux.append((a[1], a[3])))
-    def faux_capteur(*a, **k):
+    vrai_run = orc.subprocess.run
+    def faux_capteur(cmd, *a, **k):
+        if not any(str(x).endswith("capteur_x.py") for x in cmd):  # git de l'empreinte de départ (126) : le vrai
+            return vrai_run(cmd, *a, **k)
         assert not attente.exists()  # Un ancien succès ne doit pas masquer un échec actuel.
         return type("R", (), {"returncode": 0})()
     monkeypatch.setattr(orc.subprocess, "run", faux_capteur)

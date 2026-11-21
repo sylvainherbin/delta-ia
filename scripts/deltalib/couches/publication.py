@@ -251,7 +251,7 @@ def _synchroniser(racines: Racines, base_url: str, etat: dict, obtenir, limite_t
         else:
             _, _, contenu = obtenir(urljoin(base_url, f"{generation}/{rel}"), {}, f["taille"])
         if len(contenu) != f["taille"] or hashlib.sha256(contenu).hexdigest() != f.get("sha256"):
-            raise SynchroEchec(f"contenu ou taille différent du manifeste : {rel}")
+            raise SynchroEchec(f"génération {generation} refusée : contenu ou taille différent du manifeste : {rel}")
         contenus[rel] = contenu
     base = dossier_prive(racines.commun)
     chantier = base / f".sync-{generation}"
