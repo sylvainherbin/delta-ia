@@ -156,3 +156,41 @@ def test_temoin_d_incident_avant_tout_git(tmp_path, chemin):
     assert not trace.exists(), "aucun git avant le témoin"
     (tmp_path / "rapports" / "auto" / "incident-git.json").unlink()
     assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env)) and trace.exists(), "témoin levé : le contrôle git suit"
+
+
+def _pyc_sans_source(chemin: Path) -> None:
+    """Module compilé sans source, par l'interpréteur des tests : importé depuis scripts/ avant la bibliothèque standard."""
+    import py_compile
+    source = chemin.parent.parent / f"{chemin.stem}-source.py"
+    source.write_text("from pathlib import Path\nPath('IMPORTE').write_text('pyc sans source')\n")
+    py_compile.compile(str(source), cfile=str(chemin), doraise=True)
+    source.unlink()
+
+
+@pytest.mark.parametrize("nom", ["commun", "selection"])
+def test_pyc_sans_source_ignore_par_git_arrete_avant_tout_import(tmp_path, nom):
+    """SUITE 3, B2a : scripts/zoneinfo.pyc sans source, ignoré par git (*.pyc), n'apparaît pas à git status mais serait
+    importé à la place de la bibliothèque standard. Le contrôle d'arbre refuse tout fichier ignoré sous scripts/, hors
+    __pycache__/."""
+    scripts = _depot_scripts(tmp_path, nom)
+    (scripts / f"{nom}_auto.py").write_text("import zoneinfo\n")
+    env_git = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qam", "zoneinfo"],
+                   cwd=tmp_path, env=env_git, check=True, capture_output=True)
+    _pyc_sans_source(scripts / "zoneinfo.pyc")
+    statut = subprocess.run(["git", "status", "--porcelain=v1", "--untracked-files=all"], cwd=tmp_path, env=env_git,
+                            capture_output=True, text=True, check=True)
+    assert statut.stdout == "", "invisible à git status"
+    unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
+    env = _env_unite(unite, tmp_path)
+    subprocess.run([sys.executable, "-B", str(scripts / f"{nom}_auto.py")], cwd=tmp_path, env=env, check=True)
+    assert (tmp_path / "IMPORTE").exists(), "témoin : sans contrôle, le .pyc sans source est importé (même sous le préfixe)"
+    (tmp_path / "IMPORTE").unlink()
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "ARBRE_CODE_SALE" in faits[-1].stderr and "scripts/zoneinfo.pyc" in faits[-1].stderr
+    assert not (tmp_path / "IMPORTE").exists()
+    # __pycache__/ reste toléré : PYTHONPYCACHEPREFIX l'écarte (test_pyc_piege_dans_l_arbre_n_est_pas_charge)
+    (scripts / "zoneinfo.pyc").unlink()
+    (scripts / "__pycache__").mkdir()
+    (scripts / "__pycache__" / "piege.cpython-0.pyc").write_bytes(b"")
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))

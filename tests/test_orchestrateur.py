@@ -1503,6 +1503,34 @@ def test_passage_auto_temoin_d_incident_rien_n_est_lance(depot_sh):
     assert 'export PYTHONPYCACHEPREFIX="${XDG_RUNTIME_DIR:-' in (RACINE / "scripts" / "passage-auto.sh").read_text()
 
 
+
+def test_passage_auto_pyc_sans_source_ignore_rien_n_est_lance(depot_sh):
+    """SUITE 3, B2a : scripts/html.pyc sans source, ignoré par git, serait importé par l'orchestrateur (import html) avant
+    son propre contrôle. passage-auto.sh refuse tout fichier ignoré sous scripts/ hors __pycache__/ (126, ARBRE_CODE_SALE)."""
+    import py_compile
+    source = depot_sh / "html-source.py"
+    source.write_text("from pathlib import Path\nPath('IMPORTE').write_text('pyc sans source')\n")
+    py_compile.compile(str(source), cfile=str(depot_sh / "scripts" / "html.pyc"), doraise=True)
+    source.unlink()
+    (depot_sh / ".git" / "info").mkdir(exist_ok=True)
+    with (depot_sh / ".git" / "info" / "exclude").open("a") as f:
+        f.write("*.pyc\n")
+    assert depot_sh.sh("git", "status", "--porcelain=v1", "--", "scripts").stdout == b"", "invisible à git status"
+    direct = subprocess.run([str(depot_sh / ".venv" / "bin" / "python"), "scripts/orchestrateur.py", "--config", str(depot_sh.toml),
+                             "--liste"], cwd=depot_sh, capture_output=True, text=True)
+    assert (depot_sh / "IMPORTE").exists(), f"témoin : sans le contrôle, le .pyc est importé ({direct.returncode})"
+    (depot_sh / "IMPORTE").unlink()
+    r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
+                       capture_output=True, text=True)
+    assert r.returncode == 126 and "ARBRE_CODE_SALE" in r.stderr and "scripts/html.pyc" in r.stderr and r.stdout == ""
+    assert not (depot_sh / "IMPORTE").exists()
+    (depot_sh / "scripts" / "html.pyc").unlink()
+    (depot_sh / "scripts" / "__pycache__").mkdir(exist_ok=True)
+    (depot_sh / "scripts" / "__pycache__" / "x.cpython-0.pyc").write_bytes(b"")
+    ok = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
+                        capture_output=True, text=True)
+    assert ok.returncode == 0, "__pycache__/ toléré : PYTHONPYCACHEPREFIX l'écarte"
+
 def test_passage_auto_option_liste_n_appelle_rien(depot_sh):
     r = subprocess.run([str(depot_sh / "scripts" / "passage-auto.sh"), "--config", str(depot_sh.toml), "--liste"], cwd=depot_sh,
                        capture_output=True, text=True)

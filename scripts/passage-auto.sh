@@ -5,7 +5,8 @@
 # d'une session graphique : mode nuit). Ne lance rien d'autre que scripts/orchestrateur.py, qui porte toute la logique.
 #
 # Codes de sortie : 0 chaîne sans échec ; 1 au moins une étape en échec (dont le contrôle de valider.py après une étape, code 131 dans le journal) ; 2 mauvais argument ; 14 chaîne déjà en cours ;
-# 16 environnement du dépôt illisible (.venv absent) ; 126 témoin d'incident git non levé (rapports/auto/incident-git.json).
+# 16 environnement du dépôt illisible (.venv absent) ; 126 témoin d'incident git non levé (rapports/auto/incident-git.json)
+# ou fichier ignoré sous scripts/ hors __pycache__/ (ARBRE_CODE_SALE).
 set -u
 
 RACINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,6 +32,17 @@ fi
 # le contrôle de l'orchestrateur. Rien n'est lancé (126) tant que le superviseur ne l'a pas levé.
 if [ -e "$RACINE/rapports/auto/incident-git.json" ] || [ -L "$RACINE/rapports/auto/incident-git.json" ]; then
     echo "passage-auto : INCIDENT_GIT, rapports/auto/incident-git.json non levé : rien n'est lancé" >&2
+    exit 126
+fi
+# B2a, après le témoin : un fichier IGNORÉ sous scripts/ (un html.pyc ou un zoneinfo.pyc sans source) serait importé par
+# l'orchestrateur avant son propre contrôle. Seul __pycache__/ est toléré : PYTHONPYCACHEPREFIX l'écarte.
+if ! IGNORES="$(git ls-files -o -i --exclude-standard -- scripts)"; then
+    echo "passage-auto : ARBRE_CODE_SALE, fichiers ignorés sous scripts/ illisibles : rien n'est lancé" >&2
+    exit 126
+fi
+IGNORES="$(printf '%s\n' "$IGNORES" | grep -v -e '/__pycache__/')"
+if [ -n "$IGNORES" ]; then
+    echo "passage-auto : ARBRE_CODE_SALE, fichiers ignorés sous scripts/ : $(printf '%s\n' "$IGNORES" | head -n 5 | tr '\n' ' '); rien n'est lancé" >&2
     exit 126
 fi
 exec "$PYTHON" "$RACINE/scripts/orchestrateur.py" "$@"

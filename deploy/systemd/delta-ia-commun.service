@@ -8,8 +8,9 @@ WorkingDirectory=%h/projets/delta-ia
 # Témoin d'incident (orchestrateur, code 126), EN PREMIER, avant tout git : un hook, un réglage git ou un .pth du .venv
 # peut avoir été posé ; ni git ni le Python du .venv ne sont lancés tant que le superviseur ne l'a pas levé.
 ExecStartPre=/usr/bin/python3 -I -S -c "import os, sys; t = 'rapports/auto/incident-git.json'; i = os.path.lexists(t); sys.stderr.write('INCIDENT_GIT : ' + t + ' non levé, rien n est lancé\\n' if i else ''); sys.exit(126 if i else 0)"
-# Python isolé : aucun module du dépôt n’est importé avant le contrôle de son arbre.
-ExecStartPre=/usr/bin/python3 -I -S -c "import subprocess, sys; r = subprocess.run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', 'scripts'], capture_output=True); sale = r.returncode != 0 or bool(r.stdout); sys.stderr.write('ARBRE_CODE_SALE : contrôle avant imports\\n' if sale else ''); sys.exit(126 if sale else 0)"
+# Python isolé : aucun module du dépôt n’est importé avant le contrôle de son arbre. Un fichier IGNORÉ sous scripts/, hors
+# __pycache__/ (écarté par PYTHONPYCACHEPREFIX), arrête aussi : un zoneinfo.pyc sans source y serait importé.
+ExecStartPre=/usr/bin/python3 -I -S -c "import subprocess, sys; g = lambda *a: subprocess.run(['git', *a], capture_output=True); r = g('status', '--porcelain=v1', '--untracked-files=all', '--', 'scripts'); o = g('ls-files', '-o', '-i', '--exclude-standard', '--', 'scripts'); ignores = [p for p in o.stdout.decode(errors='replace').splitlines() if '/__pycache__/' not in p]; sale = r.returncode != 0 or bool(r.stdout) or o.returncode != 0 or bool(ignores); sys.stderr.write('ARBRE_CODE_SALE : contrôle avant imports, fichiers ignorés sous scripts : ' + ' '.join(ignores[:5]) + '\\n' if sale else ''); sys.exit(126 if sale else 0)"
 ExecStart=%h/projets/delta-ia/.venv/bin/python -B scripts/commun_auto.py
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 Environment=TZ=Europe/Paris LANG=C.UTF-8 LC_ALL=C.UTF-8 GIT_TERMINAL_PROMPT=0
