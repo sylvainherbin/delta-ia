@@ -247,6 +247,13 @@ class Depot(type(Path())):
     """Chemin du dépôt de test, qui porte aussi l'aide `sh` et le faux agent."""
 
 
+@pytest.fixture(autouse=True)
+def etat_xdg_de_test(tmp_path, monkeypatch):
+    """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai
+    ~/.local/state (les essais de passage-auto.sh en héritent)."""
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+
+
 @pytest.fixture
 def depot(tmp_path):
     racine = Depot(tmp_path / "depot")
@@ -647,6 +654,20 @@ def test_incident_git_bloque_la_chaine_suivante_jusqu_a_sa_levee(depot, cfg):
     marque.unlink()
     (depot / "rapports" / "passages.log").unlink()
     assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 0
+
+
+def test_chaine_propre_ecrit_la_reference_git_hors_de_l_arbre(depot, cfg, tmp_path):
+    """SUITE 4, point 2 : la référence que les unités commun et selection comparent avant leur git status est écrite à la
+    fin d'une chaîne propre, hors de l'arbre ; une chaîne arrêtée (hook ajouté pendant l'étape) ne l'écrit pas."""
+    ref = tmp_path / "etat-xdg" / "delta-ia" / "empreinte-git.json"
+    assert orc.fichier_reference_git() == ref
+    assert chaine(depot, cfg, [etape(depot, "delta", "ok", "docs/data/claude", "a.json")]).executer() == 0
+    assert json.loads(ref.read_text(encoding="utf-8")) == orc.empreinte_git_demarrage(depot)
+    assert orc.empreinte_git_demarrage(depot)["racine"] == os.path.realpath(depot)
+    ref.unlink()
+    (depot / "rapports" / "passages.log").unlink()
+    assert chaine(depot, cfg, [etape(depot, "delta", "ajoute-hook")]).executer() == 1
+    assert not ref.exists(), "chaîne en échec : aucune référence"
 
 
 def test_hook_pose_entre_deux_temps_de_la_chaine_arrete_avant_l_etape(depot, cfg, monkeypatch):

@@ -20,6 +20,12 @@ from test_garde import lancer, pauses, racine  # noqa: F401  (fixtures et aide d
 from test_selection_auto import LUNDI, publication  # noqa: F401  (fixture)
 from test_selection_auto import git as git_sel
 
+
+@pytest.fixture(autouse=True)
+def etat_xdg_de_test(tmp_path, monkeypatch):
+    """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai ~/.local/state."""
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+
 DISCIPLINE = Path.home() / "projets" / "discipline" / "src" / "delta" / "operer" / "restes_bac.py"
 CONTENU = "* merge=union\n"
 

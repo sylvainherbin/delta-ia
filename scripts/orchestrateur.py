@@ -415,6 +415,54 @@ def empreinte_git(racine: Path) -> dict[str, str]:
     return res
 
 
+def fichier_reference_git(environ=None) -> Path:
+    """SUITE 4, point 2 : référence de l'empreinte de démarrage, HORS de l'arbre (une étape écrit l'arbre et .git), au chemin
+    que lit l'ExecStartPre des unités commun et selection : `${XDG_STATE_HOME:-~/.local/state}/delta-ia/empreinte-git.json`."""
+    environ = os.environ if environ is None else environ
+    base = environ.get("XDG_STATE_HOME") or os.path.join(environ.get("HOME") or os.path.expanduser("~"), ".local", "state")
+    return Path(base) / "delta-ia" / "empreinte-git.json"
+
+
+def empreinte_git_demarrage(racine: Path) -> dict | None:
+    """Empreinte lue SANS git (un core.fsmonitor ou un hook posé s'exécuterait au premier git) : même calcul que l'ExecStartPre
+    des unités commun et selection, qui la compare à la référence avant leur `git status`. sha256 de .git/config,
+    .git/info/attributes et .git/info/exclude (None si absent, « lien:<cible> » pour un lien), noms et sha256 de .git/hooks/.
+    None si .git n'est pas un dossier (worktree lié : ses réglages sont ailleurs) ; l'unité refuse alors (126)."""
+    g = os.path.join(racine, ".git")
+    if not os.path.isdir(g) or os.path.islink(g):
+        return None
+
+    def h(p: str) -> str | None:
+        if os.path.islink(p):
+            return "lien:" + os.readlink(p)
+        if os.path.isfile(p):
+            with open(p, "rb") as f:
+                return hashlib.sha256(f.read()).hexdigest()
+        return None
+
+    hooks = os.path.join(g, "hooks")
+    return {"racine": os.path.realpath(racine), "config": h(os.path.join(g, "config")),
+            "info/attributes": h(os.path.join(g, "info", "attributes")), "info/exclude": h(os.path.join(g, "info", "exclude")),
+            "hooks": {n: h(os.path.join(hooks, n)) for n in sorted(os.listdir(hooks))} if os.path.isdir(hooks) else None}
+
+
+def ecrire_reference_git(racine: Path, fichier: Path | None = None) -> str | None:
+    """Écrit la référence à la fin d'une chaîne propre (aucune étape en échec, aucun incident) : l'état de .git que les
+    contrôles de la chaîne viennent d'accepter. Écriture atomique. Renvoie la cause d'un échec, ou None."""
+    fichier = fichier or fichier_reference_git()
+    e = empreinte_git_demarrage(racine)
+    if e is None:
+        return ".git n'est pas un dossier : référence non écrite"
+    try:
+        fichier.parent.mkdir(parents=True, exist_ok=True)
+        tmp = fichier.with_name(fichier.name + ".tmp")
+        tmp.write_text(json.dumps(e, ensure_ascii=False, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+        os.replace(tmp, fichier)
+    except OSError as exc:
+        return f"référence {fichier} non écrite : {exc.strerror or exc}"
+    return None
+
+
 VENV_DEMARRAGE = ("sitecustomize", "usercustomize")
 
 
@@ -1224,6 +1272,10 @@ class Chaine:
         self.purge_x()
         echec_etape = any(not i.ok for i in self.issues)
         echec = echec_etape or bool(erreur_selection)
+        if not echec:  # SUITE 4, point 2 : référence des unités commun et selection, lue avant leur git status
+            cause = ecrire_reference_git(self.racine)
+            if cause:
+                journaliser(self.racine, "empreinte-git", "aucun", 1, cause)
         journaliser(self.racine, "chaine", "aucun", 1 if echec else 0,
                     "au moins une étape en échec" if echec_etape else
                     "étapes terminées, publication de la sélection en échec" if echec else

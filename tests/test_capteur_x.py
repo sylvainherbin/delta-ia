@@ -16,6 +16,12 @@ from deltalib.modeles import ErreurSource, FormatInattendu
 from deltalib.passage import recuperer
 from deltalib.sources import Source
 
+
+@pytest.fixture(autouse=True)
+def etat_xdg_de_test(tmp_path, monkeypatch):
+    """SUITE 4, point 2 : une chaîne propre écrit la référence d'empreinte git sous XDG_STATE_HOME ; jamais le vrai ~/.local/state."""
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "etat-xdg"))
+
 BRUT = json.loads((FIXTURES / "x_liste_brut.json").read_text(encoding="utf-8"))
 API = json.loads((FIXTURES / "x_api_liste.json").read_text(encoding="utf-8"))
 MAINTENANT = datetime(2026, 10, 22, 21, 30, tzinfo=timezone.utc)

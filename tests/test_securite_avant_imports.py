@@ -1,4 +1,5 @@
 """Séquence des unités rejouée sur un faux dépôt, sans systemd ni import du code sale."""
+import json
 import os
 from pathlib import Path
 import shlex
@@ -6,6 +7,8 @@ import subprocess
 import sys
 
 import pytest
+
+import orchestrateur as orc
 
 RACINE = Path(__file__).resolve().parents[1]
 
@@ -17,12 +20,13 @@ def test_arret_avant_import_du_module_sale(tmp_path, nom, etat):
     scripts.mkdir()
     (scripts / "piege.py").write_text("# fixture ordinaire\n")
     (scripts / f"{nom}_auto.py").write_text("import piege\n")
-    env = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+    env = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1", "XDG_STATE_HOME": str(tmp_path / "etat-xdg")}
     def git(*args):
         subprocess.run(["git", *args], cwd=tmp_path, env=env, check=True, capture_output=True)
     git("init", "-q")
     git("add", "scripts")
     git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "initial")
+    _reference(tmp_path, env)
     if etat != "propre":
         (scripts / "piege.py").write_text("from pathlib import Path\nPath('IMPORTE').write_text('fixture')\n")
         if etat == "index":
@@ -48,7 +52,8 @@ def test_arret_avant_import_du_module_sale(tmp_path, nom, etat):
 
 def _env_unite(unite: str, tmp_path: Path) -> dict:
     """Environnement que systemd donne à ExecStart : lignes Environment= de l'unité, %h et %t remplacés par des dossiers de test."""
-    env = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(tmp_path / "home")}
+    env = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(tmp_path / "home"),
+           "XDG_STATE_HOME": str(tmp_path / "etat-xdg")}  # jamais le vrai ~/.local/state
     for ligne in unite.splitlines():
         if ligne.startswith("Environment="):
             for affectation in shlex.split(ligne.partition("=")[2]):
@@ -68,6 +73,14 @@ def _depot_scripts(tmp_path: Path, nom: str) -> Path:
                  ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "initial"]):
         subprocess.run(["git", *args], cwd=tmp_path, env=env, check=True, capture_output=True)
     return scripts
+
+
+def _reference(tmp_path: Path, env: dict) -> Path:
+    """SUITE 4, point 2 : référence de l'empreinte git écrite comme l'orchestrateur à la fin d'une chaîne propre, au chemin
+    que l'unité lira avec cet environnement."""
+    f = orc.fichier_reference_git(env)
+    assert str(f).startswith(str(tmp_path)) and orc.ecrire_reference_git(tmp_path, f) is None
+    return f
 
 
 def _pre(unite: str, tmp_path: Path, env: dict) -> list:
@@ -90,6 +103,7 @@ def test_pyc_piege_dans_l_arbre_n_est_pas_charge(tmp_path, nom):
                     + (st.st_size & 0xFFFFFFFF).to_bytes(4, "little") + marshal.dumps(code))
     unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
     env = _env_unite(unite, tmp_path)
+    _reference(tmp_path, env)
     assert all(r.returncode == 0 for r in _pre(unite, tmp_path, env)), "arbre propre pour git : le piège passe le contrôle"
     temoin = subprocess.run([sys.executable, "-B", str(scripts / f"{nom}_auto.py")], cwd=tmp_path,
                             env={k: v for k, v in env.items() if k != "PYTHONPYCACHEPREFIX"}, check=True)
@@ -106,6 +120,7 @@ def test_temoin_d_incident_arrete_avant_le_python_du_venv(tmp_path, nom):
     _depot_scripts(tmp_path, nom)
     unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
     env = _env_unite(unite, tmp_path)
+    _reference(tmp_path, env)
     assert all(r.returncode == 0 for r in _pre(unite, tmp_path, env))
     (tmp_path / "rapports" / "auto").mkdir(parents=True)
     (tmp_path / "rapports" / "auto" / "incident-git.json").write_text("{}\n")
@@ -151,6 +166,7 @@ def test_temoin_d_incident_avant_tout_git(tmp_path, chemin):
     unite = (RACINE / chemin).read_text()
     env = _env_unite(unite, tmp_path)
     trace = _faux_git(tmp_path, env)
+    _reference(tmp_path, env)
     (tmp_path / "rapports" / "auto").mkdir(parents=True)
     (tmp_path / "rapports" / "auto" / "incident-git.json").write_text("{}\n")
     faits = _sequence(unite, tmp_path, env)
@@ -192,6 +208,65 @@ def test_modele_ne_lance_jamais_le_fsmonitor(tmp_path, chemin):
     assert not trace.exists(), "aucun git, donc aucun fsmonitor"
 
 
+def _journal(tmp_path: Path) -> list:
+    f = tmp_path / "rapports" / "passages.log"
+    return [l.split(" | ") for l in f.read_text(encoding="utf-8").splitlines()] if f.exists() else []
+
+
+@pytest.mark.parametrize("nom", ["commun", "selection"])
+def test_unite_compare_l_empreinte_git_avant_son_git_status(tmp_path, nom):
+    """SUITE 4, point 2 : un core.fsmonitor posé SANS témoin (étape qui a écrit .git/config) n'est jamais exécuté. Avant
+    son git status, l'unité compare sans git .git/config, info/attributes, info/exclude et hooks/ à la référence que
+    l'orchestrateur écrit hors de l'arbre ; absente ou différente : 126 et une ligne au journal. Le git status lui-même
+    porte -c core.fsmonitor=false."""
+    _depot_scripts(tmp_path, nom)
+    unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
+    env = _env_unite(unite, tmp_path)
+    ancienne = orc.empreinte_git_demarrage(tmp_path)
+    trace = _faux_fsmonitor(tmp_path)  # posé sans témoin ; témoin : un git ordinaire l'exécute
+
+    # 1. référence absente (première installation, ou effacée) : 126, sans git
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "EMPREINTE_GIT" in faits[-1].stderr and "référence absente" in faits[-1].stderr
+    assert not trace.exists()
+    (ligne,) = _journal(tmp_path)
+    assert ligne[1:6] == ["orchestrateur", f"{nom}-git", "0 éléments (0 fort)", "aucun", "126"] and "EMPREINTE_GIT" in ligne[6]
+
+    # 2. référence d'avant le fsmonitor : .git/config différent, 126, sans git
+    f = orc.fichier_reference_git(env)
+    f.parent.mkdir(parents=True)
+    f.write_text(json.dumps(ancienne), encoding="utf-8")
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "différent de la référence : config" in faits[-1].stderr
+    assert not trace.exists() and len(_journal(tmp_path)) == 2
+
+    # 3. référence qui contient le fsmonitor (écrite après lui) : le git status part, sous -c core.fsmonitor=false
+    _reference(tmp_path, env)
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, env))
+    assert not trace.exists(), "git status sous -c core.fsmonitor=false : le fsmonitor n'est pas exécuté"
+    assert len(_journal(tmp_path)) == 2
+
+    # 4. hook ajouté après la référence : 126, sans git
+    (tmp_path / ".git" / "hooks" / "post-index-change").write_text("#!/bin/sh\n")
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and "différent de la référence : hooks" in faits[-1].stderr
+    (tmp_path / ".git" / "hooks" / "post-index-change").unlink()
+
+    # 5. chemin par défaut, sans XDG_STATE_HOME : ~/.local/state du HOME de l'unité, le même pour l'orchestrateur
+    sans_xdg = {k: v for k, v in env.items() if k != "XDG_STATE_HOME"}
+    assert orc.fichier_reference_git(sans_xdg) == tmp_path / "home" / ".local" / "state" / "delta-ia" / "empreinte-git.json"
+    assert _sequence(unite, tmp_path, sans_xdg)[-1].returncode == 126
+    _reference(tmp_path, sans_xdg)
+    assert all(r.returncode == 0 for r in _sequence(unite, tmp_path, sans_xdg))
+
+    # 6. .git qui n'est pas un dossier (worktree lié) : 126
+    (tmp_path / ".git").rename(tmp_path / "vrai.git")
+    (tmp_path / ".git").write_text("gitdir: vrai.git\n")
+    faits = _sequence(unite, tmp_path, env)
+    assert faits[-1].returncode == 126 and ".git n est pas un dossier" in faits[-1].stderr
+    assert not trace.exists()
+
+
 def _pyc_sans_source(chemin: Path) -> None:
     """Module compilé sans source, par l'interpréteur des tests : importé depuis scripts/ avant la bibliothèque standard."""
     import py_compile
@@ -217,6 +292,7 @@ def test_pyc_sans_source_ignore_par_git_arrete_avant_tout_import(tmp_path, nom):
     assert statut.stdout == "", "invisible à git status"
     unite = (RACINE / f"deploy/systemd/delta-ia-{nom}.service").read_text()
     env = _env_unite(unite, tmp_path)
+    _reference(tmp_path, env)
     subprocess.run([sys.executable, "-B", str(scripts / f"{nom}_auto.py")], cwd=tmp_path, env=env, check=True)
     assert (tmp_path / "IMPORTE").exists(), "témoin : sans contrôle, le .pyc sans source est importé (même sous le préfixe)"
     (tmp_path / "IMPORTE").unlink()
@@ -289,6 +365,9 @@ def test_tout_lanceur_du_depot_porte_la_garde():
         avec_git = [l for l in pre if lance_git(_code_python(l))]
         if str(f.relative_to(RACINE)) in UNITES:
             assert avec_git == [pre[-1]] and "'status', '--porcelain=v1'" in pre[-1], f.name
+            # SUITE 4, point 2 : juste avant, l'empreinte sans git ; le git status neutralise fsmonitor et hooks
+            assert "empreinte-git.json" in pre[-2] and not lance_git(_code_python(pre[-2])), f.name
+            assert "['git', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', 'status'" in pre[-1], f.name
         else:
             assert avec_git == [], f"{f.name} : aucun git dans un modèle"
         assert "Environment=PYTHONPYCACHEPREFIX=%t/delta-ia-pycache" in unite, f.name
