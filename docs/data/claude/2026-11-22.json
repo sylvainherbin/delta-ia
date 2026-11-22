@@ -1,0 +1,105 @@
+{
+  "date": "2026-11-22",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-22T03:03:00+00:00",
+  "synthese": "Compte et quotas : aucune limite, offre, remise à zéro ni tarif ne change dans les sources du jour ; seule la fiche du hook `StopFailure` (erreur d'API, dont une limite atteinte) a vu son texte d'origine modifié dans la documentation. Alerte D71 : le quota hebdomadaire Claude est à 94 % (`rapports/usage.json`, relevé du 22/11 à 03 h 00 UTC, remise à zéro le 22/11 à 16 h UTC) et celui de ChatGPT à 97 % (remise à zéro le 22/11 à 17 h 10 UTC), tous deux au-dessus du seuil D71 : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser. Semaine Fable à 0 % (même remise à zéro), session 5 h non mesurée. Pour le reste, rien ne change tes outils : l'app Claude mobile change d'apparence sans aucun réglage, et les deux nouveaux événements de webhooks de la plateforme visent les clés de chiffrement gérées par un client. Claude Code 2.1.330 et Codex CLI 0.171.0 sont à jour.",
+  "elements": [
+    {
+      "id": "kb-claude-code-parametres-hook-stopfailure",
+      "ids_bruts": [
+        "kb-claude-code-parametres-hook-stopfailure"
+      ],
+      "produit": "claude-code",
+      "titre": "Fiche `StopFailure` (hook déclenché sur erreur d'API, dont une limite atteinte) : texte d'origine modifié dans la documentation",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "La documentation des hooks a modifié la description d'origine de l'événement `StopFailure`, qui s'exécute à la place de `Stop` quand un tour se termine sur une erreur d'API (limite atteinte, authentification) ; la fiche dit que Claude Code ignore la sortie et le code de sortie du hook, sauf `terminalSequence`, et qu'on s'en sert pour journaliser, alerter ou reprendre. Le texte précédent n'est pas conservé : ce qui a changé n'est pas connu. Sujet D71 repéré par mots-clés : aucune limite, aucun tarif ni aucune remise à zéro ne change.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/hooks#stopfailure",
+          "libelle": "Hook StopFailure — hooks (code.claude.com)",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Aucune limite, aucun tarif ni aucune remise à zéro ne change : seul le texte d'origine de la fiche du hook `StopFailure` a été retouché. Ton seul hook est `PermissionDenied` (il lance `operer refus`) ; aucun hook ne réagit encore à une erreur d'API, alors que tes quotas hebdomadaires Claude (94 %) et ChatGPT (97 %) sont proches du plafond.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 29/11/2026, aucune échéance publiée : relire la fiche `claude-code-parametres-hook-stopfailure` de la base ; aucun geste de compte à faire aujourd'hui.",
+        "etapes": [
+          "Le 29/11/2026, relis la fiche `claude-code-parametres-hook-stopfailure` (usage : le JSON reçu par le hook, avec les champs `error` et `error_details`) pour `~/projets/delta-ia` ; résultat attendu : aucune limite, aucun tarif ni aucune remise à zéro ne s'y ajoute, sinon le sujet remonte en tête de la veille."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-hook-stopfailure"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "un seul hook perso aujourd'hui : PermissionDenied"
+        }
+      }
+    },
+    {
+      "id": "claude-apps-notes-2026-11-20",
+      "ids_bruts": [
+        "claude-apps-notes-2026-11-20"
+      ],
+      "produit": "claude",
+      "titre": "App Claude mobile : nouvelle apparence déployée progressivement, d'abord sur iOS (iOS 26 ou plus)",
+      "version": null,
+      "date_publication": "2026-11-20",
+      "type": "nouveaute",
+      "resume": "Révision de la note du 20/11 : une nouvelle apparence de Claude Mobile est ajoutée, déployée progressivement en commençant par Claude pour iOS. Discussions, projets et forfait ne changent pas, il n'y a rien à activer ; la nouvelle apparence exige iOS 26 ou plus. Le point sur computer use (bêta, Team et Enterprise) de la même note est déjà traité le 21/11.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Notes de version des apps Claude — support.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "revision": true
+    },
+    {
+      "id": "claude-platform-notes-2026-11-16",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-16"
+      ],
+      "produit": "claude",
+      "titre": "Plateforme Claude : deux événements de webhooks d'organisation pour les clés de chiffrement gérées par le client (révision)",
+      "version": null,
+      "date_publication": "2026-11-16",
+      "type": "nouveaute",
+      "resume": "Révision de la note du 16/11 : deux types d'événements s'ajoutent aux webhooks d'organisation (bêta) : `external_key.failed`, envoyé quand le service de gestion de clés refuse de façon répétée une clé de chiffrement gérée par le client, et `external_key.recovered`, envoyé quand la clé refonctionne. Le point sur le filigrane de texte est déjà traité le 17/11.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Notes de version de la plateforme Claude — platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {},
+      "revision": true
+    }
+  ],
+  "ecartes": [],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
