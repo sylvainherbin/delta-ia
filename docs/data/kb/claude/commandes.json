@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-21",
+ "maj_le": "2026-11-22",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -10520,7 +10520,7 @@
    "categorie": "commandes",
    "nom": "/terminal-setup",
    "gabarit": "complet",
-   "description": "Installe un raccourci Maj+Entrée pour les retours à la ligne dans VS Code, Cursor, Devin Desktop, Alacritty ou Zed ; règle aussi Apple Terminal et iTerm2.",
+   "description": "Installe un raccourci Maj+Entrée pour les retours à la ligne dans VS Code, Cursor, Devin Desktop, Alacritty ou Zed. Dans Apple Terminal, coupe plutôt la sonnerie ; dans iTerm2, active l'accès au presse-papiers pour que /copy fonctionne. La commande se lance une fois, dans le terminal hôte et non dans tmux ou screen, car elle écrit dans la configuration de ce terminal.",
    "description_source": "Install a Shift+Enter keybinding for newlines in VS Code, Cursor, Devin Desktop, Alacritty, or Zed. In Apple Terminal, turn off the audible bell instead. In iTerm2, turn on clipboard access so that /copy works",
    "usage": "/terminal-setup",
    "usage_nature": "syntaxe",
@@ -10529,7 +10529,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Aucun des terminaux pris en charge n'apparaît dans ta configuration, et tu tapes surtout depuis l'iPhone."
+    "pourquoi": "Tes sessions Claude Code tournent sous tmux et se pilotent depuis l'iPhone, sans aucun des terminaux pris en charge. Effet de bord : dans VS Code, Cursor et Devin Desktop, elle écrit aussi dans les réglages de l'éditeur (accélération GPU du terminal coupée, à remettre sur \"auto\" pour annuler)."
    },
    "sources": [
     {
@@ -10538,11 +10538,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-20",
+   "maj_le": "2026-11-22",
    "historique": [
     {
      "date": "2026-09-23",
@@ -10559,10 +10559,23 @@
     {
      "date": "2026-11-20",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-22",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "2fa92cb8330a7a739ee1e983ca4f3cd5ea23e6ec",
-   "contexte_sections": null,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions Claude Code dans tmux dédié, alors que la commande doit tourner dans le terminal hôte, hors tmux."
+    },
+    "methode.travail": {
+     "sha1": "00921a0f2d4368fe1c1f738fa069d1245041ac6d",
+     "pourquoi": "Pilotage principal depuis l'iPhone par Remote Control : aucun des terminaux visés n'est cité."
+    }
+   },
    "exemple_origine": "source"
   },
   {
