@@ -5631,8 +5631,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
-   "empreinte": "0cfb8b68de4cc396582b1edfcd6e64e8f58dd65bdeabcc921df6bc841a6f8218",
+   "description_source": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. Requires Claude Code v2.1.295 or later",
+   "empreinte": "7b18c9c875dd83caaea7543784c6bfbbca816444de44ee4f1eae95753b1571ec",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-disable-bg-stable-path",
@@ -5654,7 +5654,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later"
+      "texte": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. Requires Claude Code v2.1.295 or later"
      }
     }
    },
@@ -8010,8 +8010,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Controls fork mode, which is on by default and lets Claude start forks on its own. While fork mode is on, Claude also can't wait for a subagent in interactive terminal, VS Code, or desktop sessions on your machine. Set to 0 to turn fork mode off. For versions, see Turn fork mode off",
-   "empreinte": "d651934f43c0c60a85d6eb683eecf4c769fa0a6d55162747fe945afb9c95149f",
+   "description_source": "Controls fork mode, which is on by default and lets Claude start forks on its own. Set to 0 to turn fork mode off, for example to let Claude wait for a subagent. For versions, see Turn fork mode off",
+   "empreinte": "d2722c27ae163e39a1ffea88ad7812a0c73673d3c30553d5c09ddac6bc110935",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-fork-subagent",
@@ -8033,14 +8033,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Controls fork mode, which is on by default and lets Claude start forks on its own. While fork mode is on, Claude also can't wait for a subagent in interactive terminal, VS Code, or desktop sessions on your machine. Set to 0 to turn fork mode off. For versions, see Turn fork mode off"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "19eea5deebae7ccb7e351fee947c2764433505859a16df06058d53d642e61482",
-      "statut": "automatique",
-      "texte": "Contrôle le mode fork, activé par défaut, qui permet à Claude de lancer lui-même des forks. Tant que le mode fork est activé, Claude ne peut pas non plus attendre un sous-agent dans les sessions de terminal interactif, VS Code ou de bureau sur la machine. Définir à 0 pour désactiver le mode fork. Pour les versions, voir Désactiver le mode fork"
+      "texte": "Controls fork mode, which is on by default and lets Claude start forks on its own. Set to 0 to turn fork mode off, for example to let Claude wait for a subagent. For versions, see Turn fork mode off"
      }
     }
    },
@@ -8084,6 +8077,38 @@
     }
    },
    "usage": "CLAUDE_CODE_FORWARD_SUBAGENT_TEXT",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
+   "description_source": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
+   "empreinte": "364b42db40a10bec337eff897f44dc79f5e5aad61327732da50ced2f0ef4e764",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-full-sign-in-link",
+   "identite": "kb:claude:claude-code-parametres-claude-code-full-sign-in-link",
+   "nom": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
    "usage_nature": "syntaxe"
   },
   {
@@ -12224,8 +12249,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to the number of milliseconds WebFetch keeps each fetched URL's response cached. The default is 900000, which is 15 minutes. Takes plain digits only; 0, a decimal, or any other spelling keeps the default. Claude Code reads the value once per launch, so a change in a settings env block applies when you next launch claude. Requires Claude Code v2.1.233 or later",
-   "empreinte": "be4c04d4d8c1f10dcc3eb038b622254779fa228755a5a98aa76ce0682f106492",
+   "description_source": "Set to the number of milliseconds WebFetch keeps each fetched page cached. The default is 900000, which is 15 minutes. Takes plain digits only; 0, a decimal, or any other spelling keeps the default. Claude Code reads the value once per launch, so a change in a settings env block applies when you next launch claude. Requires Claude Code v2.1.233 or later",
+   "empreinte": "7da8c220fcdd0dcf8caaca11aa0640102da7cb7b1f592fbf83987b91c3491212",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-webfetch-cache-ttl-ms",
@@ -12247,14 +12272,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to the number of milliseconds WebFetch keeps each fetched URL's response cached. The default is 900000, which is 15 minutes. Takes plain digits only; 0, a decimal, or any other spelling keeps the default. Claude Code reads the value once per launch, so a change in a settings env block applies when you next launch claude. Requires Claude Code v2.1.233 or later"
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "0f780bea2360676edac5c3f9f24247f96676b05788ec793f7951545916b33e41",
-      "statut": "automatique",
-      "texte": "Définir au nombre de millisecondes pendant lequel WebFetch conserve en cache la réponse de chaque URL récupérée. La valeur par défaut est 900000, soit 15 minutes. N'accepte que des chiffres simples ; 0, un nombre décimal ou toute autre écriture conserve la valeur par défaut. Claude Code lit la valeur une seule fois par lancement : une modification dans un bloc env des paramètres s'applique au prochain lancement de claude. Nécessite Claude Code v2.1.233 ou ultérieur"
+      "texte": "Set to the number of milliseconds WebFetch keeps each fetched page cached. The default is 900000, which is 15 minutes. Takes plain digits only; 0, a decimal, or any other spelling keeps the default. Claude Code reads the value once per launch, so a change in a settings env block applies when you next launch claude. Requires Claude Code v2.1.233 or later"
      }
     }
    },
@@ -15937,6 +15955,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Require a claude.ai login on Anthropic's API, or an Enterprise Admin Console sign-in. An Enterprise Admin Console sign-in counts only when forceLoginOrgUUID names your organization and you set no policyHelper. Requires Claude Code v2.1.329 or later.",
+   "empreinte": "34c7055e1035944a6a805a5236ca3cb96c4ea7ec460061945192f0941ec1f4ec",
+   "gabarit": "court",
+   "groupe": "Authentication and providers",
+   "id": "claude-code-parametres-enforceanthropicsignin",
+   "identite": "kb:claude:claude-code-parametres-enforceanthropicsignin",
+   "nom": "enforceAnthropicSignIn",
+   "origine": "cc-reglages",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "settings-reference",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/settings-reference#enforceanthropicsignin"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Require a claude.ai login on Anthropic's API, or an Enterprise Admin Console sign-in. An Enterprise Admin Console sign-in counts only when forceLoginOrgUUID names your organization and you set no policyHelper. Requires Claude Code v2.1.329 or later."
+     }
+    }
+   },
+   "usage": "{\n  \"forceLoginOrgUUID\": \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"enforceAnthropicSignIn\": true\n}",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "The /model picker has a Default option, and default model setting describes the model it resolves to. An availableModels allowlist limits the models you can name, but with the default prefix matching it doesn't remap your account type's default, so Default can still resolve to a model outside the list. This key closes that gap. Requires Claude Code v2.1.175 or later.",
    "empreinte": "38d510b8dea22ccac13020b30ee69338a277df62b5458e9ee07a0054e4726c7b",
    "gabarit": "court",
@@ -16760,8 +16810,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to and creates an API key instead.",
-   "empreinte": "216683ca9aa18da9cc44c1122ec2acb4a6fc6eaade12bb2ed5463257e9004fba",
+   "description_source": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array.",
+   "empreinte": "ebb2924cc655fbae58d38cc3c6690d8ea6c2f6b49457f15e4243be84fbd75fa8",
    "gabarit": "court",
    "groupe": "Authentication and providers",
    "id": "claude-code-parametres-forceloginorguuid",
@@ -16783,14 +16833,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array. If you set the key in any settings file, Claude Code also stops offering the keyless Console sign-in in the sessions that file applies to and creates an API key instead."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "bbdc5f0904f28a04a4423ef86a92bb51e184d2d03773e813b0be02ae757dfaa0",
-      "statut": "automatique",
-      "texte": "Depuis une source gérée, exiger que les connexions aux comptes claude.ai appartiennent à une seule organisation Anthropic, indiquée sous forme d'UUID unique, ou à l'une de plusieurs organisations, indiquées sous forme de tableau. Depuis n'importe quel fichier de paramètres, Claude Code utilise aussi un UUID unique pour présélectionner cette organisation lors d'une connexion claude.ai ou Claude Console, et ne présélectionne rien pour un tableau. Si cette clé est définie dans n'importe quel fichier de paramètres, Claude Code cesse aussi de proposer la connexion Console sans clé dans les sessions auxquelles ce fichier s'applique et crée à la place une clé API."
+      "texte": "From a managed source, require claude.ai account logins to belong to one Anthropic organization, given as a single UUID, or to any of several organizations, given as an array. From any settings file, Claude Code also uses a single UUID to pre-select that organization during a claude.ai or Claude Console login, and pre-selects nothing for an array."
      }
     }
    },
@@ -17540,8 +17583,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Runs immediately after a tool completes successfully.",
-   "empreinte": "c394640a32b456af28f1435e47ecb92d84b3a55e536779c0ea2099ac7a1e35cf",
+   "description_source": "Runs immediately after a tool completes successfully. In the main conversation, PostToolUse hooks from managed settings also run after some failed calls, so write them to handle both.",
+   "empreinte": "59c53bd75ddbf36ffebae911c56bc3c36b8f2050849b03191be0cd7633da7a97",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-posttooluse",
@@ -17563,14 +17606,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Runs immediately after a tool completes successfully."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "d16fabc61f92a328d76a3b4e2ff331f65a9ab67af53a9f2a65d5cea0db778b0f",
-      "statut": "automatique",
-      "texte": "S'exécute immédiatement après qu'un outil s'est terminé avec succès."
+      "texte": "Runs immediately after a tool completes successfully. In the main conversation, PostToolUse hooks from managed settings also run after some failed calls, so write them to handle both."
      }
     }
    },
@@ -17696,8 +17732,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on any tool name except EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
-   "empreinte": "28526c6eab9038ad66a18cc86ae00f25c55449997d00258c64f45d70ced00eea",
+   "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on tool names other than EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
+   "empreinte": "fd7467e22e585e6fd87ebaa4ab6d5248cd975b4b1f4abbe3f617f2550f9ed779",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-pretooluse",
@@ -17719,14 +17755,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Runs after Claude creates tool parameters and before processing the tool call. Matches on any tool name except EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "491168a8c601432bb401db2008e460626ea0cf0001993369326c83fae369af61",
-      "statut": "automatique",
-      "texte": "S'exécute après que Claude a créé les paramètres de l'outil et avant le traitement de l'appel d'outil. Correspond à n'importe quel nom d'outil, à l'exception de EndConversation : outils intégrés tels que Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion et ExitPlanMode, ainsi que les noms d'outils MCP."
+      "texte": "Runs after Claude creates tool parameters and before processing the tool call. Matches on tool names other than EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names."
      }
     }
    },
@@ -17891,8 +17920,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Runs instead of Stop when the turn ends due to an API error. Claude Code ignores the hook's output and exit code, apart from terminalSequence. Use this to log failures, send alerts, or take recovery actions when Claude can't complete a response due to rate limits, authentication problems, or other API errors.",
-   "empreinte": "06005021d3113ccc4a81f6430a7da22f4da9a664ee800cecfc0625601244170f",
+   "description_source": "Runs instead of Stop when the turn ends due to an API error. Claude Code ignores the hook's output and exit code, apart from terminalSequence. Use this to log failures, send alerts, or take recovery actions.",
+   "empreinte": "80fb898cba3ce4f7a0f7ae94a52892524dc12a9107b6aa94da76eabd88b9585a",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-stopfailure",
@@ -17914,14 +17943,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Runs instead of Stop when the turn ends due to an API error. Claude Code ignores the hook's output and exit code, apart from terminalSequence. Use this to log failures, send alerts, or take recovery actions when Claude can't complete a response due to rate limits, authentication problems, or other API errors."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "715484ff653483ef0b7a05928811e8ceec3737d594be5e4cc34f71a8771f7412",
-      "statut": "automatique",
-      "texte": "S'exécute à la place de Stop lorsque le tour se termine à cause d'une erreur de l'API. Claude Code ignore la sortie et le code de sortie du hook, à l'exception de terminalSequence. Permet de journaliser les échecs, d'envoyer des alertes ou d'engager des actions de reprise lorsque Claude ne peut pas terminer une réponse en raison de limites de débit, de problèmes d'authentification ou d'autres erreurs de l'API."
+      "texte": "Runs instead of Stop when the turn ends due to an API error. Claude Code ignores the hook's output and exit code, apart from terminalSequence. Use this to log failures, send alerts, or take recovery actions."
      }
     }
    },
@@ -26305,9 +26327,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-20",
+ "maj_le": "2026-11-22",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 690
+ "total": 692
 }
