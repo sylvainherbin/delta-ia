@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 134,
+ "commentees": 135,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -4596,7 +4596,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-20",
+   "maj_le": "2026-11-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -4717,6 +4717,10 @@
     },
     {
      "date": "2026-11-20",
+     "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-23",
      "changement": "commentaire révisé"
     }
    ],
@@ -5180,16 +5184,16 @@
    "categorie": "commandes",
    "nom": "/export",
    "gabarit": "complet",
-   "description": "Exporte la conversation courante en texte brut, directement dans un fichier si un nom est passé, sinon via un dialogue de copie ou d'enregistrement.",
+   "description": "Exporte la conversation courante en texte brut. Avec un nom de fichier, l'écrit directement dans ce fichier ; à partir de la v2.1.327, refuse un fichier qui existe déjà. Sans argument, ouvre un dialogue pour copier dans le presse-papiers ou enregistrer dans un fichier.",
    "description_source": "Export the current conversation as plain text. With a filename, writes directly to that file, and on v2.1.327 or later refuses one that already exists. Without, opens a dialog to copy to clipboard or save to a file",
    "usage": "/export [filename]",
    "usage_nature": "syntaxe",
-   "exemple": "/export session-mission.txt",
+   "exemple": "/export audit-trading-sim.txt",
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Pour un audit croisé, `/export` d'une session trading-sim en fichier donne à Codex (qui audite le travail de Claude) la trace exacte de l'exécution ; à déposer là où Work et Codex lisent les missions."
+    "pourquoi": "Essai : en fin de mission d'exécution trading-sim, `/export` vers un fichier donne à Codex, qui fait l'audit adversarial, la trace exacte de ce que Claude Code a exécuté. Depuis la v2.1.327, un fichier existant est refusé et non écrasé : prévois un nom neuf par mission."
    },
    "sources": [
     {
@@ -5198,7 +5202,7 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
@@ -5276,20 +5280,38 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "projet.chatgpt-trading-sim": {
      "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
-     "pourquoi": "Codex fait l'audit adversarial, les missions passent par des fichiers"
+     "pourquoi": "Claude Code exécute, Codex fait l'audit adversarial ; missions et rapports passent par des fichiers .md"
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "projet audité par Codex"
+     "pourquoi": "projet dont les exécutions sont auditées par Codex (17 rapports d'audit)"
     }
    },
-   "exemple_origine": "compose"
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/export [filename]` écrit la conversation courante en texte brut dans le fichier nommé ; à partir de la v2.1.327, il refuse un fichier qui existe déjà. Sans argument, il ouvre un dialogue de copie ou d'enregistrement.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-23",
+     "caduc_si": "la commande change de syntaxe, de comportement face à un fichier existant ou disparaît de la documentation"
+    },
+    {
+     "affirmation": "Sur trading-sim, Claude Code exécute les noyaux et campagnes, Codex fait l'audit adversarial, et les missions et rapports circulent sous forme de fichiers.",
+     "source": "contexte:projet.chatgpt-trading-sim",
+     "releve_le": "2026-11-23",
+     "caduc_si": "l'orchestration à trois IA de trading-sim change ou Codex cesse d'y auditer le travail de Claude"
+    }
+   ]
   },
   {
    "id": "claude-code-commandes-fast",
