@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-22",
+ "maj_le": "2026-11-23",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,7 +41,7 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 691,
+ "total": 692,
  "commentees": 598,
  "entrees": [
   {
@@ -9646,6 +9646,53 @@
     },
     {
      "date": "2026-10-05",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-shell-head-start",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_SHELL_HEAD_START",
+   "gabarit": "court",
+   "description": "À 1, désactive l'avance prise par Claude Code, qui peut exécuter les fichiers de démarrage du shell pendant que Claude rédige la première commande Bash de la session, avant la demande de permission de cette commande. Demande Claude Code 2.1.327 ou plus.",
+   "description_source": "Set to 1 to turn off the head start that can run your shell startup files while Claude writes the session's first Bash command, before that command's permission prompt. Requires Claude Code v2.1.327 or later",
+   "usage": "CLAUDE_CODE_DISABLE_SHELL_HEAD_START",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Les sessions locales tournent en bypassPermissions, sans demande de permission à précéder ; aucun projet ni flux de CONTEXTE.md n'a de fichier de démarrage du shell à protéger de cette avance."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions : pas de demande de permission avant la première commande Bash."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-23",
+   "historique": [
+    {
+     "date": "2026-11-23",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-23",
      "changement": "commentée"
     }
    ]
@@ -24555,7 +24602,7 @@
    "nom": "Hook PermissionDenied",
    "gabarit": "court",
    "description": "Événement de hook déclenché en mode auto quand un appel d'outil est refusé, classificateur compris ; pas lors d'un refus manuel.",
-   "description_source": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule matches. Use it to log denials, adjust configuration, or tell the model it may retry the tool call.",
+   "description_source": "Runs when the auto mode classifier denies a tool call. That includes a denial with no verdict because a safety check separate from auto mode refused the classifier's own request or the classifier's response didn't parse. Use PermissionDenied to log denials, adjust configuration, or tell the model it may retry the tool call.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"auto\",\n  \"hook_event_name\": \"PermissionDenied\",\n  \"tool_name\": \"Bash\",\n  \"tool_input\": {\n    \"command\": \"rm -rf /tmp/build\",\n    \"description\": \"Clean build directory\"\n  },\n  \"tool_use_id\": \"toolu_01ABC123...\",\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24572,11 +24619,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24601,6 +24648,37 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule matches. Use it to log denials, adjust configuration, or tell the model it may retry the tool call.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`PermissionDenied` ne se déclenche qu'en mode auto : ni sur un refus manuel, ni sur un blocage par un hook `PreToolUse`, ni sur une règle `deny`.",
+       "source": "https://code.claude.com/docs/en/hooks#permissiondenied",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page élargit le déclenchement à d'autres modes ou refus."
+      },
+      {
+       "affirmation": "Seul hook de Sylvain : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`.",
+       "source": "contexte:config.claude-code.skills",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le relevé des hooks change dans CONTEXTE.md."
+      },
+      {
+       "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
+       "source": "contexte:config.claude-code.mode-auto",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -24613,27 +24691,7 @@
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
      "pourquoi": "Sessions locales en bypassPermissions depuis le 06/10, sauf trading."
     }
-   },
-   "provenance": [
-    {
-     "affirmation": "`PermissionDenied` ne se déclenche qu'en mode auto : ni sur un refus manuel, ni sur un blocage par un hook `PreToolUse`, ni sur une règle `deny`.",
-     "source": "https://code.claude.com/docs/en/hooks#permissiondenied",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page élargit le déclenchement à d'autres modes ou refus."
-    },
-    {
-     "affirmation": "Seul hook de Sylvain : `PermissionDenied` dans `~/.claude/settings.json`, qui lance `operer refus`.",
-     "source": "contexte:config.claude-code.skills",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le relevé des hooks change dans CONTEXTE.md."
-    },
-    {
-     "affirmation": "Toutes les sessions locales tournent en bypassPermissions depuis le 06/10, sauf trading.",
-     "source": "contexte:config.claude-code.mode-auto",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le régime des permissions change dans CONTEXTE.md."
-    }
-   ]
+   }
   },
   {
    "id": "claude-code-parametres-hook-permissionrequest",

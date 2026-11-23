@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-21",
+ "maj_le": "2026-11-23",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -2129,16 +2129,16 @@
    "categorie": "mcp",
    "nom": "Scope hierarchy and precedence",
    "gabarit": "complet",
-   "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition la plus prioritaire : portée locale, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Les trois portées se comparent par nom ; plugins et connecteurs se comparent par URL ou commande.",
+   "description": "Quand un même serveur MCP est défini à plusieurs endroits, Claude Code s'y connecte une seule fois, avec la définition la plus prioritaire : portée locale, puis projet, utilisateur, plugins, et enfin connecteurs claude.ai, sans fusion des champs. Dans `claude -p`, l'Agent SDK et VS Code, les connecteurs passent avant les serveurs de plugins. Les trois portées se comparent par nom ; plugins et connecteurs se comparent par URL ou commande.",
    "description_source": "When the same server is defined in more than one place, Claude Code connects to it once, using the definition from the highest-precedence source. The entire server entry from that source is used; fields are not merged across scopes.",
-   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](https://code.claude.com/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+   "usage": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](https://code.claude.com/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai). In `claude -p`, Agent SDK, and VS Code sessions, connectors rank above plugin-provided servers.",
    "usage_nature": "etapes",
    "exemple": null,
    "disponibilite": null,
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Le serveur local delta-ia et le connecteur de compte Delta-IA viseraient la même URL : dans `~/projets` et `~/projets/delta-ia`, seule la définition locale servirait, dans trading-sim seul le connecteur de compte ; à vérifier par `/mcp` dans une session de chacun de ces dossiers."
+    "pourquoi": "Le serveur local delta-ia et le connecteur de compte Delta-IA viseraient la même URL : dans `~/projets` et `~/projets/delta-ia`, seule la définition locale servirait, dans trading-sim seul le connecteur de compte ; à vérifier par `/mcp` dans une session de chacun de ces dossiers. La nouvelle règle `claude -p` ne change pas ce cas : aucun serveur de plugin n'y est en jeu."
    },
    "sources": [
     {
@@ -2151,7 +2151,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2268,6 +2268,35 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "usage modifié dans la documentation",
+     "avant": "1. Local scope\n2. Project scope\n3. User scope\n4. [Plugin-provided servers](https://code.claude.com/docs/en/plugins/components.md#mcp-servers)\n5. [claude.ai connectors](#use-mcp-servers-from-claude-ai)",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de plus haute priorité ; l'entrée entière de cette source est utilisée, sans fusion des champs.",
+       "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+       "releve_le": "2026-10-24",
+       "caduc_si": "la page change la règle de précédence ou autorise la fusion des champs entre portées"
+      },
+      {
+       "affirmation": "Le serveur MCP delta-ia est en portée locale dans ~/projets et ~/projets/delta-ia ; les connecteurs de compte s'appliquent partout, trading-sim compris.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-24",
+       "caduc_si": "CONTEXTE.md décrit une autre répartition du serveur delta-ia et des connecteurs de compte"
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "commentée"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
@@ -2279,15 +2308,21 @@
    },
    "provenance": [
     {
-     "affirmation": "Quand un même serveur est défini à plusieurs endroits, Claude Code s'y connecte une seule fois avec la définition de plus haute priorité ; l'entrée entière de cette source est utilisée, sans fusion des champs.",
+     "affirmation": "Un même serveur défini à plusieurs endroits n'est connecté qu'une fois, avec la définition de plus haute priorité ; l'entrée entière est utilisée, sans fusion des champs entre portées.",
      "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-23",
      "caduc_si": "la page change la règle de précédence ou autorise la fusion des champs entre portées"
+    },
+    {
+     "affirmation": "L'ordre est local, projet, utilisateur, plugins, connecteurs claude.ai ; dans `claude -p`, l'Agent SDK et VS Code, les connecteurs passent avant les serveurs de plugins ; plugins et connecteurs se comparent par URL ou commande.",
+     "source": "https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence",
+     "releve_le": "2026-11-23",
+     "caduc_si": "la page modifie l'ordre ou la règle de comparaison des doublons"
     },
     {
      "affirmation": "Le serveur MCP delta-ia est en portée locale dans ~/projets et ~/projets/delta-ia ; les connecteurs de compte s'appliquent partout, trading-sim compris.",
      "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-24",
+     "releve_le": "2026-11-23",
      "caduc_si": "CONTEXTE.md décrit une autre répartition du serveur delta-ia et des connecteurs de compte"
     }
    ]

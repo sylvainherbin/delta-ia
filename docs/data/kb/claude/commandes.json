@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "commandes",
- "maj_le": "2026-11-22",
+ "maj_le": "2026-11-23",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 135,
- "commentees": 135,
+ "commentees": 134,
  "entrees": [
   {
    "id": "claude-code-commandes-add-dir",
@@ -5181,7 +5181,7 @@
    "nom": "/export",
    "gabarit": "complet",
    "description": "Exporte la conversation courante en texte brut, directement dans un fichier si un nom est passé, sinon via un dialogue de copie ou d'enregistrement.",
-   "description_source": "Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file",
+   "description_source": "Export the current conversation as plain text. With a filename, writes directly to that file, and on v2.1.327 or later refuses one that already exists. Without, opens a dialog to copy to clipboard or save to a file",
    "usage": "/export [filename]",
    "usage_nature": "syntaxe",
    "exemple": "/export session-mission.txt",
@@ -5198,11 +5198,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-23",
    "historique": [
     {
      "date": "2026-09-23",
@@ -5227,6 +5227,55 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-23",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La commande `/export [filename]` exporte la conversation courante en texte brut ; avec un nom de fichier, elle écrit directement dans ce fichier.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La commande `/export` change de syntaxe, cesse d'écrire dans un fichier nommé ou disparaît de la documentation."
+      },
+      {
+       "affirmation": "Sans nom de fichier, `/export` ouvre un dialogue permettant de copier la conversation dans le presse-papiers ou de l'enregistrer dans un fichier.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La documentation ne décrit plus ce dialogue de copie ou d'enregistrement pour `/export` sans argument."
+      },
+      {
+       "affirmation": "Sur trading-sim, Claude Code exécute (noyaux, campagnes) et Codex fait l'audit adversarial.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus Codex comme auditeur adversarial ou Claude Code comme exécutant sur trading-sim."
+      },
+      {
+       "affirmation": "Sur trading-sim, ChatGPT, appelé « Work », est l'architecte et l'arbitre.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md n'attribue plus à « Work » le rôle d'architecte et d'arbitre sur trading-sim."
+      },
+      {
+       "affirmation": "Un dossier local non versionné contient les missions rédigées par ChatGPT (`NEXT-CLAUDE-MISSION-*`, `NEXT-CODEX-AUDIT-*`, etc.) et les rapports de retour.",
+       "source": "contexte:projet.chatgpt-trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne décrit plus ce dossier de missions et de rapports de retour partagé par fichiers."
+      },
+      {
+       "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
+       "source": "contexte:projet.trading-sim",
+       "releve_le": "2026-10-16",
+       "caduc_si": "CONTEXTE.md ne mentionne plus de rapports d'audit Codex dans `docs/audits/` pour trading-sim."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -5240,45 +5289,7 @@
      "pourquoi": "projet audité par Codex"
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "La commande `/export [filename]` exporte la conversation courante en texte brut ; avec un nom de fichier, elle écrit directement dans ce fichier.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La commande `/export` change de syntaxe, cesse d'écrire dans un fichier nommé ou disparaît de la documentation."
-    },
-    {
-     "affirmation": "Sans nom de fichier, `/export` ouvre un dialogue permettant de copier la conversation dans le presse-papiers ou de l'enregistrer dans un fichier.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La documentation ne décrit plus ce dialogue de copie ou d'enregistrement pour `/export` sans argument."
-    },
-    {
-     "affirmation": "Sur trading-sim, Claude Code exécute (noyaux, campagnes) et Codex fait l'audit adversarial.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus Codex comme auditeur adversarial ou Claude Code comme exécutant sur trading-sim."
-    },
-    {
-     "affirmation": "Sur trading-sim, ChatGPT, appelé « Work », est l'architecte et l'arbitre.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md n'attribue plus à « Work » le rôle d'architecte et d'arbitre sur trading-sim."
-    },
-    {
-     "affirmation": "Un dossier local non versionné contient les missions rédigées par ChatGPT (`NEXT-CLAUDE-MISSION-*`, `NEXT-CODEX-AUDIT-*`, etc.) et les rapports de retour.",
-     "source": "contexte:projet.chatgpt-trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne décrit plus ce dossier de missions et de rapports de retour partagé par fichiers."
-    },
-    {
-     "affirmation": "Le projet trading-sim compte 17 rapports d'audit Codex dans `docs/audits/`.",
-     "source": "contexte:projet.trading-sim",
-     "releve_le": "2026-10-16",
-     "caduc_si": "CONTEXTE.md ne mentionne plus de rapports d'audit Codex dans `docs/audits/` pour trading-sim."
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-commandes-fast",
