@@ -6747,6 +6747,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Set to 1 to turn off the head start that can run your shell startup files while Claude writes the session's first Bash command, before that command's permission prompt. Requires Claude Code v2.1.327 or later",
+   "empreinte": "27d7d2fa662398dbb84a7c6d960a6184bfcc8b53330703acf23c106022d97f1a",
+   "gabarit": "court",
+   "groupe": "Variables",
+   "id": "claude-code-parametres-claude-code-disable-shell-head-start",
+   "identite": "kb:claude:claude-code-parametres-claude-code-disable-shell-head-start",
+   "nom": "CLAUDE_CODE_DISABLE_SHELL_HEAD_START",
+   "origine": "cc-variables",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "env-vars",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/env-vars"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Set to 1 to turn off the head start that can run your shell startup files while Claude writes the session's first Bash command, before that command's permission prompt. Requires Claude Code v2.1.327 or later"
+     }
+    }
+   },
+   "usage": "CLAUDE_CODE_DISABLE_SHELL_HEAD_START",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Set to 1 to stop Claude Code from sending the structured-output output_config.format field and the anthropic-beta value that pairs with it, for an LLM gateway whose upstream rejects them. This leaves on the other pre-release capabilities that CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS turns off. Requires Claude Code v2.1.288 or later",
    "empreinte": "9f0e7050b7096f82ce64d56ecfc1b4157ca410557a844643208e4a9fd9784f5a",
    "gabarit": "court",
@@ -8081,8 +8113,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
-   "empreinte": "364b42db40a10bec337eff897f44dc79f5e5aad61327732da50ced2f0ef4e764",
+   "description_source": "Set to 1 to print the full login URL. Use it when a short login URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
+   "empreinte": "a3f3353346d5f01dcc4ee535483fedec73ca599c6a7398cc187e3f9383632e4c",
    "gabarit": "court",
    "groupe": "Variables",
    "id": "claude-code-parametres-claude-code-full-sign-in-link",
@@ -8104,7 +8136,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later"
+      "texte": "Set to 1 to print the full login URL. Use it when a short login URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later"
      }
     }
    },
@@ -17155,7 +17187,7 @@
   {
    "categorie": "parametres",
    "description_source": "Runs when an MCP server requests user input mid-task. By default, Claude Code shows an interactive dialog for the user to respond. Hooks can intercept this request and respond programmatically, skipping the dialog entirely.",
-   "empreinte": "69bd652855d18be4919721f0522e7c061705563eef0e32dca179165b436b5877",
+   "empreinte": "545d2c36aafae8d96ba4f3326c1a49a71b982c0aa460a803e0edb93aec30a180",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-elicitation",
@@ -17188,7 +17220,7 @@
      }
     }
    },
-   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Elicitation\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"message\": \"Please provide your credentials\",\n  \"mode\": \"form\",\n  \"requested_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"username\": { \"type\": \"string\", \"title\": \"Username\" }\n…",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Elicitation\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"message\": \"Please provide your username\",\n  \"mode\": \"form\",\n  \"requested_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"username\": { \"type\": \"string\", \"title\": \"Username\" }\n…",
    "usage_nature": "syntaxe"
   },
   {
@@ -17388,8 +17420,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule matches. Use it to log denials, adjust configuration, or tell the model it may retry the tool call.",
-   "empreinte": "0fa6b8409554885bb89cfec89e13076c5d57ea36c908d4071fde26fd0bb4702f",
+   "description_source": "Runs when the auto mode classifier denies a tool call. That includes a denial with no verdict because a safety check separate from auto mode refused the classifier's own request or the classifier's response didn't parse. Use PermissionDenied to log denials, adjust configuration, or tell the model it may retry the tool call.",
+   "empreinte": "301f49bf409afbd14d29f81d34e47509db6ac4a58477d8924e23f6d60a6d9afd",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-permissiondenied",
@@ -17411,14 +17443,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Runs when auto mode denies a tool call, including when it denies without a classifier verdict because a safety check separate from auto mode refused the classifier's own request or its response didn't parse. This hook only fires in auto mode: it doesn't run when you manually deny a permission dialog, when a PreToolUse hook blocks a call, or when a deny rule matches. Use it to log denials, adjust configuration, or tell the model it may retry the tool call."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "42186974b81afca5dff4658fa4d5fe542c7c770e3e6a672f60a4eaf4be5ad31e",
-      "statut": "automatique",
-      "texte": "S'exécute lorsque le mode automatique refuse un appel d'outil, y compris lorsqu'il refuse sans verdict du classifieur, parce qu'une vérification de sécurité distincte du mode automatique a rejeté la demande du classifieur elle-même, ou parce que sa réponse n'a pas pu être analysée. Ce hook ne se déclenche qu'en mode automatique : il ne s'exécute pas lors d'un refus manuel dans une boîte de dialogue de permission, lorsqu'un hook PreToolUse bloque un appel, ni lorsqu'une règle de refus correspond. Il permet de journaliser les refus, d'ajuster la configuration ou d'indiquer au modèle qu'il peut réessayer l'appel d'outil."
+      "texte": "Runs when the auto mode classifier denies a tool call. That includes a denial with no verdict because a safety check separate from auto mode refused the classifier's own request or the classifier's response didn't parse. Use PermissionDenied to log denials, adjust configuration, or tell the model it may retry the tool call."
      }
     }
    },
@@ -17427,8 +17452,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. In sessions that can't show a prompt, such as background subagents in non-interactive mode, Claude Code still runs these hooks, and if no hook returns a decision, it denies the tool call. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user.",
-   "empreinte": "94df1299bfe460bda97c057604377d2dabdad70a870dae35a6693e80a748e80d",
+   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user.",
+   "empreinte": "603a67a683796ffb2c2e3ca5e1128096194d86b53934332ec8bdaa3e7b596ed3",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-permissionrequest",
@@ -17450,14 +17475,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Runs when Claude Code is about to ask you for permission to use a tool. In sessions that can't show a prompt, such as background subagents in non-interactive mode, Claude Code still runs these hooks, and if no hook returns a decision, it denies the tool call. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "88896021766e43687d05d38f327414a99013a0938db8d4a9e727fb1a8624c3f7",
-      "statut": "automatique",
-      "texte": "S'exécute lorsque Claude Code est sur le point de demander une autorisation pour utiliser un outil. Dans les sessions qui ne peuvent pas afficher d'invite, comme les sous-agents en arrière-plan en mode non interactif, Claude Code exécute quand même ces hooks et, si aucun hook ne renvoie de décision, refuse l'appel d'outil. Pour un appel qui atteint un --permission-prompt-tool ou le callback canUseTool du SDK Agent, les hooks s'exécutent en parallèle de l'hôte, et c'est celle qui décide en premier qui s'applique. Utiliser le contrôle de décision PermissionRequest pour autoriser ou refuser au nom de l'utilisateur."
+      "texte": "Runs when Claude Code is about to ask you for permission to use a tool. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user."
      }
     }
    },
@@ -17842,8 +17860,8 @@
   },
   {
    "categorie": "parametres",
-   "description_source": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. It doesn't fire on normal startup. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts, separate from normal session startup. For per-session initialization, use SessionStart instead.",
-   "empreinte": "6ec9e935be0c77780e801f0a1795fe80877ca29d1a1910238ea31e1f2d6e8228",
+   "description_source": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts. For per-session initialization, use SessionStart instead.",
+   "empreinte": "c8a6b947745d1ad6e1e39f6bb0eeffbbe89d44adee176e40285fe306492d0c70",
    "gabarit": "court",
    "groupe": "Hook events",
    "id": "claude-code-parametres-hook-setup",
@@ -17865,14 +17883,7 @@
      "en": {
       "origine": "description_source",
       "statut": "source",
-      "texte": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. It doesn't fire on normal startup. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts, separate from normal session startup. For per-session initialization, use SessionStart instead."
-     },
-     "fr": {
-      "de": "en",
-      "glossaire": "r1",
-      "source_sha256": "7f98057ad36849eb74239051b23f038780acdb0afc1ae005a054c8650c667214",
-      "statut": "automatique",
-      "texte": "Ne se déclenche que lorsque Claude Code est lancé avec --init-only, ou avec --init ou --maintenance en mode non interactif avec l'option -p. Il ne se déclenche pas au démarrage normal. Utiliser pour l'installation unique de dépendances ou pour un nettoyage planifié, déclenchés explicitement depuis la CI ou des scripts, séparément du démarrage normal de la session. Pour l'initialisation propre à chaque session, utiliser plutôt SessionStart."
+      "texte": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts. For per-session initialization, use SessionStart instead."
      }
     }
    },
@@ -26327,9 +26338,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-22",
+ "maj_le": "2026-11-24",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 692
+ "total": 693
 }
