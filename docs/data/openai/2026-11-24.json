@@ -1,0 +1,251 @@
+{
+  "date": "2026-11-24",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-11-24T03:14:15+00:00",
+  "synthese": "Codex CLI 0.172.0 améliore la navigation et la reprise des audits sous tmux ; la CLI terminal est encore relevée en 0.171.0. GPT-6.2 Sol arrive dans l’onglet Chat, sans changer Work et Codex, et l’incident GPT-6 du 23 novembre est résolu. Le retrait de GPT-5.6 est annoncé sur X pour le 23 décembre, sans profil courant concerné dans le relevé. Lecture des tarifs incomplète ; échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+  "sources_en_echec": [
+    {
+      "id": "openai-tarifs",
+      "url": "https://learn.chatgpt.com/docs/pricing.md",
+      "erreur": "FormatInattendu: section « ^What are the usage limits for my plan\\?$ » introuvable : gabarit changé ?",
+      "partiel": false
+    },
+    {
+      "id": "openai-deprecations",
+      "url": "https://developers.openai.com/api/docs/deprecations.md",
+      "erreur": "échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+      "partiel": true
+    }
+  ],
+  "elements": [
+    {
+      "id": "rust-v0.172.0",
+      "ids_bruts": [
+        "rust-v0.172.0"
+      ],
+      "produit": "codex",
+      "titre": "Codex CLI 0.172.0 : liens de conversations, complétion et reprise des permissions",
+      "version": "0.172.0",
+      "date_publication": "2026-11-24",
+      "type": "amelioration",
+      "resume": "La CLI ouvre les liens vers les conversations sauvegardées et agents imbriqués, complète les arguments slash avec `Tab`, navigue entre groupes par `Shift+Up` et `Shift+Down` et démarre à la demande les MCP stdio facultatifs dont les outils sont en cache. Elle ajoute un relecteur d’approbation par outil connecté dans `config.toml`, le choix de Bedrock Runtime pour les clients app-server et des status lines personnalisées via `/experimental`. Les correctifs conservent les permissions, le dossier et les racines lors de `codex exec resume` sauf surcharge explicite, les chemins des sessions distantes et les réponses d’agents après interruption ; la skill openai-docs couvre GPT-6.2 et `code_mode_host_grpc` est déprécié, gRPC devenant systématique.",
+      "sources": [
+        {
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.172.0",
+          "libelle": "codex-cli-releases",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises Codex sous tmux pour les audits croisés et les missions non interactives : les liens de conversations et `Shift+Up`/`Shift+Down` facilitent le retour aux fils d’audit, tandis que `Tab` complète les arguments slash. Pour les MCP de ces audits, le démarrage différé exige un serveur stdio facultatif avec une liste d’outils en cache ; aucun gain local n’est mesuré. Le relecteur par outil connecté permet de distinguer les contrôles des connecteurs, sans changer ces contrôles dans ce passage, et `/experimental` expose les status lines personnalisées. La reprise des permissions concerne ton usage de codex exec, les paramètres explicitement passés gardant la priorité ; le relevé terminal du 24/11 indique encore 0.171.0, donc ces changements 0.172.0 restent à qualifier après mise à jour.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Dans une CLI 0.172.0 sous tmux, saisis `/mcp lo` puis presse `Tab` sans valider une connexion ; essai : dans le flux d’audit trading-sim, lance ensuite `/mcp verbose` ; résultat attendu : la complétion propose `/mcp login` et la liste MCP affiche les détails des serveurs.",
+        "etapes": [
+          "Utiliser une session d’essai en 0.172.0 ; le relevé terminal actuel est encore en 0.171.0.",
+          "Saisir /mcp lo et presser Tab ; observer la proposition sans lancer d’authentification.",
+          "Lancer /mcp verbose selon la fiche de référence ; ouvrir un lien de conversation sauvegardée depuis la recherche pour contrôler la navigation."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-commandes-mcp",
+        "codex-commandes-experimental",
+        "codex-parametres-codex-exec-resume-subcommand"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Usage de Codex CLI sous tmux pour les audits et les exécutions non interactives."
+        },
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Les missions utilisent codex exec avec des paramètres explicites."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Le scénario porte sur les audits Codex du projet trading-sim."
+        }
+      }
+    },
+    {
+      "id": "x-2124942186425069836",
+      "ids_bruts": [
+        "x-2124942186425069836"
+      ],
+      "produit": "chatgpt",
+      "titre": "ChatGPT : GPT-6.2 Sol adapté à l’onglet Chat",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "amelioration",
+      "resume": "OpenAI déploie une variante de GPT-6.2 Sol adaptée à l’onglet Chat, avec des améliorations annoncées pour les instructions détaillées, la recherche web et les images. Les notes officielles confirment que cette mise à jour ne change pas les modèles de Work et Codex.",
+      "sources": [
+        {
+          "url": "https://x.com/ChatGPT/status/2124942186425069836",
+          "libelle": "x-liste-openai",
+          "officielle": true
+        },
+        {
+          "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+          "libelle": "Notes officielles ChatGPT du 23 novembre, consultées le 24 novembre",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises ChatGPT pour auditer le travail de Claude, notamment sur la console : un essai dans l’onglet Chat permettrait d’évaluer cette variante pour expliquer un diff public ou une capture de la console. Le flux d’architecture trading-sim dans Work garde ses modèles dans cette annonce.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Ouvre l’onglet `Chat` dans ChatGPT ; essai : soumets une capture fictive de la console de pilotage et une consigne de revue précise ; résultat attendu : constater la présence de GPT-6.2 sur ton compte et obtenir une explication vérifiable des éléments visibles.",
+        "etapes": [
+          "Ouvrir une nouvelle conversation dans l’onglet Chat et constater le modèle disponible ; le déploiement est progressif.",
+          "Utiliser une capture fictive de la console et demander de distinguer les faits visibles des déductions.",
+          "Comparer manuellement chaque affirmation à la capture."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+          "pourquoi": "ChatGPT sert aux audits du travail de Claude et l’iPhone est utilisé."
+        },
+        "projet.delta-desktop": {
+          "sha1": "bcdecc74bfe1927a9a93fd72ed85838462d80929",
+          "pourquoi": "La console de pilotage fournit le scénario d’essai."
+        },
+        "projet.chatgpt-trading-sim": {
+          "sha1": "b2d088d49e79f8b0e71fd1a93af7ae9b9cb79d73",
+          "pourquoi": "Work reste le flux d’architecture de trading-sim."
+        }
+      }
+    },
+    {
+      "id": "openai-status-01M84HKHX73RF7HTVZQ2A9GFXP",
+      "ids_bruts": [
+        "openai-status-01M84HKHX73RF7HTVZQ2A9GFXP"
+      ],
+      "produit": "chatgpt",
+      "titre": "ChatGPT : erreurs GPT-6 des comptes payants résolues le 23 novembre",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "correction",
+      "resume": "Des erreurs intermittentes ont affecté les conversations GPT-6 sur les comptes ChatGPT payants le 23 novembre, de 15:50:14 à 16:38:46 UTC, soit 16:50:14 à 17:38:46 à Paris. La page d’état déclare tous les services concernés rétablis après une mitigation.",
+      "sources": [
+        {
+          "url": "https://status.openai.com/incidents/01M84HKHX73RF7HTVZQ2A9GFXP",
+          "libelle": "openai-status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises ChatGPT pour les audits du travail de Claude : cette fenêtre est un repère pour examiner d’éventuels échecs d’échanges. La source vise GPT-6 et ne prouve ni un incident de tes sessions CLI ni un échec de ton architecture Work sur trading-sim.",
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "usage.hors-machine": {
+          "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+          "pourquoi": "Usage de ChatGPT pour auditer le travail de Claude."
+        }
+      }
+    },
+    {
+      "id": "x-2124981905380569283",
+      "ids_bruts": [
+        "x-2124981905380569283",
+        "x-2124988211621707815"
+      ],
+      "produit": "chatgpt",
+      "titre": "GPT-5.6 : retrait annoncé le 23 décembre dans Chat, Work et Codex",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "depreciation",
+      "resume": "OpenAI annonce le retrait de GPT-5.6 Sol dans Chat, ainsi que de GPT-5.6 Sol et Terra dans Work et Codex, le 23 décembre 2026. Le même compte indique une orientation générale de retrait des modèles anciens de deux générations ; annoncé sur X, pas encore confirmé par la documentation consultée pendant ce passage, sans remplacement recommandé dans les posts.",
+      "sources": [
+        {
+          "url": "https://x.com/ChatGPT/status/2124981905380569283",
+          "libelle": "x-liste-openai",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ChatGPT/status/2124988211621707815",
+          "libelle": "x-liste-openai",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.codex.profils": {
+          "sha1": "0354f7242eedd61fa297ddfe2e0a6973d4cb060f",
+          "pourquoi": "L’impact est apprécié sur les profils courants du relevé et l’usage quotidien des trois profils."
+        },
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "GPT-5.6 Sol est cité seulement dans les audits historiques du contexte."
+        }
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2125007927098699827",
+      "raison": "post X sans rapport : compte rendu de recherche sur des vulnérabilités du noyau Linux, sans nouvelle fonction accessible aux audits du profil"
+    },
+    {
+      "id": "x-2124981075596521956",
+      "raison": "post X sans rapport : lien seul, sans fait exploitable ni changement de fonction établi dans le contenu collecté"
+    },
+    {
+      "id": "x-2124981063487492379",
+      "raison": "post X sans rapport : programme OpenWorks d’accompagnement des commerces locaux, sans changement de Claude, ChatGPT ou Codex applicable au profil"
+    },
+    {
+      "id": "x-2124980590717911527",
+      "raison": "post X sans rapport : runtime de défense eBPF sans usage ni besoin établi dans les projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944234310730004",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944232993722879",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944231664075210",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944230338744689",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944228635869457",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944227318829249",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124944225955639430",
+      "raison": "post X sans rapport : démonstration 3D de GPT-6.2 sans nouveau réglage ni flux applicable aux projets décrits par CONTEXTE.md"
+    },
+    {
+      "id": "x-2124922133545714160",
+      "raison": "post X sans rapport : programme OpenWorks d’accompagnement des commerces locaux, sans changement de Claude, ChatGPT ou Codex applicable au profil"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
