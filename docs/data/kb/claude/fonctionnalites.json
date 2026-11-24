@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 105,
- "commentees": 101,
+ "commentees": 102,
  "entrees": [
   {
    "id": "claude-code-fonctionnalites-page-advisor",
@@ -512,7 +512,7 @@
    "categorie": "fonctionnalites",
    "nom": "Configure auto mode",
    "gabarit": "complet",
-   "description": "Référence de configuration du mode auto : points de contrôle humain par `permissions.ask` (push, création de PR), infrastructure de confiance dans `autoMode.environment`, remplacement des règles de blocage et d'autorisation, et inspection de la configuration effective avec les sous-commandes `claude auto-mode`. Par défaut, le classificateur ne fait confiance qu'au répertoire de travail et aux dépôts distants configurés.",
+   "description": "Référence de configuration du mode auto : un point de contrôle humain avant `git push` et `gh pr create` par des règles `permissions.ask`, évaluées avant le classificateur (une forme comme `git -C <dir> push` n'est pas couverte ; un hook PreToolUse l'est), l'infrastructure de confiance dans `autoMode.environment` (brouillon possible par `/auto-mode-setup`), le remplacement des règles de blocage et d'autorisation, et l'inspection par les sous-commandes `claude auto-mode` (`defaults`, `config`, `critique`, `reset`). Par défaut, le classificateur ne fait confiance qu'au répertoire de travail et aux dépôts distants configurés.",
    "description_source": "Tell the auto mode classifier which repos, buckets, and domains your organization trusts, set your own block and allow rules, and inspect your config.",
    "usage": "{\n  \"permissions\": {\n    \"ask\": [\n      \"Bash(git push *)\",\n      \"Bash(gh pr create *)\"\n    ]\n  }\n}",
    "usage_nature": "syntaxe",
@@ -530,11 +530,11 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "retiree": false,
    "origine": "cc-fonctionnalites",
    "groupe": null,
-   "maj_le": "2026-11-18",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -555,9 +555,13 @@
     {
      "date": "2026-11-18",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "fc4b494e47c8da342d9864b55a7072fcee6e3a40",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mode-auto": {
      "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
