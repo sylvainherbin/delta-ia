@@ -1,0 +1,389 @@
+{
+  "date": "2026-11-24",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-24T03:04:12+00:00",
+  "synthese": "Compte et quotas : aucune limite, offre, remise à zéro ni tarif ne change dans les sources du jour et aucune fiche D71 n'est ajoutée à la base ; Claude Ship, réservé à Team et Enterprise, est facturé aux jetons, et `/ship` compte comme usage Claude Code ordinaire, donc rien ne bouge pour ton Max (20x). Jauges de `rapports/usage.json` (relevé du 24/11 à 03 h 00 UTC) : Claude semaine à 22 % (remise à zéro le 29/11 à 16 h UTC), semaine Fable à 0 %, ChatGPT semaine à 37 % (remise à zéro le 29/11 à 17 h 12 UTC), session 5 h non mesurée ; aucun seuil D71 atteint. À retenir : l'annonce, faite sur X seulement, du regroupement des connecteurs et des skills en plugins sur ton compte Max, à suivre avec `claude mcp list` ; la commande `/ship` (pull request ouverte, relue et surveillée), à essayer sur une branche jetable ; et Claude Code 2.1.331 (installée, à jour), dont le changement de `retry: true` pour le hook `PermissionDenied` se tranche par un `grep`. Le retrait d'Opus 4.5 de l'API (22/01/2027), les Enterprise Frontier Safeguards, deux incidents de statut et un guide de sécurité pour Team et Enterprise n'ont pas d'effet sur ton usage ; un témoignage client est écarté.",
+  "elements": [
+    {
+      "id": "claude-code-2.1.331",
+      "ids_bruts": [
+        "claude-code-2.1.331"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.331 : section « API connectivity » dans `claude doctor`, `retry: true` du hook `PermissionDenied` précisé, reprise des requêtes silencieuses en session cloud",
+      "version": "2.1.331",
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Ajouts hors VS Code : une section « API connectivity » dans `claude doctor` (joignabilité de l'API avec le statut HTTP ou l'erreur, ou la raison de l'absence de test) ; `CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION` pour demander des réponses non compressées derrière un proxy qui coupe les réponses compressées (pas conseillé pour les runners auto-hébergés ni Remote Control) ; `optionalDependencies` dans les manifestes de plugins ; des attributs `gen_ai.*` sur les spans `claude_code.llm_request` ; Code Mode en session terminal sur Amazon Bedrock, Google Cloud, Microsoft Foundry et Claude Platform on AWS ; `oidc.groups_jsonpath` et `CLAUDE_GATEWAY_IDP_CONNECT_BY_HOSTNAME=1` pour la passerelle Claude apps ; un avis quand la dictée vocale en mode tap s'arrête seule. Six autres ajouts visent VS Code seulement. Correctifs : appels d'outils MCP bloqués jusqu'à 30 minutes sur des réponses mal formées d'un serveur local ou WebSocket ; tours et sous-agents en échec en session cloud quand une réponse restait silencieuse pendant la réflexion (Claude Code retente une fois) ; `/compact` et l'auto-compactage qui perdaient parfois une partie du résumé quand il citait certaines balises XML ; message Remote Control affiché au-dessus de la réponse en cours ; hooks Stop qui ratent la dernière réponse dans Claude Desktop (les hooks `SubagentStop` l'attendent aussi) ; shells et serveurs MCP d'un agent Workflow laissés actifs après son rapport ; `@file#10-12` qui joignait le fichier entier ; `PushNotification` qui annonçait un terminal actif à une exécution sans interface, comme une exécution planifiée. Changements : `retry: true` d'un hook `PermissionDenied` dit désormais à Claude de refaire l'appel refusé seulement si tu avais demandé cet appel ; plusieurs questions (`/ide`, `/clear`, `/compact`, `/rewind` dans la vue d'un sous-agent) affichent Yes en premier tout en démarrant sur No. À partir du 30/11/2026 (version future, date « on or after »), les marketplaces de plugins déclarées dans `extraKnownMarketplaces` des réglages gérés se mettront à jour par défaut ; `\"autoUpdate\": false` sur l'entrée les exclut. Le reste (Windows, VS Code, passerelle, Code Mode cloud) vise des configurations que CONTEXTE.md ne décrit pas.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21331",
+          "libelle": "Claude Code 2.1.331 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Claude Code 2.1.331 est installée et à jour d'après `docs/data/versions.json` : les correctifs sont déjà actifs. Ton seul hook est `PermissionDenied`, qui lance `operer refus` (CONTEXTE.md) : la 2.1.331 change ce que `retry: true` dit à Claude, mais la fiche de la base dit que ce hook ne se déclenche qu'en mode auto, alors que tes sessions locales tournent en `bypassPermissions` sauf trading (CONTEXTE.md) ; le changement ne te toucherait donc que si `operer refus` répond `retry: true`, ce que la première commande de l'action tranche. Tes sessions pilotées depuis l'iPhone par Remote Control ne voient plus un message s'afficher au-dessus de la réponse en cours, et tes sous-agents (31 appels `Agent` relevés le 04/10) retentent une fois quand une réponse reste silencieuse en session cloud. `/compact`, que tu tapes, ne perd plus une partie du résumé dans le cas des balises XML citées. La section « API connectivity » de `claude doctor` donne un diagnostic de joignabilité de l'API sans lancer de session. Les ajouts de passerelle, de Code Mode sur les clouds, de VS Code et de Windows, et les `optionalDependencies` de plugins ne visent pas ta configuration (aucun plugin propre, CONTEXTE.md).",
+      "projets_concernes": [],
+      "action": {
+        "description": "Trancher l'effet du changement `retry: true` sur ton hook `PermissionDenied`, puis essayer la nouvelle section de `claude doctor`.",
+        "etapes": [
+          "Lance `grep -n \"retry\" ~/projets/discipline/src/delta/operer/refus.py` (hook `PermissionDenied` de `~/.claude/settings.json`, fiche `claude-code-parametres-hook-permissiondenied`) ; résultat attendu : aucune ligne, donc la sortie de `operer refus` ne contient pas `retry: true` et le changement de la 2.1.331 ne te touche pas ; une ligne : relis-la avec la fiche avant de la garder.",
+          "Dans une session de `~/projets/delta-ia`, lance `claude doctor` (fiche `claude-code-commandes-claude-doctor`, usage `claude doctor`) ; résultat attendu : une section « API connectivity » dit si l'API est joignable, avec le statut HTTP ou l'erreur, ou la raison pour laquelle elle n'a pas été testée."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-commandes-claude-doctor",
+        "claude-code-parametres-hook-permissiondenied"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Un seul hook perso, `PermissionDenied`, qui lance `operer refus` : cible du changement `retry: true`."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en `bypassPermissions` sauf trading : le hook ne se déclenche qu'en mode auto."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control : correctif de l'ordre des messages."
+        },
+        "config.claude-code.sous-agents": {
+          "sha1": "5ee183a9303b683bb41985498260b10b233ebba0",
+          "pourquoi": "Sous-agents utilisés (31 appels `Agent` le 04/10) : reprise d'une requête silencieuse."
+        }
+      }
+    },
+    {
+      "id": "x-2124970294523945328",
+      "ids_bruts": [
+        "x-2124970294523945328"
+      ],
+      "produit": "claude",
+      "titre": "Connecteurs et skills réunis en « plugins » sur Claude (annoncé sur X)",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Annoncé sur X par le compte @claudeai, pas encore confirmé par la documentation (aucune note de l'app Claude du jour ne le reprend) : les connecteurs et les skills se réunissent en plugins, un seul mécanisme pour relier tes outils à Claude, lui apprendre une compétence, ou les deux. Le déploiement est en ligne sur les forfaits Free, Pro, Max et Ultra ; Team et Enterprise « bientôt », sans date. Le post renvoie vers un répertoire de plus de 10 000 plugins. Il ne dit pas si les connecteurs et skills déjà installés sont migrés, renommés ou conservés.",
+      "sources": [
+        {
+          "url": "https://x.com/claudeai/status/2124970294523945328",
+          "libelle": "@claudeai — post du 2026-11-23 20:56 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Tu utilises des connecteurs de compte (`claude.ai Vercel` connecté, delta-ia, Gmail et Drive connectés sans être appelés dans Claude Code) et des skills claude.ai synchronisés, surtout `red-team` (CONTEXTE.md) : le regroupement en plugins touche ces deux familles sur ton compte Max. Le post ne dit pas ce que devient l'existant : si les connecteurs de compte changent de nom ou de forme, la liste `deny` du `.claude/settings.json` de trading-sim, qui ne les nomme pas aujourd'hui (écart déjà signalé dans CONTEXTE.md), serait à revoir avec Work. Rien n'est à changer avant de savoir si l'annonce modifie ta liste de connecteurs.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Relever la liste actuelle des connecteurs avec `claude mcp list`, puis la comparer le 01/12/2026.",
+        "etapes": [
+          "Dans une session de `~/projets/delta-ia`, lance `claude mcp list` et garde la sortie dans la session (CONTEXTE.md cite `claude.ai Vercel: https://mcp.vercel.com - ✔ Connected` au 12/10) ; résultat attendu aujourd'hui : tes connecteurs de compte avec leurs noms actuels.",
+          "Le 01/12/2026, relance `claude mcp list` dans la même session ; résultat attendu : les mêmes noms ; un nom changé ou un connecteur disparu indique que la migration vers les plugins a eu lieu, et la question du `deny` de trading-sim est alors à transmettre à Work."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Connecteurs de compte, delta-ia et Vercel ; écart du `deny` de trading-sim qui ne les liste pas."
+        },
+        "usage.hors-machine": {
+          "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
+          "pourquoi": "Tu utilises les connecteurs et les skills claude.ai (surtout `red-team`) sur ton compte."
+        }
+      }
+    },
+    {
+      "id": "https://claude.com/blog/introducing-claude-ship",
+      "ids_bruts": [
+        "https://claude.com/blog/introducing-claude-ship",
+        "x-2124959436640858475",
+        "x-2124959438175981965",
+        "x-2124959440772137337"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Ship (bêta) : revue, correctifs et approbation des pull requests ; commandes `/ship` et `/steward` dans Claude Code",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Claude Ship réunit Code Review (disponible en général) et deux agents en bêta : PR Steward, qui corrige les vérifications en échec, les conflits de fusion et les retours de revue sans approuver ni fusionner, et Claude Approvals, qui applique une politique d'approbation écrite comme un fichier du dépôt (un « CODEOWNERS plus intelligent »). Disponible sur les forfaits Team et Enterprise pour des dépôts GitHub, pas pour les organisations avec Zero Data Retention, la configuration HIPAA ou des clés gérées par le client ; l'administrateur l'active par dépôt. Facturation aux jetons pour l'organisation ; `/ship` compte comme un usage ordinaire de Claude Code. Côté développeur, `/ship [level] [pr] [+bot]` commite, pousse, ouvre la pull request si la branche n'en a pas, la fait relire, puis surveille la pull request dans la session ; `/ship stop` met fin à la surveillance. `/steward` surveille sans revue préalable ; `/ship:review` est un alias de `/code-review`. Le déploiement de `/ship` dans la CLI et l'app de bureau commence le 23/11 ; la disponibilité sur le forfait Max n'est pas précisée.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/introducing-claude-ship",
+          "libelle": "Introducing Claude Ship — claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124959436640858475",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 20:13 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124959438175981965",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 20:13 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124959440772137337",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 20:13 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Commandes — code.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Claude Ship est réservé à Team et Enterprise, ton abonnement est un Max individuel : l'activation par dépôt et la politique d'approbation ne te concernent pas. Seule la commande `/ship` s'adresse au développeur, et la page ne dit pas si elle est livrée sur Max. Tes missions de `delta-ia` et de `discipline` fusionnent en avance rapide, sans pull request, et seule trading-sim passe par une PR, sous l'arbitrage de Work et l'audit de Codex (CONTEXTE.md) : `/ship` ajouterait donc une étape que ce flux n'a pas, et l'approbation par Claude n'a pas sa place sur trading-sim. Ton irritant déclaré est de mal connaître les commandes de Claude Code : un essai sur une branche jetable de `delta-ia`, sans fusion, te dit si la commande est présente chez toi. Tu n'as pas de skill perso nommée `ship` ni `steward` (CONTEXTE.md), donc aucun conflit avec les commandes livrées.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer `/ship` sur une branche jetable de delta-ia, hors de la fenêtre de la chaîne D70 (03 h 30 à 08 h 00) ; si la commande est absente, revérifier le 01/12/2026, aucune échéance publiée.",
+        "etapes": [
+          "Crée un worktree jetable avec `git worktree add ~/projets/.worktrees/delta-ia/essai-ship -b essai-ship`, ajoute-y un fichier texte `essai-ship.txt` d'une ligne, ouvre une session Claude Code dedans et lance `/ship` (fiche `claude-code-skills-ship`, usage `/ship [level] [pr] [+bot]`) ; résultat attendu : la branche est poussée, une pull request s'ouvre sur GitHub et la revue s'affiche dans la session, ou la session répond que `/ship` n'existe pas, ce qui voudrait dire qu'il n'est pas livré sur ton compte.",
+          "Termine par `/ship stop` pour arrêter la surveillance, ferme la pull request sans la fusionner, puis retire le worktree avec `git worktree remove ~/projets/.worktrees/delta-ia/essai-ship` ; résultat attendu : plus de branche `essai-ship` ouverte et `main` inchangé."
+        ],
+        "effort": "30min"
+      },
+      "kb_refs": [
+        "claude-code-skills-ship",
+        "claude-code-skills-steward",
+        "claude-code-commandes-ship-review"
+      ],
+      "contexte_sections": {
+        "methode.missions": {
+          "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+          "pourquoi": "Une branche et un worktree par mission, fusion en avance rapide : `/ship` ajoute une pull request que ce flux n'a pas."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Seul dépôt dont les commits passent par une PR, avec audit Codex : pas le terrain de l'essai."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Aucune skill ni commande perso nommée `ship` ou `steward` : pas de conflit avec les commandes livrées."
+        }
+      }
+    },
+    {
+      "id": "x-2124978802006851961",
+      "ids_bruts": [
+        "x-2124978802006851961"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code sur ordinateur : panneau latéral refait, Files, Changes et Terminal en onglets (macOS d'abord, Linux « bientôt »)",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Annoncé sur X par @ClaudeDevs, pas encore confirmé par la documentation : le panneau latéral de Claude Code dans l'app de bureau est refait ; Files, Changes, Terminal et les autres outils s'ouvrent en onglets à côté de la session, déplaçables pour en voir plusieurs à la fois ou détachables dans leur propre fenêtre. Déploiement en cours sur Mac, Windows et Linux « bientôt », sans date.",
+      "sources": [
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124978802006851961",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 21:30 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises Claude Desktop en mode Claude Code, intensivement, depuis la session « Refonte console mobile Delta » (Claude Design), sur des paquets Debian (CONTEXTE.md) : le nouveau panneau te concernera quand le déploiement atteindra Linux, que le post annonce sans date. Ton écran de session est donc inchangé aujourd'hui.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le 01/12/2026 si le panneau en onglets est livré sur ton Claude Desktop, aucune échéance publiée.",
+        "etapes": [
+          "Le 01/12/2026, ouvre la session Claude Design de `delta-desktop` dans Claude Desktop (mode Code) et regarde si `Files`, `Changes` et `Terminal` s'ouvrent en onglets à côté de la session ; résultat attendu : des onglets déplaçables et détachables (déploiement atteint Linux), ou un panneau inchangé, donc à revérifier une semaine plus tard."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Desktop en mode Claude Code utilisé intensivement pour Claude Design, sur Debian."
+        }
+      }
+    },
+    {
+      "id": "https://claude.com/blog/zero-data-retention-with-enterprise-frontier-safeguards",
+      "ids_bruts": [
+        "https://claude.com/blog/zero-data-retention-with-enterprise-frontier-safeguards",
+        "claude-platform-notes-2026-11-23",
+        "x-2124929944530587712",
+        "x-2124929946925793294",
+        "x-2124930253344948518",
+        "x-2124930255777591454"
+      ],
+      "produit": "claude",
+      "titre": "Enterprise Frontier Safeguards : zero data retention avec détection de mésusage, en bêta publique sur Claude Platform, AWS, Bedrock et Google Cloud ; deux événements de webhooks",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Les Enterprise Frontier Safeguards (EFS) passent en bêta publique pour les organisations éligibles : zero data retention (ZDR) compatible avec une surveillance automatisée du mésusage sur plusieurs requêtes. Les entrées et sorties vont, chiffrées, vers un stockage du client (Amazon S3 ou Google Cloud Storage) et ne sont plus conservées par Anthropic ni le fournisseur cloud ; les cas de risque sortent en « Safety Cases » sans les entrées ni les sorties. Disponible sur Claude Platform, Claude Platform on AWS, Amazon Bedrock et Claude on Google Cloud ; Microsoft Foundry « bientôt ». Sur Claude Platform, l'activation se fait par workspace dans la Console et couvre toutes les requêtes Messages API du workspace. Les notes de la plateforme ajoutent deux événements de webhooks d'organisation en bêta, `external_storage.failed` et `external_storage.recovered`, pour le contrôle quotidien du stockage du client.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/zero-data-retention-with-enterprise-frontier-safeguards",
+          "libelle": "Zero data retention with Enterprise Frontier Safeguards is now in beta — claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version du 2026-11-23",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/claudeai/status/2124929944530587712",
+          "libelle": "@claudeai — post du 2026-11-23 18:15 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/claudeai/status/2124929946925793294",
+          "libelle": "@claudeai — post du 2026-11-23 18:15 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124930253344948518",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 18:17 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2124930255777591454",
+          "libelle": "@ClaudeDevs — post du 2026-11-23 18:17 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-deprecations-2026-11-23-claude-opus-4-5-model",
+      "ids_bruts": [
+        "anthropic-deprecations-2026-11-23-claude-opus-4-5-model",
+        "anthropic-deprecations-statut-modeles"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Retrait de Claude Opus 4.5 sur l'API Claude le 22/01/2027 (remplaçant recommandé : `claude-opus-5-5`)",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "depreciation",
+      "resume": "Le 23/11/2026, Anthropic a notifié le retrait de Claude Opus 4.5 (`claude-opus-4-5-20251101`, et `claude-opus-4-5` sans date) de l'API Claude le 22/01/2027 ; le remplaçant recommandé est `claude-opus-5-5`, avec un guide de migration. Dates différentes sur les autres plateformes et dans Claude Code : la page renvoie à sa vue d'ensemble. Le tableau d'état des modèles est modifié : `claude-opus-4-5-20251101` passait de « Active, pas avant le 24/11/2026 » à « Deprecated, 23/11/2026, retrait 22/01/2027 ».",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+          "libelle": "Dépréciations des modèles Claude — platform.claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations#model-status",
+          "libelle": "Dépréciations des modèles Claude — Model status",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-yzs0s90d8fm8",
+      "ids_bruts": [
+        "anthropic-status-yzs0s90d8fm8"
+      ],
+      "produit": "claude",
+      "titre": "Incident du 23/11 : erreurs élevées sur plusieurs modèles Claude pendant 17 minutes (résolu)",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Incident d'impact « major » ouvert le 23/11 à 09 h 49 UTC : erreurs élevées sur les requêtes vers Claude Fable 5.2, Sonnet 5.5, Opus 5.5, Mythos 5.2, Haiku 5.5 et d'autres modèles, sur claude.ai, l'API, Claude Code et Cowork. Correctif déployé à 10 h 07 UTC, incident résolu à 11 h 07 UTC ; l'impact est daté de 09 h 39 à 09 h 56 UTC.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/yzs0s90d8fm8",
+          "libelle": "Elevated errors for multiple models — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-3vbyqgnswwxq",
+      "ids_bruts": [
+        "anthropic-status-3vbyqgnswwxq"
+      ],
+      "produit": "claude",
+      "titre": "Incident en cours : le complément Claude disparaît d'Excel, Word et PowerPoint sur Mac pour les comptes Microsoft personnels",
+      "version": null,
+      "date_publication": "2026-11-24",
+      "type": "nouveaute",
+      "resume": "Incident d'impact « minor » ouvert le 24/11 à 00 h 10 UTC, statut « investigating » : le complément Claude disparaît d'Excel, Word et PowerPoint sur Mac pour les utilisateurs connectés à Microsoft Office avec un compte Microsoft personnel ; les comptes professionnels et scolaires ne semblent pas touchés, et les autres apps Claude non plus. Contournement indiqué : les versions web d'Office sur office.com.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/3vbyqgnswwxq",
+          "libelle": "Claude for Microsoft 365 add-in missing for some users — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "https://claude.com/blog/enterprise-guide-to-securing-coding-agents",
+      "ids_bruts": [
+        "https://claude.com/blog/enterprise-guide-to-securing-coding-agents"
+      ],
+      "produit": "claude-code",
+      "titre": "Guide de sécurité des agents de code pour Team et Enterprise : risques, couche de jugement, frontières fixes, politique centrale",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Guide en six chapitres pour les organisations Team et Enterprise : exigences à demander à un fournisseur d'agents, quatre risques (identifiants divulgués, dépendances et extensions non vérifiées, exfiltration, injection de prompt), couche de jugement (entraînement, sondes d'injection, classificateur du mode auto) et frontières fixes (règles allow, ask et deny, analyse des commandes Bash, hooks, bac à sable), réglages gérés centralisés et liste de pilote sur un dépôt. Il redonne que le mode auto est le mode de départ des sessions interactives sur tous les forfaits, `claude -p`, l'Agent SDK et la configuration HIPAA restant en mode manuel, et que les règles deny et ask s'appliquent à chaque partie d'une commande dans tous les modes, `bypassPermissions` compris.",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/enterprise-guide-to-securing-coding-agents",
+          "libelle": "The enterprise guide to securing coding agents — claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "https://claude.com/blog/kpmg-todd-lohr-on-ai-when-your-data-is-also-your-clients-data",
+      "raison": "entretien client (KPMG) sur l'adoption de l'IA en entreprise, sans nouveauté de modèle, d'outil ni de condition d'usage"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

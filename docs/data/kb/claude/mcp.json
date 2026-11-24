@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-23",
+ "maj_le": "2026-11-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 52,
- "commentees": 50,
+ "commentees": 49,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -1152,7 +1152,7 @@
    "nom": "Local scope",
    "gabarit": "complet",
    "description": "Portée par défaut : le serveur n'est chargé que dans le projet où on l'a ajouté, reste privé, et Claude Code l'enregistre dans `~/.claude.json` sous le chemin de ce projet. Elle convient aux serveurs personnels, expérimentaux ou porteurs d'identifiants à garder hors du dépôt.",
-   "description_source": "Local scope is the default. A local-scoped server loads only in the project where you added it and stays private to you. Claude Code stores it in ~/.claude.json under that project's path, so the same server won't appear in your other projects. Use local scope for personal development servers, experimental configurations, or servers with credentials you don't want in version control.",
+   "description_source": "Local scope is the default. A local-scoped server loads only in the project where you added it and stays private to you. Claude Code stores it in ~/.claude.json under that project's path. Use local scope for personal development servers, experimental configurations, or servers with credentials you don't want in version control.",
    "usage": "# Add a local-scoped server (default)\nclaude mcp add --transport http stripe https://mcp.stripe.com\n\n# Explicitly specify local scope\nclaude mcp add --transport http stripe --scope local https://mcp.stripe.com",
    "usage_nature": "syntaxe",
    "exemple": "claude mcp add --transport http --scope local delta-ia https://delta-mcp-ruddy.vercel.app/mcp",
@@ -1169,11 +1169,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "MCP installation scopes",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -1202,6 +1202,31 @@
     {
      "date": "2026-10-16",
      "changement": "provenance ajoutée"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Local scope is the default. A local-scoped server loads only in the project where you added it and stays private to you. Claude Code stores it in ~/.claude.json under that project's path, so the same server won't appear in your other projects. Use local scope for personal development servers, experimental configurations, or servers with credentials you don't want in version control.",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "La portée locale est le défaut : le serveur ne se charge que dans le projet où on l'a ajouté, reste privé et s'enregistre dans `~/.claude.json` sous le chemin de ce projet.",
+       "source": "https://code.claude.com/docs/en/mcp#local-scope",
+       "releve_le": "2026-10-16",
+       "caduc_si": "La page change le défaut de portée ou l'emplacement d'enregistrement."
+      },
+      {
+       "affirmation": "delta-ia a été ajouté le 24/09 en `--scope local` dans `~/projets` et `~/projets/delta-ia`, et reste absent de `~/projets/trading-sim`.",
+       "source": "contexte:config.claude-code.mcp",
+       "releve_le": "2026-10-16",
+       "caduc_si": "Le connecteur delta-ia change de portée ou de dossiers dans CONTEXTE.md."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
    ],
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
@@ -1211,21 +1236,7 @@
      "pourquoi": "delta-ia ajouté en `--scope local` dans ~/projets et ~/projets/delta-ia ; portée liée au cwd, absent de trading-sim."
     }
    },
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "La portée locale est le défaut : le serveur ne se charge que dans le projet où on l'a ajouté, reste privé et s'enregistre dans `~/.claude.json` sous le chemin de ce projet.",
-     "source": "https://code.claude.com/docs/en/mcp#local-scope",
-     "releve_le": "2026-10-16",
-     "caduc_si": "La page change le défaut de portée ou l'emplacement d'enregistrement."
-    },
-    {
-     "affirmation": "delta-ia a été ajouté le 24/09 en `--scope local` dans `~/projets` et `~/projets/delta-ia`, et reste absent de `~/projets/trading-sim`.",
-     "source": "contexte:config.claude-code.mcp",
-     "releve_le": "2026-10-16",
-     "caduc_si": "Le connecteur delta-ia change de portée ou de dossiers dans CONTEXTE.md."
-    }
-   ]
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-mcp-managing-your-servers",

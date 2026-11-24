@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-11-12",
+ "maj_le": "2026-11-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 24,
- "commentees": 24,
+ "total": 26,
+ "commentees": 26,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -1523,6 +1523,72 @@
    ]
   },
   {
+   "id": "claude-code-skills-ship",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/ship",
+   "gabarit": "complet",
+   "description": "Skill livrée avec Claude Code : elle commite et pousse le travail, ouvre une pull request GitHub si la branche n'en a pas, fait relire le changement, puis surveille la pull request dans la session et pousse des correctifs pour les retours de revue et les vérifications en échec. `/ship stop` met fin à la surveillance. Les arguments facultatifs sont un niveau de revue, un numéro de pull request et `+bot`. Une skill ou commande perso nommée `ship` n'est pas chargée à sa place.",
+   "description_source": "Skill. Commit and push your work and open a GitHub pull request, if your branch has none. Then review the change. Claude then watches the pull request in this session and pushes fixes for review feedback and failing checks. /ship stop ends the watch. See Get a pull request ready with /ship. If the command is missing, see Troubleshooting",
+   "usage": "/ship [level] [pr] [+bot]",
+   "usage_nature": "syntaxe",
+   "exemple": "/ship",
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Essai sur une branche de mission de `~/projets/delta-ia` : `/ship` commite, pousse et ouvre la pull request, que les missions OPÉRER n'ouvrent pas aujourd'hui (fusion en avance rapide). Il consomme de l'usage tant que la session surveille la pull request."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Une branche et un worktree par mission, fusion en avance rapide : `/ship` ajoute une pull request que ce flux n'a pas."
+    },
+    "projet.trading-sim": {
+     "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+     "pourquoi": "Seul dépôt dont les commits passent par une PR, sous gouvernance de Work : pas le terrain de l'essai."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-11-24",
+   "historique": [
+    {
+     "date": "2026-11-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/ship [level] [pr] [+bot]` commite, pousse, ouvre la pull request GitHub, la fait relire puis la surveille dans la session ; `/ship stop` arrête la surveillance.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-24",
+     "caduc_si": "La description ou la syntaxe de `/ship` change dans la page des commandes."
+    },
+    {
+     "affirmation": "Les fusions des missions se font en avance rapide, sans pull request, sauf sur trading-sim.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-11-24",
+     "caduc_si": "CONTEXTE.md décrit un flux de missions avec pull requests."
+    }
+   ]
+  },
+  {
    "id": "claude-code-skills-simplify",
    "produit": "claude-code",
    "categorie": "skills",
@@ -1679,6 +1745,53 @@
     }
    ],
    "exemple_origine": "source"
+  },
+  {
+   "id": "claude-code-skills-steward",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/steward",
+   "gabarit": "complet",
+   "description": "Skill livrée avec Claude Code : elle surveille la pull request GitHub ouverte dans la session et pousse des correctifs pour les retours de revue et les vérifications en échec, sans la revue que `/ship` lance d'abord. `/steward stop` met fin à la surveillance ; alias `/ship:steward`. Les arguments facultatifs sont un numéro de pull request et `+bot`.",
+   "description_source": "Skill. Watch your open GitHub pull request in this session and push fixes for review feedback and failing checks, without the review that /ship runs first. /steward stop ends the watch. See Watch without a review using /steward. If the command is missing, see Troubleshooting. Alias: /ship:steward",
+   "usage": "/steward [pr] [+bot]",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Elle suppose une pull request ouverte à surveiller ; les missions de `delta-ia` et de `discipline` fusionnent en avance rapide sans pull request, et l'essai de `/ship` couvre déjà ce cas."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.missions": {
+     "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
+     "pourquoi": "Fusion en avance rapide, sans pull request à surveiller."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-11-24",
+   "historique": [
+    {
+     "date": "2026-11-24",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-skills-update-config",

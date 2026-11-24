@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-23",
+ "maj_le": "2026-11-24",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 692,
- "commentees": 598,
+ "commentees": 595,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -11429,7 +11429,7 @@
    "nom": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
    "gabarit": "court",
    "description": "Variable d'environnement : à 1, `claude auth login` et `/login` affichent l'URL de connexion claude.ai complète au lieu de la version courte (2.1.330 ou plus), utile si l'URL courte donne une erreur ou si un script lit des valeurs dans l'URL.",
-   "description_source": "Set to 1 to print the full claude.ai login URL instead of a short one. Use it when the short URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
+   "description_source": "Set to 1 to print the full login URL. Use it when a short login URL shows an error or your script reads values from the URL. Set it in your shell or user settings. Requires Claude Code v2.1.330 or later",
    "usage": "CLAUDE_CODE_FULL_SIGN_IN_LINK",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -11446,7 +11446,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "env.multi-sessions": {
@@ -11457,7 +11457,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-11-21",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-11-21",
@@ -11470,6 +11470,10 @@
     {
      "date": "2026-11-21",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -24245,7 +24249,7 @@
    "gabarit": "court",
    "description": "Événement de hook déclenché quand un serveur MCP demande une saisie en cours de tâche ; le hook peut répondre à la place du dialogue interactif.",
    "description_source": "Runs when an MCP server requests user input mid-task. By default, Claude Code shows an interactive dialog for the user to respond. Hooks can intercept this request and respond programmatically, skipping the dialog entirely.",
-   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Elicitation\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"message\": \"Please provide your credentials\",\n  \"mode\": \"form\",\n  \"requested_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"username\": { \"type\": \"string\", \"title\": \"Username\" }\n…",
+   "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Elicitation\",\n  \"mcp_server_name\": \"my-mcp-server\",\n  \"message\": \"Please provide your username\",\n  \"mode\": \"form\",\n  \"requested_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"username\": { \"type\": \"string\", \"title\": \"Username\" }\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
    "disponibilite": null,
@@ -24265,7 +24269,7 @@
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-16",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24286,9 +24290,17 @@
     {
      "date": "2026-10-16",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "usage modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "commentée"
     }
    ],
-   "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
      "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
@@ -24700,7 +24712,7 @@
    "nom": "Hook PermissionRequest",
    "gabarit": "court",
    "description": "Événement de hook déclenché avant une demande de permission ; il peut décider à la place de l'utilisateur, et sans décision une session non interactive refuse.",
-   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. In sessions that can't show a prompt, such as background subagents in non-interactive mode, Claude Code still runs these hooks, and if no hook returns a decision, it denies the tool call. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user.",
+   "description_source": "Runs when Claude Code is about to ask you for permission to use a tool. For a call that reaches a --permission-prompt-tool or the Agent SDK's canUseTool callback, the hooks run alongside your host, and whichever decides first applies. Use PermissionRequest decision control to allow or deny on behalf of the user.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"permission_mode\": \"default\",\n  \"hook_event_name\": \"PermissionRequest\",\n  \"tool_name\": \"Bash\",\n  \"tool_input\": {\n    \"command\": \"rm -rf node_modules\",\n    \"description\": \"Remove node_modules directory\"\n  },\n  \"permission_suggestions\": [\n…",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -24717,11 +24729,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -24742,6 +24754,10 @@
     {
      "date": "2026-10-11",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "4bdfe79cc5e05a5be02e629b9a1df2c6845434b9",
@@ -25476,7 +25492,7 @@
    "nom": "Hook Setup",
    "gabarit": "court",
    "description": "Événement de hook déclenché seulement avec `--init-only`, ou avec `--init` / `--maintenance` en mode `-p`, jamais au démarrage normal, pour une installation ou un nettoyage ponctuels.",
-   "description_source": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. It doesn't fire on normal startup. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts, separate from normal session startup. For per-session initialization, use SessionStart instead.",
+   "description_source": "Fires only when you launch Claude Code with --init-only, or with --init or --maintenance in non-interactive mode with the -p flag. Use it for one-time dependency installation or scheduled cleanup that you trigger explicitly from CI or scripts. For per-session initialization, use SessionStart instead.",
    "usage": "{\n  \"session_id\": \"abc123\",\n  \"transcript_path\": \"/Users/.../.claude/projects/.../00893aaf-19fa-41d2-8238-13269b9b3ca0.jsonl\",\n  \"cwd\": \"/Users/...\",\n  \"hook_event_name\": \"Setup\",\n  \"trigger\": \"init\"\n}",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -25493,11 +25509,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-hooks",
    "groupe": "Hook events",
-   "maj_le": "2026-11-06",
+   "maj_le": "2026-11-24",
    "historique": [
     {
      "date": "2026-09-23",
@@ -25522,6 +25538,10 @@
     {
      "date": "2026-11-06",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-24",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
