@@ -1,0 +1,542 @@
+{
+  "date": "2026-11-25",
+  "perimetre": "claude",
+  "agent": "claude-code",
+  "genere_le": "2026-11-25T03:12:00+00:00",
+  "synthese": "Compte et quotas : alerte D71, ton quota hebdomadaire Claude est à 83 % (`rapports/usage.json`, relevé du 25/11 à 03 h 00 UTC, remise à zéro le 29/11 à 16 h UTC) : vérifie tes remises à zéro disponibles (Paramètres > Utilisation) avant d'économiser ; semaine Fable à 0 %, ChatGPT semaine à 50 % (relevé du 24/11 à 17 h 00 UTC, remise à zéro le 29/11 à 17 h 12 UTC), session 5 h non mesurée. Aucune limite, offre ni tarif ne change dans les sources du jour ; seule la fiche `CLAUDE_CODE_RETRY_WATCHDOG` (sujet D71) a été réécrite par la documentation. À retenir : Claude Code 2.1.332 (installée, à jour) livre les skills de serveurs MCP, à essayer avec `/skills` sur tes serveurs delta-ia et Vercel, et corrige une limite d'usage signalée comme atteinte à Remote Control après sa remise à zéro ; l'annonce « Skills over MCP » en donne la portée. « Install as app » ne vise que Mac et Windows, pas ton poste Linux ; le retrait de Sonnet 4.5 de l'API (30/11/2026) ne touche aucun usage d'API relevé chez toi.",
+  "elements": [
+    {
+      "id": "kb-claude-code-parametres-claude-code-retry-watchdog",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-retry-watchdog"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence (sujet D71) : fiche `CLAUDE_CODE_RETRY_WATCHDOG` réécrite, la page ne décrit plus l'attente de la fin de fenêtre d'usage",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "changement_rupture",
+      "resume": "La documentation a raccourci la description de `CLAUDE_CODE_RETRY_WATCHDOG=1` (sessions sans surveillance : les erreurs de capacité 429 et 529 sont retentées au-delà de `CLAUDE_CODE_MAX_RETRIES`). Elle ne dit plus qu'une requête qui reçoit un 429 de limite de dépense ou de crédits épuisés échoue tout de suite, ni que le watchdog attend jusqu'à 5 minutes entre deux essais ou la remise à zéro annoncée, ni que le nombre d'essais monte à 300 pour les autres erreurs transitoires depuis la v2.1.199. Elle garde seulement que les limites de dépense et les crédits d'usage épuisés peuvent mettre fin aux tentatives et que la variable exige Claude Code 2.1.186 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Claude Code — env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "fort",
+      "pour_toi": "Aucune limite ni aucun tarif ne change : la page décrit moins précisément ce que fait le watchdog quand une limite d'usage est atteinte, sans le contredire. La chaîne D70 lance chaque jour à 04:00 les étapes `/delta` et `/delta-kb` par Claude Code, sans surveillance, derrière une garde de quota (CONTEXTE.md) ; ton quota hebdomadaire Claude est à 83 % (`rapports/usage.json`, relevé du 25/11/2026 à 03 h 00 UTC). Si tu poses la variable dans l'environnement de ces étapes, leur comportement face à une limite d'usage ne serait plus décrit par la documentation : la fiche garde l'essai comme `tester`, à reconsidérer après relecture.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Revérifier le texte de la page le 02/12/2026 avant tout essai du watchdog dans la chaîne D70.",
+        "etapes": [
+          "Revérifier le 02/12/2026, aucune échéance publiée : relis la section `CLAUDE_CODE_RETRY_WATCHDOG` de https://code.claude.com/docs/en/env-vars (fiche `claude-code-parametres-claude-code-retry-watchdog`) ; si elle redit le comportement face aux limites d'usage, l'essai dans l'environnement de l'étape `/delta` de la chaîne D70 peut être demandé à Dev-delta."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-parametres-claude-code-retry-watchdog"
+      ],
+      "contexte_sections": {
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Chaîne de 04:00 : étapes /delta et /delta-kb sans surveillance, derrière une garde de quota."
+        }
+      }
+    },
+    {
+      "id": "claude-code-2.1.332",
+      "ids_bruts": [
+        "claude-code-2.1.332"
+      ],
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.332 : skills de serveurs MCP (bêta), événement de hook `PreSkillShellCommand`, limite d'usage plus signalée atteinte après sa remise à zéro",
+      "version": "2.1.332",
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Ajouts hors VS Code : skills de serveurs MCP (bêta), affichés sous la forme `server:skill` dans le menu `/` ; événement de hook `PreSkillShellCommand`, qui peut refuser les commandes shell en ligne d'un skill ou d'une commande à son chargement (sur 2.1.331 et antérieures, un fichier de réglages qui le nomme ouvre une boîte de dialogue au démarrage) ; option « Always deliver » sur l'invite des messages retenus venant d'autres sessions ; ligne de pied de page tant qu'un message signalé laisse la session sur un autre modèle, jusqu'au choix par `/model` ; événement OpenTelemetry `assistant_response` ; avertissements VS Code et onglet Code de Desktop sur une session mal enregistrée, qui disent comment l'enregistrer avec `/compact` ; niveau d'accès du Cyber Verification Program dans l'en-tête. Correctifs : `claude auth login` annonçait « Login successful. » sans avoir pu enregistrer la connexion (il sort maintenant en code 1) ; une limite d'usage était signalée atteinte aux clients Remote Control, IDE et SDK après sa remise à zéro ; blocages quand un hook affiche une sortie sans fin ou qu'un serveur MCP local inonde sa sortie standard ; lecture bloquée sur un tube nommé sans écrivain (échec après 20 s) ; échecs de compaction. Changements : `--model default` retombe sur un modèle plus ancien au lieu de s'arrêter en erreur quand le modèle manque ; `/permissions` refuse une règle qui serait ignorée au prochain démarrage ; `/schedule` et `/loop` disent « cloud scheduled task » au lieu de « routine » (`/routines` fonctionne encore) ; le `service.name` OpenTelemetry de l'onglet Code de Desktop devient `claude-code-desktop` ; `computer-use` devient un nom de skill réservé sur Mac. Le reste vise Windows, VS Code, Amazon Bedrock, Google Cloud, Microsoft Foundry et les runners auto-hébergés.",
+      "sources": [
+        {
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21332",
+          "libelle": "Claude Code 2.1.332 — CHANGELOG.md",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "moyen",
+      "pour_toi": "Claude Code 2.1.332 est installée et à jour d'après `docs/data/versions.json` : les correctifs sont déjà actifs. Tes sessions pilotées par Remote Control ne reçoivent plus « limite atteinte » après une remise à zéro, ce qui compte avec ton quota hebdomadaire à 83 % (`rapports/usage.json`, relevé du 25/11 à 03 h 00 UTC). Les skills de serveurs MCP concernent ton serveur delta-ia et le connecteur Vercel (CONTEXTE.md) : ils apparaîtraient dans `/skills` sous `<serveur>:<skill>` si l'un d'eux en publie, ce que rien ne dit aujourd'hui ; ton Max les active par défaut avec `/login`, et pour une session pilotée par Remote Control la page demande de dire à Claude d'utiliser le skill au lieu d'envoyer sa commande (fiche `claude-code-mcp-find-and-call-mcp-skills-by-name`). « Always deliver » touche les messages retenus d'autres sessions, donc tes sessions qui se parlent par `SendMessage` ; la page ne définit pas « retenu », le constat reste à faire à l'usage. `PreSkillShellCommand` ne te concerne pas : ton seul hook est `PermissionDenied` (CONTEXTE.md), aucun fichier de réglages ne nomme le nouvel événement. L'économie de mémoire de `claude -p` au démarrage profite aux étapes Claude de la chaîne D70, que la skill `/delta` décrit comme lancées par `claude -p`. Les changements de passerelle, de Foundry, de Vertex, de Windows, de Mac et de VS Code ne visent pas ta configuration.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lister les skills de serveurs MCP visibles dans une session de `~/projets/delta-ia`.",
+        "etapes": [
+          "Lance `/skills` dans une session de `~/projets/delta-ia` (fiche `claude-code-mcp-find-and-call-mcp-skills-by-name`, syntaxe `/<serveur>:<skill>`, exemple de la page `/docs:pdf report.pdf`), hors de la fenêtre de la chaîne D70 (03 h 30 à 08 h 00) ; résultat attendu : une ligne `<serveur>:<skill>` pour chaque skill qu'un des serveurs connectés (delta-ia, Vercel) publie, et aucune ligne de ce type s'ils n'en publient pas.",
+          "Après la remise à zéro du 29/11/2026 à 16 h UTC, ouvre une session Remote Control depuis l'iPhone : elle ne doit plus afficher « limite atteinte » ; si elle l'affiche encore le 30/11/2026, signale-le au chef delta-ia."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-mcp-find-and-call-mcp-skills-by-name",
+        "claude-code-commandes-skills"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Serveur MCP delta-ia et connecteur Vercel connectés dans ~/projets/delta-ia."
+        },
+        "env.multi-sessions": {
+          "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+          "pourquoi": "Sessions pilotées par Remote Control et qui se parlent par SendMessage."
+        },
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Un seul hook perso, PermissionDenied : l'événement PreSkillShellCommand ne le touche pas."
+        },
+        "methode.chaine-nuit": {
+          "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+          "pourquoi": "Étapes Claude de la chaîne D70 non interactives : économie de mémoire de claude -p."
+        }
+      }
+    },
+    {
+      "id": "https://claude.com/blog/skills-over-mcp-tasks-and-more",
+      "ids_bruts": [
+        "https://claude.com/blog/skills-over-mcp-tasks-and-more",
+        "x-2125289794871963935",
+        "x-2125289797199511594",
+        "x-2125290306539253760",
+        "x-2125290412713676882"
+      ],
+      "produit": "claude",
+      "titre": "Skills over MCP (bêta publique), Tasks et Elicitation disponibles en général, File Uploads « bientôt » dans Claude et Claude Code",
+      "version": null,
+      "date_publication": "2026-11-24",
+      "type": "nouveaute",
+      "resume": "Les serveurs MCP peuvent publier des skills avec leurs outils (Skills over MCP, bêta publique dans Claude et Claude Code) : chargés seulement au besoin, mis à jour avec le serveur, adaptables à un compte ou une organisation ; actifs par défaut sur Pro, Max et Ultra, à activer par un administrateur sur Team, « bientôt » sur Enterprise. Tasks (un serveur fait tourner une opération longue ou une boucle d'agent pendant que Claude continue, puis reprend le résultat) et Elicitation (un serveur suspend l'appel pour demander une saisie par formulaire ou lien) sont disponibles en général dans Claude et Claude Code sur Pro, Max et Ultra. File Uploads, qui enverrait PDF, tableurs et images à un serveur sans passer par la fenêtre de contexte, est annoncé « bientôt ». Annoncé aussi sur X par @ClaudeDevs ; plus de 10 000 connecteurs MCP pour Claude. Fiches de la base ajoutées le même jour sur les skills MCP : `claude-code-mcp-find-and-call-mcp-skills-by-name` (nom `<serveur>:<skill>`, exemple `/docs:pdf report.pdf`), `claude-code-mcp-approvals-for-mcp-skills` (en mode auto aucune invite, une règle `ask` ou « Restrict to Ask » exige l'approbation à chaque fois, même en `bypassPermissions`), `claude-code-mcp-mcp-skill-availability` (activés avec `/login` sur Pro, Max et Ultra), `claude-code-mcp-mcp-skill-limitations` (100 skills par serveur), `claude-code-mcp-security-scanning-for-mcp-skills` (les serveurs ajoutés par `claude mcp add` ne sont pas analysés) et `claude-code-mcp-troubleshoot-mcp-skills` (`claude --debug=mcp`).",
+      "sources": [
+        {
+          "url": "https://claude.com/resources/articles/skills-over-mcp-tasks-and-more",
+          "libelle": "MCP servers can now ship skills, run tasks, and more with Claude — claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://code.claude.com/docs/en/mcp#use-skills-from-mcp-servers",
+          "libelle": "Use skills from MCP servers — code.claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125289794871963935",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 18:05 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125289797199511594",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 18:05 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125290306539253760",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 18:07 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125290412713676882",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 18:08 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Ton serveur MCP delta-ia est le tien (CONTEXTE.md) et le connecteur Vercel est déjà branché : Skills over MCP, Tasks et Elicitation sont des capacités que ces serveurs pourraient exposer, ce que rien ne dit qu'ils fassent aujourd'hui. Skills over MCP est actif par défaut sur ton Max ; l'essai de listage est dans l'élément Claude Code 2.1.332. Tes sessions locales tournent en `bypassPermissions` (CONTEXTE.md) : d'après la fiche d'approbation, un skill MCP s'y chargerait sans invite, sauf règle `ask` posée par `/permissions`, et les skills des serveurs ajoutés par `claude mcp add` ne sont pas analysés par Anthropic, ce qui n'a de portée que pour un serveur tiers.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Lister les serveurs MCP connectés dans `~/projets/delta-ia`, seuls susceptibles de publier des skills.",
+        "etapes": [
+          "Depuis `~/projets/delta-ia`, lance `claude mcp list` (le nom d'un skill sera ensuite `<serveur>:<skill>`, fiche `claude-code-mcp-find-and-call-mcp-skills-by-name`) ; résultat attendu : delta-ia et Vercel listés comme connectés ; l'essai de listage `/skills` est dans l'élément Claude Code 2.1.332."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-mcp-find-and-call-mcp-skills-by-name",
+        "claude-code-mcp-approvals-for-mcp-skills",
+        "claude-code-mcp-mcp-skill-availability",
+        "claude-code-mcp-mcp-skill-limitations",
+        "claude-code-mcp-security-scanning-for-mcp-skills",
+        "claude-code-mcp-troubleshoot-mcp-skills"
+      ],
+      "contexte_sections": {
+        "config.claude-code.mcp": {
+          "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+          "pourquoi": "Serveur delta-ia (le tien) et connecteur Vercel : serveurs MCP concernés."
+        },
+        "config.claude-code.mode-auto": {
+          "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+          "pourquoi": "Sessions locales en bypassPermissions : pas d'invite au chargement d'un skill MCP."
+        }
+      }
+    },
+    {
+      "id": "claude-apps-notes-2026-11-24",
+      "ids_bruts": [
+        "claude-apps-notes-2026-11-24",
+        "https://claude.com/blog/install-as-app",
+        "x-2125315491522650299",
+        "x-2125315493771059685"
+      ],
+      "produit": "claude",
+      "titre": "Claude apps : « Install as app » (bêta, Mac et Windows) pour les artefacts, récapitulatif mensuel sorti de bêta, transfert de fichiers avec les connecteurs (bêta)",
+      "version": null,
+      "date_publication": "2026-11-24",
+      "type": "nouveaute",
+      "resume": "Un artefact peut s'installer comme app de bureau (icône et fenêtre propres, connecteurs utilisables, notifications ou élément de barre de menus avec ta permission) dans Claude pour Mac et Windows, en bêta sur tous les forfaits ; ses requêtes à Claude comptent dans les limites du forfait, sans clé API. Le récapitulatif mensuel (Reflect, dans les réglages) sort de bêta sur Free, Pro, Max et Ultra : il peut s'appuyer sur les sessions Claude Code et les tâches Cowork du cloud, et les récapitulatifs stockés se suppriment. Claude peut envoyer un fichier à une app connectée ou en enregistrer un qu'elle propose, en bêta progressive sur Pro, Max et Ultra.",
+      "sources": [
+        {
+          "url": "https://support.claude.com/en/articles/12138966-release-notes.md",
+          "libelle": "Claude apps — notes de version — support.claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://claude.com/resources/articles/install-as-app",
+          "libelle": "Turn artifacts into Mac and Windows apps — claude.com",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125315491522650299",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 19:47 UTC",
+          "officielle": true
+        },
+        {
+          "url": "https://x.com/ClaudeDevs/status/2125315493771059685",
+          "libelle": "@ClaudeDevs — post du 2026-11-24 19:47 UTC",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-status-fbvlx4wx4zx5",
+      "ids_bruts": [
+        "anthropic-status-fbvlx4wx4zx5"
+      ],
+      "produit": "claude",
+      "titre": "Incident Claude Haiku 5.5 : erreurs élevées le 24/11 de 17 h 09 à 17 h 27 UTC (résolu)",
+      "version": null,
+      "date_publication": "2026-11-24",
+      "type": "nouveaute",
+      "resume": "Incident de gravité « major » ouvert le 24/11 à 17 h 19 UTC : erreurs élevées sur les requêtes à Claude Haiku 5.5, correctif déployé à 17 h 27, résolu à 17 h 50 UTC. Impact de 17 h 09 à 17 h 27 UTC sur claude.ai, l'API Claude, Claude Code et Claude Cowork.",
+      "sources": [
+        {
+          "url": "https://status.claude.com/incidents/fbvlx4wx4zx5",
+          "libelle": "Elevated errors for Claude Haiku 5.5 — status.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "claude-platform-notes-2026-11-23",
+      "ids_bruts": [
+        "claude-platform-notes-2026-11-23",
+        "claude-platform-notes-2026-11-20"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "API Analytics de Claude Enterprise : nouvelle règle de comptage des sessions (20/11) et corrections de sous-comptage (23/11)",
+      "version": null,
+      "date_publication": "2026-11-23",
+      "type": "nouveaute",
+      "resume": "Notes de la plateforme du 20/11 : une session de la vue « Chat and Cowork unified » commence la première fois, un jour UTC, où Claude exécute une commande Bash, crée ou modifie un fichier dans le chat, et s'arrête à la fin du jour ; la règle s'applique progressivement, sans recompter l'activité passée. Du 23/11 : correctifs d'un sous-comptage des recherches web (données du 17/11 UTC et après) et de l'usage des connecteurs (19/11 et après), et un correctif de l'activité des projets annoncé pour le 24/11 (données du 20/11 et après). Les parties déjà couvertes le 24/11 (Enterprise Frontier Safeguards, webhooks de stockage, retrait d'Opus 4.5) ne sont pas reprises.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md",
+          "libelle": "Claude Platform — notes de version — platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "anthropic-deprecations-2026-09-30-claude-sonnet-4-5-model",
+      "ids_bruts": [
+        "anthropic-deprecations-2026-09-30-claude-sonnet-4-5-model"
+      ],
+      "revision": true,
+      "produit": "claude",
+      "titre": "Retrait de Claude Sonnet 4.5 le 30/11/2026 : la page retire le texte sur le comportement de Claude Code après le retrait",
+      "version": null,
+      "date_publication": "2026-09-30",
+      "type": "depreciation",
+      "resume": "La page retire les phrases qui décrivaient le comportement de Claude Code après le retrait (erreur « There's an issue with the selected model » sur l'API Claude, passage au modèle suivant d'une chaîne de repli, nouvel essai de Sonnet 4.5 au message suivant), ajoute un lien vers le guide de migration vers Sonnet 5.5 et remplace le renvoi « Si tu utilises Claude Code » par « Si tu utilises une autre plateforme que l'API Claude ». La date de retrait (30/11/2026) et le remplaçant recommandé (`claude-sonnet-5-5`) ne changent pas.",
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+          "libelle": "Dépréciations des modèles Claude — platform.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-fonctionnalites-page-slack",
+      "ids_bruts": [
+        "kb-claude-code-fonctionnalites-page-slack"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : l'ancienne intégration Claude Code in Slack est retirée",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "depreciation",
+      "resume": "La page « Claude Code in Slack » dit que l'ancienne intégration est retirée : dans un espace Slack non relié à Claude Tag, `@Claude` répond que l'espace n'est pas configuré pour Claude Tag. Team et Enterprise passent par Claude Tag ; sur Pro, Max et Ultra, Claude Tag n'est pas disponible et la page renvoie vers les Projets ou les sessions cloud. Aucune date de retrait n'est donnée.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/slack",
+          "libelle": "Claude Code in Slack — code.claude.com",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-fonctionnalites-page-slack"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-skills-whiteboard",
+      "ids_bruts": [
+        "kb-claude-code-skills-whiteboard"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : skill ajoutée, `/whiteboard`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de skill ajoutée : `/whiteboard [brief]` crée un tableau blanc sous la forme d'un artefact Claude Whiteboards (exemple de la page : `/whiteboard a service map of the checkout flow`). Elle demande Claude Code 2.1.323 ou plus, une session où les artefacts sont disponibles et un compte où le modèle Whiteboards existe ; quand l'organisation l'a désactivé, la commande n'apparaît pas.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Claude Code — commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises les artefacts et l'onglet Code de Claude Desktop pour construire la console (CONTEXTE.md) : la commande y a un terrain d'essai, avec le cycle d'une mission OPÉRER comme brief. La page ne dit pas si ton compte Max a le modèle Whiteboards ; l'essai le tranche.",
+      "projets_concernes": [],
+      "action": {
+        "description": "Essayer `/whiteboard` dans l'onglet Code de Claude Desktop.",
+        "etapes": [
+          "Dans une session de l'onglet Code de Claude Desktop, lance `/whiteboard le cycle d'une mission OPÉRER, de BRIEF à CLOSE` (fiche `claude-code-skills-whiteboard`, syntaxe `/whiteboard [brief]`) ; résultat attendu : un artefact Whiteboards du cycle BRIEF, EN_COURS, A_RELIRE, OK, FUSIONNEE, POUSSEE, CLOSE, ou la commande absente du menu `/` si ton compte n'a pas le modèle Whiteboards."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "claude-code-skills-whiteboard"
+      ],
+      "contexte_sections": {
+        "config.claude-code.skills": {
+          "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+          "pourquoi": "Claude Design et artefacts dans Claude Desktop en mode Claude Code, usage intensif déclaré."
+        },
+        "methode.operer": {
+          "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+          "pourquoi": "Cycle d'une mission OPÉRER, de BRIEF à CLOSE, brief de l'essai."
+        }
+      }
+    },
+    {
+      "id": "kb-claude-code-skills-motion",
+      "ids_bruts": [
+        "kb-claude-code-skills-motion"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : skill ajoutée, `/motion`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de skill ajoutée : `/motion [brief]` crée une animation sous la forme d'un artefact Claude Motion. Disponible dans les sessions locales de l'app de bureau et les sessions cloud hébergées par Anthropic, pas dans le terminal ni les extensions d'IDE ; elle exige Claude Code 2.1.323 ou plus et un compte Team ou Enterprise où le modèle Motion existe.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Claude Code — commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-skills-motion"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-skills-claude-approvals",
+      "ids_bruts": [
+        "kb-claude-code-skills-claude-approvals"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : skill ajoutée, `/claude-approvals`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de skill ajoutée : `/claude-approvals [what to change or explain]` modifie, explique ou règle un fichier de politique Claude Approvals ou son classifieur. Elle exige Claude Code 2.1.331 ou plus et la récupération des indicateurs de fonctionnalités.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/commands",
+          "libelle": "Claude Code — commands",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-skills-claude-approvals"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-disabledirectmcpskills",
+      "ids_bruts": [
+        "kb-claude-code-parametres-disabledirectmcpskills"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : réglage ajouté, `disableDirectMcpSkills`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de clé de réglage ajoutée : `{\"disableDirectMcpSkills\": false}` active ou désactive les skills de serveurs MCP pour une organisation, pour tous les serveurs sauf les connecteurs claude.ai (un propriétaire utilise alors l'interrupteur « Skills over MCP » de Organization settings > Connectors). Elle exige Claude Code 2.1.331 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/settings-reference#disabledirectmcpskills",
+          "libelle": "Claude Code — settings-reference",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-disabledirectmcpskills"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-ship",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-disable-ship"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable ajoutée, `CLAUDE_CODE_DISABLE_SHIP`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de variable d'environnement ajoutée : `CLAUDE_CODE_DISABLE_SHIP=1` désactive les commandes `/ship` et `/steward`. Elle exige Claude Code 2.1.331 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Claude Code — env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-ship"
+      ],
+      "contexte_sections": {}
+    },
+    {
+      "id": "kb-claude-code-parametres-claude-code-disable-response-compression",
+      "ids_bruts": [
+        "kb-claude-code-parametres-claude-code-disable-response-compression"
+      ],
+      "produit": "claude-code",
+      "titre": "Base de référence : variable ajoutée, `CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION`",
+      "version": null,
+      "date_publication": "2026-11-25",
+      "type": "nouveaute",
+      "resume": "Fiche de variable d'environnement ajoutée : `CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION=1` demande des réponses du modèle non compressées quand un proxy laisse les réponses compressées inachevées. La page la déconseille pour les runners auto-hébergés et Remote Control, l'ignore dans les réglages de projet et locaux et exige Claude Code 2.1.331 ou plus.",
+      "sources": [
+        {
+          "url": "https://code.claude.com/docs/en/env-vars",
+          "libelle": "Claude Code — env-vars",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "nul",
+      "pour_toi": null,
+      "projets_concernes": [],
+      "action": null,
+      "kb_refs": [
+        "claude-code-parametres-claude-code-disable-response-compression"
+      ],
+      "contexte_sections": {}
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "anthropic-deprecations-2026-11-23-claude-opus-4-5-model",
+      "raison": "déjà couvert le 2026-11-24 (anthropic-deprecations-2026-11-23-claude-opus-4-5-model) ; seule la phrase qui renvoyait Claude Code à la vue d'ensemble des dates est retirée, retrait d'Opus 4.5 inchangé (22/01/2027)"
+    },
+    {
+      "id": "claude-platform-notes-2026-11-17",
+      "raison": "déjà couvert le 2026-11-18 (claude-platform-notes-2026-11-17) ; seule l'adresse du lien vers la documentation de Linked billing change"
+    },
+    {
+      "id": "x-2125365668463993091",
+      "raison": "déjà couvert le 2026-11-24 (https://claude.com/blog/introducing-claude-ship) : guide d'usage de Claude Ship (Team et Enterprise), sans nouvelle commande"
+    },
+    {
+      "id": "x-2125365268381929637",
+      "raison": "post X sans rapport (recherche d'interprétabilité des Anthropic Fellows)"
+    },
+    {
+      "id": "x-2125341904644763678",
+      "raison": "post X sans rapport (évaluation de recherche Siren sur l'évasion de bac à sable : aucun outil, réglage ni condition d'usage)"
+    },
+    {
+      "id": "x-2125277263314792687",
+      "raison": "post X sans rapport (vidéo sur l'architecture de Claude Managed Agents, plateforme pour développeurs d'API)"
+    }
+  ],
+  "sources_en_echec": [],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}

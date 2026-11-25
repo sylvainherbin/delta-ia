@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "mcp",
- "maj_le": "2026-11-24",
+ "maj_le": "2026-11-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 52,
- "commentees": 49,
+ "total": 58,
+ "commentees": 53,
  "entrees": [
   {
    "id": "claude-code-mcp-add-a-server-from-setup-instructions-written-for-another-client",
@@ -139,6 +139,53 @@
     {
      "date": "2026-11-03",
      "changement": "commentaire révisé"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-mcp-approvals-for-mcp-skills",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Approvals for MCP skills",
+   "gabarit": "complet",
+   "description": "En mode auto (par défaut), le chargement d'un skill MCP ne demande rien : le classifieur décide sans lire le skill. En mode Manual ou acceptEdits, une invite s'affiche, avec « Allow this version » pour la sauter jusqu'à ce que le serveur modifie les fichiers du skill ; l'approbation se retire dans `/permissions`. Une règle `ask` ou un connecteur en « Restrict to Ask » exigent une approbation à chaque fois, même en `bypassPermissions`.",
+   "description_source": "When Claude loads an MCP skill in auto mode, the default, you don't see a prompt. The classifier decides whether the skill loads, without reading it. In Manual or acceptEdits mode, you see a prompt. Select Allow this version to skip the prompt and the classifier until the server changes the skill's files. To remove that approval in the terminal, delete its rule in /permissions.",
+   "usage": "acceptEdits",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Tes sessions locales tournent en `bypassPermissions` : un skill MCP se chargerait sans invite, et seule une règle `ask` ajoutée par `/permissions` changerait cela ; rien à régler tant qu'aucun serveur connecté ne publie de skill."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#approvals-for-mcp-skills",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mode-auto": {
+     "sha1": "ed29ba0e2aa29f74ed5428d6823d8f94a812f74d",
+     "pourquoi": "Sessions locales en bypassPermissions sauf trading : pas d'invite au chargement d'un skill MCP."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
     }
    ]
   },
@@ -955,6 +1002,78 @@
    "exemple_origine": "source"
   },
   {
+   "id": "claude-code-mcp-find-and-call-mcp-skills-by-name",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Find and call MCP skills by name",
+   "gabarit": "complet",
+   "description": "Depuis Claude Code 2.1.331 (bêta publique), un serveur MCP peut publier des skills avec ses outils. Ils apparaissent dans `/` (et `/skills` dans le terminal ou VS Code) sous le nom `<serveur>:<skill>` ; on les lance en les demandant à Claude ou en tapant leur nom comme commande. Un connecteur ou un serveur de plugin ajoute un préfixe (`claude_ai_Docs:pdf`).",
+   "description_source": "To find a skill, type / at the prompt in the terminal, VS Code, or the Desktop app's Code tab. In the terminal or VS Code, you can also run /skills. To use a skill, ask Claude, or type its name as a command. A skill's name is <server>:<skill>.",
+   "usage": "/docs:pdf report.pdf",
+   "usage_nature": "syntaxe",
+   "exemple": "/docs:pdf report.pdf",
+   "disponibilite": "Claude Code 2.1.331 ou plus ; actif avec /login sur Pro, Max et Ultra ; terminal et sessions locales de l'app de bureau (pas claude -p ni les sessions cloud)",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Le serveur MCP delta-ia et le connecteur Vercel sont déjà branchés dans `~/projets/delta-ia` : `/skills` y montrerait une ligne `<serveur>:<skill>` pour chaque skill qu'un de ces serveurs publie, et rien s'ils n'en publient aucun ; sur une session pilotée par Remote Control, la page demande de dire à Claude d'utiliser le skill au lieu d'envoyer sa commande."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#find-and-call-mcp-skills-by-name",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveur MCP delta-ia en portée locale et connecteur Vercel déjà connectés dans ~/projets/delta-ia."
+    },
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions pilotées depuis l'iPhone par Remote Control : la page demande de citer le skill, pas sa commande."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "Les skills d'un serveur MCP se trouvent en tapant `/` (ou `/skills` dans le terminal et VS Code) et se nomment `<serveur>:<skill>` ; ils exigent Claude Code 2.1.331 ou plus.",
+     "source": "https://code.claude.com/docs/en/mcp#find-and-call-mcp-skills-by-name",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La page change le format du nom `<serveur>:<skill>` ou le moyen de les lister."
+    },
+    {
+     "affirmation": "Pour une session terminal pilotée par Remote Control, il faut demander à Claude d'utiliser le skill plutôt que d'envoyer sa commande ; claude -p et les sessions cloud ne gèrent pas les skills MCP.",
+     "source": "https://code.claude.com/docs/en/mcp#where-mcp-skills-are-supported",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La page étend les skills MCP à claude -p ou aux commandes envoyées par Remote Control."
+    },
+    {
+     "affirmation": "Le serveur MCP delta-ia (portée locale) et le connecteur claude.ai Vercel sont connectés dans les dossiers de travail de Sylvain.",
+     "source": "contexte:config.claude-code.mcp",
+     "releve_le": "2026-11-25",
+     "caduc_si": "Ces serveurs sont retirés ou le dossier de travail change."
+    }
+   ]
+  },
+  {
    "id": "claude-code-mcp-for-mcp-server-authors",
    "produit": "claude-code",
    "categorie": "mcp",
@@ -1368,6 +1487,95 @@
    "exemple_impossible": "Usage = variable posée par l'hôte (`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`) ; valeur absente de la source"
   },
   {
+   "id": "claude-code-mcp-mcp-skill-availability",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "MCP skill availability",
+   "gabarit": "complet",
+   "description": "Les skills MCP sont actifs avec `/login` sur un forfait Pro, Max ou Ultra et avec un jeton longue durée de ces forfaits ; sur Team et Enterprise ils restent désactivés tant que l'organisation ne les active pas. Avec une clé API ou une connexion Console, le déploiement est progressif.",
+   "description_source": "When you sign in with /login on a Pro, Max, or Ultra plan, MCP skills are on. With /login on a Team or Enterprise plan, they're off until your organization turns them on.",
+   "usage": "/login",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Pro, Max et Ultra (Team et Enterprise : activation par l'organisation)",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton abonnement Max (20x) fait partie des forfaits où les skills MCP sont actifs par défaut : aucun réglage à faire."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#mcp-skill-availability",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Claude Max (20x) : forfait où les skills MCP sont actifs avec /login."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-mcp-mcp-skill-limitations",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "MCP skill limitations",
+   "gabarit": "complet",
+   "description": "Un serveur affiche au plus 100 skills ; pour les skills analysés, 100 Ko par fichier texte et 400 Ko par skill, et les skills qui contiennent une archive, un fichier binaire non listé ou du texte dans un dossier comme `dist/` ne se chargent pas.",
+   "description_source": "Each server shows up to 100 skills. Scanned skills have limits:",
+   "usage": "dist/",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ces plafonds ne comptent que pour un serveur qui publie des skills, ce qu'aucun de tes serveurs connectés n'est connu pour faire."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#mcp-skill-limitations",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {},
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-mcp-mcp-tasks-for-server-authors",
    "produit": "claude-code",
    "categorie": "mcp",
@@ -1438,7 +1646,7 @@
    "nom": "MCP tasks that run on the server",
    "gabarit": "complet",
    "description": "Une tâche MCP est un travail long (export de rapport, build) que le serveur exécute lui-même ; l'appel d'outil de Claude rend la main dès que le serveur l'accepte, et le transcript indique la fin (« MCP task … completed »).",
-   "description_source": "An MCP task is a long job, such as a report export or a build, that an MCP server runs itself using the MCP tasks extension. Claude's tool call returns once the server accepts the job, so Claude keeps working unless you make Claude wait. When the job ends, the transcript says so and Claude gets the result. Ask Claude for it.",
+   "description_source": "An MCP task is a long job, such as a report export or a build, that an MCP server runs itself using the MCP tasks extension. In the main conversation, Claude's tool call returns once the server accepts the job, so Claude keeps working unless you make Claude wait. When the job ends, the transcript says so and Claude gets the result. Ask Claude for it.",
    "usage": "MCP task <server task id> (<server>/<tool>) completed.",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -1455,7 +1663,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
@@ -1466,7 +1674,7 @@
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Installing MCP servers",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-10-24",
@@ -1479,6 +1687,10 @@
     {
      "date": "2026-10-24",
      "changement": "exemple impossible"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "exemple_impossible": "L'usage est le message affiché dans le transcript à la fin d'une tâche MCP, pas une commande ni une configuration à exécuter."
@@ -2094,7 +2306,7 @@
    "nom": "Restrict OAuth scopes",
    "gabarit": "complet",
    "description": "`oauth.scopes` fixe les autorisations OAuth demandées lors de la connexion, pour limiter un serveur à un sous-ensemble approuvé quand le serveur d'autorisation en propose davantage.",
-   "description_source": "Set oauth.scopes to pin the scopes Claude Code requests during the authorization flow. This is the supported way to restrict an MCP server to a security-team-approved subset when the upstream authorization server advertises more scopes than you want to grant. The value is a single space-separated string, matching the scope parameter format in RFC 6749 §3.3.",
+   "description_source": "Set oauth.scopes to pin the scopes Claude Code requests during the authorization flow. This is the supported way to restrict an MCP server to an approved subset when the upstream authorization server advertises more scopes than you want to grant. The value is a single space-separated string, matching the scope parameter format in RFC 6749 §3.3.",
    "usage": "{\n  \"mcpServers\": {\n    \"slack\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.slack.com/mcp\",\n      \"oauth\": {\n        \"scopes\": \"channels:read chat:write search:read\"\n      }\n    }\n  }\n}",
    "usage_nature": "syntaxe",
    "exemple": "{\n  \"mcpServers\": {\n    \"slack\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.slack.com/mcp\",\n      \"oauth\": {\n        \"scopes\": \"channels:read chat:write search:read\"\n      }\n    }\n  }\n}",
@@ -2111,11 +2323,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-mcp",
    "groupe": "Authenticate with remote MCP servers",
-   "maj_le": "2026-10-11",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -2128,6 +2340,10 @@
     {
      "date": "2026-10-11",
      "changement": "exemple ajouté"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -2335,6 +2551,53 @@
      "source": "contexte:config.claude-code.mcp",
      "releve_le": "2026-11-23",
      "caduc_si": "CONTEXTE.md décrit une autre répartition du serveur delta-ia et des connecteurs de compte"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-mcp-security-scanning-for-mcp-skills",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Security scanning for MCP skills",
+   "gabarit": "complet",
+   "description": "Anthropic analyse les skills de certains connecteurs (connecteurs tiers du Directory ajoutés sur claude.ai, connecteurs personnalisés d'une organisation Enterprise qui garde l'analyse activée) : une version ne se charge qu'après l'analyse. Les autres serveurs, dont ceux du Directory ajoutés par `claude mcp add`, ne sont pas analysés ; la page avertit que les skills peuvent faire exécuter du code et que les serveurs peuvent les modifier à tout moment.",
+   "description_source": "Anthropic scans skills from some connectors, with exceptions and limitations. For these connectors, a version loads only after it passes the scan:",
+   "usage": "claude mcp add",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Ton serveur delta-ia est ajouté par `claude mcp add` donc non analysé, mais c'est le tien ; la mise en garde ne compterait que pour un serveur tiers ajouté de la même façon."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#security-scanning-for-mcp-skills",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveur delta-ia ajouté par `claude mcp add --scope local` ; connecteur Vercel de compte."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
     }
    ]
   },
@@ -2553,6 +2816,53 @@
     }
    ],
    "exemple_impossible": "`usage` est une ligne du journal de débogage, pas une commande : rien d'exécutable à montrer."
+  },
+  {
+   "id": "claude-code-mcp-troubleshoot-mcp-skills",
+   "produit": "claude-code",
+   "categorie": "mcp",
+   "nom": "Troubleshoot MCP skills",
+   "gabarit": "complet",
+   "description": "Quand les skills d'un serveur MCP manquent, la page demande de vérifier les configurations prises en charge, l'approbation et le journal de `claude --debug=mcp`, puis liste des cas particuliers.",
+   "description_source": "If skills from MCP servers are missing, check the supported setups, approval, the claude --debug=mcp log, and these cases:",
+   "usage": "claude --debug=mcp",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Utile seulement si `/skills` ne montre pas un skill attendu d'un serveur qui en publie ; aucun de tes serveurs n'est connu pour le faire aujourd'hui."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/mcp#troubleshoot-mcp-skills",
+     "libelle": "mcp",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.claude-code.mcp": {
+     "sha1": "7cc499ef610d54c29ebf1a8870cfbfdd6cbb54ce",
+     "pourquoi": "Serveurs connectés : delta-ia et Vercel, sans skills MCP connus."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-mcp",
+   "groupe": "Use skills from MCP servers",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-mcp-use-a-fixed-oauth-callback-port",

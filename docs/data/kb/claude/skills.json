@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-11-24",
+ "maj_le": "2026-11-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 26,
- "commentees": 26,
+ "total": 29,
+ "commentees": 27,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -51,7 +51,7 @@
    "nom": "/artifact-capabilities",
    "gabarit": "complet",
    "description": "Skill intégré qui charge la référence des capacités d'exécution d'un artefact publié : appel de tes connecteurs, téléchargement de fichier proposé au lecteur, et la liste de celles que ton compte autorise. Claude le charge normalement de lui-même avant de construire une page qui en utilise une ; l'appel manuel sert à consulter cette liste.",
-   "description_source": "Skill. Load the reference for the runtime capabilities a published artifact can use, such as calling your connectors or offering a file download, including which ones your account has. Claude normally loads it on its own before building a page that uses one. Available where artifacts are",
+   "description_source": "Skill. Load the reference for the runtime capabilities a published artifact can use, such as calling your connectors or offering a file download, including which ones your account has. Requires artifacts",
    "usage": "/artifact-capabilities",
    "usage_nature": "syntaxe",
    "exemple": "/artifact-capabilities",
@@ -68,7 +68,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
@@ -79,7 +79,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-10",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-30",
@@ -100,6 +100,10 @@
     {
      "date": "2026-11-10",
      "changement": "commentaire révisé"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "exemple_origine": "source"
@@ -323,6 +327,53 @@
     }
    },
    "exemple_origine": "source"
+  },
+  {
+   "id": "claude-code-skills-claude-approvals",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/claude-approvals",
+   "gabarit": "complet",
+   "description": "Skill livré avec Claude Code qui modifie, explique ou règle un fichier de politique Claude Approvals ou son classifieur ; exige Claude Code 2.1.331 ou plus et la récupération des indicateurs de fonctionnalités.",
+   "description_source": "Skill. Edit, explain, or tune a Claude Approvals policy file or classifier. Requires Claude Code v2.1.331 or later and feature-flag fetching",
+   "usage": "/claude-approvals [what to change or explain]",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Claude Code 2.1.331 ou plus, avec récupération des indicateurs de fonctionnalités",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude Approvals est l'agent d'approbation de pull requests de Claude Ship (Team et Enterprise), et tes missions ne passent pas par des approbations de PR hors trading-sim."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Fusion en avance rapide après l'OK du chef : pas d'approbation de PR sur les projets FULL_AUTO."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-skills-claude-in-chrome",
@@ -1178,6 +1229,53 @@
    ]
   },
   {
+   "id": "claude-code-skills-motion",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/motion",
+   "gabarit": "complet",
+   "description": "Skill qui crée une animation à partir d'un brief sous la forme d'un artefact Claude Motion ; disponible dans les sessions locales de l'app de bureau et les sessions cloud hébergées par Anthropic, pas dans le terminal ni les extensions d'IDE, avec un compte Team ou Enterprise où le modèle Motion existe.",
+   "description_source": "Skill. Make a new animation from your brief as a Claude Motion artifact, for example /motion an explainer of how our deploy pipeline works. Available in local sessions in the Desktop app and in Anthropic-hosted cloud sessions, not in the terminal or IDE extensions. Requires Claude Code v2.1.323 or later and a Team or Enterprise account where the Motion template is available",
+   "usage": "/motion [brief]",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": "Team et Enterprise ; app de bureau (sessions locales) et sessions cloud ; Claude Code 2.1.323 ou plus",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réservé à Team et Enterprise ; ton compte est un Max individuel."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max (20x) individuel : le modèle Motion exige Team ou Enterprise."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-skills-page-skills",
    "produit": "claude-code",
    "categorie": "skills",
@@ -1529,7 +1627,7 @@
    "nom": "/ship",
    "gabarit": "complet",
    "description": "Skill livrée avec Claude Code : elle commite et pousse le travail, ouvre une pull request GitHub si la branche n'en a pas, fait relire le changement, puis surveille la pull request dans la session et pousse des correctifs pour les retours de revue et les vérifications en échec. `/ship stop` met fin à la surveillance. Les arguments facultatifs sont un niveau de revue, un numéro de pull request et `+bot`. Une skill ou commande perso nommée `ship` n'est pas chargée à sa place.",
-   "description_source": "Skill. Commit and push your work and open a GitHub pull request, if your branch has none. Then review the change. Claude then watches the pull request in this session and pushes fixes for review feedback and failing checks. /ship stop ends the watch. See Get a pull request ready with /ship. If the command is missing, see Troubleshooting",
+   "description_source": "Skill. Commit and push your work where /ship can, open a GitHub pull request for your branch if it has none, then review the change. Claude then watches the pull request in this session and pushes fixes for review feedback and failing checks. /ship stop ends the watch. See Get a pull request ready with /ship. If the command is missing, see Troubleshooting",
    "usage": "/ship [level] [pr] [+bot]",
    "usage_nature": "syntaxe",
    "exemple": "/ship",
@@ -1546,7 +1644,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.missions": {
@@ -1561,7 +1659,7 @@
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-11-24",
@@ -1570,23 +1668,34 @@
     {
      "date": "2026-11-24",
      "changement": "commentée"
-    }
-   ],
-   "exemple_origine": "compose",
-   "provenance": [
-    {
-     "affirmation": "`/ship [level] [pr] [+bot]` commite, pousse, ouvre la pull request GitHub, la fait relire puis la surveille dans la session ; `/ship stop` arrête la surveillance.",
-     "source": "https://code.claude.com/docs/en/commands",
-     "releve_le": "2026-11-24",
-     "caduc_si": "La description ou la syntaxe de `/ship` change dans la page des commandes."
     },
     {
-     "affirmation": "Les fusions des missions se font en avance rapide, sans pull request, sauf sur trading-sim.",
-     "source": "contexte:methode.missions",
-     "releve_le": "2026-11-24",
-     "caduc_si": "CONTEXTE.md décrit un flux de missions avec pull requests."
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Skill. Commit and push your work and open a GitHub pull request, if your branch has none. Then review the change. Claude then watches the pull request in this session and pushes fixes for review feedback and failing checks. /ship stop ends the watch. See Get a pull request ready with /ship. If the command is missing, see Troubleshooting",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "`/ship [level] [pr] [+bot]` commite, pousse, ouvre la pull request GitHub, la fait relire puis la surveille dans la session ; `/ship stop` arrête la surveillance.",
+       "source": "https://code.claude.com/docs/en/commands",
+       "releve_le": "2026-11-24",
+       "caduc_si": "La description ou la syntaxe de `/ship` change dans la page des commandes."
+      },
+      {
+       "affirmation": "Les fusions des missions se font en avance rapide, sans pull request, sauf sur trading-sim.",
+       "source": "contexte:methode.missions",
+       "releve_le": "2026-11-24",
+       "caduc_si": "CONTEXTE.md décrit un flux de missions avec pull requests."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
     }
-   ]
+   ],
+   "exemple_origine": "compose"
   },
   {
    "id": "claude-code-skills-simplify",
@@ -1979,6 +2088,78 @@
      "source": "contexte:projet.carnet",
      "releve_le": "2026-10-16",
      "caduc_si": "CONTEXTE.md ne décrit plus carnet comme actif ou n'y mentionne plus Claude Code pour le développement."
+    }
+   ]
+  },
+  {
+   "id": "claude-code-skills-whiteboard",
+   "produit": "claude-code",
+   "categorie": "skills",
+   "nom": "/whiteboard",
+   "gabarit": "complet",
+   "description": "Skill qui crée un tableau blanc à partir d'un brief sous la forme d'un artefact Claude Whiteboards (par exemple une carte de services) ; exige Claude Code 2.1.323 ou plus, une session où les artefacts sont disponibles et un compte où le modèle Whiteboards existe, sinon la commande n'apparaît pas.",
+   "description_source": "Skill. Make a new whiteboard from your brief as a Claude Whiteboards artifact, for example /whiteboard a service map of the checkout flow. Requires Claude Code v2.1.323 or later, a session where artifacts are available, and an account where the Whiteboards template is available. When your organization has that template off, the command doesn't appear, so ask an Owner to turn it on",
+   "usage": "/whiteboard [brief]",
+   "usage_nature": "syntaxe",
+   "exemple": "/whiteboard le cycle d'une mission OPÉRER, de BRIEF à CLOSE",
+   "disponibilite": "Claude Code 2.1.323 ou plus ; session avec artefacts ; compte où le modèle Whiteboards existe",
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Tu utilises les artefacts et l'onglet Code de Claude Desktop pour construire la console : `/whiteboard` sur le cycle d'une mission OPÉRER (BRIEF à CLOSE) produirait un tableau blanc, ou n'apparaîtrait pas dans `/` si ton compte n'a pas le modèle Whiteboards."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/commands",
+     "libelle": "commands",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.operer": {
+     "sha1": "425acd49cde7e0dfcd53b9c32b7bc485b64fa04f",
+     "pourquoi": "Cycle d'une mission OPÉRER : BRIEF, EN_COURS, A_RELIRE, OK, FUSIONNEE, POUSSEE, CLOSE."
+    },
+    "config.claude-code.skills": {
+     "sha1": "ea1c593e91f0effefae69579902550750c762b86",
+     "pourquoi": "Claude Design et artefacts dans Claude Desktop en mode Claude Code, usage intensif déclaré."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-commandes",
+   "groupe": "All commands",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ],
+   "exemple_origine": "compose",
+   "provenance": [
+    {
+     "affirmation": "`/whiteboard [brief]` crée un artefact Claude Whiteboards ; il exige Claude Code 2.1.323 ou plus, une session où les artefacts sont disponibles et un compte où le modèle Whiteboards existe, sinon la commande n'apparaît pas.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La page des commandes retire `/whiteboard` ou change ses conditions de disponibilité."
+    },
+    {
+     "affirmation": "Sylvain utilise les artefacts, et Claude Design depuis Claude Desktop en mode Claude Code, de façon intensive pour construire la console.",
+     "source": "contexte:config.claude-code.skills",
+     "releve_le": "2026-11-25",
+     "caduc_si": "Sylvain cesse d'utiliser Claude Desktop en mode Claude Code ou les artefacts."
+    },
+    {
+     "affirmation": "Le cycle d'une mission OPÉRER va de BRIEF à CLOSE par EN_COURS, A_RELIRE, OK, FUSIONNEE et POUSSEE.",
+     "source": "contexte:methode.operer",
+     "releve_le": "2026-11-25",
+     "caduc_si": "Le cycle d'une mission OPÉRER change."
     }
    ]
   },

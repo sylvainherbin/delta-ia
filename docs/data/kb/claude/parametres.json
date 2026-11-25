@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-24",
+ "maj_le": "2026-11-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 692,
- "commentees": 595,
+ "total": 695,
+ "commentees": 594,
  "entrees": [
   {
    "id": "claude-code-parametres-add-dir",
@@ -714,7 +714,7 @@
    "nom": "--allow-dangerously-skip-permissions",
    "gabarit": "court",
    "description": "Option de lancement qui ajoute `bypassPermissions` au cycle Maj+Tab sans démarrer dans ce mode.",
-   "description_source": "Add bypassPermissions to the Shift+Tab mode cycle without starting in it. While bypassPermissions is in the cycle of an interactive terminal session, most edits and commands Claude attempts in plan mode run with no prompt, before you approve a plan. See permission modes — claude --permission-mode default --allow-dangerously-skip-permissions",
+   "description_source": "Add bypassPermissions to the Shift+Tab mode cycle without starting in it. While bypassPermissions is in the cycle of an interactive terminal session, most edits and commands Claude attempts in plan mode can run with no prompt, before you approve a plan. See permission modes — claude --permission-mode default --allow-dangerously-skip-permissions",
    "usage": "--allow-dangerously-skip-permissions",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -735,7 +735,7 @@
    "retiree": false,
    "origine": "cc-cli",
    "groupe": "CLI flags",
-   "maj_le": "2026-11-20",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -751,6 +751,10 @@
     },
     {
      "date": "2026-11-20",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-25",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -6246,7 +6250,7 @@
    "nom": "CLAUDE_CODE_ARTIFACT_COMMENTS",
    "gabarit": "court",
    "description": "Variable qui empêche, à `0`, Claude de lire les commentaires d'un artefact et d'y répondre.",
-   "description_source": "Set to 0 to stop Claude reading and replying to comments on an artifact. Has no effect when CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC has turned artifacts off. Requires Claude Code v2.1.221 or later",
+   "description_source": "Set to 0 to stop the Artifact tool from reading and replying to comments on an artifact. Has no effect when CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC has turned artifacts off. Requires Claude Code v2.1.221 or later",
    "usage": "CLAUDE_CODE_ARTIFACT_COMMENTS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6263,11 +6267,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -6276,6 +6280,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -6330,7 +6338,7 @@
    "nom": "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS",
    "gabarit": "court",
    "description": "Variable (valeur 0) qui empêche Claude d'appliquer de petites modifications au fichier d'un artefact au moment de le publier : il édite alors le fichier avec ses outils d'édition, puis publie en une étape séparée (v2.1.300 ou plus).",
-   "description_source": "Set to 0 to stop Claude from applying small changes to an artifact's file as part of publishing it. Claude then edits the file with its file-editing tools and publishes it as a separate step. Requires Claude Code v2.1.300 or later",
+   "description_source": "Set to 0 to stop Claude from applying small changes to an artifact's local file as part of publishing it. Requires Claude Code v2.1.300 or later",
    "usage": "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -6347,13 +6355,13 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "5581ae38d11b80bcceb826cca8322df8b2a058be",
    "contexte_sections": {},
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-15",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-10-15",
@@ -6362,6 +6370,10 @@
     {
      "date": "2026-10-15",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -9062,7 +9074,7 @@
    "nom": "CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND",
    "gabarit": "court",
    "description": "Variable d'environnement à 1 : Claude attend le résultat d'une tâche MCP en session interactive au lieu de la laisser passer en arrière-plan (par défaut après deux minutes, si l'arrière-plan automatique est actif). Exige Claude Code 2.1.304 ou plus.",
-   "description_source": "Set to 1 so that Claude waits for the result of an MCP task in an interactive session. While automatic backgrounding is on, it still moves the call to the background after two minutes by default. Requires Claude Code v2.1.304 or later",
+   "description_source": "Set to 1 so that Claude waits for the result of an MCP task in an interactive terminal session. While automatic backgrounding is on, it still moves the call to the background after two minutes by default. Requires Claude Code v2.1.304 or later",
    "usage": "CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -9079,7 +9091,7 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "config.claude-code.mcp": {
@@ -9090,7 +9102,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-10-24",
@@ -9099,6 +9111,10 @@
     {
      "date": "2026-10-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ]
   },
@@ -9651,6 +9667,53 @@
    ]
   },
   {
+   "id": "claude-code-parametres-claude-code-disable-response-compression",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION",
+   "gabarit": "court",
+   "description": "Variable d'environnement : à `1`, demande des réponses non compressées quand un proxy laisse les réponses compressées inachevées ; déconseillée pour les runners auto-hébergés et Remote Control, ignorée dans les réglages de projet et locaux ; exige Claude Code 2.1.331 ou plus.",
+   "description_source": "Set to 1 to request uncompressed model responses if your proxy leaves compressed ones unfinished. Not recommended for self-hosted runners or Remote Control. Ignored in project and local settings. Requires Claude Code v2.1.331 or later",
+   "usage": "CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Aucun proxy ni passerelle n'est décrit entre tes sessions et l'API, et la page la déconseille pour Remote Control, que tu emploies."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "env.multi-sessions": {
+     "sha1": "1445352f2d778113bda87569f2ede546f23b6acb",
+     "pourquoi": "Sessions pilotées par Remote Control : usage que la page déconseille avec cette variable."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
    "id": "claude-code-parametres-claude-code-disable-shell-head-start",
    "produit": "claude-code",
    "categorie": "parametres",
@@ -9693,6 +9756,53 @@
     },
     {
      "date": "2026-11-23",
+     "changement": "commentée"
+    }
+   ]
+  },
+  {
+   "id": "claude-code-parametres-claude-code-disable-ship",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "CLAUDE_CODE_DISABLE_SHIP",
+   "gabarit": "court",
+   "description": "Variable d'environnement : à `1`, désactive les commandes `/ship` et `/steward` ; exige Claude Code 2.1.331 ou plus.",
+   "description_source": "Set to 1 to turn off /ship and /steward. Requires Claude Code v2.1.331 or later",
+   "usage": "CLAUDE_CODE_DISABLE_SHIP",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Claude Ship vise les forfaits Team et Enterprise, tes missions fusionnent sans pull request hors trading-sim, et rien n'indique qu'une session lance `/ship` seule : il n'y a rien à couper."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/env-vars",
+     "libelle": "env-vars",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Fusion en avance rapide par le dev après l'OK du chef, sans pull request."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-variables",
+   "groupe": "Variables",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
      "changement": "commentée"
     }
    ]
@@ -12593,7 +12703,7 @@
    "nom": "CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS",
    "gabarit": "court",
    "description": "Variable qui fixe au bout de combien de temps un appel d'outil MCP passe en arrière-plan, 2 minutes par défaut.",
-   "description_source": "Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off and, in an interactive session, to make Claude wait for MCP tasks. Requires Claude Code v2.1.212 or later",
+   "description_source": "Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off. In an interactive terminal session, 0 also makes Claude wait for MCP tasks. Requires Claude Code v2.1.212 or later",
    "usage": "CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -12614,7 +12724,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -12626,6 +12736,10 @@
     },
     {
      "date": "2026-10-24",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-25",
      "changement": "description d'origine modifiée dans la documentation"
     }
    ],
@@ -14533,8 +14647,8 @@
    "categorie": "parametres",
    "nom": "CLAUDE_CODE_RETRY_WATCHDOG",
    "gabarit": "court",
-   "description": "Variable pour les sessions sans surveillance : les erreurs de capacité 429 et 529 sont retentées indéfiniment au lieu d'échouer après `CLAUDE_CODE_MAX_RETRIES`.",
-   "description_source": "Set to 1 for unattended sessions such as eval harnesses, CI jobs, or remote workers. Retries 429 and 529 capacity errors indefinitely instead of failing after CLAUDE_CODE_MAX_RETRIES attempts. Claude Code fails at once when a standard-speed request gets a 429 that reports a spend limit or exhausted usage credits, even one from a gateway spend cap that resets on a schedule. Before v2.1.239, the watchdog retried these indefinitely. For fast mode requests, see Handle rate limits. The watchdog backs off up to 5 minutes between attempts, or until the limit resets when the response carries a rate-limit reset time, so a session that hits a usage limit waits out the remaining window. On v2.1.199 or later it also raises the default retry count for other transient errors, such as server errors, timeouts, and dropped connections, to 300, roughly three hours of backoff, and removes the cap of 15 on CLAUDE_CODE_MAX_RETRIES if you set that variable explicitly. Requires Claude Code v2.1.186 or later",
+   "description": "Variable pour les sessions sans surveillance : à `1`, les erreurs de capacité 429 et 529 sont retentées au-delà de `CLAUDE_CODE_MAX_RETRIES`, mais les limites de dépense et les crédits d'usage épuisés peuvent mettre fin aux tentatives ; exige Claude Code 2.1.186 ou plus.",
+   "description_source": "Set to 1 for unattended sessions. Keeps retrying 429 and 529 capacity errors past CLAUDE_CODE_MAX_RETRIES. Spend limits and exhausted usage credits can end the retries. See retry limits and fast mode. Requires Claude Code v2.1.186 or later",
    "usage": "CLAUDE_CODE_RETRY_WATCHDOG",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -14542,7 +14656,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Une mission herbin-trading laissée seule pendant une surcharge de l'API ne s'arrêterait plus sur une erreur de capacité ; posée dans l'environnement de ce seul service."
+    "pourquoi": "Les étapes `/delta` et `/delta-kb` de la chaîne D70 de 04:00 tournent sans surveillance : `CLAUDE_CODE_RETRY_WATCHDOG=1` dans leur environnement les ferait retenter une erreur 429 ou 529 plutôt que d'échouer, sauf si une limite de dépense ou des crédits épuisés y mettent fin."
    },
    "sources": [
     {
@@ -14555,7 +14669,7 @@
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-10-18",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -14568,22 +14682,56 @@
     {
      "date": "2026-10-18",
      "changement": "provenance ajoutée"
-    }
-   ],
-   "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
-   "contexte_sections": null,
-   "provenance": [
-    {
-     "affirmation": "Avec CLAUDE_CODE_RETRY_WATCHDOG=1, Claude Code retente indéfiniment les erreurs de capacité 429 et 529 au lieu d'échouer après CLAUDE_CODE_MAX_RETRIES, en attendant jusqu'à 5 minutes entre deux essais, ou jusqu'à la remise à zéro annoncée par la réponse.",
-     "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-18",
-     "caduc_si": "La variable disparaît de la documentation ou cesse de retenter indéfiniment les erreurs 429 et 529."
     },
     {
-     "affirmation": "Depuis v2.1.239, une requête à vitesse standard qui reçoit un 429 signalant une limite de dépense ou des crédits d'usage épuisés échoue tout de suite, même avec le watchdog ; CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS (v2.1.295) plafonne l'attente par requête.",
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation",
+     "avant": "Set to 1 for unattended sessions such as eval harnesses, CI jobs, or remote workers. Retries 429 and 529 capacity errors indefinitely instead of failing after CLAUDE_CODE_MAX_RETRIES attempts. Claude Code fails at once when a standard-speed request gets a 429 that reports a spend limit or exhausted usage credits, even one from a gateway spend cap that resets on a schedule. Before v2.1.239, the watchdog retried these indefinitely. For fast mode requests, see Handle rate limits. The watchdog backs off up to 5 minutes between attempts, or until the limit resets when the response carries a rate-limit reset time, so a session that hits a usage limit waits out the remaining window. On v2.1.199 or later it also raises the default retry count for other transient errors, such as server errors, timeouts, and dropped connections, to 300, roughly three hours of backoff, and removes the cap of 15 on CLAUDE_CODE_MAX_RETRIES if you set that variable explicitly. Requires Claude Code v2.1.186 or later",
+     "raison": "modifié dans la documentation"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "provenance corrigée",
+     "avant": [
+      {
+       "affirmation": "Avec CLAUDE_CODE_RETRY_WATCHDOG=1, Claude Code retente indéfiniment les erreurs de capacité 429 et 529 au lieu d'échouer après CLAUDE_CODE_MAX_RETRIES, en attendant jusqu'à 5 minutes entre deux essais, ou jusqu'à la remise à zéro annoncée par la réponse.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-18",
+       "caduc_si": "La variable disparaît de la documentation ou cesse de retenter indéfiniment les erreurs 429 et 529."
+      },
+      {
+       "affirmation": "Depuis v2.1.239, une requête à vitesse standard qui reçoit un 429 signalant une limite de dépense ou des crédits d'usage épuisés échoue tout de suite, même avec le watchdog ; CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS (v2.1.295) plafonne l'attente par requête.",
+       "source": "https://code.claude.com/docs/en/env-vars",
+       "releve_le": "2026-10-18",
+       "caduc_si": "La documentation change le traitement des 429 de limite de dépense ou retire CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS."
+      }
+     ],
+     "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ],
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "methode.chaine-nuit": {
+     "sha1": "55ede10fc3a20e1689f47e5a626e0a1aa76ead9a",
+     "pourquoi": "Chaîne de 04:00 : étapes /delta et /delta-kb par Claude Code, sans surveillance, arrêtées par la garde."
+    }
+   },
+   "provenance": [
+    {
+     "affirmation": "Avec `CLAUDE_CODE_RETRY_WATCHDOG=1`, Claude Code retente les erreurs de capacité 429 et 529 au-delà de `CLAUDE_CODE_MAX_RETRIES` ; les limites de dépense et les crédits d'usage épuisés peuvent mettre fin aux tentatives ; la variable exige Claude Code 2.1.186 ou plus.",
      "source": "https://code.claude.com/docs/en/env-vars",
-     "releve_le": "2026-10-18",
-     "caduc_si": "La documentation change le traitement des 429 de limite de dépense ou retire CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS."
+     "releve_le": "2026-11-25",
+     "caduc_si": "La page change le comportement du watchdog face aux erreurs 429 et 529 ou retire la variable."
+    },
+    {
+     "affirmation": "Un timer lance chaque jour à 04:00 la chaîne D70, dont les étapes /delta et /delta-kb tournent par Claude Code, sans surveillance, derrière une garde de quota.",
+     "source": "contexte:methode.chaine-nuit",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La chaîne D70 change d'horaire, d'étapes ou d'orchestrateur."
     }
    ]
   },
@@ -19400,7 +19548,7 @@
    "nom": "DISABLE_COMPACT",
    "gabarit": "court",
    "description": "Variable qui désactive toute compaction, automatique et `/compact`.",
-   "description_source": "Set to 1 to disable all compaction: both automatic compaction and the manual /compact command",
+   "description_source": "Set to 1 to disable all compaction, including /compact and the rewind menu's summarize options",
    "usage": "DISABLE_COMPACT",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -19417,11 +19565,11 @@
      "officielle": true
     }
    ],
-   "commentee": true,
+   "commentee": false,
    "retiree": false,
    "origine": "cc-variables",
    "groupe": "Variables",
-   "maj_le": "2026-09-24",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-09-23",
@@ -19430,6 +19578,10 @@
     {
      "date": "2026-09-24",
      "changement": "commentée"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
     }
    ],
    "contexte_empreinte": "c56f9e8dbdb4db33a2f08dc37c2eb9a7d763cc64",
@@ -21027,6 +21179,53 @@
      "pourquoi": "Claude Design utilisé intensivement depuis Claude Desktop."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-disabledirectmcpskills",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "disableDirectMcpSkills",
+   "gabarit": "court",
+   "description": "Clé de réglage qui active ou désactive les skills de serveurs MCP pour une organisation (tous les serveurs sauf les connecteurs claude.ai, réglés par un propriétaire dans Organization settings > Connectors) ; exige Claude Code 2.1.331 ou plus.",
+   "description_source": "Turn skills from MCP servers on or off for your organization. This key covers every server except claude.ai connectors. For connectors, an Owner uses the Skills over MCP switch in Organization settings > Connectors instead. Skills from MCP servers require Claude Code v2.1.331 or later.",
+   "usage": "{\n  \"disableDirectMcpSkills\": false\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Réglage d'administration de réglages gérés ; ton Max individuel a les skills MCP actifs sans cette clé."
+   },
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/settings-reference#disabledirectmcpskills",
+     "libelle": "settings-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "profil": {
+     "sha1": "37456ad86c155768635db6e2fb147cd6af8949d6",
+     "pourquoi": "Abonnement Max (20x) individuel, sans organisation ni réglages gérés."
+    }
+   },
+   "retiree": false,
+   "origine": "cc-reglages",
+   "groupe": "MCP",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-disabledmcpjsonservers",
