@@ -1,7 +1,7 @@
 {
  "perimetre": "openai",
  "categorie": "parametres",
- "maj_le": "2026-11-20",
+ "maj_le": "2026-11-25",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,8 +41,8 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 474,
- "commentees": 474,
+ "total": 476,
+ "commentees": 476,
  "entrees": [
   {
    "id": "chatgpt-parametres-reglages-appearance",
@@ -2538,6 +2538,53 @@
      "pourquoi": "Les plugins actifs sont connus, sans essai d’approbation par outil."
     }
    }
+  },
+  {
+   "id": "codex-parametres-apps-id-tools-tool-approvals-reviewer",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "apps.<id>.tools.<tool>.approvals_reviewer",
+   "gabarit": "court",
+   "description": "Choisit user ou auto_review comme relecteur des demandes d’approbation d’un outil connecté, en surcharge du choix de l’application et sous les contraintes administrées.",
+   "description_source": "Type : user | auto_review. Choose who reviews approval prompts for this tool. Overrides the app's reviewer, subject to managed requirements.",
+   "usage": "apps.<id>.tools.<tool>.approvals_reviewer",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "ignorer",
+    "pourquoi": "Le flux d’audit Codex sous tmux ne décrit aucun besoin de modifier le relecteur des approbations par outil connecté."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux pour les audits et les missions CLI."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ]
   },
   {
    "id": "codex-parametres-apps-id-tools-tool-enabled",
@@ -11759,6 +11806,73 @@
    }
   },
   {
+   "id": "codex-parametres-features-mcp-lazy-stdio-startup",
+   "produit": "codex",
+   "categorie": "parametres",
+   "nom": "features.mcp_lazy_stdio_startup",
+   "gabarit": "court",
+   "description": "Démarre par défaut au premier appel les serveurs MCP stdio admissibles dont les outils sont en cache ; false les démarre dès la création du fil.",
+   "description_source": "Type : boolean. Start eligible stdio MCP servers on the first tool call when their tool list is cached. Defaults to true. Set to false to start them when the thread starts.",
+   "usage": "features.mcp_lazy_stdio_startup",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": {
+    "verdict": "tester",
+    "pourquoi": "Pour découvrir ce réglage dans le flux d’audit sous tmux après mise à jour de la CLI, lancer `codex -c 'features.mcp_lazy_stdio_startup=false'` : résultat attendu, les MCP stdio démarrent à la création du fil, sans modifier config.toml ni présumer un gain de temps."
+   },
+   "sources": [
+    {
+     "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "libelle": "config-reference",
+     "officielle": true
+    }
+   ],
+   "commentee": true,
+   "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
+   "contexte_sections": {
+    "config.codex.interface": {
+     "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+     "pourquoi": "Codex est utilisé sous tmux pour les audits et les missions CLI."
+    }
+   },
+   "retiree": false,
+   "origine": "oa-config",
+   "groupe": "config.toml",
+   "maj_le": "2026-11-25",
+   "historique": [
+    {
+     "date": "2026-11-25",
+     "changement": "ajoutée à l'inventaire"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "commentée"
+    }
+   ],
+   "provenance": [
+    {
+     "affirmation": "features.mcp_lazy_stdio_startup vaut true par défaut ; false démarre les serveurs stdio à la création du fil.",
+     "source": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La documentation change le défaut, les conditions ou le moment du démarrage."
+    },
+    {
+     "affirmation": "Les surcharges -c key=value prennent la priorité pour cette invocation.",
+     "source": "https://learn.chatgpt.com/docs/developer-commands?surface=cli#global-flags",
+     "releve_le": "2026-11-25",
+     "caduc_si": "La syntaxe ou la portée des surcharges CLI change."
+    },
+    {
+     "affirmation": "Sylvain utilise Codex en CLI sous tmux pour les audits.",
+     "source": "contexte:config.codex.interface",
+     "releve_le": "2026-11-25",
+     "caduc_si": "Le contexte change concernant ce flux."
+    }
+   ]
+  },
+  {
    "id": "codex-parametres-features-memories",
    "produit": "codex",
    "categorie": "parametres",
@@ -16883,8 +16997,8 @@
    "categorie": "parametres",
    "nom": "mcp_servers.<id>.startup_readiness",
    "gabarit": "court",
-   "description": "Utilise par défaut une connexion effective pour déclarer le serveur prêt, ou un catalogue d’outils en cache valide avec catalog ; l’appel d’un outil exige toujours une connexion effective.",
-   "description_source": "Type : connection | catalog. Use a live connection to establish startup readiness (connection, the default), or let a valid cached tool catalog satisfy startup while the connection opens (catalog). Calling a tool still requires a live connection.",
+   "description": "Déclare le serveur prêt sur une connexion effective par défaut (connection), ou sur un catalogue en cache valide (catalog), tout appel d’outil exigeant encore une connexion effective.",
+   "description_source": "Type : connection | catalog. Use a live connection to establish startup readiness (connection, the default) or accept a valid cached tool catalog (catalog). Tool calls still require a live connection.",
    "usage": "mcp_servers.<id>.startup_readiness",
    "usage_nature": "syntaxe",
    "exemple": null,
@@ -16906,13 +17020,13 @@
    "contexte_sections": {
     "config.codex.interface": {
      "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
-     "pourquoi": "Codex est utilisé sous tmux et pour les audits."
+     "pourquoi": "Codex est utilisé sous tmux pour les audits et les missions CLI."
     }
    },
    "retiree": false,
    "origine": "oa-config",
    "groupe": "config.toml",
-   "maj_le": "2026-11-03",
+   "maj_le": "2026-11-25",
    "historique": [
     {
      "date": "2026-11-03",
@@ -16920,6 +17034,14 @@
     },
     {
      "date": "2026-11-03",
+     "changement": "commentée"
+    },
+    {
+     "date": "2026-11-25",
+     "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-25",
      "changement": "commentée"
     }
    ]

@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-25",
+  "perimetre": "openai",
+  "agent": "codex",
+  "genere_le": "2026-11-25T03:16:13+00:00",
+  "synthese": "La base Codex ajoute les clés du relecteur d’approbation par outil connecté et du démarrage différé des MCP stdio ; leur essai demande une CLI à jour, le terminal restant relevé en 0.171.0. Le relais GPT-6.2 Chat reprend l’événement déjà couvert hier. La lecture des tarifs reste incomplète ; échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+  "sources_en_echec": [
+    {
+      "id": "openai-tarifs",
+      "url": "https://learn.chatgpt.com/docs/pricing.md",
+      "erreur": "FormatInattendu: section « ^What are the usage limits for my plan\\?$ » introuvable : gabarit changé ?",
+      "partiel": false
+    },
+    {
+      "id": "openai-deprecations",
+      "url": "https://developers.openai.com/api/docs/deprecations.md",
+      "erreur": "échéances : 1 signalement(s) — aucun retrait extrait de la page : gabarit changé ?",
+      "partiel": true
+    }
+  ],
+  "elements": [
+    {
+      "id": "kb-codex-parametres-apps-id-tools-tool-approvals-reviewer",
+      "ids_bruts": [
+        "kb-codex-parametres-apps-id-tools-tool-approvals-reviewer",
+        "kb-codex-parametres-features-mcp-lazy-stdio-startup"
+      ],
+      "produit": "codex",
+      "titre": "Base Codex : relecteur par outil et démarrage différé des MCP stdio",
+      "version": null,
+      "date_publication": null,
+      "type": "nouveaute",
+      "resume": "Paramètre `apps.<id>.tools.<tool>.approvals_reviewer` : choisit user ou auto_review pour les demandes d’approbation de cet outil, en surcharge de l’application et sous les contraintes administrées.\nParamètre `features.mcp_lazy_stdio_startup` : true par défaut, démarre au premier appel les MCP stdio admissibles dont les outils sont en cache ; false les démarre dès la création du fil.",
+      "sources": [
+        {
+          "url": "https://learn.chatgpt.com/docs/config-file/config-reference#configtoml",
+          "libelle": "Référence officielle config.toml",
+          "officielle": true
+        }
+      ],
+      "certitude": "officiel",
+      "impact": "faible",
+      "pour_toi": "Tu utilises Codex en CLI sous tmux pour les audits de trading-sim : la référence donne maintenant la clé exacte du démarrage différé des MCP stdio annoncé dans la 0.172.0, sans gain local mesuré. Le relecteur par outil précise la granularité des approbations, sans justifier de changement de tes contrôles actuels. Le relevé terminal du 25/11 reste en 0.171.0 : la présence de ces clés dans la documentation ne prouve pas leur disponibilité dans ton binaire.",
+      "projets_concernes": [
+        "trading-sim"
+      ],
+      "action": {
+        "description": "Après mise à jour de la CLI autonome en 0.172.0, lancer `codex -c 'features.mcp_lazy_stdio_startup=false'` ; essai dans le flux d’audit trading-sim sous tmux ; résultat attendu : les MCP stdio démarrent à la création du fil, la surcharge ne modifiant pas `~/.codex/config.toml`.",
+        "etapes": [
+          "Employer une session d’essai dans le flux d’audit trading-sim sous tmux, après mise à jour de la CLI autonome.",
+          "Lancer `codex -c 'features.mcp_lazy_stdio_startup=false'` pour demander le démarrage à la création du fil.",
+          "Résultat attendu : démarrage des MCP stdio à la création du fil ; les lancements suivants retrouvent le réglage habituel, sans gain de temps présumé."
+        ],
+        "effort": "5min"
+      },
+      "kb_refs": [
+        "codex-parametres-apps-id-tools-tool-approvals-reviewer",
+        "codex-parametres-features-mcp-lazy-stdio-startup",
+        "codex-parametres-codex-config-c"
+      ],
+      "contexte_sections": {
+        "config.codex.interface": {
+          "sha1": "7eb749e4dc132ac2d595114af8f72069c77953dd",
+          "pourquoi": "Codex CLI sous tmux sert aux audits ; distinction entre la CLI terminal et le binaire de la chaîne."
+        },
+        "projet.trading-sim": {
+          "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
+          "pourquoi": "Le scénario de découverte du réglage porte sur le flux d’audit Codex de trading-sim."
+        }
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "id": "x-2125365094284734646",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334394491801883",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334392814051724",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334391195070471",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334389387366627",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334387575435593",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334385272774887",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125334383490105601",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125305610678010244",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125305608597590018",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "x-2125305606685053416",
+      "raison": "post X sans rapport"
+    },
+    {
+      "id": "releasebot-83617",
+      "raison": "déjà couvert le 2026-11-24 (x-2124942186425069836)"
+    }
+  ],
+  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6"
+}
