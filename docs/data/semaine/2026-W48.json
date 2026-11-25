@@ -2,7 +2,7 @@
   "semaine": "2026-W48",
   "du": "2026-11-23",
   "au": "2026-11-29",
-  "genere_le": "2026-11-24T03:09:14+00:00",
+  "genere_le": "2026-11-25T03:11:45+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -11,7 +11,8 @@
       "raison": null,
       "jours": [
         "2026-11-23",
-        "2026-11-24"
+        "2026-11-24",
+        "2026-11-25"
       ]
     },
     "actu": {
@@ -19,14 +20,16 @@
       "raison": null,
       "jours": [
         "2026-11-23",
-        "2026-11-24"
+        "2026-11-24",
+        "2026-11-25"
       ]
     },
     "openai": {
       "statut": "ok",
       "raison": null,
       "jours": [
-        "2026-11-23"
+        "2026-11-23",
+        "2026-11-24"
       ]
     },
     "kb-claude": {
@@ -59,6 +62,30 @@
   "d71": [
     {
       "perimetre": "claude",
+      "id": "kb-claude-code-parametres-claude-code-retry-watchdog",
+      "produit": "claude-code",
+      "titre": "Base de référence (sujet D71) : fiche `CLAUDE_CODE_RETRY_WATCHDOG` réécrite, la page ne décrit plus l'attente de la fin de fenêtre d'usage",
+      "version": null,
+      "impact": "fort",
+      "certitude": "officiel",
+      "date_publication": "2026-11-25",
+      "jour": "2026-11-25",
+      "action": "Revérifier le texte de la page le 02/12/2026 avant tout essai du watchdog dans la chaîne D70."
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-2.1.332",
+      "produit": "claude-code",
+      "titre": "Claude Code 2.1.332 : skills de serveurs MCP (bêta), événement de hook `PreSkillShellCommand`, limite d'usage plus signalée atteinte après sa remise à zéro",
+      "version": "2.1.332",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-11-25",
+      "jour": "2026-11-25",
+      "action": "Lister les skills de serveurs MCP visibles dans une session de `~/projets/delta-ia`."
+    },
+    {
+      "perimetre": "claude",
       "id": "https://claude.com/blog/introducing-claude-ship",
       "produit": "claude-code",
       "titre": "Claude Ship (bêta) : revue, correctifs et approbation des pull requests ; commandes `/ship` et `/steward` dans Claude Code",
@@ -82,9 +109,57 @@
       "date_publication": "2026-11-23",
       "jour": "2026-11-24",
       "action": "Relever la liste actuelle des connecteurs avec `claude mcp list`, puis la comparer le 01/12/2026."
+    },
+    {
+      "perimetre": "openai",
+      "id": "openai-status-01M84HKHX73RF7HTVZQ2A9GFXP",
+      "produit": "chatgpt",
+      "titre": "ChatGPT : erreurs GPT-6 des comptes payants résolues le 23 novembre",
+      "version": null,
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-11-23",
+      "jour": "2026-11-24",
+      "action": null
+    },
+    {
+      "perimetre": "openai",
+      "id": "rust-v0.172.0",
+      "produit": "codex",
+      "titre": "Codex CLI 0.172.0 : liens de conversations, complétion et reprise des permissions",
+      "version": "0.172.0",
+      "impact": "moyen",
+      "certitude": "officiel",
+      "date_publication": "2026-11-24",
+      "jour": "2026-11-24",
+      "action": "Dans une CLI 0.172.0 sous tmux, saisis `/mcp lo` puis presse `Tab` sans valider une connexion ; essai : dans le flux d’audit trading-sim, lance ensuite `/mcp verbose` ; résultat attendu : la complétion propose `/mcp login` et la liste MCP affiche les détails des serveurs."
     }
   ],
   "base_ajoutees": [
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-find-and-call-mcp-skills-by-name",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "Find and call MCP skills by name",
+      "usage": "/docs:pdf report.pdf",
+      "exemple": "/docs:pdf report.pdf",
+      "exemple_origine": "source",
+      "verdict": "tester",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-skills-whiteboard",
+      "produit": "claude-code",
+      "categorie": "skills",
+      "nom": "/whiteboard",
+      "usage": "/whiteboard [brief]",
+      "exemple": "/whiteboard le cycle d'une mission OPÉRER, de BRIEF à CLOSE",
+      "exemple_origine": "compose",
+      "verdict": "tester",
+      "date_ajout": "2026-11-25"
+    },
     {
       "perimetre": "claude",
       "id": "claude-code-skills-ship",
@@ -99,13 +174,133 @@
     },
     {
       "perimetre": "claude",
+      "id": "claude-code-mcp-approvals-for-mcp-skills",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "Approvals for MCP skills",
+      "usage": "acceptEdits",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-mcp-skill-availability",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "MCP skill availability",
+      "usage": "/login",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-mcp-skill-limitations",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "MCP skill limitations",
+      "usage": "dist/",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-security-scanning-for-mcp-skills",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "Security scanning for MCP skills",
+      "usage": "claude mcp add",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-mcp-troubleshoot-mcp-skills",
+      "produit": "claude-code",
+      "categorie": "mcp",
+      "nom": "Troubleshoot MCP skills",
+      "usage": "claude --debug=mcp",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-disable-response-compression",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION",
+      "usage": "CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-claude-code-disable-ship",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "CLAUDE_CODE_DISABLE_SHIP",
+      "usage": "CLAUDE_CODE_DISABLE_SHIP",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-disabledirectmcpskills",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "disableDirectMcpSkills",
+      "usage": "{\n  \"disableDirectMcpSkills\": false\n}",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-skills-claude-approvals",
+      "produit": "claude-code",
+      "categorie": "skills",
+      "nom": "/claude-approvals",
+      "usage": "/claude-approvals [what to change or explain]",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-skills-motion",
+      "produit": "claude-code",
+      "categorie": "skills",
+      "nom": "/motion",
+      "usage": "/motion [brief]",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "claude",
       "id": "claude-code-commandes-ship-review",
       "produit": "claude-code",
       "categorie": "commandes",
       "nom": "/ship:review",
       "usage": "/ship:review",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "/ship:review",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-24"
     },
@@ -116,8 +311,8 @@
       "categorie": "skills",
       "nom": "/steward",
       "usage": "/steward [pr] [+bot]",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "/steward",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-24"
     },
