@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "parametres",
- "maj_le": "2026-11-25",
+ "maj_le": "2026-11-26",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -41,7 +41,7 @@
   "usage.hors-machine": "1a0e0264070c220124c8edb13e9e88ad701f1228"
  },
  "contexte_deprecies": [],
- "total": 695,
+ "total": 696,
  "commentees": 594,
  "entrees": [
   {
@@ -25419,6 +25419,41 @@
      "pourquoi": "Un seul hook aujourd'hui (`PermissionDenied`) ; aucun besoin décrit de filtrer les changements de modèle."
     }
    }
+  },
+  {
+   "id": "claude-code-parametres-hook-preskillshellcommand",
+   "produit": "claude-code",
+   "categorie": "parametres",
+   "nom": "Hook PreSkillShellCommand",
+   "gabarit": "court",
+   "description": null,
+   "description_source": "Runs before an injected command, a shell command that runs while a skill or a command such as /security-review loads. PreToolUse hooks don't fire for injected commands. To log or block them with a script you already run on PreToolUse, add the script to this event too. In a skill's file, injected commands appear as !<command> or in a ! block.",
+   "usage": "{\n  \"hooks\": {\n    \"PreSkillShellCommand\": [\n      {\n        \"matcher\": \"Bash|PowerShell\",\n        \"hooks\": [\n          { \"type\": \"command\", \"command\": \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh\", \"args\": [], \"onFailure\": \"block\" }\n        ]\n      }\n    ]\n  }\n}",
+   "usage_nature": "syntaxe",
+   "exemple": null,
+   "disponibilite": null,
+   "statut_usage": "inconnu",
+   "recommandation": null,
+   "sources": [
+    {
+     "url": "https://code.claude.com/docs/en/hooks#preskillshellcommand",
+     "libelle": "hooks",
+     "officielle": true
+    }
+   ],
+   "commentee": false,
+   "contexte_empreinte": null,
+   "contexte_sections": null,
+   "retiree": false,
+   "origine": "cc-hooks",
+   "groupe": "Hook events",
+   "maj_le": "2026-11-26",
+   "historique": [
+    {
+     "date": "2026-11-26",
+     "changement": "ajoutée à l'inventaire"
+    }
+   ]
   },
   {
    "id": "claude-code-parametres-hook-pretooluse",
