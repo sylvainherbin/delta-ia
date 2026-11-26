@@ -2,7 +2,7 @@
   "semaine": "2026-W48",
   "du": "2026-11-23",
   "au": "2026-11-29",
-  "genere_le": "2026-11-25T03:11:45+00:00",
+  "genere_le": "2026-11-26T03:06:19+00:00",
   "statut": "ok",
   "raison": null,
   "sources": {
@@ -12,7 +12,8 @@
       "jours": [
         "2026-11-23",
         "2026-11-24",
-        "2026-11-25"
+        "2026-11-25",
+        "2026-11-26"
       ]
     },
     "actu": {
@@ -21,7 +22,8 @@
       "jours": [
         "2026-11-23",
         "2026-11-24",
-        "2026-11-25"
+        "2026-11-25",
+        "2026-11-26"
       ]
     },
     "openai": {
@@ -29,7 +31,8 @@
       "raison": null,
       "jours": [
         "2026-11-23",
-        "2026-11-24"
+        "2026-11-24",
+        "2026-11-25"
       ]
     },
     "kb-claude": {
@@ -161,6 +164,18 @@
       "date_ajout": "2026-11-25"
     },
     {
+      "perimetre": "openai",
+      "id": "codex-parametres-features-mcp-lazy-stdio-startup",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "features.mcp_lazy_stdio_startup",
+      "usage": "features.mcp_lazy_stdio_startup",
+      "exemple": "[features]\nmcp_lazy_stdio_startup = false",
+      "exemple_origine": "compose",
+      "verdict": "tester",
+      "date_ajout": "2026-11-25"
+    },
+    {
       "perimetre": "claude",
       "id": "claude-code-skills-ship",
       "produit": "claude-code",
@@ -191,8 +206,8 @@
       "categorie": "mcp",
       "nom": "MCP skill availability",
       "usage": "/login",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "/login",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-25"
     },
@@ -215,8 +230,8 @@
       "categorie": "mcp",
       "nom": "Security scanning for MCP skills",
       "usage": "claude mcp add",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "claude mcp add --transport http notion https://mcp.notion.com/mcp",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-25"
     },
@@ -227,8 +242,8 @@
       "categorie": "mcp",
       "nom": "Troubleshoot MCP skills",
       "usage": "claude --debug=mcp",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "claude --debug=mcp",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-25"
     },
@@ -275,8 +290,8 @@
       "categorie": "skills",
       "nom": "/claude-approvals",
       "usage": "/claude-approvals [what to change or explain]",
-      "exemple": null,
-      "exemple_origine": null,
+      "exemple": "/claude-approvals",
+      "exemple_origine": "source",
       "verdict": "ignorer",
       "date_ajout": "2026-11-25"
     },
@@ -287,6 +302,18 @@
       "categorie": "skills",
       "nom": "/motion",
       "usage": "/motion [brief]",
+      "exemple": "/motion an explainer of how our deploy pipeline works",
+      "exemple_origine": "source",
+      "verdict": "ignorer",
+      "date_ajout": "2026-11-25"
+    },
+    {
+      "perimetre": "openai",
+      "id": "codex-parametres-apps-id-tools-tool-approvals-reviewer",
+      "produit": "codex",
+      "categorie": "parametres",
+      "nom": "apps.<id>.tools.<tool>.approvals_reviewer",
+      "usage": "apps.<id>.tools.<tool>.approvals_reviewer",
       "exemple": null,
       "exemple_origine": null,
       "verdict": "ignorer",
@@ -327,6 +354,18 @@
       "exemple_origine": null,
       "verdict": "ignorer",
       "date_ajout": "2026-11-23"
+    },
+    {
+      "perimetre": "claude",
+      "id": "claude-code-parametres-hook-preskillshellcommand",
+      "produit": "claude-code",
+      "categorie": "parametres",
+      "nom": "Hook PreSkillShellCommand",
+      "usage": "{\n  \"hooks\": {\n    \"PreSkillShellCommand\": [\n      {\n        \"matcher\": \"Bash|PowerShell\",\n        \"hooks\": [\n          { \"type\": \"command\", \"command\": \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh\", \"args\": [], \"onFailure\": \"block\" }\n        ]\n      }\n    ]\n  }\n}",
+      "exemple": null,
+      "exemple_origine": null,
+      "verdict": null,
+      "date_ajout": "2026-11-26"
     }
   ],
   "base_verdicts": []
