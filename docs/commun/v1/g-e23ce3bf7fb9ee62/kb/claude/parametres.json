@@ -17804,6 +17804,38 @@
   },
   {
    "categorie": "parametres",
+   "description_source": "Runs before an injected command, a shell command that runs while a skill or a command such as /security-review loads. PreToolUse hooks don't fire for injected commands. To log or block them with a script you already run on PreToolUse, add the script to this event too. In a skill's file, injected commands appear as !<command> or in a ! block.",
+   "empreinte": "72704003bade1aa43ae90e37e79c19ab6770fa69a56c51f17aa68a43e6e564e8",
+   "gabarit": "court",
+   "groupe": "Hook events",
+   "id": "claude-code-parametres-hook-preskillshellcommand",
+   "identite": "kb:claude:claude-code-parametres-hook-preskillshellcommand",
+   "nom": "Hook PreSkillShellCommand",
+   "origine": "cc-hooks",
+   "produit": "claude-code",
+   "retiree": false,
+   "sources": [
+    {
+     "libelle": "hooks",
+     "officielle": true,
+     "url": "https://code.claude.com/docs/en/hooks#preskillshellcommand"
+    }
+   ],
+   "systemes": null,
+   "textes": {
+    "description": {
+     "en": {
+      "origine": "description_source",
+      "statut": "source",
+      "texte": "Runs before an injected command, a shell command that runs while a skill or a command such as /security-review loads. PreToolUse hooks don't fire for injected commands. To log or block them with a script you already run on PreToolUse, add the script to this event too. In a skill's file, injected commands appear as !<command> or in a ! block."
+     }
+    }
+   },
+   "usage": "{\n  \"hooks\": {\n    \"PreSkillShellCommand\": [\n      {\n        \"matcher\": \"Bash|PowerShell\",\n        \"hooks\": [\n          { \"type\": \"command\", \"command\": \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh\", \"args\": [], \"onFailure\": \"block\" }\n        ]\n      }\n    ]\n  }\n}",
+   "usage_nature": "syntaxe"
+  },
+  {
+   "categorie": "parametres",
    "description_source": "Runs after Claude creates tool parameters and before processing the tool call. Matches on tool names other than EndConversation: built-in tools such as Bash, PowerShell, Edit, Write, Read, Glob, Grep, Agent, Workflow, WebFetch, WebSearch, AskUserQuestion, and ExitPlanMode, and any MCP tool names.",
    "empreinte": "fd7467e22e585e6fd87ebaa4ab6d5248cd975b4b1f4abbe3f617f2550f9ed779",
    "gabarit": "court",
@@ -26392,9 +26424,9 @@
   }
  ],
  "famille": "kb",
- "maj_le": "2026-11-25",
+ "maj_le": "2026-11-26",
  "perimetre": "claude",
  "schema": "delta.commun",
  "schema_version": 1,
- "total": 696
+ "total": 697
 }
