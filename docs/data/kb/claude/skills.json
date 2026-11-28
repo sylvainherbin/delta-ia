@@ -1,7 +1,7 @@
 {
  "perimetre": "claude",
  "categorie": "skills",
- "maj_le": "2026-11-25",
+ "maj_le": "2026-11-28",
  "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
  "contexte_sections": {
   "profil": "37456ad86c155768635db6e2fb147cd6af8949d6",
@@ -42,7 +42,7 @@
  },
  "contexte_deprecies": [],
  "total": 29,
- "commentees": 27,
+ "commentees": 29,
  "entrees": [
   {
    "id": "claude-code-skills-artifact-capabilities",
@@ -50,7 +50,7 @@
    "categorie": "skills",
    "nom": "/artifact-capabilities",
    "gabarit": "complet",
-   "description": "Skill intégré qui charge la référence des capacités d'exécution d'un artefact publié : appel de tes connecteurs, téléchargement de fichier proposé au lecteur, et la liste de celles que ton compte autorise. Claude le charge normalement de lui-même avant de construire une page qui en utilise une ; l'appel manuel sert à consulter cette liste.",
+   "description": "Skill livré avec Claude Code qui charge la référence des capacités d'exécution qu'un artefact publié peut utiliser, comme l'appel de tes connecteurs ou un téléchargement de fichier proposé au lecteur, avec celles que ton compte possède. Il exige que les artefacts soient disponibles sur le compte.",
    "description_source": "Skill. Load the reference for the runtime capabilities a published artifact can use, such as calling your connectors or offering a file download, including which ones your account has. Requires artifacts",
    "usage": "/artifact-capabilities",
    "usage_nature": "syntaxe",
@@ -59,7 +59,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "ignorer",
-    "pourquoi": "Tu utilises les artefacts, mais Claude charge ce skill seul quand une page en a besoin ; l'appeler toi-même n'apporte rien à tes projets actuels."
+    "pourquoi": "Tu utilises les artefacts de Claude, mais CONTEXTE.md ne cite aucun artefact publié qui appelle des connecteurs ou propose un fichier ; aucun projet actuel n'en dépend."
    },
    "sources": [
     {
@@ -68,18 +68,18 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "usage.hors-machine": {
      "sha1": "1a0e0264070c220124c8edb13e9e88ad701f1228",
-     "pourquoi": "Sylvain utilise les artefacts de Claude ; aucun artefact publié avec connecteurs n'est cité."
+     "pourquoi": "Sylvain utilise les artefacts de Claude ; aucun artefact publié avec connecteurs ou téléchargement n'est cité."
     }
    },
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-25",
+   "maj_le": "2026-11-28",
    "historique": [
     {
      "date": "2026-09-30",
@@ -104,6 +104,10 @@
     {
      "date": "2026-11-25",
      "changement": "description d'origine modifiée dans la documentation"
+    },
+    {
+     "date": "2026-11-28",
+     "changement": "commentée"
     }
    ],
    "exemple_origine": "source"
@@ -1636,7 +1640,7 @@
    "categorie": "skills",
    "nom": "/ship",
    "gabarit": "complet",
-   "description": "Skill livrée avec Claude Code : elle commite et pousse le travail, ouvre une pull request GitHub si la branche n'en a pas, fait relire le changement, puis surveille la pull request dans la session et pousse des correctifs pour les retours de revue et les vérifications en échec. `/ship stop` met fin à la surveillance. Les arguments facultatifs sont un niveau de revue, un numéro de pull request et `+bot`. Une skill ou commande perso nommée `ship` n'est pas chargée à sa place.",
+   "description": "Skill livré avec Claude Code : il commite et pousse ton travail là où il le peut, ouvre une pull request GitHub pour ta branche si elle n'en a pas, puis relit le changement. Claude surveille ensuite la pull request dans la session et pousse des correctifs pour les retours de revue et les vérifications en échec ; `/ship stop` met fin à la surveillance. Arguments facultatifs : un niveau, un numéro de pull request et `+bot`.",
    "description_source": "Skill. Commit and push your work where /ship can, open a GitHub pull request for your branch if it has none, then review the change. Claude then watches the pull request in this session and pushes fixes for review feedback and failing checks. /ship stop ends the watch. See Get a pull request ready with /ship. If the command is missing, see Troubleshooting",
    "usage": "/ship [level] [pr] [+bot]",
    "usage_nature": "syntaxe",
@@ -1645,7 +1649,7 @@
    "statut_usage": "inconnu",
    "recommandation": {
     "verdict": "tester",
-    "pourquoi": "Essai sur une branche de mission de `~/projets/delta-ia` : `/ship` commite, pousse et ouvre la pull request, que les missions OPÉRER n'ouvrent pas aujourd'hui (fusion en avance rapide). Il consomme de l'usage tant que la session surveille la pull request."
+    "pourquoi": "Essai sur une branche de mission de `~/projets/delta-ia`, après l'OK du chef puisque `/ship` pousse avant sa propre revue : résultat attendu, une pull request ouverte et relue, que le flux actuel (fusion en avance rapide, sans pull request) n'a pas. La surveillance occupe la session jusqu'à `/ship stop`."
    },
    "sources": [
     {
@@ -1654,22 +1658,26 @@
      "officielle": true
     }
    ],
-   "commentee": false,
+   "commentee": true,
    "contexte_empreinte": "abb92beeff351d9ba4bf8891e4f210ac2bee97a6",
    "contexte_sections": {
     "methode.missions": {
      "sha1": "9a5c68bdac7e029b9075c5b29db83a366d1b66b0",
-     "pourquoi": "Une branche et un worktree par mission, fusion en avance rapide : `/ship` ajoute une pull request que ce flux n'a pas."
+     "pourquoi": "Une branche et un worktree par mission, fusion en avance rapide sans pull request : `/ship` ajoute une pull request et une revue."
+    },
+    "methode.organisation": {
+     "sha1": "8eb4434e11ddfe2da3d10243b0daeecc3c704d90",
+     "pourquoi": "Les devs commitent et poussent après l'OK du chef : `/ship` pousse d'emblée, d'où l'essai après cet OK."
     },
     "projet.trading-sim": {
      "sha1": "2ef5ba22f29bae31c7271df516e385b8a8abe342",
-     "pourquoi": "Seul dépôt dont les commits passent par une PR, sous gouvernance de Work : pas le terrain de l'essai."
+     "pourquoi": "Seul dépôt dont les commits passent par une PR, gouverné par Work : pas le terrain de l'essai."
     }
    },
    "retiree": false,
    "origine": "cc-commandes",
    "groupe": "All commands",
-   "maj_le": "2026-11-25",
+   "maj_le": "2026-11-28",
    "historique": [
     {
      "date": "2026-11-24",
@@ -1703,9 +1711,33 @@
       }
      ],
      "raison": "documentation modifiée : provenance à refaire"
+    },
+    {
+     "date": "2026-11-28",
+     "changement": "commentée"
     }
    ],
-   "exemple_origine": "compose"
+   "exemple_origine": "source",
+   "provenance": [
+    {
+     "affirmation": "`/ship [level] [pr] [+bot]` commite et pousse là où il le peut, ouvre une pull request GitHub si la branche n'en a pas, relit le changement, puis surveille la pull request dans la session ; `/ship stop` arrête la surveillance.",
+     "source": "https://code.claude.com/docs/en/commands",
+     "releve_le": "2026-11-28",
+     "caduc_si": "La description ou la syntaxe de `/ship` change dans la page des commandes, ou la commande en disparaît."
+    },
+    {
+     "affirmation": "Les missions se font sur une branche et un worktree dédiés, fusionnés en avance rapide dans `main` après relecture, sans pull request.",
+     "source": "contexte:methode.missions",
+     "releve_le": "2026-11-28",
+     "caduc_si": "CONTEXTE.md décrit un flux de missions avec pull requests."
+    },
+    {
+     "affirmation": "Les devs commitent et poussent seulement après l'OK du chef.",
+     "source": "contexte:methode.organisation",
+     "releve_le": "2026-11-28",
+     "caduc_si": "CONTEXTE.md autorise les devs à pousser avant l'OK du chef."
+    }
+   ]
   },
   {
    "id": "claude-code-skills-simplify",
